@@ -8,6 +8,7 @@ public class Text {
   public Text(String content) {
     this.content = content;
   }
+
   public Text(File file) {
     // Load the content from the file
     this.content = loadContentFromFile(file);

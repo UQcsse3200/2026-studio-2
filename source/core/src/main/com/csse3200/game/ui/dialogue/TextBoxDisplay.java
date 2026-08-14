@@ -1,69 +1,91 @@
 package com.csse3200.game.ui.dialogue;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.csse3200.game.ui.UIComponent;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.csse3200.game.ui.UIComponent;
 
 public class TextBoxDisplay extends UIComponent {
 
-  private boolean created = false;
+  private final float lifetime;
+  private final float xPos;
+  private final float yPos;
+  private float age = 0;
 
   private Text text;
   private Table table;
   private Label label;
 
-  public TextBoxDisplay(Text text) {
+  public TextBoxDisplay(Text text, float lifetime, float xPos, float yPos) {
     this.text = text;
+    this.lifetime = lifetime;
+    this.xPos = xPos;
+    this.yPos = yPos;
+    this.table = new Table();
+    this.table.setPosition(xPos, yPos);
   }
 
   @Override
   public void create() {
-    // Guard against double-creation which would register the component multiple times
-    if (created) return;
-    created = true;
-
     super.create();
-    // create actors but don't set text here; draw will update label content
     table = new Table();
-    table.setFillParent(true);
-    table.bottom().padBottom(20f);
-
-    label = new Label("", skin, "default");
+    table.setVisible(false);
+    label = new Label("", skin);
     label.setWrap(true);
-    label.setWidth(stage.getViewport().getWorldWidth() - 40f);
+    label.setAlignment(1);
+    label.setWidth(200f);
+    table.add(label).width(200f).pad(20f);
 
-    table.add(label).expandX().left().pad(10f).width(label.getWidth());
     stage.addActor(table);
   }
 
   @Override
   protected void draw(SpriteBatch batch) {
     if (label == null) {
-      // If for some reason create() wasn't called, lazily initialise minimal actors
-      table = new Table();
-      table.setFillParent(true);
-      table.bottom().padBottom(20f);
-      label = new Label("", skin, "default");
-      label.setWrap(true);
-      table.add(label).expandX().left().pad(10f).width(stage.getViewport().getWorldWidth() - 40f);
-      stage.addActor(table);
+      create();
     }
 
-    // Update the label text from the stored Text object
     String content = text == null ? "" : text.getContent();
     label.setText(content);
-    label.setVisible(true);
+
+    if (content == null || content.isEmpty()) {
+      table.setVisible(false);
+      return;
+    }
+
+    this.age += Gdx.graphics.getDeltaTime();
+    if (this.age >= lifetime) {
+      table.setVisible(false);
+      this.dispose();
+      return;
+    }
+
+    float x = this.xPos;
+    float y = this.yPos;
+    if (entity != null) {
+      Vector2 worldPos = entity.getCenterPosition();
+      float screenWidth = Gdx.graphics.getWidth();
+      float screenHeight = Gdx.graphics.getHeight();
+      x = (worldPos.x / 20f) * screenWidth + 10f;
+      y = (worldPos.y / 20f) * screenHeight + 18f;
+    }
+
+    table.setPosition(x, y);
     table.setVisible(true);
+    label.setVisible(true);
   }
 
   @Override
   public void dispose() {
-    if (!created) return;
-    created = false;
-
     super.dispose();
-    if (label != null) label.remove();
-    if (table != null) table.remove();
+    if (label != null) {
+      label.remove();
+    }
+    if (table != null) {
+      table.remove();
+    }
+    System.out.println("Text box disposed");
   }
 
   public void setText(Text newText) {
@@ -71,5 +93,6 @@ public class TextBoxDisplay extends UIComponent {
     if (label != null) {
       label.setText(newText == null ? "" : newText.getContent());
     }
+    this.age = 0f;
   }
 }
