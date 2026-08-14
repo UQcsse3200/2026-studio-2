@@ -1,41 +1,41 @@
 package com.csse3200.game.ui.dialogue;
-
+import com.badlogic.gdx.Gdx;
 import com.csse3200.game.components.Component;
 
 public class TextBox extends Component {
+
+  private static final float DEFAULT_LIFETIME = 3f;
+  private static final float DEFAULT_X = Gdx.graphics.getWidth() / 2f - 100f; //centre
+  private static final float DEFAULT_Y = 20f;
+
+  private final float lifetime;
+  private final float xPos;
+  private final float yPos;
+
   private TextBoxDisplay textBoxDisplay;
-  private Text text;
+  private final Text text;
 
   public TextBox(Text text) {
+    this.lifetime = DEFAULT_LIFETIME;
+    this.xPos = DEFAULT_X;
+    this.yPos = DEFAULT_Y;
     this.text = text;
-    this.textBoxDisplay = new TextBoxDisplay(text);
+    this.textBoxDisplay = new TextBoxDisplay(text, this.lifetime, this.xPos, this.yPos);
+  }
+
+  public TextBox(Text text, float lifetime, float xPos, float yPos) {
+    this.lifetime = lifetime;
+    this.xPos = xPos;
+    this.yPos = yPos;
+    this.text = text;
+    this.textBoxDisplay = new TextBoxDisplay(text, this.lifetime, this.xPos, this.yPos);
   }
 
   @Override
   public void create() {
     super.create();
     if (textBoxDisplay == null) {
-      textBoxDisplay = new TextBoxDisplay(text);
-    }
-    textBoxDisplay.create();
-  }
-
-  /**
-   * Show the dialogue box. If a non-null message is provided, update the displayed text.
-   * create() on the display is guarded, so calling it here is safe and will register the
-   * display with the render service if not already done. Do not call draw() directly; the
-   * render service will call draw each frame.
-   */
-  public void showDialogue(String message) {
-    if (message != null) {
-      Text newText = new Text(message);
-      this.text = newText;
-      if (textBoxDisplay == null) textBoxDisplay = new TextBoxDisplay(newText);
-      else textBoxDisplay.setText(newText);
-    }
-
-    if (textBoxDisplay == null) {
-      textBoxDisplay = new TextBoxDisplay(text);
+      textBoxDisplay = new TextBoxDisplay(text, DEFAULT_LIFETIME, DEFAULT_X, DEFAULT_Y);
     }
     textBoxDisplay.create();
   }

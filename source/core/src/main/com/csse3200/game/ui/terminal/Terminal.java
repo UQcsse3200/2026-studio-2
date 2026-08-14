@@ -29,7 +29,8 @@ public class Terminal extends Component {
     this.commands = commands;
 
     addCommand("debug", new DebugCommand());
-    addCommand("TextBox", new TextBoxCommand("Hello World"));
+    addCommand("textbox", new TextBoxCommand("Hello World"));
+    addCommand("textNewPos", new TextBoxCommand("Hello World", 3, 100, 100));
   }
 
   /**
