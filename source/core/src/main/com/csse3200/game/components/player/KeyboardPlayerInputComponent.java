@@ -4,14 +4,13 @@ import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.input.InputComponent;
-import com.csse3200.game.utils.math.Vector2Utils;
 
 /**
- * Input handler for the player for keyboard and touch (mouse) input. This input handler only uses
- * keyboard input.
+ * Input handler for the player for keyboard input.
  */
 public class KeyboardPlayerInputComponent extends InputComponent {
   private final Vector2 walkDirection = Vector2.Zero.cpy();
+  private static final int SPEED = 1;
 
   public KeyboardPlayerInputComponent() {
     super(5);
@@ -26,24 +25,19 @@ public class KeyboardPlayerInputComponent extends InputComponent {
   @Override
   public boolean keyDown(int keycode) {
     switch (keycode) {
-      case Keys.W:
-        walkDirection.add(Vector2Utils.UP);
-        triggerWalkEvent();
-        return true;
       case Keys.A:
-        walkDirection.add(Vector2Utils.LEFT);
-        triggerWalkEvent();
-        return true;
-      case Keys.S:
-        walkDirection.add(Vector2Utils.DOWN);
+      case Keys.LEFT:
+        walkDirection.add(-SPEED, 0);
         triggerWalkEvent();
         return true;
       case Keys.D:
-        walkDirection.add(Vector2Utils.RIGHT);
+      case Keys.RIGHT:
+        walkDirection.add(SPEED, 0);
         triggerWalkEvent();
         return true;
       case Keys.SPACE:
-        entity.getEvents().trigger("attack");
+      case Keys.W:
+        entity.getEvents().trigger("jump");
         return true;
       default:
         return false;
@@ -59,20 +53,14 @@ public class KeyboardPlayerInputComponent extends InputComponent {
   @Override
   public boolean keyUp(int keycode) {
     switch (keycode) {
-      case Keys.W:
-        walkDirection.sub(Vector2Utils.UP);
-        triggerWalkEvent();
-        return true;
       case Keys.A:
-        walkDirection.sub(Vector2Utils.LEFT);
-        triggerWalkEvent();
-        return true;
-      case Keys.S:
-        walkDirection.sub(Vector2Utils.DOWN);
+      case Keys.LEFT:
+        walkDirection.add(SPEED, 0);
         triggerWalkEvent();
         return true;
       case Keys.D:
-        walkDirection.sub(Vector2Utils.RIGHT);
+      case Keys.RIGHT:
+        walkDirection.add(-SPEED, 0);
         triggerWalkEvent();
         return true;
       default:
@@ -81,10 +69,10 @@ public class KeyboardPlayerInputComponent extends InputComponent {
   }
 
   private void triggerWalkEvent() {
-    if (walkDirection.epsilonEquals(Vector2.Zero)) {
+    if (walkDirection.epsilonEquals(Vector2.Zero, 0.01f)) {
       entity.getEvents().trigger("walkStop");
     } else {
-      entity.getEvents().trigger("walk", walkDirection);
+      entity.getEvents().trigger("walk", walkDirection.cpy());
     }
   }
 }
