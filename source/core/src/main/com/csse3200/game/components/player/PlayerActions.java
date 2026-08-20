@@ -10,13 +10,16 @@ import com.csse3200.game.physics.raycast.RaycastHit;
 import com.csse3200.game.services.ServiceLocator;
 
 public class PlayerActions extends Component {
-  private static final Vector2 MAX_SPEED = new Vector2(3f, 3f);
   private static final float JUMP_FORCE = 5f;
 
   private PhysicsComponent physicsComponent;
   private Vector2 walkDirection = Vector2.Zero.cpy();
   private boolean moving = false;
   private boolean isGrounded = false;
+
+  private static final Vector2 MAX_SPEED = new Vector2(3f, 3f);
+  private static final float SPRINT_MULTIPLIER = 1.75f; // adjust to taste
+  private boolean isSprinting = false;
 
   @Override
   public void create() {
@@ -25,6 +28,8 @@ public class PlayerActions extends Component {
     entity.getEvents().addListener("walkStop", this::stopWalking);
     entity.getEvents().addListener("attack", this::attack);
     entity.getEvents().addListener("jump", this::jump);
+    entity.getEvents().addListener("sprint", this::sprint);
+    entity.getEvents().addListener("sprintStop", this::stopSprinting);
   }
 
   @Override
@@ -38,7 +43,8 @@ public class PlayerActions extends Component {
   private void updateSpeed() {
     Body body = physicsComponent.getBody();
     Vector2 velocity = body.getLinearVelocity();
-    float desiredVelocityX = walkDirection.x * MAX_SPEED.x;
+    float speedMultiplier = isSprinting ? SPRINT_MULTIPLIER : 1f;
+    float desiredVelocityX = walkDirection.x * MAX_SPEED.x * speedMultiplier;
     float impulseX = (desiredVelocityX - velocity.x) * body.getMass();
     body.applyLinearImpulse(new Vector2(impulseX, 0), body.getWorldCenter(), true);
   }
@@ -68,6 +74,16 @@ public class PlayerActions extends Component {
       body.applyLinearImpulse(new Vector2(0, JUMP_FORCE), body.getWorldCenter(), true);
       isGrounded = false;
     }
+  }
+
+  void sprint() {
+    this.isSprinting = true;
+    updateSpeed();
+  }
+
+  void stopSprinting() {
+    this.isSprinting = false;
+    updateSpeed();
   }
 
   void attack() {
