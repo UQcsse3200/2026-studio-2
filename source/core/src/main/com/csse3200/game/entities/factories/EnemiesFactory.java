@@ -29,16 +29,14 @@ public class EnemyFactory {
             FileLoader.readClass(NPCConfigs.class, "configs/NPCs.json");
 
     public static Entity createGhoul(Entity target) {
-        Entity zombie = createBaseEnemy(target);
+        Entity ghoul = createBaseEnemy(target);
 
-        // Temporary until zombie config is added
         BaseEntityConfig config = configs.ghoul;
 
         ghoul.addComponent(
                 new CombatStatsComponent(config.health, config.baseAttack)
         );
-
-        return zombie;
+        return ghoul;
     }
 
     private static Entity createBaseEnemy(Entity target) {
