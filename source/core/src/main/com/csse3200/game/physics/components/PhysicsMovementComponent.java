@@ -17,8 +17,7 @@ public class PhysicsMovementComponent extends Component implements MovementContr
   private Vector2 targetPosition;
   private boolean movementEnabled = true;
 
-  public PhysicsMovementComponent() {
-  }
+  public PhysicsMovementComponent() {}
 
   public PhysicsMovementComponent(Vector2 maxSpeed) {
     this.maxSpeed = maxSpeed;
