@@ -1,6 +1,8 @@
+package com.csse3200.game.components;
+
 public abstract class Item {
-  public string itemName;
-  public string description;
+  public String itemName;
+  public String description;
   public int quantity;
 
   public Item(String itemName, String description, int quantity) {
