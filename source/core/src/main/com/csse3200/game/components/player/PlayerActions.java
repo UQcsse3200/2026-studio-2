@@ -18,7 +18,7 @@ public class PlayerActions extends Component {
   private boolean isGrounded = false;
 
   private static final Vector2 MAX_SPEED = new Vector2(3f, 3f);
-  private static final float SPRINT_MULTIPLIER = 1.75f; // adjust to taste
+  private static final float SPRINT_MULTIPLIER = 1.75f;
   private boolean isSprinting = false;
 
   @Override
@@ -53,8 +53,9 @@ public class PlayerActions extends Component {
     Vector2 position = entity.getCenterPosition();
     Vector2 rayEnd = position.cpy().sub(0, 0.1f);
     RaycastHit hit = new RaycastHit();
-    return ServiceLocator.getPhysicsService().getPhysics()
-            .raycast(position, rayEnd, PhysicsLayer.GROUND, hit);
+    return ServiceLocator.getPhysicsService()
+        .getPhysics()
+        .raycast(position, rayEnd, PhysicsLayer.GROUND, hit);
   }
 
   void walk(Vector2 direction) {
@@ -66,6 +67,12 @@ public class PlayerActions extends Component {
     this.walkDirection = Vector2.Zero.cpy();
     updateSpeed();
     moving = false;
+  }
+
+  void attack() {
+    Sound attackSound =
+        ServiceLocator.getResourceService().getAsset("sounds/Impact4.ogg", Sound.class);
+    attackSound.play();
   }
 
   void jump() {
@@ -84,11 +91,5 @@ public class PlayerActions extends Component {
   void stopSprinting() {
     this.isSprinting = false;
     updateSpeed();
-  }
-
-  void attack() {
-    Sound attackSound =
-            ServiceLocator.getResourceService().getAsset("sounds/Impact4.ogg", Sound.class);
-    attackSound.play();
   }
 }

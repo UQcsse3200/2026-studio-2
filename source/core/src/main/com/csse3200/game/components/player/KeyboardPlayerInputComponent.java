@@ -5,13 +5,13 @@ import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.input.InputComponent;
 
-/**
- * Input handler for the player for keyboard input.
- */
+/** Input handler for the player for keyboard input. */
 public class KeyboardPlayerInputComponent extends InputComponent {
   private final Vector2 walkDirection = Vector2.Zero.cpy();
   private static final int SPEED = 1;
-  private final boolean[] keysHeld = new boolean[4];
+  private static final int LEFT = 0;
+  private static final int RIGHT = 1;
+  private final boolean[] keysHeld = new boolean[2];
 
   public KeyboardPlayerInputComponent() {
     super(5);
@@ -28,12 +28,12 @@ public class KeyboardPlayerInputComponent extends InputComponent {
     switch (keycode) {
       case Keys.A:
       case Keys.LEFT:
-        keysHeld[0] = true;
+        keysHeld[LEFT] = true;
         triggerWalkEvent();
         return true;
       case Keys.D:
       case Keys.RIGHT:
-        keysHeld[1] = true;
+        keysHeld[RIGHT] = true;
         triggerWalkEvent();
         return true;
       case Keys.SPACE:
@@ -60,12 +60,12 @@ public class KeyboardPlayerInputComponent extends InputComponent {
     switch (keycode) {
       case Keys.A:
       case Keys.LEFT:
-        keysHeld[0] = false;
+        keysHeld[LEFT] = false;
         triggerWalkEvent();
         return true;
       case Keys.D:
       case Keys.RIGHT:
-        keysHeld[1] = false;
+        keysHeld[RIGHT] = false;
         triggerWalkEvent();
         return true;
       case Keys.SHIFT_LEFT:
@@ -79,8 +79,8 @@ public class KeyboardPlayerInputComponent extends InputComponent {
 
   private void triggerWalkEvent() {
     float x = 0;
-    if (keysHeld[0]) x -= SPEED;
-    if (keysHeld[1]) x += SPEED;
+    if (keysHeld[LEFT]) x -= SPEED;
+    if (keysHeld[RIGHT]) x += SPEED;
 
     walkDirection.set(x, 0);
 
@@ -90,5 +90,4 @@ public class KeyboardPlayerInputComponent extends InputComponent {
       entity.getEvents().trigger("walk", walkDirection.cpy());
     }
   }
-
 }
