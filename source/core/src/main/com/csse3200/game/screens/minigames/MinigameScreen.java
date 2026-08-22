@@ -42,6 +42,7 @@ public abstract class MinigameScreen extends ScreenAdapter {
   }
 
   protected abstract String[] getTextures();
+
   protected abstract Entity createUI();
 
   @Override
