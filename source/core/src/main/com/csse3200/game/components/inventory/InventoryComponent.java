@@ -2,7 +2,6 @@ package com.csse3200.game.components.inventory;
 
 import com.csse3200.game.components.Component;
 import com.csse3200.game.components.item.ItemType;
-
 import java.util.EnumMap;
 import java.util.Map;
 import org.slf4j.Logger;
@@ -11,8 +10,7 @@ import org.slf4j.LoggerFactory;
 /**
  * A component intended to be used by the player to track their inventory.
  *
- * <p>Tracks the player's gold, stored items, inventory capacity,
- * and currently selected item.
+ * <p>Tracks the player's gold, stored items, inventory capacity, and currently selected item.
  */
 public class InventoryComponent extends Component {
   private static final Logger logger = LoggerFactory.getLogger(InventoryComponent.class);
@@ -89,13 +87,13 @@ public class InventoryComponent extends Component {
 
   /**
    * Adds the requested quantity of an item to the inventory.
- *
- * <p>If the quantity is invalid or there is no available slot for a new
- * item type, the inventory remains unchanged.
- *
- * @param item item type to add
- * @param quantity quantity to add
- * @return true if the item was successfully added
+   *
+   * <p>If the quantity is invalid or there is no available slot for a new item type, the inventory
+   * remains unchanged.
+   *
+   * @param item item type to add
+   * @param quantity quantity to add
+   * @return true if the item was successfully added
    */
   public boolean addItem(ItemType item, int quantity) {
     if (item == null || quantity <= 0) {
@@ -252,8 +250,7 @@ public class InventoryComponent extends Component {
     }
 
     for (int offset = 1; offset <= item.length; offset++) {
-      int candidateIndex =
-          Math.floorMod(startIndex + direction * offset, item.length);
+      int candidateIndex = Math.floorMod(startIndex + direction * offset, item.length);
       ItemType candidate = item[candidateIndex];
 
       if (hasItem(candidate)) {
