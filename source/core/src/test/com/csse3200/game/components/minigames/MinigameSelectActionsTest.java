@@ -14,9 +14,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 @ExtendWith(GameExtension.class)
 class MinigameSelectActionsTest {
 
-  /**
-   * Back button on minigame screen properly disposes and returns to main screen
-   */
+  /** Back button on minigame screen properly disposes and returns to main screen */
   @Test
   void shouldReturnToMainMenuOnBack() {
     GdxGame game = mock(GdxGame.class);
@@ -28,9 +26,7 @@ class MinigameSelectActionsTest {
     verify(game).setScreen(GdxGame.ScreenType.MAIN_MENU);
   }
 
-  /**
-   * If minigames are not playable yet, selecting one must not change screen.
-   */
+  /** If minigames are not playable yet, selecting one must not change screen. */
   @Test
   void shouldNotChangeScreenForUnimplementedMinigame() {
     GdxGame game = mock(GdxGame.class);
