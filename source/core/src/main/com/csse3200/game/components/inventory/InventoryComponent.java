@@ -11,14 +11,14 @@ import org.slf4j.LoggerFactory;
 /**
  * A component intended to be used by the player to track their inventory.
  *
- * <p>Currently only stores the gold amount but can be extended for more advanced functionality such
- * as storing items. Can also be used as a more generic component for other entities.
+ * <p>Tracks the player's gold, stored items, inventory capacity,
+ * and currently selected item.
  */
 public class InventoryComponent extends Component {
   private static final Logger logger = LoggerFactory.getLogger(InventoryComponent.class);
   private static final int DEFAULT_CAPACITY = 2;
 
-  private final Map<ItemType, Integer> items = new EnumMap<>(ItemType.class);
+  private final Map<ItemType, Integer> storedItems = new EnumMap<>(ItemType.class);
   private final int capacity;
 
   private int gold;
@@ -31,7 +31,6 @@ public class InventoryComponent extends Component {
    */
   public InventoryComponent(int gold) {
     setGold(gold);
-
     this.capacity = DEFAULT_CAPACITY;
   }
 
@@ -53,7 +52,7 @@ public class InventoryComponent extends Component {
   /**
    * Returns the player's gold.
    *
-   * @return entity's health
+   * @return the player's current gold
    */
   public int getGold() {
     return this.gold;
@@ -89,32 +88,75 @@ public class InventoryComponent extends Component {
   }
 
   /**
-   * Adds the complete quantity to an item stack.
-   *
-   * <p>The operation is atomic: when the inventory is full, the quantity is invalid, or the stack
-   * limit would be exceeded, nothing is added.
-   *
-   * @return true when the complete quantity was added
+   * Adds the requested quantity of an item to the inventory.
+ *
+ * <p>If the quantity is invalid or there is no available slot for a new
+ * item type, the inventory remains unchanged.
+ *
+ * @param item item type to add
+ * @param quantity quantity to add
+ * @return true if the item was successfully added
    */
   public boolean addItem(ItemType item, int quantity) {
     if (item == null || quantity <= 0) {
       return false;
     }
+    boolean isNewItem = !storedItems.containsKey(item);
 
+    if (isNewItem && isFull()) {
+      return false;
+    }
+
+    int currentQuantity = getItemCount(item);
+    storedItems.put(item, currentQuantity + quantity);
+
+    // Automatically select the first item added.
+    if (selectedItem == null) {
+      selectedItem = item;
+      notifySelectionChanged();
+    }
+    notifyInventoryChanged();
     return true;
   }
 
   /**
-   * Removes the complete requested quantity.
+   * Removes the requested quantity of an item from the inventory.
    *
    * <p>If the requested quantity is not available, the inventory remains unchanged.
    *
-   * @return true when the quantity was removed
+   * @param item item type to remove
+   * @param quantity quantity to remove
+   * @return true if the item was successfully removed
    */
   public boolean removeItem(ItemType item, int quantity) {
     if (item == null || quantity <= 0) {
       return false;
     }
+    int currentQuantity = getItemCount(item);
+
+    if (currentQuantity < quantity) {
+      return false;
+    }
+
+    int remainingQuantity = currentQuantity - quantity;
+
+    if (remainingQuantity == 0) {
+      storedItems.remove(item);
+
+      if (selectedItem == item) {
+        selectedItem = null;
+
+        if (!storedItems.isEmpty()) {
+          selectNext();
+        } else {
+          notifySelectionChanged();
+        }
+      }
+    } else {
+      storedItems.put(item, remainingQuantity);
+    }
+
+    notifyInventoryChanged();
     return true;
   }
 
@@ -148,7 +190,7 @@ public class InventoryComponent extends Component {
   /**
    * Returns the number of items of a certain type in the inventory.
    *
-   * @param itemType the item type to check
+   * @param item the item type to check
    * @return the number of items of that type in the inventory
    */
   public int getItemCount(ItemType item) {
@@ -156,23 +198,32 @@ public class InventoryComponent extends Component {
       return 0;
     }
 
-    return items.getOrDefault(item, 0);
+    return storedItems.getOrDefault(item, 0);
   }
 
   /**
-   * Returns the number of items of a certain type in the inventory.
+   * Checks whether the inventory contains the specified item type.
    *
-   * @param itemType the item type to check
-   * @return the number of items of that type in the inventory
+   * @param item item type to check
+   * @return true if at least one item of that type is stored
    */
   public boolean hasItem(ItemType item) {
     return getItemCount(item) > 0;
   }
 
   /**
-   * Returns the number of items of a certain type in the inventory.
+   * Returns whether all distinct item slots are occupied.
    *
-   * @return the number of items of that type in the inventory
+   * @return true if the inventory has no free item slots
+   */
+  public boolean isFull() {
+    return storedItems.size() >= capacity;
+  }
+
+  /**
+   * Returns the maximum number of distinct item stacks.
+   *
+   * @return inventory capacity
    */
   public int getCapacity() {
     return capacity;
@@ -185,6 +236,11 @@ public class InventoryComponent extends Component {
    * @return selected item, or null when the inventory contains no item
    */
   private ItemType selectRelative(int direction) {
+    if (storedItems.isEmpty()) {
+      selectedItem = null;
+      return null;
+    }
+
     ItemType oldSelection = selectedItem;
     ItemType[] item = ItemType.values();
 
@@ -221,7 +277,7 @@ public class InventoryComponent extends Component {
   private void notifyInventoryChanged() {
     // Constructor operations happen before the component is attached to an Entity.
     if (entity != null) {
-      // Notify listeners that the inventory has changed (can implement specific event in the future)
+      // TODO: Trigger inventory changed event for UI.
     }
   }
 
@@ -232,7 +288,7 @@ public class InventoryComponent extends Component {
    */
   private void notifySelectionChanged() {
     if (entity != null) {
-      // Notify listeners that the selection has changed (can implement specific event in the future)
+      // TODO: Trigger selection changed event for UI.
     }
   }
 }
