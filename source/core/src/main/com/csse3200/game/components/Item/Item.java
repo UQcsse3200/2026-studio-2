@@ -8,6 +8,7 @@ public abstract class Item {
 
   public Item(ItemType itemType, String itemName, String description, int quantity) {
     this.itemType = itemType;
+    this.itemName = itemName;
     this.description = description;
     this.quantity = quantity;
   }

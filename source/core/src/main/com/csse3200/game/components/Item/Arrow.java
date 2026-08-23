@@ -1,0 +1,39 @@
+package com.csse3200.game.components.item;
+
+public abstract class Arrow extends Item {
+  protected int damage;
+  protected float range;
+  protected boolean consumeAmmo; // Whether consume ammo
+  protected float cooldown; // The cooldown time;
+
+  public Arrow(
+      String itemName,
+      String description,
+      int quantity,
+      int damage,
+      float range,
+      boolean consumeAmmo,
+      float cooldown) {
+    super(ItemType.ARROW, itemName, description, quantity);
+    this.damage = damage;
+    this.range = range;
+    this.consumeAmmo = consumeAmmo;
+    this.cooldown = cooldown;
+  }
+
+  public int getDamage() {
+    return damage;
+  }
+
+  public float getRange() {
+    return range;
+  }
+
+  public boolean isConsumeAmmo() {
+    return consumeAmmo;
+  }
+
+  public float getCooldown() {
+    return cooldown;
+  }
+}
