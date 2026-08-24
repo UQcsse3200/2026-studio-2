@@ -5,31 +5,46 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-/** Stores and calculates the wheel's logic  */
+/** Stores and calculates the wheel's logic */
 public class WheelLogic {
-    private final List<Map.Entry<String, Integer>> items = new ArrayList<>();
-    private final Random random;
+  private final List<Map.Entry<String, Integer>> items = new ArrayList<>();
+  private final Random random;
+  private Map.Entry<String, Integer> winner;
 
-   
-    public WheelLogic(Map<String, Integer> source){
-        this(source, new Random());
-    }
+  public WheelLogic(Map<String, Integer> source) {
+    this(source, new Random());
+  }
 
-    /**
-     * Creates a wheel with a supplied source and new randomness so tests can seed it
-     *
-     * @param source item labels mapped to their value
-     * @param random the randomness used to pick a winner
-     */
-    WheelLogic(Map<String, Integer> source, Random random){
-        this.random = random;
-        for (Map.Entry<String, Integer> item : source.entrySet()) {
-            items.add(Map.entry(item.getKey(), item.getValue()));
-        }
+  /**
+   * Creates a wheel with a supplied source and new randomness so tests can seed it
+   *
+   * @param source item labels mapped to their value
+   * @param random the randomness used to pick a winner
+   */
+  WheelLogic(Map<String, Integer> source, Random random) {
+    this.random = random;
+    for (Map.Entry<String, Integer> item : source.entrySet()) {
+      items.add(Map.entry(item.getKey(), item.getValue()));
     }
+  }
 
-    public Map.Entry<String, Integer> Spin(){
-        int index = random.nextInt(items.size());
-        return items.get(index);
-    }
+  /**
+   * Uses random to randomly select an item from the wheel
+   *
+   * @return winner the item that is chosen from the wheel
+   */
+  public Map.Entry<String, Integer> spin() {
+    int index = random.nextInt(items.size());
+    winner = items.get(index);
+    return winner;
+  }
+
+  /**
+   * Gets the items within the wheel.
+   *
+   * @return items the list of items
+   */
+  public List<Map.Entry<String, Integer>> getItems() {
+    return items;
+  }
 }
