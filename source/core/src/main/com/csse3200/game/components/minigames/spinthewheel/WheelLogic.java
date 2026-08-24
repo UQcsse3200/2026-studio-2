@@ -10,6 +10,7 @@ public class WheelLogic {
   private final List<Map.Entry<String, Integer>> items = new ArrayList<>();
   private final Random random;
   private Map.Entry<String, Integer> winner;
+  private int winningIndex = -1;
 
   public WheelLogic(Map<String, Integer> source) {
     this(source, new Random());
@@ -22,6 +23,10 @@ public class WheelLogic {
    * @param random the randomness used to pick a winner
    */
   WheelLogic(Map<String, Integer> source, Random random) {
+    if (source.isEmpty()) {
+      throw new IllegalArgumentException("Wheel needs at least one item");
+    }
+
     this.random = random;
     for (Map.Entry<String, Integer> item : source.entrySet()) {
       items.add(Map.entry(item.getKey(), item.getValue()));
@@ -36,6 +41,7 @@ public class WheelLogic {
   public Map.Entry<String, Integer> spin() {
     int index = random.nextInt(items.size());
     winner = items.get(index);
+    winningIndex = index;
     return winner;
   }
 
@@ -45,6 +51,16 @@ public class WheelLogic {
    * @return items the list of items
    */
   public List<Map.Entry<String, Integer>> getItems() {
-    return items;
+    return List.copyOf(items);
+  }
+
+  /**
+   * Gets the winning angle in degrees for the screen to display accordingly
+   *
+   * @return the angle of the winningIndex
+   */
+  public float getWinningAngle() {
+    float seg = 360f / items.size();
+    return seg * winningIndex;
   }
 }
