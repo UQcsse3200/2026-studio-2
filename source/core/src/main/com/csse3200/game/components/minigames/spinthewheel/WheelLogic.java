@@ -60,7 +60,10 @@ public class WheelLogic {
    * @return the angle of the winningIndex
    */
   public float getWinningAngle() {
+    if (winningIndex == -1) {
+      throw new IllegalStateException("Wheel needs to be spun first");
+    }
     float seg = 360f / items.size();
-    return seg * winningIndex;
+    return (seg * winningIndex) + seg / 2;
   }
 }
