@@ -70,6 +70,7 @@ public class ForestGameArea extends GameArea {
 
     spawnTerrain();
     spawnTrees();
+    spawnPlatforms();
     player = spawnPlayer();
     spawnGhosts();
     spawnGhostKing();
@@ -122,6 +123,12 @@ public class ForestGameArea extends GameArea {
       Entity tree = ObstacleFactory.createTree();
       spawnEntityAt(tree, randomPos, true, false);
     }
+  }
+
+  private void spawnPlatforms() {
+    GridPoint2 platformPos = new GridPoint2(10, 7);
+    Entity platform = ObstacleFactory.createPlatform();
+    spawnEntityAt(platform, platformPos, true, false);
   }
 
   private Entity spawnPlayer() {
