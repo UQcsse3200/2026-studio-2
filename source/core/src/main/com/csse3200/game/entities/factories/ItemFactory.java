@@ -3,7 +3,6 @@ package com.csse3200.game.entities.factories;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.csse3200.game.components.item.Item;
 import com.csse3200.game.components.item.ItemComponent;
-import com.csse3200.game.components.item.ItemPickupComponent;
 import com.csse3200.game.components.item.RopeArr;
 import com.csse3200.game.components.item.StandardArr;
 import com.csse3200.game.entities.Entity;
@@ -13,7 +12,10 @@ import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.rendering.TextureRenderComponent;
 
 /**
- * Factory to create collectable item entities that sit in the world until a player walks into them.
+ * Factory to create item entities that sit in the world for the player to find.
+ *
+ * <p>Each entity carries the item it represents and a sensor hitbox, so interaction logic can
+ * detect it. Collecting the item is handled separately.
  *
  * <p>Each item type should have a creation method that returns a corresponding entity.
  */
@@ -24,9 +26,9 @@ public class ItemFactory {
   private static final float ITEM_HEIGHT = 0.5f;
 
   /**
-   * Creates a collectable entity for an item.
+   * Creates a world entity for an item.
    *
-   * @param item item granted when the entity is collected
+   * @param item item this entity represents
    * @param texturePath internal path of the texture to draw
    * @return entity
    */
@@ -36,8 +38,7 @@ public class ItemFactory {
             .addComponent(new TextureRenderComponent(texturePath))
             .addComponent(new PhysicsComponent().setBodyType(BodyType.StaticBody))
             .addComponent(new HitboxComponent().setLayer(PhysicsLayer.DEFAULT))
-            .addComponent(new ItemComponent(item))
-            .addComponent(new ItemPickupComponent(PhysicsLayer.PLAYER));
+            .addComponent(new ItemComponent(item));
 
     itemEntity.getComponent(TextureRenderComponent.class).scaleEntity();
     itemEntity.scaleHeight(ITEM_HEIGHT);
@@ -45,7 +46,7 @@ public class ItemFactory {
   }
 
   /**
-   * Creates a collectable rope arrow.
+   * Creates a rope arrow lying in the world.
    *
    * @return entity
    */
@@ -54,9 +55,9 @@ public class ItemFactory {
   }
 
   /**
-   * Creates a collectable stack of standard arrows.
+   * Creates a stack of standard arrows lying in the world.
    *
-   * @param quantity number of arrows granted on collection
+   * @param quantity number of arrows in the stack
    * @return entity
    */
   public static Entity createStandardArrow(int quantity) {
