@@ -34,6 +34,17 @@ public class ObstacleFactory {
     return tree;
   }
 
+  public static Entity createPlatform() {
+    Entity platform = new Entity()
+            .addComponent(new TextureRenderComponent("images/ghostKing.png"))
+            .addComponent(new PhysicsComponent())
+            .addComponent(new ColliderComponent().setLayer(PhysicsLayer.OBSTACLE));
+
+    platform.getComponent(PhysicsComponent.class).setBodyType(BodyType.StaticBody);
+
+    return platform;
+  }
+
   /**
    * Creates an invisible physics wall.
    *
