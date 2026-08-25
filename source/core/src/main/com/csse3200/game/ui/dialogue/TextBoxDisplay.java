@@ -87,12 +87,4 @@ public class TextBoxDisplay extends UIComponent {
     }
     System.out.println("Text box disposed");
   }
-
-  public void setText(Text newText) {
-    this.text = newText;
-    if (label != null) {
-      label.setText(newText == null ? "" : newText.getContent());
-    }
-    this.age = 0f;
-  }
 }
