@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
  */
 public class InventoryComponent extends Component {
   private static final Logger logger = LoggerFactory.getLogger(InventoryComponent.class);
-  private static final int DEFAULT_CAPACITY = 2;
+  private static final int DEFAULT_CAPACITY = 8;
 
   private final Map<ItemType, Integer> storedItems = new EnumMap<>(ItemType.class);
   private final int capacity;
@@ -23,7 +23,7 @@ public class InventoryComponent extends Component {
   private ItemType selectedItem;
 
   /**
-   * Creates an inventory with two distinct item slots.
+   * Creates an inventory with the default capacity.
    *
    * @param gold starting gold
    */
