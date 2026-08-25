@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
@@ -27,6 +28,9 @@ public class MainMenuDisplay extends UIComponent {
   private void addActors() {
     table = new Table();
     table.setFillParent(true);
+    float screenWidth = Gdx.graphics.getWidth();
+    float screenHeight = Gdx.graphics.getHeight();
+    float pad = screenHeight * 0.02f;
     // Background image generated using Google Gemini for sprint 1
     Image background =
         new Image(
@@ -40,70 +44,70 @@ public class MainMenuDisplay extends UIComponent {
             ServiceLocator.getResourceService()
                 .getAsset("images/title_odysseus_logo.png", Texture.class));
 
-    TextButton startBtn = new TextButton("Begin", skin);
-    TextButton loadBtn = new TextButton("Continue", skin);
-    TextButton minigamesBtn = new TextButton("Minigames", skin);
-    TextButton settingsBtn = new TextButton("Settings", skin);
-    TextButton exitBtn = new TextButton("Quit", skin);
+    TextButton PlayBtn = new TextButton("Play", skin);
+    TextButton ContinueBtn = new TextButton("Continue", skin);
+    TextButton MinigamesBtn = new TextButton("Minigames", skin);
+    TextButton SettingsBtn = new TextButton("Settings", skin);
+    TextButton ExitBtn = new TextButton("Quit", skin);
 
     // Triggers an event when the button is pressed
-    startBtn.addListener(
+    PlayBtn.addListener(
         new ChangeListener() {
           @Override
           public void changed(ChangeEvent changeEvent, Actor actor) {
-            logger.debug("Start button clicked");
-            entity.getEvents().trigger("play");
+            logger.debug("Play button clicked");
+            entity.getEvents().trigger("Play");
           }
         });
 
-    loadBtn.addListener(
+    ContinueBtn.addListener(
         new ChangeListener() {
           @Override
           public void changed(ChangeEvent changeEvent, Actor actor) {
-            logger.debug("Load button clicked");
-            entity.getEvents().trigger("continue");
+            logger.debug("Continue button clicked");
+            entity.getEvents().trigger("Continue");
           }
         });
 
-    minigamesBtn.addListener(
+    MinigamesBtn.addListener(
         new ChangeListener() {
           @Override
           public void changed(ChangeEvent changeEvent, Actor actor) {
             logger.debug("Minigames button clicked");
-            entity.getEvents().trigger("minigames");
+            entity.getEvents().trigger("Minigames");
           }
         });
 
-    settingsBtn.addListener(
+    SettingsBtn.addListener(
         new ChangeListener() {
           @Override
           public void changed(ChangeEvent changeEvent, Actor actor) {
             logger.debug("Settings button clicked");
-            entity.getEvents().trigger("settings");
+            entity.getEvents().trigger("Settings");
           }
         });
 
-    exitBtn.addListener(
+    ExitBtn.addListener(
         new ChangeListener() {
           @Override
           public void changed(ChangeEvent changeEvent, Actor actor) {
 
             logger.debug("Exit button clicked");
-            entity.getEvents().trigger("exit");
+            entity.getEvents().trigger("Exit");
           }
         });
 
-    table.add(title).width(800f).height(300f).padBottom(10f);
+    table.add(title).width(screenWidth * 0.5f).height(screenHeight * 0.3f).padBottom(pad);
     table.row();
-    table.add(startBtn);
+    table.add(PlayBtn);
     table.row();
-    table.add(loadBtn).padTop(18f);
+    table.add(ContinueBtn).padTop(pad);
     table.row();
-    table.add(minigamesBtn).padTop(18f);
+    table.add(MinigamesBtn).padTop(pad);
     table.row();
-    table.add(settingsBtn).padTop(18f);
+    table.add(SettingsBtn).padTop(pad);
     table.row();
-    table.add(exitBtn).padTop(18f);
+    table.add(ExitBtn).padTop(pad);
 
     stage.addActor(table);
   }
