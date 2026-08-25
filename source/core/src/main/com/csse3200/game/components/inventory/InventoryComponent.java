@@ -274,6 +274,7 @@ public class InventoryComponent extends Component {
   private void notifyInventoryChanged() {
     // Constructor operations happen before the component is attached to an Entity.
     if (entity != null) {
+      entity.getEvents().trigger("inventoryChanged");
       // TODO: Trigger inventory changed event for UI.
     }
   }
@@ -285,6 +286,7 @@ public class InventoryComponent extends Component {
    */
   private void notifySelectionChanged() {
     if (entity != null) {
+      entity.getEvents().trigger("inventorySelectionChanged");
       // TODO: Trigger selection changed event for UI.
     }
   }
