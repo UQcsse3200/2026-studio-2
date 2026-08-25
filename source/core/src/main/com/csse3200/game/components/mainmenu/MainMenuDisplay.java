@@ -27,16 +27,24 @@ public class MainMenuDisplay extends UIComponent {
   private void addActors() {
     table = new Table();
     table.setFillParent(true);
+      // Background image generated using Google Gemini for sprint 1
+      Image background = new Image(
+              ServiceLocator.getResourceService()
+                      .getAsset("images/main_menu_bg.jpg", Texture.class));
+      background.setFillParent(true);
+      stage.addActor(background);
+
+      // title made in Canva
     Image title =
         new Image(
             ServiceLocator.getResourceService()
-                .getAsset("images/box_boy_title.png", Texture.class));
+                .getAsset("images/title_odysseus_logo.png", Texture.class));
 
-    TextButton startBtn = new TextButton("Start", skin);
-    TextButton loadBtn = new TextButton("Load", skin);
+    TextButton startBtn = new TextButton("Begin", skin);
+    TextButton loadBtn = new TextButton("Continue", skin);
     TextButton minigamesBtn = new TextButton("Minigames", skin);
     TextButton settingsBtn = new TextButton("Settings", skin);
-    TextButton exitBtn = new TextButton("Exit", skin);
+    TextButton exitBtn = new TextButton("Quit", skin);
 
     // Triggers an event when the button is pressed
     startBtn.addListener(
@@ -44,7 +52,7 @@ public class MainMenuDisplay extends UIComponent {
           @Override
           public void changed(ChangeEvent changeEvent, Actor actor) {
             logger.debug("Start button clicked");
-            entity.getEvents().trigger("start");
+            entity.getEvents().trigger("play");
           }
         });
 
@@ -53,20 +61,21 @@ public class MainMenuDisplay extends UIComponent {
           @Override
           public void changed(ChangeEvent changeEvent, Actor actor) {
             logger.debug("Load button clicked");
-            entity.getEvents().trigger("load");
+            entity.getEvents().trigger("continue");
           }
         });
 
-    minigamesBtn.addListener(
-        new ChangeListener() {
-          @Override
-          public void changed(ChangeEvent changeEvent, Actor actor) {
-            logger.debug("Minigames button clicked");
-            entity.getEvents().trigger("minigames");
-          }
-        });
+      minigamesBtn.addListener(
+              new ChangeListener() {
+                  @Override
+                  public void changed(ChangeEvent changeEvent, Actor actor) {
+                      logger.debug("Minigames button clicked");
+                      entity.getEvents().trigger("minigames");
+                  }
+              });
 
-    settingsBtn.addListener(
+
+      settingsBtn.addListener(
         new ChangeListener() {
           @Override
           public void changed(ChangeEvent changeEvent, Actor actor) {
@@ -85,17 +94,17 @@ public class MainMenuDisplay extends UIComponent {
           }
         });
 
-    table.add(title);
+    table.add(title).width(800f).height(300f).padBottom(10f);
     table.row();
-    table.add(startBtn).padTop(30f);
+    table.add(startBtn);
     table.row();
-    table.add(loadBtn).padTop(15f);
+    table.add(loadBtn).padTop(18f);
     table.row();
-    table.add(minigamesBtn).padTop(15f);
+    table.add(minigamesBtn).padTop(18f);
     table.row();
-    table.add(settingsBtn).padTop(15f);
+    table.add(settingsBtn).padTop(18f);
     table.row();
-    table.add(exitBtn).padTop(15f);
+    table.add(exitBtn).padTop(18f);
 
     stage.addActor(table);
   }

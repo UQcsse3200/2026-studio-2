@@ -19,39 +19,40 @@ public class MainMenuActions extends Component {
 
   @Override
   public void create() {
-    entity.getEvents().addListener("start", this::onStart);
-    entity.getEvents().addListener("load", this::onLoad);
-    entity.getEvents().addListener("exit", this::onExit);
-    entity.getEvents().addListener("settings", this::onSettings);
+    entity.getEvents().addListener("play", this::onPlay);
+    entity.getEvents().addListener("continue", this::onLoad);
     entity.getEvents().addListener("minigames", this::onMinigames);
+    entity.getEvents().addListener("settings", this::onSettings);
+    entity.getEvents().addListener("exit", this::onExit);
+
   }
 
   /** Swaps to the Main Game screen. */
-  private void onStart() {
-    logger.info("Start game");
+  private void onPlay() {
+    logger.info("play");
     game.setScreen(GdxGame.ScreenType.MAIN_GAME);
   }
 
   /** Intended for loading a saved game state. Load functionality is not actually implemented. */
   private void onLoad() {
-    logger.info("Load game");
+    logger.info("continue");
+  }
+
+  /** Swaps to the Mini Games Screen */
+  private void onMinigames(){
+  logger.info("minigames");
+  game.setScreen(GdxGame.ScreenType.MINIGAME_SELECT);} //TODO: uncomment when PR #37 is merged
+
+
+  /** Swaps to the Settings screen. */
+  private void onSettings() {
+    logger.info("settings");
+    game.setScreen(GdxGame.ScreenType.SETTINGS);
   }
 
   /** Exits the game. */
   private void onExit() {
-    logger.info("Exit game");
+    logger.info("exit");
     game.exit();
-  }
-
-  /** Swaps to the Settings screen. */
-  private void onSettings() {
-    logger.info("Launching settings screen");
-    game.setScreen(GdxGame.ScreenType.SETTINGS);
-  }
-
-  /** Swaps to the Minigame Select screen. */
-  private void onMinigames() {
-    logger.info("Launching minigame select screen");
-    game.setScreen(GdxGame.ScreenType.MINIGAME_SELECT);
   }
 }
