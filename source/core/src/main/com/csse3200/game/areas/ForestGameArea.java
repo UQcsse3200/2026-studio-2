@@ -7,6 +7,7 @@ import com.csse3200.game.areas.terrain.TerrainFactory;
 import com.csse3200.game.areas.terrain.TerrainFactory.TerrainType;
 import com.csse3200.game.components.gamearea.GameAreaDisplay;
 import com.csse3200.game.entities.Entity;
+import com.csse3200.game.entities.factories.ItemFactory;
 import com.csse3200.game.entities.factories.NPCFactory;
 import com.csse3200.game.entities.factories.ObstacleFactory;
 import com.csse3200.game.entities.factories.PlayerFactory;
@@ -23,9 +24,13 @@ public class ForestGameArea extends GameArea {
   private static final int NUM_TREES = 7;
   private static final int NUM_GHOSTS = 2;
   private static final GridPoint2 PLAYER_SPAWN = new GridPoint2(10, 10);
+  private static final GridPoint2 ROPE_ARROW_SPAWN = new GridPoint2(12, 10);
+  private static final GridPoint2 STANDARD_ARROW_SPAWN = new GridPoint2(8, 10);
+  private static final int STANDARD_ARROW_QUANTITY = 5;
   private static final float WALL_WIDTH = 0.1f;
   private static final String[] forestTextures = {
     "images/box_boy_leaf.png",
+    "images/heart.png",
     "images/tree.png",
     "images/ghost_king.png",
     "images/ghost_1.png",
@@ -71,6 +76,7 @@ public class ForestGameArea extends GameArea {
     spawnTerrain();
     spawnTrees();
     player = spawnPlayer();
+    spawnItems();
     spawnGhosts();
     spawnGhostKing();
 
@@ -128,6 +134,15 @@ public class ForestGameArea extends GameArea {
     Entity newPlayer = PlayerFactory.createPlayer();
     spawnEntityAt(newPlayer, PLAYER_SPAWN, true, true);
     return newPlayer;
+  }
+
+  private void spawnItems() {
+    spawnEntityAt(ItemFactory.createRopeArrow(), ROPE_ARROW_SPAWN, true, false);
+    spawnEntityAt(
+        ItemFactory.createStandardArrow(STANDARD_ARROW_QUANTITY),
+        STANDARD_ARROW_SPAWN,
+        true,
+        false);
   }
 
   private void spawnGhosts() {
