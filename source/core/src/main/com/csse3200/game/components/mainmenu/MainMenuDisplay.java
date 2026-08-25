@@ -27,14 +27,14 @@ public class MainMenuDisplay extends UIComponent {
   private void addActors() {
     table = new Table();
     table.setFillParent(true);
-      // Background image generated using Google Gemini for sprint 1
-      Image background = new Image(
-              ServiceLocator.getResourceService()
-                      .getAsset("images/main_menu_bg.jpg", Texture.class));
-      background.setFillParent(true);
-      stage.addActor(background);
+    // Background image generated using Google Gemini for sprint 1
+    Image background =
+        new Image(
+            ServiceLocator.getResourceService().getAsset("images/main_menu_bg.jpg", Texture.class));
+    background.setFillParent(true);
+    stage.addActor(background);
 
-      // title made in Canva
+    // title made in Canva
     Image title =
         new Image(
             ServiceLocator.getResourceService()
@@ -65,17 +65,16 @@ public class MainMenuDisplay extends UIComponent {
           }
         });
 
-      minigamesBtn.addListener(
-              new ChangeListener() {
-                  @Override
-                  public void changed(ChangeEvent changeEvent, Actor actor) {
-                      logger.debug("Minigames button clicked");
-                      entity.getEvents().trigger("minigames");
-                  }
-              });
+    minigamesBtn.addListener(
+        new ChangeListener() {
+          @Override
+          public void changed(ChangeEvent changeEvent, Actor actor) {
+            logger.debug("Minigames button clicked");
+            entity.getEvents().trigger("minigames");
+          }
+        });
 
-
-      settingsBtn.addListener(
+    settingsBtn.addListener(
         new ChangeListener() {
           @Override
           public void changed(ChangeEvent changeEvent, Actor actor) {
