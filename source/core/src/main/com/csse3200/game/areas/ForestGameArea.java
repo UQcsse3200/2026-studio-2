@@ -8,7 +8,6 @@ import com.csse3200.game.areas.terrain.TerrainFactory.TerrainType;
 import com.csse3200.game.components.gamearea.GameAreaDisplay;
 import com.csse3200.game.components.player.KeyboardPlayerInputComponent;
 import com.csse3200.game.entities.Entity;
-import com.csse3200.game.entities.factories.NPCFactory;
 import com.csse3200.game.entities.factories.ObstacleFactory;
 import com.csse3200.game.entities.factories.PlayerFactory;
 import com.csse3200.game.entities.factories.TestCeilingFactory;
@@ -63,8 +62,8 @@ public class ForestGameArea extends GameArea {
    */
   public ForestGameArea(Entity cameraEntity, TerrainFactory terrainFactory) {
     super();
-      this.cameraEntity = cameraEntity;
-      this.terrainFactory = terrainFactory;
+    this.cameraEntity = cameraEntity;
+    this.terrainFactory = terrainFactory;
   }
 
   /** Create the game area, including terrain, static entities (trees), dynamic entities (player) */
@@ -135,8 +134,7 @@ public class ForestGameArea extends GameArea {
 
   private Entity spawnPlayer() {
     Entity newPlayer = PlayerFactory.createPlayer();
-    KeyboardPlayerInputComponent input =
-            newPlayer.getComponent(KeyboardPlayerInputComponent.class);
+    KeyboardPlayerInputComponent input = newPlayer.getComponent(KeyboardPlayerInputComponent.class);
     if (input != null) {
       input.setCameraEntity(cameraEntity);
     }
@@ -157,8 +155,6 @@ public class ForestGameArea extends GameArea {
   private void spawnGhosts() {
     GridPoint2 minPos = new GridPoint2(0, 0);
     GridPoint2 maxPos = terrain.getMapBounds(0).sub(2, 2);
-
-
   }
 
   private void spawnGhostKing() {

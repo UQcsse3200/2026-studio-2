@@ -22,8 +22,8 @@ public class PlayerActions extends Component {
   private boolean isSprinting = false;
 
   /**
-   * Action component for interacting with the player. Player events should be initialised in create()
-   * and when triggered should call methods within this class.
+   * Action component for interacting with the player. Player events should be initialised in
+   * create() and when triggered should call methods within this class.
    */
   @Override
   public void create() {
@@ -35,7 +35,6 @@ public class PlayerActions extends Component {
     entity.getEvents().addListener("jump", this::jump);
     entity.getEvents().addListener("sprint", this::sprint);
     entity.getEvents().addListener("sprintStop", this::stopSprinting);
-
   }
 
   @Override
@@ -67,8 +66,8 @@ public class PlayerActions extends Component {
     Vector2 rayEnd = rayStart.cpy().sub(0, 0.15f);
     RaycastHit hit = new RaycastHit();
     return ServiceLocator.getPhysicsService()
-            .getPhysics()
-            .raycast(rayStart, rayEnd, PhysicsLayer.GROUND, hit);
+        .getPhysics()
+        .raycast(rayStart, rayEnd, PhysicsLayer.GROUND, hit);
   }
 
   /**
