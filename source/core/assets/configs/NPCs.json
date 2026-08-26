@@ -8,7 +8,7 @@
     "baseAttack": 25,
     "spookyFactor": 7
   },
-  "skeleton": {
+  "ghoul": {
     "health": 50,
     "baseAttack": 5
   }
