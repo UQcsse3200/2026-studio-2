@@ -59,7 +59,7 @@ public class TutorialGameScreen extends ScreenAdapter {
         ServiceLocator.registerRenderService(new RenderService());
 
         renderer = RenderFactory.createRenderer();
-        renderer.getCamera().getEntity().setPosition(CAMERA_POSITION);
+        //renderer.getCamera().getEntity().setPosition(CAMERA_POSITION);
         renderer.getDebug().renderPhysicsWorld(physicsEngine.getWorld());
 
         loadAssets();
@@ -69,6 +69,7 @@ public class TutorialGameScreen extends ScreenAdapter {
         TerrainFactory terrainFactory = new TerrainFactory(renderer.getCamera());
         TutorialGameArea tutorialGameArea = new TutorialGameArea(terrainFactory);
         tutorialGameArea.create();
+        renderer.getCamera().setTarget(tutorialGameArea.getPlayer());
     }
 
     @Override

@@ -25,6 +25,7 @@ public class TutorialGameArea extends GameArea {
     private static final GridPoint2 PLAYER_SPAWN = new GridPoint2(10, 10);
     private static final float WALL_WIDTH = 0.1f;
     private static final String[] forestTextures = {
+            "images/black_roof.png",
             "images/box_boy_leaf.png",
             "images/tree.png",
             "images/ghost_king.png",
@@ -98,11 +99,13 @@ public class TutorialGameArea extends GameArea {
         spawnEntityAt(
                 ObstacleFactory.createWall(WALL_WIDTH, worldBounds.y), GridPoint2Utils.ZERO, false, false);
         // Right
+        /*
         spawnEntityAt(
                 ObstacleFactory.createWall(WALL_WIDTH, worldBounds.y),
                 new GridPoint2(tileBounds.x, 0),
                 false,
                 false);
+         */
         // Top
         spawnEntityAt(
                 ObstacleFactory.createWall(worldBounds.x, WALL_WIDTH),
@@ -126,9 +129,20 @@ public class TutorialGameArea extends GameArea {
     }
 
     private void spawnPlatforms() {
-        GridPoint2 platformPos = new GridPoint2(10, 7);
+        GridPoint2 platformPos = new GridPoint2(0, 3);
         Entity platform = ObstacleFactory.createPlatform();
-        spawnEntityAt(platform, platformPos, true, false);
+        platform.setScale(6, 3);
+        spawnEntityAt(platform, platformPos, false, false);
+
+        GridPoint2 platformPos2 = new GridPoint2(16, 10);
+        Entity platform2 = ObstacleFactory.createPlatform();
+        platform2.setScale(3, 1);
+        spawnEntityAt(platform2, platformPos2, false, false);
+
+        GridPoint2 platformPos3 = new GridPoint2(26, 12);
+        Entity platform3 = ObstacleFactory.createPlatform();
+        platform3.setScale(3, 1);
+        spawnEntityAt(platform3, platformPos3, false, false);
     }
 
     private Entity spawnPlayer() {
@@ -185,6 +199,10 @@ public class TutorialGameArea extends GameArea {
         resourceService.unloadAssets(forestTextureAtlases);
         resourceService.unloadAssets(forestSounds);
         resourceService.unloadAssets(forestMusic);
+    }
+
+    public Entity getPlayer() {
+        return player;
     }
 
     @Override

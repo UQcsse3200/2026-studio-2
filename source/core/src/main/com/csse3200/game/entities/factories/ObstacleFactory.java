@@ -37,7 +37,7 @@ public class ObstacleFactory {
   public static Entity createPlatform() {
     Entity platform =
         new Entity()
-            .addComponent(new TextureRenderComponent("images/ghostKing.png"))
+            .addComponent(new TextureRenderComponent("images/black_roof.png"))
             .addComponent(new PhysicsComponent())
             .addComponent(new ColliderComponent().setLayer(PhysicsLayer.OBSTACLE));
 
