@@ -19,7 +19,7 @@ public class PhysicsMovementComponent extends Component implements MovementContr
 
   @Override
   public void create() {
-    physicsComponent = entity.getComponent(PhysicsComponent.class);
+      physicsComponent = entity.getComponent(PhysicsComponent.class);
   }
 
   @Override

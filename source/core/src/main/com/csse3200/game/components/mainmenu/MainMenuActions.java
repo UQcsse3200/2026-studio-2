@@ -23,6 +23,7 @@ public class MainMenuActions extends Component {
     entity.getEvents().addListener("load", this::onLoad);
     entity.getEvents().addListener("exit", this::onExit);
     entity.getEvents().addListener("settings", this::onSettings);
+
   }
 
   /** Swaps to the Main Game screen. */

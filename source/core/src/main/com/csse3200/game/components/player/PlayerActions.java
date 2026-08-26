@@ -17,6 +17,8 @@ public class PlayerActions extends Component {
   private PhysicsComponent physicsComponent;
   private Vector2 walkDirection = Vector2.Zero.cpy();
   private boolean moving = false;
+  private boolean paused = false;
+
 
   @Override
   public void create() {
@@ -24,6 +26,7 @@ public class PlayerActions extends Component {
     entity.getEvents().addListener("walk", this::walk);
     entity.getEvents().addListener("walkStop", this::stopWalking);
     entity.getEvents().addListener("attack", this::attack);
+    entity.getEvents().addListener("togglePaused", this::togglePause);
   }
 
   @Override
@@ -42,14 +45,22 @@ public class PlayerActions extends Component {
     body.applyLinearImpulse(impulse, body.getWorldCenter(), true);
   }
 
+  void togglePause() {
+      paused = !paused;
+  }
+
   /**
    * Moves the player towards a given direction.
    *
    * @param direction direction to move in
    */
   void walk(Vector2 direction) {
-    this.walkDirection = direction;
-    moving = true;
+    if (paused) {
+        stopWalking();
+    } else {
+        this.walkDirection = direction;
+        moving = true;
+    }
   }
 
   /** Stops the player from walking. */

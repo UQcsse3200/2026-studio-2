@@ -20,11 +20,18 @@ public class MainGameActions extends Component {
   @Override
   public void create() {
     entity.getEvents().addListener("exit", this::onExit);
+    entity.getEvents().addListener("settings", this::onSettingsFromPause);
   }
 
   /** Swaps to the Main Menu screen. */
   private void onExit() {
     logger.info("Exiting main game screen");
     game.setScreen(GdxGame.ScreenType.MAIN_MENU);
+  }
+
+  /** Swaps to the Settings screen. */
+  private void onSettingsFromPause() {
+      logger.info("Launching settings screen from pause menu");
+      game.setScreen(GdxGame.ScreenType.SETTINGS_FROM_PAUSE);
   }
 }

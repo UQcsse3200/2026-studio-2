@@ -9,6 +9,8 @@ import com.csse3200.game.areas.terrain.TerrainFactory;
 import com.csse3200.game.components.gamearea.PerformanceDisplay;
 import com.csse3200.game.components.maingame.MainGameActions;
 import com.csse3200.game.components.maingame.MainGameExitDisplay;
+import com.csse3200.game.components.maingame.PauseMenuDisplay;
+import com.csse3200.game.components.mainmenu.MainMenuActions;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.entities.factories.RenderFactory;
@@ -34,7 +36,8 @@ import org.slf4j.LoggerFactory;
  */
 public class MainGameScreen extends ScreenAdapter {
   private static final Logger logger = LoggerFactory.getLogger(MainGameScreen.class);
-  private static final String[] mainGameTextures = {"images/heart.png"};
+  private static final String[] mainGameTextures = {"images/heart.png", "images/box_boy_title.png"};
+
   private static final Vector2 CAMERA_POSITION = new Vector2(7.5f, 7.5f);
 
   private final GdxGame game;
@@ -137,7 +140,8 @@ public class MainGameScreen extends ScreenAdapter {
         .addComponent(new MainGameExitDisplay())
         .addComponent(new Terminal())
         .addComponent(inputComponent)
-        .addComponent(new TerminalDisplay());
+        .addComponent(new TerminalDisplay())
+        .addComponent(new PauseMenuDisplay(this.game));
 
     ServiceLocator.getEntityService().register(ui);
   }

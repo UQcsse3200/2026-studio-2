@@ -24,8 +24,8 @@ import org.slf4j.LoggerFactory;
  * DECO2800Game/settings.json under your home directory (This is C:/users/[username] on Windows).
  */
 
-public class SettingsMenuDisplay extends UIComponent {
-  private static final Logger logger = LoggerFactory.getLogger(SettingsMenuDisplay.class);
+public class SettingsMenuDisplayFromPause extends UIComponent {
+  private static final Logger logger = LoggerFactory.getLogger(SettingsMenuDisplayFromPause.class);
   private final GdxGame game;
 
   private Table rootTable;
@@ -35,10 +35,7 @@ public class SettingsMenuDisplay extends UIComponent {
   private Slider uiScaleSlider;
   private SelectBox<StringDecorator<DisplayMode>> displayModeSelect;
 
-  private ScreenType sourceScreen = ScreenType.MAIN_MENU;
-
-
-  public SettingsMenuDisplay(GdxGame game) {
+  public SettingsMenuDisplayFromPause(GdxGame game) {
     super();
     this.game = game;
   }
@@ -205,7 +202,7 @@ public class SettingsMenuDisplay extends UIComponent {
   }
 
   private void exitMenu() {
-    game.setScreen(ScreenType.MAIN_MENU);
+    game.setScreen(ScreenType.MAIN_GAME);
   }
 
   private Integer parseOrNull(String num) {
