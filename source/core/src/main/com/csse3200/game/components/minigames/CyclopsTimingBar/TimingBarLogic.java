@@ -24,6 +24,7 @@ public class TimingBarLogic {
 
   /**
    * Change the width of the scoring area to the given width
+   *
    * @param width - float value of the new width of the scoring area
    */
   public void changeScoringAreaWidth(float width) {
@@ -55,16 +56,12 @@ public class TimingBarLogic {
     }
   }
 
-  /**
-   * Stops the sliding marker
-   */
+  /** Stops the sliding marker */
   public void stopMarker() {
     this.isStopped = true;
   }
 
-  /**
-   * Starts the sliding marker
-   */
+  /** Starts the sliding marker */
   public void startMarker() {
     this.isStopped = false;
   }
