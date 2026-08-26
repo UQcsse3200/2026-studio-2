@@ -1,6 +1,7 @@
 package com.csse3200.game.ui.dialogue;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.csse3200.game.components.Component;
 
 public class TextBox extends Component {
@@ -18,6 +19,7 @@ public class TextBox extends Component {
         this.yPos = yPos;
         this.text = text;
         this.textBoxDisplay = new TextBoxDisplay(text, this.lifetime, this.xPos, this.yPos);
+        this.textBoxDisplay.setTextColor(Color.WHITE);
     }
 
     @Override
