@@ -12,6 +12,7 @@ import com.csse3200.game.ui.UIComponent;
 /** A ui component for displaying player stats, e.g. health. */
 public class PlayerStatsDisplay extends UIComponent {
   Table table;
+  private int maxHealth = 3;
   private Image heartImage;
   private Label healthLabel;
 
@@ -37,16 +38,20 @@ public class PlayerStatsDisplay extends UIComponent {
 
     // Heart image
     float heartSideLength = 30f;
-    heartImage =
-        new Image(ServiceLocator.getResourceService().getAsset("images/heart.png", Texture.class));
+    //heartImage =
+      //new Image(ServiceLocator.getResourceService().getAsset("images/Full_heart.png", Texture.class));
 
     // Health text
     int health = entity.getComponent(CombatStatsComponent.class).getHealth();
-    CharSequence healthText = String.format("Health: %d", health);
-    healthLabel = new Label(healthText, skin, "large");
+    //CharSequence healthText = String.format("Health: %d", health);
+    //healthLabel = new Label(healthText, skin, "large");
 
-    table.add(heartImage).size(heartSideLength).pad(5);
-    table.add(healthLabel);
+    for (int i = 0; i < maxHealth; i++) {
+      heartImage = new Image(ServiceLocator.getResourceService().getAsset("images/Full_heart.png", Texture.class));
+      table.add(heartImage).size(heartSideLength).pad(5);
+    }
+    //table.add(heartImage).size(heartSideLength).pad(5);
+    //table.add(healthLabel);
     stage.addActor(table);
   }
 
