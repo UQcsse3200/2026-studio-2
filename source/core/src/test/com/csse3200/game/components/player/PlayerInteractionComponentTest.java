@@ -53,8 +53,7 @@ class PlayerInteractionComponentTest {
     Entity player = createPlayer(new InventoryComponent(0));
     Entity item = spawnWorldItem(new RopeArr(), new Vector2(0.5f, 0f));
 
-    PlayerInteractionComponent interaction =
-        player.getComponent(PlayerInteractionComponent.class);
+    PlayerInteractionComponent interaction = player.getComponent(PlayerInteractionComponent.class);
 
     assertEquals(item, interaction.findNearestItem());
   }
@@ -64,8 +63,7 @@ class PlayerInteractionComponentTest {
     Entity player = createPlayer(new InventoryComponent(0));
     spawnWorldItem(new RopeArr(), new Vector2(10f, 10f));
 
-    PlayerInteractionComponent interaction =
-        player.getComponent(PlayerInteractionComponent.class);
+    PlayerInteractionComponent interaction = player.getComponent(PlayerInteractionComponent.class);
 
     assertNull(interaction.findNearestItem());
   }
@@ -76,8 +74,7 @@ class PlayerInteractionComponentTest {
     Entity notAnItem = new Entity();
     ServiceLocator.getEntityService().register(notAnItem);
 
-    PlayerInteractionComponent interaction =
-        player.getComponent(PlayerInteractionComponent.class);
+    PlayerInteractionComponent interaction = player.getComponent(PlayerInteractionComponent.class);
 
     assertNull(interaction.findNearestItem());
   }
@@ -87,8 +84,7 @@ class PlayerInteractionComponentTest {
     Entity player = createPlayer(new InventoryComponent(0));
     Entity item = spawnWorldItem(new StandardArr(3), new Vector2(0.5f, 0f));
 
-    PlayerInteractionComponent interaction =
-        player.getComponent(PlayerInteractionComponent.class);
+    PlayerInteractionComponent interaction = player.getComponent(PlayerInteractionComponent.class);
 
     assertTrue(interaction.pickup(item));
     assertEquals(3, player.getComponent(InventoryComponent.class).getItemCount(ItemType.ARROW));
@@ -181,8 +177,7 @@ class PlayerInteractionComponentTest {
     inventory.addItem(ItemType.ARROW, 1);
     inventory.addItem(ItemType.RopeArrow, 1);
 
-    PlayerInteractionComponent interaction =
-        player.getComponent(PlayerInteractionComponent.class);
+    PlayerInteractionComponent interaction = player.getComponent(PlayerInteractionComponent.class);
     ItemType initial = inventory.getSelectedItem();
     ItemType other = initial == ItemType.ARROW ? ItemType.RopeArrow : ItemType.ARROW;
 

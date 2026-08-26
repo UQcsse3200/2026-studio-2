@@ -51,9 +51,9 @@ public class PlayerInteractionComponent extends Component {
   }
 
   /**
-   * Attempts to pick up the given item entity. The item's availability and the player's range to
-   * it are both re-validated at the time of interaction, since either may have changed since the
-   * item was first detected.
+   * Attempts to pick up the given item entity. The item's availability and the player's range to it
+   * are both re-validated at the time of interaction, since either may have changed since the item
+   * was first detected.
    *
    * @param itemEntity item entity to pick up
    * @return true if the item was picked up
