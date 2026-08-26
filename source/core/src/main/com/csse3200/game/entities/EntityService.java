@@ -38,6 +38,15 @@ public class EntityService {
     entities.removeValue(entity, true);
   }
 
+  /**
+   * Returns a copy of all currently registered entities.
+   *
+   * @return registered entities
+   */
+  public Array<Entity> getEntities() {
+    return new Array<>(entities);
+  }
+
   /** Update all registered entities. Should only be called from the main game loop. */
   public void update() {
     for (Entity entity : entities) {

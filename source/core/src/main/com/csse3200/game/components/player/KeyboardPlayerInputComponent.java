@@ -45,6 +45,21 @@ public class KeyboardPlayerInputComponent extends InputComponent {
       case Keys.SPACE:
         entity.getEvents().trigger("attack");
         return true;
+      case Keys.E:
+        entity.getEvents().trigger("interact");
+        return true;
+      case Keys.Q:
+        entity.getEvents().trigger("dropItem");
+        return true;
+      case Keys.X:
+        entity.getEvents().trigger("deleteItem");
+        return true;
+      case Keys.PERIOD:
+        entity.getEvents().trigger("switchItem", 1);
+        return true;
+      case Keys.COMMA:
+        entity.getEvents().trigger("switchItem", -1);
+        return true;
       default:
         return false;
     }
