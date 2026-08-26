@@ -8,6 +8,10 @@ public class PhysicsLayer {
   public static final short OBSTACLE = (1 << 2);
   // NPC (Non-Playable Character) colliders
   public static final short NPC = (1 << 3);
+  // Ground and platforms used by side-view player movement
+  public static final short GROUND = (1 << 4);
+  // Projectiles fired by the player
+  public static final short PLAYER_PROJECTILE = (1 << 5);
   public static final short ALL = ~0;
 
   public static boolean contains(short filterBits, short layer) {
