@@ -1,14 +1,15 @@
 package com.csse3200.game.entities.factories;
 
+import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.ai.tasks.AITaskComponent;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.TouchAttackComponent;
+import com.csse3200.game.components.npc.GhostAnimationController;
 import com.csse3200.game.components.tasks.ChaseTask;
 import com.csse3200.game.components.tasks.WanderTask;
 import com.csse3200.game.entities.Entity;
-import com.csse3200.game.entities.configs.BaseEntityConfig;
-import com.csse3200.game.entities.configs.NPCConfigs;
 import com.csse3200.game.entities.configs.EnemyConfig;
 import com.csse3200.game.entities.configs.EnemyConfigs;
 import com.csse3200.game.files.FileLoader;
@@ -18,15 +19,12 @@ import com.csse3200.game.physics.components.ColliderComponent;
 import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.physics.components.PhysicsMovementComponent;
-import com.badlogic.gdx.graphics.g2d.Animation;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.csse3200.game.components.npc.GhostAnimationController;
 import com.csse3200.game.rendering.AnimationRenderComponent;
 import com.csse3200.game.services.ServiceLocator;
 
 public class EnemyFactory {
   private static final EnemyConfigs configs =
-          FileLoader.readClass(EnemyConfigs.class, "configs/Enemies.json");
+      FileLoader.readClass(EnemyConfigs.class, "configs/Enemies.json");
 
   // Test function for checking enemy behaviour
   public static Entity createChaser(Entity target) {
@@ -41,15 +39,15 @@ public class EnemyFactory {
     Entity chaser = createEnemy(target, config);
 
     AnimationRenderComponent animator =
-            new AnimationRenderComponent(
-                    ServiceLocator.getResourceService().getAsset("images/ghost.atlas", TextureAtlas.class));
+        new AnimationRenderComponent(
+            ServiceLocator.getResourceService().getAsset("images/ghost.atlas", TextureAtlas.class));
     animator.addAnimation("angry_float", 0.1f, Animation.PlayMode.LOOP);
     animator.addAnimation("float", 0.1f, Animation.PlayMode.LOOP);
 
     chaser
-            .addComponent(new CombatStatsComponent(config.health, config.baseAttack))
-            .addComponent(animator)
-            .addComponent(new GhostAnimationController());
+        .addComponent(new CombatStatsComponent(config.health, config.baseAttack))
+        .addComponent(animator)
+        .addComponent(new GhostAnimationController());
 
     chaser.getComponent(AnimationRenderComponent.class).scaleEntity();
 
@@ -59,9 +57,12 @@ public class EnemyFactory {
   public static Entity createEnemy(Entity target, EnemyConfig config) {
     AITaskComponent aiComponent =
         new AITaskComponent()
-            .addTask(new WanderTask(new Vector2(config.wanderRangeX, config.wanderRangeY),
-                    config.wanderWaitTime))
-            .addTask(new ChaseTask(target, config.chasePriority, config.viewDistance, config.maxChaseDistance));
+            .addTask(
+                new WanderTask(
+                    new Vector2(config.wanderRangeX, config.wanderRangeY), config.wanderWaitTime))
+            .addTask(
+                new ChaseTask(
+                    target, config.chasePriority, config.viewDistance, config.maxChaseDistance));
 
     Entity enemy =
         new Entity()
