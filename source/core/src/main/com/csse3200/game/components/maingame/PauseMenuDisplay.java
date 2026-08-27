@@ -49,9 +49,9 @@ public class PauseMenuDisplay extends UIComponent {
         new ChangeListener() {
           @Override
           public void changed(ChangeEvent changeEvent, Actor actor) {
-              if (ServiceLocator.getEntityService().getPaused()) {
-                  unpause();
-              }
+            if (ServiceLocator.getEntityService().getPaused()) {
+              unpause();
+            }
           }
         });
 
