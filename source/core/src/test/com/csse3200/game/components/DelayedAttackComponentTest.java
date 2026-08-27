@@ -11,6 +11,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(GameExtension.class)
@@ -31,6 +32,20 @@ public class DelayedAttackComponentTest {
         entity.getEvents().trigger("collisionStart", entityFixture, targetFixture);
 
         assertTrue(entity.getComponent(DelayedAttackComponent.class).attacking);
+    }
+
+    @Test
+    void shouldEndAttack() {
+        short targetLayer = (1 << 3);
+        Entity entity = createAttacker(targetLayer);
+        Entity target = createTarget(targetLayer);
+
+        Fixture entityFixture = entity.getComponent(HitboxComponent.class).getFixture();
+        Fixture targetFixture = target.getComponent(HitboxComponent.class).getFixture();
+        entity.getEvents().trigger("collisionStart", entityFixture, targetFixture);
+        entity.getEvents().trigger("attackAnimationFinished");
+
+        assertFalse(entity.getComponent(DelayedAttackComponent.class).attacking);
     }
 
     Entity createAttacker(short targetLayer) {
