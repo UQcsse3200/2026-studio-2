@@ -19,7 +19,6 @@ public class PlayerActions extends Component {
   private boolean moving = false;
   private boolean paused = false;
 
-
   @Override
   public void create() {
     physicsComponent = entity.getComponent(PhysicsComponent.class);
@@ -46,7 +45,7 @@ public class PlayerActions extends Component {
   }
 
   void togglePause() {
-      paused = !paused;
+    paused = !paused;
   }
 
   /**
@@ -56,10 +55,10 @@ public class PlayerActions extends Component {
    */
   void walk(Vector2 direction) {
     if (paused) {
-        stopWalking();
+      stopWalking();
     } else {
-        this.walkDirection = direction;
-        moving = true;
+      this.walkDirection = direction;
+      moving = true;
     }
   }
 

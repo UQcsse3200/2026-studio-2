@@ -8,9 +8,8 @@ import com.badlogic.gdx.Screen;
 import com.csse3200.game.files.UserSettings;
 import com.csse3200.game.screens.MainGameScreen;
 import com.csse3200.game.screens.MainMenuScreen;
-import com.csse3200.game.screens.SettingsScreen;
 import com.csse3200.game.screens.SettingsFromPauseScreen;
-import com.csse3200.game.services.ServiceLocator;
+import com.csse3200.game.screens.SettingsScreen;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -49,13 +49,13 @@ public class KeyboardTerminalInputComponent extends InputComponent {
       return true;
     }
     if (keycode == Input.Keys.ESCAPE) {
-        ServiceLocator.getEntityService().togglePaused();
+      ServiceLocator.getEntityService().togglePaused();
 
-        if (ServiceLocator.getEntityService().getPaused()){
-            entity.getEvents().trigger("showPauseMenu");
-        } else {
-            entity.getEvents().trigger("hidePauseMenu");
-        }
+      if (ServiceLocator.getEntityService().getPaused()) {
+        entity.getEvents().trigger("showPauseMenu");
+      } else {
+        entity.getEvents().trigger("hidePauseMenu");
+      }
     }
 
     return terminal.isOpen();

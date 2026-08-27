@@ -31,7 +31,7 @@ public class MainGameActions extends Component {
 
   /** Swaps to the Settings screen. */
   private void onSettingsFromPause() {
-      logger.info("Launching settings screen from pause menu");
-      game.setScreen(GdxGame.ScreenType.SETTINGS_FROM_PAUSE);
+    logger.info("Launching settings screen from pause menu");
+    game.setScreen(GdxGame.ScreenType.SETTINGS_FROM_PAUSE);
   }
 }

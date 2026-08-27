@@ -43,10 +43,10 @@ public class EntityService {
   /** Update all registered entities. Should only be called from the main game loop. */
   public void update() {
     if (!paused) {
-        for (Entity entity : entities) {
-            entity.earlyUpdate();
-            entity.update();
-        }
+      for (Entity entity : entities) {
+        entity.earlyUpdate();
+        entity.update();
+      }
     }
   }
 
@@ -58,14 +58,14 @@ public class EntityService {
   }
 
   public void setPaused(boolean newPaused) {
-      paused = newPaused;
+    paused = newPaused;
   }
 
   public void togglePaused() {
-      paused = !paused;
+    paused = !paused;
   }
 
   public boolean getPaused() {
-      return paused;
+    return paused;
   }
 }

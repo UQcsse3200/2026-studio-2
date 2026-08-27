@@ -11,93 +11,97 @@ import com.csse3200.game.GdxGame;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.UIComponent;
 
+/**
+ * Displays a pause menu on the main game screen. Must be opened via the "showPauseMenu" event (in
+ * this case, triggered via the ESC key), and contains the game logo and buttons to resume gameplay,
+ * go to the settings menu, or quit the game. While the pause menu is open, the player and enemies
+ * cannot move.
+ */
 public class PauseMenuDisplay extends UIComponent {
-    Table table;
-    boolean paused = false;
+  Table table;
+  boolean paused = false;
 
-    private GdxGame game;
+  private GdxGame game;
 
-    public PauseMenuDisplay(GdxGame game) {
-        this.game = game;
-    }
+  public PauseMenuDisplay(GdxGame game) {
+    this.game = game;
+  }
 
+  @Override
+  public void create() {
+    super.create();
+    addActors();
 
-    @Override
-    public void create() {
-        super.create();
-        addActors();
+    entity.getEvents().addListener("showPauseMenu", this::pause);
+    entity.getEvents().addListener("hidePauseMenu", this::unpause);
+  }
 
-        entity.getEvents().addListener("showPauseMenu", this::pause);
-        entity.getEvents().addListener("hidePauseMenu", this::unpause);
-    }
+  private void addActors() {
+    table = new Table();
+    table.setFillParent(true);
+    table.setColor(1, 1, 1, 0);
 
-    private void addActors() {
-        table = new Table();
-        table.setFillParent(true);
-        table.setColor(1,1,1,0);
+    TextButton resumeBtn = new TextButton("Resume", skin);
+    TextButton settingsBtn = new TextButton("Settings", skin);
+    TextButton exitBtn = new TextButton("Quit Game", skin);
 
-        TextButton resumeBtn = new TextButton("Resume", skin);
-        TextButton settingsBtn = new TextButton("Settings", skin);
-        TextButton exitBtn = new TextButton("Quit Game", skin);
+    resumeBtn.addListener(
+        new ChangeListener() {
+          @Override
+          public void changed(ChangeEvent changeEvent, Actor actor) {
+            unpause();
+          }
+        });
 
+    settingsBtn.addListener(
+        new ChangeListener() {
+          @Override
+          public void changed(ChangeEvent changeEvent, Actor actor) {
+            if (paused) {
+              entity.getEvents().trigger("settingsFromPause");
+              game.setScreen(GdxGame.ScreenType.SETTINGS_FROM_PAUSE);
+            }
+          }
+        });
 
-        resumeBtn.addListener(
-                new ChangeListener() {
-                    @Override
-                    public void changed(ChangeEvent changeEvent, Actor actor) {
-                        unpause();
-                    }
-                });
+    exitBtn.addListener(
+        new ChangeListener() {
+          @Override
+          public void changed(ChangeEvent changeEvent, Actor actor) {
+            if (paused) {
+              game.exit();
+            }
+          }
+        });
 
-        settingsBtn.addListener(
-                new ChangeListener() {
-                    @Override
-                    public void changed(ChangeEvent changeEvent, Actor actor) {
-                        if (paused) {
-                        entity.getEvents().trigger("settingsFromPause");
-                        game.setScreen(GdxGame.ScreenType.SETTINGS_FROM_PAUSE);
-                        }
-                    }
-                });
+    Image title =
+        new Image(
+            ServiceLocator.getResourceService()
+                .getAsset("images/box_boy_title.png", Texture.class));
+    table.add(title).padTop(30f);
+    table.row();
+    table.add(resumeBtn).padTop(30f);
+    table.row();
+    table.add(settingsBtn).padTop(15f);
+    table.row();
+    table.add(exitBtn).padTop(15f);
+    table.row();
 
-        exitBtn.addListener(
-                new ChangeListener() {
-                    @Override
-                    public void changed(ChangeEvent changeEvent, Actor actor) {
-                        if (paused) {
-                        game.exit();
-                        }
-                    }
-                });
+    stage.addActor(table);
+  }
 
-        Image title =
-                new Image(
-                        ServiceLocator.getResourceService()
-                                .getAsset("images/box_boy_title.png", Texture.class));
-        table.add(title).padTop(30f);
-        table.row();
-        table.add(resumeBtn).padTop(30f);
-        table.row();
-        table.add(settingsBtn).padTop(15f);
-        table.row();
-        table.add(exitBtn).padTop(15f);
-        table.row();
+  private void pause() {
+    table.setColor(1, 1, 1, 1);
+    ServiceLocator.getEntityService().setPaused(true);
+  }
 
-        stage.addActor(table);
-    }
+  private void unpause() {
+    table.setColor(1, 1, 1, 0);
+    ServiceLocator.getEntityService().setPaused(false);
+  }
 
-    private void pause() {
-        table.setColor(1, 1, 1, 1);
-        ServiceLocator.getEntityService().setPaused(true);
-    }
-
-    private void unpause() {
-        table.setColor(1,1,1,0);
-        ServiceLocator.getEntityService().setPaused(false);
-    }
-
-    @Override
-    public void draw(SpriteBatch batch) {
-        // draw is handled by the stage
-    }
+  @Override
+  public void draw(SpriteBatch batch) {
+    // draw is handled by the stage
+  }
 }
