@@ -11,6 +11,18 @@
   "ghoul": {
     "health": 50,
     "baseAttack": 5
+  },
+
+  "chaser": {
+    "health": 50,
+    "baseAttack": 5,
+    "wanderRangeX": 4.0,
+    "wanderRangeY": 0.0,
+    "wanderWaitTime": 2.0,
+
+    "chasePriority": 10,
+    "viewDistance": 3.0,
+    "maxChaseDistance": 4.0
   }
 }
 
