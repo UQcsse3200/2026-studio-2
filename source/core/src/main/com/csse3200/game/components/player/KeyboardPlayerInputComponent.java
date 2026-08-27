@@ -19,6 +19,7 @@ public class KeyboardPlayerInputComponent extends InputComponent {
   private static final int SPEED = 1;
   private static final int LEFT = 0;
   private static final int RIGHT = 1;
+  private static int sprintHeld = 0;
   private final boolean[] keysHeld = new boolean[2];
   private Entity cameraEntity;
 
@@ -55,11 +56,12 @@ public class KeyboardPlayerInputComponent extends InputComponent {
         triggerWalkEvent();
         return true;
       case Keys.SPACE:
-        entity.getEvents().trigger("jump");
+        triggerJumpEvent();
         return true;
       case Keys.SHIFT_LEFT:
       case Keys.SHIFT_RIGHT:
-        entity.getEvents().trigger("sprint");
+        sprintHeld = 1;
+        triggerSprintEvent();
         return true;
       default:
         return false;
@@ -87,7 +89,8 @@ public class KeyboardPlayerInputComponent extends InputComponent {
         return true;
       case Keys.SHIFT_LEFT:
       case Keys.SHIFT_RIGHT:
-        entity.getEvents().trigger("sprintStop");
+        sprintHeld = 0;
+        triggerSprintEvent();
         return true;
       default:
         return false;
@@ -114,6 +117,18 @@ public class KeyboardPlayerInputComponent extends InputComponent {
     Vector2 aim = new Vector2(world.x, world.y).sub(entity.getCenterPosition());
     entity.getEvents().trigger("grappleFire", aim);
     return true;
+  }
+
+  private void triggerSprintEvent() {
+    if (sprintHeld == 1) {
+      entity.getEvents().trigger("sprint");
+    } else {
+      entity.getEvents().trigger("sprintStop");
+    }
+  }
+
+  private void triggerJumpEvent() {
+    entity.getEvents().trigger("jump");
   }
 
   private void triggerWalkEvent() {
