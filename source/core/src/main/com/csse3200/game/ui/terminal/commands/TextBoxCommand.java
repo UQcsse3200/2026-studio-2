@@ -1,4 +1,5 @@
 package com.csse3200.game.ui.terminal.commands;
+
 import com.badlogic.gdx.Gdx;
 import com.csse3200.game.ui.dialogue.Text;
 import com.csse3200.game.ui.dialogue.TextBox;
@@ -8,7 +9,7 @@ public class TextBoxCommand implements Command {
   private final Text message;
 
   private static final float DEFAULT_LIFETIME = 3f;
-  private static final float DEFAULT_X = Gdx.graphics.getWidth() / 2f - 100f; //centre
+  private static final float DEFAULT_X = Gdx.graphics.getWidth() / 2f - 100f; // centre
   private static final float DEFAULT_Y = 20f;
 
   private final float lifetime;
