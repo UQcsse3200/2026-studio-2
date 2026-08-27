@@ -146,20 +146,33 @@ public class TutorialGameArea extends GameArea {
     }
 
     private void spawnPlatforms() {
-        GridPoint2 floorPos = new GridPoint2(0, 3);
-        Entity floor = ObstacleFactory.createFloor();
-        floor.setScale(6, 3);
-        spawnEntityAt(floor, floorPos, false, false);
+        GridPoint2[] platforms = {
+            new GridPoint2(4, 2),
+            new GridPoint2(8, 4),
+        };
 
-        GridPoint2 platformPos2 = new GridPoint2(16, 10);
-        Entity platform2 = ObstacleFactory.createPlatform();
-        platform2.setScale(3, 1);
-        spawnEntityAt(platform2, platformPos2, false, false);
+        GridPoint2[] floors = {
+            new GridPoint2(0, 3),
+            new GridPoint2(7, 5)
+        };
 
-        GridPoint2 platformPos3 = new GridPoint2(26, 12);
-        Entity platform3 = ObstacleFactory.createPlatform();
-        platform3.setScale(3, 1);
-        spawnEntityAt(platform3, platformPos3, false, false);
+        int[][] floorScales = {
+            {6, 3},
+            {3, 5},
+        };
+
+        for (int i = 0; i < platforms.length; i++){
+            Entity platform = ObstacleFactory.createPlatform();
+            platform.setScale(3, 1);
+            spawnEntityAt(platform, platforms[i], false, false);
+        }
+
+        for (int i = 0; i < floors.length; i++){
+            Entity floor = ObstacleFactory.createFloor();
+            floor.setScale(floorScales[i][0], floorScales[i][1]);
+            spawnEntityAt(floor, floors[i], false, false);
+        }
+
     }
 
     private Entity spawnPlayer() {
