@@ -80,9 +80,33 @@ public class TerrainFactory {
         TextureRegion hexRocks =
             new TextureRegion(resourceService.getAsset("images/hex_grass_3.png", Texture.class));
         return createForestDemoTerrain(1f, hexGrass, hexTuft, hexRocks);
+      case BACKGROUND_DESERT:
+        TextureRegion tile =    
+            new TextureRegion(resourceService.getAsset("images/transparent.png", Texture.class));
+        return createDesertTerrain(0.5f, tile);
       default:
         return null;
     }
+  }
+
+private TerrainComponent createDesertTerrain(float tileWorldSize, TextureRegion tile) {
+  GridPoint2 tilePixelSize = new GridPoint2(tile.getRegionWidth(), tile.getRegionHeight());
+  TiledMap tiledMap = createDesertTiles(tilePixelSize, tile);
+  TiledMapRenderer renderer = createRenderer(tiledMap, tileWorldSize / tilePixelSize.x);
+  return new TerrainComponent(camera, tiledMap, renderer, orientation, tileWorldSize);
+}
+
+  private TiledMap createDesertTiles(
+      GridPoint2 tileSize, TextureRegion tile) {
+    TiledMap tiledMap = new TiledMap();
+    TerrainTile transparentTile = new TerrainTile(tile);
+    TiledMapTileLayer layer = new TiledMapTileLayer(MAP_SIZE.x, MAP_SIZE.y, tileSize.x, tileSize.y);
+
+    // Create base grass
+    fillTiles(layer, MAP_SIZE, transparentTile);
+
+    tiledMap.getLayers().add(layer);
+    return tiledMap;
   }
 
   private TerrainComponent createForestDemoTerrain(
@@ -155,6 +179,7 @@ public class TerrainFactory {
   public enum TerrainType {
     FOREST_DEMO,
     FOREST_DEMO_ISO,
-    FOREST_DEMO_HEX
+    FOREST_DEMO_HEX,
+    BACKGROUND_DESERT
   }
 }

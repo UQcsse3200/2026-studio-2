@@ -10,6 +10,8 @@ import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.NPCFactory;
 import com.csse3200.game.entities.factories.ObstacleFactory;
 import com.csse3200.game.entities.factories.PlayerFactory;
+import com.csse3200.game.rendering.BackgroundRenderComponent;
+import com.csse3200.game.rendering.TextureRenderComponent;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.utils.math.GridPoint2Utils;
@@ -26,6 +28,8 @@ public class TutorialGameArea extends GameArea {
     private static final float WALL_WIDTH = 0.1f;
     private static final String[] forestTextures = {
             "images/black_roof.png",
+            "images/transparent.png",
+            "images/background.png",
             "images/Tile_2.png",
             "images/platform.png",
             "images/box_boy_leaf.png",
@@ -72,6 +76,7 @@ public class TutorialGameArea extends GameArea {
         displayUI();
 
         spawnTerrain();
+        spawnBackground();
         //spawnTrees();
         spawnPlatforms();
         player = spawnPlayer();
@@ -87,9 +92,19 @@ public class TutorialGameArea extends GameArea {
         spawnEntity(ui);
     }
 
-    private void spawnTerrain() {
+    private void spawnBackground() {
+    Entity background = new Entity()
+        .addComponent(new BackgroundRenderComponent("images/background.png"));
+
+    background.setScale(30f, 16.875f);
+    background.setPosition(0f, 0f);
+
+    spawnEntity(background);
+}
+
+    private void spawnTerrain() { 
         // Background terrain
-        terrain = terrainFactory.createTerrain(TerrainType.FOREST_DEMO);
+        terrain = terrainFactory.createTerrain(TerrainType.BACKGROUND_DESERT);
         spawnEntity(new Entity().addComponent(terrain));
 
         // Terrain walls
@@ -117,7 +132,7 @@ public class TutorialGameArea extends GameArea {
         // Bottom
         spawnEntityAt(
                 ObstacleFactory.createWall(worldBounds.x, WALL_WIDTH), GridPoint2Utils.ZERO, false, false);
-    }
+            }
 
     private void spawnTrees() {
         GridPoint2 minPos = new GridPoint2(0, 0);
