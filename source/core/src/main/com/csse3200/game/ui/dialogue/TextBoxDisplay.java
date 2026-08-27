@@ -15,10 +15,11 @@ import com.csse3200.game.ui.UIComponent;
 public class TextBoxDisplay extends UIComponent {
 
     // --- Tunables ---
-    private static final float MAX_WIDTH = 200f;
-    private static final float PADDING = 16f;
-    private static final float BORDER_THICKNESS = 3f;
-    private static final float CHARS_PER_SECOND = 30f;
+    private static final int MAX_WIDTH = 200;
+    private static final int PADDING = 16;
+    private static final int BORDER_THICKNESS = 3;
+    // change the characters per second based on the size of the given text
+    private static final int CHARS_PER_SECOND = 30;
     private static final Color DEFAULT_TEXT_COLOR = Color.WHITE;
 
     private static NinePatchDrawable cachedBackground;
@@ -36,6 +37,9 @@ public class TextBoxDisplay extends UIComponent {
     private Table table;
     private Label label;
 
+    // make the boxes stay on screen until an input is given to cycle to the next one.
+    // (make this a method or builder or whatever)
+    // Make it so that the box can stay on screen forever if there is no specified input.
     public TextBoxDisplay(Text text, float lifetime, float xPos, float yPos) {
         this.text = text;
         this.lifetime = lifetime;
@@ -56,7 +60,7 @@ public class TextBoxDisplay extends UIComponent {
         }
 
         int size = 16;
-        int border = (int) BORDER_THICKNESS + 2;
+        int border = BORDER_THICKNESS + 2;
 
         Pixmap pixmap = new Pixmap(size, size, Pixmap.Format.RGBA8888);
 
