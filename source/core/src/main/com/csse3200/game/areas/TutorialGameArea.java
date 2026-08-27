@@ -67,7 +67,10 @@ public class TutorialGameArea extends GameArea {
     this.terrainFactory = terrainFactory;
   }
 
-  /** Create the game area, including terrain, static entities (trees), dynamic entities (player) */
+  /**
+   * Create the game area, including terrain, static entities (trees), dynamic entities (player)
+   * This game area does not have trees.
+   */
   @Override
   public void create() {
     loadAssets();
