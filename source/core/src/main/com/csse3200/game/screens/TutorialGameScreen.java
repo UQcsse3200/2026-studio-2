@@ -1,7 +1,6 @@
 package com.csse3200.game.screens;
 
 import com.badlogic.gdx.ScreenAdapter;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.csse3200.game.GdxGame;
 import com.csse3200.game.areas.TutorialGameArea;
@@ -30,12 +29,15 @@ import org.slf4j.LoggerFactory;
 /**
  * The game screen containing the tutorial.
  *
- * <p>Details on libGDX screens: https://happycoding.io/tutorials/libgdx/game-screens
+ * <p>Details on libGDX screens:
+ * https://happycoding.io/tutorials/libgdx/game-screens
  */
 public class TutorialGameScreen extends ScreenAdapter {
-  private static final Logger logger = LoggerFactory.getLogger(TutorialGameScreen.class);
+
+  private static final Logger logger =
+      LoggerFactory.getLogger(TutorialGameScreen.class);
+
   private static final String[] mainGameTextures = {"images/heart.png"};
-  private static final Vector2 CAMERA_POSITION = new Vector2(7.5f, 7.5f);
 
   private final GdxGame game;
   private final Renderer renderer;
@@ -45,6 +47,7 @@ public class TutorialGameScreen extends ScreenAdapter {
     this.game = game;
 
     logger.debug("Initialising main game screen services");
+
     ServiceLocator.registerTimeSource(new GameTime());
 
     PhysicsService physicsService = new PhysicsService();
@@ -58,34 +61,31 @@ public class TutorialGameScreen extends ScreenAdapter {
     ServiceLocator.registerRenderService(new RenderService());
 
     renderer = RenderFactory.createRenderer();
-    // renderer.getCamera().getEntity().setPosition(CAMERA_POSITION);
+
     renderer.getDebug().renderPhysicsWorld(physicsEngine.getWorld());
 
     loadAssets();
     createUI();
 
-<<<<<<< HEAD
     logger.debug("Initialising tutorial game screen entities");
-    TerrainFactory terrainFactory = new TerrainFactory(renderer.getCamera());
-    TutorialGameArea tutorialGameArea = new TutorialGameArea(terrainFactory);
-    tutorialGameArea.create();
-    renderer.getCamera().setTarget(tutorialGameArea.getPlayer());
-  }
-=======
-        logger.debug("Initialising tutorial game screen entities");
-   TerrainFactory terrainFactory = new TerrainFactory(renderer.getCamera());
 
-TutorialGameArea tutorialGameArea =
+    // Pass the renderer's camera to the terrain factory.
+    TerrainFactory terrainFactory =
+        new TerrainFactory(renderer.getCamera());
+
+    // Pass the same camera to the TutorialGameArea so that
+    // the parallax background can follow camera movement.
+    TutorialGameArea tutorialGameArea =
         new TutorialGameArea(
-                terrainFactory,
-                renderer.getCamera()
+            terrainFactory,
+            renderer.getCamera()
         );
 
-tutorialGameArea.create();
+    tutorialGameArea.create();
 
-renderer.getCamera().setTarget(tutorialGameArea.getPlayer());
-}  // <-- THIS closes the constructor
->>>>>>> 1bd490a (Parallax baground&baground adjustement)
+    // Follow the player with the camera.
+    renderer.getCamera().setTarget(tutorialGameArea.getPlayer());
+  }
 
   @Override
   public void render(float delta) {
@@ -126,28 +126,40 @@ renderer.getCamera().setTarget(tutorialGameArea.getPlayer());
 
   private void loadAssets() {
     logger.debug("Loading assets");
-    ResourceService resourceService = ServiceLocator.getResourceService();
+
+    ResourceService resourceService =
+        ServiceLocator.getResourceService();
+
     resourceService.loadTextures(mainGameTextures);
-    ServiceLocator.getResourceService().loadAll();
+    resourceService.loadAll();
   }
 
   private void unloadAssets() {
     logger.debug("Unloading assets");
-    ResourceService resourceService = ServiceLocator.getResourceService();
+
+    ResourceService resourceService =
+        ServiceLocator.getResourceService();
+
     resourceService.unloadAssets(mainGameTextures);
   }
 
   /**
-   * Creates the main game's ui including components for rendering ui elements to the screen and
-   * capturing and handling ui input.
+   * Creates the main game's UI including components for rendering UI
+   * elements to the screen and capturing and handling UI input.
    */
   private void createUI() {
     logger.debug("Creating ui");
-    Stage stage = ServiceLocator.getRenderService().getStage();
+
+    Stage stage =
+        ServiceLocator.getRenderService().getStage();
+
     InputComponent inputComponent =
-        ServiceLocator.getInputService().getInputFactory().createForTerminal();
+        ServiceLocator.getInputService()
+            .getInputFactory()
+            .createForTerminal();
 
     Entity ui = new Entity();
+
     ui.addComponent(new InputDecorator(stage, 10))
         .addComponent(new PerformanceDisplay())
         .addComponent(new MainGameActions(this.game))
