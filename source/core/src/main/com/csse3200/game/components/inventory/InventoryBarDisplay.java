@@ -75,6 +75,7 @@ public class InventoryBarDisplay extends UIComponent {
     return switch (item) {
       case ARROW -> "Arrow";
       case RopeArrow -> "Rope Arrow";
+      case CONSUMABLE -> "Consumable";
     };
   }
 

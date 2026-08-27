@@ -41,4 +41,5 @@ public abstract class Arrow extends Item {
   public float getCooldown() {
     return cooldown;
   }
+
 }
