@@ -10,21 +10,28 @@ import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.physics.raycast.RaycastHit;
 import com.csse3200.game.services.ServiceLocator;
 
+import static java.lang.Math.abs;
+
 /** Player fires a rope */
 public class GrappleComponent extends Component {
   private static final float MAX_RANGE = 8f;
-  private static final float SWING_FORCE = 14f;
+  private static final float SWING_FORCE = 0f;
   private static final short TARGETS = (short) (PhysicsLayer.OBSTACLE | PhysicsLayer.GROUND);
 
   private PhysicsComponent physicsComponent;
   private RopeJoint ropeJoint;
   private Vector2 anchorPoint;
+  private Vector2 shotFrom;
+  private float velocityX;
+  private float velocityY;
+
 
   @Override
   public void create() {
     physicsComponent = entity.getComponent(PhysicsComponent.class);
     entity.getEvents().addListener("grappleFire", this::fire);
     entity.getEvents().addListener("grappleSwing", this::swing);
+
   }
 
   /** Fires the rope towards direction or detaches if already attached. */
@@ -34,8 +41,7 @@ public class GrappleComponent extends Component {
       return;
     }
 
-    // Determine raycast start (player center) and calculate end point MAX_RANGE units along
-    // direction
+    // Determine raycast start (player center)
     Vector2 start = entity.getCenterPosition();
     Vector2 end = start.cpy().mulAdd(direction.cpy().nor(), MAX_RANGE);
     RaycastHit hit = new RaycastHit();
@@ -49,6 +55,9 @@ public class GrappleComponent extends Component {
     anchorPoint = hit.point.cpy();
     Body playerBody = physicsComponent.getBody();
     Body anchorBody = hit.fixture.getBody();
+    shotFrom = new Vector2(anchorPoint.x - start.x, anchorPoint.y - start.y);
+    velocityX = shotFrom.x/3;
+    velocityY = shotFrom.y/3;
 
     RopeJointDef def = new RopeJointDef();
     def.bodyA = anchorBody;
@@ -78,7 +87,11 @@ public class GrappleComponent extends Component {
     if (!isAttached()) return;
 
     Body body = physicsComponent.getBody();
-    body.applyForceToCenter(direction * SWING_FORCE * body.getMass(), 0, true);
+    body.applyForceToCenter(
+            abs(velocityX) * 50f * body.getMass(),
+            0,
+            true
+    );
   }
 
   public boolean isAttached() {
