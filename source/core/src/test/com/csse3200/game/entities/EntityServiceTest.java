@@ -49,4 +49,18 @@ class EntityServiceTest {
     entityService.dispose();
     verify(entity).dispose();
   }
+
+  @Test
+  void shouldUpdatePauseState() {
+    EntityService entityService = new EntityService();
+    assert (!entityService.getPaused());
+    entityService.setPaused(true);
+    assert (entityService.getPaused());
+    entityService.setPaused(false);
+    assert (!entityService.getPaused());
+    entityService.togglePaused();
+    assert (entityService.getPaused());
+    entityService.togglePaused();
+    assert (!entityService.getPaused());
+  }
 }
