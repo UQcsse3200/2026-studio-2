@@ -26,6 +26,30 @@ public class KeyboardPlayerInputComponent extends InputComponent {
   @Override
   public boolean keyDown(int keycode) {
     switch (keycode) {
+      case Keys.NUM_1:
+        entity.getEvents().trigger("selectQuickSlot", 0);
+        return true;
+      case Keys.NUM_2:
+        entity.getEvents().trigger("selectQuickSlot", 1);
+        return true;
+      case Keys.NUM_3:
+        entity.getEvents().trigger("selectQuickSlot", 2);
+        return true;
+      case Keys.NUM_4:
+        entity.getEvents().trigger("selectQuickSlot", 3);
+        return true;
+      case Keys.NUM_5:
+        entity.getEvents().trigger("selectQuickSlot", 4);
+        return true;
+      case Keys.NUM_6:
+        entity.getEvents().trigger("selectQuickSlot", 5);
+        return true;
+      case Keys.NUM_7:
+        entity.getEvents().trigger("selectQuickSlot", 6);
+        return true;
+      case Keys.NUM_8:
+        entity.getEvents().trigger("selectQuickSlot", 7);
+        return true;
       case Keys.W:
         walkDirection.add(Vector2Utils.UP);
         triggerWalkEvent();
@@ -47,6 +71,9 @@ public class KeyboardPlayerInputComponent extends InputComponent {
         return true;
       case Keys.E:
         entity.getEvents().trigger("interact");
+        return true;
+      case Keys.B:
+        entity.getEvents().trigger("toggleBackpack");
         return true;
       case Keys.Q:
         entity.getEvents().trigger("dropItem");

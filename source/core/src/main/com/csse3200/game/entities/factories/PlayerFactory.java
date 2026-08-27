@@ -1,6 +1,7 @@
 package com.csse3200.game.entities.factories;
 
 import com.csse3200.game.components.CombatStatsComponent;
+import com.csse3200.game.components.inventory.BackpackDisplay;
 import com.csse3200.game.components.inventory.InventoryBarDisplay;
 import com.csse3200.game.components.inventory.InventoryComponent;
 import com.csse3200.game.components.player.PlayerActions;
@@ -47,6 +48,7 @@ public class PlayerFactory {
             .addComponent(new CombatStatsComponent(stats.health, stats.baseAttack))
             .addComponent(new InventoryComponent(stats.gold))
             .addComponent(new InventoryBarDisplay())
+            .addComponent(new BackpackDisplay())
             .addComponent(new PlayerInteractionComponent())
             .addComponent(inputComponent)
             .addComponent(new PlayerStatsDisplay());

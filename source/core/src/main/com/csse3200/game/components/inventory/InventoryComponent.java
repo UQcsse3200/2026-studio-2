@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
  */
 public class InventoryComponent extends Component {
   private static final Logger logger = LoggerFactory.getLogger(InventoryComponent.class);
-  private static final int DEFAULT_CAPACITY = 8;
+  private static final int DEFAULT_CAPACITY = 24;
 
   private final Map<ItemType, Integer> storedItems = new EnumMap<>(ItemType.class);
   private final int capacity;
@@ -45,6 +45,11 @@ public class InventoryComponent extends Component {
 
     this.capacity = capacity;
     setGold(gold);
+  }
+
+  @Override
+  public void create() {
+    entity.getEvents().addListener("selectQuickSlot", this::selectQuickSlot);
   }
 
   /**
@@ -183,6 +188,26 @@ public class InventoryComponent extends Component {
    */
   public ItemType selectPrevious() {
     return selectRelative(-1);
+  }
+
+  private void selectQuickSlot(int slotIndex) {
+    int currentIndex = 0;
+
+    for (ItemType itemType : ItemType.values()) {
+      if (!hasItem(itemType)) {
+        continue;
+      }
+
+      if (currentIndex == slotIndex) {
+        if (selectedItem != itemType) {
+          selectedItem = itemType;
+          notifySelectionChanged();
+        }
+        return;
+      }
+
+      currentIndex++;
+    }
   }
 
   /**

@@ -1,13 +1,18 @@
 package com.csse3200.game.components.inventory;
 
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.csse3200.game.components.item.ItemType;
+import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.UIComponent;
 
 /** Displays the player's inventory bar at the bottom of the screen. */
 public class InventoryBarDisplay extends UIComponent {
+  private static final int QUICK_BAR_SLOTS = 8;
+
   private Table table;
 
   @Override
@@ -15,15 +20,42 @@ public class InventoryBarDisplay extends UIComponent {
     super.create();
 
     entity.getEvents().addListener("inventoryChanged", this::refresh);
+
     entity.getEvents().addListener("inventorySelectionChanged", this::refresh);
 
+    entity.getEvents().addListener("backpackOpened", this::hideBar);
+
+    entity.getEvents().addListener("backpackClosed", this::showBar);
+
     addActors();
+  }
+
+  private String getItemTexture(ItemType itemType) {
+    return switch (itemType) {
+      case ARROW -> "images/arrow.png";
+      case RopeArrow -> "images/rope_arrow.png";
+      default -> "images/heart.png";
+    };
   }
 
   /** Refreshes the inventory bar when the inventory changes. */
   private void refresh() {
     if (table != null) {
       populateSlots();
+    }
+  }
+
+  /** Hides the quick bar while the backpack is open. */
+  private void hideBar() {
+    if (table != null) {
+      table.setVisible(false);
+    }
+  }
+
+  /** Displays the quick bar after the backpack is closed. */
+  private void showBar() {
+    if (table != null) {
+      table.setVisible(true);
     }
   }
 
@@ -48,19 +80,26 @@ public class InventoryBarDisplay extends UIComponent {
     int slotNumber = 1;
 
     for (ItemType item : ItemType.values()) {
+      if (slotNumber > QUICK_BAR_SLOTS) {
+        break;
+      }
+
       int count = inventory.getItemCount(item);
 
       if (count > 0) {
         Table slot = createSlot(slotNumber, item, count, inventory.getSelectedItem() == item);
 
         table.add(slot).width(160f).height(90f).pad(8f);
+
         slotNumber++;
       }
     }
 
-    while (slotNumber <= inventory.getCapacity()) {
+    while (slotNumber <= QUICK_BAR_SLOTS) {
       Table emptySlot = createEmptySlot(slotNumber);
+
       table.add(emptySlot).width(160f).height(90f).pad(8f);
+
       slotNumber++;
     }
   }
@@ -76,6 +115,7 @@ public class InventoryBarDisplay extends UIComponent {
       case ARROW -> "Arrow";
       case RopeArrow -> "Rope Arrow";
       case CONSUMABLE -> "Consumable";
+      default -> item.toString();
     };
   }
 
@@ -99,17 +139,26 @@ public class InventoryBarDisplay extends UIComponent {
       slot.setBackground(skin.getDrawable("button-c"));
     }
 
+    Texture texture =
+        ServiceLocator.getResourceService().getAsset(getItemTexture(item), Texture.class);
+
+    Image icon = new Image(texture);
+
     Label numberLabel = new Label(Integer.toString(slotNumber), skin, "large");
 
     Label itemLabel = new Label(getItemDisplayName(item), skin);
 
     Label countLabel = new Label("x" + count, skin);
 
-    slot.add(numberLabel).padRight(10f);
+    slot.add(numberLabel).width(25f).left().padLeft(5f).padRight(5f);
+
+    slot.add(icon).size(36f, 36f).padRight(8f);
+
     slot.add(itemLabel).expandX().left();
+
     slot.row();
 
-    slot.add(countLabel).colspan(2).padTop(5f).right();
+    slot.add(countLabel).colspan(3).right().padRight(5f).padBottom(3f);
 
     return slot;
   }
@@ -129,8 +178,9 @@ public class InventoryBarDisplay extends UIComponent {
 
     Label emptyLabel = new Label("EMPTY", skin);
 
-    slot.add(numberLabel).padRight(10f);
-    slot.add(emptyLabel);
+    slot.add(numberLabel).width(25f).left().padLeft(5f).padRight(5f);
+
+    slot.add(emptyLabel).expandX().center();
 
     return slot;
   }
