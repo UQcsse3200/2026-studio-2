@@ -49,7 +49,9 @@ public class PauseMenuDisplay extends UIComponent {
         new ChangeListener() {
           @Override
           public void changed(ChangeEvent changeEvent, Actor actor) {
-            unpause();
+            if (ServiceLocator.getEntityService().getPaused()) {
+              unpause();
+            }
           }
         });
 
@@ -57,7 +59,7 @@ public class PauseMenuDisplay extends UIComponent {
         new ChangeListener() {
           @Override
           public void changed(ChangeEvent changeEvent, Actor actor) {
-            if (paused) {
+            if (ServiceLocator.getEntityService().getPaused()) {
               entity.getEvents().trigger("settingsFromPause");
               game.setScreen(GdxGame.ScreenType.SETTINGS_FROM_PAUSE);
             }
@@ -68,7 +70,7 @@ public class PauseMenuDisplay extends UIComponent {
         new ChangeListener() {
           @Override
           public void changed(ChangeEvent changeEvent, Actor actor) {
-            if (paused) {
+            if (ServiceLocator.getEntityService().getPaused()) {
               game.exit();
             }
           }
