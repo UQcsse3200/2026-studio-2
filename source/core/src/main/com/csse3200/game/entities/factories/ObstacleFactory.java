@@ -1,10 +1,12 @@
 package com.csse3200.game.entities.factories;
 
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
+import com.csse3200.game.components.TouchAttackComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.physics.PhysicsUtils;
 import com.csse3200.game.physics.components.ColliderComponent;
+import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.rendering.TextureRenderComponent;
 import com.csse3200.game.rendering.TiledRenderComponent;
@@ -73,6 +75,28 @@ public class ObstacleFactory {
             .addComponent(new ColliderComponent().setLayer(PhysicsLayer.OBSTACLE));
     wall.setScale(width, height);
     return wall;
+  }
+
+  /**
+   * Creates a spike hazard entity that deals half a heart (0.5f) of damage to the player upon
+   * touch.
+   *
+   * @return spike entity
+   */
+  public static Entity createSpike() {
+    Entity spike =
+        new Entity()
+            .addComponent(new TextureRenderComponent("images/spike.png"))
+            .addComponent(new PhysicsComponent())
+            .addComponent(new ColliderComponent().setLayer(PhysicsLayer.OBSTACLE))
+            .addComponent(new HitboxComponent().setLayer(PhysicsLayer.OBSTACLE))
+            .addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER, 0.5f));
+
+    spike.getComponent(PhysicsComponent.class).setBodyType(BodyType.StaticBody);
+    spike.getComponent(TextureRenderComponent.class).scaleEntity();
+    PhysicsUtils.setScaledCollider(spike, 0.8f, 0.5f);
+
+    return spike;
   }
 
   private ObstacleFactory() {

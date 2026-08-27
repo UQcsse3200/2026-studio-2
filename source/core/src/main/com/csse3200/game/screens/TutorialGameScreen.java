@@ -29,13 +29,11 @@ import org.slf4j.LoggerFactory;
 /**
  * The game screen containing the tutorial.
  *
- * <p>Details on libGDX screens:
- * https://happycoding.io/tutorials/libgdx/game-screens
+ * <p>Details on libGDX screens: https://happycoding.io/tutorials/libgdx/game-screens
  */
 public class TutorialGameScreen extends ScreenAdapter {
 
-  private static final Logger logger =
-      LoggerFactory.getLogger(TutorialGameScreen.class);
+  private static final Logger logger = LoggerFactory.getLogger(TutorialGameScreen.class);
 
   private static final String[] mainGameTextures = {"images/heart.png"};
 
@@ -70,16 +68,11 @@ public class TutorialGameScreen extends ScreenAdapter {
     logger.debug("Initialising tutorial game screen entities");
 
     // Pass the renderer's camera to the terrain factory.
-    TerrainFactory terrainFactory =
-        new TerrainFactory(renderer.getCamera());
+    TerrainFactory terrainFactory = new TerrainFactory(renderer.getCamera());
 
     // Pass the same camera to the TutorialGameArea so that
     // the parallax background can follow camera movement.
-    TutorialGameArea tutorialGameArea =
-        new TutorialGameArea(
-            terrainFactory,
-            renderer.getCamera()
-        );
+    TutorialGameArea tutorialGameArea = new TutorialGameArea(terrainFactory, renderer.getCamera());
 
     tutorialGameArea.create();
 
@@ -127,8 +120,7 @@ public class TutorialGameScreen extends ScreenAdapter {
   private void loadAssets() {
     logger.debug("Loading assets");
 
-    ResourceService resourceService =
-        ServiceLocator.getResourceService();
+    ResourceService resourceService = ServiceLocator.getResourceService();
 
     resourceService.loadTextures(mainGameTextures);
     resourceService.loadAll();
@@ -137,26 +129,22 @@ public class TutorialGameScreen extends ScreenAdapter {
   private void unloadAssets() {
     logger.debug("Unloading assets");
 
-    ResourceService resourceService =
-        ServiceLocator.getResourceService();
+    ResourceService resourceService = ServiceLocator.getResourceService();
 
     resourceService.unloadAssets(mainGameTextures);
   }
 
   /**
-   * Creates the main game's UI including components for rendering UI
-   * elements to the screen and capturing and handling UI input.
+   * Creates the main game's UI including components for rendering UI elements to the screen and
+   * capturing and handling UI input.
    */
   private void createUI() {
     logger.debug("Creating ui");
 
-    Stage stage =
-        ServiceLocator.getRenderService().getStage();
+    Stage stage = ServiceLocator.getRenderService().getStage();
 
     InputComponent inputComponent =
-        ServiceLocator.getInputService()
-            .getInputFactory()
-            .createForTerminal();
+        ServiceLocator.getInputService().getInputFactory().createForTerminal();
 
     Entity ui = new Entity();
 
