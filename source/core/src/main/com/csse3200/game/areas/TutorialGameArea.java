@@ -26,6 +26,8 @@ public class TutorialGameArea extends GameArea {
     private static final float WALL_WIDTH = 0.1f;
     private static final String[] forestTextures = {
             "images/black_roof.png",
+            "images/Tile_2.png",
+            "images/platform.png",
             "images/box_boy_leaf.png",
             "images/tree.png",
             "images/ghost_king.png",
@@ -129,10 +131,10 @@ public class TutorialGameArea extends GameArea {
     }
 
     private void spawnPlatforms() {
-        GridPoint2 platformPos = new GridPoint2(0, 3);
-        Entity platform = ObstacleFactory.createPlatform();
-        platform.setScale(6, 3);
-        spawnEntityAt(platform, platformPos, false, false);
+        GridPoint2 floorPos = new GridPoint2(0, 3);
+        Entity floor = ObstacleFactory.createFloor();
+        floor.setScale(6, 3);
+        spawnEntityAt(floor, floorPos, false, false);
 
         GridPoint2 platformPos2 = new GridPoint2(16, 10);
         Entity platform2 = ObstacleFactory.createPlatform();

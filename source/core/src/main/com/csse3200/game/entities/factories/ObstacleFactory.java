@@ -7,6 +7,7 @@ import com.csse3200.game.physics.PhysicsUtils;
 import com.csse3200.game.physics.components.ColliderComponent;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.rendering.TextureRenderComponent;
+import com.csse3200.game.rendering.TiledRenderComponent;
 
 /**
  * Factory to create obstacle entities.
@@ -37,13 +38,26 @@ public class ObstacleFactory {
   public static Entity createPlatform() {
     Entity platform =
         new Entity()
-            .addComponent(new TextureRenderComponent("images/black_roof.png"))
+            .addComponent(new TextureRenderComponent("images/platform.png"))
             .addComponent(new PhysicsComponent())
             .addComponent(new ColliderComponent().setLayer(PhysicsLayer.OBSTACLE));
 
     platform.getComponent(PhysicsComponent.class).setBodyType(BodyType.StaticBody);
 
     return platform;
+  }
+
+  public static Entity createFloor() {
+    Entity floor = 
+          new Entity()
+            .addComponent(new TiledRenderComponent("images/Tile_2.png", 0.75f))
+            .addComponent(new PhysicsComponent().setBodyType(BodyType.StaticBody))
+            .addComponent(new ColliderComponent().setLayer(PhysicsLayer.OBSTACLE));
+  
+    floor.getComponent(PhysicsComponent.class).setBodyType(BodyType.StaticBody);
+
+    return floor;
+
   }
 
   /**
