@@ -16,25 +16,43 @@ import com.csse3200.game.physics.components.ColliderComponent;
 import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.physics.components.PhysicsMovementComponent;
+import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.csse3200.game.components.npc.GhostAnimationController;
+import com.csse3200.game.rendering.AnimationRenderComponent;
+import com.csse3200.game.services.ServiceLocator;
 
 public class EnemyFactory {
   private static final NPCConfigs configs =
       FileLoader.readClass(NPCConfigs.class, "configs/NPCs.json");
 
   public static Entity createGhoul(Entity target) {
-    Entity ghoul = createBaseEnemy(target);
 
-    BaseEntityConfig config = configs.ghoul;
+    BaseEntityConfig config = configs.chaser;
+    Entity chaser = createBaseEnemy(target, config);
 
-    ghoul.addComponent(new CombatStatsComponent(config.health, config.baseAttack));
-    return ghoul;
+    AnimationRenderComponent animator =
+            new AnimationRenderComponent(
+                    ServiceLocator.getResourceService().getAsset("images/ghost.atlas", TextureAtlas.class));
+    animator.addAnimation("angry_float", 0.1f, Animation.PlayMode.LOOP);
+    animator.addAnimation("float", 0.1f, Animation.PlayMode.LOOP);
+
+    chaser
+            .addComponent(new CombatStatsComponent(config.health, config.baseAttack))
+            .addComponent(animator)
+            .addComponent(new GhostAnimationController());
+
+    chaser.getComponent(AnimationRenderComponent.class).scaleEntity();
+
+    return chaser;
   }
 
-  private static Entity createBaseEnemy(Entity target) {
+  private static Entity createBaseEnemy(Entity target, BaseEntityConfig config) {
     AITaskComponent aiComponent =
         new AITaskComponent()
-            .addTask(new WanderTask(new Vector2(2f, 2f), 2f))
-            .addTask(new ChaseTask(target, 10, 3f, 4f));
+            .addTask(new WanderTask(new Vector2(config.wanderRangeX, config.wanderRangeY),
+                    config.wanderWaitTime))
+            .addTask(new ChaseTask(target, config.chasePriority, config.viewDistance, config.maxChaseDistance));
 
     Entity enemy =
         new Entity()

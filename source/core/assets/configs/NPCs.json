@@ -21,8 +21,8 @@
     "wanderWaitTime": 2.0,
 
     "chasePriority": 10,
-    "viewDistance": 3.0,
-    "maxChaseDistance": 4.0
+    "viewDistance": 20.0,
+    "maxChaseDistance": 20.0
   }
 }
 

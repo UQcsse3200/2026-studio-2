@@ -8,10 +8,11 @@ public class ChaserConfig {
     public int baseAttack = 0;
     public int baseSpeed = 3;
 
-    // Enemy behaviour configs
+    // Enemy behaviour config
     public float wanderRangeX;
     public float wanderRangeY;
     public float wanderWaitTime;
+    public int chasePriority;
     public float viewDistance;
     public float maxChaseDistance;
 }

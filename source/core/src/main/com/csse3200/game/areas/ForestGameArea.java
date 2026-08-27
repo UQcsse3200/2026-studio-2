@@ -10,12 +10,14 @@ import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.NPCFactory;
 import com.csse3200.game.entities.factories.ObstacleFactory;
 import com.csse3200.game.entities.factories.PlayerFactory;
+import com.csse3200.game.entities.factories.EnemyFactory;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.utils.math.GridPoint2Utils;
 import com.csse3200.game.utils.math.RandomUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 
 /** Forest area for the demo game with trees, a player, and some enemies. */
 public class ForestGameArea extends GameArea {
@@ -71,8 +73,9 @@ public class ForestGameArea extends GameArea {
     spawnTerrain();
     spawnTrees();
     player = spawnPlayer();
-    spawnGhosts();
-    spawnGhostKing();
+    spawnGhoul();
+    //spawnGhosts();
+    //spawnGhostKing();
 
     playMusic();
   }
@@ -130,6 +133,7 @@ public class ForestGameArea extends GameArea {
     return newPlayer;
   }
 
+
   private void spawnGhosts() {
     GridPoint2 minPos = new GridPoint2(0, 0);
     GridPoint2 maxPos = terrain.getMapBounds(0).sub(2, 2);
@@ -141,6 +145,19 @@ public class ForestGameArea extends GameArea {
     }
   }
 
+
+
+  private void spawnGhoul() {
+    GridPoint2 minPos = new GridPoint2(0, 0);
+    GridPoint2 maxPos = terrain.getMapBounds(0).sub(2, 2);
+
+    GridPoint2 randomPos = RandomUtils.random(minPos, maxPos);
+    Entity ghoul = EnemyFactory.createGhoul(player);
+
+    spawnEntityAt(ghoul, randomPos, true, true);
+  }
+
+
   private void spawnGhostKing() {
     GridPoint2 minPos = new GridPoint2(0, 0);
     GridPoint2 maxPos = terrain.getMapBounds(0).sub(2, 2);
@@ -149,6 +166,7 @@ public class ForestGameArea extends GameArea {
     Entity ghostKing = NPCFactory.createGhostKing(player);
     spawnEntityAt(ghostKing, randomPos, true, true);
   }
+
 
   private void playMusic() {
     Music music = ServiceLocator.getResourceService().getAsset(backgroundMusic, Music.class);
