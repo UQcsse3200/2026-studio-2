@@ -37,13 +37,13 @@ public class BackgroundRenderComponent extends RenderComponent {
     batch.draw(texture, position.x, position.y, scale.x, scale.y);
   }
 
-    @Override
-    public int getLayer() {
-        return 0;
-    }
+  @Override
+  public int getLayer() {
+    return 0;
+  }
 
-    @Override
-    public float getZIndex() {
-        return -1f;
-    }
+  @Override
+  public float getZIndex() {
+    return -1f;
+  }
 }

@@ -48,16 +48,15 @@ public class ObstacleFactory {
   }
 
   public static Entity createFloor() {
-    Entity floor = 
-          new Entity()
+    Entity floor =
+        new Entity()
             .addComponent(new TiledRenderComponent("images/Tile_2.png", 0.75f))
             .addComponent(new PhysicsComponent().setBodyType(BodyType.StaticBody))
             .addComponent(new ColliderComponent().setLayer(PhysicsLayer.OBSTACLE));
-  
+
     floor.getComponent(PhysicsComponent.class).setBodyType(BodyType.StaticBody);
 
     return floor;
-
   }
 
   /**
