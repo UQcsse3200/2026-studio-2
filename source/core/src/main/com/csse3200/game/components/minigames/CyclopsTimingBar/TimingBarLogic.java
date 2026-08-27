@@ -1,37 +1,50 @@
 package com.csse3200.game.components.minigames.CyclopsTimingBar;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Mathematical state of the components in the timing bar. Keeps track of size and location of
  * scoring bar. Keeps track of the location of the sweeping marker.
  */
 public class TimingBarLogic {
+  private static final Logger logger = LoggerFactory.getLogger(TimingBarLogic.class);
 
-  public float barStart = 2f;
-  public float barWidth;
+  public float barStart = 0f;
+  public float barWidth = 1f; // Acts as 100% etc.
+  public float scoringAreaSize;
+
+  private final float markerSpeed = 1f;
+  private int direction = 1;
+
+  public float markerX = barStart;
   public float greenStart;
   public float greenEnd;
 
-  public float markerX = barStart;
-  private final float markerSpeed = 10f;
-  private int direction = 1;
-
   public boolean isStopped = false;
 
-  public TimingBarLogic(float barWidth, float scoringAreaWidth) {
-    this.barWidth = barWidth;
+  /**
+   * Scoring area width is designed to be a float as a percentage (e.g 0-100)
+   *
+   * @param scoringAreaWidth
+   */
+  public TimingBarLogic(float scoringAreaWidth) {
     this.changeScoringAreaWidth(scoringAreaWidth);
   }
 
   /**
    * Change the width of the scoring area to the given width
    *
-   * @param width - float value of the new width of the scoring area
+   * @param width - float value as a percentage, 0-100%
    */
   public void changeScoringAreaWidth(float width) {
     float barCenter = barWidth / 2;
 
-    this.greenStart = barCenter - (width / 2);
-    this.greenEnd = barCenter + (width / 2);
+    float covered_area = width / 100;
+    scoringAreaSize = covered_area;
+
+    this.greenStart = barCenter - (covered_area / 2);
+    this.greenEnd = barCenter + (covered_area / 2);
   }
 
   /**
@@ -46,12 +59,13 @@ public class TimingBarLogic {
 
     markerX += markerSpeed * direction * deltaTime;
 
-    float rightEdge = barStart + barWidth;
-    if (markerX >= rightEdge) {
-      markerX = rightEdge;
+    // logger.info("Marker: {}", markerX);
+
+    if (markerX >= barWidth) {
+      markerX = barWidth;
       direction = -1;
-    } else if (markerX <= barStart) {
-      markerX = barStart;
+    } else if (markerX <= 0) {
+      markerX = 0;
       direction = 1;
     }
   }
