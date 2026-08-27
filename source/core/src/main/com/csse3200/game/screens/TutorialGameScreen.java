@@ -64,12 +64,28 @@ public class TutorialGameScreen extends ScreenAdapter {
     loadAssets();
     createUI();
 
+<<<<<<< HEAD
     logger.debug("Initialising tutorial game screen entities");
     TerrainFactory terrainFactory = new TerrainFactory(renderer.getCamera());
     TutorialGameArea tutorialGameArea = new TutorialGameArea(terrainFactory);
     tutorialGameArea.create();
     renderer.getCamera().setTarget(tutorialGameArea.getPlayer());
   }
+=======
+        logger.debug("Initialising tutorial game screen entities");
+   TerrainFactory terrainFactory = new TerrainFactory(renderer.getCamera());
+
+TutorialGameArea tutorialGameArea =
+        new TutorialGameArea(
+                terrainFactory,
+                renderer.getCamera()
+        );
+
+tutorialGameArea.create();
+
+renderer.getCamera().setTarget(tutorialGameArea.getPlayer());
+}  // <-- THIS closes the constructor
+>>>>>>> 1bd490a (Parallax baground&baground adjustement)
 
   @Override
   public void render(float delta) {

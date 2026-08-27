@@ -5,6 +5,7 @@ import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.areas.terrain.TerrainFactory;
 import com.csse3200.game.areas.terrain.TerrainFactory.TerrainType;
+import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.components.gamearea.GameAreaDisplay;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.NPCFactory;
@@ -52,10 +53,25 @@ public class TutorialGameArea extends GameArea {
   private static final String backgroundMusic = "sounds/BGM_03_mp3.mp3";
   private static final String[] forestMusic = {backgroundMusic};
 
+    private final TerrainFactory terrainFactory;
+    private final CameraComponent camera;
   private final TerrainFactory terrainFactory;
 
   private Entity player;
 
+    /**
+     * Initialise this ForestGameArea to use the provided TerrainFactory.
+     *
+     * @param terrainFactory TerrainFactory used to create the terrain for the GameArea.
+     * @requires terrainFactory != null
+     */
+public TutorialGameArea(
+        TerrainFactory terrainFactory,
+        CameraComponent camera) {
+    super();
+    this.terrainFactory = terrainFactory;
+    this.camera = camera;
+}
   /**
    * Initialise this ForestGameArea to use the provided TerrainFactory.
    *
@@ -98,8 +114,8 @@ public class TutorialGameArea extends GameArea {
     Entity background =
         new Entity().addComponent(new BackgroundRenderComponent("images/background.png"));
 
-    background.setScale(30f, 16.875f);
-    background.setPosition(0f, 0f);
+    background.setScale(60f, 33.75f);
+    background.setPosition(-20f, -10f);
 
     spawnEntity(background);
   }
