@@ -23,6 +23,7 @@ public class MainMenuActions extends Component {
     entity.getEvents().addListener("load", this::onLoad);
     entity.getEvents().addListener("exit", this::onExit);
     entity.getEvents().addListener("settings", this::onSettings);
+    entity.getEvents().addListener("minigames", this::onMinigames);
   }
 
   /** Swaps to the Main Game screen. */
@@ -46,5 +47,11 @@ public class MainMenuActions extends Component {
   private void onSettings() {
     logger.info("Launching settings screen");
     game.setScreen(GdxGame.ScreenType.SETTINGS);
+  }
+
+  /** Swaps to the Minigame Select screen. */
+  private void onMinigames() {
+    logger.info("Launching minigame select screen");
+    game.setScreen(GdxGame.ScreenType.MINIGAME_SELECT);
   }
 }
