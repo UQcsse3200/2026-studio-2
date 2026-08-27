@@ -5,7 +5,7 @@ public class RopeArr extends Arrow {
   public RopeArr() {
     super(
         ItemType.RopeArrow,
-        2,
+        ItemId.ROPE_ARROW.getId(),
         "Rope Arrow",
         "An arrow used for grappling.",
         1,
