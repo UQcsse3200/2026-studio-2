@@ -7,8 +7,8 @@ import com.csse3200.game.components.TouchAttackComponent;
 import com.csse3200.game.components.tasks.ChaseTask;
 import com.csse3200.game.components.tasks.WanderTask;
 import com.csse3200.game.entities.Entity;
-import com.csse3200.game.entities.configs.BaseEntityConfig;
-import com.csse3200.game.entities.configs.NPCConfigs;
+import com.csse3200.game.entities.configs.EnemyConfig;
+import com.csse3200.game.entities.configs.EnemyConfigs;
 import com.csse3200.game.files.FileLoader;
 import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.physics.PhysicsUtils;
@@ -18,23 +18,14 @@ import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.physics.components.PhysicsMovementComponent;
 
 public class EnemyFactory {
-  private static final NPCConfigs configs =
-      FileLoader.readClass(NPCConfigs.class, "configs/NPCs.json");
+  private static final EnemyConfigs configs =
+      FileLoader.readClass(EnemyConfigs.class, "configs/Enemies.json");
 
-  public static Entity createGhoul(Entity target) {
-    Entity ghoul = createBaseEnemy(target);
-
-    BaseEntityConfig config = configs.ghoul;
-
-    ghoul.addComponent(new CombatStatsComponent(config.health, config.baseAttack));
-    return ghoul;
-  }
-
-  private static Entity createBaseEnemy(Entity target) {
+  public static Entity createEnemy(Entity target, EnemyConfig config) {
     AITaskComponent aiComponent =
         new AITaskComponent()
             .addTask(new WanderTask(new Vector2(2f, 2f), 2f))
-            .addTask(new ChaseTask(target, 10, 3f, 4f));
+            .addTask(new ChaseTask(target, 10, config.speed, 4f));
 
     Entity enemy =
         new Entity()
@@ -42,8 +33,9 @@ public class EnemyFactory {
             .addComponent(new PhysicsMovementComponent())
             .addComponent(new ColliderComponent())
             .addComponent(new HitboxComponent().setLayer(PhysicsLayer.NPC))
-            .addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER, 1.5f))
-            .addComponent(aiComponent);
+            .addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER, config.attackRange))
+            .addComponent(aiComponent)
+            .addComponent(new CombatStatsComponent(config.health, config.baseAttack));
 
     PhysicsUtils.setScaledCollider(enemy, 0.9f, 0.4f);
 
