@@ -8,7 +8,6 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.UIComponent;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,10 +24,12 @@ public class PlayerStatsDisplay extends UIComponent {
   @Override
   public void create() {
     super.create();
-    
-    fullHeartTexture = ServiceLocator.getResourceService().getAsset("images/purple_heart.png", Texture.class);
-    brokenHeartTexture = ServiceLocator.getResourceService().getAsset("images/brown_brokenHeart.png", Texture.class);
-    
+
+    fullHeartTexture =
+        ServiceLocator.getResourceService().getAsset("images/purple_heart.png", Texture.class);
+    brokenHeartTexture =
+        ServiceLocator.getResourceService().getAsset("images/brown_brokenHeart.png", Texture.class);
+
     addActors();
     entity.getEvents().addListener("updateHealth", this::updatePlayerHealthUI);
   }
@@ -67,7 +68,7 @@ public class PlayerStatsDisplay extends UIComponent {
    */
   public void updatePlayerHealthUI(int health) {
     // 100 total HP across 2 hearts (4 hits total) -> 25 HP per hit
-    int hpPerHit = 25; 
+    int hpPerHit = 25;
     int remainingHits = health / hpPerHit;
 
     for (int i = 0; i < heartImages.size(); i++) {
