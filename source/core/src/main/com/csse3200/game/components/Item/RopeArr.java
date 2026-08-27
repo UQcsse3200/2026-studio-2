@@ -4,6 +4,7 @@ package com.csse3200.game.components.item;
 public class RopeArr extends Arrow {
   public RopeArr() {
     super(
+        ItemType.RopeArrow,
         "Rope Arrow",
         "An arrow used for grappling.",
         1,

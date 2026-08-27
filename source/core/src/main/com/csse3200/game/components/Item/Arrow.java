@@ -6,7 +6,12 @@ public abstract class Arrow extends Item {
   protected boolean consumeAmmo; // Whether consume ammo
   protected float cooldown; // The cooldown time;
 
-  public Arrow(
+  /**
+   * Each arrow subclass supplies its own item type, so different arrows occupy separate inventory
+   * slots rather than stacking together.
+   */
+  protected Arrow(
+      ItemType itemType,
       String itemName,
       String description,
       int quantity,
@@ -14,7 +19,7 @@ public abstract class Arrow extends Item {
       float range,
       boolean consumeAmmo,
       float cooldown) {
-    super(ItemType.ARROW, itemName, description, quantity);
+    super(itemType, itemName, description, quantity);
     this.damage = damage;
     this.range = range;
     this.consumeAmmo = consumeAmmo;

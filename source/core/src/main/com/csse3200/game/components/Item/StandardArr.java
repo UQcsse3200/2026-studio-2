@@ -3,6 +3,7 @@ package com.csse3200.game.components.item;
 public class StandardArr extends Arrow {
   public StandardArr(int quantity) {
     super(
+        ItemType.ARROW,
         "Standard Arrow",
         "A basic arrow used as ammunition.",
         quantity,
