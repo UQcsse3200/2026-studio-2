@@ -9,6 +9,8 @@ import com.csse3200.game.components.tasks.WanderTask;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.BaseEntityConfig;
 import com.csse3200.game.entities.configs.NPCConfigs;
+import com.csse3200.game.entities.configs.EnemyConfig;
+import com.csse3200.game.entities.configs.EnemyConfigs;
 import com.csse3200.game.files.FileLoader;
 import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.physics.PhysicsUtils;
@@ -23,13 +25,20 @@ import com.csse3200.game.rendering.AnimationRenderComponent;
 import com.csse3200.game.services.ServiceLocator;
 
 public class EnemyFactory {
-  private static final NPCConfigs configs =
-      FileLoader.readClass(NPCConfigs.class, "configs/NPCs.json");
+  private static final EnemyConfigs configs =
+          FileLoader.readClass(EnemyConfigs.class, "configs/Enemies.json");
 
-  public static Entity createGhoul(Entity target) {
+  // Test function for checking enemy behaviour
+  public static Entity createChaser(Entity target) {
+    EnemyConfig config = configs.chaser;
+    System.out.println("health = " + config.health);
+    System.out.println("baseAttack = " + config.baseAttack);
+    System.out.println("speed = " + config.speed);
+    System.out.println("wanderX = " + config.wanderRangeX);
+    System.out.println("priority = " + config.chasePriority);
+    System.out.println("view = " + config.viewDistance);
 
-    BaseEntityConfig config = configs.chaser;
-    Entity chaser = createBaseEnemy(target, config);
+    Entity chaser = createEnemy(target, config);
 
     AnimationRenderComponent animator =
             new AnimationRenderComponent(
@@ -47,7 +56,7 @@ public class EnemyFactory {
     return chaser;
   }
 
-  private static Entity createBaseEnemy(Entity target, BaseEntityConfig config) {
+  public static Entity createEnemy(Entity target, EnemyConfig config) {
     AITaskComponent aiComponent =
         new AITaskComponent()
             .addTask(new WanderTask(new Vector2(config.wanderRangeX, config.wanderRangeY),

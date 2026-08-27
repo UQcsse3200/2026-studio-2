@@ -8,11 +8,6 @@
     "baseAttack": 25,
     "spookyFactor": 7
   },
-  "ghoul": {
-    "health": 50,
-    "baseAttack": 5
-  },
-
   "chaser": {
     "health": 50,
     "baseAttack": 5,

@@ -73,7 +73,7 @@ public class ForestGameArea extends GameArea {
     spawnTerrain();
     spawnTrees();
     player = spawnPlayer();
-    spawnGhoul();
+    spawnChaser();
     //spawnGhosts();
     //spawnGhostKing();
 
@@ -146,15 +146,14 @@ public class ForestGameArea extends GameArea {
   }
 
 
-
-  private void spawnGhoul() {
+  private void spawnChaser() {
     GridPoint2 minPos = new GridPoint2(0, 0);
     GridPoint2 maxPos = terrain.getMapBounds(0).sub(2, 2);
 
     GridPoint2 randomPos = RandomUtils.random(minPos, maxPos);
-    Entity ghoul = EnemyFactory.createGhoul(player);
+    Entity chaser = EnemyFactory.createChaser(player);
 
-    spawnEntityAt(ghoul, randomPos, true, true);
+    spawnEntityAt(chaser, randomPos, true, true);
   }
 
 
