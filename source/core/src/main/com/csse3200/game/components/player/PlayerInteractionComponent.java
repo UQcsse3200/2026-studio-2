@@ -186,7 +186,8 @@ public class PlayerInteractionComponent extends Component {
     return switch (type) {
       case ARROW -> ItemFactory.createStandardArrow(quantity);
       case RopeArrow -> ItemFactory.createRopeArrow();
-      case CONSUMABLE -> throw new IllegalArgumentException("Consumable item entity not implemented yet");
+      case CONSUMABLE ->
+          throw new IllegalArgumentException("Consumable item entity not implemented yet");
     };
   }
 }

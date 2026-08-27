@@ -4,6 +4,7 @@ public class StandardArr extends Arrow {
   public StandardArr(int quantity) {
     super(
         ItemType.ARROW,
+        1,
         "Standard Arrow",
         "A basic arrow used as ammunition.",
         quantity,

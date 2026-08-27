@@ -12,6 +12,7 @@ public abstract class Arrow extends Item {
    */
   protected Arrow(
       ItemType itemType,
+      int itemId,
       String itemName,
       String description,
       int quantity,
@@ -19,7 +20,7 @@ public abstract class Arrow extends Item {
       float range,
       boolean consumeAmmo,
       float cooldown) {
-    super(itemType, itemName, description, quantity);
+    super(itemType, itemId, itemName, description, quantity);
     this.damage = damage;
     this.range = range;
     this.consumeAmmo = consumeAmmo;
@@ -41,5 +42,4 @@ public abstract class Arrow extends Item {
   public float getCooldown() {
     return cooldown;
   }
-
 }
