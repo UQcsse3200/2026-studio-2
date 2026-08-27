@@ -6,15 +6,23 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Group;
+import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.UIComponent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class TimingBarDisplay extends UIComponent {
+  private static final Logger logger = LoggerFactory.getLogger(TimingBarDisplay.class);
 
-  private static final float SCALE = 10f;
-  private static final float SCREEN_X = 100f;
-  private static final float SCREEN_Y = 500f;
-  private static final float BAR_HEIGHT = 20f;
+  private static float SCREEN_X;
+  private static float SCREEN_Y;
+  private static final float BAR_WIDTH = 500f;
+  private static final float BAR_HEIGHT = 30f;
+
+  private float location_x;
+  private float location_y;
 
   private final TimingBarLogic logic;
   private Texture blankTexture;
@@ -22,16 +30,29 @@ public class TimingBarDisplay extends UIComponent {
 
   private Group group;
   private Image barBackground;
-  private Image greenZone;
+  private Image scoreZone;
   private Image marker;
 
   private boolean visible = true;
 
   public TimingBarDisplay(TimingBarLogic logic) {
     this.logic = logic;
+    setupComponentSizes();
+  }
+
+  private void setupComponentSizes() {
+    logger.info("Retrieving window size");
+    Stage stage = ServiceLocator.getRenderService().getStage();
+    logger.info("Stage dimensions: ({}, {})", stage.getWidth(), stage.getHeight());
+    SCREEN_X = stage.getWidth();
+    SCREEN_Y = stage.getHeight();
+
+    location_x = (SCREEN_X / 2) - (BAR_WIDTH / 2);
+    location_y = (SCREEN_Y / 2) + (BAR_HEIGHT / 2);
   }
 
   public void setVisible(boolean visible) {
+    logger.info("setting TimingBarDiplay visbility to {}.", visible);
     this.visible = visible;
     if (group != null) {
       group.setVisible(visible);
@@ -57,22 +78,28 @@ public class TimingBarDisplay extends UIComponent {
 
     group = new Group();
 
+    logger.info("loading timing bar background");
     barBackground = new Image(blankRegion);
     barBackground.setColor(Color.DARK_GRAY);
-    barBackground.setPosition(SCREEN_X + logic.barStart * SCALE, SCREEN_Y);
-    barBackground.setSize(logic.barWidth * SCALE, BAR_HEIGHT);
+    barBackground.setPosition(location_x, location_y);
+    barBackground.setSize(BAR_WIDTH, BAR_HEIGHT);
     group.addActor(barBackground);
+    logger.info("created timing bar background at (X: {}, Y: {})", location_x, location_y);
 
-    greenZone = new Image(blankRegion);
-    greenZone.setColor(Color.GREEN);
-    greenZone.setPosition(SCREEN_X + logic.greenStart * SCALE, SCREEN_Y);
-    greenZone.setSize((logic.greenEnd - logic.greenStart) * SCALE, BAR_HEIGHT);
-    group.addActor(greenZone);
+    logger.info("loading timing bar scoring zone");
+    scoreZone = new Image(blankRegion);
+    scoreZone.setColor(Color.GREEN);
+    scoreZone.setPosition(
+        location_x + (BAR_WIDTH / 2) - ((BAR_WIDTH * logic.scoringAreaSize) / 2), location_y);
+    scoreZone.setSize((BAR_WIDTH * logic.scoringAreaSize), BAR_HEIGHT);
+    group.addActor(scoreZone);
 
+    logger.info("loading timing bar marker");
     marker = new Image(blankRegion);
     marker.setColor(Color.RED);
-    marker.setSize(4f, BAR_HEIGHT + 8f);
-    marker.setPosition(SCREEN_X + logic.markerX * SCALE - marker.getWidth() / 2, SCREEN_Y - 4f);
+    marker.setSize(10f, BAR_HEIGHT + 8f);
+    marker.setPosition(
+        location_x + (logic.markerX * BAR_WIDTH) - marker.getWidth() / 2, location_y - 4f);
     group.addActor(marker);
 
     group.setVisible(visible);
@@ -82,7 +109,7 @@ public class TimingBarDisplay extends UIComponent {
   @Override
   public void update() {
     if (marker != null) {
-      marker.setX(SCREEN_X + logic.markerX * SCALE - marker.getWidth() / 2);
+      marker.setX(location_x + (logic.markerX * BAR_WIDTH) - marker.getWidth() / 2);
     }
   }
 
