@@ -1,5 +1,7 @@
 package com.csse3200.game.components;
 
+import com.csse3200.game.services.GameTime;
+import com.csse3200.game.services.ServiceLocator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,8 +15,22 @@ public class CombatStatsComponent extends Component {
   private static final Logger logger = LoggerFactory.getLogger(CombatStatsComponent.class);
   private int health;
   private int baseAttack;
+  private final long invulnerabilityDuration;
+  private long invulnerableUntil;
 
   public CombatStatsComponent(int health, int baseAttack) {
+    this(health, baseAttack, 0);
+  }
+
+  /**
+   * Creates combat stats with an invulnerability window after each successful hit.
+   *
+   * @param health initial health
+   * @param baseAttack base attack damage
+   * @param invulnerabilityDuration invulnerability duration in milliseconds
+   */
+  public CombatStatsComponent(int health, int baseAttack, long invulnerabilityDuration) {
+    this.invulnerabilityDuration = Math.max(0, invulnerabilityDuration);
     setHealth(health);
     setBaseAttack(baseAttack);
   }
@@ -85,7 +101,14 @@ public class CombatStatsComponent extends Component {
   }
 
   public void hit(CombatStatsComponent attacker) {
+    GameTime timeSource = ServiceLocator.getTimeSource();
+    long currentTime = timeSource == null ? 0 : timeSource.getTime();
+    if (currentTime < invulnerableUntil) {
+      return;
+    }
+
     int newHealth = getHealth() - attacker.getBaseAttack();
     setHealth(newHealth);
+    invulnerableUntil = currentTime + invulnerabilityDuration;
   }
 }

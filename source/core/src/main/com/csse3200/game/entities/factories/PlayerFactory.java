@@ -23,6 +23,7 @@ import com.csse3200.game.services.ServiceLocator;
  * the properties stores in 'PlayerConfig'.
  */
 public class PlayerFactory {
+  private static final long PLAYER_INVULNERABILITY_DURATION = 1000;
   private static final PlayerConfig stats =
       FileLoader.readClass(PlayerConfig.class, "configs/player.json");
 
@@ -42,7 +43,9 @@ public class PlayerFactory {
             .addComponent(new ColliderComponent())
             .addComponent(new HitboxComponent().setLayer(PhysicsLayer.PLAYER))
             .addComponent(new PlayerActions())
-            .addComponent(new CombatStatsComponent(stats.health, stats.baseAttack))
+            .addComponent(
+                new CombatStatsComponent(
+                    stats.health, stats.baseAttack, PLAYER_INVULNERABILITY_DURATION))
             .addComponent(new InventoryComponent(stats.gold))
             .addComponent(inputComponent)
             .addComponent(new PlayerStatsDisplay());
