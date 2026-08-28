@@ -1,6 +1,7 @@
 package com.csse3200.game.entities.factories;
 
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
+import com.csse3200.game.components.item.HealthPotion;
 import com.csse3200.game.components.item.Item;
 import com.csse3200.game.components.item.ItemComponent;
 import com.csse3200.game.components.item.RopeArr;
@@ -20,8 +21,9 @@ import com.csse3200.game.rendering.TextureRenderComponent;
  * <p>Each item type should have a creation method that returns a corresponding entity.
  */
 public class ItemFactory {
-  /** Placeholder art, used until item sprites are available. */
-  private static final String DEFAULT_TEXTURE = "images/heart.png";
+  private static final String STANDARD_ARROW_TEXTURE = "images/arrow.png";
+  private static final String ROPE_ARROW_TEXTURE = "images/rope_arrow.png";
+  private static final String CONSUMABLE_TEXTURE = "images/heart.png";
 
   private static final float ITEM_HEIGHT = 0.5f;
 
@@ -51,7 +53,7 @@ public class ItemFactory {
    * @return entity
    */
   public static Entity createRopeArrow() {
-    return createItem(new RopeArr(), DEFAULT_TEXTURE);
+    return createItem(new RopeArr(), ROPE_ARROW_TEXTURE);
   }
 
   /**
@@ -61,7 +63,17 @@ public class ItemFactory {
    * @return entity
    */
   public static Entity createStandardArrow(int quantity) {
-    return createItem(new StandardArr(quantity), DEFAULT_TEXTURE);
+    return createItem(new StandardArr(quantity), STANDARD_ARROW_TEXTURE);
+  }
+
+  /**
+   * Creates a stack of health potions lying in the world.
+   *
+   * @param quantity number of potions in the stack
+   * @return entity
+   */
+  public static Entity createHealthPotion(int quantity) {
+    return createItem(new HealthPotion(quantity), CONSUMABLE_TEXTURE);
   }
 
   private ItemFactory() {

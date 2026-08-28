@@ -1,11 +1,9 @@
 package com.csse3200.game.components.player;
 
-import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.csse3200.game.components.Component;
 import com.csse3200.game.physics.components.PhysicsComponent;
-import com.csse3200.game.services.ServiceLocator;
 
 /**
  * Action component for interacting with the player. Player events should be initialised in create()
@@ -23,7 +21,6 @@ public class PlayerActions extends Component {
     physicsComponent = entity.getComponent(PhysicsComponent.class);
     entity.getEvents().addListener("walk", this::walk);
     entity.getEvents().addListener("walkStop", this::stopWalking);
-    entity.getEvents().addListener("attack", this::attack);
   }
 
   @Override
@@ -57,12 +54,5 @@ public class PlayerActions extends Component {
     this.walkDirection = Vector2.Zero.cpy();
     updateSpeed();
     moving = false;
-  }
-
-  /** Makes the player attack. */
-  void attack() {
-    Sound attackSound =
-        ServiceLocator.getResourceService().getAsset("sounds/Impact4.ogg", Sound.class);
-    attackSound.play();
   }
 }

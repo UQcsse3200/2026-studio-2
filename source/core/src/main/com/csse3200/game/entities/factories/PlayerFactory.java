@@ -4,6 +4,7 @@ import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.inventory.BackpackDisplay;
 import com.csse3200.game.components.inventory.InventoryBarDisplay;
 import com.csse3200.game.components.inventory.InventoryComponent;
+import com.csse3200.game.components.player.ItemUseComponent;
 import com.csse3200.game.components.player.PlayerActions;
 import com.csse3200.game.components.player.PlayerInteractionComponent;
 import com.csse3200.game.components.player.PlayerStatsDisplay;
@@ -50,6 +51,7 @@ public class PlayerFactory {
             .addComponent(new InventoryBarDisplay())
             .addComponent(new BackpackDisplay())
             .addComponent(new PlayerInteractionComponent())
+            .addComponent(new ItemUseComponent())
             .addComponent(inputComponent)
             .addComponent(new PlayerStatsDisplay());
 

@@ -26,7 +26,9 @@ public class ForestGameArea extends GameArea {
   private static final GridPoint2 PLAYER_SPAWN = new GridPoint2(10, 10);
   private static final GridPoint2 ROPE_ARROW_SPAWN = new GridPoint2(12, 10);
   private static final GridPoint2 STANDARD_ARROW_SPAWN = new GridPoint2(8, 10);
+  private static final GridPoint2 HEALTH_POTION_SPAWN = new GridPoint2(10, 8);
   private static final int STANDARD_ARROW_QUANTITY = 5;
+  private static final int HEALTH_POTION_QUANTITY = 3;
   private static final float WALL_WIDTH = 0.1f;
   private static final String[] forestTextures = {
     "images/box_boy_leaf.png",
@@ -145,6 +147,8 @@ public class ForestGameArea extends GameArea {
         STANDARD_ARROW_SPAWN,
         true,
         false);
+    spawnEntityAt(
+        ItemFactory.createHealthPotion(HEALTH_POTION_QUANTITY), HEALTH_POTION_SPAWN, true, false);
   }
 
   private void spawnGhosts() {

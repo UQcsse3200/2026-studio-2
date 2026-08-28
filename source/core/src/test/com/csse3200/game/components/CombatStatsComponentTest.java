@@ -16,7 +16,7 @@ class CombatStatsComponentTest {
     assertEquals(100, combat.getHealth());
 
     combat.setHealth(150);
-    assertEquals(150, combat.getHealth());
+    assertEquals(CombatStatsComponent.MAX_HEALTH, combat.getHealth());
 
     combat.setHealth(-50);
     assertEquals(0, combat.getHealth());
@@ -40,6 +40,14 @@ class CombatStatsComponentTest {
     combat.addHealth(100);
     combat.addHealth(-20);
     assertEquals(80, combat.getHealth());
+  }
+
+  @Test
+  void shouldCapHealthAtMaximum() {
+    CombatStatsComponent combat = new CombatStatsComponent(90, 20);
+    combat.addHealth(50);
+    assertEquals(CombatStatsComponent.MAX_HEALTH, combat.getHealth());
+    assertTrue(combat.isHealthFull());
   }
 
   @Test
