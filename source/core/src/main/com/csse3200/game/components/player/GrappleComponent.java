@@ -12,7 +12,7 @@ import com.csse3200.game.services.ServiceLocator;
 
 /** Player fires a rope */
 public class GrappleComponent extends Component {
-  private static final float MAX_RANGE = 20f;
+  private static final float MAX_RANGE = 8f;
   private static final float BASE_SWING_FORCE = 30f;
   private static final float SWING_SCALE = 20f;
   private static final short TARGETS = (short) (PhysicsLayer.OBSTACLE | PhysicsLayer.GROUND);
