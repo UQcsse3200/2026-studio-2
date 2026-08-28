@@ -10,12 +10,11 @@ import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.physics.raycast.RaycastHit;
 import com.csse3200.game.services.ServiceLocator;
 
-import static java.lang.Math.abs;
-
 /** Player fires a rope */
 public class GrappleComponent extends Component {
-  private static final float MAX_RANGE = 8f;
-  private static final float SWING_FORCE = 0f;
+  private static final float MAX_RANGE = 20f;
+  private static final float BASE_SWING_FORCE = 30f;
+  private static final float SWING_SCALE = 20f;
   private static final short TARGETS = (short) (PhysicsLayer.OBSTACLE | PhysicsLayer.GROUND);
 
   private PhysicsComponent physicsComponent;
@@ -25,13 +24,11 @@ public class GrappleComponent extends Component {
   private float velocityX;
   private float velocityY;
 
-
   @Override
   public void create() {
     physicsComponent = entity.getComponent(PhysicsComponent.class);
     entity.getEvents().addListener("grappleFire", this::fire);
     entity.getEvents().addListener("grappleSwing", this::swing);
-
   }
 
   /** Fires the rope towards direction or detaches if already attached. */
@@ -55,9 +52,6 @@ public class GrappleComponent extends Component {
     anchorPoint = hit.point.cpy();
     Body playerBody = physicsComponent.getBody();
     Body anchorBody = hit.fixture.getBody();
-    shotFrom = new Vector2(anchorPoint.x - start.x, anchorPoint.y - start.y);
-    velocityX = shotFrom.x/3;
-    velocityY = shotFrom.y/3;
 
     RopeJointDef def = new RopeJointDef();
     def.bodyA = anchorBody;
@@ -65,9 +59,10 @@ public class GrappleComponent extends Component {
 
     // Convert world anchor coordinates to the anchor body's local space
     def.localAnchorA.set(anchorBody.getLocalPoint(anchorPoint));
+    def.localAnchorB.set(playerBody.getLocalPoint(start));
 
     // Set max rope length to the current straight-line distance to the wall
-    def.maxLength = playerBody.getPosition().dst(anchorPoint);
+    def.maxLength = start.dst(anchorPoint);
     def.collideConnected = true;
     ropeJoint =
         (RopeJoint) ServiceLocator.getPhysicsService().getPhysics().getWorld().createJoint(def);
@@ -86,12 +81,14 @@ public class GrappleComponent extends Component {
   void swing(float direction) {
     if (!isAttached()) return;
 
+    float offsetX = entity.getCenterPosition().x - anchorPoint.x;
+    float ropeLength = ropeJoint.getMaxLength();
+
+    float swingRatio = Math.min(1f, Math.abs(offsetX) / ropeLength);
+    float force = BASE_SWING_FORCE + (SWING_SCALE * swingRatio);
+
     Body body = physicsComponent.getBody();
-    body.applyForceToCenter(
-            abs(velocityX) * 50f * body.getMass(),
-            0,
-            true
-    );
+    body.applyForceToCenter(direction * force * body.getMass(), 0, true);
   }
 
   public boolean isAttached() {
