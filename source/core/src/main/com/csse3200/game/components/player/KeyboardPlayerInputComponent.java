@@ -26,6 +26,7 @@ public class KeyboardPlayerInputComponent extends InputComponent {
   @Override
   public boolean keyDown(int keycode) {
     switch (keycode) {
+      // Hotbar number keys
       case Keys.NUM_1:
         entity.getEvents().trigger("selectQuickSlot", 0);
         return true;
@@ -49,6 +50,9 @@ public class KeyboardPlayerInputComponent extends InputComponent {
         return true;
       case Keys.NUM_8:
         entity.getEvents().trigger("selectQuickSlot", 7);
+        return true;
+      case Keys.NUM_9:
+        entity.getEvents().trigger("selectQuickSlot", 8);
         return true;
       case Keys.W:
         walkDirection.add(Vector2Utils.UP);

@@ -2,8 +2,9 @@ package com.csse3200.game.components.inventory;
 
 import com.csse3200.game.components.Component;
 import com.csse3200.game.components.item.ItemType;
-import java.util.EnumMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,13 +15,16 @@ import org.slf4j.LoggerFactory;
  */
 public class InventoryComponent extends Component {
   private static final Logger logger = LoggerFactory.getLogger(InventoryComponent.class);
-  private static final int DEFAULT_CAPACITY = 24;
+  private static final int DEFAULT_ROWS = 3;
+  private static final int DEFAULT_COLUMNS = 8;
+  private static final int MAX_COLUMNS = 9;
 
-  private final Map<ItemType, Integer> storedItems = new EnumMap<>(ItemType.class);
-  private final int capacity;
+  private final List<InventorySlot> slots;
+  private int rows;
+  private int columns;
 
   private int gold;
-  private ItemType selectedItem;
+  private int selectedSlotIndex = -1;
 
   /**
    * Creates an inventory with the default capacity.
@@ -28,22 +32,43 @@ public class InventoryComponent extends Component {
    * @param gold starting gold
    */
   public InventoryComponent(int gold) {
-    setGold(gold);
-    this.capacity = DEFAULT_CAPACITY;
+    this(gold, DEFAULT_ROWS, DEFAULT_COLUMNS);
   }
 
   /**
-   * Creates an inventory with a configurable number of distinct item stacks.
+   * Creates a single-row inventory with a configurable number of distinct item stacks.
    *
    * @param gold starting gold
-   * @param capacity maximum number of distinct item stacks
+   * @param capacity number of slots in the single row, from 1 to 9
    */
   public InventoryComponent(int gold, int capacity) {
-    if (capacity <= 0) {
-      throw new IllegalArgumentException("Inventory capacity must be greater than zero");
+    this(gold, 1, capacity);
+  }
+
+  /**
+   * Creates an inventory with configurable grid dimensions.
+   *
+   * <p>The first row is the hotbar. Columns are limited to nine so every hotbar slot has a number
+   * key.
+   *
+   * @param gold starting gold
+   * @param rows number of inventory rows
+   * @param columns number of slots per row, from 1 to 9
+   */
+  public InventoryComponent(int gold, int rows, int columns) {
+    long capacity = (long) rows * columns;
+    if (rows <= 0 || columns <= 0 || columns > MAX_COLUMNS || capacity > Integer.MAX_VALUE) {
+      throw new IllegalArgumentException(
+          "Inventory rows must be positive, columns must be between 1 and 9, and total slots must "
+              + "not exceed Integer.MAX_VALUE");
     }
 
-    this.capacity = capacity;
+    this.rows = rows;
+    this.columns = columns;
+    this.slots = new ArrayList<>((int) capacity);
+    for (int index = 0; index < capacity; index++) {
+      slots.add(InventorySlot.empty());
+    }
     setGold(gold);
   }
 
@@ -51,6 +76,10 @@ public class InventoryComponent extends Component {
   public void create() {
     entity.getEvents().addListener("selectQuickSlot", this::selectQuickSlot);
   }
+
+  // ---------
+  // Gold
+  // ---------
 
   /**
    * Returns the player's gold.
@@ -90,6 +119,10 @@ public class InventoryComponent extends Component {
     setGold(this.gold + gold);
   }
 
+  // ---------
+  // Add/remove items
+  // ---------
+
   /**
    * Adds the requested quantity of an item to the inventory.
    *
@@ -104,20 +137,28 @@ public class InventoryComponent extends Component {
     if (item == null || quantity <= 0) {
       return false;
     }
-    boolean isNewItem = !storedItems.containsKey(item);
-
-    if (isNewItem && isFull()) {
-      return false;
+    int oldSelectedSlotIndex = selectedSlotIndex;
+    ItemType oldSelectedItem = getSelectedItem();
+    int slotIndex = findItemSlot(item);
+    if (slotIndex < 0) {
+      slotIndex = findEmptySlot();
+      if (slotIndex < 0) {
+        return false;
+      }
+      slots.set(slotIndex, InventorySlot.of(item, quantity));
+    } else {
+      InventorySlot slot = slots.get(slotIndex);
+      long newQuantity = (long) slot.getQuantity() + quantity;
+      if (newQuantity > Integer.MAX_VALUE) {
+        return false;
+      }
+      slots.set(slotIndex, InventorySlot.of(item, (int) newQuantity));
     }
 
-    int currentQuantity = getItemCount(item);
-    storedItems.put(item, currentQuantity + quantity);
-
-    // Automatically select the first item added.
-    if (selectedItem == null) {
-      selectedItem = item;
-      notifySelectionChanged();
+    if (selectedSlotIndex < 0) {
+      selectedSlotIndex = slotIndex;
     }
+    notifySelectionChangedIfNeeded(oldSelectedSlotIndex, oldSelectedItem);
     notifyInventoryChanged();
     return true;
   }
@@ -135,33 +176,35 @@ public class InventoryComponent extends Component {
     if (item == null || quantity <= 0) {
       return false;
     }
-    int currentQuantity = getItemCount(item);
+    int slotIndex = findItemSlot(item);
+    int currentQuantity = slotIndex < 0 ? 0 : slots.get(slotIndex).getQuantity();
 
     if (currentQuantity < quantity) {
       return false;
     }
 
+    int oldSelectedSlotIndex = selectedSlotIndex;
+    ItemType oldSelectedItem = getSelectedItem();
     int remainingQuantity = currentQuantity - quantity;
 
     if (remainingQuantity == 0) {
-      storedItems.remove(item);
+      slots.set(slotIndex, InventorySlot.empty());
 
-      if (selectedItem == item) {
-        selectedItem = null;
-
-        if (!storedItems.isEmpty()) {
-          selectNext();
-        } else {
-          notifySelectionChanged();
-        }
+      if (selectedSlotIndex == slotIndex) {
+        selectedSlotIndex = findRelativeOccupiedSlot(slotIndex, 1);
       }
     } else {
-      storedItems.put(item, remainingQuantity);
+      slots.set(slotIndex, InventorySlot.of(item, remainingQuantity));
     }
 
+    notifySelectionChangedIfNeeded(oldSelectedSlotIndex, oldSelectedItem);
     notifyInventoryChanged();
     return true;
   }
+
+  // ---------
+  // Selection
+  // ---------
 
   /**
    * Returns the currently selected item type.
@@ -169,7 +212,32 @@ public class InventoryComponent extends Component {
    * @return the currently selected item type
    */
   public ItemType getSelectedItem() {
-    return selectedItem;
+    InventorySlot selectedSlot = getSlot(selectedSlotIndex);
+    return selectedSlot == null ? null : selectedSlot.getItemType();
+  }
+
+  /**
+   * Returns the currently selected physical slot.
+   *
+   * @return zero-based slot index, or -1 when no slot is selected
+   */
+  public int getSelectedSlotIndex() {
+    return selectedSlotIndex;
+  }
+
+  /**
+   * Selects a physical inventory position, including an empty position.
+   *
+   * @param index zero-based slot index
+   * @return true when the selected position changed
+   */
+  public boolean selectSlot(int index) {
+    if (!isValidSlotIndex(index) || selectedSlotIndex == index) {
+      return false;
+    }
+    selectedSlotIndex = index;
+    notifySelectionChanged();
+    return true;
   }
 
   /**
@@ -191,24 +259,14 @@ public class InventoryComponent extends Component {
   }
 
   private void selectQuickSlot(int slotIndex) {
-    int currentIndex = 0;
-
-    for (ItemType itemType : ItemType.values()) {
-      if (!hasItem(itemType)) {
-        continue;
-      }
-
-      if (currentIndex == slotIndex) {
-        if (selectedItem != itemType) {
-          selectedItem = itemType;
-          notifySelectionChanged();
-        }
-        return;
-      }
-
-      currentIndex++;
+    if (slotIndex >= 0 && slotIndex < getHotbarSlotCount()) {
+      selectSlot(slotIndex);
     }
   }
+
+  // ---------
+  // Queries
+  // ---------
 
   /**
    * Returns the number of items of a certain type in the inventory.
@@ -221,7 +279,8 @@ public class InventoryComponent extends Component {
       return 0;
     }
 
-    return storedItems.getOrDefault(item, 0);
+    int slotIndex = findItemSlot(item);
+    return slotIndex < 0 ? 0 : slots.get(slotIndex).getQuantity();
   }
 
   /**
@@ -240,7 +299,7 @@ public class InventoryComponent extends Component {
    * @return true if the inventory has no free item slots
    */
   public boolean isFull() {
-    return storedItems.size() >= capacity;
+    return findEmptySlot() < 0;
   }
 
   /**
@@ -249,8 +308,171 @@ public class InventoryComponent extends Component {
    * @return inventory capacity
    */
   public int getCapacity() {
-    return capacity;
+    return slots.size();
   }
+
+  /**
+   * Returns the current number of inventory rows.
+   *
+   * @return inventory row count
+   */
+  public int getRows() {
+    return rows;
+  }
+
+  /**
+   * Returns the current number of slots in each row.
+   *
+   * @return inventory column count
+   */
+  public int getColumns() {
+    return columns;
+  }
+
+  /**
+   * Returns the number of slots in the first-row hotbar.
+   *
+   * @return hotbar slot count
+   */
+  public int getHotbarSlotCount() {
+    return columns;
+  }
+
+  /**
+   * Returns the slot at an inventory position.
+   *
+   * @param index zero-based slot index
+   * @return immutable slot, or null when the index is invalid
+   */
+  public InventorySlot getSlot(int index) {
+    return isValidSlotIndex(index) ? slots.get(index) : null;
+  }
+
+  /**
+   * Returns an unmodifiable snapshot of every inventory slot.
+   *
+   * @return ordered slot snapshot
+   */
+  public List<InventorySlot> getSlots() {
+    return Collections.unmodifiableList(new ArrayList<>(slots));
+  }
+
+  /**
+   * Returns the number of physical inventory positions.
+   *
+   * @return slot count
+   */
+  public int getSlotCount() {
+    return slots.size();
+  }
+
+  /**
+   * Returns whether a valid inventory position is empty.
+   *
+   * @param index zero-based slot index
+   * @return true only when the index is valid and its slot is empty
+   */
+  public boolean isSlotEmpty(int index) {
+    return isValidSlotIndex(index) && slots.get(index).isEmpty();
+  }
+
+  // ---------
+  // Slot operations
+  // ---------
+
+  /**
+   * Appends one empty row without changing any existing slot index.
+   *
+   * @return true when the row was added, or false if the resulting capacity would overflow
+   */
+  public boolean addRow() {
+    long newCapacity = ((long) rows + 1) * columns;
+    if (newCapacity > Integer.MAX_VALUE) {
+      return false;
+    }
+
+    for (int column = 0; column < columns; column++) {
+      slots.add(InventorySlot.empty());
+    }
+    rows++;
+    notifyInventoryChanged();
+    return true;
+  }
+
+  /**
+   * Appends one empty column while preserving every existing item's row and column coordinates.
+   *
+   * @return true when the column was added, or false at the nine-column limit or on overflow
+   */
+  public boolean addColumn() {
+    if (columns >= MAX_COLUMNS) {
+      return false;
+    }
+
+    int newColumns = columns + 1;
+    long newCapacity = (long) rows * newColumns;
+    if (newCapacity > Integer.MAX_VALUE) {
+      return false;
+    }
+
+    int oldColumns = columns;
+    int oldSelectedSlotIndex = selectedSlotIndex;
+    ItemType oldSelectedItem = getSelectedItem();
+    List<InventorySlot> expandedSlots = new ArrayList<>((int) newCapacity);
+    for (int row = 0; row < rows; row++) {
+      int rowStart = row * oldColumns;
+      expandedSlots.addAll(slots.subList(rowStart, rowStart + oldColumns));
+      expandedSlots.add(InventorySlot.empty());
+    }
+
+    slots.clear();
+    slots.addAll(expandedSlots);
+    columns = newColumns;
+    if (oldSelectedSlotIndex >= 0) {
+      int selectedRow = oldSelectedSlotIndex / oldColumns;
+      int selectedColumn = oldSelectedSlotIndex % oldColumns;
+      selectedSlotIndex = selectedRow * newColumns + selectedColumn;
+    }
+
+    notifyInventoryChanged();
+    notifySelectionChangedIfNeeded(oldSelectedSlotIndex, oldSelectedItem);
+    return true;
+  }
+
+  /**
+   * Exchanges the contents of two physical inventory positions.
+   *
+   * @param firstIndex first zero-based slot index
+   * @param secondIndex second zero-based slot index
+   * @return true when two different slot values were exchanged
+   */
+  public boolean swapSlots(int firstIndex, int secondIndex) {
+    if (!isValidSlotIndex(firstIndex)
+        || !isValidSlotIndex(secondIndex)
+        || firstIndex == secondIndex) {
+      return false;
+    }
+
+    InventorySlot firstSlot = slots.get(firstIndex);
+    InventorySlot secondSlot = slots.get(secondIndex);
+    if (firstSlot == secondSlot) {
+      return false;
+    }
+
+    ItemType oldSelectedItem = getSelectedItem();
+    slots.set(firstIndex, secondSlot);
+    slots.set(secondIndex, firstSlot);
+
+    notifyInventoryChanged();
+    if (oldSelectedItem != getSelectedItem()) {
+      notifySelectionChanged();
+    }
+    return true;
+  }
+
+  // ---------
+  // Internal helpers
+  // ---------
 
   /**
    * Selects the next or previous owned item.
@@ -259,60 +481,72 @@ public class InventoryComponent extends Component {
    * @return selected item, or null when the inventory contains no item
    */
   private ItemType selectRelative(int direction) {
-    if (storedItems.isEmpty()) {
-      selectedItem = null;
-      return null;
-    }
-
-    ItemType oldSelection = selectedItem;
-    ItemType[] item = ItemType.values();
-
-    int startIndex;
-    if (selectedItem == null) {
+    int oldSelectedSlotIndex = selectedSlotIndex;
+    ItemType oldSelectedItem = getSelectedItem();
+    int startIndex = selectedSlotIndex;
+    if (startIndex < 0) {
       startIndex = direction > 0 ? -1 : 0;
-    } else {
-      startIndex = selectedItem.ordinal();
     }
 
-    for (int offset = 1; offset <= item.length; offset++) {
-      int candidateIndex = Math.floorMod(startIndex + direction * offset, item.length);
-      ItemType candidate = item[candidateIndex];
-
-      if (hasItem(candidate)) {
-        selectedItem = candidate;
-        break;
-      }
-    }
-
-    if (oldSelection != selectedItem) {
-      notifySelectionChanged();
-    }
-
-    return selectedItem;
+    selectedSlotIndex = findRelativeOccupiedSlot(startIndex, direction);
+    notifySelectionChangedIfNeeded(oldSelectedSlotIndex, oldSelectedItem);
+    return getSelectedItem();
   }
 
-  /**
-   * Notifies listeners that the inventory has changed.
-   *
-   * <p>Currently does nothing, but can be extended to implement a specific event in the future.
-   */
+  private boolean isValidSlotIndex(int index) {
+    return index >= 0 && index < slots.size();
+  }
+
+  private int findItemSlot(ItemType item) {
+    for (int index = 0; index < slots.size(); index++) {
+      if (slots.get(index).getItemType() == item) {
+        return index;
+      }
+    }
+    return -1;
+  }
+
+  private int findEmptySlot() {
+    for (int index = 0; index < slots.size(); index++) {
+      if (slots.get(index).isEmpty()) {
+        return index;
+      }
+    }
+    return -1;
+  }
+
+  private int findRelativeOccupiedSlot(int startIndex, int direction) {
+    for (int offset = 1; offset <= slots.size(); offset++) {
+      int candidateIndex = Math.floorMod(startIndex + direction * offset, slots.size());
+      if (!slots.get(candidateIndex).isEmpty()) {
+        return candidateIndex;
+      }
+    }
+    return -1;
+  }
+
+  private void notifySelectionChangedIfNeeded(int oldSlotIndex, ItemType oldItem) {
+    if (oldSlotIndex != selectedSlotIndex || oldItem != getSelectedItem()) {
+      notifySelectionChanged();
+    }
+  }
+
+  // ---------
+  // Events
+  // ---------
+
+  /** Triggers the inventory changed event after a successful inventory mutation. */
   private void notifyInventoryChanged() {
     // Constructor operations happen before the component is attached to an Entity.
     if (entity != null) {
       entity.getEvents().trigger("inventoryChanged");
-      // TODO: Trigger inventory changed event for UI.
     }
   }
 
-  /**
-   * Notifies listeners that the selected item has changed.
-   *
-   * <p>Currently does nothing, but can be extended to implement a specific event in the future.
-   */
+  /** Triggers the inventory selection changed event after the active selection changes. */
   private void notifySelectionChanged() {
     if (entity != null) {
       entity.getEvents().trigger("inventorySelectionChanged");
-      // TODO: Trigger selection changed event for UI.
     }
   }
 }

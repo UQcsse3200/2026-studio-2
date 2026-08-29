@@ -11,8 +11,6 @@ import com.csse3200.game.ui.UIComponent;
 
 /** Displays the player's inventory bar at the bottom of the screen. */
 public class InventoryBarDisplay extends UIComponent {
-  private static final int QUICK_BAR_SLOTS = 8;
-
   private Table table;
 
   @Override
@@ -77,30 +75,20 @@ public class InventoryBarDisplay extends UIComponent {
 
     InventoryComponent inventory = entity.getComponent(InventoryComponent.class);
 
-    int slotNumber = 1;
-
-    for (ItemType item : ItemType.values()) {
-      if (slotNumber > QUICK_BAR_SLOTS) {
-        break;
+    for (int slotIndex = 0; slotIndex < inventory.getHotbarSlotCount(); slotIndex++) {
+      int slotNumber = slotIndex + 1;
+      boolean selected = inventory.getSelectedSlotIndex() == slotIndex;
+      InventorySlot inventorySlot = inventory.getSlot(slotIndex);
+      Table slot;
+      if (inventorySlot == null || inventorySlot.isEmpty()) {
+        slot = createEmptySlot(slotNumber, selected);
+      } else {
+        slot =
+            createSlot(
+                slotNumber, inventorySlot.getItemType(), inventorySlot.getQuantity(), selected);
       }
 
-      int count = inventory.getItemCount(item);
-
-      if (count > 0) {
-        Table slot = createSlot(slotNumber, item, count, inventory.getSelectedItem() == item);
-
-        table.add(slot).width(160f).height(90f).pad(8f);
-
-        slotNumber++;
-      }
-    }
-
-    while (slotNumber <= QUICK_BAR_SLOTS) {
-      Table emptySlot = createEmptySlot(slotNumber);
-
-      table.add(emptySlot).width(160f).height(90f).pad(8f);
-
-      slotNumber++;
+      table.add(slot).width(160f).height(90f).pad(8f);
     }
   }
 
@@ -169,10 +157,10 @@ public class InventoryBarDisplay extends UIComponent {
    * @param slotNumber slot number displayed to the player
    * @return the created empty slot
    */
-  private Table createEmptySlot(int slotNumber) {
+  private Table createEmptySlot(int slotNumber, boolean selected) {
     Table slot = new Table();
     slot.pad(8f);
-    slot.setBackground(skin.getDrawable("button-c"));
+    slot.setBackground(skin.getDrawable(selected ? "selection" : "button-c"));
 
     Label numberLabel = new Label(Integer.toString(slotNumber), skin, "large");
 

@@ -14,14 +14,10 @@ import com.csse3200.game.ui.UIComponent;
 /**
  * Displays the player's backpack inventory.
  *
- * <p>The backpack contains a 3 x 8 grid of inventory slots. Selecting an occupied slot displays
- * information about that item in the item details panel.
+ * <p>The backpack reads its grid dimensions from InventoryComponent. Selecting an occupied slot
+ * displays information about that item in the item details panel.
  */
 public class BackpackDisplay extends UIComponent {
-  private static final int ROWS = 3;
-  private static final int COLUMNS = 8;
-  private static final int TOTAL_SLOTS = ROWS * COLUMNS;
-
   private Table table;
   private Table inventoryTable;
   private Table detailsTable;
@@ -74,36 +70,23 @@ public class BackpackDisplay extends UIComponent {
 
     InventoryComponent inventory = entity.getComponent(InventoryComponent.class);
 
-    int slotNumber = 1;
-
-    for (ItemType itemType : ItemType.values()) {
-      int quantity = inventory.getItemCount(itemType);
-
-      if (quantity <= 0) {
-        continue;
+    for (int slotIndex = 0; slotIndex < inventory.getSlotCount(); slotIndex++) {
+      int slotNumber = slotIndex + 1;
+      InventorySlot inventorySlot = inventory.getSlot(slotIndex);
+      Table slot;
+      if (inventorySlot == null || inventorySlot.isEmpty()) {
+        slot = createEmptySlot(slotNumber);
+      } else {
+        slot =
+            createItemSlot(
+                slotNumber, slotIndex, inventorySlot.getItemType(), inventorySlot.getQuantity());
       }
-
-      Table slot = createItemSlot(slotNumber, itemType, quantity);
 
       inventoryTable.add(slot).width(95f).height(95f).pad(5f);
 
-      if (slotNumber % COLUMNS == 0) {
+      if (slotNumber % inventory.getColumns() == 0) {
         inventoryTable.row();
       }
-
-      slotNumber++;
-    }
-
-    while (slotNumber <= TOTAL_SLOTS) {
-      Table slot = createEmptySlot(slotNumber);
-
-      inventoryTable.add(slot).width(95f).height(95f).pad(5f);
-
-      if (slotNumber % COLUMNS == 0) {
-        inventoryTable.row();
-      }
-
-      slotNumber++;
     }
   }
 
@@ -114,13 +97,13 @@ public class BackpackDisplay extends UIComponent {
    * @param quantity quantity of the item
    * @return slot table
    */
-  private Table createItemSlot(int slotNumber, ItemType itemType, int quantity) {
+  private Table createItemSlot(int slotNumber, int slotIndex, ItemType itemType, int quantity) {
 
     Table slot = new Table();
 
     InventoryComponent inventory = entity.getComponent(InventoryComponent.class);
 
-    if (itemType == inventory.getSelectedItem()) {
+    if (slotIndex == inventory.getSelectedSlotIndex()) {
       slot.setBackground(skin.getDrawable("selection"));
     } else {
       slot.setBackground(skin.getDrawable("button-c"));
@@ -138,7 +121,9 @@ public class BackpackDisplay extends UIComponent {
 
     Label quantityLabel = new Label("x" + quantity, skin);
 
-    Label slotLabel = new Label(slotNumber <= 8 ? Integer.toString(slotNumber) : "", skin);
+    Label slotLabel =
+        new Label(
+            slotNumber <= inventory.getHotbarSlotCount() ? Integer.toString(slotNumber) : "", skin);
 
     slot.add(slotLabel).width(18f).left().padLeft(2f);
 
@@ -180,7 +165,10 @@ public class BackpackDisplay extends UIComponent {
     slot.pad(8f);
     slot.setBackground(skin.getDrawable("button-c"));
 
-    Label slotLabel = new Label(slotNumber <= 8 ? Integer.toString(slotNumber) : "", skin);
+    InventoryComponent inventory = entity.getComponent(InventoryComponent.class);
+    Label slotLabel =
+        new Label(
+            slotNumber <= inventory.getHotbarSlotCount() ? Integer.toString(slotNumber) : "", skin);
 
     Label emptyLabel = new Label("EMPTY", skin);
 
