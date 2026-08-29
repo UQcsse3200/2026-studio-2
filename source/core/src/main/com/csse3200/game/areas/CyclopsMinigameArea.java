@@ -48,7 +48,7 @@ public class CyclopsMinigameArea extends GameArea {
     TimingBarLogic timingBarLogic = new TimingBarLogic(20f);
     TimingBarDisplay timingBarDisplay = new TimingBarDisplay(timingBarLogic);
     minigameLogicComponent =
-        new CyclopsMinigameLogicComponent(timingBarLogic, timingBarDisplay, player);
+        new CyclopsMinigameLogicComponent(timingBarLogic, timingBarDisplay);
 
     timingMinigameEntity = new Entity();
     timingMinigameEntity.addComponent(timingBarDisplay);
