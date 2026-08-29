@@ -95,8 +95,11 @@ public class EnemyFactory {
             .addComponent(new PhysicsMovementComponent())
             .addComponent(new ColliderComponent())
             .addComponent(new HitboxComponent().setLayer(PhysicsLayer.NPC))
-            .addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER, 1.5f))
             .addComponent(aiComponent);
+
+    if (!config.attackType.equals("range")) {
+      enemy.addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER, 1.5f));
+    }
 
     PhysicsUtils.setScaledCollider(enemy, 0.9f, 0.4f);
 

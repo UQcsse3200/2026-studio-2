@@ -51,14 +51,17 @@ public class RangedAttackTask extends DefaultTask implements PriorityTask {
   @Override
   public void start() {
     super.start();
+    System.out.println("RangedAttackTask STARTED");
     lastAttackTime = 0;
   }
 
   @Override
   public void update() {
+    System.out.println("RangedAttackTask UPDATE");
     long currentTime = ServiceLocator.getTimeSource().getTime();
 
     if (currentTime - lastAttackTime >= cooldown * 1000) {
+      System.out.println("Cooldown reached - firing");
       fireProjectile();
       lastAttackTime = currentTime;
     }
@@ -76,6 +79,7 @@ public class RangedAttackTask extends DefaultTask implements PriorityTask {
   }
 
   private void fireProjectile() {
+    System.out.println("Firing projectile");
     Entity enemy = owner.getEntity();
 
     Entity projectile =
