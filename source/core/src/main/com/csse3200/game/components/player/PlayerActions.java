@@ -9,10 +9,16 @@ import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.physics.raycast.RaycastHit;
 import com.csse3200.game.services.ServiceLocator;
 
+/**
+ * Action component for interacting with the player. Player events should be initialised in create()
+ * and when triggered should call methods within this class.
+ */
 public class PlayerActions extends Component {
   private static final float JUMP_FORCE = 5f;
-  private static final Vector2 MAX_SPEED = new Vector2(3f, 3f); // Metres per second
+  private static final Vector2 MAX_SPEED = new Vector2(5f, 5f); // Metres per second
   private static final float SPRINT_MULTIPLIER = 1.75f;
+  private static final float ROPE_JUMP_MULTIPLIER = 0.7f;
+  private static final float AIR_CONTROL = 0.1f; // How much steering you get mid-air
 
   private PhysicsComponent physicsComponent;
   private GrappleComponent grapple;
@@ -21,10 +27,6 @@ public class PlayerActions extends Component {
   private boolean isGrounded = false;
   private boolean isSprinting = false;
 
-  /**
-   * Action component for interacting with the player. Player events should be initialised in
-   * create() and when triggered should call methods within this class.
-   */
   @Override
   public void create() {
     physicsComponent = entity.getComponent(PhysicsComponent.class);
@@ -40,13 +42,19 @@ public class PlayerActions extends Component {
   @Override
   public void update() {
     isGrounded = checkGrounded();
-    boolean grappling = grapple != null && grapple.isAttached();
-    if (moving && !grappling) {
-      updateSpeed();
-    } else if (moving) {
-      // don't override velocity while swinging or it kills the momentum
-      entity.getEvents().trigger("grappleSwing", walkDirection.x);
+    if (!moving) {
+      return;
     }
+    if (isGrappling()) {
+      // Walking is off while swinging, movement keys just add speed to the arc
+      entity.getEvents().trigger("grappleSwing", walkDirection.x);
+    } else {
+      updateSpeed();
+    }
+  }
+
+  private boolean isGrappling() {
+    return grapple != null && grapple.isAttached();
   }
 
   private void updateSpeed() {
@@ -54,11 +62,16 @@ public class PlayerActions extends Component {
     Vector2 velocity = body.getLinearVelocity();
     float speedMultiplier = isSprinting ? SPRINT_MULTIPLIER : 1f;
     float desiredVelocityX = walkDirection.x * MAX_SPEED.x * speedMultiplier;
-    float impulseX = (desiredVelocityX - velocity.x) * body.getMass();
+
+    // Full control on the ground, weak in the air so swing momentum isn't wiped on landing
+    float control = isGrounded ? 1f : AIR_CONTROL;
+
+    // impulse = (desiredVel - currentVel) * mass
+    float impulseX = (desiredVelocityX - velocity.x) * body.getMass() * control;
     body.applyLinearImpulse(new Vector2(impulseX, 0), body.getWorldCenter(), true);
   }
 
-  /** Short ray down to see if we're standing on something. */
+  /** Short ray down from the player's feet to see if we're standing on something. */
   private boolean checkGrounded() {
     Vector2 position = entity.getCenterPosition();
     float halfHeight = entity.getScale().y / 2f;
@@ -66,8 +79,8 @@ public class PlayerActions extends Component {
     Vector2 rayEnd = rayStart.cpy().sub(0, 0.15f);
     RaycastHit hit = new RaycastHit();
     return ServiceLocator.getPhysicsService()
-        .getPhysics()
-        .raycast(rayStart, rayEnd, PhysicsLayer.GROUND, hit);
+            .getPhysics()
+            .raycast(rayStart, rayEnd, PhysicsLayer.GROUND, hit);
   }
 
   /**
@@ -83,21 +96,31 @@ public class PlayerActions extends Component {
   /** Stops the player from walking. */
   void stopWalking() {
     this.walkDirection = Vector2.Zero.cpy();
-    updateSpeed();
+    if (!isGrappling()) {
+      updateSpeed();
+    }
     moving = false;
   }
 
   /** Makes the player attack. */
   void attack() {
     Sound attackSound =
-        ServiceLocator.getResourceService().getAsset("sounds/Impact4.ogg", Sound.class);
+            ServiceLocator.getResourceService().getAsset("sounds/Impact4.ogg", Sound.class);
     attackSound.play();
   }
 
-  /** makes the player jump, but only if we're on the ground. */
+  /** Jump off the ground, or let go of the rope with a kick upward. */
   void jump() {
+    Body body = physicsComponent.getBody();
+
+    if (isGrappling()) {
+      grapple.release();
+      body.applyLinearImpulse(
+              new Vector2(0, JUMP_FORCE * ROPE_JUMP_MULTIPLIER), body.getWorldCenter(), true);
+      return;
+    }
+
     if (isGrounded) {
-      Body body = physicsComponent.getBody();
       body.applyLinearImpulse(new Vector2(0, JUMP_FORCE), body.getWorldCenter(), true);
       isGrounded = false;
     }
@@ -105,11 +128,15 @@ public class PlayerActions extends Component {
 
   void sprint() {
     this.isSprinting = true;
-    updateSpeed();
+    if (!isGrappling()) {
+      updateSpeed();
+    }
   }
 
   void stopSprinting() {
     this.isSprinting = false;
-    updateSpeed();
+    if (!isGrappling()) {
+      updateSpeed();
+    }
   }
 }

@@ -2,27 +2,25 @@ package com.csse3200.game.components.player;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
-import com.badlogic.gdx.physics.box2d.joints.RopeJoint;
-import com.badlogic.gdx.physics.box2d.joints.RopeJointDef;
+import com.badlogic.gdx.physics.box2d.joints.DistanceJoint;
+import com.badlogic.gdx.physics.box2d.joints.DistanceJointDef;
 import com.csse3200.game.components.Component;
 import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.physics.raycast.RaycastHit;
 import com.csse3200.game.services.ServiceLocator;
 
-/** Player fires a rope */
+/** Player fires a rope and swings from it like a pendulum. */
 public class GrappleComponent extends Component {
   private static final float MAX_RANGE = 8f;
-  private static final float BASE_SWING_FORCE = 30f;
-  private static final float SWING_SCALE = 20f;
+  private static final float SWING_FORCE = 5f;
+  private static final float MAX_SWING_SPEED = 7f;
+  private static final float SWING_DAMPING = 0.5f;
   private static final short TARGETS = (short) (PhysicsLayer.OBSTACLE | PhysicsLayer.GROUND);
 
   private PhysicsComponent physicsComponent;
-  private RopeJoint ropeJoint;
+  private DistanceJoint ropeJoint;
   private Vector2 anchorPoint;
-  private Vector2 shotFrom;
-  private float velocityX;
-  private float velocityY;
 
   @Override
   public void create() {
@@ -53,42 +51,64 @@ public class GrappleComponent extends Component {
     Body playerBody = physicsComponent.getBody();
     Body anchorBody = hit.fixture.getBody();
 
-    RopeJointDef def = new RopeJointDef();
+    DistanceJointDef def = new DistanceJointDef();
     def.bodyA = anchorBody;
     def.bodyB = playerBody;
 
     // Convert world anchor coordinates to the anchor body's local space
     def.localAnchorA.set(anchorBody.getLocalPoint(anchorPoint));
-    def.localAnchorB.set(playerBody.getLocalPoint(start));
 
-    // Set max rope length to the current straight-line distance to the wall
-    def.maxLength = start.dst(anchorPoint);
+    // Pivot from the player's centre of mass so the pendulum hangs evenly
+    def.localAnchorB.set(playerBody.getLocalCenter());
+
+    // Fixed length keeps the player on the arc so momentum carries to the other side
+    def.length = start.dst(anchorPoint);
+    def.frequencyHz = 0f; // 0 = rigid rod, raise for a springier rope
+    def.dampingRatio = 0f;
     def.collideConnected = true;
+
     ropeJoint =
-        (RopeJoint) ServiceLocator.getPhysicsService().getPhysics().getWorld().createJoint(def);
+            (DistanceJoint) ServiceLocator.getPhysicsService().getPhysics().getWorld().createJoint(def);
+
+    // Stop the player spinning, and bleed the swing off over time
+    playerBody.setFixedRotation(true);
+    playerBody.setLinearDamping(SWING_DAMPING);
   }
 
-  /** Detaches the rope, restoring free movement. */
+  /** Detaches the rope, restoring free movement. Momentum carries over. */
   void release() {
     if (!isAttached()) return;
 
     ServiceLocator.getPhysicsService().getPhysics().getWorld().destroyJoint(ropeJoint);
     ropeJoint = null;
     anchorPoint = null;
+
+    physicsComponent.getBody().setLinearDamping(0f);
   }
 
-  /** Applies horizontal swing force while anchored. */
+  /**
+   * Pushes along the swing arc while anchored, so holding a direction builds speed.
+   *
+   * @param direction -1 for left, +1 for right, 0 for no input
+   */
   void swing(float direction) {
-    if (!isAttached()) return;
-
-    float offsetX = entity.getCenterPosition().x - anchorPoint.x;
-    float ropeLength = ropeJoint.getMaxLength();
-
-    float swingRatio = Math.min(1f, Math.abs(offsetX) / ropeLength);
-    float force = BASE_SWING_FORCE + (SWING_SCALE * swingRatio);
+    // No input means let the pendulum swing freely, otherwise it drifts to one side
+    if (!isAttached() || direction == 0f) return;
 
     Body body = physicsComponent.getBody();
-    body.applyForceToCenter(direction * force * body.getMass(), 0, true);
+
+    // Cap the speed so you can't pump forever
+    if (body.getLinearVelocity().len() > MAX_SWING_SPEED) {
+      return;
+    }
+
+    // Vector from the anchor out to the player
+    Vector2 r = entity.getCenterPosition().sub(anchorPoint);
+
+    // Rotate 90 degrees one way or the other depending on which key is held
+    Vector2 tangent = direction > 0 ? new Vector2(-r.y, r.x).nor() : new Vector2(r.y, -r.x).nor();
+
+    body.applyForceToCenter(tangent.scl(SWING_FORCE * body.getMass()), true);
   }
 
   public boolean isAttached() {
