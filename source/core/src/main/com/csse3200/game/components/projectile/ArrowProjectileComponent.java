@@ -96,6 +96,9 @@ public class ArrowProjectileComponent extends Component {
     CombatStatsComponent targetStats = target.getComponent(CombatStatsComponent.class);
     if (targetStats != null) {
       targetStats.hit(combatStats);
+      if (targetStats.isDead()) {
+        ServiceLocator.getEntityService().scheduleRemoval(target);
+      }
     }
   }
 

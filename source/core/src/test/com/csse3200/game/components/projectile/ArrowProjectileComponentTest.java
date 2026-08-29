@@ -3,6 +3,8 @@ package com.csse3200.game.components.projectile;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Fixture;
@@ -54,6 +56,23 @@ class ArrowProjectileComponentTest {
 
     assertEquals(10, target.getComponent(CombatStatsComponent.class).getHealth());
     assertTrue(projectile.isSpent());
+  }
+
+  @Test
+  void shouldRemoveNpcWhenDamageReducesHealthToZero() {
+    Entity arrow = createArrow(Vector2.X, 10f, 15f);
+    Entity target = createTarget(PhysicsLayer.NPC, true, 10);
+
+    arrow
+        .getEvents()
+        .trigger(
+            "collisionStart",
+            arrow.getComponent(HitboxComponent.class).getFixture(),
+            target.getComponent(HitboxComponent.class).getFixture());
+    entityService.update();
+
+    assertTrue(target.getComponent(CombatStatsComponent.class).isDead());
+    verify(target).dispose();
   }
 
   @Test
@@ -113,12 +132,14 @@ class ArrowProjectileComponentTest {
   }
 
   private Entity createTarget(short layer, boolean hasCombatStats) {
-    Entity target =
-        new Entity()
-            .addComponent(new PhysicsComponent())
-            .addComponent(new HitboxComponent().setLayer(layer));
+    return createTarget(layer, hasCombatStats, 20);
+  }
+
+  private Entity createTarget(short layer, boolean hasCombatStats, int health) {
+    Entity target = spy(new Entity());
+    target.addComponent(new PhysicsComponent()).addComponent(new HitboxComponent().setLayer(layer));
     if (hasCombatStats) {
-      target.addComponent(new CombatStatsComponent(20, 0));
+      target.addComponent(new CombatStatsComponent(health, 0));
     }
     entityService.register(target);
     return target;

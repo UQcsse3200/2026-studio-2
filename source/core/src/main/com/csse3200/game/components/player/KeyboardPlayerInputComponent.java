@@ -66,7 +66,7 @@ public class KeyboardPlayerInputComponent extends InputComponent {
         if (!attackHeld) {
           Vector2 aimDirection = getMouseAimDirection();
           if (aimDirection != null && !aimDirection.isZero()) {
-            entity.getEvents().trigger("fireArrow", aimDirection);
+            entity.getEvents().trigger("primaryAttack", aimDirection);
           }
           attackHeld = true;
         }
