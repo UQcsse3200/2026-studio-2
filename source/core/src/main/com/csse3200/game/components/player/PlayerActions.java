@@ -1,6 +1,5 @@
 package com.csse3200.game.components.player;
 
-import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.csse3200.game.components.Component;
@@ -33,7 +32,6 @@ public class PlayerActions extends Component {
     grapple = entity.getComponent(GrappleComponent.class);
     entity.getEvents().addListener("walk", this::walk);
     entity.getEvents().addListener("walkStop", this::stopWalking);
-    entity.getEvents().addListener("attack", this::attack);
     entity.getEvents().addListener("jump", this::jump);
     entity.getEvents().addListener("sprint", this::sprint);
     entity.getEvents().addListener("sprintStop", this::stopSprinting);
@@ -100,13 +98,6 @@ public class PlayerActions extends Component {
       updateSpeed();
     }
     moving = false;
-  }
-
-  /** Makes the player attack. */
-  void attack() {
-    Sound attackSound =
-        ServiceLocator.getResourceService().getAsset("sounds/Impact4.ogg", Sound.class);
-    attackSound.play();
   }
 
   /** Jump off the ground, or let go of the rope with a kick upward. */
