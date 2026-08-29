@@ -25,18 +25,20 @@ public class CyclopsMinigameLogicComponent extends Component {
 
   private boolean timingBarGameActive = false;
   private boolean pillarTransitioning = false;
+  private boolean readyToMovePlayer = false;
 
   /* Player */
   private Entity player;
-  private GridPoint2 startingLocation;
 
   /* Map Info */
   private TerrainComponent terrain;
   private final GridPoint2 MAPSIZE;
+  private static final int Y = 3;
+  private GridPoint2 endingLocation;
   private ArrayList<GridPoint2> pillarLocations;
+  private ArrayList<GridPoint2> lossLocations;
   private int numOfPillars = 3;
   private int currentPillar = 0;
-  private static final int Y = 3;
 
   /**
    * Creates the game logic for the Cyclops minigame.
@@ -54,12 +56,14 @@ public class CyclopsMinigameLogicComponent extends Component {
     this.player = player;
 
     this.MAPSIZE = terrain.getMapBounds(terrain.getLayer());
+    endingLocation = new GridPoint2(MAPSIZE.x - 1, Y);
     setupPillarLocations();
   }
 
   private void setupPillarLocations() {
     logger.info("Setting up pillar locations");
     this.pillarLocations = new ArrayList<>();
+    this.lossLocations = new ArrayList<>();
 
     logger.info("Pillars used = {}", numOfPillars);
 
@@ -68,6 +72,10 @@ public class CyclopsMinigameLogicComponent extends Component {
       GridPoint2 pillar = new GridPoint2(x, Y);
       pillarLocations.add(pillar);
       logger.info("Pillar {} X world-location set to {}", i, pillar);
+
+      int lossX = ((MAPSIZE.x / (numOfPillars)) * i);
+      GridPoint2 loss = new GridPoint2(lossX, Y);
+      lossLocations.add(loss);
     }
 
     logger.info("Pillar locations setup");
@@ -76,10 +84,17 @@ public class CyclopsMinigameLogicComponent extends Component {
   private boolean moveToNextPillar() {
     currentPillar += 1;
 
-    if (currentPillar >= numOfPillars) return false;
+    if (currentPillar >= numOfPillars) {
+      player.setPosition(terrain.tileToWorldPosition(endingLocation));
+      return false;
+    }
 
     player.setPosition(terrain.tileToWorldPosition(pillarLocations.get(currentPillar)));
     return true;
+  }
+
+  private void moveToNextLossLocation() {
+    player.setPosition(terrain.tileToWorldPosition(lossLocations.get(currentPillar)));
   }
 
   private void toggleTimingBarGame() {
@@ -90,6 +105,9 @@ public class CyclopsMinigameLogicComponent extends Component {
             logic.startMarker();
             timingBarDisplay.setVisible(!timingBarDisplay.isVisible());
             timingBarGameActive = !timingBarGameActive;
+
+            // temporary VV
+            if (!timingBarGameActive) readyToMovePlayer = true;
           }
         },
         timingBarDelay);
@@ -98,6 +116,8 @@ public class CyclopsMinigameLogicComponent extends Component {
   @Override
   public void update() {
     if (running) {
+
+      checkDevInputs();
 
       if (timingBarGameActive) {
         if (logic != null && !logic.isStopped) {
@@ -109,10 +129,22 @@ public class CyclopsMinigameLogicComponent extends Component {
           logic.stopMarker();
           toggleTimingBarGame();
         }
+      } else if (readyToMovePlayer) {
+        // Assuming player was successful in minigame
+        readyToMovePlayer = false;
+        if (logic.checkHit()) {
+          if (!moveToNextPillar()) {
+            running = false;
+            logger.info("Player won minigame");
+          }
+        } else {
+          running = false;
+          logger.info("Player lost minigame");
+          moveToNextLossLocation();
+          return;
+        }
+        toggleTimingBarGame();
       }
-
-      // check if player has reached end of game
-      checkDevInputs();
     }
   }
 
@@ -131,9 +163,7 @@ public class CyclopsMinigameLogicComponent extends Component {
 
   public void startMinigame() {
     logger.info("starting timing bar minigame");
-
-    startingLocation = pillarLocations.getFirst();
-    player.setPosition(terrain.tileToWorldPosition(startingLocation));
+    player.setPosition(terrain.tileToWorldPosition(pillarLocations.getFirst()));
 
     this.running = true;
     toggleTimingBarGame();
