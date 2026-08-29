@@ -24,7 +24,7 @@ public class CyclopsMinigameArea extends GameArea {
   private CyclopsMinigameLogicComponent minigameLogicComponent;
 
   private Entity player;
-  private GridPoint2 startPosition = new GridPoint2(1, 1);
+  private GridPoint2 startPosition = new GridPoint2(-10, -10);
 
   public CyclopsMinigameArea(TerrainFactory terrainFactory) {
     super();
@@ -48,7 +48,7 @@ public class CyclopsMinigameArea extends GameArea {
     TimingBarLogic timingBarLogic = new TimingBarLogic(20f);
     TimingBarDisplay timingBarDisplay = new TimingBarDisplay(timingBarLogic);
     minigameLogicComponent =
-        new CyclopsMinigameLogicComponent(timingBarLogic, timingBarDisplay);
+        new CyclopsMinigameLogicComponent(timingBarLogic, timingBarDisplay, terrain, player);
 
     timingMinigameEntity = new Entity();
     timingMinigameEntity.addComponent(timingBarDisplay);
