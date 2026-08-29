@@ -79,8 +79,8 @@ public class PlayerActions extends Component {
     Vector2 rayEnd = rayStart.cpy().sub(0, 0.15f);
     RaycastHit hit = new RaycastHit();
     return ServiceLocator.getPhysicsService()
-            .getPhysics()
-            .raycast(rayStart, rayEnd, PhysicsLayer.GROUND, hit);
+        .getPhysics()
+        .raycast(rayStart, rayEnd, PhysicsLayer.GROUND, hit);
   }
 
   /**
@@ -105,7 +105,7 @@ public class PlayerActions extends Component {
   /** Makes the player attack. */
   void attack() {
     Sound attackSound =
-            ServiceLocator.getResourceService().getAsset("sounds/Impact4.ogg", Sound.class);
+        ServiceLocator.getResourceService().getAsset("sounds/Impact4.ogg", Sound.class);
     attackSound.play();
   }
 
@@ -116,7 +116,7 @@ public class PlayerActions extends Component {
     if (isGrappling()) {
       grapple.release();
       body.applyLinearImpulse(
-              new Vector2(0, JUMP_FORCE * ROPE_JUMP_MULTIPLIER), body.getWorldCenter(), true);
+          new Vector2(0, JUMP_FORCE * ROPE_JUMP_MULTIPLIER), body.getWorldCenter(), true);
       return;
     }
 
