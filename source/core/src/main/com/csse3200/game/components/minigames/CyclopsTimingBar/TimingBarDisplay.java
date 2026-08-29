@@ -6,9 +6,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Group;
-import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.UIComponent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,10 +14,10 @@ import org.slf4j.LoggerFactory;
 public class TimingBarDisplay extends UIComponent {
   private static final Logger logger = LoggerFactory.getLogger(TimingBarDisplay.class);
 
-  private static float SCREEN_X;
-  private static float SCREEN_Y;
-  private static final float BAR_WIDTH = 500f;
-  private static final float BAR_HEIGHT = 30f;
+  private float SCREEN_X;
+  private float SCREEN_Y;
+  private final float BAR_WIDTH = 400f;
+  private final float BAR_HEIGHT = 25f;
 
   private float location_x;
   private float location_y;
@@ -33,16 +31,18 @@ public class TimingBarDisplay extends UIComponent {
   private Image scoreZone;
   private Image marker;
 
-  private boolean visible = true;
+  private boolean visible = false;
 
   public TimingBarDisplay(TimingBarLogic logic) {
     this.logic = logic;
-    setupComponentSizes();
+  }
+
+  public float getScreenWidth() {
+    return this.SCREEN_X;
   }
 
   private void setupComponentSizes() {
     logger.info("Retrieving window size");
-    Stage stage = ServiceLocator.getRenderService().getStage();
     logger.info("Stage dimensions: ({}, {})", stage.getWidth(), stage.getHeight());
     SCREEN_X = stage.getWidth();
     SCREEN_Y = stage.getHeight();
@@ -66,6 +66,7 @@ public class TimingBarDisplay extends UIComponent {
   @Override
   public void create() {
     super.create();
+    setupComponentSizes();
 
     // For now create a 1x1 texture (until assets are used maybe)
     Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
@@ -97,9 +98,9 @@ public class TimingBarDisplay extends UIComponent {
     logger.info("loading timing bar marker");
     marker = new Image(blankRegion);
     marker.setColor(Color.RED);
-    marker.setSize(10f, BAR_HEIGHT + 8f);
+    marker.setSize(10f, BAR_HEIGHT);
     marker.setPosition(
-        location_x + (logic.markerX * BAR_WIDTH) - marker.getWidth() / 2, location_y - 4f);
+        location_x + (logic.markerX * BAR_WIDTH) - marker.getWidth() / 2, location_y);
     group.addActor(marker);
 
     group.setVisible(visible);

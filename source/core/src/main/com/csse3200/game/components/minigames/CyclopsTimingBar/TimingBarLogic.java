@@ -21,7 +21,7 @@ public class TimingBarLogic {
   public float greenStart;
   public float greenEnd;
 
-  public boolean isStopped = false;
+  public boolean isStopped = true;
 
   /**
    * Scoring area width is designed to be a float as a percentage (e.g 0-100)
