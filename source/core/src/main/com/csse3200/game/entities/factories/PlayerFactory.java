@@ -53,6 +53,18 @@ public class PlayerFactory {
     return player;
   }
 
+  /**
+   * Create a player display entity.
+   *
+   * @return entity
+   */
+  public static Entity createPlayerDisplay() {
+    Entity player = new Entity()
+            .addComponent(new TextureRenderComponent("images/box_boy_leaf.png"));
+    player.getComponent(TextureRenderComponent.class).scaleEntity();
+    return player;
+  }
+
   private PlayerFactory() {
     throw new IllegalStateException("Instantiating static util class");
   }
