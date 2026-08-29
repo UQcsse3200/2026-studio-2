@@ -45,9 +45,7 @@ public class EnemyFactory {
     animator.addAnimation("angry_float", 0.1f, Animation.PlayMode.LOOP);
     animator.addAnimation("float", 0.1f, Animation.PlayMode.LOOP);
 
-    chaser
-        .addComponent(animator)
-        .addComponent(new GhostAnimationController());
+    chaser.addComponent(animator).addComponent(new GhostAnimationController());
 
     chaser.getComponent(AnimationRenderComponent.class).scaleEntity();
 
