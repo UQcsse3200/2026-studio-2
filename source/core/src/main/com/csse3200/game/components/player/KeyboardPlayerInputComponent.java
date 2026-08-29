@@ -11,6 +11,8 @@ import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.input.InputComponent;
 
+import java.util.TimeZone;
+
 /** Input handler for player keyboard and mouse controls. */
 public class KeyboardPlayerInputComponent extends InputComponent {
   private final Vector2 walkDirection = Vector2.Zero.cpy();
@@ -71,6 +73,8 @@ public class KeyboardPlayerInputComponent extends InputComponent {
           attackHeld = true;
         }
         return true;
+      case Keys.R:
+
       default:
         return false;
     }
@@ -102,6 +106,9 @@ public class KeyboardPlayerInputComponent extends InputComponent {
         return true;
       case Keys.E:
         attackHeld = false;
+        return true;
+      case Keys.R:
+        grappleHeld = false;
         return true;
       default:
         return false;
