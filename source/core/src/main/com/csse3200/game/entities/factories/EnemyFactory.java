@@ -26,16 +26,10 @@ public class EnemyFactory {
   private static final EnemyConfigs configs =
       FileLoader.readClass(EnemyConfigs.class, "configs/Enemies.json");
 
+
   // Test function for checking enemy behaviour
   public static Entity createChaser(Entity target) {
     EnemyConfig config = configs.chaser;
-    System.out.println("health = " + config.health);
-    System.out.println("baseAttack = " + config.baseAttack);
-    System.out.println("speed = " + config.speed);
-    System.out.println("wanderX = " + config.wanderRangeX);
-    System.out.println("priority = " + config.chasePriority);
-    System.out.println("view = " + config.viewDistance);
-
     Entity chaser = createEnemy(target, config);
 
     AnimationRenderComponent animator =
@@ -58,9 +52,11 @@ public class EnemyFactory {
     AITaskComponent aiComponent =
         new AITaskComponent()
             .addTask(
+                // Adding the values for wander task from the enemy's config file
                 new WanderTask(
                     new Vector2(config.wanderRangeX, config.wanderRangeY), config.wanderWaitTime))
             .addTask(
+                // Adding the values for chase task from the enemy's config file
                 new ChaseTask(
                     target, config.chasePriority, config.viewDistance, config.maxChaseDistance));
 
