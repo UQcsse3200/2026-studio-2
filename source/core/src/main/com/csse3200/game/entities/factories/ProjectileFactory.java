@@ -26,8 +26,7 @@ public class ProjectileFactory {
   public static Entity createEnemyProjectile(
       Vector2 targetPosition, int damage, float speed, float lifetime) {
 
-    PhysicsMovementComponent movement =
-        new PhysicsMovementComponent(new Vector2(speed, speed));
+    PhysicsMovementComponent movement = new PhysicsMovementComponent(new Vector2(speed, speed));
     movement.setTarget(targetPosition);
 
     Entity projectile =

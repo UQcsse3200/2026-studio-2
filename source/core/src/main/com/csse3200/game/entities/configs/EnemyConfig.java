@@ -13,5 +13,4 @@ public class EnemyConfig extends BaseEntityConfig {
   public int chasePriority;
   public float viewDistance;
   public float maxChaseDistance;
-
 }

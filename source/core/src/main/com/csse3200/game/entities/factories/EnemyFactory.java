@@ -8,9 +8,8 @@ import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.TouchAttackComponent;
 import com.csse3200.game.components.npc.GhostAnimationController;
 import com.csse3200.game.components.tasks.ChaseTask;
-import com.csse3200.game.components.tasks.WanderTask;
 import com.csse3200.game.components.tasks.RangedAttackTask;
-import com.csse3200.game.components.ProjectileComponent;
+import com.csse3200.game.components.tasks.WanderTask;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.EnemyConfig;
 import com.csse3200.game.entities.configs.EnemyConfigs;
@@ -24,11 +23,9 @@ import com.csse3200.game.physics.components.PhysicsMovementComponent;
 import com.csse3200.game.rendering.AnimationRenderComponent;
 import com.csse3200.game.services.ServiceLocator;
 
-
 public class EnemyFactory {
   private static final EnemyConfigs configs =
       FileLoader.readClass(EnemyConfigs.class, "configs/Enemies.json");
-
 
   // Test function for checking enemy behaviour
   public static Entity createChaser(Entity target) {
@@ -57,15 +54,15 @@ public class EnemyFactory {
     Entity shooter = createEnemy(target, config);
 
     AnimationRenderComponent animator =
-            new AnimationRenderComponent(
-                    ServiceLocator.getResourceService().getAsset("images/ghost.atlas", TextureAtlas.class));
+        new AnimationRenderComponent(
+            ServiceLocator.getResourceService().getAsset("images/ghost.atlas", TextureAtlas.class));
     animator.addAnimation("angry_float", 0.1f, Animation.PlayMode.LOOP);
     animator.addAnimation("float", 0.1f, Animation.PlayMode.LOOP);
 
     shooter
-            .addComponent(new CombatStatsComponent(config.health, config.baseAttack))
-            .addComponent(animator)
-            .addComponent(new GhostAnimationController());
+        .addComponent(new CombatStatsComponent(config.health, config.baseAttack))
+        .addComponent(animator)
+        .addComponent(new GhostAnimationController());
 
     shooter.getComponent(AnimationRenderComponent.class).scaleEntity();
 
@@ -86,7 +83,8 @@ public class EnemyFactory {
 
     // If the enemy is a range type, add a range task.
     if (config.attackType.equals("range")) {
-      aiComponent.addTask(new RangedAttackTask(target, 20, config.attackRange, 2f, config.baseAttack, 5f, 5f));
+      aiComponent.addTask(
+          new RangedAttackTask(target, 20, config.attackRange, 2f, config.baseAttack, 5f, 5f));
     }
 
     Entity enemy =
