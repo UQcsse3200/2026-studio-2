@@ -31,6 +31,12 @@ public class MinigameSelectActions extends Component {
    * @param minigame the minigame the player selected
    */
   private void onSelectMinigame(MinigameType minigame) {
+    switch (minigame) {
+      case CYCLOPS_TIMING:
+        game.setScreen(GdxGame.ScreenType.CYCLOPS_MINIGAME);
+        logger.info("Selected minigame {} loading...", minigame);
+        return;
+    }
     logger.info("Selected minigame {}, not yet implemented", minigame);
   }
 
