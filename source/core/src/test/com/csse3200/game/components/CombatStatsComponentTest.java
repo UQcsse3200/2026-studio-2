@@ -6,9 +6,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import com.csse3200.game.entities.Entity;
 import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.services.GameTime;
 import com.csse3200.game.services.ServiceLocator;
+import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -73,5 +75,19 @@ class CombatStatsComponentTest {
 
     target.hit(attacker);
     assertEquals(80, target.getHealth());
+  }
+
+  @Test
+  void shouldTriggerDeathWhenHealthReachesZero() {
+    CombatStatsComponent combat = new CombatStatsComponent(10, 0);
+    Entity entity = new Entity().addComponent(combat);
+    AtomicInteger deaths = new AtomicInteger();
+    entity.getEvents().addListener("death", deaths::incrementAndGet);
+    entity.create();
+
+    combat.setHealth(0);
+    combat.setHealth(0);
+
+    assertEquals(1, deaths.get());
   }
 }
