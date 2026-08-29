@@ -72,7 +72,7 @@ public class CyclopsMinigameArea extends GameArea {
 
   private Entity spawnPlayer() {
     Entity newPlayer = PlayerFactory.createPlayerDisplay();
-    spawnEntityAt(newPlayer, new GridPoint2(10, 10), true, true);
+    spawnEntityAt(newPlayer, startPosition, true, true);
     return newPlayer;
   }
 
