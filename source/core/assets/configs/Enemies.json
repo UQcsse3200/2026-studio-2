@@ -29,5 +29,21 @@
     "chasePriority": 10,
     "viewDistance": 20.0,
     "maxChaseDistance": 20.0
+  },
+
+  "shooter": {
+    "health": 50,
+    "baseAttack": 5,
+    "speed": 3.0,
+    "behaviour": "chase",
+    "attackType": "range",
+    "attackRange": 1.5,
+
+    "wanderRangeX": 4.0,
+    "wanderRangeY": 0.0,
+    "wanderWaitTime": 2.0,
+    "chasePriority": 10,
+    "viewDistance": 20.0,
+    "maxChaseDistance": 20.0
   }
 }

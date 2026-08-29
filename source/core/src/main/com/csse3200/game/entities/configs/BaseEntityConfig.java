@@ -9,11 +9,4 @@ public class BaseEntityConfig {
   public int baseAttack = 0;
   public int baseSpeed = 3;
 
-  // Values for the entity's behaviour
-  public float wanderRangeX;
-  public float wanderRangeY;
-  public float wanderWaitTime;
-  public int chasePriority;
-  public float viewDistance;
-  public float maxChaseDistance;
 }

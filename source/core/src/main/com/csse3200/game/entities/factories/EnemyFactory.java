@@ -9,6 +9,8 @@ import com.csse3200.game.components.TouchAttackComponent;
 import com.csse3200.game.components.npc.GhostAnimationController;
 import com.csse3200.game.components.tasks.ChaseTask;
 import com.csse3200.game.components.tasks.WanderTask;
+import com.csse3200.game.components.tasks.RangedAttackTask;
+import com.csse3200.game.components.ProjectileComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.EnemyConfig;
 import com.csse3200.game.entities.configs.EnemyConfigs;
@@ -21,6 +23,7 @@ import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.physics.components.PhysicsMovementComponent;
 import com.csse3200.game.rendering.AnimationRenderComponent;
 import com.csse3200.game.services.ServiceLocator;
+
 
 public class EnemyFactory {
   private static final EnemyConfigs configs =
@@ -48,6 +51,27 @@ public class EnemyFactory {
     return chaser;
   }
 
+  // Test function for checking enemy behaviour that shoots
+  public static Entity createShooter(Entity target) {
+    EnemyConfig config = configs.shooter;
+    Entity shooter = createEnemy(target, config);
+
+    AnimationRenderComponent animator =
+            new AnimationRenderComponent(
+                    ServiceLocator.getResourceService().getAsset("images/ghost.atlas", TextureAtlas.class));
+    animator.addAnimation("angry_float", 0.1f, Animation.PlayMode.LOOP);
+    animator.addAnimation("float", 0.1f, Animation.PlayMode.LOOP);
+
+    shooter
+            .addComponent(new CombatStatsComponent(config.health, config.baseAttack))
+            .addComponent(animator)
+            .addComponent(new GhostAnimationController());
+
+    shooter.getComponent(AnimationRenderComponent.class).scaleEntity();
+
+    return shooter;
+  }
+
   public static Entity createEnemy(Entity target, EnemyConfig config) {
     AITaskComponent aiComponent =
         new AITaskComponent()
@@ -59,6 +83,11 @@ public class EnemyFactory {
                 // Adding the values for chase task from the enemy's config file
                 new ChaseTask(
                     target, config.chasePriority, config.viewDistance, config.maxChaseDistance));
+
+    // If the enemy is a range type, add a range task.
+    if (config.attackType.equals("range")) {
+      aiComponent.addTask(new RangedAttackTask(target, 20, config.attackRange, 2f, config.baseAttack, 5f, 5f));
+    }
 
     Entity enemy =
         new Entity()
