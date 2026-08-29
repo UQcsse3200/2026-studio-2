@@ -59,8 +59,8 @@ public class PlayerFactory {
    * @return entity
    */
   public static Entity createPlayerDisplay() {
-    Entity player = new Entity()
-            .addComponent(new TextureRenderComponent("images/box_boy_leaf.png"));
+    Entity player =
+        new Entity().addComponent(new TextureRenderComponent("images/box_boy_leaf.png"));
     player.getComponent(TextureRenderComponent.class).scaleEntity();
     return player;
   }
