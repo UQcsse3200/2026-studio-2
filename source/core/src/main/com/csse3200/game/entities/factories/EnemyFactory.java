@@ -95,6 +95,7 @@ public class EnemyFactory {
             .addComponent(new HitboxComponent().setLayer(PhysicsLayer.NPC))
             .addComponent(aiComponent);
 
+    // If attack type is not range
     if (!config.attackType.equals("range")) {
       enemy.addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER, 1.5f));
     }
