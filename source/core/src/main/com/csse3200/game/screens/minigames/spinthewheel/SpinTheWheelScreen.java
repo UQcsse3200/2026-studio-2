@@ -14,6 +14,11 @@ import java.util.List;
 /** The screen for the spin the wheel minigame. */
 public class SpinTheWheelScreen extends MinigameScreen {
   private static final List<WheelItem> items = createItems();
+  private static final String[] TEXTURES = {
+  "images/minigames/spinthewheel/wheel-disc.png",
+  "images/minigames/spinthewheel/wheel-spoke.png",
+  "images/minigames/spinthewheel/wheel-pointer.png",
+};
 
   public SpinTheWheelScreen(GdxGame game) {
     super(game);
@@ -34,7 +39,7 @@ public class SpinTheWheelScreen extends MinigameScreen {
 
   @Override
   protected String[] getTextures() {
-    return new String[0];
+    return TEXTURES;
   }
 
   @Override
