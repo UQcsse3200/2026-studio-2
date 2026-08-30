@@ -6,73 +6,153 @@ import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.services.ServiceLocator;
 
-/** Render a parallax background texture. */
+import java.util.ArrayList;
+import java.util.List;
+
+/** Render multiple layers of a parallax background. */
 public class BackgroundRenderComponent extends RenderComponent {
 
-  private final Texture texture;
-  private final CameraComponent camera;
-  private final float parallaxFactor;
+    /** A single parallax background layer. */
+    private static class ParallaxLayer {
+        private final Texture texture;
+        private final float parallaxFactor;
+        private final float width;
+        private final float height;
+        private final float yOffset;
 
-  /**
-   * Creates a parallax background from a texture path.
-   *
-   * @param texturePath internal path of the background texture
-   * @param camera camera used to calculate parallax movement
-   * @param parallaxFactor controls the background movement speed
-   */
-  public BackgroundRenderComponent(
-      String texturePath, CameraComponent camera, float parallaxFactor) {
+        ParallaxLayer(
+                Texture texture,
+                float parallaxFactor,
+                float width,
+                float height,
+                float yOffset) {
 
-    this(
-        ServiceLocator.getResourceService().getAsset(texturePath, Texture.class),
-        camera,
-        parallaxFactor);
-  }
+            this.texture = texture;
+            this.parallaxFactor = parallaxFactor;
+            this.width = width;
+            this.height = height;
+            this.yOffset = yOffset;
+        }
+    }
 
-  /**
-   * Creates a parallax background from a texture.
-   *
-   * @param texture background texture
-   * @param camera camera used to calculate parallax movement
-   * @param parallaxFactor controls the background movement speed
-   */
-  public BackgroundRenderComponent(Texture texture, CameraComponent camera, float parallaxFactor) {
+    private final List<ParallaxLayer> layers = new ArrayList<>();
+    private final CameraComponent camera;
 
-    this.texture = texture;
-    this.camera = camera;
-    this.parallaxFactor = parallaxFactor;
-  }
+    /**
+     * Creates a multi-layer parallax background.
+     *
+     * @param camera camera used to calculate parallax movement
+     */
+    public BackgroundRenderComponent(CameraComponent camera) {
+        this.camera = camera;
+    }
 
-  /** Scale the entity to a width of 1 and matching texture ratio. */
-  public void scaleEntity() {
-    entity.setScale(1f, (float) texture.getHeight() / texture.getWidth());
-  }
+    /**
+     * Adds a parallax layer with a custom size and vertical position.
+     *
+     * @param texturePath internal path of the texture
+     * @param parallaxFactor controls how much the layer moves
+     * @param width width of the layer in world units
+     * @param height height of the layer in world units
+     * @param yOffset vertical position relative to the background entity
+     */
+    public void addLayer(
+            String texturePath,
+            float parallaxFactor,
+            float width,
+            float height,
+            float yOffset) {
 
-  @Override
-  protected void draw(SpriteBatch batch) {
+        Texture texture = ServiceLocator.getResourceService()
+                .getAsset(texturePath, Texture.class);
 
-    Vector2 position = entity.getPosition();
-    Vector2 scale = entity.getScale();
+        layers.add(
+                new ParallaxLayer(
+                        texture,
+                        parallaxFactor,
+                        width,
+                        height,
+                        yOffset
+                )
+        );
+    }
 
-    // Get the camera's current horizontal position.
-    float cameraX = camera.getCamera().position.x;
+    /**
+     * Adds a parallax layer using its texture dimensions.
+     *
+     * @param texture texture for the layer
+     * @param parallaxFactor controls how much the layer moves
+     * @param width width of the layer in world units
+     * @param height height of the layer in world units
+     * @param yOffset vertical position relative to the background entity
+     */
+    public void addLayer(
+            Texture texture,
+            float parallaxFactor,
+            float width,
+            float height,
+            float yOffset) {
 
-    // Move the background more slowly than the camera.
-    float backgroundX = position.x + cameraX * (1f - parallaxFactor);
+        layers.add(
+                new ParallaxLayer(
+                        texture,
+                        parallaxFactor,
+                        width,
+                        height,
+                        yOffset
+                )
+        );
+    }
 
-    // Keep the background vertically fixed.
-    float backgroundY = position.y;
+    /**
+     * Scale is controlled individually for each layer.
+     */
+    public void scaleEntity() {
+        // Layer sizes are defined when they are added.
+    }
 
-    batch.draw(texture, backgroundX, backgroundY, scale.x, scale.y);
-  }
+    @Override
+    protected void draw(SpriteBatch batch) {
 
-  @Override
-  public int getLayer() {
-    return 0;
-  }
+        if (layers.isEmpty()) {
+            return;
+        }
 
-  @Override
-  public float getZIndex() {
-    return -1f;
-  }
+        Vector2 position = entity.getPosition();
+
+        float cameraX = camera.getCamera().position.x;
+
+        /*
+         * Draw layers from back to front.
+         *
+         * Lower parallax factors move more slowly.
+         * Higher parallax factors move more quickly.
+         */
+        for (ParallaxLayer layer : layers) {
+
+            float backgroundX =
+                    position.x + cameraX * (1f - layer.parallaxFactor);
+
+            float backgroundY =
+                    position.y + layer.yOffset;
+
+            batch.draw(
+                    layer.texture,
+                    backgroundX,
+                    backgroundY,
+                    layer.width,
+                    layer.height
+            );
+        }
+    }
+
+    @Override
+    public int getLayer() {
+        return 0;
+    }
+
+    @Override
+    public float getZIndex() {
+        return -1f;
+    }
 }
