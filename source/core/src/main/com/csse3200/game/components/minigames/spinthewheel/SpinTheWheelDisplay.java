@@ -205,8 +205,7 @@ public class SpinTheWheelDisplay extends UIComponent {
   }
 
   @Override
-  public void draw(SpriteBatch batch) {
-  }
+  public void draw(SpriteBatch batch) {}
 
   @Override
   public float getZIndex() {
