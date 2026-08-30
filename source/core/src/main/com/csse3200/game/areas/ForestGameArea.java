@@ -44,7 +44,10 @@ public class ForestGameArea extends GameArea {
     "images/iso_grass_3.png"
   };
   private static final String[] forestTextureAtlases = {
-    "images/terrain_iso_grass.atlas", "images/ghost.atlas", "images/ghostKing.atlas"
+    "images/terrain_iso_grass.atlas",
+    "images/ghost.atlas",
+    "images/ghostKing.atlas",
+    "images/player.atlas"
   };
   private static final String[] forestSounds = {"sounds/Impact4.ogg"};
   private static final String backgroundMusic = "sounds/BGM_03_mp3.mp3";
@@ -165,7 +168,7 @@ public class ForestGameArea extends GameArea {
   private void playMusic() {
     Music music = ServiceLocator.getResourceService().getAsset(backgroundMusic, Music.class);
     music.setLooping(true);
-    music.setVolume(0.0f);
+    music.setVolume(1f);
     music.play();
   }
 

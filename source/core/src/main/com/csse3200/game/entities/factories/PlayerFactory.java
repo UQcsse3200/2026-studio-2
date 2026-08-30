@@ -1,5 +1,7 @@
 package com.csse3200.game.entities.factories;
 
+import com.badlogic.gdx.graphics.g2d.Animation.PlayMode;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.player.*;
 import com.csse3200.game.entities.Entity;
@@ -11,8 +13,8 @@ import com.csse3200.game.physics.PhysicsUtils;
 import com.csse3200.game.physics.components.ColliderComponent;
 import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.physics.components.PhysicsComponent;
+import com.csse3200.game.rendering.AnimationRenderComponent;
 import com.csse3200.game.rendering.GrappleRenderComponent;
-import com.csse3200.game.rendering.TextureRenderComponent;
 import com.csse3200.game.services.ServiceLocator;
 
 /**
@@ -34,9 +36,17 @@ public class PlayerFactory {
     InputComponent inputComponent =
         ServiceLocator.getInputService().getInputFactory().createForPlayer();
 
+    AnimationRenderComponent animator =
+        new AnimationRenderComponent(
+            ServiceLocator.getResourceService()
+                .getAsset("images/player.atlas", TextureAtlas.class));
+    animator.addAnimation("idle", 1f, PlayMode.LOOP);
+    animator.addAnimation("walk", 0.1f, PlayMode.LOOP);
+    animator.addAnimation("sprint", 0.1f, PlayMode.LOOP);
+
     Entity player =
         new Entity()
-            .addComponent(new TextureRenderComponent("images/box_boy_leaf.png"))
+            .addComponent(animator)
             .addComponent(new PhysicsComponent())
             .addComponent(new ColliderComponent())
             .addComponent(new HitboxComponent().setLayer(PhysicsLayer.PLAYER))
@@ -46,11 +56,12 @@ public class PlayerFactory {
             .addComponent(inputComponent)
             .addComponent(new PlayerStatsDisplay())
             .addComponent(new GrappleComponent())
-            .addComponent(new GrappleRenderComponent());
+            .addComponent(new GrappleRenderComponent())
+            .addComponent(new PlayerAnimationController());
 
     PhysicsUtils.setScaledCollider(player, 0.6f, 0.3f);
     player.getComponent(ColliderComponent.class).setDensity(1.5f);
-    player.getComponent(TextureRenderComponent.class).scaleEntity();
+    player.getComponent(AnimationRenderComponent.class).scaleEntity();
     return player;
   }
 

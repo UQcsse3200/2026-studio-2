@@ -1,0 +1,171 @@
+player_idle.png
+size: 256, 277
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+default
+  rotate: false
+  xy: 0, 0
+  size: 256, 277
+  orig: 256, 277
+  offset: 0, 0
+  index: 0
+idle
+  rotate: false
+  xy: 0, 0
+  size: 256, 277
+  orig: 256, 277
+  offset: 0, 0
+  index: 0
+
+player_walk.png
+size: 512, 256
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+walk
+  rotate: false
+  xy: 0, 0
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: 0
+walk
+  rotate: false
+  xy: 128, 0
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: 1
+walk
+  rotate: false
+  xy: 256, 0
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: 2
+walk
+  rotate: false
+  xy: 384, 0
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: 3
+walk
+  rotate: false
+  xy: 0, 128
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: 4
+walk
+  rotate: false
+  xy: 128, 128
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: 5
+walk
+  rotate: false
+  xy: 256, 128
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: 6
+walk
+  rotate: false
+  xy: 384, 128
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: 7
+
+player_run.png
+size: 512, 384
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+sprint
+  rotate: false
+  xy: 0, 0
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: 0
+sprint
+  rotate: false
+  xy: 128, 0
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: 1
+sprint
+  rotate: false
+  xy: 256, 0
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: 2
+sprint
+  rotate: false
+  xy: 384, 0
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: 3
+sprint
+  rotate: false
+  xy: 0, 128
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: 4
+sprint
+  rotate: false
+  xy: 128, 128
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: 5
+sprint
+  rotate: false
+  xy: 256, 128
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: 6
+sprint
+  rotate: false
+  xy: 384, 128
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: 7
+sprint
+  rotate: false
+  xy: 0, 256
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: 8
+sprint
+  rotate: false
+  xy: 128, 256
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: 9
+sprint
+  rotate: false
+  xy: 256, 256
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: 10
+sprint
+  rotate: false
+  xy: 384, 256
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: 11
