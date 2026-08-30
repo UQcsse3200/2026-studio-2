@@ -1,171 +1,171 @@
 player_idle.png
-size: 256, 277
+size: 256, 274
 format: RGBA8888
 filter: Nearest,Nearest
 repeat: none
 default
   rotate: false
   xy: 0, 0
-  size: 256, 277
-  orig: 256, 277
+  size: 256, 274
+  orig: 256, 274
   offset: 0, 0
   index: 0
 idle
   rotate: false
   xy: 0, 0
-  size: 256, 277
-  orig: 256, 277
+  size: 256, 274
+  orig: 256, 274
   offset: 0, 0
   index: 0
 
 player_walk.png
-size: 512, 256
+size: 200, 162
 format: RGBA8888
 filter: Nearest,Nearest
 repeat: none
 walk
   rotate: false
   xy: 0, 0
-  size: 128, 128
-  orig: 128, 128
+  size: 50, 81
+  orig: 50, 81
   offset: 0, 0
   index: 0
 walk
   rotate: false
-  xy: 128, 0
-  size: 128, 128
-  orig: 128, 128
+  xy: 50, 0
+  size: 50, 81
+  orig: 50, 81
   offset: 0, 0
   index: 1
 walk
   rotate: false
-  xy: 256, 0
-  size: 128, 128
-  orig: 128, 128
+  xy: 100, 0
+  size: 50, 81
+  orig: 50, 81
   offset: 0, 0
   index: 2
 walk
   rotate: false
-  xy: 384, 0
-  size: 128, 128
-  orig: 128, 128
+  xy: 150, 0
+  size: 50, 81
+  orig: 50, 81
   offset: 0, 0
   index: 3
 walk
   rotate: false
-  xy: 0, 128
-  size: 128, 128
-  orig: 128, 128
+  xy: 0, 81
+  size: 50, 81
+  orig: 50, 81
   offset: 0, 0
   index: 4
 walk
   rotate: false
-  xy: 128, 128
-  size: 128, 128
-  orig: 128, 128
+  xy: 50, 81
+  size: 50, 81
+  orig: 50, 81
   offset: 0, 0
   index: 5
 walk
   rotate: false
-  xy: 256, 128
-  size: 128, 128
-  orig: 128, 128
+  xy: 100, 81
+  size: 50, 81
+  orig: 50, 81
   offset: 0, 0
   index: 6
 walk
   rotate: false
-  xy: 384, 128
-  size: 128, 128
-  orig: 128, 128
+  xy: 150, 81
+  size: 50, 81
+  orig: 50, 81
   offset: 0, 0
   index: 7
 
 player_run.png
-size: 512, 384
+size: 300, 243
 format: RGBA8888
 filter: Nearest,Nearest
 repeat: none
 sprint
   rotate: false
   xy: 0, 0
-  size: 128, 128
-  orig: 128, 128
+  size: 75, 81
+  orig: 75, 81
   offset: 0, 0
   index: 0
 sprint
   rotate: false
-  xy: 128, 0
-  size: 128, 128
-  orig: 128, 128
+  xy: 75, 0
+  size: 75, 81
+  orig: 75, 81
   offset: 0, 0
   index: 1
 sprint
   rotate: false
-  xy: 256, 0
-  size: 128, 128
-  orig: 128, 128
+  xy: 150, 0
+  size: 75, 81
+  orig: 75, 81
   offset: 0, 0
   index: 2
 sprint
   rotate: false
-  xy: 384, 0
-  size: 128, 128
-  orig: 128, 128
+  xy: 225, 0
+  size: 75, 81
+  orig: 75, 81
   offset: 0, 0
   index: 3
 sprint
   rotate: false
-  xy: 0, 128
-  size: 128, 128
-  orig: 128, 128
+  xy: 0, 81
+  size: 75, 81
+  orig: 75, 81
   offset: 0, 0
   index: 4
 sprint
   rotate: false
-  xy: 128, 128
-  size: 128, 128
-  orig: 128, 128
+  xy: 75, 81
+  size: 75, 81
+  orig: 75, 81
   offset: 0, 0
   index: 5
 sprint
   rotate: false
-  xy: 256, 128
-  size: 128, 128
-  orig: 128, 128
+  xy: 150, 81
+  size: 75, 81
+  orig: 75, 81
   offset: 0, 0
   index: 6
 sprint
   rotate: false
-  xy: 384, 128
-  size: 128, 128
-  orig: 128, 128
+  xy: 225, 81
+  size: 75, 81
+  orig: 75, 81
   offset: 0, 0
   index: 7
 sprint
   rotate: false
-  xy: 0, 256
-  size: 128, 128
-  orig: 128, 128
+  xy: 0, 162
+  size: 75, 81
+  orig: 75, 81
   offset: 0, 0
   index: 8
 sprint
   rotate: false
-  xy: 128, 256
-  size: 128, 128
-  orig: 128, 128
+  xy: 75, 162
+  size: 75, 81
+  orig: 75, 81
   offset: 0, 0
   index: 9
 sprint
   rotate: false
-  xy: 256, 256
-  size: 128, 128
-  orig: 128, 128
+  xy: 150, 162
+  size: 75, 81
+  orig: 75, 81
   offset: 0, 0
   index: 10
 sprint
   rotate: false
-  xy: 384, 256
-  size: 128, 128
-  orig: 128, 128
+  xy: 225, 162
+  size: 75, 81
+  orig: 75, 81
   offset: 0, 0
   index: 11
