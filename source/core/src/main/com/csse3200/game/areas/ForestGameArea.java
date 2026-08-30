@@ -127,7 +127,7 @@ public class ForestGameArea extends GameArea {
 
   private void spawnPlatforms() {
     GridPoint2 platformPos = new GridPoint2(10, 7);
-    Entity platform = ObstacleFactory.createPlatform();
+    Entity platform = ObstacleFactory.createPlatform(0);
     spawnEntityAt(platform, platformPos, true, false);
   }
 
