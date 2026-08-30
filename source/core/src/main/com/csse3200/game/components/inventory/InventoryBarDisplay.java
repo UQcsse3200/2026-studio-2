@@ -134,15 +134,11 @@ public class InventoryBarDisplay extends UIComponent {
 
     Label numberLabel = new Label(Integer.toString(slotNumber), skin, "large");
 
-    Label itemLabel = new Label(getItemDisplayName(item), skin);
-
     Label countLabel = new Label("x" + count, skin);
 
     slot.add(numberLabel).width(25f).left().padLeft(5f).padRight(5f);
 
-    slot.add(icon).size(36f, 36f).padRight(8f);
-
-    slot.add(itemLabel).expandX().left();
+    slot.add(icon).size(50f, 50f).expand().center();
 
     slot.row();
 
@@ -164,11 +160,9 @@ public class InventoryBarDisplay extends UIComponent {
 
     Label numberLabel = new Label(Integer.toString(slotNumber), skin, "large");
 
-    Label emptyLabel = new Label("EMPTY", skin);
-
     slot.add(numberLabel).width(25f).left().padLeft(5f).padRight(5f);
 
-    slot.add(emptyLabel).expandX().center();
+    slot.add().expand().fill();
 
     return slot;
   }

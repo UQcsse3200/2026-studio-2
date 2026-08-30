@@ -44,6 +44,10 @@ public class BackpackDisplay extends UIComponent {
     inventoryTable = new Table();
     detailsTable = new Table();
 
+    detailsTable.setBackground(skin.getDrawable("button-c"));
+
+    detailsTable.pad(20f);
+
     Label title = new Label("Inventory", skin, "large");
 
     contentTable.add(title).colspan(2).padBottom(20f);
@@ -52,7 +56,7 @@ public class BackpackDisplay extends UIComponent {
 
     contentTable.add(inventoryTable).padRight(40f);
 
-    contentTable.add(detailsTable).width(250f).top();
+    contentTable.add(detailsTable).width(280f).top();
 
     table.add(contentTable);
 
@@ -119,28 +123,15 @@ public class BackpackDisplay extends UIComponent {
 
     Image icon = new Image(texture);
 
-    Label itemName = new Label(getItemDisplayName(itemType), skin);
-
-    itemName.setWrap(true);
-    itemName.setAlignment(1);
-
-    Label quantityLabel = new Label("x" + quantity, skin);
-
     Label slotLabel =
         new Label(
             slotNumber <= inventory.getHotbarSlotCount() ? Integer.toString(slotNumber) : "", skin);
 
     slot.add(slotLabel).width(18f).left().padLeft(2f);
 
-    slot.add(icon).size(40f, 40f).padRight(4f);
+    slot.add(icon).size(55f, 55f).padRight(4f);
 
     slot.row();
-
-    slot.add(itemName).colspan(2).width(85f).center();
-
-    slot.row();
-
-    slot.add(quantityLabel).colspan(2).center();
 
     slot.addListener(
         new ClickListener() {
@@ -271,11 +262,7 @@ public class BackpackDisplay extends UIComponent {
         new Label(
             slotNumber <= inventory.getHotbarSlotCount() ? Integer.toString(slotNumber) : "", skin);
 
-    Label emptyLabel = new Label("EMPTY", skin);
-
     slot.add(slotLabel).width(18f).left().padLeft(2f);
-
-    slot.add(emptyLabel).expandX().center();
 
     slot.addListener(
         new ClickListener() {
