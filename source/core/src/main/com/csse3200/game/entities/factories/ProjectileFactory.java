@@ -10,6 +10,7 @@ import com.csse3200.game.physics.PhysicsUtils;
 import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.physics.components.PhysicsMovementComponent;
+import com.csse3200.game.physics.components.ColliderComponent;
 
 /** Factory for creating enemy projectiles. */
 public class ProjectileFactory {
@@ -36,7 +37,8 @@ public class ProjectileFactory {
             .addComponent(new HitboxComponent().setLayer(PhysicsLayer.NPC))
             .addComponent(new CombatStatsComponent(1, damage))
             .addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER))
-            .addComponent(new ProjectileComponent(lifetime));
+            .addComponent(new ProjectileComponent(lifetime))
+            .addComponent(new ColliderComponent());
 
     PhysicsUtils.setScaledCollider(projectile, 0.3f, 0.3f);
 

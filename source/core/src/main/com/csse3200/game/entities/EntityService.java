@@ -16,6 +16,7 @@ public class EntityService {
   private static final int INITIAL_CAPACITY = 16;
 
   private final Array<Entity> entities = new Array<>(false, INITIAL_CAPACITY);
+  private final Array<Entity> entitiesToDispose = new Array<>();
 
   /**
    * Register a new entity with the entity service. The entity will be created and start updating.
@@ -38,12 +39,27 @@ public class EntityService {
     entities.removeValue(entity, true);
   }
 
+  /**
+   * Schedules an entity to be disposed after the current update cycle.
+   *
+   * @param entity entity to dispose
+   */
+  public void scheduleForDisposal(Entity entity) {
+    if (!entitiesToDispose.contains(entity, true)) {
+      entitiesToDispose.add(entity);
+    }
+  }
+
   /** Update all registered entities. Should only be called from the main game loop. */
   public void update() {
     for (Entity entity : entities) {
       entity.earlyUpdate();
       entity.update();
     }
+    for (Entity entity : entitiesToDispose) {
+      entity.dispose();
+    }
+    entitiesToDispose.clear();
   }
 
   /** Dispose all entities. */
@@ -51,5 +67,6 @@ public class EntityService {
     for (Entity entity : entities) {
       entity.dispose();
     }
+
   }
 }

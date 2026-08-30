@@ -4,7 +4,7 @@ import com.csse3200.game.services.ServiceLocator;
 
 public class ProjectileComponent extends Component {
 
-  private float remainingLifetime;
+    private float remainingLifetime;
 
   /**
    * Creates a projectile component.
@@ -20,7 +20,7 @@ public class ProjectileComponent extends Component {
     remainingLifetime -= ServiceLocator.getTimeSource().getDeltaTime();
 
     if (remainingLifetime <= 0f) {
-      entity.dispose();
+      ServiceLocator.getEntityService().scheduleForDisposal(entity);
     }
   }
 }
