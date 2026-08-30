@@ -12,6 +12,10 @@ import java.util.Set;
 import org.junit.jupiter.api.Test;
 
 class WheelLogicTest {
+  private static final List<WheelItem> THREE_ITEMS =
+      List.of(new WheelItem("A", 1), 
+      new WheelItem("B", 2), 
+      new WheelItem("C", 3));
 
   @Test
   void shouldRejectEmptyWheel() {
@@ -20,15 +24,10 @@ class WheelLogicTest {
 
   @Test
   void shouldReturnItemAtChosenIndex() {
-    List<WheelItem> source =
-        List.of(new WheelItem("A", 1), 
-        new WheelItem("B", 2), 
-        new WheelItem("C", 3));
-
     Random random = mock(Random.class);
     when(random.nextInt(3)).thenReturn(1);
 
-    WheelLogic wheel = new WheelLogic(source, random);
+    WheelLogic wheel = new WheelLogic(THREE_ITEMS, random);
     WheelItem result = wheel.spin();
 
     assertEquals("B", result.name());
@@ -43,10 +42,7 @@ class WheelLogicTest {
 
   @Test
   void shouldReachEveryItem() {
-    List<WheelItem> source =
-        List.of(new WheelItem("A", 1), new WheelItem("B", 2), new WheelItem("C", 3));
-
-    WheelLogic wheel = new WheelLogic(source);
+    WheelLogic wheel = new WheelLogic(THREE_ITEMS);
 
     Set<String> seen = new HashSet<>();
     for (int i = 0; i < 200; i++) {

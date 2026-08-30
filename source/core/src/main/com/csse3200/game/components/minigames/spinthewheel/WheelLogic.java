@@ -60,4 +60,33 @@ public class WheelLogic {
     float seg = 360f / items.size();
     return (seg * winningIndex) + seg / 2;
   }
+
+  /**
+   * Calculates the rotation the wheel should finish at so the winning segment sits under the
+   * pointer.
+   *
+   * @param currentRotation the wheel's current rotation in degrees
+   * @param pointerAngle the angle the pointer sits at in degrees
+   * @param fullTurns whole extra rotations to spin through before landing
+   * @return the absolute rotation in degrees to animate the wheel to
+   */
+  public float getTargetRotation(float currentRotation, float pointerAngle, int fullTurns) {
+    if (fullTurns < 0) {
+      throw new IllegalArgumentException("Wheel cannot spin a negative number of turns");
+    }
+
+    float landing = pointerAngle - getWinningAngle();
+    float delta = wrap360(landing - currentRotation);
+    return currentRotation + delta + (fullTurns * 360f);
+  }
+
+  /**
+   * Wraps an angle into the range [0, 360).
+   *
+   * @param degrees the angle to wrap
+   * @return the equivalent angle between 0 and 360
+   */
+  private static float wrap360(float degrees) {
+    return ((degrees % 360f) + 360f) % 360f;
+  }
 }
