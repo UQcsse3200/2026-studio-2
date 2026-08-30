@@ -7,7 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.csse3200.game.ui.UIComponent;
-import java.util.Map;
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,7 +19,7 @@ public class SpinTheWheelDisplay extends UIComponent {
   private Table table;
   private Label resultLabel;
 
-  public SpinTheWheelDisplay(Map<String, Integer> items) {
+  public SpinTheWheelDisplay(List<WheelItem> items) {
     this.wheel = new WheelLogic(items);
   }
 
@@ -40,8 +40,8 @@ public class SpinTheWheelDisplay extends UIComponent {
           @Override
           public void changed(ChangeEvent changeEvent, Actor actor) {
             logger.debug("Spin button clicked");
-            Map.Entry<String, Integer> result = wheel.spin();
-            resultLabel.setText(result.getKey() + " x" + result.getValue());
+            WheelItem result = wheel.spin();
+            resultLabel.setText(result.name() + " x" + result.value());
           }
         });
     table.row();

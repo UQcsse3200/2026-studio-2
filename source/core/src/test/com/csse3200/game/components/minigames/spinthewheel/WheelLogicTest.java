@@ -1,12 +1,12 @@
 package com.csse3200.game.components.minigames.spinthewheel;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
@@ -15,54 +15,42 @@ class WheelLogicTest {
 
   @Test
   void shouldRejectEmptyWheel() {
-    try {
-      new WheelLogic(Map.of());
-    } catch (IllegalArgumentException e) {
-    }
+    assertThrows(IllegalArgumentException.class, () -> new WheelLogic(List.of()));
   }
 
   @Test
   void shouldReturnItemAtChosenIndex() {
-    Map<String, Integer> source = new LinkedHashMap<>();
-    source.put("A", 1);
-    source.put("B", 2);
-    source.put("C", 3);
+    List<WheelItem> source =
+        List.of(new WheelItem("A", 1), 
+        new WheelItem("B", 2), 
+        new WheelItem("C", 3));
 
     Random random = mock(Random.class);
     when(random.nextInt(3)).thenReturn(1);
 
     WheelLogic wheel = new WheelLogic(source, random);
-    Map.Entry<String, Integer> result = wheel.spin();
+    WheelItem result = wheel.spin();
 
-    assertEquals("B", result.getKey());
-    assertEquals(2, result.getValue());
+    assertEquals("B", result.name());
+    assertEquals(2, result.value());
   }
 
   @Test
   void shouldRejectAngleBeforeSpin() {
-    Map<String, Integer> source = new LinkedHashMap<>();
-    source.put("A", 1);
-
-    WheelLogic wheel = new WheelLogic(source);
-
-    try {
-      wheel.getWinningAngle();
-    } catch (IllegalStateException e) {
-    }
+    WheelLogic wheel = new WheelLogic(List.of(new WheelItem("A", 1)));
+    assertThrows(IllegalStateException.class, wheel::getWinningAngle);
   }
 
   @Test
   void shouldReachEveryItem() {
-    Map<String, Integer> source = new LinkedHashMap<>();
-    source.put("A", 1);
-    source.put("B", 2);
-    source.put("C", 3);
+    List<WheelItem> source =
+        List.of(new WheelItem("A", 1), new WheelItem("B", 2), new WheelItem("C", 3));
 
     WheelLogic wheel = new WheelLogic(source);
 
     Set<String> seen = new HashSet<>();
     for (int i = 0; i < 200; i++) {
-      seen.add(wheel.spin().getKey());
+      seen.add(wheel.spin().name());
     }
 
     assertEquals(3, seen.size());

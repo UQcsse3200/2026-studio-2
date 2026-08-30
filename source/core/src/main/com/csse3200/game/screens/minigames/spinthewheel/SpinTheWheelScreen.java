@@ -4,16 +4,16 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.csse3200.game.GdxGame;
 import com.csse3200.game.components.minigames.spinthewheel.SpinTheWheelActions;
 import com.csse3200.game.components.minigames.spinthewheel.SpinTheWheelDisplay;
+import com.csse3200.game.components.minigames.spinthewheel.WheelItem;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.input.InputDecorator;
 import com.csse3200.game.screens.minigames.MinigameScreen;
 import com.csse3200.game.services.ServiceLocator;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.List;
 
 /** The screen for the spin the wheel minigame. */
 public class SpinTheWheelScreen extends MinigameScreen {
-  private static final Map<String, Integer> items = createItems();
+  private static final List<WheelItem> items = createItems();
 
   public SpinTheWheelScreen(GdxGame game) {
     super(game);
@@ -24,13 +24,12 @@ public class SpinTheWheelScreen extends MinigameScreen {
    *
    * @return the item labels mapped to their value
    */
-  private static Map<String, Integer> createItems() {
-    Map<String, Integer> wheelItems = new LinkedHashMap<>();
-    wheelItems.put("Wood", 10);
-    wheelItems.put("Stone", 20);
-    wheelItems.put("Iron", 30);
-    wheelItems.put("Gold", 50);
-    return wheelItems;
+  private static List<WheelItem> createItems() {
+    return List.of(
+        new WheelItem("Wood", 10),
+        new WheelItem("Stone", 20),
+        new WheelItem("Iron", 30),
+        new WheelItem("Gold", 50));
   }
 
   @Override
