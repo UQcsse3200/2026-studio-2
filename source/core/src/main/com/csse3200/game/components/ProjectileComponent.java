@@ -4,7 +4,7 @@ import com.csse3200.game.services.ServiceLocator;
 
 public class ProjectileComponent extends Component {
 
-    private float remainingLifetime;
+  private float remainingLifetime;
 
   /**
    * Creates a projectile component.

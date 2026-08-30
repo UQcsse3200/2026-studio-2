@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.ai.tasks.AITaskComponent;
 import com.csse3200.game.components.CombatStatsComponent;
+import com.csse3200.game.components.EnemyDeathComponent;
 import com.csse3200.game.components.TouchAttackComponent;
 import com.csse3200.game.components.npc.GhostAnimationController;
 import com.csse3200.game.components.tasks.ChaseTask;
@@ -38,10 +39,7 @@ public class EnemyFactory {
     animator.addAnimation("angry_float", 0.1f, Animation.PlayMode.LOOP);
     animator.addAnimation("float", 0.1f, Animation.PlayMode.LOOP);
 
-    chaser
-        .addComponent(new CombatStatsComponent(config.health, config.baseAttack))
-        .addComponent(animator)
-        .addComponent(new GhostAnimationController());
+    chaser.addComponent(animator).addComponent(new GhostAnimationController());
 
     chaser.getComponent(AnimationRenderComponent.class).scaleEntity();
 
@@ -60,7 +58,7 @@ public class EnemyFactory {
     animator.addAnimation("float", 0.1f, Animation.PlayMode.LOOP);
 
     shooter
-        .addComponent(new CombatStatsComponent(config.health, config.baseAttack))
+        // .addComponent(new CombatStatsComponent(config.health, config.baseAttack))
         .addComponent(animator)
         .addComponent(new GhostAnimationController());
 
@@ -93,6 +91,8 @@ public class EnemyFactory {
             .addComponent(new PhysicsMovementComponent())
             .addComponent(new ColliderComponent())
             .addComponent(new HitboxComponent().setLayer(PhysicsLayer.NPC))
+            .addComponent(new CombatStatsComponent(config.health, config.baseAttack))
+            .addComponent(new EnemyDeathComponent())
             .addComponent(aiComponent);
 
     // If attack type is not range
