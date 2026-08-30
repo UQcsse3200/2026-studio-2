@@ -14,12 +14,12 @@ class HealthPotionTest {
   void shouldUseAndConsumePotion() {
     HealthPotion potion = new HealthPotion(2);
 
-    assertEquals(ItemType.CONSUMABLE, potion.itemType);
+    assertEquals(ItemType.CONSUMABLE, potion.getItemType());
     assertEquals(HealthPotion.HEAL_AMOUNT, potion.getTreatment());
     assertTrue(potion.useConsumable());
-    assertEquals(1, potion.quantity);
+    assertEquals(1, potion.getQuantity());
     assertTrue(potion.useConsumable());
-    assertEquals(0, potion.quantity);
+    assertEquals(0, potion.getQuantity());
     assertFalse(potion.useConsumable());
   }
 }

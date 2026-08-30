@@ -72,7 +72,7 @@ public class PlayerInteractionComponent extends Component {
     }
 
     Item item = itemComponent.getItem();
-    if (item == null || !inventory.addItem(item.itemType, item.quantity)) {
+    if (item == null || !inventory.addItem(item.getItemType(), item.getQuantity())) {
       logger.debug("Pickup blocked for {}", itemEntity);
       entity.getEvents().trigger("itemPickupBlocked", item);
       return false;

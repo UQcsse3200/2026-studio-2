@@ -1,10 +1,10 @@
 package com.csse3200.game.components.item;
 
 public abstract class Arrow extends Item {
-  protected int damage;
-  protected float range;
-  protected boolean consumeAmmo; // Whether consume ammo
-  protected float cooldown; // The cooldown time;
+  private int damage;
+  private float range;
+  private boolean consumeAmmo; // Whether consume ammo
+  private float cooldown; // The cooldown time;
 
   /**
    * Each arrow subclass supplies its own item type, so different arrows occupy separate inventory

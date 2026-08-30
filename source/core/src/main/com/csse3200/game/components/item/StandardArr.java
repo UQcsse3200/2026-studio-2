@@ -15,11 +15,6 @@ public class StandardArr extends Arrow {
   }
 
   public boolean useArr() {
-    if (!(quantity > 0)) {
-      return false;
-    } else {
-      quantity--;
-      return true;
-    }
+    return removeQuantity(1);
   }
 }

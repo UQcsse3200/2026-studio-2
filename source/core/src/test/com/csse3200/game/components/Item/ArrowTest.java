@@ -13,8 +13,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 class ArrowTest {
   @Test
   void shouldGiveEachArrowItsOwnItemType() {
-    assertEquals(ItemType.ARROW, new StandardArr(1).itemType);
-    assertEquals(ItemType.RopeArrow, new RopeArr().itemType);
+    assertEquals(ItemType.ARROW, new StandardArr(1).getItemType());
+    assertEquals(ItemType.RopeArrow, new RopeArr().getItemType());
   }
 
   @Test
@@ -23,8 +23,8 @@ class ArrowTest {
     StandardArr standard = new StandardArr(3);
     RopeArr rope = new RopeArr();
 
-    assertTrue(inventory.addItem(standard.itemType, standard.quantity));
-    assertTrue(inventory.addItem(rope.itemType, rope.quantity));
+    assertTrue(inventory.addItem(standard.getItemType(), standard.getQuantity()));
+    assertTrue(inventory.addItem(rope.getItemType(), rope.getQuantity()));
 
     assertEquals(3, inventory.getItemCount(ItemType.ARROW));
     assertEquals(1, inventory.getItemCount(ItemType.RopeArrow));
@@ -33,8 +33,8 @@ class ArrowTest {
   @Test
   void shouldSelectBetweenBothArrowTypes() {
     InventoryComponent inventory = new InventoryComponent(0);
-    inventory.addItem(new StandardArr(3).itemType, 3);
-    inventory.addItem(new RopeArr().itemType, 1);
+    inventory.addItem(new StandardArr(3).getItemType(), 3);
+    inventory.addItem(new RopeArr().getItemType(), 1);
 
     assertEquals(ItemType.ARROW, inventory.getSelectedItem());
     assertEquals(ItemType.RopeArrow, inventory.selectNext());

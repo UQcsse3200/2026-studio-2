@@ -34,8 +34,8 @@ class ItemComponentTest {
 
     Item stored = entity.getComponent(ItemComponent.class).getItem();
 
-    assertEquals(ItemType.ARROW, stored.itemType);
-    assertEquals("Standard Arrow", stored.itemName);
-    assertEquals(4, stored.quantity);
+    assertEquals(ItemType.ARROW, stored.getItemType());
+    assertEquals("Standard Arrow", stored.getItemName());
+    assertEquals(4, stored.getQuantity());
   }
 }
