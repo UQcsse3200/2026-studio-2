@@ -11,6 +11,7 @@ import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.physics.components.PhysicsMovementComponent;
 import com.csse3200.game.physics.components.ColliderComponent;
+import com.csse3200.game.rendering.TextureRenderComponent;
 
 /** Factory for creating enemy projectiles. */
 public class ProjectileFactory {
@@ -38,9 +39,11 @@ public class ProjectileFactory {
             .addComponent(new CombatStatsComponent(1, damage))
             .addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER))
             .addComponent(new ProjectileComponent(lifetime))
-            .addComponent(new ColliderComponent());
+            .addComponent(new ColliderComponent())
+            .addComponent(new TextureRenderComponent("images/heart.png"));
 
     PhysicsUtils.setScaledCollider(projectile, 0.3f, 0.3f);
+    projectile.setScale(0.3f, 0.3f);
 
     return projectile;
   }
