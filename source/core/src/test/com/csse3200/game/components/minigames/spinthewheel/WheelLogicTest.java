@@ -13,9 +13,7 @@ import org.junit.jupiter.api.Test;
 
 class WheelLogicTest {
   private static final List<WheelItem> THREE_ITEMS =
-      List.of(new WheelItem("A", 1), 
-      new WheelItem("B", 2), 
-      new WheelItem("C", 3));
+      List.of(new WheelItem("A", 1), new WheelItem("B", 2), new WheelItem("C", 3));
 
   @Test
   void shouldRejectEmptyWheel() {

@@ -15,10 +15,10 @@ import java.util.List;
 public class SpinTheWheelScreen extends MinigameScreen {
   private static final List<WheelItem> items = createItems();
   private static final String[] TEXTURES = {
-  "images/minigames/spinthewheel/wheel-disc.png",
-  "images/minigames/spinthewheel/wheel-spoke.png",
-  "images/minigames/spinthewheel/wheel-pointer.png",
-};
+    "images/minigames/spinthewheel/wheel-disc.png",
+    "images/minigames/spinthewheel/wheel-spoke.png",
+    "images/minigames/spinthewheel/wheel-pointer.png",
+  };
 
   public SpinTheWheelScreen(GdxGame game) {
     super(game);
