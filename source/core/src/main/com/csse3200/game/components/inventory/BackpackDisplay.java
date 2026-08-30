@@ -2,11 +2,14 @@ package com.csse3200.game.components.inventory;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.utils.DragListener;
 import com.csse3200.game.components.item.ItemType;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.UIComponent;
@@ -22,7 +25,8 @@ public class BackpackDisplay extends UIComponent {
   private Table inventoryTable;
   private Table detailsTable;
   private Table contentTable;
-  private ItemType selectedItem;
+  private Table highlightedSlot;
+  private float originalAlpha;
 
   private boolean visible = false;
 
@@ -75,7 +79,7 @@ public class BackpackDisplay extends UIComponent {
       InventorySlot inventorySlot = inventory.getSlot(slotIndex);
       Table slot;
       if (inventorySlot == null || inventorySlot.isEmpty()) {
-        slot = createEmptySlot(slotNumber);
+        slot = createEmptySlot(slotNumber, slotIndex);
       } else {
         slot =
             createItemSlot(
@@ -100,6 +104,7 @@ public class BackpackDisplay extends UIComponent {
   private Table createItemSlot(int slotNumber, int slotIndex, ItemType itemType, int quantity) {
 
     Table slot = new Table();
+    slot.setUserObject(slotIndex);
 
     InventoryComponent inventory = entity.getComponent(InventoryComponent.class);
 
@@ -131,8 +136,6 @@ public class BackpackDisplay extends UIComponent {
 
     slot.row();
 
-    slot.row();
-
     slot.add(itemName).colspan(2).width(85f).center();
 
     slot.row();
@@ -144,11 +147,108 @@ public class BackpackDisplay extends UIComponent {
           @Override
           public void clicked(InputEvent event, float x, float y) {
 
-            selectedItem = itemType;
+            InventoryComponent inventory = entity.getComponent(InventoryComponent.class);
+
+            inventory.selectSlot(slotIndex);
 
             showItemDetails(itemType, quantity);
+          }
+        });
 
-            populateSlots();
+    slot.addListener(
+        new DragListener() {
+          private int sourceSlotIndex;
+          private Image dragIcon;
+
+          @Override
+          public void dragStart(InputEvent event, float x, float y, int pointer) {
+
+            sourceSlotIndex = slotIndex;
+
+            originalAlpha = slot.getColor().a;
+            slot.getColor().a = 0.4f;
+
+            Texture dragTexture =
+                ServiceLocator.getResourceService()
+                    .getAsset(getItemTexture(itemType), Texture.class);
+
+            dragIcon = new Image(dragTexture);
+            dragIcon.setSize(45f, 45f);
+
+            // Prevent the floating icon from blocking hit detection.
+            dragIcon.setTouchable(Touchable.disabled);
+
+            stage.addActor(dragIcon);
+
+            dragIcon.setPosition(
+                event.getStageX() - dragIcon.getWidth() / 2f,
+                event.getStageY() - dragIcon.getHeight() / 2f);
+          }
+
+          @Override
+          public void drag(InputEvent event, float x, float y, int pointer) {
+
+            if (dragIcon != null) {
+              dragIcon.setPosition(
+                  event.getStageX() - dragIcon.getWidth() / 2f,
+                  event.getStageY() - dragIcon.getHeight() / 2f);
+            }
+
+            Actor target = stage.hit(event.getStageX(), event.getStageY(), true);
+
+            while (target != null && !(target.getUserObject() instanceof Integer)) {
+              target = target.getParent();
+            }
+
+            Table newHighlightedSlot = target instanceof Table ? (Table) target : null;
+
+            if (highlightedSlot != newHighlightedSlot) {
+              if (highlightedSlot != null) {
+                highlightedSlot.setBackground(skin.getDrawable("button-c"));
+              }
+
+              highlightedSlot = newHighlightedSlot;
+
+              if (highlightedSlot != null) {
+                highlightedSlot.setBackground(skin.getDrawable("selection"));
+              }
+            }
+          }
+
+          @Override
+          public void dragStop(InputEvent event, float x, float y, int pointer) {
+
+            slot.getColor().a = originalAlpha;
+
+            if (highlightedSlot != null) {
+              highlightedSlot.setBackground(skin.getDrawable("button-c"));
+              highlightedSlot = null;
+            }
+
+            if (dragIcon != null) {
+              dragIcon.remove();
+              dragIcon = null;
+            }
+
+            Actor target = stage.hit(event.getStageX(), event.getStageY(), true);
+
+            while (target != null && !(target.getUserObject() instanceof Integer)) {
+              target = target.getParent();
+            }
+
+            if (target == null) {
+              return;
+            }
+
+            int targetSlotIndex = (Integer) target.getUserObject();
+
+            if (sourceSlotIndex == targetSlotIndex) {
+              return;
+            }
+
+            InventoryComponent inventory = entity.getComponent(InventoryComponent.class);
+
+            inventory.swapSlots(sourceSlotIndex, targetSlotIndex);
           }
         });
 
@@ -160,8 +260,9 @@ public class BackpackDisplay extends UIComponent {
    *
    * @return empty slot table
    */
-  private Table createEmptySlot(int slotNumber) {
+  private Table createEmptySlot(int slotNumber, int slotIndex) {
     Table slot = new Table();
+    slot.setUserObject(slotIndex);
     slot.pad(8f);
     slot.setBackground(skin.getDrawable("button-c"));
 
@@ -175,6 +276,17 @@ public class BackpackDisplay extends UIComponent {
     slot.add(slotLabel).width(18f).left().padLeft(2f);
 
     slot.add(emptyLabel).expandX().center();
+
+    slot.addListener(
+        new ClickListener() {
+          @Override
+          public void clicked(InputEvent event, float x, float y) {
+            InventoryComponent inventory = entity.getComponent(InventoryComponent.class);
+
+            inventory.selectSlot(slotIndex);
+            showEmptyDetails();
+          }
+        });
 
     return slot;
   }
