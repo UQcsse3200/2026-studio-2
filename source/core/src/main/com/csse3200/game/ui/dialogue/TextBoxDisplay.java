@@ -106,10 +106,7 @@ public class TextBoxDisplay extends UIComponent {
         label.setAlignment(1);
         applyTextColor();
 
-        table
-            .add(label)
-            .width(MAX_WIDTH)
-            .pad(PADDING);
+    table.add(label).width(MAX_WIDTH).pad(PADDING);
 
         stage.addActor(table);
     }

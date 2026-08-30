@@ -6,34 +6,34 @@ import com.csse3200.game.components.Component;
 
 public class TextBox extends Component {
 
-    private final Text text;
-    // default, redundant values
-    private float lifetime = 3f;
-    private float xPos = Gdx.graphics.getWidth() / 2f - 100f;
-    private float yPos = 20f;
-    private TextBoxDisplay textBoxDisplay;
+  private final Text text;
+  // default, redundant values
+  private float lifetime = 3f;
+  private float xPos = Gdx.graphics.getWidth() / 2f - 100f;
+  private float yPos = 20f;
+  private TextBoxDisplay textBoxDisplay;
 
-    public TextBox(Text text, float lifetime, float xPos, float yPos) {
-        this.lifetime = lifetime;
-        this.xPos = xPos;
-        this.yPos = yPos;
-        this.text = text;
-        this.textBoxDisplay = new TextBoxDisplay(text, this.lifetime, this.xPos, this.yPos);
-        this.textBoxDisplay.setTextColor(Color.WHITE);
-    }
+  public TextBox(Text text, float lifetime, float xPos, float yPos) {
+    this.lifetime = lifetime;
+    this.xPos = xPos;
+    this.yPos = yPos;
+    this.text = text;
+    this.textBoxDisplay = new TextBoxDisplay(text, this.lifetime, this.xPos, this.yPos);
+    this.textBoxDisplay.setTextColor(Color.WHITE);
+  }
 
-    @Override
-    public void create() {
-        super.create();
-        if (textBoxDisplay == null) {
-            textBoxDisplay = new TextBoxDisplay(text, this.lifetime, this.xPos, this.yPos);
-        }
-        textBoxDisplay.create();
+  @Override
+  public void create() {
+    super.create();
+    if (textBoxDisplay == null) {
+      textBoxDisplay = new TextBoxDisplay(text, this.lifetime, this.xPos, this.yPos);
     }
+    textBoxDisplay.create();
+  }
 
-    public void hideDialogue() {
-        if (textBoxDisplay != null) {
-            textBoxDisplay.dispose();
-        }
+  public void hideDialogue() {
+    if (textBoxDisplay != null) {
+      textBoxDisplay.dispose();
     }
+  }
 }
