@@ -1,4 +1,6 @@
-package com.csse3200.game.components.item;
+package com.csse3200.game.components.item.consumables;
+
+import com.csse3200.game.components.item.ItemId;
 
 /** A health potion that restores health when used. */
 public class HealthPotion extends Consumable {

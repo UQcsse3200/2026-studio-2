@@ -1,4 +1,7 @@
-package com.csse3200.game.components.item;
+package com.csse3200.game.components.item.consumables;
+
+import com.csse3200.game.components.item.Item;
+import com.csse3200.game.components.item.ItemType;
 
 public abstract class Consumable extends Item {
   private int treatment;

@@ -1,4 +1,7 @@
-package com.csse3200.game.components.item;
+package com.csse3200.game.components.item.weapons;
+
+import com.csse3200.game.components.item.Item;
+import com.csse3200.game.components.item.ItemType;
 
 public abstract class Arrow extends Item {
   private int damage;

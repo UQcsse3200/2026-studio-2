@@ -8,8 +8,8 @@ import static org.mockito.Mockito.when;
 
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.inventory.InventoryComponent;
-import com.csse3200.game.components.item.HealthPotion;
 import com.csse3200.game.components.item.ItemType;
+import com.csse3200.game.components.item.consumables.HealthPotion;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.services.GameTime;

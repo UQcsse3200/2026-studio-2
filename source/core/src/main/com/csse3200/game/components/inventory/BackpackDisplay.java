@@ -340,6 +340,8 @@ public class BackpackDisplay extends UIComponent {
     return switch (itemType) {
       case ARROW -> "Arrow";
       case RopeArrow -> "Rope Arrow";
+      case FireArrow -> "Fire Arrow";
+      case ColdArrow -> "Cold Arrow";
       default -> itemType.toString();
     };
   }
@@ -359,6 +361,10 @@ public class BackpackDisplay extends UIComponent {
 
       case RopeArrow -> "A special arrow designed for utility and traversal.";
 
+      case FireArrow -> "An arrow that can burn enemies.";
+
+      case ColdArrow -> "An arrow that can slow enemies down";
+
       default -> "No description available.";
     };
   }
@@ -373,6 +379,8 @@ public class BackpackDisplay extends UIComponent {
     return switch (itemType) {
       case ARROW -> "images/arrow.png";
       case RopeArrow -> "images/rope_arrow.png";
+      case FireArrow -> "images/fire_arrow.png";
+      case ColdArrow -> "images/cold_arrow.png";
       default -> "images/heart.png";
     };
   }

@@ -1,4 +1,7 @@
-package com.csse3200.game.components.item;
+package com.csse3200.game.components.item.weapons;
+
+import com.csse3200.game.components.item.ItemId;
+import com.csse3200.game.components.item.ItemType;
 
 public class StandardArr extends Arrow {
   public StandardArr(int quantity) {

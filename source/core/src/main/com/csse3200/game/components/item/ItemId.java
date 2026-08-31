@@ -4,7 +4,9 @@ package com.csse3200.game.components.item;
 public enum ItemId {
   STANDARD_ARROW(1),
   ROPE_ARROW(2),
-  CONSUMABLE(3);
+  CONSUMABLE(3),
+  FIRE_ARROW(4),
+  COLD_ARROW(5);
 
   private final int id;
 

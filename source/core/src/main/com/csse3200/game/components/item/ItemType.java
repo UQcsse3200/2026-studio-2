@@ -4,5 +4,7 @@ package com.csse3200.game.components.item;
 public enum ItemType {
   ARROW,
   RopeArrow,
+  FireArrow,
+  ColdArrow,
   CONSUMABLE
 }

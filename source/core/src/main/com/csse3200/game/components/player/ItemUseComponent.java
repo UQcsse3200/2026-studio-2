@@ -4,10 +4,12 @@ import com.badlogic.gdx.audio.Sound;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.Component;
 import com.csse3200.game.components.inventory.InventoryComponent;
-import com.csse3200.game.components.item.HealthPotion;
 import com.csse3200.game.components.item.ItemType;
-import com.csse3200.game.components.item.RopeArr;
-import com.csse3200.game.components.item.StandardArr;
+import com.csse3200.game.components.item.consumables.HealthPotion;
+import com.csse3200.game.components.item.weapons.ColdArr;
+import com.csse3200.game.components.item.weapons.FireArr;
+import com.csse3200.game.components.item.weapons.RopeArr;
+import com.csse3200.game.components.item.weapons.StandardArr;
 import com.csse3200.game.services.GameTime;
 import com.csse3200.game.services.ServiceLocator;
 import org.slf4j.Logger;
@@ -77,6 +79,8 @@ public class ItemUseComponent extends Component {
       case ARROW -> useStandardArrow();
       case RopeArrow -> useRopeArrow();
       case CONSUMABLE -> useConsumable();
+      case FireArrow -> useFireArrow();
+      case ColdArrow -> useColdArrow();
     };
   }
 
@@ -139,6 +143,36 @@ public class ItemUseComponent extends Component {
 
     combatStats.addHealth(potion.getTreatment());
     entity.getEvents().trigger("itemUsed", ItemType.CONSUMABLE);
+    return true;
+  }
+
+  private boolean useFireArrow() {
+    FireArr arrow = new FireArr(1);
+
+    if (!inventory.removeItem(ItemType.FireArrow, 1)) {
+      logger.debug("No fire arrows left to fire");
+      entity.getEvents().trigger("itemUseFailed", ItemType.FireArrow);
+      return false;
+    }
+
+    playAttackSound();
+    entity.getEvents().trigger("fireArrFired", arrow);
+    entity.getEvents().trigger("itemUsed", ItemType.FireArrow);
+    return true;
+  }
+
+  private boolean useColdArrow() {
+    ColdArr arrow = new ColdArr(1);
+
+    if (!inventory.removeItem(ItemType.ColdArrow, 1)) {
+      logger.debug("No fire arrows left to fire");
+      entity.getEvents().trigger("itemUseFailed", ItemType.ColdArrow);
+      return false;
+    }
+
+    playAttackSound();
+    entity.getEvents().trigger("coldArrFired", arrow);
+    entity.getEvents().trigger("itemUsed", ItemType.FireArrow);
     return true;
   }
 

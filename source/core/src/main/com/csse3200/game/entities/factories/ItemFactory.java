@@ -1,11 +1,13 @@
 package com.csse3200.game.entities.factories;
 
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
-import com.csse3200.game.components.item.HealthPotion;
 import com.csse3200.game.components.item.Item;
 import com.csse3200.game.components.item.ItemComponent;
-import com.csse3200.game.components.item.RopeArr;
-import com.csse3200.game.components.item.StandardArr;
+import com.csse3200.game.components.item.consumables.HealthPotion;
+import com.csse3200.game.components.item.weapons.ColdArr;
+import com.csse3200.game.components.item.weapons.FireArr;
+import com.csse3200.game.components.item.weapons.RopeArr;
+import com.csse3200.game.components.item.weapons.StandardArr;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.physics.components.HitboxComponent;
@@ -24,6 +26,8 @@ public class ItemFactory {
   private static final String STANDARD_ARROW_TEXTURE = "images/arrow.png";
   private static final String ROPE_ARROW_TEXTURE = "images/rope_arrow.png";
   private static final String CONSUMABLE_TEXTURE = "images/heart.png";
+  private static final String FIRE_ARROW_TEXTURE = "images/fire_arrow.png";
+  private static final String COLD_ARROW_TEXTURE = "images/cold_arrow.png";
 
   private static final float ITEM_HEIGHT = 0.5f;
 
@@ -74,6 +78,14 @@ public class ItemFactory {
    */
   public static Entity createHealthPotion(int quantity) {
     return createItem(new HealthPotion(quantity), CONSUMABLE_TEXTURE);
+  }
+
+  public static Entity createFireArrow(int quantity) {
+    return createItem(new FireArr(quantity), FIRE_ARROW_TEXTURE);
+  }
+
+  public static Entity createColdArrow(int quantity) {
+    return createItem(new ColdArr(quantity), COLD_ARROW_TEXTURE);
   }
 
   private ItemFactory() {

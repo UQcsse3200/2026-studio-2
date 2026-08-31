@@ -137,6 +137,11 @@ public class InventoryComponent extends Component {
     if (item == null || quantity <= 0) {
       return false;
     }
+
+    if (item == ItemType.RopeArrow && hasItem(ItemType.RopeArrow)) {
+      return false;
+    }
+
     int oldSelectedSlotIndex = selectedSlotIndex;
     ItemType oldSelectedItem = getSelectedItem();
     int slotIndex = findItemSlot(item);

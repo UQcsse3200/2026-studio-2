@@ -32,6 +32,8 @@ public class InventoryBarDisplay extends UIComponent {
     return switch (itemType) {
       case ARROW -> "images/arrow.png";
       case RopeArrow -> "images/rope_arrow.png";
+      case FireArrow -> "images/fire_arrow.png";
+      case ColdArrow -> "images/cold_arrow.png";
       default -> "images/heart.png";
     };
   }
@@ -103,6 +105,8 @@ public class InventoryBarDisplay extends UIComponent {
       case ARROW -> "Arrow";
       case RopeArrow -> "Rope Arrow";
       case CONSUMABLE -> "Consumable";
+      case FireArrow -> "Fire Arrow";
+      case ColdArrow -> "Cold Arrow";
       default -> item.toString();
     };
   }
