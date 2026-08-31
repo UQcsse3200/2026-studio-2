@@ -43,7 +43,6 @@ public class BlankTransitionScreen extends UIComponent {
 
     stage.addActor(blackScreen);
     blackScreen.setVisible(false);
-    blackScreen.toFront();
   }
 
   /**
