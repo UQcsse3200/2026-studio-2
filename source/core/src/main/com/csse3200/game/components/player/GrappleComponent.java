@@ -26,16 +26,12 @@ public class GrappleComponent extends Component {
   public void create() {
     physicsComponent = entity.getComponent(PhysicsComponent.class);
     entity.getEvents().addListener("grappleFire", this::fire);
+    entity.getEvents().addListener("grappleRelease", this::release);
     entity.getEvents().addListener("grappleSwing", this::swing);
   }
 
   /** Fires the rope towards direction or detaches if already attached. */
   void fire(Vector2 direction) {
-    if (isAttached()) {
-      release();
-      return;
-    }
-
     // Determine raycast start (player center)
     Vector2 start = entity.getCenterPosition();
     Vector2 end = start.cpy().mulAdd(direction.cpy().nor(), MAX_RANGE);

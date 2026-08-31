@@ -127,6 +127,16 @@ public class KeyboardPlayerInputComponent extends InputComponent {
     return true;
   }
 
+  @Override
+  public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+    if (button != Buttons.LEFT) {
+      return false;
+    }
+
+    entity.getEvents().trigger("grappleRelease");
+    return true;
+  }
+
   private void triggerSprintEvent() {
     if (sprintHeld) {
       entity.getEvents().trigger("sprint");
