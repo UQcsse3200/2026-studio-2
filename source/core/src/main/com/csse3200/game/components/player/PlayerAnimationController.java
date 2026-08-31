@@ -13,6 +13,7 @@ public class PlayerAnimationController extends Component {
   private boolean moving = false;
   private boolean sprinting = false;
   private boolean jumping = false;
+  private boolean hurt = false;
 
   @Override
   public void create() {
@@ -23,13 +24,17 @@ public class PlayerAnimationController extends Component {
     entity.getEvents().addListener("sprint", this::sprint);
     entity.getEvents().addListener("sprintStop", this::sprintStop);
     entity.getEvents().addListener("jumpStart", this::jumpStart);
+    entity.getEvents().addListener("hurt", this::hurt);
 
     animator.startAnimation("idle");
   }
 
   @Override
   public void update() {
-    if (jumping && animator.isFinished()) {
+    if (hurt && animator.isFinished()) {
+      hurt = false;
+      updateAnimation();
+    } else if (jumping && animator.isFinished()) {
       jumping = false;
       updateAnimation();
     }
@@ -69,6 +74,12 @@ public class PlayerAnimationController extends Component {
   void jumpStart() {
     jumping = true;
     animator.startAnimation("jump");
+  }
+
+  void hurt() {
+    jumping = false;
+    hurt = true;
+    animator.startAnimation("hurt");
   }
 
   private void updateAnimation() {

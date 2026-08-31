@@ -392,3 +392,156 @@ jump
   orig: 48, 100
   offset: 0, 0
   index: 15
+
+player_hurt.png
+size: 220, 288
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+hurt
+  rotate: false
+  xy: 72, 0
+  size: 24, 80
+  orig: 158, 158
+  offset: 69, 38
+  index: 0
+hurt
+  rotate: false
+  xy: 96, 0
+  size: 24, 80
+  orig: 158, 158
+  offset: 69, 38
+  index: 1
+hurt
+  rotate: false
+  xy: 120, 0
+  size: 31, 78
+  orig: 158, 158
+  offset: 60, 38
+  index: 2
+hurt
+  rotate: false
+  xy: 151, 0
+  size: 38, 75
+  orig: 158, 158
+  offset: 56, 38
+  index: 3
+hurt
+  rotate: false
+  xy: 118, 81
+  size: 56, 52
+  orig: 158, 158
+  offset: 48, 38
+  index: 4
+hurt
+  rotate: false
+  xy: 0, 155
+  size: 61, 45
+  orig: 158, 158
+  offset: 47, 38
+  index: 5
+hurt
+  rotate: false
+  xy: 64, 244
+  size: 64, 43
+  orig: 158, 158
+  offset: 45, 38
+  index: 6
+hurt
+  rotate: false
+  xy: 128, 244
+  size: 64, 43
+  orig: 158, 158
+  offset: 45, 38
+  index: 7
+hurt
+  rotate: false
+  xy: 0, 200
+  size: 64, 44
+  orig: 158, 158
+  offset: 45, 37
+  index: 8
+hurt
+  rotate: false
+  xy: 64, 200
+  size: 64, 44
+  orig: 158, 158
+  offset: 45, 37
+  index: 9
+hurt
+  rotate: false
+  xy: 128, 200
+  size: 64, 44
+  orig: 158, 158
+  offset: 45, 37
+  index: 10
+hurt
+  rotate: false
+  xy: 0, 244
+  size: 64, 44
+  orig: 158, 158
+  offset: 45, 37
+  index: 11
+hurt
+  rotate: false
+  xy: 61, 155
+  size: 54, 45
+  orig: 158, 158
+  offset: 51, 38
+  index: 12
+hurt
+  rotate: false
+  xy: 115, 155
+  size: 33, 45
+  orig: 158, 158
+  offset: 58, 38
+  index: 13
+hurt
+  rotate: false
+  xy: 148, 155
+  size: 33, 45
+  orig: 158, 158
+  offset: 58, 38
+  index: 14
+hurt
+  rotate: false
+  xy: 78, 81
+  size: 40, 53
+  orig: 158, 158
+  offset: 64, 37
+  index: 15
+hurt
+  rotate: false
+  xy: 38, 81
+  size: 40, 67
+  orig: 158, 158
+  offset: 65, 37
+  index: 16
+hurt
+  rotate: false
+  xy: 0, 81
+  size: 38, 74
+  orig: 158, 158
+  offset: 66, 37
+  index: 17
+hurt
+  rotate: false
+  xy: 0, 0
+  size: 24, 81
+  orig: 158, 158
+  offset: 69, 37
+  index: 18
+hurt
+  rotate: false
+  xy: 24, 0
+  size: 24, 81
+  orig: 158, 158
+  offset: 69, 37
+  index: 19
+hurt
+  rotate: false
+  xy: 48, 0
+  size: 24, 81
+  orig: 158, 158
+  offset: 69, 37
+  index: 20
