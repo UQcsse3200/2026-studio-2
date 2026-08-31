@@ -293,17 +293,17 @@ public class TutorialGameArea extends GameArea {
 
     Entity movingPlatform3 =
         ObstacleFactory.createMovingPlatform(
-            0, new Vector2(61, 2), new Vector2(61, 10), new Vector2(3, 0));
+            0, new Vector2(61, 2), new Vector2(61, 10), new Vector2(0, 3));
             spawnEntityAt(movingPlatform3, new GridPoint2(61, 10), false, false);
 
     Entity movingPlatform4 =
         ObstacleFactory.createMovingPlatform(
-            0, new Vector2(60, 11), new Vector2(60, 15), new Vector2(3, 0));
-            spawnEntityAt(movingPlatform4, new GridPoint2(60, 11), false, false);
+            0, new Vector2(60, 12), new Vector2(60, 15), new Vector2(0, 3));
+            spawnEntityAt(movingPlatform4, new GridPoint2(60, 12), false, false);
 
     Entity movingPlatform5 =
         ObstacleFactory.createMovingPlatform(
-            0, new Vector2(72, 2), new Vector2(72, 12), new Vector2(3, 0));
+            0, new Vector2(72, 2), new Vector2(72, 12), new Vector2(0, 3));
             spawnEntityAt(movingPlatform5, new GridPoint2(75, 2), false, false);
   }
 
