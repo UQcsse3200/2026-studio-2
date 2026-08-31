@@ -100,7 +100,7 @@ public class GrappleComponent extends Component {
     def.collideConnected = true;
 
     ropeJoint =
-            (DistanceJoint) ServiceLocator.getPhysicsService().getPhysics().getWorld().createJoint(def);
+        (DistanceJoint) ServiceLocator.getPhysicsService().getPhysics().getWorld().createJoint(def);
 
     // Stop the player spinning, and bleed the swing off over time
     playerBody.setFixedRotation(true);
