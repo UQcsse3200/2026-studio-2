@@ -17,6 +17,8 @@ public class EntityService {
 
   private final Array<Entity> entities = new Array<>(false, INITIAL_CAPACITY);
 
+  private boolean paused;
+
   /**
    * Register a new entity with the entity service. The entity will be created and start updating.
    *
@@ -40,9 +42,11 @@ public class EntityService {
 
   /** Update all registered entities. Should only be called from the main game loop. */
   public void update() {
-    for (Entity entity : entities) {
-      entity.earlyUpdate();
-      entity.update();
+    if (!paused) {
+      for (Entity entity : entities) {
+        entity.earlyUpdate();
+        entity.update();
+      }
     }
   }
 
@@ -51,5 +55,17 @@ public class EntityService {
     for (Entity entity : entities) {
       entity.dispose();
     }
+  }
+
+  public void setPaused(boolean newPaused) {
+    paused = newPaused;
+  }
+
+  public void togglePaused() {
+    paused = !paused;
+  }
+
+  public boolean getPaused() {
+    return paused;
   }
 }
