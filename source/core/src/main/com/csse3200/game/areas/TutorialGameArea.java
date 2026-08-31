@@ -331,6 +331,12 @@ public class TutorialGameArea extends GameArea {
             tileBounds.x * tileSize,
             tileBounds.y * tileSize);
 
+    //Example of spawning a moving platform
+    //takes (grapple, target 1, target 2, speed)
+    Entity movingPlatform = ObstacleFactory.createMovingPlatform(
+            0, new Vector2(4, 11), new Vector2(6, 11), new Vector2(3, 0));
+    spawnEntityAt(movingPlatform, new GridPoint2(5, 11), false, false);
+
     // ==========================================================
     // LEFT WALL
     // ==========================================================

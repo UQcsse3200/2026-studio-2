@@ -1,12 +1,15 @@
 package com.csse3200.game.entities.factories;
 
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
+import com.csse3200.game.components.level.MovingPlatformComponent;
 import com.csse3200.game.components.level.PlatformGrappleComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.physics.PhysicsUtils;
 import com.csse3200.game.physics.components.ColliderComponent;
 import com.csse3200.game.physics.components.PhysicsComponent;
+import com.csse3200.game.physics.components.PhysicsMovementComponent;
 import com.csse3200.game.rendering.TextureRenderComponent;
 import com.csse3200.game.rendering.TiledRenderComponent;
 
@@ -47,6 +50,18 @@ public class ObstacleFactory {
     platform.getComponent(PhysicsComponent.class).setBodyType(BodyType.StaticBody);
 
     return platform;
+  }
+
+  public static Entity createMovingPlatform(int grappleSides, Vector2 leftTarget, Vector2 rightTarget, Vector2 maxSpeed) {
+    Entity movingPlatform =
+            new Entity()
+                    .addComponent(new TextureRenderComponent("images/platform.png"))
+                    .addComponent(new PhysicsComponent())
+                    .addComponent(new PhysicsMovementComponent())
+                    .addComponent(new ColliderComponent().setLayer(PhysicsLayer.OBSTACLE))
+                    .addComponent(new MovingPlatformComponent(grappleSides, leftTarget, rightTarget, maxSpeed));
+
+    return movingPlatform;
   }
 
   public static Entity createFloor() {
