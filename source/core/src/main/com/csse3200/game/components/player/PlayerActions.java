@@ -1,6 +1,5 @@
 package com.csse3200.game.components.player;
 
-import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.csse3200.game.components.Component;
@@ -26,6 +25,7 @@ public class PlayerActions extends Component {
   private boolean moving = false;
   private boolean isGrounded = false;
   private boolean isSprinting = false;
+  private boolean paused = false;
 
   @Override
   public void create() {
@@ -33,10 +33,10 @@ public class PlayerActions extends Component {
     grapple = entity.getComponent(GrappleComponent.class);
     entity.getEvents().addListener("walk", this::walk);
     entity.getEvents().addListener("walkStop", this::stopWalking);
-    entity.getEvents().addListener("attack", this::attack);
     entity.getEvents().addListener("jump", this::jump);
     entity.getEvents().addListener("sprint", this::sprint);
     entity.getEvents().addListener("sprintStop", this::stopSprinting);
+    entity.getEvents().addListener("togglePaused", this::togglePause);
   }
 
   @Override
@@ -80,7 +80,11 @@ public class PlayerActions extends Component {
     RaycastHit hit = new RaycastHit();
     return ServiceLocator.getPhysicsService()
         .getPhysics()
-        .raycast(rayStart, rayEnd, PhysicsLayer.GROUND, hit);
+        .raycast(rayStart, rayEnd, PhysicsLayer.SOLID, hit);
+  }
+
+  void togglePause() {
+    paused = !paused;
   }
 
   /**
@@ -89,8 +93,12 @@ public class PlayerActions extends Component {
    * @param direction direction to move in
    */
   void walk(Vector2 direction) {
-    this.walkDirection = direction;
-    moving = true;
+    if (paused) {
+      stopWalking();
+    } else {
+      this.walkDirection = direction;
+      moving = true;
+    }
   }
 
   /** Stops the player from walking. */
@@ -100,13 +108,6 @@ public class PlayerActions extends Component {
       updateSpeed();
     }
     moving = false;
-  }
-
-  /** Makes the player attack. */
-  void attack() {
-    Sound attackSound =
-        ServiceLocator.getResourceService().getAsset("sounds/Impact4.ogg", Sound.class);
-    attackSound.play();
   }
 
   /** Jump off the ground, or let go of the rope with a kick upward. */

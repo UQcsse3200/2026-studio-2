@@ -1,5 +1,6 @@
 package com.csse3200.game.components.player;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Buttons;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputProcessor;
@@ -7,33 +8,30 @@ import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.csse3200.game.components.CameraComponent;
-import com.csse3200.game.entities.Entity;
 import com.csse3200.game.input.InputComponent;
 
-/**
- * Input handler for the player for keyboard and touch (mouse) input. This input handler only uses
- * keyboard input.
- */
+/** Input handler for player keyboard and mouse controls. */
 public class KeyboardPlayerInputComponent extends InputComponent {
   private final Vector2 walkDirection = Vector2.Zero.cpy();
   private static final int SPEED = 1;
   private static final int LEFT = 0;
   private static final int RIGHT = 1;
-  private static int sprintHeld = 0;
   private final boolean[] keysHeld = new boolean[2];
-  private Entity cameraEntity;
+  private boolean sprintHeld;
+  private CameraComponent cameraComponent;
+  private boolean attackHeld;
 
   public KeyboardPlayerInputComponent() {
     super(5);
   }
 
   /**
-   * Sets the camera entity used to convert screen coordinates to world coordinates when aiming.
+   * Sets the camera used to convert screen coordinates to world-space aim directions.
    *
-   * @param cameraEntity entity holding a CameraComponent
+   * @param cameraComponent active camera component
    */
-  public void setCameraEntity(Entity cameraEntity) {
-    this.cameraEntity = cameraEntity;
+  public void setCameraComponent(CameraComponent cameraComponent) {
+    this.cameraComponent = cameraComponent;
   }
 
   /**
@@ -60,8 +58,17 @@ public class KeyboardPlayerInputComponent extends InputComponent {
         return true;
       case Keys.SHIFT_LEFT:
       case Keys.SHIFT_RIGHT:
-        sprintHeld = 1;
+        sprintHeld = true;
         triggerSprintEvent();
+        return true;
+      case Keys.E:
+        if (!attackHeld) {
+          Vector2 aimDirection = getMouseAimDirection();
+          if (aimDirection != null && !aimDirection.isZero()) {
+            entity.getEvents().trigger("primaryAttack", aimDirection);
+          }
+          attackHeld = true;
+        }
         return true;
       default:
         return false;
@@ -89,8 +96,11 @@ public class KeyboardPlayerInputComponent extends InputComponent {
         return true;
       case Keys.SHIFT_LEFT:
       case Keys.SHIFT_RIGHT:
-        sprintHeld = 0;
+        sprintHeld = false;
         triggerSprintEvent();
+        return true;
+      case Keys.E:
+        attackHeld = false;
         return true;
       default:
         return false;
@@ -105,22 +115,29 @@ public class KeyboardPlayerInputComponent extends InputComponent {
    */
   @Override
   public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-    if (button != Buttons.LEFT || cameraEntity == null) {
+    if (button != Buttons.LEFT) {
       return false;
     }
-    CameraComponent cameraComponent = cameraEntity.getComponent(CameraComponent.class);
-    if (cameraComponent == null) {
+    Vector2 aimDirection = getAimDirection(screenX, screenY);
+    if (aimDirection == null || aimDirection.isZero()) {
       return false;
     }
-    Camera camera = cameraComponent.getCamera();
-    Vector3 world = camera.unproject(new Vector3(screenX, screenY, 0));
-    Vector2 aim = new Vector2(world.x, world.y).sub(entity.getCenterPosition());
-    entity.getEvents().trigger("grappleFire", aim);
+    entity.getEvents().trigger("grappleFire", aimDirection);
+    return true;
+  }
+
+  @Override
+  public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+    if (button != Buttons.LEFT) {
+      return false;
+    }
+
+    entity.getEvents().trigger("grappleRelease");
     return true;
   }
 
   private void triggerSprintEvent() {
-    if (sprintHeld == 1) {
+    if (sprintHeld) {
       entity.getEvents().trigger("sprint");
     } else {
       entity.getEvents().trigger("sprintStop");
@@ -129,6 +146,19 @@ public class KeyboardPlayerInputComponent extends InputComponent {
 
   private void triggerJumpEvent() {
     entity.getEvents().trigger("jump");
+  }
+
+  private Vector2 getMouseAimDirection() {
+    return getAimDirection(Gdx.input.getX(), Gdx.input.getY());
+  }
+
+  private Vector2 getAimDirection(int screenX, int screenY) {
+    if (cameraComponent == null) {
+      return null;
+    }
+    Camera camera = cameraComponent.getCamera();
+    Vector3 worldPosition = camera.unproject(new Vector3(screenX, screenY, 0f));
+    return new Vector2(worldPosition.x, worldPosition.y).sub(entity.getCenterPosition());
   }
 
   private void triggerWalkEvent() {
