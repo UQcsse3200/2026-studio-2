@@ -42,31 +42,29 @@ class KeyboardPlayerInputComponentTest {
   }
 
   @Test
-  void shouldFireOncePerEPressTowardCursor() {
+  void shouldFireTowardClickedWorldPosition() {
     KeyboardPlayerInputComponent component = new KeyboardPlayerInputComponent();
     Entity player = new Entity().addComponent(component);
     player.setPosition(0f, 0f);
-    Entity cameraEntity = new Entity().addComponent(new CameraComponent(camera));
-    component.setCameraComponent(cameraEntity.getComponent(CameraComponent.class));
+    component.setCameraComponent(new CameraComponent(camera));
 
     AtomicInteger shots = new AtomicInteger();
     AtomicReference<Vector2> direction = new AtomicReference<>();
     player
         .getEvents()
         .addListener(
-            "primaryAttack",
+            "shoot",
             (Vector2 aimDirection) -> {
               shots.incrementAndGet();
               direction.set(aimDirection);
             });
 
-    assertTrue(component.keyDown(Keys.E));
-    assertTrue(component.keyDown(Keys.E));
+    assertTrue(component.touchDown(4, 2, 0, Buttons.LEFT));
     assertEquals(1, shots.get());
     assertTrue(direction.get().epsilonEquals(new Vector2(9.5f, 4.5f)));
 
-    assertTrue(component.keyUp(Keys.E));
-    assertTrue(component.keyDown(Keys.E));
+    assertTrue(component.touchUp(4, 2, 0, Buttons.LEFT));
+    assertTrue(component.touchDown(4, 2, 0, Buttons.LEFT));
     assertEquals(2, shots.get());
   }
 
@@ -75,9 +73,9 @@ class KeyboardPlayerInputComponentTest {
     KeyboardPlayerInputComponent component = new KeyboardPlayerInputComponent();
     Entity player = new Entity().addComponent(component);
     AtomicInteger shots = new AtomicInteger();
-    player.getEvents().addListener("primaryAttack", (Vector2 ignored) -> shots.incrementAndGet());
+    player.getEvents().addListener("shoot", (Vector2 ignored) -> shots.incrementAndGet());
 
-    assertTrue(component.keyDown(Keys.E));
+    assertFalse(component.touchDown(4, 2, 0, Buttons.LEFT));
     assertEquals(0, shots.get());
   }
 
@@ -116,13 +114,13 @@ class KeyboardPlayerInputComponentTest {
   }
 
   @Test
-  void shouldFireGrappleTowardClickedWorldPosition() {
+  void shouldShootSelectedArrowTowardClickedWorldPosition() {
     KeyboardPlayerInputComponent component = new KeyboardPlayerInputComponent();
     Entity player = new Entity().addComponent(component);
     player.setPosition(0f, 0f);
     component.setCameraComponent(new CameraComponent(camera));
     AtomicReference<Vector2> direction = new AtomicReference<>();
-    player.getEvents().addListener("grappleFire", (Vector2 aim) -> direction.set(aim));
+    player.getEvents().addListener("shoot", (Vector2 aim) -> direction.set(aim));
 
     assertFalse(component.touchDown(4, 2, 0, Buttons.RIGHT));
     assertTrue(component.touchDown(4, 2, 0, Buttons.LEFT));
