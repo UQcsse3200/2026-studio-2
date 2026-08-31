@@ -79,7 +79,7 @@ public class ForestGameArea extends GameArea {
     spawnSkeletonWarrior();
     spawnSkeletonArcher();
 
-    //playMusic();
+    // playMusic();
   }
 
   private void displayUI() {
