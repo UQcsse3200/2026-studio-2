@@ -83,21 +83,38 @@ loadScripts(document, 'script');</script>
 </li>
 <li>
 <div id="class-summary">
-<div class="caption"><span>Classes</span></div>
+<div class="table-tabs" role="tablist" aria-orientation="horizontal"><button id="class-summary-tab0" role="tab" aria-selected="true" aria-controls="class-summary.tabpanel" tabindex="0" onkeydown="switchTab(event)" onclick="show('class-summary', 'class-summary', 2)" class="active-table-tab">All Classes and Interfaces</button><button id="class-summary-tab1" role="tab" aria-selected="false" aria-controls="class-summary.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('class-summary', 'class-summary-tab1', 2)" class="table-tab">Interfaces</button><button id="class-summary-tab2" role="tab" aria-selected="false" aria-controls="class-summary.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('class-summary', 'class-summary-tab2', 2)" class="table-tab">Classes</button></div>
+<div id="class-summary.tabpanel" role="tabpanel" aria-labelledby="class-summary-tab0">
 <div class="summary-table two-column-summary">
 <div class="table-header col-first">Class</div>
 <div class="table-header col-last">Description</div>
-<div class="col-first even-row-color class-summary class-summary-tab2"><a href="InventoryComponent.html" title="class in com.csse3200.game.components.player">InventoryComponent</a></div>
+<div class="col-first even-row-color class-summary class-summary-tab1"><a href="AttackBehaviour.html" title="interface in com.csse3200.game.components.player">AttackBehaviour</a></div>
+<div class="col-last even-row-color class-summary class-summary-tab1">
+<div class="block">Behaviour implemented by a weapon or other player attack type.</div>
+</div>
+<div class="col-first odd-row-color class-summary class-summary-tab2"><a href="BowComponent.html" title="class in com.csse3200.game.components.player">BowComponent</a></div>
+<div class="col-last odd-row-color class-summary class-summary-tab2">
+<div class="block">Ranged attack behaviour that fires standard player arrows.</div>
+</div>
+<div class="col-first even-row-color class-summary class-summary-tab2"><a href="GrappleComponent.html" title="class in com.csse3200.game.components.player">GrappleComponent</a></div>
 <div class="col-last even-row-color class-summary class-summary-tab2">
+<div class="block">Player fires a rope and swings from it like a pendulum.</div>
+</div>
+<div class="col-first odd-row-color class-summary class-summary-tab2"><a href="InventoryComponent.html" title="class in com.csse3200.game.components.player">InventoryComponent</a></div>
+<div class="col-last odd-row-color class-summary class-summary-tab2">
 <div class="block">A component intended to be used by the player to track their inventory.</div>
 </div>
-<div class="col-first odd-row-color class-summary class-summary-tab2"><a href="KeyboardPlayerInputComponent.html" title="class in com.csse3200.game.components.player">KeyboardPlayerInputComponent</a></div>
-<div class="col-last odd-row-color class-summary class-summary-tab2">
-<div class="block">Input handler for the player for keyboard and touch (mouse) input.</div>
-</div>
-<div class="col-first even-row-color class-summary class-summary-tab2"><a href="PlayerActions.html" title="class in com.csse3200.game.components.player">PlayerActions</a></div>
+<div class="col-first even-row-color class-summary class-summary-tab2"><a href="KeyboardPlayerInputComponent.html" title="class in com.csse3200.game.components.player">KeyboardPlayerInputComponent</a></div>
 <div class="col-last even-row-color class-summary class-summary-tab2">
+<div class="block">Input handler for player keyboard and mouse controls.</div>
+</div>
+<div class="col-first odd-row-color class-summary class-summary-tab2"><a href="PlayerActions.html" title="class in com.csse3200.game.components.player">PlayerActions</a></div>
+<div class="col-last odd-row-color class-summary class-summary-tab2">
 <div class="block">Action component for interacting with the player.</div>
+</div>
+<div class="col-first even-row-color class-summary class-summary-tab2"><a href="PlayerAttackComponent.html" title="class in com.csse3200.game.components.player">PlayerAttackComponent</a></div>
+<div class="col-last even-row-color class-summary class-summary-tab2">
+<div class="block">Routes generic player attack events to the currently active attack behaviour.</div>
 </div>
 <div class="col-first odd-row-color class-summary class-summary-tab2"><a href="PlayerStatsDisplay.html" title="class in com.csse3200.game.components.player">PlayerStatsDisplay</a></div>
 <div class="col-last odd-row-color class-summary class-summary-tab2">
@@ -106,6 +123,7 @@ loadScripts(document, 'script');</script>
 <div class="col-first even-row-color class-summary class-summary-tab2"><a href="TouchPlayerInputComponent.html" title="class in com.csse3200.game.components.player">TouchPlayerInputComponent</a></div>
 <div class="col-last even-row-color class-summary class-summary-tab2">
 <div class="block">Input handler for the player for keyboard and touch (mouse) input.</div>
+</div>
 </div>
 </div>
 </div>

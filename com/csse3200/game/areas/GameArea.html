@@ -119,9 +119,14 @@ implements com.badlogic.gdx.utils.Disposable</span></div>
 <div class="col-first even-row-color"><code>protected <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="../entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a>&gt;</code></div>
 <div class="col-second even-row-color"><code><a href="#areaEntities" class="member-name-link">areaEntities</a></code></div>
 <div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><code>protected <a href="terrain/TerrainComponent.html" title="class in com.csse3200.game.areas.terrain">TerrainComponent</a></code></div>
-<div class="col-second odd-row-color"><code><a href="#terrain" class="member-name-link">terrain</a></code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><code>protected final <a href="../components/CameraComponent.html" title="class in com.csse3200.game.components">CameraComponent</a></code></div>
+<div class="col-second odd-row-color"><code><a href="#cameraComponent" class="member-name-link">cameraComponent</a></code></div>
+<div class="col-last odd-row-color">
+<div class="block">Camera used by this game area.</div>
+</div>
+<div class="col-first even-row-color"><code>protected <a href="terrain/TerrainComponent.html" title="class in com.csse3200.game.areas.terrain">TerrainComponent</a></code></div>
+<div class="col-second even-row-color"><code><a href="#terrain" class="member-name-link">terrain</a></code></div>
+<div class="col-last even-row-color">&nbsp;</div>
 </div>
 </section>
 </li>
@@ -135,8 +140,10 @@ implements com.badlogic.gdx.utils.Disposable</span></div>
 <div class="table-header col-second">Constructor</div>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color"><code>protected </code></div>
-<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E()" class="member-name-link">GameArea</a>()</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(com.csse3200.game.components.CameraComponent)" class="member-name-link">GameArea</a><wbr>(<a href="../components/CameraComponent.html" title="class in com.csse3200.game.components">CameraComponent</a>&nbsp;cameraComponent)</code></div>
+<div class="col-last even-row-color">
+<div class="block">Creates a game area using the provided camera component.</div>
+</div>
 </div>
 </section>
 </li>
@@ -192,6 +199,13 @@ implements com.badlogic.gdx.utils.Disposable</span></div>
 <h2>Field Details</h2>
 <ul class="member-list">
 <li>
+<section class="detail" id="cameraComponent">
+<h3>cameraComponent</h3>
+<div class="member-signature"><span class="modifiers">protected final</span>&nbsp;<span class="return-type"><a href="../components/CameraComponent.html" title="class in com.csse3200.game.components">CameraComponent</a></span>&nbsp;<span class="element-name">cameraComponent</span></div>
+<div class="block">Camera used by this game area.</div>
+</section>
+</li>
+<li>
 <section class="detail" id="terrain">
 <h3>terrain</h3>
 <div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type"><a href="terrain/TerrainComponent.html" title="class in com.csse3200.game.areas.terrain">TerrainComponent</a></span>&nbsp;<span class="element-name">terrain</span></div>
@@ -212,9 +226,14 @@ implements com.badlogic.gdx.utils.Disposable</span></div>
 <h2>Constructor Details</h2>
 <ul class="member-list">
 <li>
-<section class="detail" id="&lt;init&gt;()">
+<section class="detail" id="&lt;init&gt;(com.csse3200.game.components.CameraComponent)">
 <h3>GameArea</h3>
-<div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="element-name">GameArea</span>()</div>
+<div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="element-name">GameArea</span><wbr><span class="parameters">(<a href="../components/CameraComponent.html" title="class in com.csse3200.game.components">CameraComponent</a>&nbsp;cameraComponent)</span></div>
+<div class="block">Creates a game area using the provided camera component.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>cameraComponent</code> - active camera component</dd>
+</dl>
 </section>
 </li>
 </ul>
