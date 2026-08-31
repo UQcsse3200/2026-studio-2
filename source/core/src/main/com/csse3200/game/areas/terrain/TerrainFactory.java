@@ -83,7 +83,7 @@ public class TerrainFactory {
       case BACKGROUND_DESERT:
         TextureRegion tile =
             new TextureRegion(resourceService.getAsset("images/transparent.png", Texture.class));
-        return createDesertTerrain(0.5f, tile);
+        return createDesertTerrain(1f, tile);
       default:
         return null;
     }

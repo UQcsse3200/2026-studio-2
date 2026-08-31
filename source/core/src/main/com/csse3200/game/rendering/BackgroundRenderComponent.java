@@ -6,73 +6,151 @@ import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.services.ServiceLocator;
 
-/** Render a parallax background texture. */
+import java.util.ArrayList;
+import java.util.List;
+
+/** Render multiple layers of a parallax background. */
 public class BackgroundRenderComponent extends RenderComponent {
 
-  private final Texture texture;
-  private final CameraComponent camera;
+  /** A single parallax background layer. */
+    private static class ParallaxLayer {private final Texture texture;
   private final float parallaxFactor;
+        private final float width;
+        private final float height;
+  private final float yOffset;
+
+        ParallaxLayer(
+                Texture texture,
+                float parallaxFactor,
+                float width,
+                float height,
+                float yOffset) {
+
+            this.texture = texture;
+            this.parallaxFactor = parallaxFactor;
+            this.width = width;
+            this.height = height;
+            this.yOffset = yOffset;
+        }
+    }
+
+    private final List<ParallaxLayer> layers = new ArrayList<>();
+    private final CameraComponent camera;
 
   /**
-   * Creates a parallax background from a texture path.
+   * Creates a multi-layer parallax background.
    *
-   * @param texturePath internal path of the background texture
    * @param camera camera used to calculate parallax movement
-   * @param parallaxFactor controls the background movement speed
+     */
+    public BackgroundRenderComponent(CameraComponent camera) {
+        this.camera = camera;
+    }
+
+    /**
+     * Adds a parallax layer with a custom size and vertical position.
+     *
+     * @param texturePath internal path of the texture
+   * @param parallaxFactor controls how much the layer moves
+     * @param width width of the layer in world units
+     * @param height height of the layer in world units
+     * @param yOffset vertical position relative to the background entity
    */
-  public BackgroundRenderComponent(
-      String texturePath, CameraComponent camera, float parallaxFactor) {
+  public void addLayer(
+      String texturePath, float parallaxFactor,
+            float width,
+            float height, float yOffset) {
 
     this(
         ServiceLocator.getResourceService().getAsset(texturePath, Texture.class),
         camera,
         parallaxFactor);
   }
+        Texture texture = ServiceLocator.getResourceService()
+                .getAsset(texturePath, Texture.class);
+
+        layers.add(
+                new ParallaxLayer(
+                        texture,
+                        parallaxFactor,
+                        width,
+                        height,
+                        yOffset
+                )
+        );
+    }
 
   /**
-   * Creates a parallax background from a texture.
+   * Adds a parallax layer using its texture dimensions.
    *
-   * @param texture background texture
-   * @param camera camera used to calculate parallax movement
-   * @param parallaxFactor controls the background movement speed
+   * @param texture texture for the layer
+   * @param parallaxFactor controls how much the layer moves
+     * @param width width of the layer in world units
+     * @param height height of the layer in world units
+   * @param yOffset vertical position relative to the background entity
    */
-  public BackgroundRenderComponent(Texture texture, CameraComponent camera, float parallaxFactor) {
+  public void addLayer(Texture texture,  float parallaxFactor,
+            float width,
+            float height,
+            float yOffset) {
 
-    this.texture = texture;
-    this.camera = camera;
-    this.parallaxFactor = parallaxFactor;
-  }
+    layers.add(
+                new ParallaxLayer(
+                        texture,
+     parallaxFactor,
+  width,
+                        height,
+                        yOffset
+                )
+        );
+    }
 
-  /** Scale the entity to a width of 1 and matching texture ratio. */
+  /*** Scale is controlled individually for each layer. */
   public void scaleEntity() {
-    entity.setScale(1f, (float) texture.getHeight() / texture.getWidth());
+    // Layer sizes are defined when they are added.
   }
 
   @Override
   protected void draw(SpriteBatch batch) {
 
-    Vector2 position = entity.getPosition();
-    Vector2 scale = entity.getScale();
+    if (layers.isEmpty()) {
+            return;
+        }Vector2 position = entity.getPosition();
+    
 
-    // Get the camera's current horizontal position.
+    
     float cameraX = camera.getCamera().position.x;
 
-    // Move the background more slowly than the camera.
-    float backgroundX = position.x + cameraX * (1f - parallaxFactor);
+    /*
+         * Draw layers from back to front.
+         *
+         * Lower parallax factors move more slowly.
+         * Higher parallax factors move more quickly.
+         */
+        for (ParallaxLayer layer : layers) {
+    float backgroundX = position.x + cameraX * (1f - layer.parallaxFactor);
 
-    // Keep the background vertically fixed.
-    float backgroundY = position.y;
+    
+    float backgroundY = position.y+ layer.yOffset;
 
     batch.draw(texture, backgroundX, backgroundY, scale.x, scale.y);
   }
+            batch.draw(
+                    layer.texture,
+                    backgroundX,
+                    backgroundY,
+                    layer.width,
+                    layer.height
+            );
+        }
+    }
 
-  @Override
-  public int getLayer() {
-    return 0;
-  }
+    @Override
+    public int getLayer() {
+        return 0;
+    }
 
-  @Override
-  public float getZIndex() {
-    return -1f;
-  }
+    @Override
+    public float getZIndex() {
+        return -1f;
+    }
 }
