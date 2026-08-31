@@ -44,17 +44,21 @@ public class TutorialGameArea extends GameArea {
 
   private static final PlatformConfig[] floors = {
     new PlatformConfig(new GridPoint2(0, 0), 3, 3, 0),
+    new PlatformConfig(new GridPoint2(0, 0), 80, 1, 0),
     new PlatformConfig(new GridPoint2(13, 0), 12, 5, 0),
     new PlatformConfig(new GridPoint2(40, 0), 10, 17, 0),
     new PlatformConfig(new GridPoint2(18, 15), 6, 2, 0),
     new PlatformConfig(new GridPoint2(0, 13), 8, 3, 0),
     new PlatformConfig(new GridPoint2(0, 16), 1, 5, 0),
-    new PlatformConfig(new GridPoint2(0, 21), 17, 3, 0),
+    new PlatformConfig(new GridPoint2(0, 21), 17, 1, 0),
     new PlatformConfig(new GridPoint2(28, 19), 4, 1, 0),
-    new PlatformConfig(new GridPoint2(35, 21), 15, 5, 0)
+    new PlatformConfig(new GridPoint2(45, 17), 5, 7, 0),
+    new PlatformConfig(new GridPoint2(35, 21), 15, 1, 0),
+    new PlatformConfig(new GridPoint2(0, 22), 50, 5, 0),
+    new PlatformConfig(new GridPoint2(0, 0), 1, 50, 0),
   };
 
-  private static final GridPoint2 PLAYER_SPAWN = new GridPoint2(10, 10);
+  private static final GridPoint2 PLAYER_SPAWN = new GridPoint2(1, 4);
 
   private static final float WALL_WIDTH = 0.1f;
 
@@ -204,12 +208,7 @@ public class TutorialGameArea extends GameArea {
 
     Vector2 worldBounds = new Vector2(tileBounds.x * tileSize, tileBounds.y * tileSize);
 
-    // Example of spawning a moving platform
-    // takes (grapple, target 1, target 2, speed)
-    Entity movingPlatform =
-        ObstacleFactory.createMovingPlatform(
-            0, new Vector2(4, 11), new Vector2(6, 11), new Vector2(3, 0));
-    spawnEntityAt(movingPlatform, new GridPoint2(5, 11), false, false);
+    spawnMovingPlatforms();
 
     // Left wall
     spawnEntityAt(
@@ -238,6 +237,20 @@ public class TutorialGameArea extends GameArea {
     // Bottom wall
     spawnEntityAt(
         ObstacleFactory.createWall(worldBounds.x, WALL_WIDTH), GridPoint2Utils.ZERO, false, false);
+  }
+
+  private void spawnMovingPlatforms(){
+    Entity movingPlatform =
+        ObstacleFactory.createMovingPlatform(
+            0, new Vector2(9, 15), new Vector2(14, 15), new Vector2(3, 0));
+            spawnEntityAt(movingPlatform, new GridPoint2(9, 15), false, false);
+    movingPlatform.setScale(2, 1);
+
+    Entity movingPlatform2 =
+        ObstacleFactory.createMovingPlatform(
+            0, new Vector2(25, 15), new Vector2(36, 15), new Vector2(3, 0));
+            spawnEntityAt(movingPlatform2, new GridPoint2(25, 15), false, false);
+    movingPlatform2.setScale(2, 1);
   }
 
   private void spawnPlatforms() {
