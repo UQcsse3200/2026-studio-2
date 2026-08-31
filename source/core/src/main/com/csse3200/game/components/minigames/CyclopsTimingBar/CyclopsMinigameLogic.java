@@ -9,6 +9,7 @@ import com.csse3200.game.areas.terrain.TerrainComponent;
 import com.csse3200.game.components.Component;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.services.ServiceLocator;
+import com.csse3200.game.ui.GameEndState;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,18 +24,13 @@ public class CyclopsMinigameLogic extends Component {
     GAME_OVER
   };
 
-  /* Game Outcome */
-  private enum Outcome {
-    WIN,
-    LOSS
-  };
+  private GameEndState outcome = GameEndState.WIN;
 
   private State state;
 
   /* Minigame Components */
   private final TimingBarLogic timingBarLogic;
   private final TimingBarDisplay timingBarDisplay;
-  private Outcome outcome;
 
   /* Screen Components */
   private BlankTransitionScreen transitionScreen;
@@ -180,12 +176,24 @@ public class CyclopsMinigameLogic extends Component {
     state = State.GAME_OVER;
     if (moved) {
       // Moved to loss position
-      outcome = Outcome.LOSS;
+      outcome = GameEndState.LOSE;
     } else {
       // Didn't move, so game was won
-      outcome = Outcome.WIN;
+      outcome = GameEndState.WIN;
     }
     stopTransition(false);
+  }
+
+  private void showEndState() {
+    Timer.schedule(
+        new Task() {
+          @Override
+          public void run() {
+            ServiceLocator.getGameEndEventHandler().trigger("gameEnd", outcome);
+          }
+        },
+        TRANSITION_DELAY);
+    state = State.STOPPED;
   }
 
   @Override
@@ -195,6 +203,7 @@ public class CyclopsMinigameLogic extends Component {
         updatePlaying();
         break;
       case State.GAME_OVER:
+        showEndState();
         break;
       default:
         // Waiting for another state to finish
