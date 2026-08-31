@@ -22,6 +22,9 @@ import com.csse3200.game.rendering.Renderer;
 import com.csse3200.game.services.GameTime;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
+import com.csse3200.game.ui.GameEndActions;
+import com.csse3200.game.ui.GameEndDisplay;
+import com.csse3200.game.ui.GameEndState;
 import com.csse3200.game.ui.terminal.Terminal;
 import com.csse3200.game.ui.terminal.TerminalDisplay;
 import org.slf4j.Logger;
@@ -62,7 +65,8 @@ public class CyclopsMinigameRoomScreen extends ScreenAdapter {
 
     logger.debug("Initialising cyclops minigame screen entities");
     TerrainFactory terrainFactory = new TerrainFactory(renderer.getCamera());
-    CyclopsMinigameArea cyclopsMinigameArea = new CyclopsMinigameArea(terrainFactory);
+    CyclopsMinigameArea cyclopsMinigameArea =
+        new CyclopsMinigameArea(renderer.getCamera(), terrainFactory);
     cyclopsMinigameArea.create();
   }
 
@@ -123,6 +127,8 @@ public class CyclopsMinigameRoomScreen extends ScreenAdapter {
         .addComponent(new CyclopsMinigameDisplay())
         .addComponent(new Terminal())
         .addComponent(inputComponent)
+        .addComponent(new GameEndDisplay(GameEndState.LOSE))
+        .addComponent(new GameEndActions(this.game))
         .addComponent(new TerminalDisplay());
 
     ServiceLocator.getEntityService().register(ui);

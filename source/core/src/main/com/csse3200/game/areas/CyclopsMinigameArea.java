@@ -2,7 +2,9 @@ package com.csse3200.game.areas;
 
 import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.csse3200.game.areas.terrain.TerrainFactory;
+import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.components.gamearea.GameAreaDisplay;
 import com.csse3200.game.components.minigames.CyclopsTimingBar.CyclopsMinigameLogic;
 import com.csse3200.game.components.minigames.CyclopsTimingBar.TimingBarDisplay;
@@ -10,6 +12,10 @@ import com.csse3200.game.components.minigames.CyclopsTimingBar.TimingBarLogic;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.ObstacleFactory;
 import com.csse3200.game.entities.factories.PlayerFactory;
+import com.csse3200.game.physics.PhysicsLayer;
+import com.csse3200.game.physics.components.ColliderComponent;
+import com.csse3200.game.physics.components.PhysicsComponent;
+import com.csse3200.game.rendering.TextureRenderComponent;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.ArrayList;
@@ -19,7 +25,10 @@ import org.slf4j.LoggerFactory;
 public class CyclopsMinigameArea extends GameArea {
   private static final Logger logger = LoggerFactory.getLogger(CyclopsMinigameArea.class);
   private static final String[] cyclopsMinigameTextures = {
-    "images/box_boy_leaf.png", "images/transparent.png", "images/Greek Statues Pack I/Brute.png"
+    "images/box_boy_leaf.png",
+    "images/transparent.png",
+    "images/Greek Statues Pack I/Brute.png",
+    "images/CyclopsMinigameFloor.png"
   };
 
   private final TerrainFactory terrainFactory;
@@ -38,8 +47,8 @@ public class CyclopsMinigameArea extends GameArea {
   private TimingBarDisplay timingBarDisplay;
   private CyclopsMinigameLogic cyclopsMinigameLogic;
 
-  public CyclopsMinigameArea(TerrainFactory terrainFactory) {
-    super();
+  public CyclopsMinigameArea(CameraComponent camera, TerrainFactory terrainFactory) {
+    super(camera);
     this.terrainFactory = terrainFactory;
   }
 
@@ -50,7 +59,7 @@ public class CyclopsMinigameArea extends GameArea {
 
     displayUI();
     spawnTerrain();
-
+    displayFloor();
     spawnStatues();
 
     player = spawnPlayer();
@@ -90,7 +99,7 @@ public class CyclopsMinigameArea extends GameArea {
     spawnEntity(new Entity().addComponent(terrain));
 
     statue_y_level = (int) (terrain.getMapBounds(terrain.getLayer()).y * 0.1);
-    winLocation = new GridPoint2(terrain.getMapBounds(terrain.getLayer()).x, statue_y_level);
+    winLocation = new GridPoint2(terrain.getMapBounds(terrain.getLayer()).x + 10, statue_y_level);
   }
 
   private void spawnStatues() {
@@ -100,18 +109,29 @@ public class CyclopsMinigameArea extends GameArea {
     GridPoint2 mapSize = terrain.getMapBounds(terrain.getLayer());
 
     for (int i = 1; i <= NUM_STATUES; i++) {
-      int x = ((mapSize.x / NUM_STATUES) * i) - (mapSize.x / (NUM_STATUES * 2)) + 1;
-      GridPoint2 location = new GridPoint2(x, statue_y_level);
+      int x = ((mapSize.x / NUM_STATUES) * i) - (mapSize.x / (NUM_STATUES * 2)) - 2;
+      GridPoint2 location = new GridPoint2(x - 1, statue_y_level);
       statueLocations.add(location);
 
       Entity statue = ObstacleFactory.createStatue();
-      statue.setScale(new Vector2(2, 5));
+      statue.setScale(new Vector2(3, 6));
       spawnEntityAt(statue, new GridPoint2(x, statue_y_level), true, false);
 
-      int gapX = (mapSize.x / NUM_STATUES) * i;
+      int gapX = (mapSize.x / NUM_STATUES) * i - 2;
       GridPoint2 gapLocation = new GridPoint2(gapX, statue_y_level);
       statueGapLocations.add(gapLocation);
     }
+  }
+
+  private void displayFloor() {
+    Entity floor =
+        new Entity()
+            .addComponent(new TextureRenderComponent("images/CyclopsMinigameFloor.png"))
+            .addComponent(new PhysicsComponent().setBodyType(BodyDef.BodyType.StaticBody))
+            .addComponent(new ColliderComponent().setLayer(PhysicsLayer.NONE));
+    floor.getComponent(TextureRenderComponent.class).scaleEntity();
+    floor.setScale(20, 5);
+    spawnEntityAt(floor, new GridPoint2(-5, 2), false, false);
   }
 
   private Entity spawnCyclops() {
