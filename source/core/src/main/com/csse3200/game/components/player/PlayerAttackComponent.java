@@ -1,46 +1,37 @@
 package com.csse3200.game.components.player;
 
-import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.components.Component;
-import com.csse3200.game.entities.Entity;
-import com.csse3200.game.entities.factories.ProjectileFactory;
-import com.csse3200.game.services.ServiceLocator;
-import java.util.function.BiFunction;
+import java.util.Objects;
 
-/** Handles player ranged-attack events and spawns standard arrows. */
+/** Routes generic player attack events to the currently active attack behaviour. */
 public class PlayerAttackComponent extends Component {
-  private static final String ATTACK_SOUND = "sounds/Impact4.ogg";
+  private AttackBehaviour activeAttack;
 
-  private final BiFunction<Vector2, Vector2, Entity> projectileFactory;
-
-  /** Creates a player attack component which fires standard arrows. */
-  public PlayerAttackComponent() {
-    this(ProjectileFactory::createPlayerArrow);
-  }
-
-  PlayerAttackComponent(BiFunction<Vector2, Vector2, Entity> projectileFactory) {
-    this.projectileFactory = projectileFactory;
+  /**
+   * Creates an attack coordinator with an initial attack behaviour.
+   *
+   * @param activeAttack initial attack behaviour
+   */
+  public PlayerAttackComponent(AttackBehaviour activeAttack) {
+    setActiveAttack(activeAttack);
   }
 
   @Override
   public void create() {
-    entity.getEvents().addListener("fireArrow", this::fireArrow);
+    entity.getEvents().addListener("primaryAttack", this::attack);
   }
 
-  private void fireArrow(Vector2 direction) {
-    if (direction == null || direction.isZero()) {
-      return;
-    }
+  private void attack(Vector2 direction) {
+    activeAttack.attack(direction);
+  }
 
-    Vector2 normalizedDirection = direction.cpy().nor();
-    Vector2 spawnPosition =
-        entity.getCenterPosition().mulAdd(normalizedDirection, entity.getScale().x * 0.6f);
-    Entity projectile = projectileFactory.apply(spawnPosition, normalizedDirection);
-    ServiceLocator.getEntityService().register(projectile);
-
-    Sound attackSound = ServiceLocator.getResourceService().getAsset(ATTACK_SOUND, Sound.class);
-    attackSound.play();
-    entity.getEvents().trigger("attackAnimation", normalizedDirection.cpy());
+  /**
+   * Changes the behaviour used for subsequent attacks.
+   *
+   * @param activeAttack new attack behaviour
+   */
+  public void setActiveAttack(AttackBehaviour activeAttack) {
+    this.activeAttack = Objects.requireNonNull(activeAttack, "Attack behaviour must not be null");
   }
 }

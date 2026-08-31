@@ -12,7 +12,7 @@ import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.services.ServiceLocator;
 
-/** Moves a player arrow, applies damage on impact, and removes it when spent. */
+/** Moves a player arrow, emits damage on impact, and removes it when spent. */
 public class ArrowProjectileComponent extends Component {
   private static final short TERRAIN = (short) (PhysicsLayer.GROUND | PhysicsLayer.OBSTACLE);
 
@@ -97,9 +97,8 @@ public class ArrowProjectileComponent extends Component {
     if (target == null) {
       return;
     }
-    CombatStatsComponent targetStats = target.getComponent(CombatStatsComponent.class);
-    if (targetStats != null) {
-      targetStats.hit(combatStats);
+    if (target.getComponent(CombatStatsComponent.class) != null) {
+      target.getEvents().trigger("takeDamage", combatStats);
     }
   }
 

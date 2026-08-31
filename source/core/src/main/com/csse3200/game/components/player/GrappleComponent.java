@@ -16,6 +16,7 @@ public class GrappleComponent extends Component {
   private static final float SWING_FORCE = 5f;
   private static final float MAX_SWING_SPEED = 7f;
   private static final float SWING_DAMPING = 0.5f;
+  private static final float RELEASE_DAMPING = 0f;
 
   private PhysicsComponent physicsComponent;
   private DistanceJoint ropeJoint;
@@ -30,6 +31,7 @@ public class GrappleComponent extends Component {
   public void create() {
     physicsComponent = entity.getComponent(PhysicsComponent.class);
     entity.getEvents().addListener("grappleFire", this::fire);
+    entity.getEvents().addListener("grappleRelease", this::release);
     entity.getEvents().addListener("grappleSwing", this::swing);
   }
 
@@ -45,13 +47,9 @@ public class GrappleComponent extends Component {
     }
   }
 
-  /** Launches a grapple arrow, or lets go if already swinging. */
+  /** Launches a grapple arrow, unless one is in flight, attached, or still on cooldown. */
   void fire(Vector2 direction) {
-    if (isAttached()) {
-      release();
-      return;
-    }
-    if (direction == null || direction.isZero() || cooldownRemaining > 0f) {
+    if (direction == null || direction.isZero() || cooldownRemaining > 0f || isAttached()) {
       return;
     }
 
@@ -62,11 +60,13 @@ public class GrappleComponent extends Component {
     arrow.addComponent(new GrappleArrowComponent(entity));
     ServiceLocator.getEntityService().register(arrow);
 
+    // Only set on a successful shot, so spamming the button doesn't extend the wait
     cooldownRemaining = GRAPPLE_COOLDOWN;
   }
 
   /**
-   * Queues a rope attachment. Called by the arrow when it lands, which happens mid physics step.
+   * Queues a rope attachment. Called by the arrow when it lands, which happens mid physics step, so
+   * the joint itself is built on the next update.
    *
    * @param anchorBody the body that was hit
    * @param point where the arrow struck, in world coordinates
@@ -86,7 +86,11 @@ public class GrappleComponent extends Component {
     DistanceJointDef def = new DistanceJointDef();
     def.bodyA = anchorBody;
     def.bodyB = playerBody;
+
+    // Convert world anchor coordinates to the anchor body's local space
     def.localAnchorA.set(anchorBody.getLocalPoint(anchorPoint));
+
+    // Pivot from the player's centre of mass so the pendulum hangs evenly
     def.localAnchorB.set(playerBody.getLocalCenter());
 
     // Fixed length keeps the player on the arc so momentum carries to the other side
@@ -96,8 +100,9 @@ public class GrappleComponent extends Component {
     def.collideConnected = true;
 
     ropeJoint =
-        (DistanceJoint) ServiceLocator.getPhysicsService().getPhysics().getWorld().createJoint(def);
+            (DistanceJoint) ServiceLocator.getPhysicsService().getPhysics().getWorld().createJoint(def);
 
+    // Stop the player spinning, and bleed the swing off over time
     playerBody.setFixedRotation(true);
     playerBody.setLinearDamping(SWING_DAMPING);
   }
@@ -110,7 +115,7 @@ public class GrappleComponent extends Component {
     ServiceLocator.getPhysicsService().getPhysics().getWorld().destroyJoint(ropeJoint);
     ropeJoint = null;
     anchorPoint = null;
-    physicsComponent.getBody().setLinearDamping(0f);
+    physicsComponent.getBody().setLinearDamping(RELEASE_DAMPING);
   }
 
   /**
@@ -125,6 +130,8 @@ public class GrappleComponent extends Component {
     }
 
     Body body = physicsComponent.getBody();
+
+    // Cap the speed so you can't pump forever
     if (body.getLinearVelocity().len() > MAX_SWING_SPEED) {
       return;
     }

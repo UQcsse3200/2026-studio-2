@@ -28,6 +28,7 @@ public class ArrowSelectionComponent extends Component {
   public void create() {
     entity.getEvents().addListener("cycleArrow", this::cycle);
     entity.getEvents().addListener("shoot", this::shoot);
+    entity.getEvents().addListener("stopShoot", this::stopShoot);
   }
 
   /** Switches to the next arrow type. */
@@ -42,7 +43,14 @@ public class ArrowSelectionComponent extends Component {
     if (selected == ArrowType.GRAPPLE) {
       entity.getEvents().trigger("grappleFire", direction);
     } else {
-      entity.getEvents().trigger("fireArrow", direction);
+      entity.getEvents().trigger("primaryAttack", direction);
+    }
+  }
+
+  /** Only the grapple cares about the button being let go. */
+  void stopShoot() {
+    if (selected == ArrowType.GRAPPLE) {
+      entity.getEvents().trigger("grappleRelease");
     }
   }
 

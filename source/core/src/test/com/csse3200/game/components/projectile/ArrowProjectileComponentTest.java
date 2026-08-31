@@ -3,9 +3,9 @@ package com.csse3200.game.components.projectile;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.spy;
 
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Fixture;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
@@ -36,24 +36,9 @@ class ArrowProjectileComponentTest {
     PhysicsComponent physics = arrow.getComponent(PhysicsComponent.class);
 
     assertTrue(physics.getBody().getLinearVelocity().epsilonEquals(new Vector2(6f, 8f)));
-    assertEquals(0f, physics.getBody().getGravityScale());
+    assertEquals(0.05f, physics.getBody().getGravityScale());
     assertEquals(0f, physics.getBody().getLinearDamping());
     assertTrue(physics.getBody().isBullet());
-  }
-
-  @Test
-  void shouldDamageNpcOnceAndBecomeSpent() {
-    Entity arrow = createArrow(Vector2.X, 10f, 15f);
-    Entity target = createTarget(PhysicsLayer.NPC, true);
-    ArrowProjectileComponent projectile = arrow.getComponent(ArrowProjectileComponent.class);
-    Fixture arrowFixture = arrow.getComponent(HitboxComponent.class).getFixture();
-    Fixture targetFixture = target.getComponent(HitboxComponent.class).getFixture();
-
-    arrow.getEvents().trigger("collisionStart", arrowFixture, targetFixture);
-    arrow.getEvents().trigger("collisionStart", arrowFixture, targetFixture);
-
-    assertEquals(10, target.getComponent(CombatStatsComponent.class).getHealth());
-    assertTrue(projectile.isSpent());
   }
 
   @Test
@@ -90,6 +75,41 @@ class ArrowProjectileComponentTest {
   }
 
   @Test
+  void shouldDamageNpcThroughDamageEvent() {
+    Entity arrow = createArrow(Vector2.X, 10f, 15f);
+    Entity target = createTarget(PhysicsLayer.NPC, true);
+
+    triggerCollision(arrow, target);
+
+    assertEquals(10, target.getComponent(CombatStatsComponent.class).getHealth());
+    assertTrue(arrow.getComponent(ArrowProjectileComponent.class).isSpent());
+  }
+
+  @Test
+  void shouldDamageNpcOnlyOnce() {
+    Entity arrow = createArrow(Vector2.X, 10f, 15f);
+    Entity target = createTarget(PhysicsLayer.NPC, true);
+    ArrowProjectileComponent projectile = arrow.getComponent(ArrowProjectileComponent.class);
+
+    triggerCollision(arrow, target);
+    triggerCollision(arrow, target);
+
+    assertEquals(10, target.getComponent(CombatStatsComponent.class).getHealth());
+    assertTrue(projectile.isSpent());
+  }
+
+  @Test
+  void shouldExpireOnObstacleWithoutDamage() {
+    Entity arrow = createArrow(Vector2.X, 10f, 15f);
+    Entity obstacle = createTarget(PhysicsLayer.OBSTACLE, false);
+    ArrowProjectileComponent projectile = arrow.getComponent(ArrowProjectileComponent.class);
+
+    triggerCollision(arrow, obstacle);
+
+    assertTrue(projectile.isSpent());
+  }
+
+  @Test
   void shouldExpireAtMaximumRange() {
     Entity arrow = createArrow(Vector2.X, 10f, 15f);
     ArrowProjectileComponent projectile = arrow.getComponent(ArrowProjectileComponent.class);
@@ -113,14 +133,25 @@ class ArrowProjectileComponentTest {
   }
 
   private Entity createTarget(short layer, boolean hasCombatStats) {
-    Entity target =
-        new Entity()
-            .addComponent(new PhysicsComponent())
-            .addComponent(new HitboxComponent().setLayer(layer));
+    return createTarget(layer, hasCombatStats, 20);
+  }
+
+  private Entity createTarget(short layer, boolean hasCombatStats, int health) {
+    Entity target = spy(new Entity());
+    target.addComponent(new PhysicsComponent()).addComponent(new HitboxComponent().setLayer(layer));
     if (hasCombatStats) {
-      target.addComponent(new CombatStatsComponent(20, 0));
+      target.addComponent(new CombatStatsComponent(health, 0));
     }
     entityService.register(target);
     return target;
+  }
+
+  private void triggerCollision(Entity arrow, Entity target) {
+    arrow
+        .getEvents()
+        .trigger(
+            "collisionStart",
+            arrow.getComponent(HitboxComponent.class).getFixture(),
+            target.getComponent(HitboxComponent.class).getFixture());
   }
 }

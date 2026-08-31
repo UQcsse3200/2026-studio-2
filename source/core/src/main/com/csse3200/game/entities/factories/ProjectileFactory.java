@@ -12,7 +12,7 @@ import com.csse3200.game.rendering.ArrowRenderComponent;
 /** Factory for player and enemy projectile entities. */
 public class ProjectileFactory {
   public static final int STANDARD_ARROW_DAMAGE = 10;
-  public static final float STANDARD_ARROW_SPEED = 12f;
+  public static final float STANDARD_ARROW_SPEED = 15f;
   public static final float STANDARD_ARROW_RANGE = 15f;
 
   public static final float GRAPPLE_ARROW_SPEED = 16f;
@@ -35,7 +35,7 @@ public class ProjectileFactory {
                 new ArrowProjectileComponent(direction, STANDARD_ARROW_SPEED, STANDARD_ARROW_RANGE))
             .addComponent(new ArrowRenderComponent());
     arrow.setScale(0.5f, 0.1f);
-    arrow.setPosition(position);
+    arrow.setPosition(position.x - arrow.getScale().x / 2f, position.y - arrow.getScale().y / 2f);
     return arrow;
   }
 

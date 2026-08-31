@@ -1,6 +1,5 @@
 package com.csse3200.game.components.player;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Buttons;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputProcessor;
@@ -8,7 +7,6 @@ import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.csse3200.game.components.CameraComponent;
-import com.csse3200.game.entities.Entity;
 import com.csse3200.game.input.InputComponent;
 
 /** Input handler for player keyboard and mouse controls. */
@@ -19,19 +17,19 @@ public class KeyboardPlayerInputComponent extends InputComponent {
   private static final int RIGHT = 1;
   private final boolean[] keysHeld = new boolean[2];
   private boolean sprintHeld;
-  private Entity cameraEntity;
+  private CameraComponent cameraComponent;
 
   public KeyboardPlayerInputComponent() {
     super(5);
   }
 
   /**
-   * Sets the camera entity used to convert screen coordinates to world-space aim directions.
+   * Sets the camera used to convert screen coordinates to world-space aim directions.
    *
-   * @param cameraEntity entity holding the active {@link CameraComponent}
+   * @param cameraComponent active camera component
    */
-  public void setCameraEntity(Entity cameraEntity) {
-    this.cameraEntity = cameraEntity;
+  public void setCameraComponent(CameraComponent cameraComponent) {
+    this.cameraComponent = cameraComponent;
   }
 
   /**
@@ -54,8 +52,7 @@ public class KeyboardPlayerInputComponent extends InputComponent {
         triggerWalkEvent();
         return true;
       case Keys.SPACE:
-      case Keys.W:
-        entity.getEvents().trigger("jump");
+        triggerJumpEvent();
         return true;
       case Keys.SHIFT_LEFT:
       case Keys.SHIFT_RIGHT:
@@ -110,7 +107,27 @@ public class KeyboardPlayerInputComponent extends InputComponent {
     if (button != Buttons.LEFT) {
       return false;
     }
-    return triggerAimedEvent("shoot", screenX, screenY);
+    Vector2 aimDirection = getAimDirection(screenX, screenY);
+    if (aimDirection == null || aimDirection.isZero()) {
+      return false;
+    }
+    entity.getEvents().trigger("shoot", aimDirection);
+    return true;
+  }
+
+  /**
+   * Signals that the fire button was let go, so the selected arrow can react.
+   *
+   * @return whether the input was processed
+   * @see InputProcessor#touchUp(int, int, int, int)
+   */
+  @Override
+  public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+    if (button != Buttons.LEFT) {
+      return false;
+    }
+    entity.getEvents().trigger("stopShoot");
+    return true;
   }
 
   private void triggerSprintEvent() {
@@ -121,26 +138,11 @@ public class KeyboardPlayerInputComponent extends InputComponent {
     }
   }
 
-  /** Fires an event aimed at wherever the mouse cursor currently sits. */
-  private boolean triggerAimedEvent(String eventName) {
-    return triggerAimedEvent(eventName, Gdx.input.getX(), Gdx.input.getY());
-  }
-
-  /** Fires an event aimed at the given screen position. */
-  private boolean triggerAimedEvent(String eventName, int screenX, int screenY) {
-    Vector2 aim = getAimDirection(screenX, screenY);
-    if (aim == null || aim.isZero()) {
-      return false;
-    }
-    entity.getEvents().trigger(eventName, aim);
-    return true;
+  private void triggerJumpEvent() {
+    entity.getEvents().trigger("jump");
   }
 
   private Vector2 getAimDirection(int screenX, int screenY) {
-    if (cameraEntity == null) {
-      return null;
-    }
-    CameraComponent cameraComponent = cameraEntity.getComponent(CameraComponent.class);
     if (cameraComponent == null) {
       return null;
     }

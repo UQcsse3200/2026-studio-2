@@ -1,7 +1,13 @@
 package com.csse3200.game.entities.factories;
 
 import com.csse3200.game.components.CombatStatsComponent;
-import com.csse3200.game.components.player.*;
+import com.csse3200.game.components.player.ArrowSelectionComponent;
+import com.csse3200.game.components.player.BowComponent;
+import com.csse3200.game.components.player.GrappleComponent;
+import com.csse3200.game.components.player.InventoryComponent;
+import com.csse3200.game.components.player.PlayerActions;
+import com.csse3200.game.components.player.PlayerAttackComponent;
+import com.csse3200.game.components.player.PlayerStatsDisplay;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.PlayerConfig;
 import com.csse3200.game.files.FileLoader;
@@ -23,7 +29,7 @@ import com.csse3200.game.services.ServiceLocator;
  */
 public class PlayerFactory {
   private static final PlayerConfig stats =
-      FileLoader.readClass(PlayerConfig.class, "configs/player.json");
+          FileLoader.readClass(PlayerConfig.class, "configs/player.json");
 
   /**
    * Create a player entity.
@@ -32,23 +38,25 @@ public class PlayerFactory {
    */
   public static Entity createPlayer() {
     InputComponent inputComponent =
-        ServiceLocator.getInputService().getInputFactory().createForPlayer();
+            ServiceLocator.getInputService().getInputFactory().createForPlayer();
+    BowComponent bowComponent = new BowComponent();
 
     Entity player =
-        new Entity()
-            .addComponent(new TextureRenderComponent("images/box_boy_leaf.png"))
-            .addComponent(new PhysicsComponent())
-            .addComponent(new ColliderComponent())
-            .addComponent(new HitboxComponent().setLayer(PhysicsLayer.PLAYER))
-            .addComponent(new PlayerActions())
-            .addComponent(new PlayerAttackComponent())
-            .addComponent(new CombatStatsComponent(stats.health, stats.baseAttack))
-            .addComponent(new InventoryComponent(stats.gold))
-            .addComponent(inputComponent)
-            .addComponent(new PlayerStatsDisplay())
-            .addComponent(new GrappleComponent())
-            .addComponent(new GrappleRenderComponent())
-            .addComponent(new ArrowSelectionComponent());
+            new Entity()
+                    .addComponent(new TextureRenderComponent("images/box_boy_leaf.png"))
+                    .addComponent(new PhysicsComponent())
+                    .addComponent(new ColliderComponent())
+                    .addComponent(new HitboxComponent().setLayer(PhysicsLayer.PLAYER))
+                    .addComponent(new PlayerActions())
+                    .addComponent(bowComponent)
+                    .addComponent(new PlayerAttackComponent(bowComponent))
+                    .addComponent(new CombatStatsComponent(stats.health, stats.baseAttack))
+                    .addComponent(new InventoryComponent(stats.gold))
+                    .addComponent(inputComponent)
+                    .addComponent(new PlayerStatsDisplay())
+                    .addComponent(new GrappleComponent())
+                    .addComponent(new GrappleRenderComponent())
+                    .addComponent(new ArrowSelectionComponent());
 
     PhysicsUtils.setScaledCollider(player, 0.6f, 0.3f);
     player.getComponent(ColliderComponent.class).setDensity(1.5f);

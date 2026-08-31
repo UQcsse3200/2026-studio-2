@@ -78,7 +78,7 @@ public class PlayerActions extends Component {
     RaycastHit hit = new RaycastHit();
     return ServiceLocator.getPhysicsService()
         .getPhysics()
-        .raycast(rayStart, rayEnd, PhysicsLayer.GROUND, hit);
+        .raycast(rayStart, rayEnd, PhysicsLayer.SOLID, hit);
   }
 
   /**

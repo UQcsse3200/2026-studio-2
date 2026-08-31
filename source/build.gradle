@@ -25,7 +25,7 @@ sonarqube {
 // formatting config
 spotless {
     java {
-        googleJavaFormat('1.28.0')
+        googleJavaFormat()
         trimTrailingWhitespace()
         endWithNewline()
         target '*/src/**/*.java'

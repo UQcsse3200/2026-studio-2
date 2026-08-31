@@ -47,14 +47,14 @@ class KeyboardPlayerInputComponentTest {
     Entity player = new Entity().addComponent(component);
     player.setPosition(0f, 0f);
     Entity cameraEntity = new Entity().addComponent(new CameraComponent(camera));
-    component.setCameraEntity(cameraEntity);
+    component.setCameraComponent(cameraEntity.getComponent(CameraComponent.class));
 
     AtomicInteger shots = new AtomicInteger();
     AtomicReference<Vector2> direction = new AtomicReference<>();
     player
         .getEvents()
         .addListener(
-            "fireArrow",
+            "primaryAttack",
             (Vector2 aimDirection) -> {
               shots.incrementAndGet();
               direction.set(aimDirection);
@@ -75,7 +75,7 @@ class KeyboardPlayerInputComponentTest {
     KeyboardPlayerInputComponent component = new KeyboardPlayerInputComponent();
     Entity player = new Entity().addComponent(component);
     AtomicInteger shots = new AtomicInteger();
-    player.getEvents().addListener("fireArrow", (Vector2 ignored) -> shots.incrementAndGet());
+    player.getEvents().addListener("primaryAttack", (Vector2 ignored) -> shots.incrementAndGet());
 
     assertTrue(component.keyDown(Keys.E));
     assertEquals(0, shots.get());
@@ -120,7 +120,7 @@ class KeyboardPlayerInputComponentTest {
     KeyboardPlayerInputComponent component = new KeyboardPlayerInputComponent();
     Entity player = new Entity().addComponent(component);
     player.setPosition(0f, 0f);
-    component.setCameraEntity(new Entity().addComponent(new CameraComponent(camera)));
+    component.setCameraComponent(new CameraComponent(camera));
     AtomicReference<Vector2> direction = new AtomicReference<>();
     player.getEvents().addListener("grappleFire", (Vector2 aim) -> direction.set(aim));
 
