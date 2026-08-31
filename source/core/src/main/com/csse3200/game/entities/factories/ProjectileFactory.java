@@ -16,7 +16,7 @@ public class ProjectileFactory {
   public static final float STANDARD_ARROW_RANGE = 15f;
 
   public static final float GRAPPLE_ARROW_SPEED = 16f;
-  public static final float GRAPPLE_ARROW_RANGE = 10f;
+  public static final float GRAPPLE_ARROW_RANGE = 16f;
 
   /**
    * Creates a standard player arrow with unlimited-ammo behaviour.
