@@ -12,6 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
+import com.csse3200.game.components.maingame.MainGameExitDisplay;
 import com.csse3200.game.events.EventHandler;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.dialogue.TypewriterEffect;
@@ -67,6 +68,12 @@ public class GameEndDisplay extends UIComponent {
     }
     if (panel != null) {
       panel.setVisible(true);
+    }
+    if (entity != null) {
+      MainGameExitDisplay exitDisplay = entity.getComponent(MainGameExitDisplay.class);
+      if (exitDisplay != null) {
+        exitDisplay.setVisible(false);
+      }
     }
   }
 
