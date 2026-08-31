@@ -8,6 +8,7 @@ import com.badlogic.gdx.utils.Timer.Task;
 import com.csse3200.game.areas.terrain.TerrainComponent;
 import com.csse3200.game.components.Component;
 import com.csse3200.game.entities.Entity;
+import com.csse3200.game.services.ServiceLocator;
 import java.util.ArrayList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,26 +16,34 @@ import org.slf4j.LoggerFactory;
 public class CyclopsMinigameLogicComponent extends Component {
   private static final Logger logger = LoggerFactory.getLogger(CyclopsMinigameLogicComponent.class);
 
+  /* State Machine */
+  protected enum State {
+    STOPPED,
+    PLAYING,
+  }
+
+  private State state;
+
   /* Minigame Components */
-  private final TimingBarLogic logic;
+  private final TimingBarLogic timingBarLogic;
   private final TimingBarDisplay timingBarDisplay;
-  private boolean running = false;
+
+  /* Screen Components */
+  private BlankTransitionScreen transitionScreen;
 
   /* Timing Components */
-  private static final float timingBarDelay = 0.5f; // 0.5 of a second
-
-  private boolean timingBarGameActive = false;
-  private boolean pillarTransitioning = false;
-  private boolean readyToMovePlayer = false;
+  private static final float TIMING_BAR_DELAY = 0.3f; // 0.3 of a second
+  private static final float TRANSITION_CHANGE_DELAY = 0.3f; // 0.3 of a second
+  private static final float TRANSITION_DELAY = 0.5f; // 0.3 of a second
 
   /* Player */
   private Entity player;
 
   /* Map Info */
   private TerrainComponent terrain;
-  private final GridPoint2 MAPSIZE;
-  private static final int Y = 3;
-  private GridPoint2 endingLocation;
+  private GridPoint2 mapSize;
+  private static final int Y_LEVEL = 3;
+  private GridPoint2 winLocation;
   private ArrayList<GridPoint2> pillarLocations;
   private ArrayList<GridPoint2> lossLocations;
   private int numOfPillars = 3;
@@ -50,13 +59,24 @@ public class CyclopsMinigameLogicComponent extends Component {
    */
   public CyclopsMinigameLogicComponent(
       TimingBarLogic logic, TimingBarDisplay display, TerrainComponent terrain, Entity player) {
-    this.logic = logic;
+    this.timingBarLogic = logic;
     this.timingBarDisplay = display;
     this.terrain = terrain;
     this.player = player;
 
-    this.MAPSIZE = terrain.getMapBounds(terrain.getLayer());
-    endingLocation = new GridPoint2(MAPSIZE.x - 1, Y);
+    this.state = State.STOPPED;
+
+    initialiseComponents();
+  }
+
+  protected void initialiseComponents() {
+    /* Screens - Transition, win, lose screen */
+    this.transitionScreen = new BlankTransitionScreen();
+    ServiceLocator.getEntityService().register(new Entity().addComponent(this.transitionScreen));
+
+    /* Map / Terrain dependent components */
+    this.mapSize = terrain.getMapBounds(terrain.getLayer());
+    winLocation = new GridPoint2(mapSize.x - 1, Y_LEVEL);
     setupPillarLocations();
   }
 
@@ -68,104 +88,129 @@ public class CyclopsMinigameLogicComponent extends Component {
     logger.info("Pillars used = {}", numOfPillars);
 
     for (int i = 1; i <= numOfPillars; i++) {
-      int x = ((MAPSIZE.x / (numOfPillars)) * i) - (MAPSIZE.x / (numOfPillars * 2)) - 1;
-      GridPoint2 pillar = new GridPoint2(x, Y);
+      int x = ((mapSize.x / (numOfPillars)) * i) - (mapSize.x / (numOfPillars * 2)) - 1;
+      GridPoint2 pillar = new GridPoint2(x, Y_LEVEL);
       pillarLocations.add(pillar);
       logger.info("Pillar {} X world-location set to {}", i, pillar);
 
-      int lossX = ((MAPSIZE.x / (numOfPillars)) * i);
-      GridPoint2 loss = new GridPoint2(lossX, Y);
+      int lossX = ((mapSize.x / (numOfPillars)) * i);
+      GridPoint2 loss = new GridPoint2(lossX, Y_LEVEL);
       lossLocations.add(loss);
     }
 
     logger.info("Pillar locations setup");
   }
 
-  private boolean moveToNextPillar() {
-    currentPillar += 1;
+  private boolean moveToNextLocation(boolean success) {
+    if (success) {
+      currentPillar += 1;
 
-    if (currentPillar >= numOfPillars) {
-      player.setPosition(terrain.tileToWorldPosition(endingLocation));
-      return false;
+      if (currentPillar >= numOfPillars) {
+        player.setPosition(terrain.tileToWorldPosition(winLocation));
+        return false;
+      }
+
+      player.setPosition(terrain.tileToWorldPosition(pillarLocations.get(currentPillar)));
+
+    } else {
+      player.setPosition(terrain.tileToWorldPosition(lossLocations.get(currentPillar)));
     }
 
-    player.setPosition(terrain.tileToWorldPosition(pillarLocations.get(currentPillar)));
     return true;
   }
 
-  private void moveToNextLossLocation() {
-    player.setPosition(terrain.tileToWorldPosition(lossLocations.get(currentPillar)));
+  private void updatePlaying() {
+    timingBarLogic.update(Gdx.graphics.getDeltaTime());
+    if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
+      stopTimingBar();
+    }
   }
 
-  private void toggleTimingBarGame() {
+  private void startTimingBar() {
     Timer.schedule(
         new Task() {
           @Override
           public void run() {
-            logic.startMarker();
-            timingBarDisplay.setVisible(!timingBarDisplay.isVisible());
-            timingBarGameActive = !timingBarGameActive;
-
-            // temporary VV
-            if (!timingBarGameActive) readyToMovePlayer = true;
+            timingBarDisplay.setVisible(true);
+            timingBarLogic.startMarker();
+            state = State.PLAYING;
           }
         },
-        timingBarDelay);
+        TIMING_BAR_DELAY);
+  }
+
+  private void stopTimingBar() {
+    timingBarLogic.stopMarker();
+
+    Timer.schedule(
+        new Task() {
+          @Override
+          public void run() {
+            timingBarDisplay.setVisible(false);
+            startTransition();
+          }
+        },
+        TIMING_BAR_DELAY);
+  }
+
+  private void startTransition() {
+    Timer.schedule(
+        new Task() {
+          @Override
+          public void run() {
+            transitionScreen.setVisible(true);
+            transition();
+          }
+        },
+        TRANSITION_CHANGE_DELAY);
+  }
+
+  private void stopTransition(boolean restart) {
+    Timer.schedule(
+        new Task() {
+          @Override
+          public void run() {
+            transitionScreen.setVisible(false);
+            if (restart) {
+              startTimingBar();
+            }
+          }
+        },
+        TRANSITION_DELAY);
+  }
+
+  private void transition() {
+    boolean success = timingBarLogic.checkHit();
+
+    boolean moved = moveToNextLocation(success);
+
+    if (moved && success) {
+      // keep playing
+      stopTransition(true);
+    } else if (moved) {
+      // lost
+      stopTransition(false);
+    } else {
+      // Show win screen
+      stopTransition(false);
+    }
   }
 
   @Override
   public void update() {
-    if (running) {
-
-      checkDevInputs();
-
-      if (timingBarGameActive) {
-        if (logic != null && !logic.isStopped) {
-          logic.update(Gdx.graphics.getDeltaTime());
-        }
-
-        if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
-          logger.info("sliding marker stopped");
-          logic.stopMarker();
-          toggleTimingBarGame();
-        }
-      } else if (readyToMovePlayer) {
-        // Assuming player was successful in minigame
-        readyToMovePlayer = false;
-        if (logic.checkHit()) {
-          if (!moveToNextPillar()) {
-            running = false;
-            logger.info("Player won minigame");
-          }
-        } else {
-          running = false;
-          logger.info("Player lost minigame");
-          moveToNextLossLocation();
-          return;
-        }
-        toggleTimingBarGame();
-      }
-    }
-  }
-
-  private void checkDevInputs() {
-    if (Gdx.input.isKeyPressed(Input.Keys.PERIOD)) { // DEV TOOL Sort of
-      logger.info("DEV: activated timing bar");
-      logic.startMarker();
-      timingBarDisplay.setVisible(true);
-      timingBarGameActive = true;
-      running = true;
-    } else if (Gdx.input.isKeyJustPressed(Input.Keys.COMMA)) { // DEV TOOL
-      logger.info("DEV: move player forward");
-      moveToNextPillar();
+    switch (state) {
+      case State.PLAYING:
+        updatePlaying();
+        break;
+      default:
+        // Waiting for another state to finish
+        break;
     }
   }
 
   public void startMinigame() {
     logger.info("starting timing bar minigame");
     player.setPosition(terrain.tileToWorldPosition(pillarLocations.getFirst()));
-
-    this.running = true;
-    toggleTimingBarGame();
+    startTimingBar();
   }
 }
