@@ -3,6 +3,8 @@ package com.csse3200.game.components.item;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 
+import com.csse3200.game.components.item.weapons.RopeArr;
+import com.csse3200.game.components.item.weapons.StandardArr;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.extensions.GameExtension;
 import org.junit.jupiter.api.Test;

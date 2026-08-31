@@ -5,6 +5,10 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.csse3200.game.components.inventory.InventoryComponent;
+import com.csse3200.game.components.item.weapons.ColdArr;
+import com.csse3200.game.components.item.weapons.FireArr;
+import com.csse3200.game.components.item.weapons.RopeArr;
+import com.csse3200.game.components.item.weapons.StandardArr;
 import com.csse3200.game.extensions.GameExtension;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -53,5 +57,37 @@ class ArrowTest {
     assertEquals(10, standard.getDamage());
     assertTrue(standard.isConsumeAmmo());
     assertEquals(0f, standard.getCooldown(), 0.001f);
+  }
+
+  @Test
+  void shouldKeepFireArrowSpecificAttributes() {
+    FireArr fire = new FireArr(1);
+
+    assertEquals(ItemType.FireArrow, fire.getItemType());
+    assertEquals(ItemId.FIRE_ARROW.getId(), fire.getItemId());
+    assertEquals("Fire Arrow", fire.getItemName());
+    assertEquals(1, fire.getQuantity());
+    assertEquals(5, fire.getDamage());
+    assertEquals(new StandardArr(1).getRange() + 1, fire.getRange(), 0.001f);
+    assertTrue(fire.isConsumeAmmo());
+    assertEquals(0f, fire.getCooldown(), 0.001f);
+    assertEquals(3f, fire.getBurnDamagePerSecond(), 0.001f);
+    assertEquals(5f, fire.getBurnTime(), 0.001f);
+  }
+
+  @Test
+  void shouldKeepColdrrowSpecificAttributes() {
+    ColdArr cold = new ColdArr(1);
+
+    assertEquals(ItemType.ColdArrow, cold.getItemType());
+    assertEquals(ItemId.COLD_ARROW.getId(), cold.getItemId());
+    assertEquals("Cold Arrow", cold.getItemName());
+    assertEquals(1, cold.getQuantity());
+    assertEquals(8, cold.getDamage());
+    assertEquals(new StandardArr(1).getRange() + 1, cold.getRange(), 0.001f);
+    assertTrue(cold.isConsumeAmmo());
+    assertEquals(0f, cold.getCooldown(), 0.001f);
+    assertEquals(0.75f, cold.getSlowSpeed(), 0.001f);
+    assertEquals(5f, cold.getSlowTime(), 0.001f);
   }
 }
