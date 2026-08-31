@@ -3,6 +3,7 @@ package com.csse3200.game.ui.terminal;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.csse3200.game.input.InputComponent;
+import com.csse3200.game.services.ServiceLocator;
 
 /**
  * Input handler for the debug terminal for keyboard and touch (mouse) input. This input handler
@@ -42,10 +43,19 @@ public class KeyboardTerminalInputComponent extends InputComponent {
    */
   @Override
   public boolean keyDown(int keycode) {
-    // handle open and close terminal
+    // handle open and close termina`l
     if (keycode == TOGGLE_OPEN_KEY) {
       terminal.toggleIsOpen();
       return true;
+    }
+    if (keycode == Input.Keys.ESCAPE) {
+      ServiceLocator.getEntityService().togglePaused();
+
+      if (ServiceLocator.getEntityService().getPaused()) {
+        entity.getEvents().trigger("showPauseMenu");
+      } else {
+        entity.getEvents().trigger("hidePauseMenu");
+      }
     }
 
     return terminal.isOpen();
