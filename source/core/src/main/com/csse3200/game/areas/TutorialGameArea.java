@@ -341,7 +341,7 @@ public class TutorialGameArea extends GameArea {
 
   private void spawnWinCondition() {
     Entity winCon = ObstacleFactory.createWinConEntity();
-    spawnEntityAt(winCon, new GridPoint2(10, 11), true, true);
+    spawnEntityAt(winCon, new GridPoint2(80, 18), true, true);
   }
 
   private void spawnGhosts() {
