@@ -52,14 +52,16 @@ public class ObstacleFactory {
     return platform;
   }
 
-  public static Entity createMovingPlatform(int grappleSides, Vector2 leftTarget, Vector2 rightTarget, Vector2 maxSpeed) {
+  public static Entity createMovingPlatform(
+      int grappleSides, Vector2 leftTarget, Vector2 rightTarget, Vector2 maxSpeed) {
     Entity movingPlatform =
-            new Entity()
-                    .addComponent(new TextureRenderComponent("images/platform.png"))
-                    .addComponent(new PhysicsComponent())
-                    .addComponent(new PhysicsMovementComponent())
-                    .addComponent(new ColliderComponent().setLayer(PhysicsLayer.OBSTACLE))
-                    .addComponent(new MovingPlatformComponent(grappleSides, leftTarget, rightTarget, maxSpeed));
+        new Entity()
+            .addComponent(new TextureRenderComponent("images/platform.png"))
+            .addComponent(new PhysicsComponent())
+            .addComponent(new PhysicsMovementComponent())
+            .addComponent(new ColliderComponent().setLayer(PhysicsLayer.OBSTACLE))
+            .addComponent(
+                new MovingPlatformComponent(grappleSides, leftTarget, rightTarget, maxSpeed));
 
     return movingPlatform;
   }
