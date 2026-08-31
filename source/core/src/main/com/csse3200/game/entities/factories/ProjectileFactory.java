@@ -32,9 +32,7 @@ public class ProjectileFactory {
                 new ArrowProjectileComponent(direction, STANDARD_ARROW_SPEED, STANDARD_ARROW_RANGE))
             .addComponent(new ArrowRenderComponent());
     arrow.setScale(0.5f, 0.1f);
-    arrow.setPosition(
-      position.x - arrow.getScale().x / 2f,
-      position.y - arrow.getScale().y / 2f);
+    arrow.setPosition(position.x - arrow.getScale().x / 2f, position.y - arrow.getScale().y / 2f);
     return arrow;
   }
 
