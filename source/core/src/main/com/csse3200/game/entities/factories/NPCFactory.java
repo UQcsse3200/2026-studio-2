@@ -108,6 +108,8 @@ public class NPCFactory {
             .addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER, 1.5f))
             .addComponent(aiComponent);
 
+    npc.getComponent(PhysicsComponent.class).getBody().setGravityScale(0f);
+
     PhysicsUtils.setScaledCollider(npc, 0.9f, 0.4f);
     return npc;
   }

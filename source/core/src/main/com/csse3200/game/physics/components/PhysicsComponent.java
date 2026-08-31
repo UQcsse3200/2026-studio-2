@@ -18,7 +18,7 @@ import com.csse3200.game.services.ServiceLocator;
  * {@link PhysicsContactListener }
  */
 public class PhysicsComponent extends Component {
-  private static final float GROUND_FRICTION = 5f;
+  private static final float GROUND_FRICTION = 2f;
   private final PhysicsEngine physics;
   private final Body body;
   private boolean paused = false;

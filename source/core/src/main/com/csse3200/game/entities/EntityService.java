@@ -16,6 +16,7 @@ public class EntityService {
   private static final int INITIAL_CAPACITY = 16;
 
   private final Array<Entity> entities = new Array<>(false, INITIAL_CAPACITY);
+  private final Array<Entity> pendingRemoval = new Array<>(false, INITIAL_CAPACITY);
 
   private boolean paused;
 
@@ -38,6 +39,23 @@ public class EntityService {
   public void unregister(Entity entity) {
     logger.debug("Unregistering {} in entity service", entity);
     entities.removeValue(entity, true);
+    pendingRemoval.removeValue(entity, true);
+  }
+
+  /**
+   * Schedules an entity for safe disposal after the current update finishes.
+   *
+   * <p>This should be used by components which expire during an entity update, since immediately
+   * removing an entity while the service is iterating can skip the next entity.
+   *
+   * @param entity entity to remove
+   */
+  public void scheduleRemoval(Entity entity) {
+    if (entity == null || pendingRemoval.contains(entity, true)) {
+      return;
+    }
+    entity.setEnabled(false);
+    pendingRemoval.add(entity);
   }
 
   /** Update all registered entities. Should only be called from the main game loop. */
@@ -48,24 +66,26 @@ public class EntityService {
         entity.update();
       }
     }
+    removeScheduledEntities();
   }
 
   /** Dispose all entities. */
   public void dispose() {
-    for (Entity entity : entities) {
+    Array<Entity> existingEntities = new Array<>(entities);
+    entities.clear();
+    pendingRemoval.clear();
+    for (Entity entity : existingEntities) {
       entity.dispose();
     }
   }
 
-  public void setPaused(boolean newPaused) {
-    paused = newPaused;
-  }
-
-  public void togglePaused() {
-    paused = !paused;
-  }
-
-  public boolean getPaused() {
-    return paused;
+  private void removeScheduledEntities() {
+    Array<Entity> removals = new Array<>(pendingRemoval);
+    pendingRemoval.clear();
+    for (Entity entity : removals) {
+      if (entities.contains(entity, true)) {
+        entity.dispose();
+      }
+    }
   }
 }
