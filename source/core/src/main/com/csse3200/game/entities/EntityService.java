@@ -67,6 +67,5 @@ public class EntityService {
     for (Entity entity : entities) {
       entity.dispose();
     }
-
   }
 }
