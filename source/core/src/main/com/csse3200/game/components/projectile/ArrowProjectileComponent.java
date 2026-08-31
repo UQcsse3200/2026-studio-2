@@ -52,7 +52,7 @@ public class ArrowProjectileComponent extends Component {
     combatStats = entity.getComponent(CombatStatsComponent.class);
 
     Body body = physicsComponent.getBody();
-    body.setGravityScale(0f);
+    body.setGravityScale(0.05f);
     body.setLinearDamping(0f);
     body.setBullet(true);
     body.setLinearVelocity(direction.cpy().scl(speed));

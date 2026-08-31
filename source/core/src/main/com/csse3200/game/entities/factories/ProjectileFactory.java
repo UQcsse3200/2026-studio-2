@@ -12,7 +12,7 @@ import com.csse3200.game.rendering.ArrowRenderComponent;
 /** Factory for player and enemy projectile entities. */
 public class ProjectileFactory {
   public static final int STANDARD_ARROW_DAMAGE = 10;
-  public static final float STANDARD_ARROW_SPEED = 12f;
+  public static final float STANDARD_ARROW_SPEED = 15f;
   public static final float STANDARD_ARROW_RANGE = 15f;
 
   /**
