@@ -1,11 +1,10 @@
 package com.csse3200.game.entities.factories;
-import com.csse3200.game.components.CombatStatsComponent;
-
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
-import com.csse3200.game.components.level.MovingPlatformComponent;
+import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.TouchAttackComponent;
+import com.csse3200.game.components.level.MovingPlatformComponent;
 import com.csse3200.game.components.level.PlatformGrappleComponent;
 import com.csse3200.game.components.level.WinConditionComponent;
 import com.csse3200.game.entities.Entity;
@@ -59,8 +58,8 @@ public class ObstacleFactory {
 
   public static Entity createMovingPlatform(
       int grappleSides, Vector2 firstTarget, Vector2 secondTarget, Vector2 maxSpeed) {
-      PhysicsComponent physicsComponent = new PhysicsComponent();
-      ColliderComponent colliderComponent = new ColliderComponent();
+    PhysicsComponent physicsComponent = new PhysicsComponent();
+    ColliderComponent colliderComponent = new ColliderComponent();
     Entity movingPlatform =
         new Entity()
             .addComponent(new TextureRenderComponent("images/platform.png"))
@@ -124,18 +123,19 @@ public class ObstacleFactory {
   /**
    * Creates a spike hazard entity with custom rotation.
    *
-   * @param rotationAngle Angle in degrees to rotate the spike (0 = UP, 180 = DOWN, 270 = LEFT, 90 = RIGHT)
+   * @param rotationAngle Angle in degrees to rotate the spike (0 = UP, 180 = DOWN, 270 = LEFT, 90 =
+   *     RIGHT)
    * @return spike entity
    */
   public static Entity createSpike(float rotationAngle) {
     Entity spike =
-            new Entity()
-                    .addComponent(new TextureRenderComponent("images/spike.png"))
-                    .addComponent(new PhysicsComponent())
-                    .addComponent(new ColliderComponent().setLayer(PhysicsLayer.OBSTACLE))
-                    .addComponent(new CombatStatsComponent(100, 1))
-                    .addComponent(new HitboxComponent().setLayer(PhysicsLayer.OBSTACLE))
-                    .addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER));
+        new Entity()
+            .addComponent(new TextureRenderComponent("images/spike.png"))
+            .addComponent(new PhysicsComponent())
+            .addComponent(new ColliderComponent().setLayer(PhysicsLayer.OBSTACLE))
+            .addComponent(new CombatStatsComponent(100, 1))
+            .addComponent(new HitboxComponent().setLayer(PhysicsLayer.OBSTACLE))
+            .addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER));
 
     spike.getComponent(PhysicsComponent.class).setBodyType(BodyType.StaticBody);
 

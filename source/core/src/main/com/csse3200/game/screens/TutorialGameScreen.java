@@ -60,7 +60,7 @@ public class TutorialGameScreen extends ScreenAdapter {
 
     renderer = RenderFactory.createRenderer();
 
-    //renderer.getDebug().setActive(true);
+    // renderer.getDebug().setActive(true);
     renderer.getDebug().renderPhysicsWorld(physicsEngine.getWorld());
 
     loadAssets();

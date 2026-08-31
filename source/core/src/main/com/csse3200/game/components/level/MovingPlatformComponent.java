@@ -30,9 +30,7 @@ public class MovingPlatformComponent extends PlatformGrappleComponent {
   }
 
   @Override
-  /**
-   * Create the moving platform and assign it an initial target.
-   */
+  /** Create the moving platform and assign it an initial target. */
   public void create() {
     movementComponent = entity.getComponent(PhysicsMovementComponent.class);
     physicsComponent = entity.getComponent(PhysicsComponent.class);
@@ -42,9 +40,8 @@ public class MovingPlatformComponent extends PlatformGrappleComponent {
 
   @Override
   /**
-   * Updates the target and speed of the moving platform once it reaches
-   * one of its targets. Upon reaching its first target, its speed is reversed
-   * and its target is set to the second target.
+   * Updates the target and speed of the moving platform once it reaches one of its targets. Upon
+   * reaching its first target, its speed is reversed and its target is set to the second target.
    */
   public void update() {
     if (movementComponent.getMoving() && movementComponent.getTarget() != null) {
@@ -72,14 +69,14 @@ public class MovingPlatformComponent extends PlatformGrappleComponent {
         // reverse direction
         Vector2 velocity = getDirection().scl(maxSpeed.y);
         body.setLinearVelocity(velocity);
-
       }
     }
   }
 
   /**
-   * Gets the normalised direction of the moving platform.
-   * e.g. (-1, 0) for left and (1, 0) for right
+   * Gets the normalised direction of the moving platform. e.g. (-1, 0) for left and (1, 0) for
+   * right
+   *
    * @return normalised direction of movement.
    */
   private Vector2 getDirection() {

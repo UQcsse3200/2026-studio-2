@@ -38,7 +38,9 @@ public class GrappleComponent extends Component {
     RaycastHit hit = new RaycastHit();
 
     // Perform Box2D raycast against terrain/obstacle layers and exits if no surface was hit
-    if (!ServiceLocator.getPhysicsService().getPhysics().raycast(start, end, PhysicsLayer.SOLID, hit)) {
+    if (!ServiceLocator.getPhysicsService()
+        .getPhysics()
+        .raycast(start, end, PhysicsLayer.SOLID, hit)) {
       return;
     }
 
@@ -112,7 +114,7 @@ public class GrappleComponent extends Component {
   }
 
   public Vector2 getAnchorPoint() {
-    //return anchorPoint == null ? null : anchorPoint.cpy();
+    // return anchorPoint == null ? null : anchorPoint.cpy();
     if (!isAttached() || anchorBody == null) {
       return null;
     }

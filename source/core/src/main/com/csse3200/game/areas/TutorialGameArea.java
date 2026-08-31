@@ -30,7 +30,7 @@ public class TutorialGameArea extends GameArea {
   private static final int NUM_GHOSTS = 2;
 
   private static final PlatformConfig[] platforms = {
-    //first half
+    // first half
     new PlatformConfig(new GridPoint2(4, 2), 3, 1, 0),
     new PlatformConfig(new GridPoint2(8, 3), 3, 1, 0),
     new PlatformConfig(new GridPoint2(14, 6), 3, 1, 0),
@@ -43,15 +43,14 @@ public class TutorialGameArea extends GameArea {
     new PlatformConfig(new GridPoint2(14, 11), 3, 1, 0),
     new PlatformConfig(new GridPoint2(9, 13), 3, 1, 0),
 
-    //second half
+    // second half
     new PlatformConfig(new GridPoint2(56, 22), 3, 1, 0),
     new PlatformConfig(new GridPoint2(60, 23), 3, 1, 0),
     new PlatformConfig(new GridPoint2(64, 22), 3, 1, 0),
-
   };
 
   private static final PlatformConfig[] floors = {
-    //borders 
+    // borders
     new PlatformConfig(new GridPoint2(0, 0), 100, 1, 0),
     new PlatformConfig(new GridPoint2(0, 22), 50, 5, 0),
     new PlatformConfig(new GridPoint2(50, 25), 40, 5, 0),
@@ -72,35 +71,23 @@ public class TutorialGameArea extends GameArea {
     // second half
     new PlatformConfig(new GridPoint2(53, 13), 3, 4, 0),
     new PlatformConfig(new GridPoint2(56, 15), 3, 1, 0),
-
     new PlatformConfig(new GridPoint2(56, 16), 1, 3, 0),
-
-
     new PlatformConfig(new GridPoint2(53, 7), 3, 4, 0),
     new PlatformConfig(new GridPoint2(56, 10), 4, 1, 0),
-
-
     new PlatformConfig(new GridPoint2(63, 0), 1, 18, 0),
     new PlatformConfig(new GridPoint2(59, 18), 10, 1, 0),
-
     new PlatformConfig(new GridPoint2(68, 15), 3, 1, 0),
     new PlatformConfig(new GridPoint2(71, 15), 1, 6, 0),
-
     new PlatformConfig(new GridPoint2(64, 15), 1, 1, 0),
-
     new PlatformConfig(new GridPoint2(68, 11), 1, 3, 0),
     new PlatformConfig(new GridPoint2(68, 11), 3, 1, 0),
-
     new PlatformConfig(new GridPoint2(75, 15), 3, 1, 0),
     new PlatformConfig(new GridPoint2(75, 12), 1, 3, 0),
-
     new PlatformConfig(new GridPoint2(78, 0), 13, 17, 0),
   };
 
   private static final GridPoint2[] spikes = {
-          new GridPoint2(10, 2),
-          new GridPoint2(20, 2),
-          new GridPoint2(35, 2)
+    new GridPoint2(10, 2), new GridPoint2(20, 2), new GridPoint2(35, 2)
   };
 
   private static final GridPoint2 PLAYER_SPAWN = new GridPoint2(1, 4);
@@ -118,7 +105,7 @@ public class TutorialGameArea extends GameArea {
     "images/Tile_2.png",
     "images/platform.png",
     "images/box_boy_leaf.png",
-          "images/spike.png",
+    "images/spike.png",
     "images/tree.png",
     "images/ghost_king.png",
     "images/ghost_1.png",
@@ -297,34 +284,34 @@ public class TutorialGameArea extends GameArea {
         ObstacleFactory.createWall(worldBounds.x, WALL_WIDTH), GridPoint2Utils.ZERO, false, false);
   }
 
-  private void spawnMovingPlatforms(){
+  private void spawnMovingPlatforms() {
 
     Entity movingPlatform =
         ObstacleFactory.createMovingPlatform(
             0, new Vector2(9, 15), new Vector2(14, 15), new Vector2(3, 0));
-            movingPlatform.setScale(2, 1);
-            spawnEntityAt(movingPlatform, new GridPoint2(9, 15), false, false);
+    movingPlatform.setScale(2, 1);
+    spawnEntityAt(movingPlatform, new GridPoint2(9, 15), false, false);
 
     Entity movingPlatform2 =
         ObstacleFactory.createMovingPlatform(
             0, new Vector2(25, 15), new Vector2(36, 15), new Vector2(3, 0));
-            movingPlatform2.setScale(2, 1);
-            spawnEntityAt(movingPlatform2, new GridPoint2(25, 15), false, false);
+    movingPlatform2.setScale(2, 1);
+    spawnEntityAt(movingPlatform2, new GridPoint2(25, 15), false, false);
 
     Entity movingPlatform3 =
         ObstacleFactory.createMovingPlatform(
             0, new Vector2(61, 2), new Vector2(61, 10), new Vector2(0, 3));
-            spawnEntityAt(movingPlatform3, new GridPoint2(61, 10), false, false);
+    spawnEntityAt(movingPlatform3, new GridPoint2(61, 10), false, false);
 
     Entity movingPlatform4 =
         ObstacleFactory.createMovingPlatform(
             0, new Vector2(60, 12), new Vector2(60, 15), new Vector2(0, 3));
-            spawnEntityAt(movingPlatform4, new GridPoint2(60, 12), false, false);
+    spawnEntityAt(movingPlatform4, new GridPoint2(60, 12), false, false);
 
     Entity movingPlatform5 =
         ObstacleFactory.createMovingPlatform(
             0, new Vector2(72, 2), new Vector2(72, 12), new Vector2(0, 3));
-            spawnEntityAt(movingPlatform5, new GridPoint2(75, 2), false, false);
+    spawnEntityAt(movingPlatform5, new GridPoint2(75, 2), false, false);
   }
 
   private void spawnPlatforms() {
