@@ -13,20 +13,28 @@ import java.util.ArrayList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class CyclopsMinigameLogicComponent extends Component {
-  private static final Logger logger = LoggerFactory.getLogger(CyclopsMinigameLogicComponent.class);
+public class CyclopsMinigameLogic extends Component {
+  private static final Logger logger = LoggerFactory.getLogger(CyclopsMinigameLogic.class);
 
   /* State Machine */
-  protected enum State {
+  private enum State {
     STOPPED,
     PLAYING,
-  }
+    GAME_OVER
+  };
+
+  /* Game Outcome */
+  private enum Outcome {
+    WIN,
+    LOSS
+  };
 
   private State state;
 
   /* Minigame Components */
   private final TimingBarLogic timingBarLogic;
   private final TimingBarDisplay timingBarDisplay;
+  private Outcome outcome;
 
   /* Screen Components */
   private BlankTransitionScreen transitionScreen;
@@ -57,7 +65,7 @@ public class CyclopsMinigameLogicComponent extends Component {
    * @param terrain
    * @param player - A display only player entity
    */
-  public CyclopsMinigameLogicComponent(
+  public CyclopsMinigameLogic(
       TimingBarLogic logic, TimingBarDisplay display, TerrainComponent terrain, Entity player) {
     this.timingBarLogic = logic;
     this.timingBarDisplay = display;
@@ -76,7 +84,7 @@ public class CyclopsMinigameLogicComponent extends Component {
 
     /* Map / Terrain dependent components */
     this.mapSize = terrain.getMapBounds(terrain.getLayer());
-    winLocation = new GridPoint2(mapSize.x - 1, Y_LEVEL);
+    winLocation = new GridPoint2(mapSize.x, Y_LEVEL);
     setupPillarLocations();
   }
 
@@ -171,9 +179,8 @@ public class CyclopsMinigameLogicComponent extends Component {
           @Override
           public void run() {
             transitionScreen.setVisible(false);
-            if (restart) {
-              startTimingBar();
-            }
+            if (restart) startTimingBar();
+            else state = State.GAME_OVER;
           }
         },
         TRANSITION_DELAY);
@@ -187,13 +194,17 @@ public class CyclopsMinigameLogicComponent extends Component {
     if (moved && success) {
       // keep playing
       stopTransition(true);
-    } else if (moved) {
-      // lost
-      stopTransition(false);
-    } else {
-      // Show win screen
-      stopTransition(false);
+      return;
     }
+
+    if (moved) {
+      // Moved to loss position
+      outcome = Outcome.LOSS;
+    } else {
+      // Didn't move, so game was won
+      outcome = Outcome.WIN;
+    }
+    stopTransition(false);
   }
 
   @Override
@@ -201,6 +212,8 @@ public class CyclopsMinigameLogicComponent extends Component {
     switch (state) {
       case State.PLAYING:
         updatePlaying();
+        break;
+      case State.GAME_OVER:
         break;
       default:
         // Waiting for another state to finish

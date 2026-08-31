@@ -3,7 +3,7 @@ package com.csse3200.game.areas;
 import com.badlogic.gdx.math.GridPoint2;
 import com.csse3200.game.areas.terrain.TerrainFactory;
 import com.csse3200.game.components.gamearea.GameAreaDisplay;
-import com.csse3200.game.components.minigames.CyclopsTimingBar.CyclopsMinigameLogicComponent;
+import com.csse3200.game.components.minigames.CyclopsTimingBar.CyclopsMinigameLogic;
 import com.csse3200.game.components.minigames.CyclopsTimingBar.TimingBarDisplay;
 import com.csse3200.game.components.minigames.CyclopsTimingBar.TimingBarLogic;
 import com.csse3200.game.entities.Entity;
@@ -21,7 +21,7 @@ public class CyclopsMinigameArea extends GameArea {
 
   private final TerrainFactory terrainFactory;
   private Entity timingMinigameEntity;
-  private CyclopsMinigameLogicComponent minigameLogicComponent;
+  private CyclopsMinigameLogic minigameLogicComponent;
 
   private Entity player;
   private GridPoint2 startPosition = new GridPoint2(-10, -10);
@@ -48,7 +48,7 @@ public class CyclopsMinigameArea extends GameArea {
     TimingBarLogic timingBarLogic = new TimingBarLogic(20f);
     TimingBarDisplay timingBarDisplay = new TimingBarDisplay(timingBarLogic);
     minigameLogicComponent =
-        new CyclopsMinigameLogicComponent(timingBarLogic, timingBarDisplay, terrain, player);
+        new CyclopsMinigameLogic(timingBarLogic, timingBarDisplay, terrain, player);
 
     timingMinigameEntity = new Entity();
     timingMinigameEntity.addComponent(timingBarDisplay);
