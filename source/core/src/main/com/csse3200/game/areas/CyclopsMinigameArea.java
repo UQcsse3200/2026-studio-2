@@ -109,6 +109,16 @@ public class CyclopsMinigameArea extends GameArea {
     GridPoint2 mapSize = terrain.getMapBounds(terrain.getLayer());
 
     for (int i = 1; i <= NUM_STATUES; i++) {
+      /* Formula for equally spacing out statues.
+        Idea was to have equal spacing for all statues (mapSize.x / NUM_STATUES).
+        This splits the map into (currently thirds), then * i (statue number) to place
+        in correct position.
+
+        This is then offset by (mapSize.x / num_statues*2) which effectively gets the middle
+        of the gap between two statues / locations.
+
+        -2 is just to better offset it and can be adjusted freely
+       */
       int x = ((mapSize.x / NUM_STATUES) * i) - (mapSize.x / (NUM_STATUES * 2)) - 2;
       GridPoint2 location = new GridPoint2(x - 1, statue_y_level);
       statueLocations.add(location);
