@@ -476,14 +476,14 @@ public class InventoryComponent extends Component {
   }
 
   /**
-   * Sorts occupied slots by {@link ItemType} declaration order and moves empty slots to the end.
+   * Sorts occupied slots by stable numeric item ID and moves empty slots to the end.
    *
    * <p>If an item is selected, that item remains selected at its new slot index. A selected empty
    * slot remains at the same physical index.
    *
    * @return true when the slot order changed
    */
-  public boolean sortByItemType() {
+  public boolean sortByItemId() {
     List<InventorySlot> previousSlots = new ArrayList<>(slots);
     int oldSelectedSlotIndex = selectedSlotIndex;
     ItemType oldSelectedItem = getSelectedItem();
@@ -496,7 +496,7 @@ public class InventoryComponent extends Component {
           if (second.isEmpty()) {
             return -1;
           }
-          return Integer.compare(first.getItemType().ordinal(), second.getItemType().ordinal());
+          return Integer.compare(first.getItemType().getId(), second.getItemType().getId());
         });
 
     if (slots.equals(previousSlots)) {

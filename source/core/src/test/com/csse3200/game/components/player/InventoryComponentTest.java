@@ -357,13 +357,31 @@ class InventoryComponentTest {
   }
 
   @Test
-  void shouldSortOccupiedSlotsByItemTypeAndMoveEmptySlotsToEnd() {
+  void shouldSortOccupiedSlotsByNumericItemId() {
+    InventoryComponent inventory = new InventoryComponent(0, 5);
+    inventory.addItem(ItemType.ColdArrow, 5);
+    inventory.addItem(ItemType.CONSUMABLE, 3);
+    inventory.addItem(ItemType.FireArrow, 4);
+    inventory.addItem(ItemType.RopeArrow, 2);
+    inventory.addItem(ItemType.ARROW, 1);
+
+    assertTrue(inventory.sortByItemId());
+
+    assertEquals(ItemType.ARROW, inventory.getSlot(0).getItemType());
+    assertEquals(ItemType.RopeArrow, inventory.getSlot(1).getItemType());
+    assertEquals(ItemType.CONSUMABLE, inventory.getSlot(2).getItemType());
+    assertEquals(ItemType.FireArrow, inventory.getSlot(3).getItemType());
+    assertEquals(ItemType.ColdArrow, inventory.getSlot(4).getItemType());
+  }
+
+  @Test
+  void shouldSortOccupiedSlotsByItemIdAndMoveEmptySlotsToEnd() {
     InventoryComponent inventory = new InventoryComponent(0, 5);
     inventory.addItem(ItemType.CONSUMABLE, 3);
     inventory.addItem(ItemType.RopeArrow, 2);
     inventory.addItem(ItemType.ARROW, 1);
 
-    assertTrue(inventory.sortByItemType());
+    assertTrue(inventory.sortByItemId());
 
     assertEquals(ItemType.ARROW, inventory.getSlot(0).getItemType());
     assertEquals(1, inventory.getSlot(0).getQuantity());
@@ -388,7 +406,7 @@ class InventoryComponentTest {
     inventoryEvents[0] = 0;
     selectionEvents[0] = 0;
 
-    assertTrue(inventory.sortByItemType());
+    assertTrue(inventory.sortByItemId());
 
     assertEquals(ItemType.CONSUMABLE, inventory.getSelectedItem());
     assertEquals(1, inventory.getSelectedSlotIndex());
@@ -409,7 +427,7 @@ class InventoryComponentTest {
     inventoryEvents[0] = 0;
     selectionEvents[0] = 0;
 
-    assertFalse(inventory.sortByItemType());
+    assertFalse(inventory.sortByItemId());
 
     assertEquals(0, inventoryEvents[0]);
     assertEquals(0, selectionEvents[0]);
