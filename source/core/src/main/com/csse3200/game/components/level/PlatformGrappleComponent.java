@@ -39,6 +39,10 @@ public class PlatformGrappleComponent extends Component {
     this.grappleSides = Math.min(grappleSides, 15);
   }
 
+  public int getGrappleSides() {
+    return grappleSides;
+  }
+
   /**
    * Allows the grappleable sides to be updated during the game, for example if a button is pressed.
    *
@@ -71,21 +75,20 @@ public class PlatformGrappleComponent extends Component {
     Vector2 max = bounds[1];
 
     // check against provided raycast end for which side was hit
-    // note: corner hits will not register as successful side hits as they are exactly equal
-    //       to min and max. If we decide to alter this functionality, it's as simple as checking
-    //       if the min <= raycastEnd and raycastEnd <= max.
-    float floatLenience = 0.05f; // account for any floating point inaccuracies
+    float floatLenience = 0.005f; // account for any floating point inaccuracies
 
-    if (min.y < raycastEnd.y && raycastEnd.y < max.y) {
-      if (min.x - raycastEnd.x < floatLenience) {
+    if (min.y <= raycastEnd.y && raycastEnd.y <= max.y) {
+      if (Math.abs(min.x - raycastEnd.x) <= floatLenience) {
         return LEFT_SIDE;
-      } else if (max.x - raycastEnd.x < floatLenience) {
+      } else if (Math.abs(max.x - raycastEnd.x) <= floatLenience) {
         return RIGHT_SIDE;
       }
-    } else if (min.x < raycastEnd.x && raycastEnd.x < max.x) {
-      if (min.y - raycastEnd.y < floatLenience) {
+    }
+
+    if (min.x <= raycastEnd.x && raycastEnd.x <= max.x) {
+      if (Math.abs(min.y - raycastEnd.y) <= floatLenience) {
         return TOP_SIDE;
-      } else if (max.y - raycastEnd.y < floatLenience) {
+      } else if (Math.abs(max.y - raycastEnd.y) <= floatLenience) {
         return BOTTOM_SIDE;
       }
     }
