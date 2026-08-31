@@ -18,7 +18,7 @@ class GameAreaTest {
     TerrainFactory factory = mock(TerrainFactory.class);
 
     GameArea gameArea =
-        new GameArea() {
+        new GameArea(new Entity()) {
           @Override
           public void create() {}
         };

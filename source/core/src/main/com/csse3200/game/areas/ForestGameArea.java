@@ -51,19 +51,18 @@ public class ForestGameArea extends GameArea {
   private static final String[] forestMusic = {backgroundMusic};
 
   private final TerrainFactory terrainFactory;
-  private final Entity cameraEntity;
 
   private Entity player;
 
   /**
    * Initialise this ForestGameArea to use the provided TerrainFactory.
    *
+   * @param cameraEntity entity containing the active camera.
    * @param terrainFactory TerrainFactory used to create the terrain for the GameArea.
    * @requires terrainFactory != null
    */
   public ForestGameArea(Entity cameraEntity, TerrainFactory terrainFactory) {
-    super();
-    this.cameraEntity = cameraEntity;
+    super(cameraEntity);
     this.terrainFactory = terrainFactory;
   }
 
