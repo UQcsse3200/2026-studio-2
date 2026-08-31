@@ -52,6 +52,10 @@ public class PlatformGrappleComponent extends Component {
    * Checks the raycast end location of the grapple on the platform and converts it into a usable
    * side int that can be compared against the valid grapple sides for this platform
    *
+   * @param platform the entity that should be checked against the raycast. Note: should be a known
+   *     platform!
+   * @param raycastEnd the Vector2 object created by the physics engine's raycast that corresponds
+   *     to the final point in the world the grapple hit
    * @return a base 10 integer representing which side of the platform was hit by the player's
    *     grapple. Can only be 1 (BOTTOM_SIDE), 2 (RIGHT_SIDE), 4 (TOP_SIDE) or 8 (LEFT_SIDE).
    */
@@ -99,7 +103,7 @@ public class PlatformGrappleComponent extends Component {
    * @return an array with 2 Vector2 elements: the top left coordinates and the bottom right
    *     coordinates that represent the outer bounds of this platform
    */
-  private Vector2[] calculatePlatformBounds(Entity platform) {
+  protected Vector2[] calculatePlatformBounds(Entity platform) {
     Vector2 topLeft;
     Vector2 bottomRight;
 
