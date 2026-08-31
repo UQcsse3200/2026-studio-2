@@ -14,8 +14,8 @@ public class TimingBarLogic {
   public float barWidth = 1f; // Acts as 100% etc.
   public float scoringAreaSize;
 
-  private final float markerSpeed = 1f;
-  private int direction = 1;
+  public final float markerSpeed = 1f;
+  public int direction = 1;
 
   public float markerX = barStart;
   public float greenStart;
