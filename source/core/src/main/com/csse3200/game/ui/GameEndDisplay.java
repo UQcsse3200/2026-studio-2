@@ -23,7 +23,7 @@ public class GameEndDisplay extends UIComponent {
   private static final int PANEL_WIDTH = 520;
   private static final int PANEL_HEIGHT = 310;
   private static final int BORDER_THICKNESS = 3;
-  private static final float MESSAGE_SPEED = 30f;
+  private static final float MESSAGE_SPEED = 21f;
 
   private static NinePatchDrawable cachedBackground;
 
@@ -101,7 +101,6 @@ public class GameEndDisplay extends UIComponent {
 
   private void buildActors() {
     panel = new Table();
-    panel.setFillParent(true);
     panel.setVisible(false);
     panel.setBackground(getBackgroundDrawable());
     panel.center();
@@ -148,6 +147,9 @@ public class GameEndDisplay extends UIComponent {
     panel.add(restartBtn).padBottom(10f).row();
     panel.add(mainMenuBtn).padBottom(10f).row();
     panel.add(exitDesktopBtn).padBottom(20f).row();
+    panel.pack();
+    panel.setPosition(
+        (stage.getWidth() - panel.getWidth()) / 2f, (stage.getHeight() - panel.getHeight()) / 2f);
 
     stage.addActor(panel);
     updateMessageLabel();
@@ -162,7 +164,7 @@ public class GameEndDisplay extends UIComponent {
     int border = BORDER_THICKNESS + 2;
 
     Pixmap pixmap = new Pixmap(size, size, Pixmap.Format.RGBA8888);
-    pixmap.setColor(new Color(0.07f, 0.07f, 0.09f, 0.88f));
+    pixmap.setColor(new Color(0.35f, 0.35f, 0.38f, 0.88f));
     pixmap.fill();
     pixmap.setColor(new Color(0.85f, 0.8f, 0.4f, 1f));
     for (int i = 0; i < border; i++) {
