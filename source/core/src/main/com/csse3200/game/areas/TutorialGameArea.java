@@ -39,14 +39,22 @@ public class TutorialGameArea extends GameArea {
     new PlatformConfig(new GridPoint2(30, 7), 3, 1, 0),
     new PlatformConfig(new GridPoint2(27, 9), 3, 1, 0),
     new PlatformConfig(new GridPoint2(23, 11), 3, 1, 0),
+    new PlatformConfig(new GridPoint2(14, 11), 3, 1, 0),
+    new PlatformConfig(new GridPoint2(9, 13), 3, 1, 0),
 
 };
 
 private static final PlatformConfig[] floors = {
     new PlatformConfig(new GridPoint2(0, 0), 3, 3, 0),
     new PlatformConfig(new GridPoint2(13, 0), 12, 5, 0),
-    new PlatformConfig(new GridPoint2(40, 0), 12, 20, 0),
+    new PlatformConfig(new GridPoint2(40, 0), 10, 17, 0),
     new PlatformConfig(new GridPoint2(18, 15), 6, 2, 0),
+    new PlatformConfig(new GridPoint2(0, 13), 8, 3, 0),
+    new PlatformConfig(new GridPoint2(0, 16), 1, 5, 0),
+    new PlatformConfig(new GridPoint2(0, 21), 17, 3, 0),
+    new PlatformConfig(new GridPoint2(28, 19), 4, 1, 0),
+    new PlatformConfig(new GridPoint2(35, 21), 15, 5, 0),
+
   };
 
   private static final GridPoint2 PLAYER_SPAWN =
