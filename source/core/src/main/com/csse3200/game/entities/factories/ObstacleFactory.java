@@ -4,6 +4,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.csse3200.game.components.level.MovingPlatformComponent;
 import com.csse3200.game.components.level.PlatformGrappleComponent;
+import com.csse3200.game.components.level.WinConditionComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.physics.PhysicsUtils;
@@ -64,6 +65,24 @@ public class ObstacleFactory {
                 new MovingPlatformComponent(grappleSides, leftTarget, rightTarget, maxSpeed));
 
     return movingPlatform;
+  }
+
+  public static Entity createWinConEntity() {
+    // set up sensor collider
+    ColliderComponent collider = new ColliderComponent();
+    collider.setLayer(PhysicsLayer.NPC);
+    collider.setSensor(true);
+
+    Entity winCon =
+        new Entity()
+            .addComponent(new PhysicsComponent())
+            .addComponent(collider)
+            .addComponent(new WinConditionComponent());
+
+    winCon.getComponent(PhysicsComponent.class).setBodyType(BodyType.StaticBody);
+    winCon.getComponent(ColliderComponent.class).setAsBox(new Vector2(2f, 2f));
+
+    return winCon;
   }
 
   public static Entity createFloor() {
