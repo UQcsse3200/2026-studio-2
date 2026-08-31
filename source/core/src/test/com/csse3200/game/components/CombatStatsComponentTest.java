@@ -102,6 +102,25 @@ class CombatStatsComponentTest {
   }
 
   @Test
+  void shouldIgnoreDamageEventsDuringInvulnerabilityWindow() {
+    GameTime gameTime = mock(GameTime.class);
+    ServiceLocator.registerTimeSource(gameTime);
+    CombatStatsComponent targetStats = new CombatStatsComponent(100, 0, 1000);
+    Entity target = new Entity().addComponent(targetStats);
+    CombatStatsComponent attacker = new CombatStatsComponent(100, 10);
+    target.create();
+
+    when(gameTime.getTime()).thenReturn(100L, 500L, 1100L);
+
+    target.getEvents().trigger("takeDamage", attacker);
+    target.getEvents().trigger("takeDamage", attacker);
+    assertEquals(90, targetStats.getHealth());
+
+    target.getEvents().trigger("takeDamage", attacker);
+    assertEquals(80, targetStats.getHealth());
+  }
+
+  @Test
   void shouldTriggerDeathWhenHealthReachesZero() {
     CombatStatsComponent combat = new CombatStatsComponent(10, 0);
     Entity entity = new Entity().addComponent(combat);
@@ -112,6 +131,22 @@ class CombatStatsComponentTest {
     combat.setHealth(0);
     combat.setHealth(0);
 
+    assertEquals(1, deaths.get());
+  }
+
+  @Test
+  void shouldPlayerDieWhenTakingLethalDamage() {
+    CombatStatsComponent playerStats = new CombatStatsComponent(10, 0);
+    Entity player = new Entity().addComponent(playerStats);
+    CombatStatsComponent attacker = new CombatStatsComponent(10, 10);
+    AtomicInteger deaths = new AtomicInteger();
+    player.getEvents().addListener("death", deaths::incrementAndGet);
+    player.create();
+
+    player.getEvents().trigger("takeDamage", attacker);
+
+    assertEquals(0, playerStats.getHealth());
+    assertTrue(playerStats.isDead());
     assertEquals(1, deaths.get());
   }
 }
