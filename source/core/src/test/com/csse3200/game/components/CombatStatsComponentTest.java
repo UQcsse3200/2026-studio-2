@@ -43,6 +43,30 @@ class CombatStatsComponentTest {
   }
 
   @Test
+  void shouldGetMaxHealth() {
+    CombatStatsComponent combat = new CombatStatsComponent(100, 20);
+    assertEquals(100, combat.getMaxHealth());
+
+    combat.setHealth(150);
+    assertEquals(100, combat.getMaxHealth());
+  }
+
+  @Test
+  void shouldAddMaxHealth() {
+    CombatStatsComponent combat = new CombatStatsComponent(75, 20);
+    combat.setHealth(25);
+
+    combat.addMaxHealth(25);
+    assertEquals(100, combat.getMaxHealth());
+    assertEquals(50, combat.getHealth());
+
+    combat.addMaxHealth(-25);
+    combat.addMaxHealth(0);
+    assertEquals(100, combat.getMaxHealth());
+    assertEquals(50, combat.getHealth());
+  }
+
+  @Test
   void shouldSetGetBaseAttack() {
     CombatStatsComponent combat = new CombatStatsComponent(100, 20);
     assertEquals(20, combat.getBaseAttack());
