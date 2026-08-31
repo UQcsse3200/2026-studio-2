@@ -67,7 +67,7 @@ public class PlayerStatsDisplay extends UIComponent {
    */
   public void updatePlayerHealthUI(int health) {
     // 100 total HP across 2 hearts (4 hits total) -> 25 HP per hit
-    int hpPerHit = 25; 
+    int hpPerHit = 2; 
     int remainingHits = health / hpPerHit;
 
     for (int i = 0; i < heartImages.size(); i++) {
