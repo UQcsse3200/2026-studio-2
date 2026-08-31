@@ -97,7 +97,7 @@ public class TimingBarDisplay extends UIComponent {
 
     logger.info("loading timing bar marker");
     marker = new Image(blankRegion);
-    marker.setColor(Color.RED);
+    marker.setColor(Color.WHITE);
     marker.setSize(10f, BAR_HEIGHT);
     marker.setPosition(
         location_x + (logic.markerX * BAR_WIDTH) - marker.getWidth() / 2, location_y);
@@ -122,6 +122,7 @@ public class TimingBarDisplay extends UIComponent {
   @Override
   protected void draw(SpriteBatch batch) {
     // draw is handled by the stage
+    batch.setColor(Color.WHITE);
   }
 
   @Override

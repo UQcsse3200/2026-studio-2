@@ -9,7 +9,7 @@ import com.csse3200.game.areas.terrain.TerrainComponent;
 import com.csse3200.game.components.Component;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.services.ServiceLocator;
-import java.util.ArrayList;
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,13 +49,11 @@ public class CyclopsMinigameLogic extends Component {
 
   /* Map Info */
   private TerrainComponent terrain;
-  private GridPoint2 mapSize;
-  private static final int Y_LEVEL = 3;
   private GridPoint2 winLocation;
-  private ArrayList<GridPoint2> pillarLocations;
-  private ArrayList<GridPoint2> lossLocations;
-  private int numOfPillars = 3;
-  private int currentPillar = 0;
+  private List<GridPoint2> safeLocations;
+  private List<GridPoint2> lossLocations;
+  private int numOfSafeLocs;
+  private int currentSafeLoc = 0;
 
   /**
    * Creates the game logic for the Cyclops minigame.
@@ -74,54 +72,36 @@ public class CyclopsMinigameLogic extends Component {
 
     this.state = State.STOPPED;
 
-    initialiseComponents();
-  }
-
-  private void initialiseComponents() {
-    /* Screens - Transition, win, lose screen */
     this.transitionScreen = new BlankTransitionScreen();
     ServiceLocator.getEntityService().register(new Entity().addComponent(this.transitionScreen));
-
-    /* Map / Terrain dependent components */
-    this.mapSize = terrain.getMapBounds(terrain.getLayer());
-    winLocation = new GridPoint2(mapSize.x, Y_LEVEL);
-    setupPillarLocations();
   }
 
-  private void setupPillarLocations() {
-    logger.info("Setting up pillar locations");
-    this.pillarLocations = new ArrayList<>();
-    this.lossLocations = new ArrayList<>();
+  public void setWinLocation(GridPoint2 winLocation) {
+    this.winLocation = winLocation;
+  }
 
-    logger.info("Pillars used = {}", numOfPillars);
+  public void setLossLocations(List<GridPoint2> lossLocations) {
+    this.lossLocations = lossLocations;
+  }
 
-    for (int i = 1; i <= numOfPillars; i++) {
-      int x = ((mapSize.x / (numOfPillars)) * i) - (mapSize.x / (numOfPillars * 2)) - 1;
-      GridPoint2 pillar = new GridPoint2(x, Y_LEVEL);
-      pillarLocations.add(pillar);
-      logger.info("Pillar {} X world-location set to {}", i, pillar);
-
-      int lossX = ((mapSize.x / (numOfPillars)) * i);
-      GridPoint2 loss = new GridPoint2(lossX, Y_LEVEL);
-      lossLocations.add(loss);
-    }
-
-    logger.info("Pillar locations setup");
+  public void setSafeLocations(List<GridPoint2> safeLocations) {
+    this.safeLocations = safeLocations;
+    this.numOfSafeLocs = safeLocations.size();
   }
 
   private boolean moveToNextLocation(boolean success) {
     if (success) {
-      currentPillar += 1;
+      currentSafeLoc += 1;
 
-      if (currentPillar >= numOfPillars) {
+      if (currentSafeLoc >= numOfSafeLocs) {
         player.setPosition(terrain.tileToWorldPosition(winLocation));
         return false;
       }
 
-      player.setPosition(terrain.tileToWorldPosition(pillarLocations.get(currentPillar)));
+      player.setPosition(terrain.tileToWorldPosition(safeLocations.get(currentSafeLoc)));
 
     } else {
-      player.setPosition(terrain.tileToWorldPosition(lossLocations.get(currentPillar)));
+      player.setPosition(terrain.tileToWorldPosition(lossLocations.get(currentSafeLoc)));
     }
 
     return true;
@@ -197,6 +177,7 @@ public class CyclopsMinigameLogic extends Component {
       return;
     }
 
+    state = State.GAME_OVER;
     if (moved) {
       // Moved to loss position
       outcome = Outcome.LOSS;
@@ -223,7 +204,6 @@ public class CyclopsMinigameLogic extends Component {
 
   public void startMinigame() {
     logger.info("starting timing bar minigame");
-    player.setPosition(terrain.tileToWorldPosition(pillarLocations.getFirst()));
     startTimingBar();
   }
 }

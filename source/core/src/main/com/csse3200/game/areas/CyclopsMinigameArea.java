@@ -1,30 +1,42 @@
 package com.csse3200.game.areas;
 
 import com.badlogic.gdx.math.GridPoint2;
+import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.areas.terrain.TerrainFactory;
 import com.csse3200.game.components.gamearea.GameAreaDisplay;
 import com.csse3200.game.components.minigames.CyclopsTimingBar.CyclopsMinigameLogic;
 import com.csse3200.game.components.minigames.CyclopsTimingBar.TimingBarDisplay;
 import com.csse3200.game.components.minigames.CyclopsTimingBar.TimingBarLogic;
 import com.csse3200.game.entities.Entity;
+import com.csse3200.game.entities.factories.ObstacleFactory;
 import com.csse3200.game.entities.factories.PlayerFactory;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
+import java.util.ArrayList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class CyclopsMinigameArea extends GameArea {
   private static final Logger logger = LoggerFactory.getLogger(CyclopsMinigameArea.class);
   private static final String[] cyclopsMinigameTextures = {
-    "images/box_boy_leaf.png", "images/transparent.png"
+    "images/box_boy_leaf.png", "images/transparent.png", "images/Greek Statues Pack I/Brute.png"
   };
 
   private final TerrainFactory terrainFactory;
   private Entity timingMinigameEntity;
-  private CyclopsMinigameLogic minigameLogicComponent;
 
   private Entity player;
-  private GridPoint2 startPosition = new GridPoint2(-10, -10);
+
+  private static final int NUM_STATUES = 3;
+  private int statue_y_level;
+  private GridPoint2 winLocation;
+  private ArrayList<GridPoint2> statueLocations;
+  private ArrayList<GridPoint2> statueGapLocations;
+
+  /* Timing Minigame Components */
+  private TimingBarLogic timingBarLogic;
+  private TimingBarDisplay timingBarDisplay;
+  private CyclopsMinigameLogic cyclopsMinigameLogic;
 
   public CyclopsMinigameArea(TerrainFactory terrainFactory) {
     super();
@@ -39,23 +51,31 @@ public class CyclopsMinigameArea extends GameArea {
     displayUI();
     spawnTerrain();
 
+    spawnStatues();
+
     player = spawnPlayer();
 
+    setupTimingMinigame();
     startTimingMinigame();
   }
 
-  private void startTimingMinigame() {
-    TimingBarLogic timingBarLogic = new TimingBarLogic(20f);
-    TimingBarDisplay timingBarDisplay = new TimingBarDisplay(timingBarLogic);
-    minigameLogicComponent =
+  private void setupTimingMinigame() {
+    timingBarLogic = new TimingBarLogic(20f);
+    timingBarDisplay = new TimingBarDisplay(timingBarLogic);
+    cyclopsMinigameLogic =
         new CyclopsMinigameLogic(timingBarLogic, timingBarDisplay, terrain, player);
+    cyclopsMinigameLogic.setWinLocation(winLocation);
+    cyclopsMinigameLogic.setSafeLocations(statueLocations);
+    cyclopsMinigameLogic.setLossLocations(statueGapLocations);
 
     timingMinigameEntity = new Entity();
     timingMinigameEntity.addComponent(timingBarDisplay);
-    timingMinigameEntity.addComponent(minigameLogicComponent);
+    timingMinigameEntity.addComponent(cyclopsMinigameLogic);
     spawnEntity(timingMinigameEntity);
+  }
 
-    minigameLogicComponent.startMinigame();
+  private void startTimingMinigame() {
+    cyclopsMinigameLogic.startMinigame();
   }
 
   private void displayUI() {
@@ -68,11 +88,39 @@ public class CyclopsMinigameArea extends GameArea {
     // Background terrain
     terrain = terrainFactory.createTerrain(TerrainFactory.TerrainType.CYCLOPS_ROOM);
     spawnEntity(new Entity().addComponent(terrain));
+
+    statue_y_level = (int) (terrain.getMapBounds(terrain.getLayer()).y * 0.1);
+    winLocation = new GridPoint2(terrain.getMapBounds(terrain.getLayer()).x, statue_y_level);
+  }
+
+  private void spawnStatues() {
+    this.statueLocations = new ArrayList<>(NUM_STATUES);
+    this.statueGapLocations = new ArrayList<>(NUM_STATUES);
+
+    GridPoint2 mapSize = terrain.getMapBounds(terrain.getLayer());
+
+    for (int i = 1; i <= NUM_STATUES; i++) {
+      int x = ((mapSize.x / NUM_STATUES) * i) - (mapSize.x / (NUM_STATUES * 2)) + 1;
+      GridPoint2 location = new GridPoint2(x, statue_y_level);
+      statueLocations.add(location);
+
+      Entity statue = ObstacleFactory.createStatue();
+      statue.setScale(new Vector2(2, 5));
+      spawnEntityAt(statue, new GridPoint2(x, statue_y_level), true, false);
+
+      int gapX = (mapSize.x / NUM_STATUES) * i;
+      GridPoint2 gapLocation = new GridPoint2(gapX, statue_y_level);
+      statueGapLocations.add(gapLocation);
+    }
+  }
+
+  private Entity spawnCyclops() {
+    return new Entity();
   }
 
   private Entity spawnPlayer() {
     Entity newPlayer = PlayerFactory.createPlayerDisplay();
-    spawnEntityAt(newPlayer, startPosition, true, true);
+    spawnEntityAt(newPlayer, statueLocations.getFirst(), true, false);
     return newPlayer;
   }
 
