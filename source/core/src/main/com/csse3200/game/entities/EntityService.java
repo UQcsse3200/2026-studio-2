@@ -88,4 +88,16 @@ public class EntityService {
       }
     }
   }
+
+  public void setPaused(boolean newPaused) {
+    paused = newPaused;
+  }
+
+  public void togglePaused() {
+    paused = !paused;
+  }
+
+  public boolean getPaused() {
+    return paused;
+  }
 }
