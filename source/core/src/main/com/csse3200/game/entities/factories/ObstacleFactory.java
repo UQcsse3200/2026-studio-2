@@ -49,7 +49,7 @@ public class ObstacleFactory {
         new Entity()
             .addComponent(new TextureRenderComponent("images/platform.png"))
             .addComponent(new PhysicsComponent())
-            .addComponent(new ColliderComponent().setLayer(PhysicsLayer.OBSTACLE))
+            .addComponent(new ColliderComponent().setLayer(PhysicsLayer.GROUND))
             .addComponent(new PlatformGrappleComponent(grappleSides));
 
     platform.getComponent(PhysicsComponent.class).setBodyType(BodyType.StaticBody);
@@ -58,16 +58,20 @@ public class ObstacleFactory {
   }
 
   public static Entity createMovingPlatform(
-      int grappleSides, Vector2 leftTarget, Vector2 rightTarget, Vector2 maxSpeed) {
+      int grappleSides, Vector2 firstTarget, Vector2 secondTarget, Vector2 maxSpeed) {
+      PhysicsComponent physicsComponent = new PhysicsComponent();
+      ColliderComponent colliderComponent = new ColliderComponent();
     Entity movingPlatform =
         new Entity()
             .addComponent(new TextureRenderComponent("images/platform.png"))
-            .addComponent(new PhysicsComponent())
+            .addComponent(physicsComponent)
             .addComponent(new PhysicsMovementComponent())
-            .addComponent(new ColliderComponent().setLayer(PhysicsLayer.OBSTACLE))
+            .addComponent(colliderComponent.setLayer(PhysicsLayer.OBSTACLE))
             .addComponent(
-                new MovingPlatformComponent(grappleSides, leftTarget, rightTarget, maxSpeed));
-
+                new MovingPlatformComponent(grappleSides, firstTarget, secondTarget, maxSpeed));
+    physicsComponent.getBody().setGravityScale(0f);
+    physicsComponent.setBodyType(BodyType.KinematicBody);
+    colliderComponent.setFriction(1.5f);
     return movingPlatform;
   }
 

@@ -20,6 +20,7 @@ public class GrappleComponent extends Component {
   private PhysicsComponent physicsComponent;
   private DistanceJoint ropeJoint;
   private Vector2 anchorPoint;
+  private Body anchorBody;
 
   @Override
   public void create() {
@@ -44,7 +45,7 @@ public class GrappleComponent extends Component {
     // Store fired position and retrieve physics bodies for joint setup
     anchorPoint = hit.point.cpy();
     Body playerBody = physicsComponent.getBody();
-    Body anchorBody = hit.fixture.getBody();
+    this.anchorBody = hit.fixture.getBody();
 
     DistanceJointDef def = new DistanceJointDef();
     def.bodyA = anchorBody;
@@ -111,6 +112,10 @@ public class GrappleComponent extends Component {
   }
 
   public Vector2 getAnchorPoint() {
-    return anchorPoint == null ? null : anchorPoint.cpy();
+    //return anchorPoint == null ? null : anchorPoint.cpy();
+    if (!isAttached() || anchorBody == null) {
+      return null;
+    }
+    return anchorBody.getWorldPoint(ropeJoint.getLocalAnchorA());
   }
 }

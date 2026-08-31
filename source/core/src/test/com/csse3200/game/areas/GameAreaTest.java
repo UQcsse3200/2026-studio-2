@@ -39,7 +39,7 @@ class GameAreaTest {
   @Test
   void shouldSavePlatformReference() {
     GameArea gameArea =
-        new GameArea() {
+        new GameArea(new CameraComponent()) {
           @Override
           public void create() {}
         };
@@ -60,7 +60,7 @@ class GameAreaTest {
   @Test
   void findsBestPlatformCandidate() {
     GameArea gameArea =
-        new GameArea() {
+        new GameArea(new CameraComponent()) {
           @Override
           public void create() {}
         };
@@ -93,7 +93,7 @@ class GameAreaTest {
   @Test
   void checkSuccessfulGrapples() {
     GameArea gameArea =
-        new GameArea() {
+        new GameArea(new CameraComponent()) {
           @Override
           public void create() {}
         };

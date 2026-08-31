@@ -8,6 +8,7 @@ import com.csse3200.game.areas.terrain.TerrainFactory;
 import com.csse3200.game.areas.terrain.TerrainFactory.TerrainType;
 import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.components.gamearea.GameAreaDisplay;
+import com.csse3200.game.components.player.KeyboardPlayerInputComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.NPCFactory;
 import com.csse3200.game.entities.factories.ObstacleFactory;
@@ -111,6 +112,7 @@ public class TutorialGameArea extends GameArea {
 
     // Existing game textures
     "images/black_roof.png",
+    "images/purple_heart.png",
     "images/transparent.png",
     "images/DevGridTile.png",
     "images/Tile_2.png",
@@ -160,7 +162,7 @@ public class TutorialGameArea extends GameArea {
    * @param camera CameraComponent used by the parallax background.
    */
   public TutorialGameArea(TerrainFactory terrainFactory, CameraComponent camera) {
-    super();
+    super(camera);
 
     this.terrainFactory = terrainFactory;
     this.camera = camera;
@@ -300,14 +302,14 @@ public class TutorialGameArea extends GameArea {
     Entity movingPlatform =
         ObstacleFactory.createMovingPlatform(
             0, new Vector2(9, 15), new Vector2(14, 15), new Vector2(3, 0));
+            movingPlatform.setScale(2, 1);
             spawnEntityAt(movingPlatform, new GridPoint2(9, 15), false, false);
-    movingPlatform.setScale(2, 1);
 
     Entity movingPlatform2 =
         ObstacleFactory.createMovingPlatform(
             0, new Vector2(25, 15), new Vector2(36, 15), new Vector2(3, 0));
+            movingPlatform2.setScale(2, 1);
             spawnEntityAt(movingPlatform2, new GridPoint2(25, 15), false, false);
-    movingPlatform2.setScale(2, 1);
 
     Entity movingPlatform3 =
         ObstacleFactory.createMovingPlatform(
@@ -367,7 +369,10 @@ public class TutorialGameArea extends GameArea {
   private Entity spawnPlayer() {
 
     Entity newPlayer = PlayerFactory.createPlayer();
-
+    KeyboardPlayerInputComponent input = newPlayer.getComponent(KeyboardPlayerInputComponent.class);
+    if (input != null) {
+      input.setCameraComponent(cameraComponent);
+    }
     spawnEntityAt(newPlayer, PLAYER_SPAWN, true, true);
 
     return newPlayer;
