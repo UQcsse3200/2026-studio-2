@@ -3,12 +3,7 @@ package com.csse3200.game.entities.factories;
 import com.badlogic.gdx.graphics.g2d.Animation.PlayMode;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.csse3200.game.components.CombatStatsComponent;
-import com.csse3200.game.components.player.BowComponent;
-import com.csse3200.game.components.player.GrappleComponent;
-import com.csse3200.game.components.player.InventoryComponent;
-import com.csse3200.game.components.player.PlayerActions;
-import com.csse3200.game.components.player.PlayerAttackComponent;
-import com.csse3200.game.components.player.PlayerStatsDisplay;
+import com.csse3200.game.components.player.*;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.PlayerConfig;
 import com.csse3200.game.files.FileLoader;
@@ -46,9 +41,10 @@ public class PlayerFactory {
         new AnimationRenderComponent(
             ServiceLocator.getResourceService()
                 .getAsset("images/player.atlas", TextureAtlas.class));
-    animator.addAnimation("idle", 1f, PlayMode.LOOP);
+    animator.addAnimation("idle", 0.15f, PlayMode.LOOP);
     animator.addAnimation("walk", 0.1f, PlayMode.LOOP);
     animator.addAnimation("sprint", 0.1f, PlayMode.LOOP);
+    animator.addAnimation("jump", 0.05f, PlayMode.NORMAL);
 
     Entity player =
         new Entity()
@@ -70,7 +66,7 @@ public class PlayerFactory {
     PhysicsUtils.setScaledCollider(player, 0.6f, 0.3f);
     player.getComponent(ColliderComponent.class).setDensity(1.5f);
     player.getComponent(AnimationRenderComponent.class).scaleEntity();
-    player.setScale(1.5f, 1.5f);
+    player.scaleWidth(0.75f);
     return player;
   }
 

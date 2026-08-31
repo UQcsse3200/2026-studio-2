@@ -12,6 +12,7 @@ public class PlayerAnimationController extends Component {
   private AnimationRenderComponent animator;
   private boolean moving = false;
   private boolean sprinting = false;
+  private boolean jumping = false;
 
   @Override
   public void create() {
@@ -21,8 +22,17 @@ public class PlayerAnimationController extends Component {
     entity.getEvents().addListener("walkStop", this::walkStop);
     entity.getEvents().addListener("sprint", this::sprint);
     entity.getEvents().addListener("sprintStop", this::sprintStop);
+    entity.getEvents().addListener("jumpStart", this::jumpStart);
 
     animator.startAnimation("idle");
+  }
+
+  @Override
+  public void update() {
+    if (jumping && animator.isFinished()) {
+      jumping = false;
+      updateAnimation();
+    }
   }
 
   void walk(Vector2 direction) {
@@ -30,22 +40,35 @@ public class PlayerAnimationController extends Component {
     if (direction.x != 0) {
       animator.setFlipX(direction.x < 0);
     }
-    updateAnimation();
+    if (!jumping) {
+      updateAnimation();
+    }
   }
 
   void walkStop() {
     moving = false;
-    updateAnimation();
+    if (!jumping) {
+      updateAnimation();
+    }
   }
 
   void sprint() {
     sprinting = true;
-    updateAnimation();
+    if (!jumping) {
+      updateAnimation();
+    }
   }
 
   void sprintStop() {
     sprinting = false;
-    updateAnimation();
+    if (!jumping) {
+      updateAnimation();
+    }
+  }
+
+  void jumpStart() {
+    jumping = true;
+    animator.startAnimation("jump");
   }
 
   private void updateAnimation() {

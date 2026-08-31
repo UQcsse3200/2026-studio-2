@@ -1,22 +1,127 @@
 player_idle.png
-size: 256, 274
+size: 104, 328
 format: RGBA8888
 filter: Nearest,Nearest
 repeat: none
 default
   rotate: false
   xy: 0, 0
-  size: 256, 274
-  orig: 256, 274
+  size: 26, 82
+  orig: 26, 82
   offset: 0, 0
   index: 0
 idle
   rotate: false
   xy: 0, 0
-  size: 256, 274
-  orig: 256, 274
+  size: 26, 82
+  orig: 26, 82
   offset: 0, 0
   index: 0
+idle
+  rotate: false
+  xy: 26, 0
+  size: 26, 82
+  orig: 26, 82
+  offset: 0, 0
+  index: 1
+idle
+  rotate: false
+  xy: 52, 0
+  size: 26, 82
+  orig: 26, 82
+  offset: 0, 0
+  index: 2
+idle
+  rotate: false
+  xy: 78, 0
+  size: 26, 82
+  orig: 26, 82
+  offset: 0, 0
+  index: 3
+idle
+  rotate: false
+  xy: 0, 82
+  size: 26, 82
+  orig: 26, 82
+  offset: 0, 0
+  index: 4
+idle
+  rotate: false
+  xy: 26, 82
+  size: 26, 82
+  orig: 26, 82
+  offset: 0, 0
+  index: 5
+idle
+  rotate: false
+  xy: 52, 82
+  size: 26, 82
+  orig: 26, 82
+  offset: 0, 0
+  index: 6
+idle
+  rotate: false
+  xy: 78, 82
+  size: 26, 82
+  orig: 26, 82
+  offset: 0, 0
+  index: 7
+idle
+  rotate: false
+  xy: 0, 164
+  size: 26, 82
+  orig: 26, 82
+  offset: 0, 0
+  index: 8
+idle
+  rotate: false
+  xy: 26, 164
+  size: 26, 82
+  orig: 26, 82
+  offset: 0, 0
+  index: 9
+idle
+  rotate: false
+  xy: 52, 164
+  size: 26, 82
+  orig: 26, 82
+  offset: 0, 0
+  index: 10
+idle
+  rotate: false
+  xy: 78, 164
+  size: 26, 82
+  orig: 26, 82
+  offset: 0, 0
+  index: 11
+idle
+  rotate: false
+  xy: 0, 246
+  size: 26, 82
+  orig: 26, 82
+  offset: 0, 0
+  index: 12
+idle
+  rotate: false
+  xy: 26, 246
+  size: 26, 82
+  orig: 26, 82
+  offset: 0, 0
+  index: 13
+idle
+  rotate: false
+  xy: 52, 246
+  size: 26, 82
+  orig: 26, 82
+  offset: 0, 0
+  index: 14
+idle
+  rotate: false
+  xy: 78, 246
+  size: 26, 82
+  orig: 26, 82
+  offset: 0, 0
+  index: 15
 
 player_walk.png
 size: 200, 162
@@ -169,3 +274,121 @@ sprint
   orig: 75, 81
   offset: 0, 0
   index: 11
+
+player_jump.png
+size: 192, 400
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+jump
+  rotate: false
+  xy: 0, 0
+  size: 48, 100
+  orig: 48, 100
+  offset: 0, 0
+  index: 0
+jump
+  rotate: false
+  xy: 48, 0
+  size: 48, 100
+  orig: 48, 100
+  offset: 0, 0
+  index: 1
+jump
+  rotate: false
+  xy: 96, 0
+  size: 48, 100
+  orig: 48, 100
+  offset: 0, 0
+  index: 2
+jump
+  rotate: false
+  xy: 144, 0
+  size: 48, 100
+  orig: 48, 100
+  offset: 0, 0
+  index: 3
+jump
+  rotate: false
+  xy: 0, 100
+  size: 48, 100
+  orig: 48, 100
+  offset: 0, 0
+  index: 4
+jump
+  rotate: false
+  xy: 48, 100
+  size: 48, 100
+  orig: 48, 100
+  offset: 0, 0
+  index: 5
+jump
+  rotate: false
+  xy: 96, 100
+  size: 48, 100
+  orig: 48, 100
+  offset: 0, 0
+  index: 6
+jump
+  rotate: false
+  xy: 144, 100
+  size: 48, 100
+  orig: 48, 100
+  offset: 0, 0
+  index: 7
+jump
+  rotate: false
+  xy: 0, 200
+  size: 48, 100
+  orig: 48, 100
+  offset: 0, 0
+  index: 8
+jump
+  rotate: false
+  xy: 48, 200
+  size: 48, 100
+  orig: 48, 100
+  offset: 0, 0
+  index: 9
+jump
+  rotate: false
+  xy: 96, 200
+  size: 48, 100
+  orig: 48, 100
+  offset: 0, 0
+  index: 10
+jump
+  rotate: false
+  xy: 144, 200
+  size: 48, 100
+  orig: 48, 100
+  offset: 0, 0
+  index: 11
+jump
+  rotate: false
+  xy: 0, 300
+  size: 48, 100
+  orig: 48, 100
+  offset: 0, 0
+  index: 12
+jump
+  rotate: false
+  xy: 48, 300
+  size: 48, 100
+  orig: 48, 100
+  offset: 0, 0
+  index: 13
+jump
+  rotate: false
+  xy: 96, 300
+  size: 48, 100
+  orig: 48, 100
+  offset: 0, 0
+  index: 14
+jump
+  rotate: false
+  xy: 144, 300
+  size: 48, 100
+  orig: 48, 100
+  offset: 0, 0
+  index: 15
