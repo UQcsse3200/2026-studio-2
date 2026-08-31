@@ -22,6 +22,7 @@ import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.physics.components.PhysicsMovementComponent;
 import com.csse3200.game.rendering.AnimationRenderComponent;
+import com.csse3200.game.rendering.TextureRenderComponent;
 import com.csse3200.game.services.ServiceLocator;
 
 public class EnemyFactory {
@@ -33,13 +34,7 @@ public class EnemyFactory {
     EnemyConfig config = configs.chaser;
     Entity chaser = createEnemy(target, config);
 
-    AnimationRenderComponent animator =
-        new AnimationRenderComponent(
-            ServiceLocator.getResourceService().getAsset("images/ghost.atlas", TextureAtlas.class));
-    animator.addAnimation("angry_float", 0.1f, Animation.PlayMode.LOOP);
-    animator.addAnimation("float", 0.1f, Animation.PlayMode.LOOP);
-
-    chaser.addComponent(animator).addComponent(new GhostAnimationController());
+    chaser.addComponent(new TextureRenderComponent("images/skeleton_warrior.png"));
     chaser.getComponent(AnimationRenderComponent.class).scaleEntity();
 
     chaser
@@ -54,18 +49,11 @@ public class EnemyFactory {
     EnemyConfig config = configs.shooter;
     Entity shooter = createEnemy(target, config);
 
-    AnimationRenderComponent animator =
-        new AnimationRenderComponent(
-            ServiceLocator.getResourceService().getAsset("images/ghost.atlas", TextureAtlas.class));
-    animator.addAnimation("angry_float", 0.1f, Animation.PlayMode.LOOP);
-    animator.addAnimation("float", 0.1f, Animation.PlayMode.LOOP);
-
     shooter
         // .addComponent(new CombatStatsComponent(config.health, config.baseAttack))
-        .addComponent(animator)
-        .addComponent(new GhostAnimationController());
+        .addComponent(new TextureRenderComponent("images/skeleton_archer.png"));
 
-    shooter.getComponent(AnimationRenderComponent.class).scaleEntity();
+    shooter.getComponent(TextureRenderComponent.class).scaleEntity();
 
     return shooter;
   }
