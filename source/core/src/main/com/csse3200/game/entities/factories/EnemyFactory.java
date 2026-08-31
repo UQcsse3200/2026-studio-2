@@ -6,9 +6,9 @@ import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.ai.tasks.AITaskComponent;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.EnemyDeathComponent;
-import com.csse3200.game.components.TouchAttackComponent;
 import com.csse3200.game.components.npc.GhostAnimationController;
 import com.csse3200.game.components.tasks.ChaseTask;
+import com.csse3200.game.components.tasks.DelayedAttackTask;
 import com.csse3200.game.components.tasks.RangedAttackTask;
 import com.csse3200.game.components.tasks.WanderTask;
 import com.csse3200.game.entities.Entity;
@@ -40,8 +40,11 @@ public class EnemyFactory {
     animator.addAnimation("float", 0.1f, Animation.PlayMode.LOOP);
 
     chaser.addComponent(animator).addComponent(new GhostAnimationController());
-
     chaser.getComponent(AnimationRenderComponent.class).scaleEntity();
+
+    chaser
+        .getComponent(AITaskComponent.class)
+        .addTask(new DelayedAttackTask(target, 20, 0.8f, 0.5f));
 
     return chaser;
   }
@@ -94,11 +97,6 @@ public class EnemyFactory {
             .addComponent(new CombatStatsComponent(config.health, config.baseAttack))
             .addComponent(new EnemyDeathComponent())
             .addComponent(aiComponent);
-
-    // If attack type is not range
-    if (!config.attackType.equals("range")) {
-      enemy.addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER, 1.5f));
-    }
 
     PhysicsUtils.setScaledCollider(enemy, 0.9f, 0.4f);
 
