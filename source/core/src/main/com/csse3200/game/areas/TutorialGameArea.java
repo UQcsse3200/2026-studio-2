@@ -86,14 +86,11 @@ public class TutorialGameArea extends GameArea {
 
   /**
    * Initialise this TutorialGameArea using the provided TerrainFactory and CameraComponent.
-   * Initialise this TutorialGameArea using the provided
-   * TerrainFactory and CameraComponent.
    *
    * @param terrainFactory TerrainFactory used to create the terrain.
    * @param camera CameraComponent used by the parallax background.
    */
   public TutorialGameArea(TerrainFactory terrainFactory, CameraComponent camera) {
-
     super();
 
     this.terrainFactory = terrainFactory;
@@ -148,156 +145,101 @@ public class TutorialGameArea extends GameArea {
   }
 
   /**
-   * ============================================================
-   * CURRENT ACTIVE BACKGROUND
+   * ============================================================ CURRENT ACTIVE BACKGROUND
    * ============================================================
    *
-   * Uses the complete original_background.png as ONE layer.
+   * <p>Uses the complete original_background.png as ONE layer.
    *
    * <p>The camera and parallax factor are passed to the BackgroundRenderComponent so that the
-   * background moves more slowly than the foreground when the camera moves.
-   * The image is 1024 x 572, so when its width is 60 world
-   * units, the matching height is approximately 33.52.
+   * background moves more slowly than the foreground when the camera moves. The image is 1024 x
+   * 572, so when its width is 60 world units, the matching height is approximately 33.52.
    *
-   * Parallax factor = 0.30
+   * <p>Parallax factor = 0.30
    *
-   * This means the background moves at 30% of the camera
-   * movement relative to the world, giving the subtle effect
-   * you originally wanted.
+   * <p>This means the background moves at 30% of the camera movement relative to the world, giving
+   * the subtle effect you originally wanted.
    */
   private void spawnBackground() {
 
-    BackgroundRenderComponent backgroundComponent =
-        new BackgroundRenderComponent(camera);
+    BackgroundRenderComponent backgroundComponent = new BackgroundRenderComponent(camera);
 
     // ----------------------------------------------------------
     // COMPLETE ORIGINAL BACKGROUND
     // ----------------------------------------------------------
     backgroundComponent.addLayer(
-        "images/parallax/original_background.png",
-        0.30f,
-        60f,
-        33.515625f,
-        -1.50f
-    );
+        "images/parallax/original_background.png", 0.30f, 60f, 33.515625f, -1.50f);
 
     // Create background entity
-    Entity background =
-        new Entity()
-            .addComponent(new BackgroundRenderComponent("images/background.png", camera, 0.3f));
-            .addComponent(backgroundComponent);
+    Entity background = new Entity().addComponent(backgroundComponent);
 
     /*
      * Keep the same general world position used by your
      * existing parallax system.
      */
-    background.setPosition(
-        -20f,
-        -10f
-    );
+    background.setPosition(-20f, -10f);
 
     spawnEntity(background);
   }
 
   /**
+   * ============================================================ ORIGINAL 5-LAYER PARALLAX SYSTEM
    * ============================================================
-   * ORIGINAL 5-LAYER PARALLAX SYSTEM
-   * ============================================================
    *
-   * IMPORTANT:
+   * <p>IMPORTANT:
    *
-   * DO NOT DELETE THIS METHOD.
+   * <p>DO NOT DELETE THIS METHOD.
    *
-   * It contains your original five layers so you can return
-   * to them later when you start separating/sketching the
-   * background properly.
+   * <p>It contains your original five layers so you can return to them later when you start
+   * separating/sketching the background properly.
    *
-   * To activate the five-layer version later, simply change:
+   * <p>To activate the five-layer version later, simply change:
    *
-   *     spawnBackground();
+   * <p>spawnBackground();
    *
-   * to:
+   * <p>to:
    *
-   *     spawnFiveLayerBackground();
+   * <p>spawnFiveLayerBackground();
    *
-   * in create().
+   * <p>in create().
    */
   private void spawnFiveLayerBackground() {
 
-    BackgroundRenderComponent backgroundComponent =
-        new BackgroundRenderComponent(camera);
+    BackgroundRenderComponent backgroundComponent = new BackgroundRenderComponent(camera);
 
     // ==========================================================
     // LAYER 1 - SKY
     // ==========================================================
-    backgroundComponent.addLayer(
-        "images/parallax/sky.png",
-        0.05f,
-        60f,
-        7.66f,
-        25.00f
-    );
+    backgroundComponent.addLayer("images/parallax/sky.png", 0.05f, 60f, 7.66f, 25.00f);
 
     // ==========================================================
     // LAYER 2 - CLOUDS
     // ==========================================================
-    backgroundComponent.addLayer(
-        "images/parallax/Clouds.png",
-        0.15f,
-        60f,
-        6.36f,
-        18.90f
-    );
+    backgroundComponent.addLayer("images/parallax/Clouds.png", 0.15f, 60f, 6.36f, 18.90f);
 
     // ==========================================================
     // LAYER 3 - MOUNTAINS
     // ==========================================================
-    backgroundComponent.addLayer(
-        "images/parallax/Mountains.png",
-        0.30f,
-        60f,
-        6.29f,
-        13.00f
-    );
+    backgroundComponent.addLayer("images/parallax/Mountains.png", 0.30f, 60f, 6.29f, 13.00f);
 
     // ==========================================================
     // LAYER 4 - GROUND
     // ==========================================================
-    backgroundComponent.addLayer(
-        "images/parallax/ground.png",
-        0.50f,
-        60f,
-        8.22f,
-        6.00f
-    );
+    backgroundComponent.addLayer("images/parallax/ground.png", 0.50f, 60f, 8.22f, 6.00f);
 
     // ==========================================================
     // LAYER 5 - ROCKS / FOREGROUND
     // ==========================================================
-    backgroundComponent.addLayer(
-        "images/parallax/Rocks.png",
-        0.80f,
-        60f,
-        8.07f,
-        -1.50f
-    );
+    backgroundComponent.addLayer("images/parallax/Rocks.png", 0.80f, 60f, 8.07f, -1.50f);
 
     // Create background entity
-    Entity background =
-        new Entity()
-            .addComponent(backgroundComponent);
+    Entity background = new Entity().addComponent(backgroundComponent);
 
-    background.setPosition(
-        -20f,
-        -10f
-    );
+    background.setPosition(-20f, -10f);
 
     spawnEntity(background);
   }
 
-  /**
-   * Creates the terrain and world boundaries.
-   */
+  /** Creates the terrain and world boundaries. */
   private void spawnTerrain() {
 
     // Background terrain
@@ -306,8 +248,7 @@ public class TutorialGameArea extends GameArea {
     spawnEntity(new Entity().addComponent(terrain));
 
     // Terrain walls
-    float tileSize =
-        terrain.getTileSize();
+    float tileSize = terrain.getTileSize();
 
     GridPoint2 tileBounds = terrain.getMapBounds(0);
 
@@ -348,24 +289,16 @@ public class TutorialGameArea extends GameArea {
         ObstacleFactory.createWall(worldBounds.x, WALL_WIDTH), GridPoint2Utils.ZERO, false, false);
   }
 
-  /**
-   * Creates the gameplay platforms and floors.
-   */
+  /** Creates the gameplay platforms and floors. */
   private void spawnPlatforms() {
 
-    GridPoint2[] platforms = {
-        new GridPoint2(4, 2),
-        new GridPoint2(8, 4)
-    };
+    GridPoint2[] platforms = {new GridPoint2(4, 2), new GridPoint2(8, 4)};
 
-    GridPoint2[] floors = {
-        new GridPoint2(0, 3),
-        new GridPoint2(7, 5)
-    };
+    GridPoint2[] floors = {new GridPoint2(0, 3), new GridPoint2(7, 5)};
 
     int[][] floorScales = {
-        {6, 3},
-        {3, 5}
+      {6, 3},
+      {3, 5}
     };
 
     // ==========================================================
@@ -373,18 +306,11 @@ public class TutorialGameArea extends GameArea {
     // ==========================================================
     for (int i = 0; i < platforms.length; i++) {
 
-      Entity platform =
-          ObstacleFactory.createPlatform(0);
+      Entity platform = ObstacleFactory.createPlatform(0);
 
-      platform.setScale(
-          3,
-          1);
+      platform.setScale(3, 1);
 
-      spawnEntityAt(
-          platform,
-          platforms[i],
-          false,
-          false);
+      spawnEntityAt(platform, platforms[i], false, false);
     }
 
     // ==========================================================
@@ -392,41 +318,25 @@ public class TutorialGameArea extends GameArea {
     // ==========================================================
     for (int i = 0; i < floors.length; i++) {
 
-      Entity floor =
-          ObstacleFactory.createFloor();
+      Entity floor = ObstacleFactory.createFloor();
 
-      floor.setScale(
-          floorScales[i][0],
-          floorScales[i][1]);
+      floor.setScale(floorScales[i][0], floorScales[i][1]);
 
-      spawnEntityAt(
-          floor,
-          floors[i],
-          false,
-          false);
+      spawnEntityAt(floor, floors[i], false, false);
     }
   }
 
-  /**
-   * Creates and spawns the player.
-   */
+  /** Creates and spawns the player. */
   private Entity spawnPlayer() {
 
-    Entity newPlayer =
-        PlayerFactory.createPlayer();
+    Entity newPlayer = PlayerFactory.createPlayer();
 
-    spawnEntityAt(
-        newPlayer,
-        PLAYER_SPAWN,
-        true,
-        true);
+    spawnEntityAt(newPlayer, PLAYER_SPAWN, true, true);
 
     return newPlayer;
   }
 
-  /**
-   * Creates trees.
-   */
+  /** Creates trees. */
   private void spawnTrees() {
 
     GridPoint2 minPos = new GridPoint2(0, 0);
@@ -439,13 +349,11 @@ public class TutorialGameArea extends GameArea {
 
       Entity tree = ObstacleFactory.createTree();
 
-      spawnEntityAt(tree, randomPos,  false, false);
+      spawnEntityAt(tree, randomPos, false, false);
     }
   }
 
-  /**
-   * Creates the ghosts.
-   */
+  /** Creates the ghosts. */
   private void spawnGhosts() {
 
     GridPoint2 minPos = new GridPoint2(0, 0);
@@ -462,9 +370,7 @@ public class TutorialGameArea extends GameArea {
     }
   }
 
-  /**
-   * Creates the ghost king.
-   */
+  /** Creates the ghost king. */
   private void spawnGhostKing() {
 
     GridPoint2 minPos = new GridPoint2(0, 0);
@@ -478,9 +384,7 @@ public class TutorialGameArea extends GameArea {
     spawnEntityAt(ghostKing, randomPos, true, true);
   }
 
-  /**
-   * Plays the background music.
-   */
+  /** Plays the background music. */
   private void playMusic() {
 
     Music music = ServiceLocator.getResourceService().getAsset(backgroundMusic, Music.class);
@@ -490,9 +394,7 @@ public class TutorialGameArea extends GameArea {
     music.play();
   }
 
-  /**
-   * Loads all assets.
-   */
+  /** Loads all assets. */
   private void loadAssets() {
 
     logger.debug("Loading assets");
@@ -513,9 +415,7 @@ public class TutorialGameArea extends GameArea {
     }
   }
 
-  /**
-   * Unloads all assets.
-   */
+  /** Unloads all assets. */
   private void unloadAssets() {
 
     logger.debug("Unloading assets");
@@ -540,9 +440,7 @@ public class TutorialGameArea extends GameArea {
     return player;
   }
 
-  /**
-   * Dispose of the game area.
-   */
+  /** Dispose of the game area. */
   @Override
   public void dispose() {
 

@@ -1,8 +1,8 @@
 package com.csse3200.game.entities.factories;
 
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
-import com.csse3200.game.components.level.PlatformGrappleComponent;
 import com.csse3200.game.components.TouchAttackComponent;
+import com.csse3200.game.components.level.PlatformGrappleComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.physics.PhysicsUtils;
