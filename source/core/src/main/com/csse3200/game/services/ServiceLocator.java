@@ -24,7 +24,7 @@ public class ServiceLocator {
   private static GameTime timeSource;
   private static InputService inputService;
   private static ResourceService resourceService;
-  private static EventHandler gameEndEventHandler;
+  private static EventHandler gameEndEventHandler; 
 
   public static EntityService getEntityService() {
     return entityService;
