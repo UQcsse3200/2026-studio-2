@@ -30,32 +30,32 @@ public class EnemyFactory {
       FileLoader.readClass(EnemyConfigs.class, "configs/Enemies.json");
 
   // Test function for checking enemy behaviour
-  public static Entity createChaser(Entity target) {
-    EnemyConfig config = configs.chaser;
-    Entity chaser = createEnemy(target, config);
+  public static Entity createSkeletonWarrior(Entity target) {
+    EnemyConfig config = configs.skeletonWarrior;
+    Entity skeletonWarrior = createEnemy(target, config);
 
-    chaser.addComponent(new TextureRenderComponent("images/skeleton_warrior.png"));
-    chaser.getComponent(AnimationRenderComponent.class).scaleEntity();
+    skeletonWarrior.addComponent(new TextureRenderComponent("images/skeleton_warrior.png"));
+    skeletonWarrior.getComponent(TextureRenderComponent.class).scaleEntity();
 
-    chaser
+    skeletonWarrior
         .getComponent(AITaskComponent.class)
         .addTask(new DelayedAttackTask(target, 20, 0.8f, 0.5f));
 
-    return chaser;
+    return skeletonWarrior;
   }
 
   // Test function for checking enemy behaviour that shoots
-  public static Entity createShooter(Entity target) {
-    EnemyConfig config = configs.shooter;
-    Entity shooter = createEnemy(target, config);
+  public static Entity createSkeletonArcher(Entity target) {
+    EnemyConfig config = configs.skeletonArcher;
+    Entity SkeletonArcher = createEnemy(target, config);
 
-    shooter
+    SkeletonArcher
         // .addComponent(new CombatStatsComponent(config.health, config.baseAttack))
         .addComponent(new TextureRenderComponent("images/skeleton_archer.png"));
 
-    shooter.getComponent(TextureRenderComponent.class).scaleEntity();
+    SkeletonArcher.getComponent(TextureRenderComponent.class).scaleEntity();
 
-    return shooter;
+    return SkeletonArcher;
   }
 
   public static Entity createEnemy(Entity target, EnemyConfig config) {
