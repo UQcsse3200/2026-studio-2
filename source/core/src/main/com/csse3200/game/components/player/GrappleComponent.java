@@ -16,7 +16,6 @@ public class GrappleComponent extends Component {
   private static final float SWING_FORCE = 5f;
   private static final float MAX_SWING_SPEED = 7f;
   private static final float SWING_DAMPING = 0.5f;
-  private static final short TARGETS = (short) (PhysicsLayer.OBSTACLE | PhysicsLayer.GROUND);
 
   private PhysicsComponent physicsComponent;
   private DistanceJoint ropeJoint;
@@ -38,7 +37,7 @@ public class GrappleComponent extends Component {
     RaycastHit hit = new RaycastHit();
 
     // Perform Box2D raycast against terrain/obstacle layers and exits if no surface was hit
-    if (!ServiceLocator.getPhysicsService().getPhysics().raycast(start, end, TARGETS, hit)) {
+    if (!ServiceLocator.getPhysicsService().getPhysics().raycast(start, end, PhysicsLayer.SOLID, hit)) {
       return;
     }
 

@@ -10,6 +10,8 @@ public class PhysicsLayer {
   public static final short NPC = (1 << 3);
   // Ground and platforms used by side-view player movement
   public static final short GROUND = (1 << 4);
+  // Solids used for grappling + groundedness
+  public static final short SOLID = GROUND | OBSTACLE;
   // Projectiles fired by the player
   public static final short PLAYER_PROJECTILE = (1 << 5);
   public static final short ALL = ~0;
