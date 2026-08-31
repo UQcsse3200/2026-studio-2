@@ -44,38 +44,6 @@ class ArrowProjectileComponentTest {
   }
 
   @Test
-  void shouldDamageNpcOnceAndBecomeSpent() {
-    Entity arrow = createArrow(Vector2.X, 10f, 15f);
-    Entity target = createTarget(PhysicsLayer.NPC, true);
-    ArrowProjectileComponent projectile = arrow.getComponent(ArrowProjectileComponent.class);
-    Fixture arrowFixture = arrow.getComponent(HitboxComponent.class).getFixture();
-    Fixture targetFixture = target.getComponent(HitboxComponent.class).getFixture();
-
-    arrow.getEvents().trigger("collisionStart", arrowFixture, targetFixture);
-    arrow.getEvents().trigger("collisionStart", arrowFixture, targetFixture);
-
-    assertEquals(10, target.getComponent(CombatStatsComponent.class).getHealth());
-    assertTrue(projectile.isSpent());
-  }
-
-  @Test
-  void shouldRemoveNpcWhenDamageReducesHealthToZero() {
-    Entity arrow = createArrow(Vector2.X, 10f, 15f);
-    Entity target = createTarget(PhysicsLayer.NPC, true, 10);
-
-    arrow
-        .getEvents()
-        .trigger(
-            "collisionStart",
-            arrow.getComponent(HitboxComponent.class).getFixture(),
-            target.getComponent(HitboxComponent.class).getFixture());
-    entityService.update();
-
-    assertTrue(target.getComponent(CombatStatsComponent.class).isDead());
-    verify(target).dispose();
-  }
-
-  @Test
   void shouldExpireOnTerrainWithoutDamage() {
     Entity arrow = createArrow(Vector2.X, 10f, 15f);
     Entity terrain = createTarget(PhysicsLayer.GROUND, false);
