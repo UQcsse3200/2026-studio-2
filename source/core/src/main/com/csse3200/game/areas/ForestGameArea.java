@@ -5,6 +5,7 @@ import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.areas.terrain.TerrainFactory;
 import com.csse3200.game.areas.terrain.TerrainFactory.TerrainType;
+import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.components.gamearea.GameAreaDisplay;
 import com.csse3200.game.components.player.KeyboardPlayerInputComponent;
 import com.csse3200.game.entities.Entity;
@@ -57,12 +58,12 @@ public class ForestGameArea extends GameArea {
   /**
    * Initialise this ForestGameArea to use the provided TerrainFactory.
    *
-   * @param cameraEntity entity containing the active camera.
+   * @param cameraComponent active camera component.
    * @param terrainFactory TerrainFactory used to create the terrain for the GameArea.
    * @requires terrainFactory != null
    */
-  public ForestGameArea(Entity cameraEntity, TerrainFactory terrainFactory) {
-    super(cameraEntity);
+  public ForestGameArea(CameraComponent cameraComponent, TerrainFactory terrainFactory) {
+    super(cameraComponent);
     this.terrainFactory = terrainFactory;
   }
 
@@ -136,7 +137,7 @@ public class ForestGameArea extends GameArea {
     Entity newPlayer = PlayerFactory.createPlayer();
     KeyboardPlayerInputComponent input = newPlayer.getComponent(KeyboardPlayerInputComponent.class);
     if (input != null) {
-      input.setCameraEntity(cameraEntity);
+      input.setCameraComponent(cameraComponent);
     }
     spawnEntityAt(newPlayer, PLAYER_SPAWN, true, true);
     return newPlayer;

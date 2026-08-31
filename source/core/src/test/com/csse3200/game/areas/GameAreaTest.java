@@ -4,6 +4,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 import com.csse3200.game.areas.terrain.TerrainFactory;
+import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.extensions.GameExtension;
@@ -18,7 +19,7 @@ class GameAreaTest {
     TerrainFactory factory = mock(TerrainFactory.class);
 
     GameArea gameArea =
-        new GameArea(new Entity()) {
+        new GameArea(new CameraComponent()) {
           @Override
           public void create() {}
         };

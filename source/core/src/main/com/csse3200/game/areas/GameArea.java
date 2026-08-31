@@ -17,18 +17,18 @@ import java.util.List;
  * <p>Support for enabling/disabling game areas could be added by making this a Component instead.
  */
 public abstract class GameArea implements Disposable {
-  /** Entity containing the active camera used by this game area. */
-  protected final Entity cameraEntity;
+  /** Camera used by this game area. */
+  protected final CameraComponent cameraComponent;
   protected TerrainComponent terrain;
   protected List<Entity> areaEntities;
 
   /**
-   * Creates a game area using the provided camera entity.
+   * Creates a game area using the provided camera component.
    *
-   * @param cameraEntity entity containing the active {@link CameraComponent}
+   * @param cameraComponent active camera component
    */
-  protected GameArea(Entity cameraEntity) {
-    this.cameraEntity = cameraEntity;
+  protected GameArea(CameraComponent cameraComponent) {
+    this.cameraComponent = cameraComponent;
     areaEntities = new ArrayList<>();
   }
 

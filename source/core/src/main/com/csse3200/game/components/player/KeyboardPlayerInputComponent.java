@@ -8,7 +8,6 @@ import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.csse3200.game.components.CameraComponent;
-import com.csse3200.game.entities.Entity;
 import com.csse3200.game.input.InputComponent;
 
 /** Input handler for player keyboard and mouse controls. */
@@ -19,7 +18,7 @@ public class KeyboardPlayerInputComponent extends InputComponent {
   private static final int RIGHT = 1;
   private final boolean[] keysHeld = new boolean[2];
   private boolean sprintHeld;
-  private Entity cameraEntity;
+  private CameraComponent cameraComponent;
   private boolean attackHeld;
 
   public KeyboardPlayerInputComponent() {
@@ -27,12 +26,12 @@ public class KeyboardPlayerInputComponent extends InputComponent {
   }
 
   /**
-   * Sets the camera entity used to convert screen coordinates to world-space aim directions.
+   * Sets the camera used to convert screen coordinates to world-space aim directions.
    *
-   * @param cameraEntity entity holding the active {@link CameraComponent}
+   * @param cameraComponent active camera component
    */
-  public void setCameraEntity(Entity cameraEntity) {
-    this.cameraEntity = cameraEntity;
+  public void setCameraComponent(CameraComponent cameraComponent) {
+    this.cameraComponent = cameraComponent;
   }
 
   /**
@@ -154,10 +153,6 @@ public class KeyboardPlayerInputComponent extends InputComponent {
   }
 
   private Vector2 getAimDirection(int screenX, int screenY) {
-    if (cameraEntity == null) {
-      return null;
-    }
-    CameraComponent cameraComponent = cameraEntity.getComponent(CameraComponent.class);
     if (cameraComponent == null) {
       return null;
     }
