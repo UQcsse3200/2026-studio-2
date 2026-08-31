@@ -11,8 +11,7 @@ public class TiledRenderComponent extends RenderComponent {
   private final float tileWorldSize;
 
   public TiledRenderComponent(String texturePath, float tileWorldSize) {
-    Texture texture =
-        ServiceLocator.getResourceService().getAsset(texturePath, Texture.class);
+    Texture texture = ServiceLocator.getResourceService().getAsset(texturePath, Texture.class);
 
     texture.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
 
@@ -31,11 +30,6 @@ public class TiledRenderComponent extends RenderComponent {
     textureRegion.setU2(tilesX);
     textureRegion.setV2(tilesY);
 
-    batch.draw(
-        textureRegion,
-        position.x,
-        position.y,
-        scale.x,
-        scale.y);
+    batch.draw(textureRegion, position.x, position.y, scale.x, scale.y);
   }
 }

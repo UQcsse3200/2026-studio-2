@@ -81,7 +81,7 @@ public class TerrainFactory {
             new TextureRegion(resourceService.getAsset("images/hex_grass_3.png", Texture.class));
         return createForestDemoTerrain(1f, hexGrass, hexTuft, hexRocks);
       case BACKGROUND_DESERT:
-        TextureRegion tile =    
+        TextureRegion tile =
             new TextureRegion(resourceService.getAsset("images/transparent.png", Texture.class));
         return createDesertTerrain(1f, tile);
       default:
@@ -89,15 +89,14 @@ public class TerrainFactory {
     }
   }
 
-private TerrainComponent createDesertTerrain(float tileWorldSize, TextureRegion tile) {
-  GridPoint2 tilePixelSize = new GridPoint2(tile.getRegionWidth(), tile.getRegionHeight());
-  TiledMap tiledMap = createDesertTiles(tilePixelSize, tile);
-  TiledMapRenderer renderer = createRenderer(tiledMap, tileWorldSize / tilePixelSize.x);
-  return new TerrainComponent(camera, tiledMap, renderer, orientation, tileWorldSize);
-}
+  private TerrainComponent createDesertTerrain(float tileWorldSize, TextureRegion tile) {
+    GridPoint2 tilePixelSize = new GridPoint2(tile.getRegionWidth(), tile.getRegionHeight());
+    TiledMap tiledMap = createDesertTiles(tilePixelSize, tile);
+    TiledMapRenderer renderer = createRenderer(tiledMap, tileWorldSize / tilePixelSize.x);
+    return new TerrainComponent(camera, tiledMap, renderer, orientation, tileWorldSize);
+  }
 
-  private TiledMap createDesertTiles(
-      GridPoint2 tileSize, TextureRegion tile) {
+  private TiledMap createDesertTiles(GridPoint2 tileSize, TextureRegion tile) {
     TiledMap tiledMap = new TiledMap();
     TerrainTile transparentTile = new TerrainTile(tile);
     TiledMapTileLayer layer = new TiledMapTileLayer(MAP_SIZE.x, MAP_SIZE.y, tileSize.x, tileSize.y);

@@ -1,10 +1,8 @@
 package com.csse3200.game.screens;
 
 import com.badlogic.gdx.ScreenAdapter;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.csse3200.game.GdxGame;
-import com.csse3200.game.areas.ForestGameArea;
 import com.csse3200.game.areas.TutorialGameArea;
 import com.csse3200.game.areas.terrain.TerrainFactory;
 import com.csse3200.game.components.gamearea.PerformanceDisplay;
@@ -34,113 +32,130 @@ import org.slf4j.LoggerFactory;
  * <p>Details on libGDX screens: https://happycoding.io/tutorials/libgdx/game-screens
  */
 public class TutorialGameScreen extends ScreenAdapter {
-    private static final Logger logger = LoggerFactory.getLogger(TutorialGameScreen.class);
-    private static final String[] mainGameTextures = {"images/heart.png"};
-    private static final Vector2 CAMERA_POSITION = new Vector2(7.5f, 7.5f);
 
-    private final GdxGame game;
-    private final Renderer renderer;
-    private final PhysicsEngine physicsEngine;
+  private static final Logger logger = LoggerFactory.getLogger(TutorialGameScreen.class);
 
-    public TutorialGameScreen(GdxGame game) {
-        this.game = game;
+  private static final String[] mainGameTextures = {"images/heart.png"};
 
-        logger.debug("Initialising main game screen services");
-        ServiceLocator.registerTimeSource(new GameTime());
+  private final GdxGame game;
+  private final Renderer renderer;
+  private final PhysicsEngine physicsEngine;
 
-        PhysicsService physicsService = new PhysicsService();
-        ServiceLocator.registerPhysicsService(physicsService);
-        physicsEngine = physicsService.getPhysics();
+  public TutorialGameScreen(GdxGame game) {
+    this.game = game;
 
-        ServiceLocator.registerInputService(new InputService());
-        ServiceLocator.registerResourceService(new ResourceService());
+    logger.debug("Initialising main game screen services");
 
-        ServiceLocator.registerEntityService(new EntityService());
-        ServiceLocator.registerRenderService(new RenderService());
+    ServiceLocator.registerTimeSource(new GameTime());
 
-        renderer = RenderFactory.createRenderer();
-        //renderer.getCamera().getEntity().setPosition(CAMERA_POSITION);
-        renderer.getDebug().renderPhysicsWorld(physicsEngine.getWorld());
+    PhysicsService physicsService = new PhysicsService();
+    ServiceLocator.registerPhysicsService(physicsService);
+    physicsEngine = physicsService.getPhysics();
 
-        loadAssets();
-        createUI();
+    ServiceLocator.registerInputService(new InputService());
+    ServiceLocator.registerResourceService(new ResourceService());
 
-        logger.debug("Initialising tutorial game screen entities");
-        TerrainFactory terrainFactory = new TerrainFactory(renderer.getCamera());
-        TutorialGameArea tutorialGameArea = new TutorialGameArea(terrainFactory);
-        tutorialGameArea.create();
-        renderer.getCamera().setTarget(tutorialGameArea.getPlayer());
-    }
+    ServiceLocator.registerEntityService(new EntityService());
+    ServiceLocator.registerRenderService(new RenderService());
 
-    @Override
-    public void render(float delta) {
-        physicsEngine.update();
-        ServiceLocator.getEntityService().update();
-        renderer.render();
-    }
+    renderer = RenderFactory.createRenderer();
 
-    @Override
-    public void resize(int width, int height) {
-        renderer.resize(width, height);
-        logger.trace("Resized renderer: ({} x {})", width, height);
-    }
+    renderer.getDebug().renderPhysicsWorld(physicsEngine.getWorld());
 
-    @Override
-    public void pause() {
-        logger.info("Game paused");
-    }
+    loadAssets();
+    createUI();
 
-    @Override
-    public void resume() {
-        logger.info("Game resumed");
-    }
+    logger.debug("Initialising tutorial game screen entities");
 
-    @Override
-    public void dispose() {
-        logger.debug("Disposing main game screen");
+    // Pass the renderer's camera to the terrain factory.
+    TerrainFactory terrainFactory = new TerrainFactory(renderer.getCamera());
 
-        renderer.dispose();
-        unloadAssets();
+    // Pass the same camera to the TutorialGameArea so that
+    // the parallax background can follow camera movement.
+    TutorialGameArea tutorialGameArea = new TutorialGameArea(terrainFactory, renderer.getCamera());
 
-        ServiceLocator.getEntityService().dispose();
-        ServiceLocator.getRenderService().dispose();
-        ServiceLocator.getResourceService().dispose();
+    tutorialGameArea.create();
 
-        ServiceLocator.clear();
-    }
+    // Follow the player with the camera.
+    renderer.getCamera().setTarget(tutorialGameArea.getPlayer());
+  }
 
-    private void loadAssets() {
-        logger.debug("Loading assets");
-        ResourceService resourceService = ServiceLocator.getResourceService();
-        resourceService.loadTextures(mainGameTextures);
-        ServiceLocator.getResourceService().loadAll();
-    }
+  @Override
+  public void render(float delta) {
+    physicsEngine.update();
+    ServiceLocator.getEntityService().update();
+    renderer.render();
+  }
 
-    private void unloadAssets() {
-        logger.debug("Unloading assets");
-        ResourceService resourceService = ServiceLocator.getResourceService();
-        resourceService.unloadAssets(mainGameTextures);
-    }
+  @Override
+  public void resize(int width, int height) {
+    renderer.resize(width, height);
+    logger.trace("Resized renderer: ({} x {})", width, height);
+  }
 
-    /**
-     * Creates the main game's ui including components for rendering ui elements to the screen and
-     * capturing and handling ui input.
-     */
-    private void createUI() {
-        logger.debug("Creating ui");
-        Stage stage = ServiceLocator.getRenderService().getStage();
-        InputComponent inputComponent =
-                ServiceLocator.getInputService().getInputFactory().createForTerminal();
+  @Override
+  public void pause() {
+    logger.info("Game paused");
+  }
 
-        Entity ui = new Entity();
-        ui.addComponent(new InputDecorator(stage, 10))
-                .addComponent(new PerformanceDisplay())
-                .addComponent(new MainGameActions(this.game))
-                .addComponent(new MainGameExitDisplay())
-                .addComponent(new Terminal())
-                .addComponent(inputComponent)
-                .addComponent(new TerminalDisplay());
+  @Override
+  public void resume() {
+    logger.info("Game resumed");
+  }
 
-        ServiceLocator.getEntityService().register(ui);
-    }
+  @Override
+  public void dispose() {
+    logger.debug("Disposing main game screen");
+
+    renderer.dispose();
+    unloadAssets();
+
+    ServiceLocator.getEntityService().dispose();
+    ServiceLocator.getRenderService().dispose();
+    ServiceLocator.getResourceService().dispose();
+
+    ServiceLocator.clear();
+  }
+
+  private void loadAssets() {
+    logger.debug("Loading assets");
+
+    ResourceService resourceService = ServiceLocator.getResourceService();
+
+    resourceService.loadTextures(mainGameTextures);
+    resourceService.loadAll();
+  }
+
+  private void unloadAssets() {
+    logger.debug("Unloading assets");
+
+    ResourceService resourceService = ServiceLocator.getResourceService();
+
+    resourceService.unloadAssets(mainGameTextures);
+  }
+
+  /**
+   * Creates the main game's UI including components for rendering UI elements to the screen and
+   * capturing and handling UI input.
+   */
+  private void createUI() {
+    logger.debug("Creating ui");
+
+    Stage stage = ServiceLocator.getRenderService().getStage();
+
+    InputComponent inputComponent =
+        ServiceLocator.getInputService().getInputFactory().createForTerminal();
+
+    Entity ui = new Entity();
+
+    ui.addComponent(new InputDecorator(stage, 10))
+        .addComponent(new PerformanceDisplay())
+        .addComponent(new MainGameActions(this.game))
+        .addComponent(new MainGameExitDisplay())
+        .addComponent(new Terminal())
+        .addComponent(inputComponent)
+        .addComponent(new TerminalDisplay());
+
+    ServiceLocator.getEntityService().register(ui);
+  }
 }

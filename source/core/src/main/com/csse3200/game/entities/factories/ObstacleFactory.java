@@ -1,6 +1,7 @@
 package com.csse3200.game.entities.factories;
 
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
+import com.csse3200.game.components.level.PlatformGrappleComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.physics.PhysicsUtils;
@@ -35,12 +36,13 @@ public class ObstacleFactory {
     return tree;
   }
 
-  public static Entity createPlatform() {
+  public static Entity createPlatform(int grappleSides) {
     Entity platform =
         new Entity()
             .addComponent(new TextureRenderComponent("images/platform.png"))
             .addComponent(new PhysicsComponent())
-            .addComponent(new ColliderComponent().setLayer(PhysicsLayer.OBSTACLE));
+            .addComponent(new ColliderComponent().setLayer(PhysicsLayer.OBSTACLE))
+            .addComponent(new PlatformGrappleComponent(grappleSides));
 
     platform.getComponent(PhysicsComponent.class).setBodyType(BodyType.StaticBody);
 
@@ -48,16 +50,15 @@ public class ObstacleFactory {
   }
 
   public static Entity createFloor() {
-    Entity floor = 
-          new Entity()
+    Entity floor =
+        new Entity()
             .addComponent(new TiledRenderComponent("images/Tile_2.png", 0.75f))
             .addComponent(new PhysicsComponent().setBodyType(BodyType.StaticBody))
             .addComponent(new ColliderComponent().setLayer(PhysicsLayer.OBSTACLE));
-  
+
     floor.getComponent(PhysicsComponent.class).setBodyType(BodyType.StaticBody);
 
     return floor;
-
   }
 
   /**
