@@ -153,14 +153,13 @@ public class TutorialGameArea extends GameArea {
    * @param camera CameraComponent used by the parallax background.
    */
   public TutorialGameArea(TerrainFactory terrainFactory, CameraComponent camera) {
-
     super();
 
     this.terrainFactory = terrainFactory;
     this.camera = camera;
   }
 
-  /** Create the game area, including terrain, background, platforms and player. */
+  /** Create the game area, including terrain, background, platforms and a player. */
   @Override
   public void create() {
 
@@ -196,9 +195,19 @@ public class TutorialGameArea extends GameArea {
   }
 
   /**
-   * Creates the multi-layer parallax background.
+   * ============================================================ CURRENT ACTIVE BACKGROUND
+   * ============================================================
    *
-   * <p>Each layer has its own size, position and parallax factor.
+   * <p>Uses the complete original_background.png as ONE layer.
+   *
+   * <p>The camera and parallax factor are passed to the BackgroundRenderComponent so that the
+   * background moves more slowly than the foreground when the camera moves. The image is 1024 x
+   * 572, so when its width is 60 world units, the matching height is approximately 33.52.
+   *
+   * <p>Parallax factor = 0.30
+   *
+   * <p>This means the background moves at 30% of the camera movement relative to the world, giving
+   * the subtle effect you originally wanted.
    */
   private void spawnBackground() {
 
@@ -373,6 +382,7 @@ public class TutorialGameArea extends GameArea {
     spawnEntityAt(ghostKing, randomPos, true, true);
   }
 
+  /** Plays the background music. */
   private void playMusic() {
 
     Music music = ServiceLocator.getResourceService().getAsset(backgroundMusic, Music.class);
@@ -382,6 +392,7 @@ public class TutorialGameArea extends GameArea {
     music.play();
   }
 
+  /** Loads all assets. */
   private void loadAssets() {
 
     logger.debug("Loading assets");
@@ -402,6 +413,7 @@ public class TutorialGameArea extends GameArea {
     }
   }
 
+  /** Unloads all assets. */
   private void unloadAssets() {
 
     logger.debug("Unloading assets");
@@ -421,6 +433,7 @@ public class TutorialGameArea extends GameArea {
     return player;
   }
 
+  /** Dispose of the game area. */
   @Override
   public void dispose() {
 

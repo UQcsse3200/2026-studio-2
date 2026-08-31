@@ -80,7 +80,6 @@ public class BackgroundRenderComponent extends RenderComponent {
 
   @Override
   protected void draw(SpriteBatch batch) {
-
     if (layers.isEmpty()) {
       return;
     }
