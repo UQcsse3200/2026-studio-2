@@ -11,8 +11,6 @@ import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.input.InputComponent;
 
-import java.util.TimeZone;
-
 /** Input handler for player keyboard and mouse controls. */
 public class KeyboardPlayerInputComponent extends InputComponent {
   private final Vector2 walkDirection = Vector2.Zero.cpy();
@@ -22,7 +20,6 @@ public class KeyboardPlayerInputComponent extends InputComponent {
   private final boolean[] keysHeld = new boolean[2];
   private boolean sprintHeld;
   private Entity cameraEntity;
-  private boolean attackHeld;
 
   public KeyboardPlayerInputComponent() {
     super(5);
@@ -57,24 +54,17 @@ public class KeyboardPlayerInputComponent extends InputComponent {
         triggerWalkEvent();
         return true;
       case Keys.SPACE:
-        triggerJumpEvent();
+      case Keys.W:
+        entity.getEvents().trigger("jump");
         return true;
       case Keys.SHIFT_LEFT:
       case Keys.SHIFT_RIGHT:
         sprintHeld = true;
         triggerSprintEvent();
         return true;
-      case Keys.E:
-        if (!attackHeld) {
-          Vector2 aimDirection = getMouseAimDirection();
-          if (aimDirection != null && !aimDirection.isZero()) {
-            entity.getEvents().trigger("fireArrow", aimDirection);
-          }
-          attackHeld = true;
-        }
+      case Keys.Q:
+        entity.getEvents().trigger("cycleArrow");
         return true;
-      case Keys.R:
-
       default:
         return false;
     }
@@ -104,19 +94,13 @@ public class KeyboardPlayerInputComponent extends InputComponent {
         sprintHeld = false;
         triggerSprintEvent();
         return true;
-      case Keys.E:
-        attackHeld = false;
-        return true;
-      case Keys.R:
-        grappleHeld = false;
-        return true;
       default:
         return false;
     }
   }
 
   /**
-   * Fires the grapple toward the clicked world position.
+   * Fires the currently selected arrow toward the clicked world position.
    *
    * @return whether the input was processed
    * @see InputProcessor#touchDown(int, int, int, int)
@@ -126,12 +110,7 @@ public class KeyboardPlayerInputComponent extends InputComponent {
     if (button != Buttons.LEFT) {
       return false;
     }
-    Vector2 aimDirection = getAimDirection(screenX, screenY);
-    if (aimDirection == null || aimDirection.isZero()) {
-      return false;
-    }
-    entity.getEvents().trigger("grappleFire", aimDirection);
-    return true;
+    return triggerAimedEvent("shoot", screenX, screenY);
   }
 
   private void triggerSprintEvent() {
@@ -142,12 +121,19 @@ public class KeyboardPlayerInputComponent extends InputComponent {
     }
   }
 
-  private void triggerJumpEvent() {
-    entity.getEvents().trigger("jump");
+  /** Fires an event aimed at wherever the mouse cursor currently sits. */
+  private boolean triggerAimedEvent(String eventName) {
+    return triggerAimedEvent(eventName, Gdx.input.getX(), Gdx.input.getY());
   }
 
-  private Vector2 getMouseAimDirection() {
-    return getAimDirection(Gdx.input.getX(), Gdx.input.getY());
+  /** Fires an event aimed at the given screen position. */
+  private boolean triggerAimedEvent(String eventName, int screenX, int screenY) {
+    Vector2 aim = getAimDirection(screenX, screenY);
+    if (aim == null || aim.isZero()) {
+      return false;
+    }
+    entity.getEvents().trigger(eventName, aim);
+    return true;
   }
 
   private Vector2 getAimDirection(int screenX, int screenY) {

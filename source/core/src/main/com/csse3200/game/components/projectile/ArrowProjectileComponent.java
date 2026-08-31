@@ -52,7 +52,7 @@ public class ArrowProjectileComponent extends Component {
     combatStats = entity.getComponent(CombatStatsComponent.class);
 
     Body body = physicsComponent.getBody();
-    body.setGravityScale(0f);
+    body.setGravityScale(0.05f);
     body.setLinearDamping(0f);
     body.setBullet(true);
     body.setLinearVelocity(direction.cpy().scl(speed));
@@ -85,6 +85,10 @@ public class ArrowProjectileComponent extends Component {
   }
 
   private void damageTarget(Fixture other) {
+    // Non-damaging arrows (e.g. grapple) have no combat stats
+    if (combatStats == null) {
+      return;
+    }
     Object userData = other.getBody().getUserData();
     if (!(userData instanceof BodyUserData)) {
       return;
