@@ -1,20 +1,37 @@
 package com.csse3200.game.components.player;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input.Buttons;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
+import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.input.InputComponent;
-import com.csse3200.game.utils.math.Vector2Utils;
 
-/**
- * Input handler for the player for keyboard and touch (mouse) input. This input handler only uses
- * keyboard input.
- */
+/** Input handler for player keyboard and mouse controls. */
 public class KeyboardPlayerInputComponent extends InputComponent {
   private final Vector2 walkDirection = Vector2.Zero.cpy();
+  private static final int SPEED = 1;
+  private static final int LEFT = 0;
+  private static final int RIGHT = 1;
+  private final boolean[] keysHeld = new boolean[2];
+  private boolean sprintHeld;
+  private CameraComponent cameraComponent;
+  private boolean attackHeld;
 
   public KeyboardPlayerInputComponent() {
     super(5);
+  }
+
+  /**
+   * Sets the camera used to convert screen coordinates to world-space aim directions.
+   *
+   * @param cameraComponent active camera component
+   */
+  public void setCameraComponent(CameraComponent cameraComponent) {
+    this.cameraComponent = cameraComponent;
   }
 
   /**
@@ -26,24 +43,32 @@ public class KeyboardPlayerInputComponent extends InputComponent {
   @Override
   public boolean keyDown(int keycode) {
     switch (keycode) {
-      case Keys.W:
-        walkDirection.add(Vector2Utils.UP);
-        triggerWalkEvent();
-        return true;
       case Keys.A:
-        walkDirection.add(Vector2Utils.LEFT);
-        triggerWalkEvent();
-        return true;
-      case Keys.S:
-        walkDirection.add(Vector2Utils.DOWN);
+      case Keys.LEFT:
+        keysHeld[LEFT] = true;
         triggerWalkEvent();
         return true;
       case Keys.D:
-        walkDirection.add(Vector2Utils.RIGHT);
+      case Keys.RIGHT:
+        keysHeld[RIGHT] = true;
         triggerWalkEvent();
         return true;
       case Keys.SPACE:
-        entity.getEvents().trigger("attack");
+        triggerJumpEvent();
+        return true;
+      case Keys.SHIFT_LEFT:
+      case Keys.SHIFT_RIGHT:
+        sprintHeld = true;
+        triggerSprintEvent();
+        return true;
+      case Keys.E:
+        if (!attackHeld) {
+          Vector2 aimDirection = getMouseAimDirection();
+          if (aimDirection != null && !aimDirection.isZero()) {
+            entity.getEvents().trigger("primaryAttack", aimDirection);
+          }
+          attackHeld = true;
+        }
         return true;
       default:
         return false;
@@ -59,32 +84,94 @@ public class KeyboardPlayerInputComponent extends InputComponent {
   @Override
   public boolean keyUp(int keycode) {
     switch (keycode) {
-      case Keys.W:
-        walkDirection.sub(Vector2Utils.UP);
-        triggerWalkEvent();
-        return true;
       case Keys.A:
-        walkDirection.sub(Vector2Utils.LEFT);
-        triggerWalkEvent();
-        return true;
-      case Keys.S:
-        walkDirection.sub(Vector2Utils.DOWN);
+      case Keys.LEFT:
+        keysHeld[LEFT] = false;
         triggerWalkEvent();
         return true;
       case Keys.D:
-        walkDirection.sub(Vector2Utils.RIGHT);
+      case Keys.RIGHT:
+        keysHeld[RIGHT] = false;
         triggerWalkEvent();
+        return true;
+      case Keys.SHIFT_LEFT:
+      case Keys.SHIFT_RIGHT:
+        sprintHeld = false;
+        triggerSprintEvent();
+        return true;
+      case Keys.E:
+        attackHeld = false;
         return true;
       default:
         return false;
     }
   }
 
+  /**
+   * Fires the grapple toward the clicked world position.
+   *
+   * @return whether the input was processed
+   * @see InputProcessor#touchDown(int, int, int, int)
+   */
+  @Override
+  public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+    if (button != Buttons.LEFT) {
+      return false;
+    }
+    Vector2 aimDirection = getAimDirection(screenX, screenY);
+    if (aimDirection == null || aimDirection.isZero()) {
+      return false;
+    }
+    entity.getEvents().trigger("grappleFire", aimDirection);
+    return true;
+  }
+
+  @Override
+  public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+    if (button != Buttons.LEFT) {
+      return false;
+    }
+
+    entity.getEvents().trigger("grappleRelease");
+    return true;
+  }
+
+  private void triggerSprintEvent() {
+    if (sprintHeld) {
+      entity.getEvents().trigger("sprint");
+    } else {
+      entity.getEvents().trigger("sprintStop");
+    }
+  }
+
+  private void triggerJumpEvent() {
+    entity.getEvents().trigger("jump");
+  }
+
+  private Vector2 getMouseAimDirection() {
+    return getAimDirection(Gdx.input.getX(), Gdx.input.getY());
+  }
+
+  private Vector2 getAimDirection(int screenX, int screenY) {
+    if (cameraComponent == null) {
+      return null;
+    }
+    Camera camera = cameraComponent.getCamera();
+    Vector3 worldPosition = camera.unproject(new Vector3(screenX, screenY, 0f));
+    return new Vector2(worldPosition.x, worldPosition.y).sub(entity.getCenterPosition());
+  }
+
   private void triggerWalkEvent() {
-    if (walkDirection.epsilonEquals(Vector2.Zero)) {
+    float x = 0;
+    if (keysHeld[LEFT]) x -= SPEED;
+    if (keysHeld[RIGHT]) x += SPEED;
+
+    walkDirection.set(x, 0);
+
+    if (walkDirection.epsilonEquals(Vector2.Zero, 0.01f)) {
       entity.getEvents().trigger("walkStop");
     } else {
-      entity.getEvents().trigger("walk", walkDirection);
+      entity.getEvents().trigger("walk", walkDirection.cpy());
     }
   }
 }
