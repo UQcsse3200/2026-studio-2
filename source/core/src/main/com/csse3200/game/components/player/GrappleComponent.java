@@ -79,7 +79,7 @@ public class GrappleComponent extends Component {
     ropeJoint = null;
     anchorPoint = null;
 
-    physicsComponent.getBody().setLinearDamping(0f);
+    physicsComponent.getBody().setLinearDamping(2f);
   }
 
   /**
