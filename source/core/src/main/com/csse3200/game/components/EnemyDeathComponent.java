@@ -13,7 +13,11 @@ public class EnemyDeathComponent extends Component {
 
     // Handle enemy death
     if (enemyHealth <= 0) {
-      entity.dispose();
+      entity.dispose(); // TBD .scheduleForDisposal instead?
     }
   }
+
+  // define dispose() behaviour
+  // @Override ...  super.dispose();
+  // dispose of event listener?
 }

@@ -68,4 +68,9 @@ public class EntityService {
       entity.dispose();
     }
   }
+
+  /** Getter function for a snapshot (shallow copy) of currently registered entities * */
+  public Array<Entity> getEntities() {
+    return new Array<>(entities);
+  }
 }
