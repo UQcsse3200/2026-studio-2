@@ -69,7 +69,7 @@ public class CyclopsMinigameLogicComponent extends Component {
     initialiseComponents();
   }
 
-  protected void initialiseComponents() {
+  private void initialiseComponents() {
     /* Screens - Transition, win, lose screen */
     this.transitionScreen = new BlankTransitionScreen();
     ServiceLocator.getEntityService().register(new Entity().addComponent(this.transitionScreen));
