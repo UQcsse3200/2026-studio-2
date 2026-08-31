@@ -26,6 +26,16 @@ class MinigameSelectActionsTest {
     verify(game).setScreen(GdxGame.ScreenType.MAIN_MENU);
   }
 
+  @Test
+  void shouldChangeScreenForCyclopsMinigameSelected() {
+    GdxGame game = mock(GdxGame.class);
+    Entity ui = new Entity().addComponent(new MinigameSelectActions(game));
+    ui.create();
+
+    ui.getEvents().trigger("selectMinigame", MinigameType.CYCLOPS_TIMING);
+    verify(game).setScreen(GdxGame.ScreenType.CYCLOPS_MINIGAME);
+  }
+
   /** If minigames are not playable yet, selecting one must not change screen. */
   @Test
   void shouldNotChangeScreenForUnimplementedMinigame() {

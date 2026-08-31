@@ -36,6 +36,8 @@ public class MinigameSelectActions extends Component {
         game.setScreen(GdxGame.ScreenType.CYCLOPS_MINIGAME);
         logger.info("Selected minigame {} loading...", minigame);
         return;
+      default:
+        logger.info("Selected minigame {} is not implemented", minigame);
     }
     logger.info("Selected minigame {}, not yet implemented", minigame);
   }
