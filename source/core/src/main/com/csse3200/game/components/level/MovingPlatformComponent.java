@@ -46,14 +46,28 @@ public class MovingPlatformComponent extends PlatformGrappleComponent {
     if (movementComponent.getMoving() && movementComponent.getTarget() != null) {
       Vector2 currentPosition = entity.getPosition();
       Body body = physicsComponent.getBody();
-      if (currentPosition.x <= leftTarget.x) {
-        movementComponent.setTarget(rightTarget);
-      } else if (currentPosition.x >= rightTarget.x) {
-        movementComponent.setTarget(leftTarget);
+
+      if (maxSpeed.y == 0) {
+        if (currentPosition.x <= leftTarget.x) {
+          movementComponent.setTarget(rightTarget);
+        } else if (currentPosition.x >= rightTarget.x) {
+          movementComponent.setTarget(leftTarget);
+        }
+
+        Vector2 velocity = getDirection().scl(maxSpeed.x);
+        setToVelocity(body, velocity);
+      }
+      if (maxSpeed.x == 0) {
+        if (currentPosition.y <= leftTarget.y) {
+          movementComponent.setTarget(rightTarget);
+        } else if (currentPosition.y >= rightTarget.y) {
+          movementComponent.setTarget(leftTarget);
+        }
+
+        Vector2 velocity = getDirection().scl(maxSpeed.y);
+        setToVelocity(body, velocity);
       }
 
-      Vector2 velocity = getDirection().scl(maxSpeed.x);
-      setToVelocity(body, velocity);
     }
   }
 
