@@ -10,6 +10,7 @@ import com.csse3200.game.screens.MainGameScreen;
 import com.csse3200.game.screens.MainMenuScreen;
 import com.csse3200.game.screens.SettingsFromPauseScreen;
 import com.csse3200.game.screens.SettingsScreen;
+import com.csse3200.game.screens.minigames.MinigameSelectScreen;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -75,6 +76,8 @@ public class GdxGame extends Game {
         return new SettingsScreen(this);
       case SETTINGS_FROM_PAUSE:
         return new SettingsFromPauseScreen(this);
+      case MINIGAME_SELECT:
+        return new MinigameSelectScreen(this);
       default:
         return null;
     }
@@ -84,7 +87,8 @@ public class GdxGame extends Game {
     MAIN_MENU,
     MAIN_GAME,
     SETTINGS,
-    SETTINGS_FROM_PAUSE
+    SETTINGS_FROM_PAUSE,
+    MINIGAME_SELECT
   }
 
   /** Exit the game. */
