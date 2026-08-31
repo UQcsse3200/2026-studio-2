@@ -178,6 +178,7 @@ public class TutorialGameArea extends GameArea {
     spawnFloors();
 
     player = spawnPlayer();
+    spawnWinCondition();
 
     // spawnGhosts();
     // spawnGhostKing();
@@ -336,6 +337,11 @@ public class TutorialGameArea extends GameArea {
     spawnEntityAt(newPlayer, PLAYER_SPAWN, true, true);
 
     return newPlayer;
+  }
+
+  private void spawnWinCondition() {
+    Entity winCon = ObstacleFactory.createWinConEntity();
+    spawnEntityAt(winCon, new GridPoint2(10, 11), true, true);
   }
 
   private void spawnGhosts() {
