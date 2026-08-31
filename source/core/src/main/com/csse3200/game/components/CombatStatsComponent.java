@@ -19,6 +19,11 @@ public class CombatStatsComponent extends Component {
     setBaseAttack(baseAttack);
   }
 
+  @Override
+  public void create() {
+    entity.getEvents().addListener("takeDamage", this::hit);
+  }
+
   /**
    * Returns true if the entity's has 0 health, otherwise false.
    *

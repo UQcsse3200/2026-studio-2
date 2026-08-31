@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Fixture;
@@ -38,7 +37,7 @@ class ArrowProjectileComponentTest {
     PhysicsComponent physics = arrow.getComponent(PhysicsComponent.class);
 
     assertTrue(physics.getBody().getLinearVelocity().epsilonEquals(new Vector2(6f, 8f)));
-    assertEquals(0f, physics.getBody().getGravityScale());
+    assertEquals(0.05f, physics.getBody().getGravityScale());
     assertEquals(0f, physics.getBody().getLinearDamping());
     assertTrue(physics.getBody().isBullet());
   }
@@ -77,6 +76,41 @@ class ArrowProjectileComponentTest {
   }
 
   @Test
+  void shouldDamageNpcThroughDamageEvent() {
+    Entity arrow = createArrow(Vector2.X, 10f, 15f);
+    Entity target = createTarget(PhysicsLayer.NPC, true);
+
+    triggerCollision(arrow, target);
+
+    assertEquals(10, target.getComponent(CombatStatsComponent.class).getHealth());
+    assertTrue(arrow.getComponent(ArrowProjectileComponent.class).isSpent());
+  }
+
+  @Test
+  void shouldDamageNpcOnlyOnce() {
+    Entity arrow = createArrow(Vector2.X, 10f, 15f);
+    Entity target = createTarget(PhysicsLayer.NPC, true);
+    ArrowProjectileComponent projectile = arrow.getComponent(ArrowProjectileComponent.class);
+
+    triggerCollision(arrow, target);
+    triggerCollision(arrow, target);
+
+    assertEquals(10, target.getComponent(CombatStatsComponent.class).getHealth());
+    assertTrue(projectile.isSpent());
+  }
+
+  @Test
+  void shouldExpireOnObstacleWithoutDamage() {
+    Entity arrow = createArrow(Vector2.X, 10f, 15f);
+    Entity obstacle = createTarget(PhysicsLayer.OBSTACLE, false);
+    ArrowProjectileComponent projectile = arrow.getComponent(ArrowProjectileComponent.class);
+
+    triggerCollision(arrow, obstacle);
+
+    assertTrue(projectile.isSpent());
+  }
+
+  @Test
   void shouldExpireAtMaximumRange() {
     Entity arrow = createArrow(Vector2.X, 10f, 15f);
     ArrowProjectileComponent projectile = arrow.getComponent(ArrowProjectileComponent.class);
@@ -111,5 +145,14 @@ class ArrowProjectileComponentTest {
     }
     entityService.register(target);
     return target;
+  }
+
+  private void triggerCollision(Entity arrow, Entity target) {
+    arrow
+        .getEvents()
+        .trigger(
+            "collisionStart",
+            arrow.getComponent(HitboxComponent.class).getFixture(),
+            target.getComponent(HitboxComponent.class).getFixture());
   }
 }
