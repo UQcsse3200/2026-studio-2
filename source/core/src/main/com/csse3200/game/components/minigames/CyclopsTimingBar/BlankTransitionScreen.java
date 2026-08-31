@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 
 public class BlankTransitionScreen extends UIComponent {
   private static final Logger logger = LoggerFactory.getLogger(BlankTransitionScreen.class);
+  private static final float Z_INDEX = 4;
 
   private Texture texture;
   private TextureRegion textureRegion;
@@ -59,5 +60,10 @@ public class BlankTransitionScreen extends UIComponent {
   public void dispose() {
     super.dispose();
     if (texture != null) texture.dispose();
+  }
+
+  @Override
+  public float getZIndex() {
+    return Z_INDEX;
   }
 }

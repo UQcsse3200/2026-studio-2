@@ -54,8 +54,8 @@ public class ObstacleFactory {
     Entity statue =
         new Entity()
             .addComponent(new TextureRenderComponent("images/Greek Statues Pack I/Brute.png"))
-            .addComponent(new PhysicsComponent())
-            .addComponent(new ColliderComponent().setLayer(PhysicsLayer.NONE));
+            .addComponent(new PhysicsComponent().setBodyType(BodyType.StaticBody))
+            .addComponent(new ColliderComponent().setLayer(PhysicsLayer.DEFAULT));
 
     return statue;
   }
