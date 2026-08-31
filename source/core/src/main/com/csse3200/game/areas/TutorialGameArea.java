@@ -96,6 +96,12 @@ public class TutorialGameArea extends GameArea {
     new PlatformConfig(new GridPoint2(78, 0), 13, 17, 0),
   };
 
+  private static final GridPoint2[] spikes = {
+          new GridPoint2(10, 2),
+          new GridPoint2(20, 2),
+          new GridPoint2(35, 2)
+  };
+
   private static final GridPoint2 PLAYER_SPAWN = new GridPoint2(1, 4);
 
   private static final float WALL_WIDTH = 0.1f;
@@ -110,6 +116,7 @@ public class TutorialGameArea extends GameArea {
     "images/Tile_2.png",
     "images/platform.png",
     "images/box_boy_leaf.png",
+          "images/spike.png",
     "images/tree.png",
     "images/ghost_king.png",
     "images/ghost_1.png",
@@ -175,6 +182,7 @@ public class TutorialGameArea extends GameArea {
 
     spawnPlatforms();
     spawnFloors();
+    spawnSpikes();
 
     player = spawnPlayer();
     spawnWinCondition();
@@ -336,6 +344,23 @@ public class TutorialGameArea extends GameArea {
       platform.setScale(config.width, config.height);
 
       spawnEntityAt(platform, config.position, false, false);
+    }
+  }
+
+  private void spawnSpikes() {
+    // 1. Upper-Left Block Top Surface (Y = 17)
+    for (int x = 53; x <= 55; x++) {
+      spawnEntityAt(ObstacleFactory.createSpike(), new GridPoint2(x, 17), true, true);
+    }
+
+    // 2. Overhead T-Bar Top Surface (Y = 19)
+    for (int x = 59; x <= 68; x++) {
+      spawnEntityAt(ObstacleFactory.createSpike(), new GridPoint2(x, 19), true, true);
+    }
+
+    // 3. Ground Pit Surface (Y = 1)
+    for (int x = 60; x <= 62; x++) {
+      spawnEntityAt(ObstacleFactory.createSpike(), new GridPoint2(x, 1), true, true);
     }
   }
 
