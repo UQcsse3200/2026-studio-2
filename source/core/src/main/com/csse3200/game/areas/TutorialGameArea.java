@@ -10,6 +10,7 @@ import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.components.gamearea.GameAreaDisplay;
 import com.csse3200.game.components.player.KeyboardPlayerInputComponent;
 import com.csse3200.game.entities.Entity;
+import com.csse3200.game.entities.factories.EnemyFactory;
 import com.csse3200.game.entities.factories.NPCFactory;
 import com.csse3200.game.entities.factories.ObstacleFactory;
 import com.csse3200.game.entities.factories.PlayerFactory;
@@ -126,7 +127,11 @@ public class TutorialGameArea extends GameArea {
     "images/parallax/Clouds.png",
     "images/parallax/Mountains.png",
     "images/parallax/ground.png",
-    "images/parallax/Rocks.png"
+    "images/parallax/Rocks.png",
+
+    // Enemy textures
+    "images/skeleton_warrior.png",
+    "images/skeleton_archer.png"
   };
 
   private static final String[] forestTextureAtlases = {
@@ -178,6 +183,8 @@ public class TutorialGameArea extends GameArea {
 
     player = spawnPlayer();
     spawnWinCondition();
+    spawnSkeletonArcher();
+    spawnSkeletonWarrior();
 
     // spawnGhosts();
     // spawnGhostKing();
@@ -375,6 +382,27 @@ public class TutorialGameArea extends GameArea {
 
       spawnEntityAt(ghost, randomPos, true, true);
     }
+  }
+
+  private void spawnSkeletonWarrior() {
+    GridPoint2 minPos = new GridPoint2(0, 0);
+    GridPoint2 maxPos = terrain.getMapBounds(0).sub(2, 2);
+
+    Entity skeletonWarrior = EnemyFactory.createSkeletonWarrior(player);
+    Entity skeletonWarrior1 = EnemyFactory.createSkeletonWarrior(player);
+    Entity skeletonWarrior2 = EnemyFactory.createSkeletonWarrior(player);
+    spawnEntityAt(skeletonWarrior, new GridPoint2(2, 4), true, true);
+    spawnEntityAt(skeletonWarrior1, new GridPoint2(5, 10), true, true);
+    spawnEntityAt(skeletonWarrior2, new GridPoint2(3, 6), true, true);
+  }
+
+  private void spawnSkeletonArcher() {
+    GridPoint2 minPos = new GridPoint2(0, 0);
+    GridPoint2 maxPos = terrain.getMapBounds(0).sub(2, 2);
+
+    Entity skeletonArcher = EnemyFactory.createSkeletonArcher(player);
+
+    spawnEntityAt(skeletonArcher, new GridPoint2(5, 16), true, true);
   }
 
   private void spawnGhostKing() {
