@@ -20,11 +20,23 @@ import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.physics.components.PhysicsMovementComponent;
 import com.csse3200.game.rendering.TextureRenderComponent;
 
+/**
+ * Factory to create enemy entities.
+ *
+ * <p>Each enemy type has a creation method that returns an entity. Stats and
+ * behaviour values are loaded from {@code configs/Enemies.json} and mapped to {@link EnemyConfigs}
+ *
+ */
 public class EnemyFactory {
   private static final EnemyConfigs configs =
       FileLoader.readClass(EnemyConfigs.class, "configs/Enemies.json");
 
-  // Test function for checking enemy behaviour
+  /**
+   * Creates a melee skeleton warrior that chases and attacks the target after a delay.
+   *
+   * @param target entity the enemy will chase and attack
+   * @return skeleton warrior entity
+   */
   public static Entity createSkeletonWarrior(Entity target) {
     EnemyConfig config = configs.skeletonWarrior;
     Entity skeletonWarrior = createEnemy(target, config);
@@ -39,7 +51,12 @@ public class EnemyFactory {
     return skeletonWarrior;
   }
 
-  // Test function for checking enemy behaviour that shoots
+  /**
+   * Creates a ranged skeleton archer that fires projectiles at the target from a distance.
+   *
+   * @param target entity the enemy will chase and shoot at
+   * @return skeleton archer entity
+   */
   public static Entity createSkeletonArcher(Entity target) {
     EnemyConfig config = configs.skeletonArcher;
     Entity SkeletonArcher = createEnemy(target, config);
@@ -53,6 +70,13 @@ public class EnemyFactory {
     return SkeletonArcher;
   }
 
+  /**
+   * Creates a base enemy entity
+   *
+   * @param target entity the enemy will chase
+   * @param config stats and behaviour values loaded from Enemies.json
+   * @return base enemy entity, without a render component
+   */
   public static Entity createEnemy(Entity target, EnemyConfig config) {
     AITaskComponent aiComponent =
         new AITaskComponent()
