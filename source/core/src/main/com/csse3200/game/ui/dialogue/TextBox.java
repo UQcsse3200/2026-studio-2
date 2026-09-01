@@ -30,10 +30,7 @@ public class TextBox extends Component {
     }
     textBoxDisplay.create();
   }
-
-  public void hideDialogue() {
-    if (textBoxDisplay != null) {
-      textBoxDisplay.dispose();
-    }
+  public void setTextColour(Color color) {
+      textBoxDisplay.setTextColor(color);
   }
 }
