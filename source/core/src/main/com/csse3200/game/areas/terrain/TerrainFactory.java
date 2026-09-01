@@ -19,7 +19,7 @@ import com.csse3200.game.utils.math.RandomUtils;
 
 /** Factory for creating game terrains. */
 public class TerrainFactory {
-  private static final GridPoint2 MAP_SIZE = new GridPoint2(30, 30);
+  private static final GridPoint2 MAP_SIZE = new GridPoint2(90, 30);
   private static final int TUFT_TILE_COUNT = 30;
   private static final int ROCK_TILE_COUNT = 30;
 
@@ -81,17 +81,28 @@ public class TerrainFactory {
             new TextureRegion(resourceService.getAsset("images/hex_grass_3.png", Texture.class));
         return createForestDemoTerrain(1f, hexGrass, hexTuft, hexRocks);
       case CYCLOPS_ROOM:
-        TextureRegion tile =
+        TextureRegion cyclopsTile =
             new TextureRegion(resourceService.getAsset("images/transparent.png", Texture.class));
-        return createCyclopsRoomTerrain(0.5f, tile);
+        return createCyclopsRoomTerrain(0.5f, cyclopsTile);
+      case BACKGROUND_DESERT:
+        TextureRegion desertTile =
+            new TextureRegion(resourceService.getAsset("images/transparent.png", Texture.class));
+        return createDesertTerrain(1f, desertTile);
       default:
         return null;
     }
   }
 
-  private TerrainComponent createCyclopsRoomTerrain(float tileWorldSize, TextureRegion tile) {
+private TerrainComponent createCyclopsRoomTerrain(float tileWorldSize, TextureRegion tile) {
     GridPoint2 tilePixelSize = new GridPoint2(tile.getRegionWidth(), tile.getRegionHeight());
     TiledMap tiledMap = createCyclopRoomTiles(tilePixelSize, tile);
+    TiledMapRenderer renderer = createRenderer(tiledMap, tileWorldSize / tilePixelSize.x);
+    return new TerrainComponent(camera, tiledMap, renderer, orientation, tileWorldSize);
+  }
+
+  private TerrainComponent createDesertTerrain(float tileWorldSize, TextureRegion tile) {
+    GridPoint2 tilePixelSize = new GridPoint2(tile.getRegionWidth(), tile.getRegionHeight());
+    TiledMap tiledMap = createDesertTiles(tilePixelSize, tile);
     TiledMapRenderer renderer = createRenderer(tiledMap, tileWorldSize / tilePixelSize.x);
     return new TerrainComponent(camera, tiledMap, renderer, orientation, tileWorldSize);
   }
@@ -101,6 +112,18 @@ public class TerrainFactory {
     TerrainTile transparentTile = new TerrainTile(tile);
     TiledMapTileLayer layer = new TiledMapTileLayer(MAP_SIZE.x, MAP_SIZE.y, tileSize.x, tileSize.y);
 
+    fillTiles(layer, MAP_SIZE, transparentTile);
+
+    tiledMap.getLayers().add(layer);
+    return tiledMap;
+  }
+
+  private TiledMap createDesertTiles(GridPoint2 tileSize, TextureRegion tile) {
+    TiledMap tiledMap = new TiledMap();
+    TerrainTile transparentTile = new TerrainTile(tile);
+    TiledMapTileLayer layer = new TiledMapTileLayer(MAP_SIZE.x, MAP_SIZE.y, tileSize.x, tileSize.y);
+
+    // Create base grass
     fillTiles(layer, MAP_SIZE, transparentTile);
 
     tiledMap.getLayers().add(layer);
@@ -178,6 +201,7 @@ public class TerrainFactory {
     FOREST_DEMO,
     FOREST_DEMO_ISO,
     FOREST_DEMO_HEX,
-    CYCLOPS_ROOM
+    CYCLOPS_ROOM,
+    BACKGROUND_DESERT
   }
 }

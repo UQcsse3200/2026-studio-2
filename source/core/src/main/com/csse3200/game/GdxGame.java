@@ -12,6 +12,7 @@ import com.csse3200.game.screens.MainMenuScreen;
 import com.csse3200.game.screens.SettingsFromPauseScreen;
 import com.csse3200.game.screens.SettingsScreen;
 import com.csse3200.game.screens.minigames.CyclopsMinigameRoomScreen;
+import com.csse3200.game.screens.TutorialGameScreen;
 import com.csse3200.game.screens.minigames.MinigameSelectScreen;
 import com.csse3200.game.screens.minigames.BlackjackScreen;
 import com.csse3200.game.screens.minigames.spinthewheel.SpinTheWheelScreen;
@@ -76,6 +77,8 @@ public class GdxGame extends Game {
         return new MainMenuScreen(this);
       case MAIN_GAME:
         return new MainGameScreen(this);
+      case TUTORIAL_GAME:
+        return new TutorialGameScreen(this);
       case SETTINGS:
         return new SettingsScreen(this);
       case SETTINGS_FROM_PAUSE:
@@ -96,6 +99,7 @@ public class GdxGame extends Game {
   public enum ScreenType {
     MAIN_MENU,
     MAIN_GAME,
+    TUTORIAL_GAME,
     SETTINGS,
     SETTINGS_FROM_PAUSE,
     MINIGAME_SELECT,
