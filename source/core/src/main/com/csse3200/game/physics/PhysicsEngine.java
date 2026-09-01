@@ -29,6 +29,8 @@ public class PhysicsEngine implements Disposable {
   private final AllHitCallback allHitCallback = new AllHitCallback();
   private float accumulator;
 
+  private boolean paused = false;
+
   public PhysicsEngine() {
     this(new World(GRAVITY, true), ServiceLocator.getTimeSource());
   }
@@ -43,15 +45,19 @@ public class PhysicsEngine implements Disposable {
     // Updating physics isn't as easy as triggering an update every frame. Each frame could take a
     // different amount of time to run, but physics simulations are only stable if computed at a
     // consistent frame rate! See: https://gafferongames.com/post/fix_your_timestep/
-    float deltaTime = timeSource.getDeltaTime();
-    float maxTime = Math.min(deltaTime, MAX_UPDATE_TIME);
-    accumulator += maxTime;
 
-    // Depending on how much time has passed, we may compute 0 or more physics steps in one go. If
-    // we need to catch up, we'll compute multiple in a row before getting to rendering.
-    while (accumulator >= PHYSICS_TIMESTEP) {
-      world.step(PHYSICS_TIMESTEP, VELOCITY_ITERATIONS, POSITION_ITERATIONS);
-      accumulator -= PHYSICS_TIMESTEP;
+    if (!paused) {
+        float deltaTime = timeSource.getDeltaTime();
+        float maxTime = Math.min(deltaTime, MAX_UPDATE_TIME);
+        accumulator += maxTime;
+
+        // Depending on how much time has passed, we may compute 0 or more physics steps in one
+        // go. If
+        // we need to catch up, we'll compute multiple in a row before getting to rendering.
+        while (accumulator >= PHYSICS_TIMESTEP) {
+            world.step(PHYSICS_TIMESTEP, VELOCITY_ITERATIONS, POSITION_ITERATIONS);
+            accumulator -= PHYSICS_TIMESTEP;
+        }
     }
   }
 
@@ -142,5 +148,9 @@ public class PhysicsEngine implements Disposable {
   @Override
   public void dispose() {
     world.dispose();
+  }
+
+  public void setPaused(boolean newPauseState) {
+      this.paused = newPauseState;
   }
 }

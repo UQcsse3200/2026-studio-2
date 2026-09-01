@@ -140,7 +140,11 @@ public class CombatStatsComponent extends Component {
   }
 
   public void hit(CombatStatsComponent attacker) {
-    int newHealth = getHealth() - attacker.getBaseAttack();
+    int oldHealth = getHealth();
+    int newHealth = oldHealth - attacker.getBaseAttack();
     setHealth(newHealth);
+    if (entity != null && getHealth() < oldHealth) {
+      entity.getEvents().trigger("hurt");
+    }
   }
 }

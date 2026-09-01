@@ -16,9 +16,9 @@ import org.slf4j.LoggerFactory;
 /**
  * Uses the currently selected inventory item when the player attacks.
  *
- * <p>Standard arrows fire through {@code primaryAttack} before ammunition is removed. Rope arrows
- * fire through {@code grappleFire} before the cooldown starts. Consumables heal the player and are
- * removed from the inventory.
+ * <p>An item must be owned and selected before it can be used. Standard arrows fire through {@code
+ * primaryAttack} before ammunition is removed. Rope arrows fire through {@code grappleFire} before
+ * the cooldown starts. Consumables heal the player and are removed from the inventory.
  *
  * <p>Requires InventoryComponent. CombatStatsComponent is required to use consumables.
  */
@@ -69,8 +69,7 @@ public class ItemUseComponent extends Component {
     }
 
     ItemType selected = inventory.getSelectedItem();
-    if (selected == null) {
-      playAttackSound();
+    if (selected == null || !inventory.hasItem(selected)) {
       return false;
     }
 
