@@ -5,14 +5,13 @@ import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.Component;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.physics.BodyUserData;
-import com.csse3200.game.physics.PhysicsEngine;
 import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.physics.raycast.RaycastHit;
 import com.csse3200.game.services.ServiceLocator;
 
 /** Close-range attack that damages the first enemy directly in front of the player. */
 public class MeleeComponent extends Component implements AttackBehaviour {
-  private static final float RANGE = 1.2f; // how far the melee reaches
+  private static final float RANGE = 1.2f;
 
   @Override
   public void create() {
@@ -26,11 +25,12 @@ public class MeleeComponent extends Component implements AttackBehaviour {
     }
 
     Vector2 origin = entity.getCenterPosition();
-    Vector2 target = origin.cpy().mulAdd(direction.cpy().nor(), RANGE);
-
-    PhysicsEngine physics = ServiceLocator.getPhysicsService().getPhysics();
+    Vector2 reach = origin.cpy().mulAdd(direction.cpy().nor(), RANGE);
     RaycastHit hit = new RaycastHit();
-    if (!physics.raycast(origin, target, PhysicsLayer.NPC, hit)) {
+
+    if (!ServiceLocator.getPhysicsService()
+        .getPhysics()
+        .raycast(origin, reach, PhysicsLayer.NPC, hit)) {
       return;
     }
 
@@ -38,14 +38,12 @@ public class MeleeComponent extends Component implements AttackBehaviour {
     if (!(userData instanceof BodyUserData)) {
       return;
     }
-    Entity hitEntity = ((BodyUserData) userData).entity;
-    if (hitEntity == null) {
-      return;
-    }
 
-    CombatStatsComponent targetStats = hitEntity.getComponent(CombatStatsComponent.class);
-    if (targetStats != null) {
-      targetStats.hit(entity.getComponent(CombatStatsComponent.class));
+    Entity target = ((BodyUserData) userData).entity;
+    CombatStatsComponent stats =
+        target == null ? null : target.getComponent(CombatStatsComponent.class);
+    if (stats != null) {
+      stats.hit(entity.getComponent(CombatStatsComponent.class));
     }
   }
 }
