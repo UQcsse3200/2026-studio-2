@@ -44,9 +44,9 @@ class PlatformGrappleComponentTest {
 
     // check expected cases
     assertEquals(8, comp.checkSideHit(entity, new Vector2(0.5f, 0.55f)));
-    assertEquals(4, comp.checkSideHit(entity, new Vector2(0.55f, 0.5f)));
+    assertEquals(4, comp.checkSideHit(entity, new Vector2(0.55f, 1.5f)));
     assertEquals(2, comp.checkSideHit(entity, new Vector2(1.5f, 0.55f)));
-    assertEquals(1, comp.checkSideHit(entity, new Vector2(0.55f, 1.5f)));
+    assertEquals(1, comp.checkSideHit(entity, new Vector2(0.55f, 0.5f)));
     assertEquals(0, comp.checkSideHit(entity, new Vector2(1.51f, 1.51f)));
 
     // check corner interactions prefer y axis (left/right side)

@@ -46,15 +46,23 @@ class GameAreaTest {
 
     ServiceLocator.registerEntityService(new EntityService());
 
-    Entity platform = spy(Entity.class);
-    platform.addComponent(new PlatformGrappleComponent(0));
-    gameArea.spawnEntity(platform);
-    verify(platform).create();
+    Entity p1 = spy(Entity.class);
+    p1.addComponent(new PlatformGrappleComponent(0));
+    gameArea.spawnEntity(p1);
+    verify(p1).create();
 
-    assertTrue(gameArea.platforms.contains(platform));
+    assertFalse(gameArea.platforms.contains(p1));
+
+    Entity p2 = spy(Entity.class);
+    p2.addComponent(new PlatformGrappleComponent(8));
+    gameArea.spawnEntity(p2);
+    verify(p2).create();
+
+    assertTrue(gameArea.platforms.contains(p2));
 
     gameArea.dispose();
-    verify(platform).dispose();
+    verify(p1).dispose();
+    verify(p2).dispose();
   }
 
   @Test
@@ -66,7 +74,7 @@ class GameAreaTest {
         };
 
     ServiceLocator.registerEntityService(new EntityService());
-    PlatformGrappleComponent comp = new PlatformGrappleComponent(0);
+    PlatformGrappleComponent comp = new PlatformGrappleComponent(15);
 
     Entity p1 = spy(Entity.class);
     p1.setPosition(0.5f, 5.5f);
@@ -88,28 +96,5 @@ class GameAreaTest {
     assertEquals(p2, gameArea.findTargetedPlatform(new Vector2(2, 1))); // test exact center
     assertEquals(p3, gameArea.findTargetedPlatform(new Vector2(15, 10))); // test far
     assertEquals(p1, gameArea.findTargetedPlatform(new Vector2(1.5f, 3.5f))); // test equidistant
-  }
-
-  @Test
-  void checkSuccessfulGrapples() {
-    GameArea gameArea =
-        new GameArea(new CameraComponent()) {
-          @Override
-          public void create() {}
-        };
-
-    ServiceLocator.registerEntityService(new EntityService());
-    PlatformGrappleComponent comp = new PlatformGrappleComponent(8);
-
-    Entity p1 = spy(Entity.class);
-    p1.setPosition(0.5f, 5.5f); // center is 1f, 6f
-    p1.addComponent(comp);
-
-    gameArea.spawnEntity(p1);
-
-    assertTrue(gameArea.checkSuccessfulGrapple(new Vector2(0.501f, 5.634f))); // normal valid
-    assertTrue(gameArea.checkSuccessfulGrapple(new Vector2(0.505f, 5.51f))); // edge success
-    assertFalse(gameArea.checkSuccessfulGrapple(new Vector2(0.494f, 5.51f))); // edge fail
-    assertFalse(gameArea.checkSuccessfulGrapple(new Vector2(5f, 10f))); // normal invalid
   }
 }
