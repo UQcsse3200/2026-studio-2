@@ -23,9 +23,8 @@ import com.csse3200.game.rendering.TextureRenderComponent;
 /**
  * Factory to create enemy entities.
  *
- * <p>Each enemy type has a creation method that returns an entity. Stats and
- * behaviour values are loaded from {@code configs/Enemies.json} and mapped to {@link EnemyConfigs}
- *
+ * <p>Each enemy type has a creation method that returns an entity. Stats and behaviour values are
+ * loaded from {@code configs/Enemies.json} and mapped to {@link EnemyConfigs}
  */
 public class EnemyFactory {
   private static final EnemyConfigs configs =
