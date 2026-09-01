@@ -109,16 +109,41 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createTree()" class="member-name-link">createTree</a>()</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createFloor(int)" class="member-name-link">createFloor</a><wbr>(int&nbsp;grappleSides)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createMovingPlatform(int,com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2)" class="member-name-link">createMovingPlatform</a><wbr>(int&nbsp;grappleSides,
+ com.badlogic.gdx.math.Vector2&nbsp;firstTarget,
+ com.badlogic.gdx.math.Vector2&nbsp;secondTarget,
+ com.badlogic.gdx.math.Vector2&nbsp;maxSpeed)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createPlatform(int)" class="member-name-link">createPlatform</a><wbr>(int&nbsp;grappleSides)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createSpike()" class="member-name-link">createSpike</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Creates a default upward-facing spike hazard entity.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createSpike(float)" class="member-name-link">createSpike</a><wbr>(float&nbsp;rotationAngle)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
-<div class="block">Creates a tree entity.</div>
+<div class="block">Creates a spike hazard entity with custom rotation.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createWall(float,float)" class="member-name-link">createWall</a><wbr>(float&nbsp;width,
- float&nbsp;height)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createTree()" class="member-name-link">createTree</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Creates a tree entity.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createWall(float,float)" class="member-name-link">createWall</a><wbr>(float&nbsp;width,
+ float&nbsp;height)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Creates an invisible physics wall.</div>
 </div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createWinConEntity()" class="member-name-link">createWinConEntity</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
 </div>
 </div>
 </div>
@@ -148,6 +173,33 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li>
+<section class="detail" id="createPlatform(int)">
+<h3>createPlatform</h3>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createPlatform</span><wbr><span class="parameters">(int&nbsp;grappleSides)</span></div>
+</section>
+</li>
+<li>
+<section class="detail" id="createMovingPlatform(int,com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2)">
+<h3>createMovingPlatform</h3>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createMovingPlatform</span><wbr><span class="parameters">(int&nbsp;grappleSides,
+ com.badlogic.gdx.math.Vector2&nbsp;firstTarget,
+ com.badlogic.gdx.math.Vector2&nbsp;secondTarget,
+ com.badlogic.gdx.math.Vector2&nbsp;maxSpeed)</span></div>
+</section>
+</li>
+<li>
+<section class="detail" id="createWinConEntity()">
+<h3>createWinConEntity</h3>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createWinConEntity</span>()</div>
+</section>
+</li>
+<li>
+<section class="detail" id="createFloor(int)">
+<h3>createFloor</h3>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createFloor</span><wbr><span class="parameters">(int&nbsp;grappleSides)</span></div>
+</section>
+</li>
+<li>
 <section class="detail" id="createWall(float,float)">
 <h3>createWall</h3>
 <div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createWall</span><wbr><span class="parameters">(float&nbsp;width,
@@ -159,6 +211,31 @@ loadScripts(document, 'script');</script>
 <dd><code>height</code> - Wall height in world units</dd>
 <dt>Returns:</dt>
 <dd>Wall entity of given width and height</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="createSpike(float)">
+<h3>createSpike</h3>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createSpike</span><wbr><span class="parameters">(float&nbsp;rotationAngle)</span></div>
+<div class="block">Creates a spike hazard entity with custom rotation.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>rotationAngle</code> - Angle in degrees to rotate the spike (0 = UP, 180 = DOWN, 270 = LEFT, 90 =
+     RIGHT)</dd>
+<dt>Returns:</dt>
+<dd>spike entity</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="createSpike()">
+<h3>createSpike</h3>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createSpike</span>()</div>
+<div class="block">Creates a default upward-facing spike hazard entity.</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>spike entity</dd>
 </dl>
 </section>
 </li>

@@ -94,7 +94,7 @@ loadScripts(document, 'script');</script>
 </dl>
 <dl class="notes">
 <dt>Direct Known Subclasses:</dt>
-<dd><code><a href="ForestGameArea.html" title="class in com.csse3200.game.areas">ForestGameArea</a></code></dd>
+<dd><code><a href="ForestGameArea.html" title="class in com.csse3200.game.areas">ForestGameArea</a></code>, <code><a href="TutorialGameArea.html" title="class in com.csse3200.game.areas">TutorialGameArea</a></code></dd>
 </dl>
 <hr>
 <div class="type-signature"><span class="modifiers">public abstract class </span><span class="element-name type-name-label">GameArea</span>
@@ -124,6 +124,12 @@ implements com.badlogic.gdx.utils.Disposable</span></div>
 <div class="col-last odd-row-color">
 <div class="block">Camera used by this game area.</div>
 </div>
+<div class="col-first even-row-color"><code>protected <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="../entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a>&gt;</code></div>
+<div class="col-second even-row-color"><code><a href="#platforms" class="member-name-link">platforms</a></code></div>
+<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><code>protected <a href="../entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
+<div class="col-second odd-row-color"><code><a href="#player" class="member-name-link">player</a></code></div>
+<div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code>protected <a href="terrain/TerrainComponent.html" title="class in com.csse3200.game.areas.terrain">TerrainComponent</a></code></div>
 <div class="col-second even-row-color"><code><a href="#terrain" class="member-name-link">terrain</a></code></div>
 <div class="col-last even-row-color">&nbsp;</div>
@@ -158,15 +164,26 @@ implements com.badlogic.gdx.utils.Disposable</span></div>
 <div class="table-header col-first">Modifier and Type</div>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>abstract void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#create()" class="member-name-link">create</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#checkSuccessfulGrapple(com.badlogic.gdx.math.Vector2)" class="member-name-link">checkSuccessfulGrapple</a><wbr>(com.badlogic.gdx.math.Vector2&nbsp;raycastEnd)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Public method for grapples to check the end of the raycast position hits a valid side of a
+ platform to confirm a successful grapple location was hit</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>abstract void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#create()" class="member-name-link">create</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
 <div class="block">Create the game area in the world.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#dispose()" class="member-name-link">dispose</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#dispose()" class="member-name-link">dispose</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Dispose of all internal entities in the area</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected <a href="../entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#findTargetedPlatform(com.badlogic.gdx.math.Vector2)" class="member-name-link">findTargetedPlatform</a><wbr>(com.badlogic.gdx.math.Vector2&nbsp;raycastEnd)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">A protected method that loops through all stored platforms</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#spawnEntity(com.csse3200.game.entities.Entity)" class="member-name-link">spawnEntity</a><wbr>(<a href="../entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;entity)</code></div>
@@ -215,6 +232,18 @@ implements com.badlogic.gdx.utils.Disposable</span></div>
 <section class="detail" id="areaEntities">
 <h3>areaEntities</h3>
 <div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a>&gt;</span>&nbsp;<span class="element-name">areaEntities</span></div>
+</section>
+</li>
+<li>
+<section class="detail" id="platforms">
+<h3>platforms</h3>
+<div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a>&gt;</span>&nbsp;<span class="element-name">platforms</span></div>
+</section>
+</li>
+<li>
+<section class="detail" id="player">
+<h3>player</h3>
+<div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type"><a href="../entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">player</span></div>
 </section>
 </li>
 </ul>
@@ -287,6 +316,37 @@ implements com.badlogic.gdx.utils.Disposable</span></div>
 <dd><code>tilePos</code> - tile position to spawn at</dd>
 <dd><code>centerX</code> - true to center entity X on the tile, false to align the bottom left corner</dd>
 <dd><code>centerY</code> - true to center entity Y on the tile, false to align the bottom left corner</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="findTargetedPlatform(com.badlogic.gdx.math.Vector2)">
+<h3>findTargetedPlatform</h3>
+<div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type"><a href="../entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">findTargetedPlatform</span><wbr><span class="parameters">(com.badlogic.gdx.math.Vector2&nbsp;raycastEnd)</span></div>
+<div class="block">A protected method that loops through all stored platforms</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>raycastEnd</code> - the Vector2 object created by the physics engine's raycast that corresponds
+     to the final point in the world the grapple hit</dd>
+<dt>Returns:</dt>
+<dd>An entity that is guaranteed to be a platform entity (the platform check is performed
+     before adding to the platforms list) that is the closest to the point at the end of the
+     raycast.<br>
+     Note: this does not guarantee the platform was successfully hit, it just returns the most
+     likely entity to do the check on</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="checkSuccessfulGrapple(com.badlogic.gdx.math.Vector2)">
+<h3>checkSuccessfulGrapple</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">checkSuccessfulGrapple</span><wbr><span class="parameters">(com.badlogic.gdx.math.Vector2&nbsp;raycastEnd)</span></div>
+<div class="block">Public method for grapples to check the end of the raycast position hits a valid side of a
+ platform to confirm a successful grapple location was hit</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>raycastEnd</code> - the Vector2 object created by the physics engine's raycast that corresponds
+     to the final point in the world the grapple hit</dd>
 </dl>
 </section>
 </li>
