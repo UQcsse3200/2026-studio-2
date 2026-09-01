@@ -23,10 +23,10 @@ public class Text {
   }
 
   public String getContent() {
-    if (content.isEmpty()){
-        return "Error -1. Empty content variable";
+    if (content.isEmpty()) {
+      return "Error -1. Empty content variable";
     } else {
-        return content;
+      return content;
     }
   }
 }

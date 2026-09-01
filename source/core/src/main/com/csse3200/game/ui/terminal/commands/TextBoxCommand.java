@@ -1,14 +1,15 @@
 package com.csse3200.game.ui.terminal.commands;
+
 import com.badlogic.gdx.Gdx;
 import com.csse3200.game.ui.dialogue.Text;
-import com.csse3200.game.ui.dialogue.TextBox;
+import com.csse3200.game.ui.dialogue.TextBoxFactory;
 import java.util.ArrayList;
 
 public class TextBoxCommand implements Command {
   private final Text message;
 
   private static final float DEFAULT_LIFETIME = 3f;
-  private static final float DEFAULT_X = Gdx.graphics.getWidth() / 2f - 100f; //centre
+  private static final float DEFAULT_X = Gdx.graphics.getWidth() / 2f - 100f; // centre
   private static final float DEFAULT_Y = 20f;
 
   private final float lifetime;
@@ -32,8 +33,8 @@ public class TextBoxCommand implements Command {
   @Override
   public boolean action(ArrayList<String> args) {
     System.out.println(message.getContent());
-    TextBox textBox = new TextBox(message, lifetime, xPos, yPos);
-    textBox.create();
+    TextBoxFactory textBoxFactory = new TextBoxFactory(message, lifetime, xPos, yPos);
+    textBoxFactory.create();
     return true;
   }
 }
