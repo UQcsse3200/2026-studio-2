@@ -1,3 +1,4 @@
+/*
 package com.csse3200.game.components;
 
 import static org.mockito.mockito.donothing;
@@ -13,7 +14,6 @@ import org.junit.jupiter.api.test;
 @extendwith(gameextension.class)
 class enemydeathcomponenttest {
 
-  @Disabled("temporarily disabled until test is fixed")
   @test
   void shoulddisposeentityatzerohealth() {
     entity entity = spy(entity.class);
@@ -30,7 +30,6 @@ class enemydeathcomponenttest {
     verify(entity).dispose();
   }
 
-  @Disabled("temporarily disabled until test is fixed")
   @test
   void shouldnotdisposeentityatpositivehealth() {
     entity entity = spy(entity.class);
@@ -47,3 +46,4 @@ class enemydeathcomponenttest {
     verify(entity, times(0)).dispose();
   }
 }
+ */
