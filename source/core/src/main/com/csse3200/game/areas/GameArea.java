@@ -24,6 +24,7 @@ public abstract class GameArea implements Disposable {
   protected TerrainComponent terrain;
   protected List<Entity> areaEntities;
   protected List<Entity> platforms = new ArrayList<>();
+  protected Entity player;
 
   /**
    * Creates a game area using the provided camera component.
@@ -54,7 +55,8 @@ public abstract class GameArea implements Disposable {
     areaEntities.add(entity);
 
     // keep track of all grappleable platforms
-    if (entity.getComponent(PlatformGrappleComponent.class) != null) {
+    PlatformGrappleComponent platform = entity.getComponent(PlatformGrappleComponent.class);
+    if (platform != null && platform.getGrappleSides() != 0) {
       platforms.add(entity);
     }
 
@@ -123,10 +125,11 @@ public abstract class GameArea implements Disposable {
    * @return true if the grapple successfully hit a platform and the hit side was a valid,
    *     grappleable side of that platform, false otherwise
    */
-  public boolean checkSuccessfulGrapple(Vector2 raycastEnd) {
+  public void checkSuccessfulGrapple(Vector2 raycastEnd) {
     Entity p = findTargetedPlatform(raycastEnd);
     PlatformGrappleComponent grappleComponent = p.getComponent(PlatformGrappleComponent.class);
     int hit = grappleComponent.checkSideHit(p, raycastEnd);
-    return grappleComponent.successfulGrapple(hit);
+    boolean result = grappleComponent.successfulGrapple(hit);
+    player.getEvents().trigger("grappleResponse", result);
   }
 }
