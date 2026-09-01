@@ -33,7 +33,7 @@ public class DelayedAttackTask extends DefaultTask implements PriorityTask {
     System.out.println("DelayedAttackTask UPDATE");
     long currentTime = ServiceLocator.getTimeSource().getTime();
 
-    if (currentTime - attackDelay * 1000 > attackStartTime) {
+    if (currentTime - attackDelay * 1000 >= attackStartTime) {
       System.out.println("Animation finished - attempting to attack");
 
       float distance = owner.getEntity().getPosition().dst(target.getPosition());
