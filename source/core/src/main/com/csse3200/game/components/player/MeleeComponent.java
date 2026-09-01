@@ -24,6 +24,7 @@ public class MeleeComponent extends Component implements AttackBehaviour {
       return;
     }
 
+    // Cast a short ray out from the player and stop at the first NPC it touches
     Vector2 origin = entity.getCenterPosition();
     Vector2 reach = origin.cpy().mulAdd(direction.cpy().nor(), RANGE);
     RaycastHit hit = new RaycastHit();
@@ -40,8 +41,12 @@ public class MeleeComponent extends Component implements AttackBehaviour {
     }
 
     Entity target = ((BodyUserData) userData).entity;
-    CombatStatsComponent stats =
-        target == null ? null : target.getComponent(CombatStatsComponent.class);
+    if (target == null) {
+      return;
+    }
+
+    // Damage comes from the player's own combat stats
+    CombatStatsComponent stats = target.getComponent(CombatStatsComponent.class);
     if (stats != null) {
       stats.hit(entity.getComponent(CombatStatsComponent.class));
     }
