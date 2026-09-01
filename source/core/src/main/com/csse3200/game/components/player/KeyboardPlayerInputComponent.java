@@ -103,10 +103,10 @@ public class KeyboardPlayerInputComponent extends InputComponent {
       case Keys.B:
         entity.getEvents().trigger("toggleBackpack");
         return true;
-      case Keys.Q:
+      case Keys.R:
         entity.getEvents().trigger("dropItem");
         return true;
-      case Keys.X:
+      case Keys.FORWARD_DEL:
         entity.getEvents().trigger("deleteItem");
         return true;
       case Keys.PERIOD:
@@ -190,14 +190,7 @@ public class KeyboardPlayerInputComponent extends InputComponent {
     ItemUseComponent itemUse = entity.getComponent(ItemUseComponent.class);
     if (itemUse != null) {
       itemUse.useSelectedItem();
-      return;
     }
-
-    Vector2 aimDirection = getMouseAimDirection();
-    if (aimDirection == null || aimDirection.isZero()) {
-      return;
-    }
-    entity.getEvents().trigger("primaryAttack", aimDirection);
   }
 
   private void triggerSprintEvent() {

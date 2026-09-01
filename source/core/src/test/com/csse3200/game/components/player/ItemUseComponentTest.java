@@ -15,6 +15,7 @@ import com.csse3200.game.entities.Entity;
 import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.services.GameTime;
 import com.csse3200.game.services.ServiceLocator;
+import java.util.concurrent.atomic.AtomicReference;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -66,13 +67,13 @@ class ItemUseComponentTest {
   }
 
   @Test
-  void shouldPlayMeleeFallbackWhenNoItemSelected() {
+  void shouldRejectAttackWhenNoArrowSelected() {
     Entity player = createPlayer();
-    boolean[] failed = {false};
-    player.getEvents().addListener("itemUseFailed", (ItemType type) -> failed[0] = true);
+    AtomicReference<Vector2> attackDirection = new AtomicReference<>();
+    player.getEvents().addListener("primaryAttack", attackDirection::set);
 
     assertFalse(player.getComponent(ItemUseComponent.class).useSelectedItem());
-    assertFalse(failed[0]);
+    assertEquals(null, attackDirection.get());
   }
 
   @Test

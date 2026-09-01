@@ -99,7 +99,7 @@ public class ForestGameArea extends GameArea {
 
     spawnGhostKing();
 
-    playMusic();
+    //playMusic();
   }
 
   private void displayUI() {
