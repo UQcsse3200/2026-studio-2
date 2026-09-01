@@ -32,7 +32,10 @@ public class GrappleComponent extends Component {
     entity.getEvents().addListener("grappleResponse", this::handleSuccessfulFire);
   }
 
-  /** Fires the rope towards direction or detaches if already attached. */
+  /**
+   * Fires the rope towards direction or detaches if already attached and sends a request event to
+   * determine if the impact point hit a valid platform side
+   */
   void fire(Vector2 direction) {
     // Determine raycast start (player center)
     Vector2 start = entity.getCenterPosition();
@@ -50,6 +53,12 @@ public class GrappleComponent extends Component {
     entity.getEvents().trigger("grappleRequested", raycastHit.point.cpy());
   }
 
+  /**
+   * Called from the response event from the GameArea and completes the grapple firing if the
+   * GameArea found a valid platform side to grapple to
+   *
+   * @param success whether the grapple point was valid
+   */
   void handleSuccessfulFire(boolean success) {
     if (!success) return;
 
