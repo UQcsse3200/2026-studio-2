@@ -174,6 +174,8 @@ public class ForestGameArea extends GameArea {
     spawnEntityAt(ItemFactory.createFireArrow(FIRE_ARROW_QUANTITY), FIRE_ARROW_SPAWN, true, false);
 
     spawnEntityAt(ItemFactory.createColdArrow(COLD_ARROW_QUANTITY), COLD_ARROW_SPAWN, true, false);
+  }
+
   private void spawnTestFloor() {
     Entity floor = TestFloorFactory.createTestFloor();
     spawnEntityAt(floor, new GridPoint2(5, 5), true, false);
