@@ -5,6 +5,7 @@ import com.csse3200.game.components.player.ArrowSelectionComponent;
 import com.csse3200.game.components.player.BowComponent;
 import com.csse3200.game.components.player.GrappleComponent;
 import com.csse3200.game.components.player.InventoryComponent;
+import com.csse3200.game.components.player.MeleeComponent;
 import com.csse3200.game.components.player.PlayerActions;
 import com.csse3200.game.components.player.PlayerAttackComponent;
 import com.csse3200.game.components.player.PlayerStatsDisplay;
@@ -18,6 +19,7 @@ import com.csse3200.game.physics.components.ColliderComponent;
 import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.rendering.GrappleRenderComponent;
+import com.csse3200.game.rendering.MeleeRenderComponent;
 import com.csse3200.game.rendering.TextureRenderComponent;
 import com.csse3200.game.services.ServiceLocator;
 
@@ -49,6 +51,7 @@ public class PlayerFactory {
             .addComponent(new HitboxComponent().setLayer(PhysicsLayer.PLAYER))
             .addComponent(new PlayerActions())
             .addComponent(bowComponent)
+            .addComponent(new MeleeComponent())
             .addComponent(new PlayerAttackComponent(bowComponent))
             .addComponent(new CombatStatsComponent(stats.health, stats.baseAttack))
             .addComponent(new InventoryComponent(stats.gold))
@@ -56,7 +59,8 @@ public class PlayerFactory {
             .addComponent(new PlayerStatsDisplay())
             .addComponent(new GrappleComponent())
             .addComponent(new GrappleRenderComponent())
-            .addComponent(new ArrowSelectionComponent());
+            .addComponent(new ArrowSelectionComponent())
+            .addComponent(new MeleeRenderComponent());
 
     PhysicsUtils.setScaledCollider(player, 0.6f, 0.3f);
     player.getComponent(ColliderComponent.class).setDensity(1.5f);
