@@ -90,10 +90,9 @@ public class EntityService {
     }
   }
 
-
   public void setPaused(boolean newPauseState) {
     paused = newPauseState;
-      updatePhysicsPauseState();
+    updatePhysicsPauseState();
   }
 
   public void togglePaused() {
@@ -106,6 +105,6 @@ public class EntityService {
   }
 
   void updatePhysicsPauseState() {
-      ServiceLocator.getPhysicsService().getPhysics().setPaused(paused);
+    ServiceLocator.getPhysicsService().getPhysics().setPaused(paused);
   }
 }
