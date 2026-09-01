@@ -122,8 +122,6 @@ public abstract class GameArea implements Disposable {
    *
    * @param raycastEnd the Vector2 object created by the physics engine's raycast that corresponds
    *     to the final point in the world the grapple hit
-   * @return true if the grapple successfully hit a platform and the hit side was a valid,
-   *     grappleable side of that platform, false otherwise
    */
   public void checkSuccessfulGrapple(Vector2 raycastEnd) {
     Entity p = findTargetedPlatform(raycastEnd);
