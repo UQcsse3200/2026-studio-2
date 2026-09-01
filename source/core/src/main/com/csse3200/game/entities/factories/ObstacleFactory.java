@@ -136,7 +136,7 @@ public class ObstacleFactory {
             .addComponent(new TextureRenderComponent("images/spike.png"))
             .addComponent(new PhysicsComponent())
             .addComponent(new ColliderComponent().setLayer(PhysicsLayer.OBSTACLE))
-            .addComponent(new CombatStatsComponent(100, 1))
+            .addComponent(new CombatStatsComponent(100, 25))
             .addComponent(new HitboxComponent().setLayer(PhysicsLayer.OBSTACLE))
             .addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER));
 
