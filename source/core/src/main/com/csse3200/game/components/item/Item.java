@@ -1,17 +1,15 @@
 package com.csse3200.game.components.item;
 
+/**
+ * One stack of an item. Kind and stats come from {@link ItemType}; this object only tracks
+ * quantity.
+ */
 public abstract class Item {
   private final ItemType itemType;
-  private final int itemId;
-  private String itemName;
-  private String description;
   private int quantity;
 
-  public Item(ItemType itemType, int itemId, String itemName, String description, int quantity) {
+  public Item(ItemType itemType, int quantity) {
     this.itemType = itemType;
-    this.itemId = itemId;
-    this.itemName = itemName;
-    this.description = description;
     this.quantity = quantity;
   }
 
@@ -20,15 +18,15 @@ public abstract class Item {
   }
 
   public int getItemId() {
-    return itemId;
+    return itemType.getId();
   }
 
   public String getItemName() {
-    return itemName;
+    return itemType.getDisplayName();
   }
 
   public String getDescription() {
-    return description;
+    return itemType.getDescription();
   }
 
   public int getQuantity() {

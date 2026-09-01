@@ -337,36 +337,17 @@ public class BackpackDisplay extends UIComponent {
    * @return readable item name
    */
   private String getItemDisplayName(ItemType itemType) {
-    return switch (itemType) {
-      case ARROW -> "Arrow";
-      case RopeArrow -> "Rope Arrow";
-      case FireArrow -> "Fire Arrow";
-      case ColdArrow -> "Cold Arrow";
-      default -> itemType.toString();
-    };
+    return itemType.getDisplayName();
   }
 
   /**
-   * Returns a short item description.
-   *
-   * <p>These descriptions are currently UI placeholders. They can later be obtained directly from
-   * the Item classes when the inventory stores full Item objects.
+   * Returns a short item description from the item catalog.
    *
    * @param itemType item type
    * @return item description
    */
   private String getItemDescription(ItemType itemType) {
-    return switch (itemType) {
-      case ARROW -> "A standard arrow used with the bow.";
-
-      case RopeArrow -> "A special arrow designed for utility and traversal.";
-
-      case FireArrow -> "An arrow that can burn enemies.";
-
-      case ColdArrow -> "An arrow that can slow enemies down";
-
-      default -> "No description available.";
-    };
+    return itemType.getDescription();
   }
 
   /**
@@ -376,13 +357,7 @@ public class BackpackDisplay extends UIComponent {
    * @return texture path
    */
   private String getItemTexture(ItemType itemType) {
-    return switch (itemType) {
-      case ARROW -> "images/arrow.png";
-      case RopeArrow -> "images/rope_arrow.png";
-      case FireArrow -> "images/fire_arrow.png";
-      case ColdArrow -> "images/cold_arrow.png";
-      default -> "images/heart.png";
-    };
+    return itemType.getTexturePath();
   }
 
   /** Refreshes the backpack after inventory data changes. */

@@ -64,7 +64,7 @@ class ArrowTest {
     FireArr fire = new FireArr(1);
 
     assertEquals(ItemType.FireArrow, fire.getItemType());
-    assertEquals(ItemId.FIRE_ARROW.getId(), fire.getItemId());
+    assertEquals(ItemType.FireArrow.getId(), fire.getItemId());
     assertEquals("Fire Arrow", fire.getItemName());
     assertEquals(1, fire.getQuantity());
     assertEquals(5, fire.getDamage());
@@ -80,7 +80,7 @@ class ArrowTest {
     ColdArr cold = new ColdArr(1);
 
     assertEquals(ItemType.ColdArrow, cold.getItemType());
-    assertEquals(ItemId.COLD_ARROW.getId(), cold.getItemId());
+    assertEquals(ItemType.ColdArrow.getId(), cold.getItemId());
     assertEquals("Cold Arrow", cold.getItemName());
     assertEquals(1, cold.getQuantity());
     assertEquals(8, cold.getDamage());

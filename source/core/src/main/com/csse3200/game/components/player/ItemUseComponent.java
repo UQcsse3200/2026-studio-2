@@ -6,10 +6,8 @@ import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.Component;
 import com.csse3200.game.components.inventory.InventoryComponent;
 import com.csse3200.game.components.item.ItemType;
-import com.csse3200.game.components.item.consumables.HealthPotion;
 import com.csse3200.game.components.item.weapons.ColdArr;
 import com.csse3200.game.components.item.weapons.FireArr;
-import com.csse3200.game.components.item.weapons.RopeArr;
 import com.csse3200.game.services.GameTime;
 import com.csse3200.game.services.ServiceLocator;
 import org.slf4j.Logger;
@@ -18,9 +16,9 @@ import org.slf4j.LoggerFactory;
 /**
  * Uses the currently selected inventory item when the player attacks.
  *
- * <p>Standard arrows consume ammunition and then fire through {@code primaryAttack}. Rope arrows
- * are unlimited but gated by a cooldown and fire through {@code grappleFire}. Consumables heal the
- * player and are removed from the inventory.
+ * <p>Standard arrows fire through {@code primaryAttack} before ammunition is removed. Rope arrows
+ * fire through {@code grappleFire} before the cooldown starts. Consumables heal the player and are
+ * removed from the inventory.
  *
  * <p>Requires InventoryComponent. CombatStatsComponent is required to use consumables.
  */
@@ -92,13 +90,14 @@ public class ItemUseComponent extends Component {
       return false;
     }
 
-    if (!inventory.removeItem(ItemType.ARROW, 1)) {
+    if (!inventory.hasItem(ItemType.ARROW)) {
       logger.debug("No standard arrows left to fire");
       entity.getEvents().trigger("itemUseFailed", ItemType.ARROW);
       return false;
     }
 
     entity.getEvents().trigger("primaryAttack", direction);
+    inventory.removeItem(ItemType.ARROW, 1);
     entity.getEvents().trigger("itemUsed", ItemType.ARROW);
     return true;
   }
@@ -130,7 +129,7 @@ public class ItemUseComponent extends Component {
     }
 
     GameTime time = ServiceLocator.getTimeSource();
-    long cooldownMs = (long) (new RopeArr().getCooldown() * 1000f);
+    long cooldownMs = (long) (ItemType.RopeArrow.getCooldown() * 1000f);
     if (time != null) {
       ropeReadyTimeMs = time.getTime() + cooldownMs;
     }
@@ -151,43 +150,42 @@ public class ItemUseComponent extends Component {
       return false;
     }
 
-    HealthPotion potion = new HealthPotion(1);
     if (!inventory.removeItem(ItemType.CONSUMABLE, 1)) {
       entity.getEvents().trigger("itemUseFailed", ItemType.CONSUMABLE);
       return false;
     }
 
-    combatStats.addHealth(potion.getTreatment());
+    combatStats.addHealth(ItemType.CONSUMABLE.getHealAmount());
     entity.getEvents().trigger("itemUsed", ItemType.CONSUMABLE);
     return true;
   }
 
   private boolean useFireArrow() {
-    FireArr arrow = new FireArr(1);
-
-    if (!inventory.removeItem(ItemType.FireArrow, 1)) {
+    if (!inventory.hasItem(ItemType.FireArrow)) {
       logger.debug("No fire arrows left to fire");
       entity.getEvents().trigger("itemUseFailed", ItemType.FireArrow);
       return false;
     }
 
+    FireArr arrow = new FireArr(1);
     playAttackSound();
     entity.getEvents().trigger("fireArrFired", arrow);
+    inventory.removeItem(ItemType.FireArrow, 1);
     entity.getEvents().trigger("itemUsed", ItemType.FireArrow);
     return true;
   }
 
   private boolean useColdArrow() {
-    ColdArr arrow = new ColdArr(1);
-
-    if (!inventory.removeItem(ItemType.ColdArrow, 1)) {
+    if (!inventory.hasItem(ItemType.ColdArrow)) {
       logger.debug("No cold arrows left to fire");
       entity.getEvents().trigger("itemUseFailed", ItemType.ColdArrow);
       return false;
     }
 
+    ColdArr arrow = new ColdArr(1);
     playAttackSound();
     entity.getEvents().trigger("coldArrFired", arrow);
+    inventory.removeItem(ItemType.ColdArrow, 1);
     entity.getEvents().trigger("itemUsed", ItemType.ColdArrow);
     return true;
   }

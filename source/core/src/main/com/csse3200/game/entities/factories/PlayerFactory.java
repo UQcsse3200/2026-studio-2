@@ -53,7 +53,9 @@ public class PlayerFactory {
             .addComponent(new PlayerActions())
             .addComponent(bowComponent)
             .addComponent(new PlayerAttackComponent(bowComponent))
-            .addComponent(new CombatStatsComponent(stats.health, stats.baseAttack))
+            .addComponent(
+                new CombatStatsComponent(
+                    stats.health, CombatStatsComponent.MAX_HEALTH, stats.baseAttack))
             .addComponent(new InventoryComponent(stats.gold))
             .addComponent(new InventoryBarDisplay())
             .addComponent(new BackpackDisplay())

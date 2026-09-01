@@ -51,6 +51,18 @@ class CombatStatsComponentTest {
   }
 
   @Test
+  void shouldAllowSeparateStartingAndMaximumHealth() {
+    CombatStatsComponent player = new CombatStatsComponent(75, 100, 10);
+    assertEquals(75, player.getHealth());
+    assertEquals(100, player.getMaxHealth());
+    assertFalse(player.isHealthFull());
+
+    player.addHealth(50);
+    assertEquals(100, player.getHealth());
+    assertTrue(player.isHealthFull());
+  }
+
+  @Test
   void shouldAllowHealthAbovePlayerDefaultForOtherEntities() {
     CombatStatsComponent boss = new CombatStatsComponent(250, 40);
     assertEquals(250, boss.getMaxHealth());

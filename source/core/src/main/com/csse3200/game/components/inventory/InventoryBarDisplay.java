@@ -11,6 +11,14 @@ import com.csse3200.game.ui.UIComponent;
 
 /** Displays the player's inventory bar at the bottom of the screen. */
 public class InventoryBarDisplay extends UIComponent {
+  /** Windowed mode is 1280px wide; eight 160px cells plus padding would clip. */
+  private static final float WINDOW_WIDTH = 1280f;
+
+  private static final float BAR_SIDE_MARGIN = 48f;
+  private static final float SLOT_PAD = 4f;
+  private static final float SLOT_HEIGHT = 72f;
+  private static final float MAX_SLOT_WIDTH = 120f;
+
   private Table table;
 
   @Override
@@ -29,13 +37,7 @@ public class InventoryBarDisplay extends UIComponent {
   }
 
   private String getItemTexture(ItemType itemType) {
-    return switch (itemType) {
-      case ARROW -> "images/arrow.png";
-      case RopeArrow -> "images/rope_arrow.png";
-      case FireArrow -> "images/fire_arrow.png";
-      case ColdArrow -> "images/cold_arrow.png";
-      default -> "images/heart.png";
-    };
+    return itemType.getTexturePath();
   }
 
   /** Refreshes the inventory bar when the inventory changes. */
@@ -90,25 +92,25 @@ public class InventoryBarDisplay extends UIComponent {
                 slotNumber, inventorySlot.getItemType(), inventorySlot.getQuantity(), selected);
       }
 
-      table.add(slot).width(136f).height(80f).pad(4f);
+      table
+          .add(slot)
+          .width(slotWidth(inventory.getHotbarSlotCount()))
+          .height(SLOT_HEIGHT)
+          .pad(SLOT_PAD);
     }
   }
 
   /**
-   * Returns a user-friendly display name for an item type.
+   * Fits every hotbar cell inside the 1280px window, including per-cell padding.
    *
-   * @param item item type
-   * @return display name
+   * @param slotCount number of hotbar slots
+   * @return width of one slot
    */
-  private String getItemDisplayName(ItemType item) {
-    return switch (item) {
-      case ARROW -> "Arrow";
-      case RopeArrow -> "Rope Arrow";
-      case CONSUMABLE -> "Consumable";
-      case FireArrow -> "Fire Arrow";
-      case ColdArrow -> "Cold Arrow";
-      default -> item.toString();
-    };
+  private float slotWidth(int slotCount) {
+    int count = Math.max(slotCount, 1);
+    float available = WINDOW_WIDTH - BAR_SIDE_MARGIN;
+    float widthForSlot = available / count - SLOT_PAD * 2f;
+    return Math.min(MAX_SLOT_WIDTH, Math.max(widthForSlot, 1f));
   }
 
   /**

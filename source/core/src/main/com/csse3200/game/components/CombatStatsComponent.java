@@ -17,10 +17,27 @@ public class CombatStatsComponent extends Component {
   private int maxHealth;
   private int baseAttack;
 
+  /**
+   * Creates combat stats whose maximum health equals the starting health.
+   *
+   * @param health starting and maximum health
+   * @param baseAttack base attack damage
+   */
   public CombatStatsComponent(int health, int baseAttack) {
-    this.maxHealth = Math.max(health, 0);
-    setHealth(health);
+    this(health, health, baseAttack);
+  }
+
+  /**
+   * Creates combat stats with an explicit maximum health for this entity.
+   *
+   * @param health starting health
+   * @param maxHealth maximum health for this entity
+   * @param baseAttack base attack damage
+   */
+  public CombatStatsComponent(int health, int maxHealth, int baseAttack) {
+    this.maxHealth = Math.max(maxHealth, 0);
     setBaseAttack(baseAttack);
+    setHealth(health);
   }
 
   @Override

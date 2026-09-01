@@ -4,17 +4,15 @@ import com.csse3200.game.components.item.Item;
 import com.csse3200.game.components.item.ItemType;
 
 public abstract class Consumable extends Item {
-  private int treatment;
-  private boolean consumedOnUse;
+  private final boolean consumedOnUse;
 
-  public Consumable(int itemId, String itemName, String description, int quantity, int treatment) {
-    super(ItemType.CONSUMABLE, itemId, itemName, description, quantity);
-    this.treatment = treatment;
+  public Consumable(ItemType itemType, int quantity) {
+    super(itemType, quantity);
     this.consumedOnUse = true;
   }
 
   public int getTreatment() {
-    return treatment;
+    return getItemType().getHealAmount();
   }
 
   public boolean useConsumable() {

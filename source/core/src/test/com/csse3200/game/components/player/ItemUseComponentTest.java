@@ -52,6 +52,22 @@ class ItemUseComponentTest {
   }
 
   @Test
+  void shouldFireStandardArrowBeforeConsumingAmmo() {
+    Entity player = createPlayer();
+    InventoryComponent inventory = player.getComponent(InventoryComponent.class);
+    inventory.addItem(ItemType.ARROW, 3);
+
+    player
+        .getEvents()
+        .addListener(
+            "primaryAttack",
+            (Vector2 ignored) -> assertEquals(3, inventory.getItemCount(ItemType.ARROW)));
+
+    assertTrue(player.getComponent(ItemUseComponent.class).useSelectedItem());
+    assertEquals(2, inventory.getItemCount(ItemType.ARROW));
+  }
+
+  @Test
   void shouldUseStandardArrowWhenAttackEventFires() {
     Entity player = createPlayer();
     InventoryComponent inventory = player.getComponent(InventoryComponent.class);
@@ -138,6 +154,22 @@ class ItemUseComponentTest {
     assertTrue(grappled[0]);
     assertFalse(use.isRopeReady());
     assertEquals(5f, use.getRopeCooldownRemaining(), 0.001f);
+  }
+
+  @Test
+  void shouldStartRopeCooldownAfterGrappleFires() {
+    Entity player = createPlayer();
+    InventoryComponent inventory = player.getComponent(InventoryComponent.class);
+    inventory.addItem(ItemType.RopeArrow, 1);
+    inventory.selectNext();
+
+    ItemUseComponent use = player.getComponent(ItemUseComponent.class);
+    player
+        .getEvents()
+        .addListener("grappleFire", (Vector2 ignored) -> assertTrue(use.isRopeReady()));
+
+    assertTrue(use.useSelectedItem());
+    assertFalse(use.isRopeReady());
   }
 
   @Test
