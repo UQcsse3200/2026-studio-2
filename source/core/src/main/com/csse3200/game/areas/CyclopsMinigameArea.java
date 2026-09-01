@@ -35,6 +35,7 @@ public class CyclopsMinigameArea extends GameArea {
 
   private Entity player;
 
+  private static final GridPoint2 MAP_SIZE = new GridPoint2(30, 30);
   private static final int NUM_STATUES = 3;
   private int statueYLevel;
   private GridPoint2 winLocation;
@@ -101,15 +102,17 @@ public class CyclopsMinigameArea extends GameArea {
     terrain = terrainFactory.createTerrain(TerrainFactory.TerrainType.CYCLOPS_ROOM);
     spawnEntity(new Entity().addComponent(terrain));
 
-    statueYLevel = (int) (terrain.getMapBounds(terrain.getLayer()).y * 0.1);
-    winLocation = new GridPoint2(terrain.getMapBounds(terrain.getLayer()).x + 10, statueYLevel);
+    statueYLevel = (int) (MAP_SIZE.y * 0.1);
+    winLocation = new GridPoint2(MAP_SIZE.x + 10, statueYLevel);
+
+    Entity cameraEntityHolder = new Entity();
+    spawnEntityAt(cameraEntityHolder, new GridPoint2(MAP_SIZE.x / 2, MAP_SIZE.y / 2), false, false);
+    this.cameraComponent.setTarget(cameraEntityHolder);
   }
 
   private void spawnStatues() {
     this.statueLocations = new ArrayList<>(NUM_STATUES);
     this.statueGapLocations = new ArrayList<>(NUM_STATUES);
-
-    GridPoint2 mapSize = terrain.getMapBounds(terrain.getLayer());
 
     for (int i = 1; i <= NUM_STATUES; i++) {
       /* Formula for equally spacing out statues.
@@ -122,15 +125,15 @@ public class CyclopsMinigameArea extends GameArea {
 
        -2 is just to better offset it and can be adjusted freely
       */
-      int x = ((mapSize.x / NUM_STATUES) * i) - (mapSize.x / (NUM_STATUES * 2)) - 2;
-      GridPoint2 location = new GridPoint2(x - 1, statueYLevel);
+      int x = ((MAP_SIZE.x / NUM_STATUES) * i) - (MAP_SIZE.x / (NUM_STATUES * 2)) - 2;
+      GridPoint2 location = new GridPoint2(x, statueYLevel);
       statueLocations.add(location);
 
       Entity statue = ObstacleFactory.createStatue();
       statue.setScale(new Vector2(3, 6));
       spawnEntityAt(statue, new GridPoint2(x, statueYLevel), true, false);
 
-      int gapX = (mapSize.x / NUM_STATUES) * i - 2;
+      int gapX = (MAP_SIZE.x / NUM_STATUES) * i - 2;
       GridPoint2 gapLocation = new GridPoint2(gapX, statueYLevel);
       statueGapLocations.add(gapLocation);
     }
