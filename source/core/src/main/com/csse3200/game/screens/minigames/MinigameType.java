@@ -4,8 +4,7 @@ package com.csse3200.game.screens.minigames;
 public enum MinigameType {
   SPIN_THE_WHEEL("Spin the wheel"),
   BLACKJACK("Blackjack"),
-  CYCLOPS_TIMING("Cyclops Timing Game")
-}
+  CYCLOPS_TIMING("Cyclops Timing Game");
 
   private final String displayName;
 
