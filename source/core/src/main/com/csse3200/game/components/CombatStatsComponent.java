@@ -145,7 +145,7 @@ public class CombatStatsComponent extends Component {
     int newHealth = oldHealth - attacker.getBaseAttack();
     setHealth(newHealth);
     invulnerableUntil = currentTime + invulnerabilityDuration;
-    
+
     if (entity != null && getHealth() < oldHealth) {
       entity.getEvents().trigger("hurt");
     }
