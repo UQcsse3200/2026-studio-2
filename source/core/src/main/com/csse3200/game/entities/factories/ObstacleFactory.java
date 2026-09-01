@@ -67,7 +67,9 @@ public class ObstacleFactory {
             .addComponent(new PhysicsMovementComponent())
             .addComponent(colliderComponent.setLayer(PhysicsLayer.OBSTACLE))
             .addComponent(
-                new MovingPlatformComponent(grappleSides, firstTarget, secondTarget, maxSpeed));
+                new MovingPlatformComponent(grappleSides, firstTarget, secondTarget, maxSpeed))
+            .addComponent(new PlatformGrappleComponent(grappleSides));
+
     physicsComponent.getBody().setGravityScale(0f);
     physicsComponent.setBodyType(BodyType.KinematicBody);
     colliderComponent.setFriction(1.5f);
@@ -92,12 +94,13 @@ public class ObstacleFactory {
     return winCon;
   }
 
-  public static Entity createFloor() {
+  public static Entity createFloor(int grappleSides) {
     Entity floor =
         new Entity()
             .addComponent(new TiledRenderComponent("images/Tile_2.png", 0.75f))
             .addComponent(new PhysicsComponent().setBodyType(BodyType.StaticBody))
-            .addComponent(new ColliderComponent().setLayer(PhysicsLayer.OBSTACLE));
+            .addComponent(new ColliderComponent().setLayer(PhysicsLayer.OBSTACLE))
+            .addComponent(new PlatformGrappleComponent(grappleSides));
 
     floor.getComponent(PhysicsComponent.class).setBodyType(BodyType.StaticBody);
 
