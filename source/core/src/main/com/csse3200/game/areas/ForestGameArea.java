@@ -5,12 +5,16 @@ import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.areas.terrain.TerrainFactory;
 import com.csse3200.game.areas.terrain.TerrainFactory.TerrainType;
+import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.components.gamearea.GameAreaDisplay;
+import com.csse3200.game.components.player.KeyboardPlayerInputComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.EnemyFactory;
 import com.csse3200.game.entities.factories.NPCFactory;
 import com.csse3200.game.entities.factories.ObstacleFactory;
 import com.csse3200.game.entities.factories.PlayerFactory;
+import com.csse3200.game.entities.factories.TestCeilingFactory;
+import com.csse3200.game.entities.factories.TestFloorFactory;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.utils.math.GridPoint2Utils;
@@ -37,6 +41,7 @@ public class ForestGameArea extends GameArea {
     "images/grass_1.png",
     "images/grass_2.png",
     "images/grass_3.png",
+    "images/black_box.png",
     "images/hex_grass_1.png",
     "images/hex_grass_2.png",
     "images/hex_grass_3.png",
@@ -58,11 +63,12 @@ public class ForestGameArea extends GameArea {
   /**
    * Initialise this ForestGameArea to use the provided TerrainFactory.
    *
+   * @param cameraComponent active camera component.
    * @param terrainFactory TerrainFactory used to create the terrain for the GameArea.
    * @requires terrainFactory != null
    */
-  public ForestGameArea(TerrainFactory terrainFactory) {
-    super();
+  public ForestGameArea(CameraComponent cameraComponent, TerrainFactory terrainFactory) {
+    super(cameraComponent);
     this.terrainFactory = terrainFactory;
   }
 
@@ -76,8 +82,13 @@ public class ForestGameArea extends GameArea {
     spawnTerrain();
     spawnTrees();
     player = spawnPlayer();
-    spawnSkeletonWarrior();
-    spawnSkeletonArcher();
+    //spawnSkeletonWarrior();
+    //spawnSkeletonArcher();
+    spawnTestFloor();
+    spawnTestCeiling();
+    spawnGhosts();
+
+    spawnGhostKing();
 
     // playMusic();
   }
@@ -131,8 +142,22 @@ public class ForestGameArea extends GameArea {
 
   private Entity spawnPlayer() {
     Entity newPlayer = PlayerFactory.createPlayer();
+    KeyboardPlayerInputComponent input = newPlayer.getComponent(KeyboardPlayerInputComponent.class);
+    if (input != null) {
+      input.setCameraComponent(cameraComponent);
+    }
     spawnEntityAt(newPlayer, PLAYER_SPAWN, true, true);
     return newPlayer;
+  }
+
+  private void spawnTestFloor() {
+    Entity floor = TestFloorFactory.createTestFloor();
+    spawnEntityAt(floor, new GridPoint2(5, 5), true, false);
+  }
+
+  private void spawnTestCeiling() {
+    Entity ceiling = TestCeilingFactory.createTestCeiling();
+    spawnEntityAt(ceiling, new GridPoint2(10, 16), true, false);
   }
 
   private void spawnGhosts() {

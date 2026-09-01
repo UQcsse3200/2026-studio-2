@@ -12,11 +12,18 @@ public class CombatStatsComponent extends Component {
 
   private static final Logger logger = LoggerFactory.getLogger(CombatStatsComponent.class);
   private int health;
+  private int maxHealth;
   private int baseAttack;
 
   public CombatStatsComponent(int health, int baseAttack) {
+    this.maxHealth = Math.max(health, 0);
     setHealth(health);
     setBaseAttack(baseAttack);
+  }
+
+  @Override
+  public void create() {
+    entity.getEvents().addListener("takeDamage", this::hit);
   }
 
   /**
@@ -35,6 +42,29 @@ public class CombatStatsComponent extends Component {
    */
   public int getHealth() {
     return health;
+  }
+
+  /**
+   * Returns the entity's maximum health.
+   *
+   * @return entity's maximum health
+   */
+  public int getMaxHealth() {
+    return maxHealth;
+  }
+
+  /**
+   * Increases the entity's maximum health by the given amount, and heals by the same amount.
+   * Amounts less than or equal to zero are ignored.
+   *
+   * @param amount amount to increase maximum health by
+   */
+  public void addMaxHealth(int amount) {
+    if (amount <= 0) {
+      return;
+    }
+    maxHealth += amount;
+    addHealth(amount);
   }
 
   /**
