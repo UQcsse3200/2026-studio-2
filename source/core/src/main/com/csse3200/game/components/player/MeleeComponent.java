@@ -11,7 +11,7 @@ import com.csse3200.game.services.ServiceLocator;
 
 /** Close-range attack that damages the first enemy directly in front of the player. */
 public class MeleeComponent extends Component implements AttackBehaviour {
-  private static final float RANGE = 1.2f;
+  private static final float RANGE = 1f;
 
   @Override
   public void create() {

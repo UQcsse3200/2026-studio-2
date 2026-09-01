@@ -13,7 +13,7 @@ public class MeleeRenderComponent extends RenderComponent {
   private static final float REACH = 1.2f;
   private static final float LINE_WIDTH = 0.08f;
 
-  private final ShapeRenderer shapeRenderer = new ShapeRenderer();
+  private ShapeRenderer shapeRenderer;
   private Vector2 swingDirection;
   private float timeRemaining = 0f;
 
@@ -43,6 +43,9 @@ public class MeleeRenderComponent extends RenderComponent {
     Vector2 end = start.cpy().mulAdd(swingDirection, REACH);
 
     batch.end();
+    if (shapeRenderer == null) {
+      shapeRenderer = new ShapeRenderer();
+    }
     shapeRenderer.setProjectionMatrix(batch.getProjectionMatrix());
     shapeRenderer.begin(ShapeType.Filled);
     shapeRenderer.setColor(Color.WHITE);
@@ -53,7 +56,9 @@ public class MeleeRenderComponent extends RenderComponent {
 
   @Override
   public void dispose() {
-    shapeRenderer.dispose();
+    if (shapeRenderer != null) {
+      shapeRenderer.dispose();
+    }
     super.dispose();
   }
 }

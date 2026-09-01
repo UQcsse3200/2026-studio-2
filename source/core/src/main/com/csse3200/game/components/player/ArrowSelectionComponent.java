@@ -54,6 +54,7 @@ public class ArrowSelectionComponent extends Component {
     }
   }
 
+  /** will be used for arrow variety */
   public ArrowType getSelected() {
     return selected;
   }

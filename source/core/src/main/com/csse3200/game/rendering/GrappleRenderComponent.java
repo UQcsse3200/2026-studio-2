@@ -13,7 +13,8 @@ public class GrappleRenderComponent extends RenderComponent {
   /** Thickness of the rendered rope line in world units */
   private static final float LINE_WIDTH = 0.05f;
 
-  private final ShapeRenderer shapeRenderer = new ShapeRenderer();
+  // Created on first draw so the component can be constructed without a graphics context
+  private ShapeRenderer shapeRenderer;
   private GrappleComponent grapple;
 
   @Override
@@ -38,6 +39,10 @@ public class GrappleRenderComponent extends RenderComponent {
     }
     Vector2 playerPos = entity.getCenterPosition();
 
+    if (shapeRenderer == null) {
+      shapeRenderer = new ShapeRenderer();
+    }
+
     // Pause standard sprite rendering to avoid pipeline conflict with primitive geometry
     batch.end();
 
@@ -52,7 +57,9 @@ public class GrappleRenderComponent extends RenderComponent {
 
   @Override
   public void dispose() {
-    shapeRenderer.dispose();
+    if (shapeRenderer != null) {
+      shapeRenderer.dispose();
+    }
     super.dispose();
   }
 }

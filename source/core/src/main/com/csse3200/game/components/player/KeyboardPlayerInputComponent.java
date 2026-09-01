@@ -105,24 +105,21 @@ public class KeyboardPlayerInputComponent extends InputComponent {
   @Override
   public boolean touchDown(int screenX, int screenY, int pointer, int button) {
     if (button == Buttons.LEFT) {
-      Vector2 aimDirection = getAimDirection(screenX, screenY);
-      if (aimDirection == null || aimDirection.isZero()) {
-        return false;
-      }
-      entity.getEvents().trigger("melee", aimDirection);
-      return true;
+      return triggerAimedEvent("melee", screenX, screenY);
     }
-
     if (button == Buttons.RIGHT) {
-      Vector2 aimDirection = getAimDirection(screenX, screenY);
-      if (aimDirection == null || aimDirection.isZero()) {
-        return false;
-      }
-      entity.getEvents().trigger("shoot", aimDirection);
-      return true;
+      return triggerAimedEvent("shoot", screenX, screenY);
     }
-
     return false;
+  }
+
+  private boolean triggerAimedEvent(String eventName, int screenX, int screenY) {
+    Vector2 aim = getAimDirection(screenX, screenY);
+    if (aim == null || aim.isZero()) {
+      return false;
+    }
+    entity.getEvents().trigger(eventName, aim);
+    return true;
   }
 
   /**
