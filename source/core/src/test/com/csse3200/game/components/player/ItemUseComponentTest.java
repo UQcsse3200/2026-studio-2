@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.inventory.InventoryComponent;
 import com.csse3200.game.components.item.ItemType;
@@ -39,11 +40,10 @@ class ItemUseComponentTest {
     player
         .getEvents()
         .addListener(
-            "arrowFired",
-            (Integer damage, Float range) -> {
+            "primaryAttack",
+            (Vector2 direction) -> {
               fired[0] = true;
-              assertEquals(10, damage);
-              assertEquals(15f, range, 0.001f);
+              assertFalse(direction.isZero());
             });
 
     assertTrue(player.getComponent(ItemUseComponent.class).useSelectedItem());
@@ -58,7 +58,7 @@ class ItemUseComponentTest {
     inventory.addItem(ItemType.ARROW, 1);
 
     int[] fired = {0};
-    player.getEvents().addListener("arrowFired", (Integer damage, Float range) -> fired[0]++);
+    player.getEvents().addListener("primaryAttack", (Vector2 ignored) -> fired[0]++);
 
     player.getEvents().trigger("attack");
     assertEquals(1, fired[0]);
@@ -130,7 +130,7 @@ class ItemUseComponentTest {
 
     ItemUseComponent use = player.getComponent(ItemUseComponent.class);
     boolean[] grappled = {false};
-    player.getEvents().addListener("grappleFire", () -> grappled[0] = true);
+    player.getEvents().addListener("grappleFire", (Vector2 ignored) -> grappled[0] = true);
 
     assertEquals(ItemType.RopeArrow, inventory.getSelectedItem());
     assertTrue(use.useSelectedItem());
@@ -149,7 +149,7 @@ class ItemUseComponentTest {
 
     ItemUseComponent use = player.getComponent(ItemUseComponent.class);
     int[] uses = {0};
-    player.getEvents().addListener("grappleFire", () -> uses[0]++);
+    player.getEvents().addListener("grappleFire", (Vector2 ignored) -> uses[0]++);
 
     assertTrue(use.useSelectedItem());
 

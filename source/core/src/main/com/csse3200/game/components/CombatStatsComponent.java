@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
  * extended for more specific combat needs.
  */
 public class CombatStatsComponent extends Component {
+  /** Default player maximum health. Other entities may use a higher per-instance maximum. */
   public static final int MAX_HEALTH = 100;
 
   private static final Logger logger = LoggerFactory.getLogger(CombatStatsComponent.class);
@@ -74,16 +75,16 @@ public class CombatStatsComponent extends Component {
    * @return whether health is full
    */
   public boolean isHealthFull() {
-    return health >= MAX_HEALTH;
+    return health >= maxHealth;
   }
 
   /**
-   * Sets the entity's health. Health is clamped between 0 and {@link #MAX_HEALTH}.
+   * Sets the entity's health. Health is clamped between 0 and this entity's maximum health.
    *
    * @param health health
    */
   public void setHealth(int health) {
-    this.health = Math.max(0, Math.min(MAX_HEALTH, health));
+    this.health = Math.max(0, Math.min(maxHealth, health));
     if (entity != null) {
       entity.getEvents().trigger("updateHealth", this.health);
     }

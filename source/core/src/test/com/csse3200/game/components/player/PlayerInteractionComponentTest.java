@@ -147,6 +147,26 @@ class PlayerInteractionComponentTest {
   }
 
   @Test
+  void shouldDropRopeArrowStackWithFullQuantity() {
+    Entity player = createPlayer(new InventoryComponent(0));
+    InventoryComponent inventory = player.getComponent(InventoryComponent.class);
+    inventory.addItem(ItemType.RopeArrow, 3);
+
+    assertTrue(player.getComponent(PlayerInteractionComponent.class).dropItem());
+    assertEquals(0, inventory.getItemCount(ItemType.RopeArrow));
+
+    int droppedQuantity = 0;
+    for (Entity entity : ServiceLocator.getEntityService().getEntities()) {
+      ItemComponent itemComponent = entity.getComponent(ItemComponent.class);
+      if (itemComponent != null && itemComponent.getItem().getItemType() == ItemType.RopeArrow) {
+        droppedQuantity = itemComponent.getItem().getQuantity();
+        break;
+      }
+    }
+    assertEquals(3, droppedQuantity);
+  }
+
+  @Test
   void shouldRejectDropWhenInventoryEmpty() {
     Entity player = createPlayer(new InventoryComponent(0));
 

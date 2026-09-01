@@ -1,6 +1,7 @@
 package com.csse3200.game.components.player;
 
 import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.Component;
 import com.csse3200.game.components.inventory.InventoryComponent;
@@ -9,7 +10,6 @@ import com.csse3200.game.components.item.consumables.HealthPotion;
 import com.csse3200.game.components.item.weapons.ColdArr;
 import com.csse3200.game.components.item.weapons.FireArr;
 import com.csse3200.game.components.item.weapons.RopeArr;
-import com.csse3200.game.components.item.weapons.StandardArr;
 import com.csse3200.game.services.GameTime;
 import com.csse3200.game.services.ServiceLocator;
 import org.slf4j.Logger;
@@ -18,15 +18,16 @@ import org.slf4j.LoggerFactory;
 /**
  * Uses the currently selected inventory item when the player attacks.
  *
- * <p>Standard arrows consume ammunition and notify combat systems via {@code arrowFired}. Rope
- * arrows are unlimited but gated by a cooldown and notify grappling via {@code grappleFire}.
- * Consumables heal the player and are removed from the inventory.
+ * <p>Standard arrows consume ammunition and then fire through {@code primaryAttack}. Rope arrows
+ * are unlimited but gated by a cooldown and fire through {@code grappleFire}. Consumables heal the
+ * player and are removed from the inventory.
  *
  * <p>Requires InventoryComponent. CombatStatsComponent is required to use consumables.
  */
 public class ItemUseComponent extends Component {
   private static final Logger logger = LoggerFactory.getLogger(ItemUseComponent.class);
   private static final String ATTACK_SOUND = "sounds/Impact4.ogg";
+  private static final Vector2 DEFAULT_AIM = new Vector2(1f, 0f);
 
   private InventoryComponent inventory;
   private CombatStatsComponent combatStats;
@@ -85,15 +86,19 @@ public class ItemUseComponent extends Component {
   }
 
   private boolean useStandardArrow() {
-    StandardArr arrow = new StandardArr(1);
+    Vector2 direction = getAimDirection();
+    if (direction.isZero()) {
+      entity.getEvents().trigger("itemUseFailed", ItemType.ARROW);
+      return false;
+    }
+
     if (!inventory.removeItem(ItemType.ARROW, 1)) {
       logger.debug("No standard arrows left to fire");
       entity.getEvents().trigger("itemUseFailed", ItemType.ARROW);
       return false;
     }
 
-    playAttackSound();
-    entity.getEvents().trigger("arrowFired", arrow.getDamage(), arrow.getRange());
+    entity.getEvents().trigger("primaryAttack", direction);
     entity.getEvents().trigger("itemUsed", ItemType.ARROW);
     return true;
   }
@@ -110,15 +115,26 @@ public class ItemUseComponent extends Component {
       return false;
     }
 
+    Vector2 direction = getAimDirection();
+    if (direction.isZero()) {
+      entity.getEvents().trigger("itemUseFailed", ItemType.RopeArrow);
+      return false;
+    }
+
+    entity.getEvents().trigger("grappleFire", direction);
+
+    GrappleComponent grapple = entity.getComponent(GrappleComponent.class);
+    if (grapple != null && !grapple.isAttached()) {
+      entity.getEvents().trigger("itemUseFailed", ItemType.RopeArrow);
+      return false;
+    }
+
     GameTime time = ServiceLocator.getTimeSource();
-    RopeArr rope = new RopeArr();
-    long cooldownMs = (long) (rope.getCooldown() * 1000f);
+    long cooldownMs = (long) (new RopeArr().getCooldown() * 1000f);
     if (time != null) {
       ropeReadyTimeMs = time.getTime() + cooldownMs;
     }
 
-    playAttackSound();
-    entity.getEvents().trigger("grappleFire");
     entity.getEvents().trigger("itemUsed", ItemType.RopeArrow);
     return true;
   }
@@ -165,15 +181,30 @@ public class ItemUseComponent extends Component {
     ColdArr arrow = new ColdArr(1);
 
     if (!inventory.removeItem(ItemType.ColdArrow, 1)) {
-      logger.debug("No fire arrows left to fire");
+      logger.debug("No cold arrows left to fire");
       entity.getEvents().trigger("itemUseFailed", ItemType.ColdArrow);
       return false;
     }
 
     playAttackSound();
     entity.getEvents().trigger("coldArrFired", arrow);
-    entity.getEvents().trigger("itemUsed", ItemType.FireArrow);
+    entity.getEvents().trigger("itemUsed", ItemType.ColdArrow);
     return true;
+  }
+
+  private Vector2 getAimDirection() {
+    KeyboardPlayerInputComponent input = entity.getComponent(KeyboardPlayerInputComponent.class);
+    if (input != null) {
+      try {
+        Vector2 aim = input.getMouseAimDirection();
+        if (aim != null && !aim.isZero()) {
+          return aim;
+        }
+      } catch (Exception e) {
+        logger.debug("Aim direction unavailable, using default");
+      }
+    }
+    return DEFAULT_AIM.cpy();
   }
 
   private void playAttackSound() {

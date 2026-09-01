@@ -52,12 +52,22 @@ public class ItemFactory {
   }
 
   /**
-   * Creates a rope arrow lying in the world.
+   * Creates a single rope arrow lying in the world.
    *
    * @return entity
    */
   public static Entity createRopeArrow() {
-    return createItem(new RopeArr(), ROPE_ARROW_TEXTURE);
+    return createRopeArrow(1);
+  }
+
+  /**
+   * Creates a stack of rope arrows lying in the world.
+   *
+   * @param quantity number of rope arrows in the stack
+   * @return entity
+   */
+  public static Entity createRopeArrow(int quantity) {
+    return createItem(new RopeArr(quantity), ROPE_ARROW_TEXTURE);
   }
 
   /**

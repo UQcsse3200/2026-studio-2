@@ -9,6 +9,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.input.InputComponent;
+import com.csse3200.game.utils.math.Vector2Utils;
 
 /** Input handler for player keyboard and mouse controls. */
 public class KeyboardPlayerInputComponent extends InputComponent {
@@ -86,9 +87,17 @@ public class KeyboardPlayerInputComponent extends InputComponent {
         triggerWalkEvent();
         return true;
       case Keys.SPACE:
-        entity.getEvents().trigger("attack");
+        triggerJumpEvent();
+        return true;
+      case Keys.SHIFT_LEFT:
+      case Keys.SHIFT_RIGHT:
+        sprintHeld = true;
+        triggerSprintEvent();
         return true;
       case Keys.E:
+        triggerAttackOrItemUse();
+        return true;
+      case Keys.F:
         entity.getEvents().trigger("interact");
         return true;
       case Keys.B:
@@ -172,6 +181,25 @@ public class KeyboardPlayerInputComponent extends InputComponent {
     return true;
   }
 
+  private void triggerAttackOrItemUse() {
+    if (attackHeld) {
+      return;
+    }
+    attackHeld = true;
+
+    ItemUseComponent itemUse = entity.getComponent(ItemUseComponent.class);
+    if (itemUse != null) {
+      itemUse.useSelectedItem();
+      return;
+    }
+
+    Vector2 aimDirection = getMouseAimDirection();
+    if (aimDirection == null || aimDirection.isZero()) {
+      return;
+    }
+    entity.getEvents().trigger("primaryAttack", aimDirection);
+  }
+
   private void triggerSprintEvent() {
     if (sprintHeld) {
       entity.getEvents().trigger("sprint");
@@ -184,7 +212,12 @@ public class KeyboardPlayerInputComponent extends InputComponent {
     entity.getEvents().trigger("jump");
   }
 
-  private Vector2 getMouseAimDirection() {
+  /**
+   * Aim direction from the current mouse position to the player, in world space.
+   *
+   * @return aim vector, or null if the camera is unavailable
+   */
+  public Vector2 getMouseAimDirection() {
     return getAimDirection(Gdx.input.getX(), Gdx.input.getY());
   }
 

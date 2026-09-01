@@ -90,7 +90,7 @@ public class InventoryBarDisplay extends UIComponent {
                 slotNumber, inventorySlot.getItemType(), inventorySlot.getQuantity(), selected);
       }
 
-      table.add(slot).width(160f).height(90f).pad(8f);
+      table.add(slot).width(136f).height(80f).pad(4f);
     }
   }
 
