@@ -179,7 +179,7 @@ public class TutorialGameArea extends GameArea {
 
     player = spawnPlayer();
     spawnWinCondition();
-    spawnTestWinCondition(); // Temporary test win condition near player spawn for quick testing
+    //spawnTestWinCondition(); // Temporary test win condition near player spawn for quick testing
 
     // spawnGhosts();
     // spawnGhostKing();
