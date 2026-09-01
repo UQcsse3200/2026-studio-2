@@ -37,7 +37,9 @@ public class GrappleComponent extends Component {
     RaycastHit hit = new RaycastHit();
 
     // Perform Box2D raycast against terrain/obstacle layers and exits if no surface was hit
-    if (!ServiceLocator.getPhysicsService().getPhysics().raycast(start, end, PhysicsLayer.SOLID, hit)) {
+    if (!ServiceLocator.getPhysicsService()
+        .getPhysics()
+        .raycast(start, end, PhysicsLayer.SOLID, hit)) {
       return;
     }
 

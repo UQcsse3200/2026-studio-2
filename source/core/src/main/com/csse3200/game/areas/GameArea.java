@@ -19,6 +19,7 @@ import java.util.List;
 public abstract class GameArea implements Disposable {
   /** Camera used by this game area. */
   protected final CameraComponent cameraComponent;
+
   protected TerrainComponent terrain;
   protected List<Entity> areaEntities;
 

@@ -1,5 +1,7 @@
 package com.csse3200.game.components;
 
+import com.csse3200.game.services.ServiceLocator;
+
 public class EnemyDeathComponent extends Component {
 
   /* Create, with a listener for health updates. */
@@ -13,7 +15,8 @@ public class EnemyDeathComponent extends Component {
 
     // Handle enemy death
     if (enemyHealth <= 0) {
-      entity.dispose(); // TBD .scheduleForDisposal instead?
+      ServiceLocator.getEntityService()
+          .scheduleRemoval(entity); // TBD .scheduleForDisposal instead?
     }
   }
 

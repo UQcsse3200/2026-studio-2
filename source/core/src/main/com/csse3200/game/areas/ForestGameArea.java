@@ -82,13 +82,13 @@ public class ForestGameArea extends GameArea {
     spawnTerrain();
     spawnTrees();
     player = spawnPlayer();
-    //spawnSkeletonWarrior();
-    //spawnSkeletonArcher();
+    spawnSkeletonWarrior();
+    spawnSkeletonArcher();
     spawnTestFloor();
     spawnTestCeiling();
-    spawnGhosts();
+    // spawnGhosts();
 
-    spawnGhostKing();
+    // spawnGhostKing();
 
     // playMusic();
   }
@@ -175,20 +175,17 @@ public class ForestGameArea extends GameArea {
     GridPoint2 minPos = new GridPoint2(0, 0);
     GridPoint2 maxPos = terrain.getMapBounds(0).sub(2, 2);
 
-    GridPoint2 randomPos = RandomUtils.random(minPos, maxPos);
-    Entity chaser = EnemyFactory.createSkeletonWarrior(player);
-
-    spawnEntityAt(chaser, randomPos, true, true);
+    Entity skeletonWarrior = EnemyFactory.createSkeletonWarrior(player);
+    spawnEntityAt(skeletonWarrior, new GridPoint2(5, 16), true, true);
   }
 
   private void spawnSkeletonArcher() {
     GridPoint2 minPos = new GridPoint2(0, 0);
     GridPoint2 maxPos = terrain.getMapBounds(0).sub(2, 2);
 
-    GridPoint2 randomPos = RandomUtils.random(minPos, maxPos);
-    Entity shooter = EnemyFactory.createSkeletonArcher(player);
+    Entity skeletonArcher = EnemyFactory.createSkeletonArcher(player);
 
-    spawnEntityAt(shooter, randomPos, true, true);
+    spawnEntityAt(skeletonArcher, new GridPoint2(5, 16), true, true);
   }
 
   private void spawnGhostKing() {

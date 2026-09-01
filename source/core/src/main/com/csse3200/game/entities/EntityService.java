@@ -99,7 +99,7 @@ public class EntityService {
   public Array<Entity> getEntities() {
     return new Array<>(entities);
   }
-  
+
   private void removeScheduledEntities() {
     Array<Entity> removals = new Array<>(pendingRemoval);
     pendingRemoval.clear();
