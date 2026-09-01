@@ -52,6 +52,11 @@ class GrappleComponentTest {
     GrappleComponent grapple = player.getComponent(GrappleComponent.class);
     InventoryComponent inventory = player.getComponent(InventoryComponent.class);
 
+    player
+        .getEvents()
+        .addListener(
+            "grappleRequested", point -> player.getEvents().trigger("grappleResponse", true));
+
     player.getEvents().trigger("grappleFire", Vector2.X.cpy());
 
     assertTrue(grapple.isAttached());
