@@ -3,10 +3,12 @@ package com.csse3200.game.components.minigames.CyclopsTimingBar;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.csse3200.game.ui.UIComponent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -97,11 +99,16 @@ public class TimingBarDisplay extends UIComponent {
 
     logger.info("loading timing bar marker");
     marker = new Image(blankRegion);
-    marker.setColor(Color.WHITE);
+    marker.setColor(Color.RED);
     marker.setSize(10f, BAR_HEIGHT);
     marker.setPosition(
         location_x + (logic.markerX * BAR_WIDTH) - marker.getWidth() / 2, location_y);
     group.addActor(marker);
+
+    BitmapFont font = new BitmapFont();
+    Label instructions = new Label("Press 'SPACE' to stop", new Label.LabelStyle(font, Color.BLACK));
+    instructions.setPosition(location_x, location_y + BAR_HEIGHT);
+    group.addActor(instructions);
 
     group.setVisible(visible);
     stage.addActor(group);
