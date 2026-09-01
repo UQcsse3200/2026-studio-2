@@ -206,31 +206,24 @@ public class TutorialGameArea extends GameArea {
    * <p>This means the background moves at 30% of the camera movement relative to the world, giving
    * the subtle effect you originally wanted.
    */
- private void spawnBackground() {
+  private void spawnBackground() {
 
-  BackgroundRenderComponent backgroundComponent =
-      new BackgroundRenderComponent(camera);
+    BackgroundRenderComponent backgroundComponent = new BackgroundRenderComponent(camera);
 
-  // Complete original background image
-  backgroundComponent.addLayer(
-      "images/parallax/original_background.png",
-      0.30f,
-      60f,
-      33.515625f,
-      -1.50f);
+    // Complete original background image
+    backgroundComponent.addLayer(
+        "images/parallax/original_background.png", 0.30f, 60f, 33.515625f, -1.50f);
 
-  // Create the background entity.
-  Entity background =
-      new Entity().addComponent(backgroundComponent);
+    // Create the background entity.
+    Entity background = new Entity().addComponent(backgroundComponent);
 
-  /*
-   * Position the background in the game world.
-   */
-  background.setPosition(-20f, -10f);
+    /*
+     * Position the background in the game world.
+     */
+    background.setPosition(-20f, -10f);
 
-  spawnEntity(background);
-}
-  
+    spawnEntity(background);
+  }
 
   private void spawnTerrain() {
 
