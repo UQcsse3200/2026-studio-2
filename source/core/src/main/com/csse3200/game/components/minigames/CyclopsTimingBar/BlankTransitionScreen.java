@@ -7,16 +7,12 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.csse3200.game.ui.UIComponent;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class BlankTransitionScreen extends UIComponent {
-  private static final Logger logger = LoggerFactory.getLogger(BlankTransitionScreen.class);
   private static final float Z_INDEX = 4;
 
   private Texture texture;
-  private TextureRegion textureRegion;
-  private Image blackScreen;
+    private Image blackScreen;
 
   public boolean isVisible() {
     return blackScreen.isVisible();
@@ -35,7 +31,7 @@ public class BlankTransitionScreen extends UIComponent {
     pixmap.fill();
 
     texture = new Texture(pixmap);
-    textureRegion = new TextureRegion(texture);
+      TextureRegion textureRegion = new TextureRegion(texture);
     pixmap.dispose();
 
     blackScreen = new Image(textureRegion);

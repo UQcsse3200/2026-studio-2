@@ -1,20 +1,15 @@
 package com.csse3200.game.components.minigames.CyclopsTimingBar;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
  * Mathematical state of the components in the timing bar. Keeps track of size and location of
  * scoring bar. Keeps track of the location of the sweeping marker.
  */
 public class TimingBarLogic {
-  private static final Logger logger = LoggerFactory.getLogger(TimingBarLogic.class);
-
   public float barStart = 0f;
   public float barWidth = 1f; // Acts as 100% etc.
   public float scoringAreaSize;
 
-  public final float markerSpeed = 1f;
+  public static final float markerSpeed = 1f;
   public int direction = 1;
 
   public float markerX = barStart;
@@ -40,11 +35,11 @@ public class TimingBarLogic {
   public void changeScoringAreaWidth(float width) {
     float barCenter = barWidth / 2;
 
-    float covered_area = width / 100;
-    scoringAreaSize = covered_area;
+    float coveredArea = width / 100;
+    scoringAreaSize = coveredArea;
 
-    this.greenStart = barCenter - (covered_area / 2);
-    this.greenEnd = barCenter + (covered_area / 2);
+    this.greenStart = barCenter - (coveredArea / 2);
+    this.greenEnd = barCenter + (coveredArea / 2);
   }
 
   /**
@@ -58,8 +53,6 @@ public class TimingBarLogic {
     }
 
     markerX += markerSpeed * direction * deltaTime;
-
-    // logger.info("Marker: {}", markerX);
 
     if (markerX >= barWidth) {
       markerX = barWidth;

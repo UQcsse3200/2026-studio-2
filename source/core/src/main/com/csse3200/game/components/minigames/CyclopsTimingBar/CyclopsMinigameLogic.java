@@ -22,7 +22,7 @@ public class CyclopsMinigameLogic extends Component {
     STOPPED,
     PLAYING,
     GAME_OVER
-  };
+  }
 
   private GameEndState outcome = GameEndState.WIN;
 

@@ -16,22 +16,19 @@ import org.slf4j.LoggerFactory;
 public class TimingBarDisplay extends UIComponent {
   private static final Logger logger = LoggerFactory.getLogger(TimingBarDisplay.class);
 
-  private float SCREEN_X;
-  private float SCREEN_Y;
-  private final float BAR_WIDTH = 400f;
-  private final float BAR_HEIGHT = 25f;
+  private float screenX;
+  private float screenY;
+  private static final float BAR_WIDTH = 400f;
+  private static final float BAR_HEIGHT = 25f;
 
   private float location_x;
   private float location_y;
 
   private final TimingBarLogic logic;
   private Texture blankTexture;
-  private TextureRegion blankRegion;
 
-  private Group group;
-  private Image barBackground;
-  private Image scoreZone;
-  private Image marker;
+    private Group group;
+    private Image marker;
 
   private boolean visible = false;
 
@@ -40,17 +37,17 @@ public class TimingBarDisplay extends UIComponent {
   }
 
   public float getScreenWidth() {
-    return this.SCREEN_X;
+    return this.screenX;
   }
 
   private void setupComponentSizes() {
     logger.info("Retrieving window size");
     logger.info("Stage dimensions: ({}, {})", stage.getWidth(), stage.getHeight());
-    SCREEN_X = stage.getWidth();
-    SCREEN_Y = stage.getHeight();
+    screenX = stage.getWidth();
+    screenY = stage.getHeight();
 
-    location_x = (SCREEN_X / 2) - (BAR_WIDTH / 2);
-    location_y = (SCREEN_Y / 2) + (BAR_HEIGHT / 2);
+    location_x = (screenX / 2) - (BAR_WIDTH / 2);
+    location_y = (screenY / 2) + (BAR_HEIGHT / 2);
   }
 
   public void setVisible(boolean visible) {
@@ -76,13 +73,13 @@ public class TimingBarDisplay extends UIComponent {
     pixmap.fill();
 
     blankTexture = new Texture(pixmap);
-    blankRegion = new TextureRegion(blankTexture);
+      TextureRegion blankRegion = new TextureRegion(blankTexture);
     pixmap.dispose();
 
     group = new Group();
 
     logger.info("loading timing bar background");
-    barBackground = new Image(blankRegion);
+      Image barBackground = new Image(blankRegion);
     barBackground.setColor(Color.DARK_GRAY);
     barBackground.setPosition(location_x, location_y);
     barBackground.setSize(BAR_WIDTH, BAR_HEIGHT);
@@ -90,7 +87,7 @@ public class TimingBarDisplay extends UIComponent {
     logger.info("created timing bar background at (X: {}, Y: {})", location_x, location_y);
 
     logger.info("loading timing bar scoring zone");
-    scoreZone = new Image(blankRegion);
+      Image scoreZone = new Image(blankRegion);
     scoreZone.setColor(Color.GREEN);
     scoreZone.setPosition(
         location_x + (BAR_WIDTH / 2) - ((BAR_WIDTH * logic.scoringAreaSize) / 2), location_y);

@@ -32,19 +32,14 @@ public class CyclopsMinigameArea extends GameArea {
   };
 
   private final TerrainFactory terrainFactory;
-  private Entity timingMinigameEntity;
 
-  private Entity player;
+    private Entity player;
 
   private static final int NUM_STATUES = 3;
-  private int statue_y_level;
+  private int statueYLevel;
   private GridPoint2 winLocation;
   private ArrayList<GridPoint2> statueLocations;
   private ArrayList<GridPoint2> statueGapLocations;
-
-  /* Timing Minigame Components */
-  private TimingBarLogic timingBarLogic;
-  private TimingBarDisplay timingBarDisplay;
   private CyclopsMinigameLogic cyclopsMinigameLogic;
 
   public CyclopsMinigameArea(CameraComponent camera, TerrainFactory terrainFactory) {
@@ -76,15 +71,16 @@ public class CyclopsMinigameArea extends GameArea {
    * statue gap locations.
    */
   private void setupTimingMinigame() {
-    timingBarLogic = new TimingBarLogic(20f);
-    timingBarDisplay = new TimingBarDisplay(timingBarLogic);
+      /* Timing Minigame Components */
+      TimingBarLogic timingBarLogic = new TimingBarLogic(20f);
+      TimingBarDisplay timingBarDisplay = new TimingBarDisplay(timingBarLogic);
     cyclopsMinigameLogic =
         new CyclopsMinigameLogic(timingBarLogic, timingBarDisplay, terrain, player);
     cyclopsMinigameLogic.setWinLocation(winLocation);
     cyclopsMinigameLogic.setSafeLocations(statueLocations);
     cyclopsMinigameLogic.setLossLocations(statueGapLocations);
 
-    timingMinigameEntity = new Entity();
+      Entity timingMinigameEntity = new Entity();
     timingMinigameEntity.addComponent(timingBarDisplay);
     timingMinigameEntity.addComponent(cyclopsMinigameLogic);
     spawnEntity(timingMinigameEntity);
@@ -105,8 +101,8 @@ public class CyclopsMinigameArea extends GameArea {
     terrain = terrainFactory.createTerrain(TerrainFactory.TerrainType.CYCLOPS_ROOM);
     spawnEntity(new Entity().addComponent(terrain));
 
-    statue_y_level = (int) (terrain.getMapBounds(terrain.getLayer()).y * 0.1);
-    winLocation = new GridPoint2(terrain.getMapBounds(terrain.getLayer()).x + 10, statue_y_level);
+    statueYLevel = (int) (terrain.getMapBounds(terrain.getLayer()).y * 0.1);
+    winLocation = new GridPoint2(terrain.getMapBounds(terrain.getLayer()).x + 10, statueYLevel);
   }
 
   private void spawnStatues() {
@@ -127,15 +123,15 @@ public class CyclopsMinigameArea extends GameArea {
        -2 is just to better offset it and can be adjusted freely
       */
       int x = ((mapSize.x / NUM_STATUES) * i) - (mapSize.x / (NUM_STATUES * 2)) - 2;
-      GridPoint2 location = new GridPoint2(x - 1, statue_y_level);
+      GridPoint2 location = new GridPoint2(x - 1, statueYLevel);
       statueLocations.add(location);
 
       Entity statue = ObstacleFactory.createStatue();
       statue.setScale(new Vector2(3, 6));
-      spawnEntityAt(statue, new GridPoint2(x, statue_y_level), true, false);
+      spawnEntityAt(statue, new GridPoint2(x, statueYLevel), true, false);
 
       int gapX = (mapSize.x / NUM_STATUES) * i - 2;
-      GridPoint2 gapLocation = new GridPoint2(gapX, statue_y_level);
+      GridPoint2 gapLocation = new GridPoint2(gapX, statueYLevel);
       statueGapLocations.add(gapLocation);
     }
   }

@@ -56,13 +56,10 @@ public class ObstacleFactory {
    * @return Statue entity
    */
   public static Entity createStatue() {
-    Entity statue =
-        new Entity()
+    return new Entity()
             .addComponent(new TextureRenderComponent("images/Greek Statues Pack I/Brute.png"))
             .addComponent(new PhysicsComponent().setBodyType(BodyType.StaticBody))
             .addComponent(new ColliderComponent().setLayer(PhysicsLayer.DEFAULT));
-
-    return statue;
   }
 
   private ObstacleFactory() {

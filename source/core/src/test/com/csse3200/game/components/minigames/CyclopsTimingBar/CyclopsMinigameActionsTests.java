@@ -7,7 +7,7 @@ import com.csse3200.game.GdxGame;
 import com.csse3200.game.entities.Entity;
 import org.junit.jupiter.api.Test;
 
-public class CyclopsMinigameActionsTests {
+class CyclopsMinigameActionsTests {
 
   @Test
   void shouldReturnToMainMenuOnBack() {
