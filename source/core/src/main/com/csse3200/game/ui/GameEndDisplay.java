@@ -24,7 +24,6 @@ public class GameEndDisplay extends UIComponent {
   private static final Logger logger = LoggerFactory.getLogger(GameEndDisplay.class);
   private static final float Z_INDEX = 20f;
   private static final int PANEL_WIDTH = 520;
-  private static final int PANEL_HEIGHT = 310;
   private static final int BORDER_THICKNESS = 3;
   private static final float MESSAGE_SPEED = 21f;
 
