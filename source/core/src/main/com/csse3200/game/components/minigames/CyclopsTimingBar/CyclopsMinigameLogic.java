@@ -85,6 +85,16 @@ public class CyclopsMinigameLogic extends Component {
     this.numOfSafeLocs = safeLocations.size();
   }
 
+  /**
+   * Moves the player to the next locations.
+   *
+   * <p>If 'success' player moves to next safe location. Returns False is player has moved to the
+   * win position otherwise True if player moves to next safe location. If not 'success' then player
+   * is moved to the next loss location and returns True
+   *
+   * @param success - boolean on whether to move player to next win or loss location
+   * @return True if player moved location, otherwise false if moved to win location
+   */
   private boolean moveToNextLocation(boolean success) {
     if (success) {
       currentSafeLoc += 1;
@@ -103,6 +113,10 @@ public class CyclopsMinigameLogic extends Component {
     return true;
   }
 
+  /**
+   * Update the timing bar logic and checks whether the 'space bar' has been hit to stop the timing
+   * bar
+   */
   private void updatePlaying() {
     timingBarLogic.update(Gdx.graphics.getDeltaTime());
     if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
@@ -110,6 +124,7 @@ public class CyclopsMinigameLogic extends Component {
     }
   }
 
+  /** Starts the timing bar logic and show the timing bar display after a delay */
   private void startTimingBar() {
     Timer.schedule(
         new Task() {
@@ -123,6 +138,7 @@ public class CyclopsMinigameLogic extends Component {
         TIMING_BAR_DELAY);
   }
 
+  /** Stops the timingBarLogic marker. And after a delay hide the timingBarDisplay */
   private void stopTimingBar() {
     timingBarLogic.stopMarker();
 
@@ -137,6 +153,7 @@ public class CyclopsMinigameLogic extends Component {
         TIMING_BAR_DELAY);
   }
 
+  /** Schedules the transition screen to appear after a delay */
   private void startTransition() {
     Timer.schedule(
         new Task() {
@@ -149,6 +166,12 @@ public class CyclopsMinigameLogic extends Component {
         TRANSITION_CHANGE_DELAY);
   }
 
+  /**
+   * Schedules the transition screen to hide and either restarts the timing minigame, or moves the
+   * state of the game to GAME_OVER, after a certain time has passed;
+   *
+   * @param restart - True and the timing bar minigame starts over
+   */
   private void stopTransition(boolean restart) {
     Timer.schedule(
         new Task() {
@@ -162,6 +185,7 @@ public class CyclopsMinigameLogic extends Component {
         TRANSITION_DELAY);
   }
 
+  /** */
   private void transition() {
     boolean success = timingBarLogic.checkHit();
 

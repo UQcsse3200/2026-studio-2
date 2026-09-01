@@ -68,6 +68,13 @@ public class CyclopsMinigameArea extends GameArea {
     startTimingMinigame();
   }
 
+  /**
+   * Initialises all timing minigame components. Creates the TimingBarLogic component,
+   * TimingBarDisplay component, and the CyclopsMinigameLogic.
+   *
+   * <p>Sets the win, safe and loss locations that the player moves to as the statue locations and
+   * statue gap locations.
+   */
   private void setupTimingMinigame() {
     timingBarLogic = new TimingBarLogic(20f);
     timingBarDisplay = new TimingBarDisplay(timingBarLogic);
@@ -133,6 +140,7 @@ public class CyclopsMinigameArea extends GameArea {
     }
   }
 
+  /** Creates and displays the floor entity that spans the entire screen */
   private void displayFloor() {
     Entity floor =
         new Entity()
@@ -144,10 +152,11 @@ public class CyclopsMinigameArea extends GameArea {
     spawnEntityAt(floor, new GridPoint2(-5, 2), false, false);
   }
 
-  private Entity spawnCyclops() {
-    return new Entity();
-  }
-
+  /**
+   * Spawns the player at the first statue location.
+   *
+   * @return the created player Entity
+   */
   private Entity spawnPlayer() {
     Entity newPlayer = PlayerFactory.createPlayerDisplay();
     spawnEntityAt(newPlayer, statueLocations.getFirst(), true, false);

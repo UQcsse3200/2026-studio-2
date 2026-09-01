@@ -50,6 +50,11 @@ public class ObstacleFactory {
     return wall;
   }
 
+  /**
+   * Creates a statue that is able to be stood infront of
+   *
+   * @return Statue entity
+   */
   public static Entity createStatue() {
     Entity statue =
         new Entity()
