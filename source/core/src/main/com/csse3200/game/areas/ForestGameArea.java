@@ -92,12 +92,9 @@ public class ForestGameArea extends GameArea {
     spawnTerrain();
     spawnTrees();
     player = spawnPlayer();
-<<<<<<< HEAD
     spawnItems();
-=======
     spawnTestFloor();
     spawnTestCeiling();
->>>>>>> main
     spawnGhosts();
 
     spawnGhostKing();
@@ -162,7 +159,6 @@ public class ForestGameArea extends GameArea {
     return newPlayer;
   }
 
-<<<<<<< HEAD
   private void spawnItems() {
     spawnEntityAt(ItemFactory.createRopeArrow(), ROPE_ARROW_SPAWN, true, false);
 
@@ -178,7 +174,6 @@ public class ForestGameArea extends GameArea {
     spawnEntityAt(ItemFactory.createFireArrow(FIRE_ARROW_QUANTITY), FIRE_ARROW_SPAWN, true, false);
 
     spawnEntityAt(ItemFactory.createColdArrow(COLD_ARROW_QUANTITY), COLD_ARROW_SPAWN, true, false);
-=======
   private void spawnTestFloor() {
     Entity floor = TestFloorFactory.createTestFloor();
     spawnEntityAt(floor, new GridPoint2(5, 5), true, false);
@@ -187,7 +182,6 @@ public class ForestGameArea extends GameArea {
   private void spawnTestCeiling() {
     Entity ceiling = TestCeilingFactory.createTestCeiling();
     spawnEntityAt(ceiling, new GridPoint2(10, 16), true, false);
->>>>>>> main
   }
 
   private void spawnGhosts() {
