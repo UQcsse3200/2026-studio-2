@@ -120,6 +120,7 @@ public class TutorialGameArea extends GameArea {
     "images/iso_grass_3.png",
 
     // Parallax background layers
+    "images/parallax/original_background.png",
     "images/parallax/sky.png",
     "images/parallax/Clouds.png",
     "images/parallax/Mountains.png",
@@ -206,38 +207,31 @@ public class TutorialGameArea extends GameArea {
    * <p>This means the background moves at 30% of the camera movement relative to the world, giving
    * the subtle effect you originally wanted.
    */
-  private void spawnBackground() {
+ private void spawnBackground() {
 
-    BackgroundRenderComponent backgroundComponent = new BackgroundRenderComponent(camera);
+  BackgroundRenderComponent backgroundComponent =
+      new BackgroundRenderComponent(camera);
 
-    // Layer 1 - Sky
-    backgroundComponent.addLayer("images/parallax/sky.png", 0.05f, 60f, 7.66f, 25.00f);
+  // Complete original background image
+  backgroundComponent.addLayer(
+      "images/parallax/original_background.png",
+      0.30f,
+      60f,
+      33.515625f,
+      -1.50f);
 
-    // Layer 2 - Clouds
-    backgroundComponent.addLayer("images/parallax/Clouds.png", 0.15f, 60f, 6.36f, 18.90f);
+  // Create the background entity.
+  Entity background =
+      new Entity().addComponent(backgroundComponent);
 
-    // Layer 3 - Mountains
-    backgroundComponent.addLayer("images/parallax/Mountains.png", 0.30f, 60f, 6.29f, 13.00f);
+  /*
+   * Position the background in the game world.
+   */
+  background.setPosition(-20f, -10f);
 
-    // Layer 4 - Ground
-    backgroundComponent.addLayer("images/parallax/ground.png", 0.50f, 60f, 8.22f, 6.00f);
-
-    // Layer 5 - Rocks / foreground
-    backgroundComponent.addLayer("images/parallax/Rocks.png", 0.80f, 60f, 8.07f, -1.50f);
-
-    // Create the background entity.
-    Entity background = new Entity().addComponent(backgroundComponent);
-
-    /*
-     * Position the background in the game world.
-     *
-     * Individual layer heights and vertical positions
-     * are controlled by BackgroundRenderComponent.
-     */
-    background.setPosition(-20f, -10f);
-
-    spawnEntity(background);
-  }
+  spawnEntity(background);
+}
+  
 
   private void spawnTerrain() {
 
