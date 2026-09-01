@@ -37,7 +37,7 @@ public class TutorialGameArea extends GameArea {
     new PlatformConfig(new GridPoint2(14, 6), 3, 1, 0),
     new PlatformConfig(new GridPoint2(19, 6), 3, 1, 0),
     new PlatformConfig(new GridPoint2(27, 2), 3, 1, 0),
-    new PlatformConfig(new GridPoint2(32, 3), 2, 2, 1),
+    new PlatformConfig(new GridPoint2(32, 3), 2, 2, 2),
     new PlatformConfig(new GridPoint2(30, 6), 3, 1, 0),
     new PlatformConfig(new GridPoint2(27, 8), 3, 1, 10),
     new PlatformConfig(new GridPoint2(23, 10), 3, 1, 2),
@@ -92,6 +92,16 @@ public class TutorialGameArea extends GameArea {
     new GridPoint2(10, 2), new GridPoint2(20, 2), new GridPoint2(35, 2)
   };
 
+  private static final GridPoint2[] skeletonWarriorSpawnLocations =
+      new GridPoint2[] {
+        new GridPoint2(45, 17), new GridPoint2(56, 16), new GridPoint2(77, 12),
+      };
+
+  private static final GridPoint2[] skeletonArcherSpawnLocations =
+      new GridPoint2[] {
+        new GridPoint2(60, 1), new GridPoint2(57, 10),
+      };
+
   private static final GridPoint2 PLAYER_SPAWN = new GridPoint2(1, 4);
 
   private static final float WALL_WIDTH = 0.1f;
@@ -131,7 +141,8 @@ public class TutorialGameArea extends GameArea {
 
     // Enemy textures
     "images/skeleton_warrior.png",
-    "images/skeleton_archer.png"
+    "images/skeleton_archer.png",
+    "images/arrow.png"
   };
 
   private static final String[] forestTextureAtlases = {
@@ -388,21 +399,20 @@ public class TutorialGameArea extends GameArea {
     GridPoint2 minPos = new GridPoint2(0, 0);
     GridPoint2 maxPos = terrain.getMapBounds(0).sub(2, 2);
 
-    Entity skeletonWarrior = EnemyFactory.createSkeletonWarrior(player);
-    Entity skeletonWarrior1 = EnemyFactory.createSkeletonWarrior(player);
-    Entity skeletonWarrior2 = EnemyFactory.createSkeletonWarrior(player);
-    spawnEntityAt(skeletonWarrior, new GridPoint2(2, 4), true, true);
-    spawnEntityAt(skeletonWarrior1, new GridPoint2(5, 10), true, true);
-    spawnEntityAt(skeletonWarrior2, new GridPoint2(3, 6), true, true);
+    for (GridPoint2 spawnLocation : skeletonWarriorSpawnLocations) {
+      Entity enemy = EnemyFactory.createSkeletonWarrior(player);
+      spawnEntityAt(enemy, spawnLocation, true, true);
+    }
   }
 
   private void spawnSkeletonArcher() {
     GridPoint2 minPos = new GridPoint2(0, 0);
     GridPoint2 maxPos = terrain.getMapBounds(0).sub(2, 2);
 
-    Entity skeletonArcher = EnemyFactory.createSkeletonArcher(player);
-
-    spawnEntityAt(skeletonArcher, new GridPoint2(5, 16), true, true);
+    for (GridPoint2 spawnLocation : skeletonArcherSpawnLocations) {
+      Entity enemy = EnemyFactory.createSkeletonArcher(player);
+      spawnEntityAt(enemy, spawnLocation, true, true);
+    }
   }
 
   private void spawnGhostKing() {
