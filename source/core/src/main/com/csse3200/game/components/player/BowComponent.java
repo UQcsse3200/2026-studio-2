@@ -66,6 +66,7 @@ public class BowComponent extends Component implements AttackBehaviour {
     chargeSeconds = 0f;
 
     if (direction == null || direction.isZero() || isOnCooldown()) {
+      entity.getEvents().trigger("attackCancelled");
       return;
     }
 
