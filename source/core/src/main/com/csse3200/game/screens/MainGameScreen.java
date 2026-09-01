@@ -1,5 +1,6 @@
 package com.csse3200.game.screens;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -48,6 +49,7 @@ public class MainGameScreen extends ScreenAdapter {
   private final GdxGame game;
   private final Renderer renderer;
   private final PhysicsEngine physicsEngine;
+  private Entity player;
 
   public MainGameScreen(GdxGame game) {
     this.game = game;
@@ -77,6 +79,14 @@ public class MainGameScreen extends ScreenAdapter {
     TerrainFactory terrainFactory = new TerrainFactory(renderer.getCamera());
     ForestGameArea forestGameArea = new ForestGameArea(renderer.getCamera(), terrainFactory);
     forestGameArea.create();
+    player = forestGameArea.getPlayer();
+    player.getEvents().addListener("death", this::onPlayerDeath);
+  }
+
+  private void onPlayerDeath() {
+    ServiceLocator.getEntityService().scheduleRemoval(player);
+    Gdx.app.postRunnable(
+        () -> ServiceLocator.getGameEndEventHandler().trigger("gameEnd", GameEndState.LOSE));
   }
 
   @Override
