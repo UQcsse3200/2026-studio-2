@@ -30,6 +30,7 @@ public class MainMenuActions extends Component {
   private void onPlay() {
     logger.info("Play");
     game.setScreen(GdxGame.ScreenType.TUTORIAL_GAME);
+  }
 
   /** Intended for loading a saved game state. Load functionality is not actually implemented. */
   private void onContinue() {
