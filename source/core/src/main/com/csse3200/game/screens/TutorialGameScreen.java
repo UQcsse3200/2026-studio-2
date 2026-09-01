@@ -1,19 +1,16 @@
 package com.csse3200.game.screens;
 
 import com.badlogic.gdx.ScreenAdapter;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.csse3200.game.GdxGame;
-import com.csse3200.game.areas.ForestGameArea;
+import com.csse3200.game.areas.TutorialGameArea;
 import com.csse3200.game.areas.terrain.TerrainFactory;
 import com.csse3200.game.components.gamearea.PerformanceDisplay;
 import com.csse3200.game.components.maingame.MainGameActions;
 import com.csse3200.game.components.maingame.MainGameExitDisplay;
-import com.csse3200.game.components.maingame.PauseMenuDisplay;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.entities.factories.RenderFactory;
-import com.csse3200.game.events.EventHandler;
 import com.csse3200.game.input.InputComponent;
 import com.csse3200.game.input.InputDecorator;
 import com.csse3200.game.input.InputService;
@@ -24,35 +21,31 @@ import com.csse3200.game.rendering.Renderer;
 import com.csse3200.game.services.GameTime;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
-import com.csse3200.game.ui.GameEndActions;
-import com.csse3200.game.ui.GameEndDisplay;
-import com.csse3200.game.ui.GameEndState;
 import com.csse3200.game.ui.terminal.Terminal;
 import com.csse3200.game.ui.terminal.TerminalDisplay;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The game screen containing the main game.
+ * The game screen containing the tutorial.
  *
  * <p>Details on libGDX screens: https://happycoding.io/tutorials/libgdx/game-screens
  */
-public class MainGameScreen extends ScreenAdapter {
-  private static final Logger logger = LoggerFactory.getLogger(MainGameScreen.class);
-  private static final String[] mainGameTextures = {
-    "images/purple_heart.png", "images/box_boy_title.png"
-  };
+public class TutorialGameScreen extends ScreenAdapter {
 
-  private static final Vector2 CAMERA_POSITION = new Vector2(7.5f, 7.5f);
+  private static final Logger logger = LoggerFactory.getLogger(TutorialGameScreen.class);
+
+  private static final String[] mainGameTextures = {"images/heart.png"};
 
   private final GdxGame game;
   private final Renderer renderer;
   private final PhysicsEngine physicsEngine;
 
-  public MainGameScreen(GdxGame game) {
+  public TutorialGameScreen(GdxGame game) {
     this.game = game;
 
     logger.debug("Initialising main game screen services");
+
     ServiceLocator.registerTimeSource(new GameTime());
 
     PhysicsService physicsService = new PhysicsService();
@@ -64,19 +57,28 @@ public class MainGameScreen extends ScreenAdapter {
 
     ServiceLocator.registerEntityService(new EntityService());
     ServiceLocator.registerRenderService(new RenderService());
-    ServiceLocator.registerGameEndEventHandler(new EventHandler());
 
     renderer = RenderFactory.createRenderer();
-    renderer.getCamera().getEntity().setPosition(CAMERA_POSITION);
+
+    // renderer.getDebug().setActive(true);
     renderer.getDebug().renderPhysicsWorld(physicsEngine.getWorld());
 
     loadAssets();
     createUI();
 
-    logger.debug("Initialising main game screen entities");
+    logger.debug("Initialising tutorial game screen entities");
+
+    // Pass the renderer's camera to the terrain factory.
     TerrainFactory terrainFactory = new TerrainFactory(renderer.getCamera());
-    ForestGameArea forestGameArea = new ForestGameArea(renderer.getCamera(), terrainFactory);
-    forestGameArea.create();
+
+    // Pass the same camera to the TutorialGameArea so that
+    // the parallax background can follow camera movement.
+    TutorialGameArea tutorialGameArea = new TutorialGameArea(terrainFactory, renderer.getCamera());
+
+    tutorialGameArea.create();
+
+    // Follow the player with the camera.
+    renderer.getCamera().setTarget(tutorialGameArea.getPlayer());
   }
 
   @Override
@@ -118,38 +120,42 @@ public class MainGameScreen extends ScreenAdapter {
 
   private void loadAssets() {
     logger.debug("Loading assets");
+
     ResourceService resourceService = ServiceLocator.getResourceService();
+
     resourceService.loadTextures(mainGameTextures);
-    ServiceLocator.getResourceService().loadAll();
+    resourceService.loadAll();
   }
 
   private void unloadAssets() {
     logger.debug("Unloading assets");
+
     ResourceService resourceService = ServiceLocator.getResourceService();
+
     resourceService.unloadAssets(mainGameTextures);
   }
 
   /**
-   * Creates the main game's ui including components for rendering ui elements to the screen and
-   * capturing and handling ui input.
+   * Creates the main game's UI including components for rendering UI elements to the screen and
+   * capturing and handling UI input.
    */
   private void createUI() {
     logger.debug("Creating ui");
+
     Stage stage = ServiceLocator.getRenderService().getStage();
+
     InputComponent inputComponent =
         ServiceLocator.getInputService().getInputFactory().createForTerminal();
 
     Entity ui = new Entity();
+
     ui.addComponent(new InputDecorator(stage, 10))
         .addComponent(new PerformanceDisplay())
         .addComponent(new MainGameActions(this.game))
         .addComponent(new MainGameExitDisplay())
-        .addComponent(new GameEndDisplay(GameEndState.LOSE))
-        .addComponent(new GameEndActions(this.game))
         .addComponent(new Terminal())
         .addComponent(inputComponent)
-        .addComponent(new TerminalDisplay())
-        .addComponent(new PauseMenuDisplay(this.game));
+        .addComponent(new TerminalDisplay());
 
     ServiceLocator.getEntityService().register(ui);
   }

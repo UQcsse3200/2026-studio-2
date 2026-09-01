@@ -19,7 +19,9 @@ public class GrappleComponent extends Component {
 
   private PhysicsComponent physicsComponent;
   private DistanceJoint ropeJoint;
+  private RaycastHit raycastHit;
   private Vector2 anchorPoint;
+  private Body anchorBody;
 
   @Override
   public void create() {
@@ -27,24 +29,44 @@ public class GrappleComponent extends Component {
     entity.getEvents().addListener("grappleFire", this::fire);
     entity.getEvents().addListener("grappleRelease", this::release);
     entity.getEvents().addListener("grappleSwing", this::swing);
+    entity.getEvents().addListener("grappleResponse", this::handleSuccessfulFire);
   }
 
-  /** Fires the rope towards direction or detaches if already attached. */
+  /**
+   * Fires the rope towards direction or detaches if already attached and sends a request event to
+   * determine if the impact point hit a valid platform side
+   */
   void fire(Vector2 direction) {
     // Determine raycast start (player center)
     Vector2 start = entity.getCenterPosition();
     Vector2 end = start.cpy().mulAdd(direction.cpy().nor(), MAX_RANGE);
-    RaycastHit hit = new RaycastHit();
+    raycastHit = new RaycastHit();
 
     // Perform Box2D raycast against terrain/obstacle layers and exits if no surface was hit
-    if (!ServiceLocator.getPhysicsService().getPhysics().raycast(start, end, PhysicsLayer.SOLID, hit)) {
+    if (!ServiceLocator.getPhysicsService()
+        .getPhysics()
+        .raycast(start, end, PhysicsLayer.SOLID, raycastHit)) {
       return;
     }
 
+    // send event to request whether the grapple raycast hits a valid platform side
+    entity.getEvents().trigger("grappleRequested", raycastHit.point.cpy());
+  }
+
+  /**
+   * Called from the response event from the GameArea and completes the grapple firing if the
+   * GameArea found a valid platform side to grapple to
+   *
+   * @param success whether the grapple point was valid
+   */
+  void handleSuccessfulFire(boolean success) {
+    if (!success) return;
+
     // Store fired position and retrieve physics bodies for joint setup
-    anchorPoint = hit.point.cpy();
+    Vector2 start = entity.getCenterPosition();
+    anchorPoint = raycastHit.point.cpy();
     Body playerBody = physicsComponent.getBody();
-    Body anchorBody = hit.fixture.getBody();
+    this.anchorBody = raycastHit.fixture.getBody();
 
     DistanceJointDef def = new DistanceJointDef();
     def.bodyA = anchorBody;
@@ -111,6 +133,10 @@ public class GrappleComponent extends Component {
   }
 
   public Vector2 getAnchorPoint() {
-    return anchorPoint == null ? null : anchorPoint.cpy();
+    // return anchorPoint == null ? null : anchorPoint.cpy();
+    if (!isAttached() || anchorBody == null) {
+      return null;
+    }
+    return anchorBody.getWorldPoint(ropeJoint.getLocalAnchorA());
   }
 }

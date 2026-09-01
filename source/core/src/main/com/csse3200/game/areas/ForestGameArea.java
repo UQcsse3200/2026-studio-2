@@ -79,6 +79,7 @@ public class ForestGameArea extends GameArea {
 
     spawnTerrain();
     spawnTrees();
+    spawnPlatforms();
     player = spawnPlayer();
     spawnTestFloor();
     spawnTestCeiling();
@@ -134,6 +135,12 @@ public class ForestGameArea extends GameArea {
       Entity tree = ObstacleFactory.createTree();
       spawnEntityAt(tree, randomPos, true, false);
     }
+  }
+
+  private void spawnPlatforms() {
+    GridPoint2 platformPos = new GridPoint2(10, 7);
+    Entity platform = ObstacleFactory.createPlatform(0);
+    spawnEntityAt(platform, platformPos, true, false);
   }
 
   private Entity spawnPlayer() {
