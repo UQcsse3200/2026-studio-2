@@ -1,6 +1,7 @@
 package com.csse3200.game.entities;
 
 import com.badlogic.gdx.utils.Array;
+import com.csse3200.game.services.ServiceLocator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -89,15 +90,22 @@ public class EntityService {
     }
   }
 
-  public void setPaused(boolean newPaused) {
-    paused = newPaused;
+
+  public void setPaused(boolean newPauseState) {
+    paused = newPauseState;
+      updatePhysicsPauseState();
   }
 
   public void togglePaused() {
     paused = !paused;
+    updatePhysicsPauseState();
   }
 
   public boolean getPaused() {
     return paused;
+  }
+
+  void updatePhysicsPauseState() {
+      ServiceLocator.getPhysicsService().getPhysics().setPaused(paused);
   }
 }
