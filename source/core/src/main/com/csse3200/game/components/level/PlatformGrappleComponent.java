@@ -87,9 +87,9 @@ public class PlatformGrappleComponent extends Component {
 
     if (min.x <= raycastEnd.x && raycastEnd.x <= max.x) {
       if (Math.abs(min.y - raycastEnd.y) <= floatLenience) {
-        return TOP_SIDE;
-      } else if (Math.abs(max.y - raycastEnd.y) <= floatLenience) {
         return BOTTOM_SIDE;
+      } else if (Math.abs(max.y - raycastEnd.y) <= floatLenience) {
+        return TOP_SIDE;
       }
     }
 
