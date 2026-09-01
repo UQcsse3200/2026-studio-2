@@ -15,12 +15,10 @@ public class EnemyDeathComponent extends Component {
 
     // Handle enemy death
     if (enemyHealth <= 0) {
-      ServiceLocator.getEntityService()
-          .scheduleRemoval(entity); // TBD .scheduleForDisposal instead?
+      ServiceLocator.getEntityService().scheduleRemoval(entity);
     }
   }
 
-  // define dispose() behaviour
   // @Override ...  super.dispose();
   // dispose of event listener?
 }

@@ -1,49 +1,49 @@
-/*
 package com.csse3200.game.components;
 
-import static org.mockito.mockito.donothing;
-import static org.mockito.mockito.spy;
-import static org.mockito.mockito.times;
-import static org.mockito.mockito.verify;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
-import com.csse3200.game.entities.entity;
-import com.csse3200.game.extensions.gameextension;
-import org.junit.jupiter.api.extension.extendwith;
-import org.junit.jupiter.api.test;
+import com.csse3200.game.entities.Entity;
+import com.csse3200.game.entities.EntityService;
+import com.csse3200.game.extensions.GameExtension;
+import com.csse3200.game.services.ServiceLocator;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
-@extendwith(gameextension.class)
+@ExtendWith(GameExtension.class)
 class enemydeathcomponenttest {
 
-  @test
-  void shoulddisposeentityatzerohealth() {
-    entity entity = spy(entity.class);
-    donothing().when(entity).dispose();
+  @Test
+  void shouldDisposeEnemyAtZeroHealth() {
+    EntityService entityService = spy(new EntityService());
+    ServiceLocator.registerEntityService(entityService);
+    Entity enemy = new Entity();
 
-    combatstatscomponent combatstats = new combatstatscomponent(100, 10);
+    CombatStatsComponent combatStats = new CombatStatsComponent(100, 10);
+    enemy.addComponent(combatStats);
+    enemy.addComponent(new EnemyDeathComponent());
+    enemy.create();
 
-    entity.addcomponent(combatstats);
-    entity.addcomponent(new enemydeathcomponent());
-    entity.create();
+    combatStats.setHealth(0);
 
-    combatstats.sethealth(0);
-
-    verify(entity).dispose();
+    verify(entityService).scheduleRemoval(enemy);
   }
 
-  @test
-  void shouldnotdisposeentityatpositivehealth() {
-    entity entity = spy(entity.class);
-    donothing().when(entity).dispose();
+  @Test
+  void shouldNotDisposeEnemyAtPositiveHealth() {
+    EntityService entityService = spy(new EntityService());
+    ServiceLocator.registerEntityService(entityService);
+    Entity enemy = new Entity();
 
-    combatstatscomponent combatstats = new combatstatscomponent(100, 10);
+    CombatStatsComponent combatStats = new CombatStatsComponent(100, 10);
 
-    entity.addcomponent(combatstats);
-    entity.addcomponent(new enemydeathcomponent());
-    entity.create();
+    enemy.addComponent(combatStats);
+    enemy.addComponent(new EnemyDeathComponent());
+    enemy.create();
 
-    combatstats.sethealth(50);
+    combatStats.setHealth(50);
 
-    verify(entity, times(0)).dispose();
+    verify(entityService, times(0)).scheduleRemoval(enemy);
   }
 }
- */
