@@ -395,6 +395,8 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/player/PlayerActions.html#create()" class="member-name-link">create()</a> - Method in class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/PlayerActions.html" title="class in com.csse3200.game.components.player">PlayerActions</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/player/PlayerAnimationController.html#create()" class="member-name-link">create()</a> - Method in class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/PlayerAnimationController.html" title="class in com.csse3200.game.components.player">PlayerAnimationController</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/player/PlayerAttackComponent.html#create()" class="member-name-link">create()</a> - Method in class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/PlayerAttackComponent.html" title="class in com.csse3200.game.components.player">PlayerAttackComponent</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/player/PlayerStatsDisplay.html#create()" class="member-name-link">create()</a> - Method in class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/PlayerStatsDisplay.html" title="class in com.csse3200.game.components.player">PlayerStatsDisplay</a></dt>
@@ -1248,6 +1250,10 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Has the playing animation finished? This will always be false for looping animations.</div>
 </dd>
+<dt><a href="com/csse3200/game/rendering/AnimationRenderComponent.html#isFlipX()" class="member-name-link">isFlipX()</a> - Method in class com.csse3200.game.rendering.<a href="com/csse3200/game/rendering/AnimationRenderComponent.html" title="class in com.csse3200.game.rendering">AnimationRenderComponent</a></dt>
+<dd>
+<div class="block">Whether the animation is currently being drawn flipped horizontally.</div>
+</dd>
 <dt><a href="com/csse3200/game/areas/terrain/TerrainComponent.TerrainOrientation.html#ISOMETRIC" class="member-name-link">ISOMETRIC</a> - Enum constant in enum class com.csse3200.game.areas.terrain.<a href="com/csse3200/game/areas/terrain/TerrainComponent.TerrainOrientation.html" title="enum class in com.csse3200.game.areas.terrain">TerrainComponent.TerrainOrientation</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/ui/terminal/Terminal.html#isOpen()" class="member-name-link">isOpen()</a> - Method in class com.csse3200.game.ui.terminal.<a href="com/csse3200/game/ui/terminal/Terminal.html" title="class in com.csse3200.game.ui.terminal">Terminal</a></dt>
@@ -1657,6 +1663,13 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="com/csse3200/game/components/player/PlayerActions.html#%3Cinit%3E()" class="member-name-link">PlayerActions()</a> - Constructor for class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/PlayerActions.html" title="class in com.csse3200.game.components.player">PlayerActions</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/player/PlayerAnimationController.html" class="type-name-link" title="class in com.csse3200.game.components.player">PlayerAnimationController</a> - Class in <a href="com/csse3200/game/components/player/package-summary.html">com.csse3200.game.components.player</a></dt>
+<dd>
+<div class="block">This class listens to events relevant to the player's movement state and plays the corresponding
+ animation when one of the events is triggered.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/player/PlayerAnimationController.html#%3Cinit%3E()" class="member-name-link">PlayerAnimationController()</a> - Constructor for class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/PlayerAnimationController.html" title="class in com.csse3200.game.components.player">PlayerAnimationController</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/player/PlayerAttackComponent.html" class="type-name-link" title="class in com.csse3200.game.components.player">PlayerAttackComponent</a> - Class in <a href="com/csse3200/game/components/player/package-summary.html">com.csse3200.game.components.player</a></dt>
 <dd>
 <div class="block">Routes generic player attack events to the currently active attack behaviour.</div>
@@ -1986,6 +1999,10 @@ loadScripts(document, 'script');</script>
 <dt><a href="com/csse3200/game/components/Component.html#setEntity(com.csse3200.game.entities.Entity)" class="member-name-link">setEntity(Entity)</a> - Method in class com.csse3200.game.components.<a href="com/csse3200/game/components/Component.html" title="class in com.csse3200.game.components">Component</a></dt>
 <dd>
 <div class="block">Set the entity to which this component belongs.</div>
+</dd>
+<dt><a href="com/csse3200/game/rendering/AnimationRenderComponent.html#setFlipX(boolean)" class="member-name-link">setFlipX(boolean)</a> - Method in class com.csse3200.game.rendering.<a href="com/csse3200/game/rendering/AnimationRenderComponent.html" title="class in com.csse3200.game.rendering">AnimationRenderComponent</a></dt>
+<dd>
+<div class="block">Flip the rendered animation horizontally, e.g.</div>
 </dd>
 <dt><a href="com/csse3200/game/physics/components/ColliderComponent.html#setFriction(float)" class="member-name-link">setFriction(float)</a> - Method in class com.csse3200.game.physics.components.<a href="com/csse3200/game/physics/components/ColliderComponent.html" title="class in com.csse3200.game.physics.components">ColliderComponent</a></dt>
 <dd>
@@ -2482,6 +2499,8 @@ loadScripts(document, 'script');</script>
 <div class="block">Called once per frame of the game, and should be used for most component logic.</div>
 </dd>
 <dt><a href="com/csse3200/game/components/player/PlayerActions.html#update()" class="member-name-link">update()</a> - Method in class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/PlayerActions.html" title="class in com.csse3200.game.components.player">PlayerActions</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/player/PlayerAnimationController.html#update()" class="member-name-link">update()</a> - Method in class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/PlayerAnimationController.html" title="class in com.csse3200.game.components.player">PlayerAnimationController</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/projectile/ArrowProjectileComponent.html#update()" class="member-name-link">update()</a> - Method in class com.csse3200.game.components.projectile.<a href="com/csse3200/game/components/projectile/ArrowProjectileComponent.html" title="class in com.csse3200.game.components.projectile">ArrowProjectileComponent</a></dt>
 <dd>&nbsp;</dd>
