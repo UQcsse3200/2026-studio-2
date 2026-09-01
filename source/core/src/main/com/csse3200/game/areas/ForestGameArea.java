@@ -9,6 +9,7 @@ import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.components.gamearea.GameAreaDisplay;
 import com.csse3200.game.components.player.KeyboardPlayerInputComponent;
 import com.csse3200.game.entities.Entity;
+import com.csse3200.game.entities.factories.EnemyFactory;
 import com.csse3200.game.entities.factories.ItemFactory;
 import com.csse3200.game.entities.factories.NPCFactory;
 import com.csse3200.game.entities.factories.ObstacleFactory;
@@ -40,9 +41,12 @@ public class ForestGameArea extends GameArea {
   private static final float WALL_WIDTH = 0.1f;
   private static final String[] forestTextures = {
     "images/box_boy_leaf.png",
-    "images/heart.png",
     "images/tree.png",
+    "images/heart.png",
     "images/ghost_king.png",
+    "images/skeleton_warrior.png",
+    "images/skeleton_archer.png",
+    "images/arrow.png",
     "images/ghost_1.png",
     "images/grass_1.png",
     "images/grass_2.png",
@@ -54,7 +58,6 @@ public class ForestGameArea extends GameArea {
     "images/iso_grass_1.png",
     "images/iso_grass_2.png",
     "images/iso_grass_3.png",
-    "images/arrow.png",
     "images/rope_arrow.png",
     "images/fire_arrow.png",
     "images/cold_arrow.png"
@@ -94,15 +97,18 @@ public class ForestGameArea extends GameArea {
 
     spawnTerrain();
     spawnTrees();
+    spawnPlatforms();
     player = spawnPlayer();
+    spawnSkeletonWarrior();
+    spawnSkeletonArcher();
     spawnItems();
     spawnTestFloor();
     spawnTestCeiling();
-    spawnGhosts();
+    // spawnGhosts();
 
-    spawnGhostKing();
+    // spawnGhostKing();
 
-    //playMusic();
+    // playMusic();
   }
 
   private void displayUI() {
@@ -152,6 +158,12 @@ public class ForestGameArea extends GameArea {
     }
   }
 
+  private void spawnPlatforms() {
+    GridPoint2 platformPos = new GridPoint2(10, 7);
+    Entity platform = ObstacleFactory.createPlatform(0);
+    spawnEntityAt(platform, platformPos, true, false);
+  }
+
   private Entity spawnPlayer() {
     Entity newPlayer = PlayerFactory.createPlayer();
     KeyboardPlayerInputComponent input = newPlayer.getComponent(KeyboardPlayerInputComponent.class);
@@ -198,6 +210,23 @@ public class ForestGameArea extends GameArea {
       Entity ghost = NPCFactory.createGhost(player);
       spawnEntityAt(ghost, randomPos, true, true);
     }
+  }
+
+  private void spawnSkeletonWarrior() {
+    GridPoint2 minPos = new GridPoint2(0, 0);
+    GridPoint2 maxPos = terrain.getMapBounds(0).sub(2, 2);
+
+    Entity skeletonWarrior = EnemyFactory.createSkeletonWarrior(player);
+    spawnEntityAt(skeletonWarrior, new GridPoint2(5, 16), true, true);
+  }
+
+  private void spawnSkeletonArcher() {
+    GridPoint2 minPos = new GridPoint2(0, 0);
+    GridPoint2 maxPos = terrain.getMapBounds(0).sub(2, 2);
+
+    Entity skeletonArcher = EnemyFactory.createSkeletonArcher(player);
+
+    spawnEntityAt(skeletonArcher, new GridPoint2(5, 16), true, true);
   }
 
   private void spawnGhostKing() {
