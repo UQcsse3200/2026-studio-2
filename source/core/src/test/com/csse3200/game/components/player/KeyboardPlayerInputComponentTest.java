@@ -26,4 +26,45 @@ class KeyboardPlayerInputComponentTest {
 
     assertEquals(8, selectedSlot[0]);
   }
+
+  // ---------
+  // Selection wheel keys
+  // ---------
+
+  @Test
+  void shouldOpenWeaponWheelOnTab() {
+    KeyboardPlayerInputComponent input = new KeyboardPlayerInputComponent();
+    Entity player = new Entity().addComponent(input);
+    WheelType[] opened = {null};
+    player.getEvents().addListener("openWheel", (WheelType wheel) -> opened[0] = wheel);
+
+    assertTrue(input.keyDown(Keys.TAB));
+
+    assertEquals(WheelType.WEAPON, opened[0]);
+  }
+
+  @Test
+  void shouldOpenConsumableWheelOnC() {
+    KeyboardPlayerInputComponent input = new KeyboardPlayerInputComponent();
+    Entity player = new Entity().addComponent(input);
+    WheelType[] opened = {null};
+    player.getEvents().addListener("openWheel", (WheelType wheel) -> opened[0] = wheel);
+
+    assertTrue(input.keyDown(Keys.C));
+
+    assertEquals(WheelType.CONSUMABLE, opened[0]);
+  }
+
+  @Test
+  void shouldCloseWheelOnKeyRelease() {
+    KeyboardPlayerInputComponent input = new KeyboardPlayerInputComponent();
+    Entity player = new Entity().addComponent(input);
+    int[] closes = {0};
+    player.getEvents().addListener("closeWheel", () -> closes[0]++);
+
+    assertTrue(input.keyUp(Keys.TAB));
+    assertTrue(input.keyUp(Keys.C));
+
+    assertEquals(2, closes[0]);
+  }
 }

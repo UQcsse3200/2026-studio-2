@@ -1,5 +1,6 @@
 package com.csse3200.game.components.player;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.math.Vector2;
@@ -91,6 +92,12 @@ public class KeyboardPlayerInputComponent extends InputComponent {
       case Keys.COMMA:
         entity.getEvents().trigger("switchItem", -1);
         return true;
+      case Keys.TAB:
+        entity.getEvents().trigger("openWheel", WheelType.WEAPON);
+        return true;
+      case Keys.C:
+        entity.getEvents().trigger("openWheel", WheelType.CONSUMABLE);
+        return true;
       default:
         return false;
     }
@@ -121,9 +128,36 @@ public class KeyboardPlayerInputComponent extends InputComponent {
         walkDirection.sub(Vector2Utils.RIGHT);
         triggerWalkEvent();
         return true;
+      case Keys.TAB:
+      case Keys.C:
+        entity.getEvents().trigger("closeWheel");
+        return true;
       default:
         return false;
     }
+  }
+
+  /**
+   * Reports where the pointer sits relative to the centre of the screen, which is where a selection
+   * wheel is drawn. The wheel ignores this while it is closed.
+   *
+   * @return whether the input was processed
+   * @see InputProcessor#mouseMoved(int, int)
+   */
+  @Override
+  public boolean mouseMoved(int screenX, int screenY) {
+    if (Gdx.graphics == null) {
+      return false;
+    }
+
+    float centreX = Gdx.graphics.getWidth() / 2f;
+    float centreY = Gdx.graphics.getHeight() / 2f;
+    // Screen y grows downwards, so flip it to get a direction with y pointing up.
+    Vector2 offsetFromCentre = new Vector2(screenX - centreX, centreY - screenY);
+    entity.getEvents().trigger("wheelPointerMoved", offsetFromCentre);
+
+    // Reported, not consumed, so other handlers still see the movement.
+    return false;
   }
 
   private void triggerWalkEvent() {

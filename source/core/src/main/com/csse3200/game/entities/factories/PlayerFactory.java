@@ -8,6 +8,7 @@ import com.csse3200.game.components.player.ItemUseComponent;
 import com.csse3200.game.components.player.PlayerActions;
 import com.csse3200.game.components.player.PlayerInteractionComponent;
 import com.csse3200.game.components.player.PlayerStatsDisplay;
+import com.csse3200.game.components.player.SelectionWheelComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.PlayerConfig;
 import com.csse3200.game.files.FileLoader;
@@ -52,6 +53,7 @@ public class PlayerFactory {
             .addComponent(new BackpackDisplay())
             .addComponent(new PlayerInteractionComponent())
             .addComponent(new ItemUseComponent())
+            .addComponent(new SelectionWheelComponent())
             .addComponent(inputComponent)
             .addComponent(new PlayerStatsDisplay());
 
