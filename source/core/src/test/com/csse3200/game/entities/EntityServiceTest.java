@@ -6,6 +6,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import com.csse3200.game.extensions.GameExtension;
+import com.csse3200.game.services.ServiceLocator;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -51,16 +52,19 @@ class EntityServiceTest {
   }
 
   @Test
-  void shouldUpdatePauseState() {
+  void shouldSafelyRemoveScheduledEntityAfterUpdate() {
     EntityService entityService = new EntityService();
-    assert (!entityService.getPaused());
-    entityService.setPaused(true);
-    assert (entityService.getPaused());
-    entityService.setPaused(false);
-    assert (!entityService.getPaused());
-    entityService.togglePaused();
-    assert (entityService.getPaused());
-    entityService.togglePaused();
-    assert (!entityService.getPaused());
+    ServiceLocator.registerEntityService(entityService);
+    Entity removedEntity = spy(Entity.class);
+    Entity remainingEntity = spy(Entity.class);
+    entityService.register(removedEntity);
+    entityService.register(remainingEntity);
+
+    entityService.scheduleRemoval(removedEntity);
+    entityService.update();
+
+    verify(removedEntity).dispose();
+    verify(remainingEntity).earlyUpdate();
+    verify(remainingEntity).update();
   }
 }
