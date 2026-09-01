@@ -104,7 +104,7 @@ public class KeyboardPlayerInputComponent extends InputComponent {
    */
   @Override
   public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-    if (button != Buttons.LEFT) {
+    if (button != Buttons.RIGHT) {
       return false;
     }
     Vector2 aimDirection = getAimDirection(screenX, screenY);
@@ -125,7 +125,7 @@ public class KeyboardPlayerInputComponent extends InputComponent {
    */
   @Override
   public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-    if (button != Buttons.LEFT) {
+    if (button != Buttons.RIGHT) {
       return false;
     }
     entity.getEvents().trigger("stopShoot", getAimDirection(screenX, screenY));

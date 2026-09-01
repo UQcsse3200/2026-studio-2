@@ -59,12 +59,12 @@ class KeyboardPlayerInputComponentTest {
               direction.set(aimDirection);
             });
 
-    assertTrue(component.touchDown(4, 2, 0, Buttons.LEFT));
+    assertTrue(component.touchDown(4, 2, 0, Buttons.RIGHT));
     assertEquals(1, shots.get());
     assertTrue(direction.get().epsilonEquals(new Vector2(9.5f, 4.5f)));
 
-    assertTrue(component.touchUp(4, 2, 0, Buttons.LEFT));
-    assertTrue(component.touchDown(4, 2, 0, Buttons.LEFT));
+    assertTrue(component.touchUp(4, 2, 0, Buttons.RIGHT));
+    assertTrue(component.touchDown(4, 2, 0, Buttons.RIGHT));
     assertEquals(2, shots.get());
   }
 
@@ -86,7 +86,7 @@ class KeyboardPlayerInputComponentTest {
               stopDirection.set(aimDirection);
             });
 
-    assertTrue(component.touchUp(4, 2, 0, Buttons.LEFT));
+    assertTrue(component.touchUp(4, 2, 0, Buttons.RIGHT));
     assertEquals(1, stops.get());
     assertTrue(stopDirection.get().epsilonEquals(new Vector2(9.5f, 4.5f)));
   }
@@ -98,7 +98,7 @@ class KeyboardPlayerInputComponentTest {
     AtomicInteger shots = new AtomicInteger();
     player.getEvents().addListener("shoot", (Vector2 ignored) -> shots.incrementAndGet());
 
-    assertFalse(component.touchDown(4, 2, 0, Buttons.LEFT));
+    assertFalse(component.touchDown(4, 2, 0, Buttons.RIGHT));
     assertEquals(0, shots.get());
   }
 
@@ -145,8 +145,8 @@ class KeyboardPlayerInputComponentTest {
     AtomicReference<Vector2> direction = new AtomicReference<>();
     player.getEvents().addListener("shoot", (Vector2 aim) -> direction.set(aim));
 
-    assertFalse(component.touchDown(4, 2, 0, Buttons.RIGHT));
-    assertTrue(component.touchDown(4, 2, 0, Buttons.LEFT));
+    assertFalse(component.touchDown(4, 2, 0, Buttons.LEFT));
+    assertTrue(component.touchDown(4, 2, 0, Buttons.RIGHT));
     assertTrue(direction.get().epsilonEquals(new Vector2(9.5f, 4.5f)));
   }
 }
