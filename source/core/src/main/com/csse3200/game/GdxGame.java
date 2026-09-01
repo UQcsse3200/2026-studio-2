@@ -1,3 +1,4 @@
+
 package com.csse3200.game;
 
 import static com.badlogic.gdx.Gdx.app;
@@ -10,6 +11,7 @@ import com.csse3200.game.screens.MainGameScreen;
 import com.csse3200.game.screens.MainMenuScreen;
 import com.csse3200.game.screens.SettingsScreen;
 import com.csse3200.game.screens.minigames.MinigameSelectScreen;
+import com.csse3200.game.screens.minigames.BlackjackScreen;
 import com.csse3200.game.screens.minigames.spinthewheel.SpinTheWheelScreen;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -78,6 +80,8 @@ public class GdxGame extends Game {
         return new MinigameSelectScreen(this);
       case MINIGAME_SPIN_THE_WHEEL:
         return new SpinTheWheelScreen(this);
+      case MINIGAME_BLACKJACK:
+        return new BlackjackScreen(this);
       default:
         return null;
     }
@@ -88,7 +92,8 @@ public class GdxGame extends Game {
     MAIN_GAME,
     SETTINGS,
     MINIGAME_SELECT,
-    MINIGAME_SPIN_THE_WHEEL
+    MINIGAME_SPIN_THE_WHEEL,
+    MINIGAME_BLACKJACK
   }
 
   /** Exit the game. */
