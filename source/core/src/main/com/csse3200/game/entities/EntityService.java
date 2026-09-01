@@ -17,6 +17,7 @@ public class EntityService {
   private static final int INITIAL_CAPACITY = 16;
 
   private final Array<Entity> entities = new Array<>(false, INITIAL_CAPACITY);
+  private final Array<Entity> entitiesToDispose = new Array<>();
   private final Array<Entity> pendingRemoval = new Array<>(false, INITIAL_CAPACITY);
 
   private boolean paused;
@@ -59,6 +60,17 @@ public class EntityService {
     pendingRemoval.add(entity);
   }
 
+  /**
+   * Schedules an entity to be disposed after the current update cycle.
+   *
+   * @param entity entity to dispose
+   */
+  public void scheduleForDisposal(Entity entity) {
+    if (!entitiesToDispose.contains(entity, true)) {
+      entitiesToDispose.add(entity);
+    }
+  }
+
   /** Update all registered entities. Should only be called from the main game loop. */
   public void update() {
     if (!paused) {
@@ -67,6 +79,10 @@ public class EntityService {
         entity.update();
       }
     }
+    for (Entity entity : entitiesToDispose) {
+      entity.dispose();
+    }
+    entitiesToDispose.clear();
     removeScheduledEntities();
   }
 
@@ -78,6 +94,11 @@ public class EntityService {
     for (Entity entity : existingEntities) {
       entity.dispose();
     }
+  }
+
+  /** Getter function for a snapshot (shallow copy) of currently registered entities * */
+  public Array<Entity> getEntities() {
+    return new Array<>(entities);
   }
 
   private void removeScheduledEntities() {
