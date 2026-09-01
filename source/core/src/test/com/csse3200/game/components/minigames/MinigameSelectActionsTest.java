@@ -25,6 +25,16 @@ class MinigameSelectActionsTest {
     verify(game).setScreen(GdxGame.ScreenType.MAIN_MENU);
   }
 
+  @Test
+  void shouldChangeScreenForCyclopsMinigameSelected() {
+    GdxGame game = mock(GdxGame.class);
+    Entity ui = new Entity().addComponent(new MinigameSelectActions(game));
+    ui.create();
+
+    ui.getEvents().trigger("selectMinigame", MinigameType.CYCLOPS_TIMING);
+    verify(game).setScreen(GdxGame.ScreenType.CYCLOPS_MINIGAME);
+  }
+
   /** Selecting spin the wheel swaps to its screen. */
   @Test
   void shouldOpenSpinTheWheelOnSelect() {
