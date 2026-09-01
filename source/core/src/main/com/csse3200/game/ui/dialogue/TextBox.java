@@ -31,6 +31,7 @@ public class TextBox extends Component {
     textBoxDisplay.create();
   }
 
+  @Override
   public void dispose() {
     super.dispose();
   }
