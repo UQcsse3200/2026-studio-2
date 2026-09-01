@@ -2,7 +2,6 @@ package com.csse3200.game.components.minigames;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
 
 import com.csse3200.game.GdxGame;
 import com.csse3200.game.entities.Entity;
@@ -36,15 +35,15 @@ class MinigameSelectActionsTest {
     verify(game).setScreen(GdxGame.ScreenType.CYCLOPS_MINIGAME);
   }
 
-  /** If minigames are not playable yet, selecting one must not change screen. */
+  /** Selecting spin the wheel swaps to its screen. */
   @Test
-  void shouldNotChangeScreenForUnimplementedMinigame() {
+  void shouldOpenSpinTheWheelOnSelect() {
     GdxGame game = mock(GdxGame.class);
     Entity ui = new Entity().addComponent(new MinigameSelectActions(game));
     ui.create();
 
     ui.getEvents().trigger("selectMinigame", MinigameType.SPIN_THE_WHEEL);
 
-    verifyNoInteractions(game);
+    verify(game).setScreen(GdxGame.ScreenType.MINIGAME_SPIN_THE_WHEEL);
   }
 }
