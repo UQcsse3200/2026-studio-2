@@ -104,15 +104,25 @@ public class KeyboardPlayerInputComponent extends InputComponent {
    */
   @Override
   public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-    if (button != Buttons.LEFT) {
-      return false;
+    if (button == Buttons.LEFT) {
+      Vector2 aimDirection = getAimDirection(screenX, screenY);
+      if (aimDirection == null || aimDirection.isZero()) {
+        return false;
+      }
+      entity.getEvents().trigger("melee", aimDirection);
+      return true;
     }
-    Vector2 aimDirection = getAimDirection(screenX, screenY);
-    if (aimDirection == null || aimDirection.isZero()) {
-      return false;
+
+    if (button == Buttons.RIGHT) {
+      Vector2 aimDirection = getAimDirection(screenX, screenY);
+      if (aimDirection == null || aimDirection.isZero()) {
+        return false;
+      }
+      entity.getEvents().trigger("shoot", aimDirection);
+      return true;
     }
-    entity.getEvents().trigger("shoot", aimDirection);
-    return true;
+
+    return false;
   }
 
   /**
@@ -123,11 +133,17 @@ public class KeyboardPlayerInputComponent extends InputComponent {
    */
   @Override
   public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-    if (button != Buttons.LEFT) {
-      return false;
+    if (button == Buttons.LEFT) {
+      entity.getEvents().trigger("stopMelee");
+      return true;
     }
-    entity.getEvents().trigger("stopShoot");
-    return true;
+
+    if (button == Buttons.RIGHT) {
+      entity.getEvents().trigger("stopShoot");
+      return true;
+    }
+
+    return false;
   }
 
   private void triggerSprintEvent() {
