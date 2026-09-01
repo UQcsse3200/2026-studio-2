@@ -96,7 +96,6 @@ public class GdxGame extends Game {
     SETTINGS_FROM_PAUSE,
     MINIGAME_SELECT,
     CYCLOPS_MINIGAME,
-    MINIGAME_SELECT,
     MINIGAME_SPIN_THE_WHEEL
   }
 
