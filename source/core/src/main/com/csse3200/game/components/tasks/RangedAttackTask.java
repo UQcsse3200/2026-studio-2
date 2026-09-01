@@ -3,7 +3,7 @@ package com.csse3200.game.components.tasks;
 import com.csse3200.game.ai.tasks.DefaultTask;
 import com.csse3200.game.ai.tasks.PriorityTask;
 import com.csse3200.game.entities.Entity;
-import com.csse3200.game.entities.factories.ProjectileFactory;
+import com.csse3200.game.entities.factories.ProjectileFact;
 import com.csse3200.game.services.ServiceLocator;
 
 /**
@@ -79,7 +79,7 @@ public class RangedAttackTask extends DefaultTask implements PriorityTask {
     Entity enemy = owner.getEntity();
 
     Entity projectile =
-        ProjectileFactory.createEnemyProjectile(
+        ProjectileFact.createEnemyProjectile(
             target.getPosition(), damage, projectileSpeed, projectileLifetime);
 
     projectile.setPosition(enemy.getCenterPosition());
