@@ -5,9 +5,7 @@ import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.services.ServiceLocator;
 
-/**
- * Controls the lifetime and disposal behaviour of a projectile.
- */
+/** Controls the lifetime and disposal behaviour of a projectile. */
 public class ProjectileComponent extends Component {
   private float remainingLifetime;
   private HitboxComponent hitboxComponent;
@@ -47,8 +45,7 @@ public class ProjectileComponent extends Component {
       return;
     }
 
-    if (!PhysicsLayer.contains(
-        PhysicsLayer.PLAYER, other.getFilterData().categoryBits)) {
+    if (!PhysicsLayer.contains(PhysicsLayer.PLAYER, other.getFilterData().categoryBits)) {
       return;
     }
 
