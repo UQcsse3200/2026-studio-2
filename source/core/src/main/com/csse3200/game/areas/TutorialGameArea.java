@@ -38,31 +38,32 @@ public class TutorialGameArea extends GameArea {
     new PlatformConfig(new GridPoint2(27, 3), 3, 1, 0),
     new PlatformConfig(new GridPoint2(32, 4), 2, 2, 1),
     new PlatformConfig(new GridPoint2(30, 7), 3, 1, 0),
-    new PlatformConfig(new GridPoint2(27, 9), 3, 1, 0),
-    new PlatformConfig(new GridPoint2(23, 11), 3, 1, 0),
+    new PlatformConfig(new GridPoint2(27, 9), 3, 1, 10),
+    new PlatformConfig(new GridPoint2(23, 11), 3, 1, 2),
     new PlatformConfig(new GridPoint2(14, 11), 3, 1, 0),
     new PlatformConfig(new GridPoint2(9, 13), 3, 1, 0),
 
     // second half
-    new PlatformConfig(new GridPoint2(56, 22), 3, 1, 0),
-    new PlatformConfig(new GridPoint2(60, 23), 3, 1, 0),
-    new PlatformConfig(new GridPoint2(64, 22), 3, 1, 0),
+    new PlatformConfig(new GridPoint2(56, 22), 3, 1, 1),
+    new PlatformConfig(new GridPoint2(60, 23), 3, 1, 1),
+    new PlatformConfig(new GridPoint2(64, 22), 3, 1, 1),
   };
 
   private static final PlatformConfig[] floors = {
     // borders
     new PlatformConfig(new GridPoint2(0, 0), 100, 1, 0),
     new PlatformConfig(new GridPoint2(0, 22), 50, 5, 0),
-    new PlatformConfig(new GridPoint2(50, 25), 40, 5, 0),
-    new PlatformConfig(new GridPoint2(0, 0), 1, 30, 0),
-    new PlatformConfig(new GridPoint2(90, 0), 1, 30, 0),
+    new PlatformConfig(new GridPoint2(50, 25), 40, 5, 1),
+    new PlatformConfig(new GridPoint2(0, 0), 1, 30, 1),
+    new PlatformConfig(new GridPoint2(90, 0), 1, 30, 1),
 
     // first half
     new PlatformConfig(new GridPoint2(0, 0), 3, 3, 0),
-    new PlatformConfig(new GridPoint2(13, 0), 12, 5, 0),
-    new PlatformConfig(new GridPoint2(40, 0), 10, 17, 0),
-    new PlatformConfig(new GridPoint2(18, 15), 6, 2, 0),
-    new PlatformConfig(new GridPoint2(0, 13), 8, 3, 0),
+    new PlatformConfig(new GridPoint2(13, 0), 12, 5, 2),
+    new PlatformConfig(new GridPoint2(40, 0), 10, 15, 0),
+    new PlatformConfig(new GridPoint2(40, 15), 10, 2, 8),
+    new PlatformConfig(new GridPoint2(18, 15), 6, 2, 9),
+    new PlatformConfig(new GridPoint2(0, 13), 8, 3, 2),
     new PlatformConfig(new GridPoint2(0, 16), 1, 5, 0),
     new PlatformConfig(new GridPoint2(0, 21), 17, 1, 0),
     new PlatformConfig(new GridPoint2(28, 19), 4, 1, 0),
@@ -71,7 +72,7 @@ public class TutorialGameArea extends GameArea {
     // second half
     new PlatformConfig(new GridPoint2(53, 13), 3, 4, 0),
     new PlatformConfig(new GridPoint2(56, 15), 3, 1, 0),
-    new PlatformConfig(new GridPoint2(56, 16), 1, 3, 0),
+    new PlatformConfig(new GridPoint2(56, 16), 1, 3, 2),
     new PlatformConfig(new GridPoint2(53, 7), 3, 4, 0),
     new PlatformConfig(new GridPoint2(56, 10), 4, 1, 0),
     new PlatformConfig(new GridPoint2(63, 0), 1, 18, 0),
@@ -81,8 +82,8 @@ public class TutorialGameArea extends GameArea {
     new PlatformConfig(new GridPoint2(64, 15), 1, 1, 0),
     new PlatformConfig(new GridPoint2(68, 11), 1, 3, 0),
     new PlatformConfig(new GridPoint2(68, 11), 3, 1, 0),
-    new PlatformConfig(new GridPoint2(75, 15), 3, 1, 0),
-    new PlatformConfig(new GridPoint2(75, 12), 1, 3, 0),
+    new PlatformConfig(new GridPoint2(75, 15), 3, 1, 8),
+    new PlatformConfig(new GridPoint2(75, 12), 1, 3, 8),
     new PlatformConfig(new GridPoint2(78, 0), 13, 17, 0),
   };
 
@@ -140,8 +141,6 @@ public class TutorialGameArea extends GameArea {
 
   private final TerrainFactory terrainFactory;
   private final CameraComponent camera;
-
-  private Entity player;
 
   /**
    * Initialise this TutorialGameArea using the provided TerrainFactory and CameraComponent.
@@ -294,7 +293,7 @@ public class TutorialGameArea extends GameArea {
 
     Entity movingPlatform3 =
         ObstacleFactory.createMovingPlatform(
-            0, new Vector2(61, 2), new Vector2(61, 10), new Vector2(0, 3));
+            10, new Vector2(61, 2), new Vector2(61, 10), new Vector2(0, 3));
     spawnEntityAt(movingPlatform3, new GridPoint2(61, 10), false, false);
 
     Entity movingPlatform4 =
@@ -304,7 +303,7 @@ public class TutorialGameArea extends GameArea {
 
     Entity movingPlatform5 =
         ObstacleFactory.createMovingPlatform(
-            0, new Vector2(72, 2), new Vector2(72, 12), new Vector2(0, 3));
+            10, new Vector2(72, 2), new Vector2(72, 12), new Vector2(0, 3));
     spawnEntityAt(movingPlatform5, new GridPoint2(75, 2), false, false);
   }
 
@@ -322,7 +321,7 @@ public class TutorialGameArea extends GameArea {
   private void spawnFloors() {
 
     for (PlatformConfig config : floors) {
-      Entity platform = ObstacleFactory.createFloor();
+      Entity platform = ObstacleFactory.createFloor(config.grappleSides);
 
       platform.setScale(config.width, config.height);
 
@@ -350,6 +349,8 @@ public class TutorialGameArea extends GameArea {
   private Entity spawnPlayer() {
 
     Entity newPlayer = PlayerFactory.createPlayer();
+    newPlayer.getEvents().addListener("grappleRequested", this::checkSuccessfulGrapple);
+
     KeyboardPlayerInputComponent input = newPlayer.getComponent(KeyboardPlayerInputComponent.class);
     if (input != null) {
       input.setCameraComponent(cameraComponent);
