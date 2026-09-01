@@ -160,17 +160,13 @@ public class BlackjackDisplay extends UIComponent {
         cardImage = createCardImage(card);
       }
 
-      dealerCards.add(cardImage)
-          .size(CARD_WIDTH, CARD_HEIGHT)
-          .pad(5f);
+      dealerCards.add(cardImage).size(CARD_WIDTH, CARD_HEIGHT).pad(5f);
 
       dealerIndex++;
     }
 
     for (Blackjack.Card card : blackjack.getPlayerHand()) {
-      playerCards.add(createCardImage(card))
-          .size(CARD_WIDTH, CARD_HEIGHT)
-          .pad(5f);
+      playerCards.add(createCardImage(card)).size(CARD_WIDTH, CARD_HEIGHT).pad(5f);
     }
 
     dealerTotalLabel.setText(
@@ -183,20 +179,15 @@ public class BlackjackDisplay extends UIComponent {
             ? "Player total: -"
             : "Player total: " + blackjack.getPlayerTotal());
 
-    balanceLabel.setText(
-        "Balance: $" + blackjack.getBalance()
-            + "    Bet: $" + blackjack.getBet());
+    balanceLabel.setText("Balance: $" + blackjack.getBalance() + "    Bet: $" + blackjack.getBet());
 
     resultLabel.setText(blackjack.getResultMessage());
   }
 
   private Image createCardBackImage() {
-    Texture texture =
-        ServiceLocator.getResourceService().getAsset(CARD_BACK_PATH, Texture.class);
+    Texture texture = ServiceLocator.getResourceService().getAsset(CARD_BACK_PATH, Texture.class);
 
-    texture.setFilter(
-        Texture.TextureFilter.Nearest,
-        Texture.TextureFilter.Nearest);
+    texture.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
 
     return new Image(texture);
   }
@@ -250,19 +241,11 @@ public class BlackjackDisplay extends UIComponent {
 
     String suitName = card.getSuit().name().toLowerCase();
 
-    String texturePath =
-        CARD_PATH
-            + rankName
-            + "_"
-            + suitName
-            + ".png";
+    String texturePath = CARD_PATH + rankName + "_" + suitName + ".png";
 
-    Texture texture =
-        ServiceLocator.getResourceService().getAsset(texturePath, Texture.class);
+    Texture texture = ServiceLocator.getResourceService().getAsset(texturePath, Texture.class);
 
-    texture.setFilter(
-        Texture.TextureFilter.Nearest,
-        Texture.TextureFilter.Nearest);
+    texture.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
 
     return new Image(texture);
   }
@@ -281,9 +264,3 @@ public class BlackjackDisplay extends UIComponent {
     super.dispose();
   }
 }
-
-
-
-
-
-

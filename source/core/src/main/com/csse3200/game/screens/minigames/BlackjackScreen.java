@@ -3,8 +3,8 @@ package com.csse3200.game.screens.minigames;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.csse3200.game.GdxGame;
 import com.csse3200.game.components.minigames.blackjack.Blackjack;
-import com.csse3200.game.components.minigames.blackjack.BlackjackDisplay;
 import com.csse3200.game.components.minigames.blackjack.BlackjackActions;
+import com.csse3200.game.components.minigames.blackjack.BlackjackDisplay;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.input.InputDecorator;
 import com.csse3200.game.services.ServiceLocator;
@@ -88,8 +88,3 @@ public class BlackjackScreen extends MinigameScreen {
         .addComponent(new InputDecorator(stage, 10));
   }
 }
-
-
-
-
-

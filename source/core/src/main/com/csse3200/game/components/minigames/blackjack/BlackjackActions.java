@@ -5,9 +5,7 @@ import com.csse3200.game.components.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * Handles actions for the Blackjack screen.
- */
+/** Handles actions for the Blackjack screen. */
 public class BlackjackActions extends Component {
   private static final Logger logger = LoggerFactory.getLogger(BlackjackActions.class);
   private final GdxGame game;

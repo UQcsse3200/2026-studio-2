@@ -12,7 +12,7 @@ public class BlankTransitionScreen extends UIComponent {
   private static final float Z_INDEX = 4;
 
   private Texture texture;
-    private Image blackScreen;
+  private Image blackScreen;
 
   public boolean isVisible() {
     return blackScreen.isVisible();
@@ -31,7 +31,7 @@ public class BlankTransitionScreen extends UIComponent {
     pixmap.fill();
 
     texture = new Texture(pixmap);
-      TextureRegion textureRegion = new TextureRegion(texture);
+    TextureRegion textureRegion = new TextureRegion(texture);
     pixmap.dispose();
 
     blackScreen = new Image(textureRegion);

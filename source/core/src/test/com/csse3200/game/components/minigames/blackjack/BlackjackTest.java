@@ -67,10 +67,11 @@ class BlackjackTest {
   void testScoreCalculationWithAces() {
     Blackjack game = new Blackjack(100, new Random(1));
 
-    List<Blackjack.Card> hand = List.of(
-        new Blackjack.Card(Blackjack.Suit.HEARTS, Blackjack.Rank.ACE),
-        new Blackjack.Card(Blackjack.Suit.CLUBS, Blackjack.Rank.NINE),
-        new Blackjack.Card(Blackjack.Suit.DIAMONDS, Blackjack.Rank.ACE));
+    List<Blackjack.Card> hand =
+        List.of(
+            new Blackjack.Card(Blackjack.Suit.HEARTS, Blackjack.Rank.ACE),
+            new Blackjack.Card(Blackjack.Suit.CLUBS, Blackjack.Rank.NINE),
+            new Blackjack.Card(Blackjack.Suit.DIAMONDS, Blackjack.Rank.ACE));
 
     assertEquals(21, game.calculateHandValue(hand));
   }

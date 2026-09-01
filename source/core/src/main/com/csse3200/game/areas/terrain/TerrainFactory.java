@@ -93,7 +93,7 @@ public class TerrainFactory {
     }
   }
 
-private TerrainComponent createCyclopsRoomTerrain(float tileWorldSize, TextureRegion tile) {
+  private TerrainComponent createCyclopsRoomTerrain(float tileWorldSize, TextureRegion tile) {
     GridPoint2 tilePixelSize = new GridPoint2(tile.getRegionWidth(), tile.getRegionHeight());
     TiledMap tiledMap = createCyclopRoomTiles(tilePixelSize, tile);
     TiledMapRenderer renderer = createRenderer(tiledMap, tileWorldSize / tilePixelSize.x);

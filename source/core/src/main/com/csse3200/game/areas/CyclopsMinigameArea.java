@@ -33,7 +33,7 @@ public class CyclopsMinigameArea extends GameArea {
 
   private final TerrainFactory terrainFactory;
 
-    private Entity player;
+  private Entity player;
 
   private static final int NUM_STATUES = 3;
   private int statueYLevel;
@@ -71,16 +71,16 @@ public class CyclopsMinigameArea extends GameArea {
    * statue gap locations.
    */
   private void setupTimingMinigame() {
-      /* Timing Minigame Components */
-      TimingBarLogic timingBarLogic = new TimingBarLogic(20f);
-      TimingBarDisplay timingBarDisplay = new TimingBarDisplay(timingBarLogic);
+    /* Timing Minigame Components */
+    TimingBarLogic timingBarLogic = new TimingBarLogic(20f);
+    TimingBarDisplay timingBarDisplay = new TimingBarDisplay(timingBarLogic);
     cyclopsMinigameLogic =
         new CyclopsMinigameLogic(timingBarLogic, timingBarDisplay, terrain, player);
     cyclopsMinigameLogic.setWinLocation(winLocation);
     cyclopsMinigameLogic.setSafeLocations(statueLocations);
     cyclopsMinigameLogic.setLossLocations(statueGapLocations);
 
-      Entity timingMinigameEntity = new Entity();
+    Entity timingMinigameEntity = new Entity();
     timingMinigameEntity.addComponent(timingBarDisplay);
     timingMinigameEntity.addComponent(cyclopsMinigameLogic);
     spawnEntity(timingMinigameEntity);

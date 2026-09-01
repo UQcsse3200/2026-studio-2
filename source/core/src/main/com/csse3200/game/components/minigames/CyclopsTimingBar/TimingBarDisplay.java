@@ -27,8 +27,8 @@ public class TimingBarDisplay extends UIComponent {
   private final TimingBarLogic logic;
   private Texture blankTexture;
 
-    private Group group;
-    private Image marker;
+  private Group group;
+  private Image marker;
 
   private boolean visible = false;
 
@@ -73,13 +73,13 @@ public class TimingBarDisplay extends UIComponent {
     pixmap.fill();
 
     blankTexture = new Texture(pixmap);
-      TextureRegion blankRegion = new TextureRegion(blankTexture);
+    TextureRegion blankRegion = new TextureRegion(blankTexture);
     pixmap.dispose();
 
     group = new Group();
 
     logger.info("loading timing bar background");
-      Image barBackground = new Image(blankRegion);
+    Image barBackground = new Image(blankRegion);
     barBackground.setColor(Color.DARK_GRAY);
     barBackground.setPosition(location_x, location_y);
     barBackground.setSize(BAR_WIDTH, BAR_HEIGHT);
@@ -87,7 +87,7 @@ public class TimingBarDisplay extends UIComponent {
     logger.info("created timing bar background at (X: {}, Y: {})", location_x, location_y);
 
     logger.info("loading timing bar scoring zone");
-      Image scoreZone = new Image(blankRegion);
+    Image scoreZone = new Image(blankRegion);
     scoreZone.setColor(Color.GREEN);
     scoreZone.setPosition(
         location_x + (BAR_WIDTH / 2) - ((BAR_WIDTH * logic.scoringAreaSize) / 2), location_y);
@@ -103,7 +103,8 @@ public class TimingBarDisplay extends UIComponent {
     group.addActor(marker);
 
     BitmapFont font = new BitmapFont();
-    Label instructions = new Label("Press 'SPACE' to stop", new Label.LabelStyle(font, Color.BLACK));
+    Label instructions =
+        new Label("Press 'SPACE' to stop", new Label.LabelStyle(font, Color.BLACK));
     instructions.setPosition(location_x, location_y + BAR_HEIGHT);
     group.addActor(instructions);
 

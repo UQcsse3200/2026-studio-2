@@ -6,8 +6,8 @@ import java.util.List;
 import java.util.Random;
 
 /**
- * Core Blackjack game logic used by the minigame. This class contains no UI code and is designed
- * to be plugged into a screen later.
+ * Core Blackjack game logic used by the minigame. This class contains no UI code and is designed to
+ * be plugged into a screen later.
  */
 public class Blackjack {
   public enum Suit {
