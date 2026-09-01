@@ -5,10 +5,10 @@ import com.csse3200.game.events.EventHandler;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.terminal.commands.Command;
 import com.csse3200.game.ui.terminal.commands.DebugCommand;
-import com.csse3200.game.ui.terminal.commands.TextBoxCommand;
-import java.io.File;
 import com.csse3200.game.ui.terminal.commands.GameEndLoseCommand;
 import com.csse3200.game.ui.terminal.commands.GameEndWinCommand;
+import com.csse3200.game.ui.terminal.commands.TextBoxCommand;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -29,7 +29,9 @@ public class Terminal extends Component {
   public Terminal() {
     this(new HashMap<>());
   }
-  File textBoxTest = new File("source/core/src/main/com/csse3200/game/ui/terminal/textBoxTestFile");
+
+  File textBoxTest =
+      new File("source/core/src/main/com/csse3200/game/ui/terminal/textBoxTestFile.txt");
 
   public Terminal(Map<String, Command> commands) {
     this.commands = commands;

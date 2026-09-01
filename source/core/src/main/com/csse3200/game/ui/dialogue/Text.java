@@ -17,14 +17,17 @@ public class Text {
   }
 
   private String loadContentFromFile(File file) {
-      String fileContents = "";
-      try {
-          fileContents = Files.readString(file.toPath());
-      } catch (IOException e) {
-          System.out.println("An error occurred.");
-          e.printStackTrace();
-      }
-      return fileContents;
+    String fileContents = "";
+    try {
+      fileContents = Files.readString(file.toPath());
+    } catch (IOException e) {
+      fileContents = "IO exception";
+    } catch (OutOfMemoryError e) {
+      fileContents = "Out of memory";
+    } catch (SecurityException e) {
+      fileContents = "Security Error";
+    }
+    return fileContents;
   }
 
   public String getContent() {

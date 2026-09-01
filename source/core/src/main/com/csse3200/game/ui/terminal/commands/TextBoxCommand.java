@@ -32,18 +32,18 @@ public class TextBoxCommand implements Command {
   }
 
   public TextBoxCommand(File message, float lifeTime, float x, float y) {
-      this.message = new Text(message);
-      this.lifetime = lifeTime;
-      this.xPos = x;
-      this.yPos = y;
+    this.message = new Text(message);
+    this.lifetime = lifeTime;
+    this.xPos = x;
+    this.yPos = y;
   }
 
-    public TextBoxCommand(File message) {
-        this.message = new Text(message);
-        this.lifetime = message.length();
-        this.xPos = DEFAULT_X;
-        this.yPos = DEFAULT_Y;
-    }
+  public TextBoxCommand(File message) {
+    this.message = new Text(message);
+    this.lifetime = (float) message.length() / message.length() * 30;
+    this.xPos = DEFAULT_X;
+    this.yPos = DEFAULT_Y;
+  }
 
   @Override
   public boolean action(ArrayList<String> args) {
