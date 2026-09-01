@@ -38,6 +38,9 @@ public class MinigameSelectActions extends Component {
       case SPIN_THE_WHEEL:
         game.setScreen(GdxGame.ScreenType.MINIGAME_SPIN_THE_WHEEL);
         break;
+      case BLACKJACK:
+        game.setScreen(GdxGame.ScreenType.MINIGAME_BLACKJACK);
+        break;
       default:
         logger.warn("Minigame is not implemented yet");
         break;
