@@ -69,6 +69,29 @@ class KeyboardPlayerInputComponentTest {
   }
 
   @Test
+  void shouldResolveDirectionOnStopShoot() {
+    KeyboardPlayerInputComponent component = new KeyboardPlayerInputComponent();
+    Entity player = new Entity().addComponent(component);
+    player.setPosition(0f, 0f);
+    component.setCameraComponent(new CameraComponent(camera));
+
+    AtomicReference<Vector2> stopDirection = new AtomicReference<>();
+    AtomicInteger stops = new AtomicInteger();
+    player
+        .getEvents()
+        .addListener(
+            "stopShoot",
+            (Vector2 aimDirection) -> {
+              stops.incrementAndGet();
+              stopDirection.set(aimDirection);
+            });
+
+    assertTrue(component.touchUp(4, 2, 0, Buttons.LEFT));
+    assertEquals(1, stops.get());
+    assertTrue(stopDirection.get().epsilonEquals(new Vector2(9.5f, 4.5f)));
+  }
+
+  @Test
   void shouldNotFireWithoutCamera() {
     KeyboardPlayerInputComponent component = new KeyboardPlayerInputComponent();
     Entity player = new Entity().addComponent(component);

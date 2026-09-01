@@ -38,19 +38,30 @@ public class ArrowSelectionComponent extends Component {
     entity.getEvents().trigger("arrowChanged", selected);
   }
 
-  /** Fires whichever arrow is currently selected. */
+  /**
+   * Starts firing whichever arrow is currently selected. The grapple fires immediately; the
+   * standard bow instead fires on release (see {@link #stopShoot}), which is also where a future
+   * charge-up mechanic will hook in.
+   */
   void shoot(Vector2 direction) {
-    if (selected == ArrowType.GRAPPLE) {
-      entity.getEvents().trigger("grappleFire", direction);
-    } else {
-      entity.getEvents().trigger("primaryAttack", direction);
+    if (selected != ArrowType.GRAPPLE) {
+      return;
     }
+    entity.getEvents().trigger("grappleFire", direction);
   }
 
-  /** Only the grapple cares about the button being let go. */
-  void stopShoot() {
+  /**
+   * Handles the fire button being let go. The grapple releases the rope; the standard bow fires
+   * toward the given (release-time) direction.
+   *
+   * @param direction release-time aim direction, or null if it couldn't be resolved (e.g. no camera
+   *     set)
+   */
+  void stopShoot(Vector2 direction) {
     if (selected == ArrowType.GRAPPLE) {
       entity.getEvents().trigger("grappleRelease");
+    } else if (direction != null && !direction.isZero()) {
+      entity.getEvents().trigger("primaryAttack", direction);
     }
   }
 

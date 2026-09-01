@@ -116,7 +116,9 @@ public class KeyboardPlayerInputComponent extends InputComponent {
   }
 
   /**
-   * Signals that the fire button was let go, so the selected arrow can react.
+   * Signals that the fire button was let go, so the selected arrow can react. Carries the aim
+   * direction resolved at release time, so a charged bow shot fires toward wherever the cursor
+   * currently is rather than where it was when charging started.
    *
    * @return whether the input was processed
    * @see InputProcessor#touchUp(int, int, int, int)
@@ -126,7 +128,7 @@ public class KeyboardPlayerInputComponent extends InputComponent {
     if (button != Buttons.LEFT) {
       return false;
     }
-    entity.getEvents().trigger("stopShoot");
+    entity.getEvents().trigger("stopShoot", getAimDirection(screenX, screenY));
     return true;
   }
 
