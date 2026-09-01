@@ -1,9 +1,11 @@
 package com.csse3200.game.ui.dialogue;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 
 public class Text {
-  private final String content;
+  private String content = "";
 
   public Text(String content) {
     this.content = content;
@@ -15,15 +17,21 @@ public class Text {
   }
 
   private String loadContentFromFile(File file) {
+    String fileContents = "";
     try {
-      return new String(java.nio.file.Files.readAllBytes(file.toPath()));
-    } catch (java.io.IOException e) {
-      return "Failed to load file";
+      fileContents = Files.readString(file.toPath());
+    } catch (IOException e) {
+      fileContents = "IO exception";
+    } catch (OutOfMemoryError e) {
+      fileContents = "Out of memory";
+    } catch (SecurityException e) {
+      fileContents = "Security Error";
     }
+    return fileContents;
   }
 
   public String getContent() {
-    if (content.isEmpty()) {
+    if (this.content.isEmpty()) {
       return "Error -1. Empty content variable";
     } else {
       return content;

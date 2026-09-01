@@ -124,6 +124,7 @@ public class PlayerActions extends Component {
     if (isGrounded) {
       body.applyLinearImpulse(new Vector2(0, JUMP_FORCE), body.getWorldCenter(), true);
       isGrounded = false;
+      entity.getEvents().trigger("jumpStart");
     }
   }
 
