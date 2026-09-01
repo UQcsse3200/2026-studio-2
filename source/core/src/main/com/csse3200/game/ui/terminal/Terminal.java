@@ -7,6 +7,7 @@ import com.csse3200.game.ui.terminal.commands.Command;
 import com.csse3200.game.ui.terminal.commands.DebugCommand;
 import com.csse3200.game.ui.terminal.commands.GameEndLoseCommand;
 import com.csse3200.game.ui.terminal.commands.GameEndWinCommand;
+import com.csse3200.game.ui.terminal.commands.KillAllEnemiesCommand;
 import com.csse3200.game.ui.terminal.commands.TextBoxCommand;
 import java.io.File;
 import java.util.ArrayList;
@@ -37,6 +38,7 @@ public class Terminal extends Component {
     this.commands = commands;
 
     addCommand("debug", new DebugCommand());
+    addCommand("killAllEnemies", new KillAllEnemiesCommand());
     addCommand("win", new GameEndWinCommand());
     addCommand("lose", new GameEndLoseCommand());
     if (ServiceLocator.getGameEndEventHandler() == null) {
