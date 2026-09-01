@@ -40,14 +40,15 @@ public class ArrowSelectionComponent extends Component {
 
   /**
    * Starts firing whichever arrow is currently selected. The grapple fires immediately; the
-   * standard bow instead fires on release (see {@link #stopShoot}), which is also where a future
-   * charge-up mechanic will hook in.
+   * standard bow instead starts charging up and only actually fires on release (see {@link
+   * #stopShoot}).
    */
   void shoot(Vector2 direction) {
-    if (selected != ArrowType.GRAPPLE) {
-      return;
+    if (selected == ArrowType.GRAPPLE) {
+      entity.getEvents().trigger("grappleFire", direction);
+    } else {
+      entity.getEvents().trigger("attackChargeStart");
     }
-    entity.getEvents().trigger("grappleFire", direction);
   }
 
   /**
