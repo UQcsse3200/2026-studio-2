@@ -1,6 +1,7 @@
 package com.csse3200.game.ui.dialogue;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
@@ -12,7 +13,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
 import com.csse3200.game.ui.UIComponent;
 
-public class TextBoxComponent extends UIComponent {
+public class TextBoxDisplay extends UIComponent {
 
   // --- Tunables ---
   private static final int MAX_WIDTH = 200;
@@ -40,7 +41,7 @@ public class TextBoxComponent extends UIComponent {
   // make the boxes stay on screen until an input is given to cycle to the next one.
   // (make this a method or builder or whatever)
   // Make it so that the box can stay on screen forever if there is no specified input.
-  public TextBoxComponent(Text text, float lifetime, float xPos, float yPos) {
+  public TextBoxDisplay(Text text, float lifetime, float xPos, float yPos) {
     this.text = text;
     this.lifetime = lifetime;
     this.xPos = xPos;

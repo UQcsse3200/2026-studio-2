@@ -2,7 +2,8 @@ package com.csse3200.game.ui.terminal.commands;
 
 import com.badlogic.gdx.Gdx;
 import com.csse3200.game.ui.dialogue.Text;
-import com.csse3200.game.ui.dialogue.TextBoxFactory;
+import com.csse3200.game.ui.dialogue.TextBox;
+import java.io.File;
 import java.util.ArrayList;
 
 public class TextBoxCommand implements Command {
@@ -30,11 +31,25 @@ public class TextBoxCommand implements Command {
     this.yPos = y;
   }
 
+  public TextBoxCommand(File message, float lifeTime, float x, float y) {
+      this.message = new Text(message);
+      this.lifetime = lifeTime;
+      this.xPos = x;
+      this.yPos = y;
+  }
+
+    public TextBoxCommand(File message) {
+        this.message = new Text(message);
+        this.lifetime = message.length();
+        this.xPos = DEFAULT_X;
+        this.yPos = DEFAULT_Y;
+    }
+
   @Override
   public boolean action(ArrayList<String> args) {
     System.out.println(message.getContent());
-    TextBoxFactory textBoxFactory = new TextBoxFactory(message, lifetime, xPos, yPos);
-    textBoxFactory.create();
+    TextBox textBox = new TextBox(message, lifetime, xPos, yPos);
+    textBox.create();
     return true;
   }
 }
