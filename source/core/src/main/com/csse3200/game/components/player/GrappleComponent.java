@@ -19,6 +19,7 @@ public class GrappleComponent extends Component {
 
   private PhysicsComponent physicsComponent;
   private DistanceJoint ropeJoint;
+  private RaycastHit raycastHit;
   private Vector2 anchorPoint;
   private Body anchorBody;
 
@@ -28,6 +29,7 @@ public class GrappleComponent extends Component {
     entity.getEvents().addListener("grappleFire", this::fire);
     entity.getEvents().addListener("grappleRelease", this::release);
     entity.getEvents().addListener("grappleSwing", this::swing);
+    entity.getEvents().addListener("grappleResponse", this::handleSuccessfulFire);
   }
 
   /** Fires the rope towards direction or detaches if already attached. */
@@ -35,19 +37,27 @@ public class GrappleComponent extends Component {
     // Determine raycast start (player center)
     Vector2 start = entity.getCenterPosition();
     Vector2 end = start.cpy().mulAdd(direction.cpy().nor(), MAX_RANGE);
-    RaycastHit hit = new RaycastHit();
+    raycastHit = new RaycastHit();
 
     // Perform Box2D raycast against terrain/obstacle layers and exits if no surface was hit
     if (!ServiceLocator.getPhysicsService()
         .getPhysics()
-        .raycast(start, end, PhysicsLayer.SOLID, hit)) {
+        .raycast(start, end, PhysicsLayer.SOLID, raycastHit)) {
       return;
     }
 
+    // send event to request whether the grapple raycast hits a valid platform side
+    entity.getEvents().trigger("grappleRequested", raycastHit.point.cpy());
+  }
+
+  void handleSuccessfulFire(boolean success) {
+    if (!success) return;
+
     // Store fired position and retrieve physics bodies for joint setup
-    anchorPoint = hit.point.cpy();
+    Vector2 start = entity.getCenterPosition();
+    anchorPoint = raycastHit.point.cpy();
     Body playerBody = physicsComponent.getBody();
-    this.anchorBody = hit.fixture.getBody();
+    this.anchorBody = raycastHit.fixture.getBody();
 
     DistanceJointDef def = new DistanceJointDef();
     def.bodyA = anchorBody;
@@ -66,7 +76,7 @@ public class GrappleComponent extends Component {
     def.collideConnected = true;
 
     ropeJoint =
-        (DistanceJoint) ServiceLocator.getPhysicsService().getPhysics().getWorld().createJoint(def);
+            (DistanceJoint) ServiceLocator.getPhysicsService().getPhysics().getWorld().createJoint(def);
 
     // Stop the player spinning, and bleed the swing off over time
     playerBody.setFixedRotation(true);
