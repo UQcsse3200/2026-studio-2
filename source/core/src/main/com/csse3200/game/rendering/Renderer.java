@@ -97,6 +97,10 @@ public class Renderer implements Disposable {
     batch.setProjectionMatrix(projMatrix);
     Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
+    // The stage shares this batch and may leave its color/alpha tinted (e.g. a fading UI
+    // actor) after its last draw call. Reset it before world rendering so that tint doesn't
+    // bleed into the next frame.
+    batch.setColor(1f, 1f, 1f, 1f);
     batch.begin();
     renderService.render(batch);
     batch.end();

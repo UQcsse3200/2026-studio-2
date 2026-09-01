@@ -25,6 +25,7 @@ public class PlayerActions extends Component {
   private boolean moving = false;
   private boolean isGrounded = false;
   private boolean isSprinting = false;
+  private boolean paused = false;
 
   @Override
   public void create() {
@@ -35,6 +36,7 @@ public class PlayerActions extends Component {
     entity.getEvents().addListener("jump", this::jump);
     entity.getEvents().addListener("sprint", this::sprint);
     entity.getEvents().addListener("sprintStop", this::stopSprinting);
+    entity.getEvents().addListener("togglePaused", this::togglePause);
   }
 
   @Override
@@ -81,14 +83,22 @@ public class PlayerActions extends Component {
         .raycast(rayStart, rayEnd, PhysicsLayer.SOLID, hit);
   }
 
+  void togglePause() {
+    paused = !paused;
+  }
+
   /**
    * Moves the player towards a given direction.
    *
    * @param direction direction to move in
    */
   void walk(Vector2 direction) {
-    this.walkDirection = direction;
-    moving = true;
+    if (paused) {
+      stopWalking();
+    } else {
+      this.walkDirection = direction;
+      moving = true;
+    }
   }
 
   /** Stops the player from walking. */
@@ -114,6 +124,7 @@ public class PlayerActions extends Component {
     if (isGrounded) {
       body.applyLinearImpulse(new Vector2(0, JUMP_FORCE), body.getWorldCenter(), true);
       isGrounded = false;
+      entity.getEvents().trigger("jumpStart");
     }
   }
 
