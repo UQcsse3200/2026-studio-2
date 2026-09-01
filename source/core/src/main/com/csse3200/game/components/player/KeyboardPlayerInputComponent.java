@@ -119,7 +119,7 @@ public class KeyboardPlayerInputComponent extends InputComponent {
       return false;
     }
     Vector2 aimDirection = getAimDirection(screenX, screenY);
-    if (aimDirection == null || aimDirection.isZero()) {
+    if (aimDirection.isZero()) {
       return false;
     }
     entity.getEvents().trigger("grappleFire", aimDirection);

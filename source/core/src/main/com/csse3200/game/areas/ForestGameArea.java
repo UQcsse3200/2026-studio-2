@@ -50,7 +50,10 @@ public class ForestGameArea extends GameArea {
     "images/iso_grass_3.png"
   };
   private static final String[] forestTextureAtlases = {
-    "images/terrain_iso_grass.atlas", "images/ghost.atlas", "images/ghostKing.atlas"
+    "images/terrain_iso_grass.atlas",
+    "images/ghost.atlas",
+    "images/ghostKing.atlas",
+    "images/player.atlas"
   };
   private static final String[] forestSounds = {"sounds/Impact4.ogg"};
   private static final String backgroundMusic = "sounds/BGM_03_mp3.mp3";
@@ -81,6 +84,7 @@ public class ForestGameArea extends GameArea {
 
     spawnTerrain();
     spawnTrees();
+    spawnPlatforms();
     player = spawnPlayer();
     spawnSkeletonWarrior();
     spawnSkeletonArcher();
@@ -138,6 +142,12 @@ public class ForestGameArea extends GameArea {
       Entity tree = ObstacleFactory.createTree();
       spawnEntityAt(tree, randomPos, true, false);
     }
+  }
+
+  private void spawnPlatforms() {
+    GridPoint2 platformPos = new GridPoint2(10, 7);
+    Entity platform = ObstacleFactory.createPlatform(0);
+    spawnEntityAt(platform, platformPos, true, false);
   }
 
   private Entity spawnPlayer() {

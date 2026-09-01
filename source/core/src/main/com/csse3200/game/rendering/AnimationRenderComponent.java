@@ -41,6 +41,11 @@ public class AnimationRenderComponent extends RenderComponent {
   private Animation<TextureRegion> currentAnimation;
   private String currentAnimationName;
   private float animationPlayTime;
+  private boolean flipX;
+
+  // Texels per world-unit at entity.scale.x == 1, established by scaleEntity(). 0 means
+  // scaleEntity() was never called, so draw() falls back to entity.scale directly.
+  private float defaultRegionWidthPx;
 
   /**
    * Create the component for a given texture atlas.
@@ -96,6 +101,7 @@ public class AnimationRenderComponent extends RenderComponent {
   public void scaleEntity() {
     TextureRegion defaultTexture = this.atlas.findRegion("default");
     entity.setScale(1f, (float) defaultTexture.getRegionHeight() / defaultTexture.getRegionWidth());
+    defaultRegionWidthPx = defaultTexture.getRegionWidth();
   }
 
   /**
@@ -174,6 +180,24 @@ public class AnimationRenderComponent extends RenderComponent {
     return currentAnimation != null && currentAnimation.isAnimationFinished(animationPlayTime);
   }
 
+  /**
+   * Flip the rendered animation horizontally, e.g. to face the entity's movement direction.
+   *
+   * @param flipX true to mirror frames horizontally, false to draw them as stored in the atlas.
+   */
+  public void setFlipX(boolean flipX) {
+    this.flipX = flipX;
+  }
+
+  /**
+   * Whether the animation is currently being drawn flipped horizontally.
+   *
+   * @return true if flipped, false otherwise.
+   */
+  public boolean isFlipX() {
+    return flipX;
+  }
+
   @Override
   protected void draw(SpriteBatch batch) {
     if (currentAnimation == null) {
@@ -182,7 +206,34 @@ public class AnimationRenderComponent extends RenderComponent {
     TextureRegion region = currentAnimation.getKeyFrame(animationPlayTime);
     Vector2 pos = entity.getPosition();
     Vector2 scale = entity.getScale();
-    batch.draw(region, pos.x, pos.y, scale.x, scale.y);
+
+    float width;
+    float height;
+    if (defaultRegionWidthPx > 0f) {
+      float unitsPerPixel = scale.x / defaultRegionWidthPx;
+      width = region.getRegionWidth() * unitsPerPixel;
+      height = region.getRegionHeight() * unitsPerPixel;
+    } else {
+      width = scale.x;
+      height = scale.y;
+    }
+
+    // Draw via raw UV coordinates (rather than the TextureRegion overload) so flipping just
+    // means swapping u/u2, without mutating the shared keyframe region. SpriteBatch's raw
+    // Texture overload maps world-y to v directly, whereas TextureRegion's v/v2 are stored
+    // top-to-bottom in image space; region.v and region.v2 must be swapped here to compensate
+    // (this is exactly what SpriteBatch#draw(TextureRegion, ...) does internally), otherwise
+    // every frame renders upside down.
+    float u = region.getU();
+    float u2 = region.getU2();
+    float v = region.getV2();
+    float v2 = region.getV();
+    if (flipX) {
+      float tmp = u;
+      u = u2;
+      u2 = tmp;
+    }
+    batch.draw(region.getTexture(), pos.x, pos.y, width, height, u, v, u2, v2);
     animationPlayTime += timeSource.getDeltaTime();
   }
 
