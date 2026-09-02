@@ -9,6 +9,9 @@ com.csse3200.game.components.level
 com.csse3200.game.components.maingame
 com.csse3200.game.components.mainmenu
 com.csse3200.game.components.minigames
+com.csse3200.game.components.minigames.blackjack
+com.csse3200.game.components.minigames.CyclopsTimingBar
+com.csse3200.game.components.minigames.spinthewheel
 com.csse3200.game.components.npc
 com.csse3200.game.components.player
 com.csse3200.game.components.projectile
@@ -28,6 +31,7 @@ com.csse3200.game.physics.raycast
 com.csse3200.game.rendering
 com.csse3200.game.screens
 com.csse3200.game.screens.minigames
+com.csse3200.game.screens.minigames.spinthewheel
 com.csse3200.game.services
 com.csse3200.game.ui
 com.csse3200.game.ui.dialogue
