@@ -79,7 +79,7 @@ public class PauseMenuDisplay extends UIComponent {
     Image title =
         new Image(
             ServiceLocator.getResourceService()
-                .getAsset("images/box_boy_title.png", Texture.class));
+                .getAsset("images/title_odysseus_logo.png", Texture.class));
     table.add(title).padTop(30f);
     table.row();
     table.add(resumeBtn).padTop(30f);
