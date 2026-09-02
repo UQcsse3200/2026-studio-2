@@ -139,35 +139,40 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-first">Modifier and Type</div>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#keyDown(int)" class="member-name-link">keyDown</a><wbr>(int&nbsp;keycode)</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>com.badlogic.gdx.math.Vector2</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getMouseAimDirection()" class="member-name-link">getMouseAimDirection</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Triggers player events on specific keycodes.</div>
+<div class="block">Aim direction from the current mouse position to the player, in world space.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#keyUp(int)" class="member-name-link">keyUp</a><wbr>(int&nbsp;keycode)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#keyDown(int)" class="member-name-link">keyDown</a><wbr>(int&nbsp;keycode)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Triggers player events on specific keycodes.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setCameraComponent(com.csse3200.game.components.CameraComponent)" class="member-name-link">setCameraComponent</a><wbr>(<a href="../CameraComponent.html" title="class in com.csse3200.game.components">CameraComponent</a>&nbsp;cameraComponent)</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#keyUp(int)" class="member-name-link">keyUp</a><wbr>(int&nbsp;keycode)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Triggers player events on specific keycodes.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setCameraComponent(com.csse3200.game.components.CameraComponent)" class="member-name-link">setCameraComponent</a><wbr>(<a href="../CameraComponent.html" title="class in com.csse3200.game.components">CameraComponent</a>&nbsp;cameraComponent)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Sets the camera used to convert screen coordinates to world-space aim directions.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#touchDown(int,int,int,int)" class="member-name-link">touchDown</a><wbr>(int&nbsp;screenX,
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#touchDown(int,int,int,int)" class="member-name-link">touchDown</a><wbr>(int&nbsp;screenX,
  int&nbsp;screenY,
  int&nbsp;pointer,
  int&nbsp;button)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Fires the grapple toward the clicked world position.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#touchUp(int,int,int,int)" class="member-name-link">touchUp</a><wbr>(int&nbsp;screenX,
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#touchUp(int,int,int,int)" class="member-name-link">touchUp</a><wbr>(int&nbsp;screenX,
  int&nbsp;screenY,
  int&nbsp;pointer,
  int&nbsp;button)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 </div>
 </div>
 </div>
@@ -300,6 +305,17 @@ loadScripts(document, 'script');</script>
 <li><code>InputProcessor.touchUp(int, int, int, int)</code></li>
 </ul>
 </dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="getMouseAimDirection()">
+<h3>getMouseAimDirection</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">com.badlogic.gdx.math.Vector2</span>&nbsp;<span class="element-name">getMouseAimDirection</span>()</div>
+<div class="block">Aim direction from the current mouse position to the player, in world space.</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>aim vector, or null if the camera is unavailable</dd>
 </dl>
 </section>
 </li>

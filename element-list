@@ -5,6 +5,10 @@ com.csse3200.game.areas
 com.csse3200.game.areas.terrain
 com.csse3200.game.components
 com.csse3200.game.components.gamearea
+com.csse3200.game.components.inventory
+com.csse3200.game.components.item
+com.csse3200.game.components.item.consumables
+com.csse3200.game.components.item.weapons
 com.csse3200.game.components.level
 com.csse3200.game.components.maingame
 com.csse3200.game.components.mainmenu
