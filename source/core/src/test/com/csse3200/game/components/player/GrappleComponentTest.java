@@ -2,6 +2,7 @@ package com.csse3200.game.components.player;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -126,6 +127,24 @@ class GrappleComponentTest {
 
     assertTrue(grapple.isAttached());
     assertEquals(1, inventory.getItemCount(ItemType.RopeArrow));
+  }
+
+  @Test
+  void shouldReachTargetsWithinProjectileRange() {
+    Entity anchor =
+        new Entity()
+            .addComponent(new PhysicsComponent().setBodyType(BodyType.StaticBody))
+            .addComponent(new HitboxComponent().setLayer(PhysicsLayer.GROUND));
+    anchor.setPosition(12f, 0f);
+    entityService.register(anchor);
+
+    Entity player = createPlayer(true);
+    AtomicReference<Vector2> requestedPoint = new AtomicReference<>();
+    player.getEvents().addListener("grappleRequested", requestedPoint::set);
+
+    player.getEvents().trigger("grappleFire", Vector2.X.cpy());
+
+    assertNotNull(requestedPoint.get());
   }
 
   private Entity createPlayer(boolean hasRopeArrow) {

@@ -16,7 +16,6 @@ import com.csse3200.game.services.ServiceLocator;
 
 /** Fires a grapple arrow, then swings from wherever it lands. */
 public class GrappleComponent extends Component {
-  private static final float MAX_RANGE = 8f;
   private static final float GRAPPLE_COOLDOWN = 2f;
   private static final float SWING_FORCE = 5f;
   private static final float MAX_SWING_SPEED = 7f;
@@ -76,7 +75,8 @@ public class GrappleComponent extends Component {
     }
 
     Vector2 start = entity.getCenterPosition();
-    Vector2 end = start.cpy().mulAdd(direction.cpy().nor(), MAX_RANGE);
+    Vector2 end =
+        start.cpy().mulAdd(direction.cpy().nor(), ProjectileFactory.GRAPPLE_ARROW_RANGE);
     RaycastHit hit = new RaycastHit();
 
     if (!ServiceLocator.getPhysicsService()

@@ -74,8 +74,6 @@ public class ForestGameArea extends GameArea {
 
   private final TerrainFactory terrainFactory;
 
-  private Entity player;
-
   /**
    * Initialise this ForestGameArea to use the provided TerrainFactory.
    *
@@ -173,6 +171,7 @@ public class ForestGameArea extends GameArea {
 
   private Entity spawnPlayer() {
     Entity newPlayer = PlayerFactory.createPlayer();
+    newPlayer.getEvents().addListener("grappleRequested", this::checkSuccessfulGrapple);
     KeyboardPlayerInputComponent input = newPlayer.getComponent(KeyboardPlayerInputComponent.class);
     if (input != null) {
       input.setCameraComponent(cameraComponent);

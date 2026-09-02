@@ -121,12 +121,6 @@ public class ItemUseComponent extends Component {
 
     entity.getEvents().trigger("grappleFire", direction);
 
-    GrappleComponent grapple = entity.getComponent(GrappleComponent.class);
-    if (grapple != null && !grapple.isAttached()) {
-      entity.getEvents().trigger("itemUseFailed", ItemType.RopeArrow);
-      return false;
-    }
-
     GameTime time = ServiceLocator.getTimeSource();
     long cooldownMs = (long) (ItemType.RopeArrow.getCooldown() * 1000f);
     if (time != null) {

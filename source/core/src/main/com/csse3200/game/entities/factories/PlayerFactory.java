@@ -63,6 +63,7 @@ public class PlayerFactory {
     animator.addAnimation("bowDraw", 0.12f, PlayMode.NORMAL); // ~0.6s
     animator.addAnimation("bowHold", 0.5f, PlayMode.LOOP);
     animator.addAnimation("bowRelease", 0.05f, PlayMode.NORMAL);
+    animator.addAnimation("melee", 0.05f, PlayMode.NORMAL);
 
     Entity player =
         new Entity()

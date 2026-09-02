@@ -174,6 +174,26 @@ class ItemUseComponentTest {
   }
 
   @Test
+  void shouldNotRequireGrappleToAttachSynchronously() {
+    InventoryComponent inventory = new InventoryComponent(0);
+    ItemUseComponent use = new ItemUseComponent();
+    Entity player =
+        new Entity()
+            .addComponent(inventory)
+            .addComponent(new CombatStatsComponent(100, 10))
+            .addComponent(use)
+            .addComponent(new GrappleComponent());
+    inventory.addItem(ItemType.RopeArrow, 1);
+    inventory.selectNext();
+    use.create();
+
+    // A grapple projectile attaches during a later physics update, not while grappleFire is handled.
+    assertTrue(use.useSelectedItem());
+    assertFalse(use.isRopeReady());
+    assertEquals(1, inventory.getItemCount(ItemType.RopeArrow));
+  }
+
+  @Test
   void shouldRejectRopeArrowDuringCooldownThenAllowAfter() {
     Entity player = createPlayer();
     InventoryComponent inventory = player.getComponent(InventoryComponent.class);
