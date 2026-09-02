@@ -158,7 +158,8 @@ public class TutorialGameScreen extends ScreenAdapter {
         .addComponent(new PerformanceDisplay())
         .addComponent(new MainGameActions(this.game))
         .addComponent(new MainGameExitDisplay())
-        .addComponent(new GameEndDisplay(GameEndState.LOSE))  // Add GameEndDisplay component to the UI entity
+        .addComponent(
+            new GameEndDisplay(GameEndState.LOSE)) // Add GameEndDisplay component to the UI entity
         .addComponent(new GameEndActions(this.game))
         .addComponent(new Terminal())
         .addComponent(inputComponent)
