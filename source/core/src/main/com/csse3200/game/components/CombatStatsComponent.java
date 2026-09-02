@@ -1,5 +1,7 @@
 package com.csse3200.game.components;
 
+import com.csse3200.game.services.GameTime;
+import com.csse3200.game.services.ServiceLocator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -9,14 +11,46 @@ import org.slf4j.LoggerFactory;
  * extended for more specific combat needs.
  */
 public class CombatStatsComponent extends Component {
-
   private static final Logger logger = LoggerFactory.getLogger(CombatStatsComponent.class);
   private int health;
   private int maxHealth;
   private int baseAttack;
+  private final long invulnerabilityDuration;
+  private long invulnerableUntil;
 
+  /**
+   * Creates combat stats with only health and baseAttack with rest inferred.
+   *
+   * @param health initial current health
+   * @param baseAttack base attack damage
+   */
   public CombatStatsComponent(int health, int baseAttack) {
-    this.maxHealth = Math.max(health, 0);
+    this(health, baseAttack, health, 0L);
+  }
+
+  /**
+   * Creates combat stats with separate current and maximum health values.
+   *
+   * @param health initial current health
+   * @param maxHealth maximum health
+   * @param baseAttack base attack damage
+   */
+  public CombatStatsComponent(int health, int maxHealth, int baseAttack) {
+    this(health, baseAttack, maxHealth, 0);
+  }
+
+  /**
+   * Creates combat stats with an invulnerability window after each successful hit.
+   *
+   * @param health initial health
+   * @param baseAttack base attack damage
+   * @param maxHealth maximum health
+   * @param invulnerabilityDuration invulnerability duration in milliseconds
+   */
+  public CombatStatsComponent(
+      int health, int baseAttack, int maxHealth, long invulnerabilityDuration) {
+    this.invulnerabilityDuration = Math.max(0, invulnerabilityDuration);
+    this.maxHealth = Math.max(maxHealth, 0);
     setHealth(health);
     setBaseAttack(baseAttack);
   }
@@ -45,15 +79,6 @@ public class CombatStatsComponent extends Component {
   }
 
   /**
-   * Returns the entity's maximum health.
-   *
-   * @return entity's maximum health
-   */
-  public int getMaxHealth() {
-    return maxHealth;
-  }
-
-  /**
    * Increases the entity's maximum health by the given amount, and heals by the same amount.
    * Amounts less than or equal to zero are ignored.
    *
@@ -68,23 +93,42 @@ public class CombatStatsComponent extends Component {
   }
 
   /**
-   * Sets the entity's health. Health has a minimum bound of 0.
+   * Returns the entity's maximum health.
+   *
+   * @return maximum health
+   */
+  public int getMaxHealth() {
+    return maxHealth;
+  }
+
+  /**
+   * Returns true if the entity is already at maximum health.
+   *
+   * @return whether health is full
+   */
+  public boolean isHealthFull() {
+    return health >= maxHealth;
+  }
+
+  /**
+   * Sets the entity's health. Health is clamped between 0 and this entity's maximum health.
    *
    * @param health health
    */
   public void setHealth(int health) {
-    if (health >= 0) {
-      this.health = health;
-    } else {
-      this.health = 0;
-    }
+    boolean wasAlive = this.health > 0;
+    this.health = Math.max(0, Math.min(health, maxHealth));
     if (entity != null) {
       entity.getEvents().trigger("updateHealth", this.health);
+      if (wasAlive && isDead()) {
+        entity.getEvents().trigger("death");
+      }
     }
   }
 
   /**
-   * Adds to the player's health. The amount added can be negative.
+   * Adds to the player's health. The amount added can be negative. Healing past the maximum health
+   * is discarded.
    *
    * @param health health to add
    */
@@ -115,9 +159,17 @@ public class CombatStatsComponent extends Component {
   }
 
   public void hit(CombatStatsComponent attacker) {
+    GameTime timeSource = ServiceLocator.getTimeSource();
+    long currentTime = timeSource == null ? 0 : timeSource.getTime();
+    if (currentTime < invulnerableUntil) {
+      return;
+    }
+
     int oldHealth = getHealth();
     int newHealth = oldHealth - attacker.getBaseAttack();
     setHealth(newHealth);
+    invulnerableUntil = currentTime + invulnerabilityDuration;
+
     if (entity != null && getHealth() < oldHealth) {
       entity.getEvents().trigger("hurt");
     }

@@ -1,6 +1,7 @@
 package com.csse3200.game.entities;
 
 import com.badlogic.gdx.utils.Array;
+import com.csse3200.game.services.ServiceLocator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,6 +17,7 @@ public class EntityService {
   private static final int INITIAL_CAPACITY = 16;
 
   private final Array<Entity> entities = new Array<>(false, INITIAL_CAPACITY);
+  private final Array<Entity> entitiesToDispose = new Array<>();
   private final Array<Entity> pendingRemoval = new Array<>(false, INITIAL_CAPACITY);
 
   private boolean paused;
@@ -58,6 +60,12 @@ public class EntityService {
     pendingRemoval.add(entity);
   }
 
+  public void scheduleForDisposal(Entity entity) {
+    if (!entitiesToDispose.contains(entity, true)) {
+      entitiesToDispose.add(entity);
+    }
+  }
+
   /** Update all registered entities. Should only be called from the main game loop. */
   public void update() {
     if (!paused) {
@@ -66,6 +74,10 @@ public class EntityService {
         entity.update();
       }
     }
+    for (Entity entity : entitiesToDispose) {
+      entity.dispose();
+    }
+    entitiesToDispose.clear();
     removeScheduledEntities();
   }
 
@@ -79,6 +91,11 @@ public class EntityService {
     }
   }
 
+  /** Getter function for a snapshot (shallow copy) of currently registered entities * */
+  public Array<Entity> getEntities() {
+    return new Array<>(entities);
+  }
+
   private void removeScheduledEntities() {
     Array<Entity> removals = new Array<>(pendingRemoval);
     pendingRemoval.clear();
@@ -89,15 +106,21 @@ public class EntityService {
     }
   }
 
-  public void setPaused(boolean newPaused) {
-    paused = newPaused;
+  public void setPaused(boolean newPauseState) {
+    paused = newPauseState;
+    updatePhysicsPauseState();
   }
 
   public void togglePaused() {
     paused = !paused;
+    updatePhysicsPauseState();
   }
 
   public boolean getPaused() {
     return paused;
+  }
+
+  void updatePhysicsPauseState() {
+    ServiceLocator.getPhysicsService().getPhysics().setPaused(paused);
   }
 }

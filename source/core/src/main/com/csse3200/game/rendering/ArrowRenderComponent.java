@@ -12,7 +12,9 @@ public class ArrowRenderComponent extends RenderComponent {
   private static final float SHAFT_LENGTH = 0.5f;
   private static final float SHAFT_WIDTH = 0.05f;
 
-  private final ShapeRenderer shapeRenderer = new ShapeRenderer();
+  // ShapeRenderer creates an OpenGL shader, so defer construction until the arrow is actually
+  // drawn. This keeps entity/physics tests compatible with the headless test environment.
+  private ShapeRenderer shapeRenderer;
   private ArrowProjectileComponent projectile;
 
   @Override
@@ -23,6 +25,9 @@ public class ArrowRenderComponent extends RenderComponent {
 
   @Override
   protected void draw(SpriteBatch batch) {
+    if (shapeRenderer == null) {
+      shapeRenderer = new ShapeRenderer();
+    }
     Vector2 center = entity.getCenterPosition();
     Vector2 halfShaft = projectile.getDirection().scl(SHAFT_LENGTH / 2f);
     Vector2 start = center.cpy().sub(halfShaft);
@@ -39,7 +44,9 @@ public class ArrowRenderComponent extends RenderComponent {
 
   @Override
   public void dispose() {
-    shapeRenderer.dispose();
+    if (shapeRenderer != null) {
+      shapeRenderer.dispose();
+    }
     super.dispose();
   }
 }

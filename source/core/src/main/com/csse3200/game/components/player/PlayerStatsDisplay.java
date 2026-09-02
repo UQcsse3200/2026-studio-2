@@ -15,7 +15,7 @@ import java.util.List;
 public class PlayerStatsDisplay extends UIComponent {
   private static final String HEART_TEXTURE = "images/purple_heart.png";
   private static final float HEART_SIDE_LENGTH = 40f;
-  private static final int HP_PER_HEART = 25;
+  private static final int HP_PER_HEART = 2;
   private static final int FLICKER_COUNT = 3;
   private static final float FLICKER_DURATION = 0.1f;
 
@@ -61,10 +61,10 @@ public class PlayerStatsDisplay extends UIComponent {
       return;
     }
 
-    growHeartsTo(Math.max(1, combatStats.getMaxHealth() / HP_PER_HEART));
+    growHeartsTo(Math.max(1, roundUpToHearts(combatStats.getMaxHealth())));
 
     int cappedHealth = Math.max(0, Math.min(health, combatStats.getMaxHealth()));
-    int heartsRemaining = cappedHealth / HP_PER_HEART;
+    int heartsRemaining = roundUpToHearts(cappedHealth);
 
     for (int i = 0; i < heartImages.size(); i++) {
       Image heart = heartImages.get(i);
@@ -78,6 +78,11 @@ public class PlayerStatsDisplay extends UIComponent {
         heart.setVisible(true);
       }
     }
+  }
+
+  /** Converts health points to hearts, keeping a partially filled heart visible. */
+  private int roundUpToHearts(int health) {
+    return (health + HP_PER_HEART - 1) / HP_PER_HEART;
   }
 
   /**
