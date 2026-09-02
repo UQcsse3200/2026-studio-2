@@ -22,7 +22,18 @@ public class CombatStatsComponent extends Component {
   private long invulnerableUntil;
 
   public CombatStatsComponent(int health, int baseAttack) {
-    this(health, baseAttack, 0);
+    this(health, baseAttack, 0L);
+  }
+
+  /**
+   * Creates combat stats with separate current and maximum health values.
+   *
+   * @param health initial current health
+   * @param maxHealth maximum health
+   * @param baseAttack base attack damage
+   */
+  public CombatStatsComponent(int health, int maxHealth, int baseAttack) {
+    this(health, maxHealth, baseAttack, 0);
   }
 
   /**
@@ -37,7 +48,14 @@ public class CombatStatsComponent extends Component {
     this.maxHealth = Math.max(health, 0);
     setHealth(health);
     setBaseAttack(baseAttack);
+  }
+
+  public CombatStatsComponent(
+      int health, int maxHealth, int baseAttack, long invulnerabilityDuration) {
+    this.invulnerabilityDuration = Math.max(0, invulnerabilityDuration);
+    this.maxHealth = Math.max(maxHealth, 0);
     setHealth(health);
+    setBaseAttack(baseAttack);
   }
 
   @Override
@@ -102,11 +120,7 @@ public class CombatStatsComponent extends Component {
    */
   public void setHealth(int health) {
     boolean wasAlive = this.health > 0;
-    if (health >= 0) {
-      this.health = health;
-    } else {
-      this.health = 0;
-    }
+    this.health = Math.max(0, Math.min(health, maxHealth));
     if (entity != null) {
       entity.getEvents().trigger("updateHealth", this.health);
       if (wasAlive && isDead()) {
