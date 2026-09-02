@@ -20,6 +20,7 @@ import com.csse3200.game.utils.math.GridPoint2Utils;
 import com.csse3200.game.utils.math.RandomUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.csse3200.game.entities.factories.ItemFactory;
 
 /** Tutorial area for the game with platforms, enemies, and a player. */
 public class TutorialGameArea extends GameArea {
@@ -92,6 +93,17 @@ public class TutorialGameArea extends GameArea {
   };
 
   private static final GridPoint2 PLAYER_SPAWN = new GridPoint2(1, 4);
+  private static final GridPoint2 ROPE_ARROW_SPAWN = new GridPoint2(2, 4);
+  private static final GridPoint2 STANDARD_ARROW_SPAWN = new GridPoint2(4, 4);
+  private static final GridPoint2 FIRE_ARROW_SPAWN = new GridPoint2(6, 4);
+  private static final GridPoint2 COLD_ARROW_SPAWN = new GridPoint2(8, 4);
+  private static final GridPoint2 HEALTH_POTION_SPAWN = new GridPoint2(10, 4);
+
+  private static final int STANDARD_ARROW_QUANTITY = 5;
+  private static final int FIRE_ARROW_QUANTITY = 5;
+  private static final int COLD_ARROW_QUANTITY = 5;
+  private static final int HEALTH_POTION_QUANTITY = 3;
+
 
   private static final float WALL_WIDTH = 0.1f;
 
@@ -126,7 +138,11 @@ public class TutorialGameArea extends GameArea {
     "images/parallax/Clouds.png",
     "images/parallax/Mountains.png",
     "images/parallax/ground.png",
-    "images/parallax/Rocks.png"
+    "images/parallax/Rocks.png",
+    "images/arrow.png",
+    "images/rope_arrow.png",
+    "images/fire_arrow.png",
+    "images/cold_arrow.png",
   };
 
   private static final String[] forestTextureAtlases = {
@@ -177,6 +193,7 @@ public class TutorialGameArea extends GameArea {
     spawnSpikes();
 
     player = spawnPlayer();
+    spawnItems(); // test items
     spawnWinCondition();
 
     // spawnGhosts();
@@ -451,4 +468,26 @@ public class TutorialGameArea extends GameArea {
 
     this.unloadAssets();
   }
+
+  /**
+   * generate items
+   */
+  private void spawnItems() {
+    spawnEntityAt(ItemFactory.createRopeArrow(), ROPE_ARROW_SPAWN, true, false);
+
+    spawnEntityAt(
+            ItemFactory.createStandardArrow(STANDARD_ARROW_QUANTITY),
+            STANDARD_ARROW_SPAWN,
+            true,
+            false);
+
+    spawnEntityAt(
+            ItemFactory.createHealthPotion(HEALTH_POTION_QUANTITY), HEALTH_POTION_SPAWN, true, false);
+
+    spawnEntityAt(ItemFactory.createFireArrow(FIRE_ARROW_QUANTITY), FIRE_ARROW_SPAWN, true, false);
+
+    spawnEntityAt(ItemFactory.createColdArrow(COLD_ARROW_QUANTITY), COLD_ARROW_SPAWN, true, false);
+  }
+
 }
+
