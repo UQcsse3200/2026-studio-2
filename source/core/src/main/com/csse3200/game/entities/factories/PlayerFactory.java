@@ -1,9 +1,9 @@
 package com.csse3200.game.entities.factories;
 
+import com.badlogic.gdx.graphics.g2d.Animation.PlayMode;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.csse3200.game.components.CombatStatsComponent;
-import com.csse3200.game.components.player.InventoryComponent;
-import com.csse3200.game.components.player.PlayerActions;
-import com.csse3200.game.components.player.PlayerStatsDisplay;
+import com.csse3200.game.components.player.*;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.PlayerConfig;
 import com.csse3200.game.files.FileLoader;
@@ -13,7 +13,8 @@ import com.csse3200.game.physics.PhysicsUtils;
 import com.csse3200.game.physics.components.ColliderComponent;
 import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.physics.components.PhysicsComponent;
-import com.csse3200.game.rendering.TextureRenderComponent;
+import com.csse3200.game.rendering.AnimationRenderComponent;
+import com.csse3200.game.rendering.GrappleRenderComponent;
 import com.csse3200.game.services.ServiceLocator;
 
 /**
@@ -34,22 +35,41 @@ public class PlayerFactory {
   public static Entity createPlayer() {
     InputComponent inputComponent =
         ServiceLocator.getInputService().getInputFactory().createForPlayer();
+    BowComponent bowComponent = new BowComponent();
+
+    AnimationRenderComponent animator =
+        new AnimationRenderComponent(
+            ServiceLocator.getResourceService()
+                .getAsset("images/player.atlas", TextureAtlas.class));
+    animator.addAnimation("idle", 0.15f, PlayMode.LOOP);
+    animator.addAnimation("walk", 0.1f, PlayMode.LOOP);
+    animator.addAnimation("sprint", 0.1f, PlayMode.LOOP);
+    animator.addAnimation("jump", 0.05f, PlayMode.NORMAL);
+    animator.addAnimation("hurt", 0.04f, PlayMode.NORMAL);
 
     Entity player =
         new Entity()
-            .addComponent(new TextureRenderComponent("images/box_boy_leaf.png"))
+            .addComponent(animator)
             .addComponent(new PhysicsComponent())
             .addComponent(new ColliderComponent())
             .addComponent(new HitboxComponent().setLayer(PhysicsLayer.PLAYER))
             .addComponent(new PlayerActions())
-            .addComponent(new CombatStatsComponent(stats.health, stats.baseAttack))
+            .addComponent(
+                new CombatStatsComponent(
+                    stats.health, stats.baseAttack, stats.invulnerabilityDuration))
+            .addComponent(bowComponent)
+            .addComponent(new PlayerAttackComponent(bowComponent))
             .addComponent(new InventoryComponent(stats.gold))
             .addComponent(inputComponent)
-            .addComponent(new PlayerStatsDisplay());
+            .addComponent(new PlayerStatsDisplay())
+            .addComponent(new GrappleComponent())
+            .addComponent(new GrappleRenderComponent())
+            .addComponent(new PlayerAnimationController());
 
     PhysicsUtils.setScaledCollider(player, 0.6f, 0.3f);
     player.getComponent(ColliderComponent.class).setDensity(1.5f);
-    player.getComponent(TextureRenderComponent.class).scaleEntity();
+    player.getComponent(AnimationRenderComponent.class).scaleEntity();
+    player.scaleWidth(0.75f);
     return player;
   }
 
