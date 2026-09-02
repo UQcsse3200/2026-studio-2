@@ -22,7 +22,7 @@ class CombatStatsComponentTest {
     assertEquals(100, combat.getHealth());
 
     combat.setHealth(150);
-    assertEquals(150, combat.getHealth());
+    assertEquals(CombatStatsComponent.MAX_HEALTH, combat.getHealth());
 
     combat.setHealth(-50);
     assertEquals(0, combat.getHealth());
@@ -46,6 +46,38 @@ class CombatStatsComponentTest {
     combat.addHealth(100);
     combat.addHealth(-20);
     assertEquals(80, combat.getHealth());
+  }
+
+  @Test
+  void shouldCapHealthAtEntityMaximum() {
+    CombatStatsComponent combat = new CombatStatsComponent(90, 20);
+    combat.addHealth(50);
+    assertEquals(90, combat.getHealth());
+    assertTrue(combat.isHealthFull());
+  }
+
+  @Test
+  void shouldAllowSeparateStartingAndMaximumHealth() {
+    CombatStatsComponent player = new CombatStatsComponent(75, 100, 10);
+    assertEquals(75, player.getHealth());
+    assertEquals(100, player.getMaxHealth());
+    assertFalse(player.isHealthFull());
+
+    player.addHealth(50);
+    assertEquals(100, player.getHealth());
+    assertTrue(player.isHealthFull());
+  }
+
+  @Test
+  void shouldAllowHealthAbovePlayerDefaultForOtherEntities() {
+    CombatStatsComponent boss = new CombatStatsComponent(250, 40);
+    assertEquals(250, boss.getMaxHealth());
+    assertEquals(250, boss.getHealth());
+    assertTrue(boss.isHealthFull());
+
+    boss.addHealth(-10);
+    assertEquals(240, boss.getHealth());
+    assertFalse(boss.isHealthFull());
   }
 
   @Test
@@ -88,7 +120,7 @@ class CombatStatsComponentTest {
   void shouldIgnoreHitsDuringInvulnerabilityWindow() {
     GameTime gameTime = mock(GameTime.class);
     ServiceLocator.registerTimeSource(gameTime);
-    CombatStatsComponent target = new CombatStatsComponent(100, 0, 1000);
+    CombatStatsComponent target = new CombatStatsComponent(100, 0, 1000L);
     CombatStatsComponent attacker = new CombatStatsComponent(100, 10);
 
     when(gameTime.getTime()).thenReturn(100L, 500L, 1100L);
@@ -105,7 +137,7 @@ class CombatStatsComponentTest {
   void shouldIgnoreDamageEventsDuringInvulnerabilityWindow() {
     GameTime gameTime = mock(GameTime.class);
     ServiceLocator.registerTimeSource(gameTime);
-    CombatStatsComponent targetStats = new CombatStatsComponent(100, 0, 1000);
+    CombatStatsComponent targetStats = new CombatStatsComponent(100, 0, 1000L);
     Entity target = new Entity().addComponent(targetStats);
     CombatStatsComponent attacker = new CombatStatsComponent(100, 10);
     target.create();

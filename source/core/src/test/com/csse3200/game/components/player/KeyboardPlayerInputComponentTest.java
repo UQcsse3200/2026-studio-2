@@ -15,6 +15,8 @@ import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.csse3200.game.components.CameraComponent;
+import com.csse3200.game.components.inventory.InventoryComponent;
+import com.csse3200.game.components.item.ItemType;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.extensions.GameExtension;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -44,10 +46,17 @@ class KeyboardPlayerInputComponentTest {
   @Test
   void shouldFireOncePerEPressTowardCursor() {
     KeyboardPlayerInputComponent component = new KeyboardPlayerInputComponent();
-    Entity player = new Entity().addComponent(component);
+    InventoryComponent inventory = new InventoryComponent(0);
+    Entity player =
+        new Entity()
+            .addComponent(component)
+            .addComponent(inventory)
+            .addComponent(new ItemUseComponent());
     player.setPosition(0f, 0f);
     Entity cameraEntity = new Entity().addComponent(new CameraComponent(camera));
     component.setCameraComponent(cameraEntity.getComponent(CameraComponent.class));
+    inventory.addItem(ItemType.ARROW, 2);
+    player.getComponent(ItemUseComponent.class).create();
 
     AtomicInteger shots = new AtomicInteger();
     AtomicReference<Vector2> direction = new AtomicReference<>();
@@ -63,11 +72,26 @@ class KeyboardPlayerInputComponentTest {
     assertTrue(component.keyDown(Keys.E));
     assertTrue(component.keyDown(Keys.E));
     assertEquals(1, shots.get());
+    assertEquals(1, inventory.getItemCount(ItemType.ARROW));
     assertTrue(direction.get().epsilonEquals(new Vector2(9.5f, 4.5f)));
 
     assertTrue(component.keyUp(Keys.E));
     assertTrue(component.keyDown(Keys.E));
     assertEquals(2, shots.get());
+    assertEquals(0, inventory.getItemCount(ItemType.ARROW));
+  }
+
+  @Test
+  void shouldNotAttackWhenItemUseComponentIsMissing() {
+    KeyboardPlayerInputComponent component = new KeyboardPlayerInputComponent();
+    Entity player = new Entity().addComponent(component);
+    player.setPosition(0f, 0f);
+    component.setCameraComponent(new CameraComponent(camera));
+    AtomicInteger shots = new AtomicInteger();
+    player.getEvents().addListener("primaryAttack", (Vector2 ignored) -> shots.incrementAndGet());
+
+    assertTrue(component.keyDown(Keys.E));
+    assertEquals(0, shots.get());
   }
 
   @Test
@@ -113,6 +137,34 @@ class KeyboardPlayerInputComponentTest {
     assertEquals(1, sprints.get());
     assertTrue(component.keyUp(Keys.SHIFT_LEFT));
     assertEquals(1, sprintStops.get());
+  }
+
+  @Test
+  void shouldDropItemWithRInsteadOfQ() {
+    KeyboardPlayerInputComponent component = new KeyboardPlayerInputComponent();
+    Entity player = new Entity().addComponent(component);
+    AtomicInteger drops = new AtomicInteger();
+    player.getEvents().addListener("dropItem", drops::incrementAndGet);
+
+    assertTrue(component.keyDown(Keys.R));
+    assertEquals(1, drops.get());
+
+    assertFalse(component.keyDown(Keys.Q));
+    assertEquals(1, drops.get());
+  }
+
+  @Test
+  void shouldDeleteItemWithDeleteInsteadOfX() {
+    KeyboardPlayerInputComponent component = new KeyboardPlayerInputComponent();
+    Entity player = new Entity().addComponent(component);
+    AtomicInteger deletions = new AtomicInteger();
+    player.getEvents().addListener("deleteItem", deletions::incrementAndGet);
+
+    assertTrue(component.keyDown(Keys.FORWARD_DEL));
+    assertEquals(1, deletions.get());
+
+    assertFalse(component.keyDown(Keys.X));
+    assertEquals(1, deletions.get());
   }
 
   @Test

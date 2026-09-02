@@ -3,7 +3,17 @@ package com.csse3200.game.entities.factories;
 import com.badlogic.gdx.graphics.g2d.Animation.PlayMode;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.csse3200.game.components.CombatStatsComponent;
+import com.csse3200.game.components.inventory.BackpackDisplay;
+import com.csse3200.game.components.inventory.InventoryBarDisplay;
+import com.csse3200.game.components.inventory.InventoryComponent;
 import com.csse3200.game.components.player.*;
+import com.csse3200.game.components.player.BowComponent;
+import com.csse3200.game.components.player.GrappleComponent;
+import com.csse3200.game.components.player.ItemUseComponent;
+import com.csse3200.game.components.player.PlayerActions;
+import com.csse3200.game.components.player.PlayerAttackComponent;
+import com.csse3200.game.components.player.PlayerInteractionComponent;
+import com.csse3200.game.components.player.PlayerStatsDisplay;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.PlayerConfig;
 import com.csse3200.game.files.FileLoader;
@@ -15,6 +25,7 @@ import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.rendering.AnimationRenderComponent;
 import com.csse3200.game.rendering.GrappleRenderComponent;
+import com.csse3200.game.rendering.TextureRenderComponent;
 import com.csse3200.game.services.ServiceLocator;
 
 /**
@@ -59,7 +70,14 @@ public class PlayerFactory {
                     stats.health, stats.baseAttack, stats.invulnerabilityDuration))
             .addComponent(bowComponent)
             .addComponent(new PlayerAttackComponent(bowComponent))
+            .addComponent(
+                new CombatStatsComponent(
+                    stats.health, CombatStatsComponent.MAX_HEALTH, stats.baseAttack))
             .addComponent(new InventoryComponent(stats.gold))
+            .addComponent(new InventoryBarDisplay())
+            .addComponent(new BackpackDisplay())
+            .addComponent(new PlayerInteractionComponent())
+            .addComponent(new ItemUseComponent())
             .addComponent(inputComponent)
             .addComponent(new PlayerStatsDisplay())
             .addComponent(new GrappleComponent())
@@ -70,6 +88,18 @@ public class PlayerFactory {
     player.getComponent(ColliderComponent.class).setDensity(1.5f);
     player.getComponent(AnimationRenderComponent.class).scaleEntity();
     player.scaleWidth(0.75f);
+    return player;
+  }
+
+  /**
+   * Create a player display entity.
+   *
+   * @return entity
+   */
+  public static Entity createPlayerDisplay() {
+    Entity player =
+        new Entity().addComponent(new TextureRenderComponent("images/box_boy_leaf.png"));
+    player.getComponent(TextureRenderComponent.class).scaleEntity();
     return player;
   }
 

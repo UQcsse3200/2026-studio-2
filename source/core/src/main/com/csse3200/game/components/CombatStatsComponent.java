@@ -11,6 +11,8 @@ import org.slf4j.LoggerFactory;
  * extended for more specific combat needs.
  */
 public class CombatStatsComponent extends Component {
+  /** Default player maximum health. Other entities may use a higher per-instance maximum. */
+  public static final int MAX_HEALTH = 100;
 
   private static final Logger logger = LoggerFactory.getLogger(CombatStatsComponent.class);
   private int health;
@@ -20,7 +22,18 @@ public class CombatStatsComponent extends Component {
   private long invulnerableUntil;
 
   public CombatStatsComponent(int health, int baseAttack) {
-    this(health, baseAttack, 0);
+    this(health, baseAttack, 0L);
+  }
+
+  /**
+   * Creates combat stats with separate current and maximum health values.
+   *
+   * @param health initial current health
+   * @param maxHealth maximum health
+   * @param baseAttack base attack damage
+   */
+  public CombatStatsComponent(int health, int maxHealth, int baseAttack) {
+    this(health, maxHealth, baseAttack, 0);
   }
 
   /**
@@ -33,6 +46,14 @@ public class CombatStatsComponent extends Component {
   public CombatStatsComponent(int health, int baseAttack, long invulnerabilityDuration) {
     this.invulnerabilityDuration = Math.max(0, invulnerabilityDuration);
     this.maxHealth = Math.max(health, 0);
+    setHealth(health);
+    setBaseAttack(baseAttack);
+  }
+
+  public CombatStatsComponent(
+      int health, int maxHealth, int baseAttack, long invulnerabilityDuration) {
+    this.invulnerabilityDuration = Math.max(0, invulnerabilityDuration);
+    this.maxHealth = Math.max(maxHealth, 0);
     setHealth(health);
     setBaseAttack(baseAttack);
   }
@@ -61,15 +82,6 @@ public class CombatStatsComponent extends Component {
   }
 
   /**
-   * Returns the entity's maximum health.
-   *
-   * @return entity's maximum health
-   */
-  public int getMaxHealth() {
-    return maxHealth;
-  }
-
-  /**
    * Increases the entity's maximum health by the given amount, and heals by the same amount.
    * Amounts less than or equal to zero are ignored.
    *
@@ -84,17 +96,31 @@ public class CombatStatsComponent extends Component {
   }
 
   /**
-   * Sets the entity's health. Health has a minimum bound of 0.
+   * Returns the entity's maximum health.
+   *
+   * @return maximum health
+   */
+  public int getMaxHealth() {
+    return maxHealth;
+  }
+
+  /**
+   * Returns true if the entity is already at maximum health.
+   *
+   * @return whether health is full
+   */
+  public boolean isHealthFull() {
+    return health >= maxHealth;
+  }
+
+  /**
+   * Sets the entity's health. Health is clamped between 0 and this entity's maximum health.
    *
    * @param health health
    */
   public void setHealth(int health) {
     boolean wasAlive = this.health > 0;
-    if (health >= 0) {
-      this.health = health;
-    } else {
-      this.health = 0;
-    }
+    this.health = Math.max(0, Math.min(health, maxHealth));
     if (entity != null) {
       entity.getEvents().trigger("updateHealth", this.health);
       if (wasAlive && isDead()) {
@@ -104,7 +130,8 @@ public class CombatStatsComponent extends Component {
   }
 
   /**
-   * Adds to the player's health. The amount added can be negative.
+   * Adds to the player's health. The amount added can be negative. Healing past the maximum health
+   * is discarded.
    *
    * @param health health to add
    */
