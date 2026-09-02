@@ -18,7 +18,7 @@ public class TextBox extends Component {
     this.xPos = xPos;
     this.yPos = yPos;
     this.text = text;
-    this.textBoxDisplay = new TextBoxDisplay(text, this.lifetime, this.xPos, this.yPos);
+    this.textBoxDisplay = new TextBoxDisplay(text, this.lifetime, this.xPos, this.yPos, this);
     this.textBoxDisplay.setTextColor(Color.WHITE);
   }
 
@@ -26,14 +26,17 @@ public class TextBox extends Component {
   public void create() {
     super.create();
     if (textBoxDisplay == null) {
-      textBoxDisplay = new TextBoxDisplay(text, this.lifetime, this.xPos, this.yPos);
+      textBoxDisplay = new TextBoxDisplay(text, this.lifetime, this.xPos, this.yPos, this);
     }
     textBoxDisplay.create();
   }
 
-  public void hideDialogue() {
-    if (textBoxDisplay != null) {
-      textBoxDisplay.dispose();
-    }
+  @Override
+  public void dispose() {
+    super.dispose();
+  }
+
+  public void setTextColour(Color color) {
+    textBoxDisplay.setTextColor(color);
   }
 }

@@ -47,17 +47,17 @@ public class PhysicsEngine implements Disposable {
     // consistent frame rate! See: https://gafferongames.com/post/fix_your_timestep/
 
     if (!paused) {
-        float deltaTime = timeSource.getDeltaTime();
-        float maxTime = Math.min(deltaTime, MAX_UPDATE_TIME);
-        accumulator += maxTime;
+      float deltaTime = timeSource.getDeltaTime();
+      float maxTime = Math.min(deltaTime, MAX_UPDATE_TIME);
+      accumulator += maxTime;
 
-        // Depending on how much time has passed, we may compute 0 or more physics steps in one
-        // go. If
-        // we need to catch up, we'll compute multiple in a row before getting to rendering.
-        while (accumulator >= PHYSICS_TIMESTEP) {
-            world.step(PHYSICS_TIMESTEP, VELOCITY_ITERATIONS, POSITION_ITERATIONS);
-            accumulator -= PHYSICS_TIMESTEP;
-        }
+      // Depending on how much time has passed, we may compute 0 or more physics steps in one
+      // go. If
+      // we need to catch up, we'll compute multiple in a row before getting to rendering.
+      while (accumulator >= PHYSICS_TIMESTEP) {
+        world.step(PHYSICS_TIMESTEP, VELOCITY_ITERATIONS, POSITION_ITERATIONS);
+        accumulator -= PHYSICS_TIMESTEP;
+      }
     }
   }
 
@@ -151,6 +151,6 @@ public class PhysicsEngine implements Disposable {
   }
 
   public void setPaused(boolean newPauseState) {
-      this.paused = newPauseState;
+    this.paused = newPauseState;
   }
 }

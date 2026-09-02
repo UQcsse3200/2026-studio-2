@@ -28,6 +28,7 @@ public class TextBoxDisplay extends UIComponent {
   private final float xPos;
   private final float yPos;
   private final Text text;
+  private final TextBox parentTextBox;
   private float age = 0f;
   private float typeTimer = 0f;
   private int revealedChars = 0;
@@ -40,13 +41,14 @@ public class TextBoxDisplay extends UIComponent {
   // make the boxes stay on screen until an input is given to cycle to the next one.
   // (make this a method or builder or whatever)
   // Make it so that the box can stay on screen forever if there is no specified input.
-  public TextBoxDisplay(Text text, float lifetime, float xPos, float yPos) {
+  public TextBoxDisplay(Text text, float lifetime, float xPos, float yPos, TextBox parentBox) {
     this.text = text;
     this.lifetime = lifetime;
     this.xPos = xPos;
     this.yPos = yPos;
     this.table = new Table();
     this.table.setPosition(xPos, yPos);
+    this.parentTextBox = parentBox;
   }
 
   /**
@@ -169,6 +171,7 @@ public class TextBoxDisplay extends UIComponent {
   @Override
   public void dispose() {
     super.dispose();
+    this.parentTextBox.dispose();
     if (label != null) {
       label.remove();
     }

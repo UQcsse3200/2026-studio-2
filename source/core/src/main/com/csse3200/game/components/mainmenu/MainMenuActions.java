@@ -26,10 +26,10 @@ public class MainMenuActions extends Component {
     entity.getEvents().addListener("Exit", this::onExit);
   }
 
-  /** Swaps to the Main Game screen. */
+  /** Swaps to the Tutorial Game screen. */
   private void onPlay() {
     logger.info("Play");
-    game.setScreen(GdxGame.ScreenType.MAIN_GAME);
+    game.setScreen(GdxGame.ScreenType.TUTORIAL_GAME);
   }
 
   /** Intended for loading a saved game state. Load functionality is not actually implemented. */

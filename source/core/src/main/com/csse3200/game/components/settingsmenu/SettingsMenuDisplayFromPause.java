@@ -201,7 +201,7 @@ public class SettingsMenuDisplayFromPause extends UIComponent {
   }
 
   private void exitMenu() {
-    game.setScreen(ScreenType.MAIN_GAME);
+    game.setScreen(ScreenType.TUTORIAL_GAME);
   }
 
   private Integer parseOrNull(String num) {

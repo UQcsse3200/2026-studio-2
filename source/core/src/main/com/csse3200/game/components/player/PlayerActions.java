@@ -13,7 +13,7 @@ import com.csse3200.game.services.ServiceLocator;
  * and when triggered should call methods within this class.
  */
 public class PlayerActions extends Component {
-  private static final float JUMP_FORCE = 5f;
+  private static final float JUMP_FORCE = 5.5f;
   private static final Vector2 MAX_SPEED = new Vector2(5f, 5f); // Metres per second
   private static final float SPRINT_MULTIPLIER = 1.75f;
   private static final float ROPE_JUMP_MULTIPLIER = 0.7f;
@@ -124,6 +124,7 @@ public class PlayerActions extends Component {
     if (isGrounded) {
       body.applyLinearImpulse(new Vector2(0, JUMP_FORCE), body.getWorldCenter(), true);
       isGrounded = false;
+      entity.getEvents().trigger("jumpStart");
     }
   }
 

@@ -1,0 +1,33 @@
+{
+  "skeletonWarrior": {
+    "health": 30,
+    "baseAttack": 25,
+    "speed": 3.0,
+    "behaviour": "chase",
+    "attackType": "melee",
+    "attackRange": 1.5,
+
+    "wanderRangeX": 4.0,
+    "wanderRangeY": 0.0,
+    "wanderWaitTime": 2.0,
+    "chasePriority": 10,
+    "viewDistance": 6.0,
+    "maxChaseDistance": 9.0
+  },
+
+  "skeletonArcher": {
+    "health": 20,
+    "baseAttack": 25,
+    "speed": 2.5,
+    "behaviour": "chase",
+    "attackType": "range",
+    "attackRange": 6.0,
+
+    "wanderRangeX": 4.0,
+    "wanderRangeY": 0.0,
+    "wanderWaitTime": 2.0,
+    "chasePriority": 10,
+    "viewDistance": 10.0,
+    "maxChaseDistance": 12.5
+  }
+}

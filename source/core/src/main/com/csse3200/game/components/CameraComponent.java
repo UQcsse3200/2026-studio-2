@@ -4,10 +4,12 @@ import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
+import com.csse3200.game.entities.Entity;
 
 public class CameraComponent extends Component {
   private final Camera camera;
   private Vector2 lastPosition;
+  private Entity target;
 
   public CameraComponent() {
     this(new OrthographicCamera());
@@ -18,10 +20,17 @@ public class CameraComponent extends Component {
     lastPosition = Vector2.Zero.cpy();
   }
 
+  public void setTarget(Entity target) {
+    this.target = target;
+  }
+
   @Override
   public void update() {
-    Vector2 position = entity.getPosition();
-    if (!lastPosition.epsilonEquals(entity.getPosition())) {
+    if (this.target == null) {
+      return;
+    }
+    Vector2 position = target.getPosition();
+    if (!lastPosition.epsilonEquals(target.getPosition())) {
       camera.position.set(position.x, position.y, 0f);
       lastPosition = position;
       camera.update();

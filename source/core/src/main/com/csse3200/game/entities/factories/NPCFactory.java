@@ -64,6 +64,32 @@ public class NPCFactory {
   }
 
   /**
+   * Creates a ghost entity.
+   *
+   * @param target entity to chase
+   * @return entity
+   */
+  public static Entity createZombie(Entity target) {
+    Entity ghost = createBaseNPC(target);
+    BaseEntityConfig config = configs.ghost;
+
+    AnimationRenderComponent animator =
+        new AnimationRenderComponent(
+            ServiceLocator.getResourceService().getAsset("images/ghost.atlas", TextureAtlas.class));
+    animator.addAnimation("angry_float", 0.1f, Animation.PlayMode.LOOP);
+    animator.addAnimation("float", 0.1f, Animation.PlayMode.LOOP);
+
+    ghost
+        .addComponent(new CombatStatsComponent(config.health, config.baseAttack))
+        .addComponent(animator)
+        .addComponent(new GhostAnimationController());
+
+    ghost.getComponent(AnimationRenderComponent.class).scaleEntity();
+
+    return ghost;
+  }
+
+  /**
    * Creates a ghost king entity.
    *
    * @param target entity to chase
@@ -105,6 +131,7 @@ public class NPCFactory {
             .addComponent(new PhysicsMovementComponent())
             .addComponent(new ColliderComponent())
             .addComponent(new HitboxComponent().setLayer(PhysicsLayer.NPC))
+            .addComponent(new CombatStatsComponent(50, 10))
             .addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER, 1.5f))
             .addComponent(aiComponent);
 
