@@ -545,3 +545,246 @@ hurt
   orig: 158, 158
   offset: 69, 37
   index: 20
+
+player_melee_attack.png
+size: 260, 475
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+melee
+  rotate: false
+  xy: 49, 403
+  size: 39, 71
+  orig: 121, 81
+  offset: 46, 0
+  index: 0
+melee
+  rotate: false
+  xy: 88, 403
+  size: 40, 71
+  orig: 121, 81
+  offset: 27, 0
+  index: 1
+melee
+  rotate: false
+  xy: 0, 403
+  size: 49, 72
+  orig: 122, 81
+  offset: 18, 0
+  index: 2
+melee
+  rotate: false
+  xy: 101, 324
+  size: 66, 73
+  orig: 121, 81
+  offset: 19, 0
+  index: 3
+melee
+  rotate: false
+  xy: 167, 324
+  size: 75, 73
+  orig: 121, 81
+  offset: 15, 0
+  index: 4
+melee
+  rotate: false
+  xy: 0, 0
+  size: 46, 81
+  orig: 121, 81
+  offset: 41, 0
+  index: 5
+melee
+  rotate: false
+  xy: 46, 0
+  size: 47, 81
+  orig: 121, 81
+  offset: 23, 0
+  index: 6
+melee
+  rotate: false
+  xy: 93, 0
+  size: 45, 81
+  orig: 122, 81
+  offset: 30, 0
+  index: 7
+melee
+  rotate: false
+  xy: 138, 0
+  size: 50, 81
+  orig: 121, 81
+  offset: 11, 0
+  index: 8
+melee
+  rotate: false
+  xy: 188, 0
+  size: 40, 81
+  orig: 121, 81
+  offset: 24, 0
+  index: 9
+melee
+  rotate: false
+  xy: 0, 81
+  size: 48, 81
+  orig: 121, 81
+  offset: 37, 0
+  index: 10
+melee
+  rotate: false
+  xy: 48, 81
+  size: 48, 81
+  orig: 121, 81
+  offset: 21, 0
+  index: 11
+melee
+  rotate: false
+  xy: 96, 81
+  size: 75, 81
+  orig: 122, 81
+  offset: 25, 0
+  index: 12
+melee
+  rotate: false
+  xy: 171, 81
+  size: 49, 81
+  orig: 121, 81
+  offset: 19, 0
+  index: 13
+melee
+  rotate: false
+  xy: 0, 162
+  size: 49, 81
+  orig: 121, 81
+  offset: 21, 0
+  index: 14
+melee
+  rotate: false
+  xy: 49, 162
+  size: 53, 81
+  orig: 121, 81
+  offset: 43, 0
+  index: 15
+melee
+  rotate: false
+  xy: 102, 162
+  size: 48, 81
+  orig: 121, 81
+  offset: 19, 0
+  index: 16
+melee
+  rotate: false
+  xy: 150, 162
+  size: 48, 81
+  orig: 122, 81
+  offset: 19, 0
+  index: 17
+melee
+  rotate: false
+  xy: 198, 162
+  size: 48, 81
+  orig: 121, 81
+  offset: 19, 0
+  index: 18
+melee
+  rotate: false
+  xy: 0, 243
+  size: 48, 81
+  orig: 121, 81
+  offset: 21, 0
+  index: 19
+melee
+  rotate: false
+  xy: 48, 243
+  size: 71, 81
+  orig: 121, 81
+  offset: 42, 0
+  index: 20
+melee
+  rotate: false
+  xy: 119, 243
+  size: 47, 81
+  orig: 121, 81
+  offset: 26, 0
+  index: 21
+melee
+  rotate: false
+  xy: 166, 243
+  size: 47, 81
+  orig: 122, 81
+  offset: 28, 0
+  index: 22
+melee
+  rotate: false
+  xy: 0, 324
+  size: 51, 79
+  orig: 121, 81
+  offset: 11, 2
+  index: 23
+melee
+  rotate: false
+  xy: 51, 324
+  size: 50, 79
+  orig: 121, 81
+  offset: 18, 2
+  index: 24
+
+player_shoot.png
+size: 248, 344
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+bowDraw
+  rotate: false
+  xy: 0, 0
+  size: 62, 86
+  orig: 62, 86
+  offset: 0, 0
+  index: 0
+bowDraw
+  rotate: false
+  xy: 62, 0
+  size: 62, 86
+  orig: 62, 86
+  offset: 0, 0
+  index: 1
+bowDraw
+  rotate: false
+  xy: 124, 0
+  size: 62, 86
+  orig: 62, 86
+  offset: 0, 0
+  index: 2
+bowDraw
+  rotate: false
+  xy: 186, 0
+  size: 62, 86
+  orig: 62, 86
+  offset: 0, 0
+  index: 3
+bowDraw
+  rotate: false
+  xy: 0, 86
+  size: 62, 86
+  orig: 62, 86
+  offset: 0, 0
+  index: 4
+bowHold
+  rotate: false
+  xy: 0, 86
+  size: 62, 86
+  orig: 62, 86
+  offset: 0, 0
+  index: 0
+bowRelease
+  rotate: false
+  xy: 124, 258
+  size: 62, 86
+  orig: 62, 86
+  offset: 0, 0
+  index: 0
+bowRelease
+  rotate: false
+  xy: 186, 258
+  size: 62, 86
+  orig: 62, 86
+  offset: 0, 0
+  index: 1

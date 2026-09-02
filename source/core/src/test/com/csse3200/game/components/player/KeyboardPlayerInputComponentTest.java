@@ -43,8 +43,98 @@ class KeyboardPlayerInputComponentTest {
             });
   }
 
+  private KeyboardPlayerInputComponent aimedComponent(Entity player) {
+    KeyboardPlayerInputComponent component = new KeyboardPlayerInputComponent();
+    player.addComponent(component);
+    player.setPosition(0f, 0f);
+    component.setCameraComponent(new CameraComponent(camera));
+    return component;
+  }
+
   @Test
-  void shouldFireOncePerEPressTowardCursor() {
+  void shouldMeleeOnLeftClick() {
+    Entity player = new Entity();
+    KeyboardPlayerInputComponent component = aimedComponent(player);
+
+    AtomicReference<Vector2> direction = new AtomicReference<>();
+    player.getEvents().addListener("melee", (Vector2 aim) -> direction.set(aim));
+
+    assertTrue(component.touchDown(4, 2, 0, Buttons.LEFT));
+    assertTrue(direction.get().epsilonEquals(new Vector2(9.5f, 4.5f)));
+  }
+
+  @Test
+  void shouldShootOnRightClick() {
+    Entity player = new Entity();
+    KeyboardPlayerInputComponent component = aimedComponent(player);
+
+    AtomicInteger shots = new AtomicInteger();
+    AtomicReference<Vector2> direction = new AtomicReference<>();
+    player
+        .getEvents()
+        .addListener(
+            "shoot",
+            (Vector2 aim) -> {
+              shots.incrementAndGet();
+              direction.set(aim);
+            });
+
+    assertTrue(component.touchDown(4, 2, 0, Buttons.RIGHT));
+    assertEquals(1, shots.get());
+    assertTrue(direction.get().epsilonEquals(new Vector2(9.5f, 4.5f)));
+  }
+
+  @Test
+  void shouldSignalStopShootOnRightRelease() {
+    Entity player = new Entity();
+    KeyboardPlayerInputComponent component = aimedComponent(player);
+
+    AtomicInteger stops = new AtomicInteger();
+    player.getEvents().addListener("stopShoot", (Vector2 ignored) -> stops.incrementAndGet());
+
+    assertTrue(component.touchUp(4, 2, 0, Buttons.RIGHT));
+    assertEquals(1, stops.get());
+  }
+
+  @Test
+  void shouldResolveDirectionOnStopShoot() {
+    Entity player = new Entity();
+    KeyboardPlayerInputComponent component = aimedComponent(player);
+
+    AtomicReference<Vector2> stopDirection = new AtomicReference<>();
+    player
+        .getEvents()
+        .addListener("stopShoot", (Vector2 aimDirection) -> stopDirection.set(aimDirection));
+
+    assertTrue(component.touchUp(4, 2, 0, Buttons.RIGHT));
+    assertTrue(stopDirection.get().epsilonEquals(new Vector2(9.5f, 4.5f)));
+  }
+
+  @Test
+  void shouldNotFireWithoutCamera() {
+    KeyboardPlayerInputComponent component = new KeyboardPlayerInputComponent();
+    Entity player = new Entity().addComponent(component);
+    AtomicInteger shots = new AtomicInteger();
+    player.getEvents().addListener("shoot", (Vector2 ignored) -> shots.incrementAndGet());
+
+    assertFalse(component.touchDown(4, 2, 0, Buttons.RIGHT));
+    assertEquals(0, shots.get());
+  }
+
+  @Test
+  void shouldCycleArrowOnQ() {
+    Entity player = new Entity();
+    KeyboardPlayerInputComponent component = aimedComponent(player);
+
+    AtomicInteger cycles = new AtomicInteger();
+    player.getEvents().addListener("cycleArrow", cycles::incrementAndGet);
+
+    assertTrue(component.keyDown(Keys.Q));
+    assertEquals(1, cycles.get());
+  }
+
+  @Test
+  void shouldUseSelectedItemOnE() {
     KeyboardPlayerInputComponent component = new KeyboardPlayerInputComponent();
     InventoryComponent inventory = new InventoryComponent(0);
     Entity player =
@@ -53,56 +143,93 @@ class KeyboardPlayerInputComponentTest {
             .addComponent(inventory)
             .addComponent(new ItemUseComponent());
     player.setPosition(0f, 0f);
-    Entity cameraEntity = new Entity().addComponent(new CameraComponent(camera));
-    component.setCameraComponent(cameraEntity.getComponent(CameraComponent.class));
+    component.setCameraComponent(new CameraComponent(camera));
     inventory.addItem(ItemType.ARROW, 2);
     player.getComponent(ItemUseComponent.class).create();
 
-    AtomicInteger shots = new AtomicInteger();
-    AtomicReference<Vector2> direction = new AtomicReference<>();
-    player
-        .getEvents()
-        .addListener(
-            "primaryAttack",
-            (Vector2 aimDirection) -> {
-              shots.incrementAndGet();
-              direction.set(aimDirection);
-            });
+    AtomicInteger attacks = new AtomicInteger();
+    player.getEvents().addListener("primaryAttack", (Vector2 ignored) -> attacks.incrementAndGet());
 
     assertTrue(component.keyDown(Keys.E));
-    assertTrue(component.keyDown(Keys.E));
-    assertEquals(1, shots.get());
+    assertEquals(1, attacks.get());
     assertEquals(1, inventory.getItemCount(ItemType.ARROW));
-    assertTrue(direction.get().epsilonEquals(new Vector2(9.5f, 4.5f)));
 
     assertTrue(component.keyUp(Keys.E));
     assertTrue(component.keyDown(Keys.E));
-    assertEquals(2, shots.get());
+    assertEquals(2, attacks.get());
     assertEquals(0, inventory.getItemCount(ItemType.ARROW));
   }
 
   @Test
-  void shouldNotAttackWhenItemUseComponentIsMissing() {
+  void shouldNotUseItemWhenItemUseComponentIsMissing() {
     KeyboardPlayerInputComponent component = new KeyboardPlayerInputComponent();
     Entity player = new Entity().addComponent(component);
-    player.setPosition(0f, 0f);
-    component.setCameraComponent(new CameraComponent(camera));
-    AtomicInteger shots = new AtomicInteger();
-    player.getEvents().addListener("primaryAttack", (Vector2 ignored) -> shots.incrementAndGet());
+    AtomicInteger attacks = new AtomicInteger();
+    player.getEvents().addListener("primaryAttack", (Vector2 ignored) -> attacks.incrementAndGet());
 
     assertTrue(component.keyDown(Keys.E));
-    assertEquals(0, shots.get());
+    assertEquals(0, attacks.get());
   }
 
   @Test
-  void shouldNotFireWithoutCamera() {
+  void shouldDropItemWithR() {
     KeyboardPlayerInputComponent component = new KeyboardPlayerInputComponent();
     Entity player = new Entity().addComponent(component);
-    AtomicInteger shots = new AtomicInteger();
-    player.getEvents().addListener("primaryAttack", (Vector2 ignored) -> shots.incrementAndGet());
+    AtomicInteger drops = new AtomicInteger();
+    player.getEvents().addListener("dropItem", drops::incrementAndGet);
 
-    assertTrue(component.keyDown(Keys.E));
-    assertEquals(0, shots.get());
+    assertTrue(component.keyDown(Keys.R));
+    assertEquals(1, drops.get());
+  }
+
+  @Test
+  void shouldDeleteItemWithDelete() {
+    KeyboardPlayerInputComponent component = new KeyboardPlayerInputComponent();
+    Entity player = new Entity().addComponent(component);
+    AtomicInteger deletions = new AtomicInteger();
+    player.getEvents().addListener("deleteItem", deletions::incrementAndGet);
+
+    assertTrue(component.keyDown(Keys.FORWARD_DEL));
+    assertEquals(1, deletions.get());
+  }
+
+  @Test
+  void shouldSelectQuickSlotWithNumberKey() {
+    KeyboardPlayerInputComponent component = new KeyboardPlayerInputComponent();
+    Entity player = new Entity().addComponent(component);
+    AtomicReference<Integer> selectedSlot = new AtomicReference<>();
+    player.getEvents().addListener("selectQuickSlot", selectedSlot::set);
+
+    assertTrue(component.keyDown(Keys.NUM_3));
+    assertEquals(2, selectedSlot.get());
+  }
+
+  @Test
+  void shouldTriggerInteractionAndBackpackEvents() {
+    KeyboardPlayerInputComponent component = new KeyboardPlayerInputComponent();
+    Entity player = new Entity().addComponent(component);
+    AtomicInteger interactions = new AtomicInteger();
+    AtomicInteger backpackToggles = new AtomicInteger();
+    player.getEvents().addListener("interact", interactions::incrementAndGet);
+    player.getEvents().addListener("toggleBackpack", backpackToggles::incrementAndGet);
+
+    assertTrue(component.keyDown(Keys.F));
+    assertTrue(component.keyDown(Keys.B));
+    assertEquals(1, interactions.get());
+    assertEquals(1, backpackToggles.get());
+  }
+
+  @Test
+  void shouldSwitchInventoryItemWithPeriodAndComma() {
+    KeyboardPlayerInputComponent component = new KeyboardPlayerInputComponent();
+    Entity player = new Entity().addComponent(component);
+    AtomicReference<Integer> change = new AtomicReference<>();
+    player.getEvents().addListener("switchItem", change::set);
+
+    assertTrue(component.keyDown(Keys.PERIOD));
+    assertEquals(1, change.get());
+    assertTrue(component.keyDown(Keys.COMMA));
+    assertEquals(-1, change.get());
   }
 
   @Test

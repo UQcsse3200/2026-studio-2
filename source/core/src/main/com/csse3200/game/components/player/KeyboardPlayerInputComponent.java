@@ -94,6 +94,9 @@ public class KeyboardPlayerInputComponent extends InputComponent {
         sprintHeld = true;
         triggerSprintEvent();
         return true;
+      case Keys.Q:
+        entity.getEvents().trigger("cycleArrow");
+        return true;
       case Keys.E:
         triggerAttackOrItemUse();
         return true;
@@ -186,32 +189,52 @@ public class KeyboardPlayerInputComponent extends InputComponent {
   }
 
   /**
-   * Fires the grapple toward the clicked world position.
+   * Fires the currently selected arrow toward the clicked world position.
    *
    * @return whether the input was processed
    * @see InputProcessor#touchDown(int, int, int, int)
    */
   @Override
   public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-    if (button != Buttons.LEFT) {
+    if (button == Buttons.LEFT) {
+      return triggerAimedEvent("melee", screenX, screenY);
+    }
+    if (button == Buttons.RIGHT) {
+      return triggerAimedEvent("shoot", screenX, screenY);
+    }
+    return false;
+  }
+
+  private boolean triggerAimedEvent(String eventName, int screenX, int screenY) {
+    Vector2 aim = getAimDirection(screenX, screenY);
+    if (aim == null || aim.isZero()) {
       return false;
     }
-    Vector2 aimDirection = getAimDirection(screenX, screenY);
-    if (aimDirection.isZero()) {
-      return false;
-    }
-    entity.getEvents().trigger("grappleFire", aimDirection);
+    entity.getEvents().trigger(eventName, aim);
     return true;
   }
 
+  /**
+   * Signals that the fire button was let go, so the selected arrow can react. Carries the aim
+   * direction resolved at release time, so a charged bow shot fires toward wherever the cursor
+   * currently is rather than where it was when charging started.
+   *
+   * @return whether the input was processed
+   * @see InputProcessor#touchUp(int, int, int, int)
+   */
   @Override
   public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-    if (button != Buttons.LEFT) {
-      return false;
+    if (button == Buttons.LEFT) {
+      entity.getEvents().trigger("stopMelee");
+      return true;
     }
 
-    entity.getEvents().trigger("grappleRelease");
-    return true;
+    if (button == Buttons.RIGHT) {
+      entity.getEvents().trigger("stopShoot", getAimDirection(screenX, screenY));
+      return true;
+    }
+
+    return false;
   }
 
   private void triggerAttackOrItemUse() {

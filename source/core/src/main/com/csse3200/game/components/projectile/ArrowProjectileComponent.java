@@ -85,6 +85,10 @@ public class ArrowProjectileComponent extends Component {
   }
 
   private void damageTarget(Fixture other) {
+    // Non-damaging arrows (e.g. grapple) have no combat stats
+    if (combatStats == null) {
+      return;
+    }
     Object userData = other.getBody().getUserData();
     if (!(userData instanceof BodyUserData)) {
       return;
