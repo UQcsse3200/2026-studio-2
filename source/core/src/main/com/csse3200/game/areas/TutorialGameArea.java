@@ -419,9 +419,6 @@ public class TutorialGameArea extends GameArea {
   }
 
   private void spawnSkeletonWarrior() {
-    GridPoint2 minPos = new GridPoint2(0, 0);
-    GridPoint2 maxPos = terrain.getMapBounds(0).sub(2, 2);
-
     for (GridPoint2 spawnLocation : skeletonWarriorSpawnLocations) {
       Entity enemy = EnemyFactory.createSkeletonWarrior(player);
       spawnEntityAt(enemy, spawnLocation, true, true);
@@ -429,9 +426,6 @@ public class TutorialGameArea extends GameArea {
   }
 
   private void spawnSkeletonArcher() {
-    GridPoint2 minPos = new GridPoint2(0, 0);
-    GridPoint2 maxPos = terrain.getMapBounds(0).sub(2, 2);
-
     for (GridPoint2 spawnLocation : skeletonArcherSpawnLocations) {
       Entity enemy = EnemyFactory.createSkeletonArcher(player);
       spawnEntityAt(enemy, spawnLocation, true, true);
