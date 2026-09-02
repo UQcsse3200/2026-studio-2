@@ -19,20 +19,32 @@ public class ProjectileFactory {
   public static final float GRAPPLE_ARROW_RANGE = 16f;
 
   /**
-   * Creates a standard player arrow with unlimited-ammo behaviour.
+   * Creates a standard player arrow with unlimited-ammo behaviour, at the default speed.
    *
    * @param position projectile spawn position
    * @param direction projectile travel direction
    * @return unregistered arrow entity
    */
   public static Entity createPlayerArrow(Vector2 position, Vector2 direction) {
+    return createPlayerArrow(position, direction, STANDARD_ARROW_SPEED);
+  }
+
+  /**
+   * Creates a standard player arrow with unlimited-ammo behaviour and a caller-chosen speed, e.g.
+   * for a bow's charge-up mechanic.
+   *
+   * @param position projectile spawn position
+   * @param direction projectile travel direction
+   * @param speed travel speed in world units per second
+   * @return unregistered arrow entity
+   */
+  public static Entity createPlayerArrow(Vector2 position, Vector2 direction, float speed) {
     Entity arrow =
         new Entity()
             .addComponent(new PhysicsComponent())
             .addComponent(new HitboxComponent().setLayer(PhysicsLayer.PLAYER_PROJECTILE))
             .addComponent(new CombatStatsComponent(1, STANDARD_ARROW_DAMAGE))
-            .addComponent(
-                new ArrowProjectileComponent(direction, STANDARD_ARROW_SPEED, STANDARD_ARROW_RANGE))
+            .addComponent(new ArrowProjectileComponent(direction, speed, STANDARD_ARROW_RANGE))
             .addComponent(new ArrowRenderComponent());
     arrow.setScale(0.5f, 0.1f);
     arrow.setPosition(position.x - arrow.getScale().x / 2f, position.y - arrow.getScale().y / 2f);

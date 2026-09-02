@@ -86,10 +86,33 @@ class KeyboardPlayerInputComponentTest {
     KeyboardPlayerInputComponent component = aimedComponent(player);
 
     AtomicInteger stops = new AtomicInteger();
-    player.getEvents().addListener("stopShoot", stops::incrementAndGet);
+    player.getEvents().addListener("stopShoot", (Vector2 ignored) -> stops.incrementAndGet());
 
     assertTrue(component.touchUp(4, 2, 0, Buttons.RIGHT));
     assertEquals(1, stops.get());
+  }
+
+  @Test
+  void shouldResolveDirectionOnStopShoot() {
+    KeyboardPlayerInputComponent component = new KeyboardPlayerInputComponent();
+    Entity player = new Entity().addComponent(component);
+    player.setPosition(0f, 0f);
+    component.setCameraComponent(new CameraComponent(camera));
+
+    AtomicReference<Vector2> stopDirection = new AtomicReference<>();
+    AtomicInteger stops = new AtomicInteger();
+    player
+        .getEvents()
+        .addListener(
+            "stopShoot",
+            (Vector2 aimDirection) -> {
+              stops.incrementAndGet();
+              stopDirection.set(aimDirection);
+            });
+
+    assertTrue(component.touchUp(4, 2, 0, Buttons.RIGHT));
+    assertEquals(1, stops.get());
+    assertTrue(stopDirection.get().epsilonEquals(new Vector2(9.5f, 4.5f)));
   }
 
   @Test
@@ -147,5 +170,18 @@ class KeyboardPlayerInputComponentTest {
     assertEquals(1, sprints.get());
     assertTrue(component.keyUp(Keys.SHIFT_LEFT));
     assertEquals(1, sprintStops.get());
+  }
+
+  @Test
+  void shouldShootSelectedArrowTowardClickedWorldPosition() {
+    KeyboardPlayerInputComponent component = new KeyboardPlayerInputComponent();
+    Entity player = new Entity().addComponent(component);
+    player.setPosition(0f, 0f);
+    component.setCameraComponent(new CameraComponent(camera));
+    AtomicReference<Vector2> direction = new AtomicReference<>();
+    player.getEvents().addListener("shoot", (Vector2 aim) -> direction.set(aim));
+
+    assertTrue(component.touchDown(4, 2, 0, Buttons.RIGHT));
+    assertTrue(direction.get().epsilonEquals(new Vector2(9.5f, 4.5f)));
   }
 }
