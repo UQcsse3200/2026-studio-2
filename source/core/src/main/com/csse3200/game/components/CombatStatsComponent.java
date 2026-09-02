@@ -1,5 +1,7 @@
 package com.csse3200.game.components;
 
+import com.csse3200.game.services.GameTime;
+import com.csse3200.game.services.ServiceLocator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,26 +18,24 @@ public class CombatStatsComponent extends Component {
   private int health;
   private int maxHealth;
   private int baseAttack;
+  private final long invulnerabilityDuration;
+  private long invulnerableUntil;
 
-  /**
-   * Creates combat stats whose maximum health equals the starting health.
-   *
-   * @param health starting and maximum health
-   * @param baseAttack base attack damage
-   */
   public CombatStatsComponent(int health, int baseAttack) {
-    this(health, health, baseAttack);
+    this(health, baseAttack, 0);
   }
 
   /**
-   * Creates combat stats with an explicit maximum health for this entity.
+   * Creates combat stats with an invulnerability window after each successful hit.
    *
-   * @param health starting health
-   * @param maxHealth maximum health for this entity
+   * @param health initial health
    * @param baseAttack base attack damage
+   * @param invulnerabilityDuration invulnerability duration in milliseconds
    */
-  public CombatStatsComponent(int health, int maxHealth, int baseAttack) {
-    this.maxHealth = Math.max(maxHealth, 0);
+  public CombatStatsComponent(int health, int baseAttack, long invulnerabilityDuration) {
+    this.invulnerabilityDuration = Math.max(0, invulnerabilityDuration);
+    this.maxHealth = Math.max(health, 0);
+    setHealth(health);
     setBaseAttack(baseAttack);
     setHealth(health);
   }
@@ -101,9 +101,17 @@ public class CombatStatsComponent extends Component {
    * @param health health
    */
   public void setHealth(int health) {
-    this.health = Math.max(0, Math.min(maxHealth, health));
+    boolean wasAlive = this.health > 0;
+    if (health >= 0) {
+      this.health = health;
+    } else {
+      this.health = 0;
+    }
     if (entity != null) {
       entity.getEvents().trigger("updateHealth", this.health);
+      if (wasAlive && isDead()) {
+        entity.getEvents().trigger("death");
+      }
     }
   }
 
@@ -140,9 +148,17 @@ public class CombatStatsComponent extends Component {
   }
 
   public void hit(CombatStatsComponent attacker) {
+    GameTime timeSource = ServiceLocator.getTimeSource();
+    long currentTime = timeSource == null ? 0 : timeSource.getTime();
+    if (currentTime < invulnerableUntil) {
+      return;
+    }
+
     int oldHealth = getHealth();
     int newHealth = oldHealth - attacker.getBaseAttack();
     setHealth(newHealth);
+    invulnerableUntil = currentTime + invulnerabilityDuration;
+
     if (entity != null && getHealth() < oldHealth) {
       entity.getEvents().trigger("hurt");
     }
