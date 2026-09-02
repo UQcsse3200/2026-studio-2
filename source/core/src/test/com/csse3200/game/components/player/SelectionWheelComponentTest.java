@@ -7,8 +7,8 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.badlogic.gdx.math.Vector2;
-import com.csse3200.game.components.item.consumables.HealthPotion;
 import com.csse3200.game.components.item.Item;
+import com.csse3200.game.components.item.consumables.HealthPotion;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.extensions.GameExtension;
 import org.junit.jupiter.api.Test;

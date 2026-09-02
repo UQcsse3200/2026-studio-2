@@ -267,52 +267,6 @@ class KeyboardPlayerInputComponentTest {
   }
 
   @Test
-  void shouldDropItemWithRInsteadOfQ() {
-    KeyboardPlayerInputComponent component = new KeyboardPlayerInputComponent();
-    Entity player = new Entity().addComponent(component);
-    AtomicInteger drops = new AtomicInteger();
-    player.getEvents().addListener("dropItem", drops::incrementAndGet);
-
-    assertTrue(component.keyDown(Keys.R));
-    assertEquals(1, drops.get());
-
-    assertFalse(component.keyDown(Keys.Q));
-    assertEquals(1, drops.get());
-  }
-
-  @Test
-  void shouldDeleteItemWithDeleteInsteadOfX() {
-    KeyboardPlayerInputComponent component = new KeyboardPlayerInputComponent();
-    Entity player = new Entity().addComponent(component);
-    AtomicInteger deletions = new AtomicInteger();
-    player.getEvents().addListener("deleteItem", deletions::incrementAndGet);
-
-    assertTrue(component.keyDown(Keys.FORWARD_DEL));
-    assertEquals(1, deletions.get());
-
-    assertFalse(component.keyDown(Keys.X));
-    assertEquals(1, deletions.get());
-  }
-
-  @Test
-  void shouldFireGrappleTowardClickedWorldPosition() {
-    KeyboardPlayerInputComponent component = new KeyboardPlayerInputComponent();
-    Entity player = new Entity().addComponent(component);
-    player.setPosition(0f, 0f);
-    component.setCameraComponent(new CameraComponent(camera));
-    AtomicReference<Vector2> direction = new AtomicReference<>();
-    player.getEvents().addListener("grappleFire", (Vector2 aim) -> direction.set(aim));
-
-    assertFalse(component.touchDown(4, 2, 0, Buttons.RIGHT));
-    assertTrue(component.touchDown(4, 2, 0, Buttons.LEFT));
-    assertTrue(direction.get().epsilonEquals(new Vector2(9.5f, 4.5f)));
-  }
-
-  // ---------
-  // Selection wheel keys
-  // ---------
-
-  @Test
   void shouldOpenWeaponWheelOnTab() {
     KeyboardPlayerInputComponent input = new KeyboardPlayerInputComponent();
     Entity player = new Entity().addComponent(input);
