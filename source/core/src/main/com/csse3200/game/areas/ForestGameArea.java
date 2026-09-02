@@ -75,6 +75,13 @@ public class ForestGameArea extends GameArea {
     this.terrainFactory = terrainFactory;
   }
 
+  /**
+   * @return the player entity after this area has been created
+   */
+  public Entity getPlayer() {
+    return player;
+  }
+
   /** Create the game area, including terrain, static entities (trees), dynamic entities (player) */
   @Override
   public void create() {

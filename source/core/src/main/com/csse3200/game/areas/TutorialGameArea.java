@@ -1,5 +1,9 @@
 package com.csse3200.game.areas;
 
+import com.csse3200.game.events.EventHandler;
+import com.csse3200.game.ui.GameEndActions;
+import com.csse3200.game.ui.GameEndDisplay;
+import com.csse3200.game.ui.GameEndState;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
@@ -196,6 +200,7 @@ public class TutorialGameArea extends GameArea {
     spawnWinCondition();
     spawnSkeletonArcher();
     spawnSkeletonWarrior();
+    //spawnTestWinCondition(); // Temporary test win condition near player spawn for quick testing
 
     // spawnGhosts();
     // spawnGhostKing();
@@ -377,6 +382,13 @@ public class TutorialGameArea extends GameArea {
   private void spawnWinCondition() {
     Entity winCon = ObstacleFactory.createWinConEntity();
     spawnEntityAt(winCon, new GridPoint2(80, 18), true, true);
+  }
+
+  // Temporary test win condition near player spawn for quick testing
+  private void spawnTestWinCondition() {
+    // Temporary test win condition near player spawn for quick testing
+    Entity testWinCon = ObstacleFactory.createWinConEntity();
+    spawnEntityAt(testWinCon, new GridPoint2(3, 4), true, true);
   }
 
   private void spawnGhosts() {
