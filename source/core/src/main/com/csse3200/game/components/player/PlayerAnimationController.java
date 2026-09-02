@@ -105,11 +105,11 @@ public class PlayerAnimationController extends Component {
     animator.startAnimation("hurt");
   }
 
-void meleeAttack(Vector2 direction) {
+  void meleeAttack(Vector2 direction) {
     if (direction.x != 0) {
       animator.setFlipX(direction.x < 0);
     }
-      
+
     jumping = false;
     hurt = false;
     attacking = true;

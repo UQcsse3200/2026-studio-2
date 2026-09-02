@@ -187,7 +187,8 @@ class ItemUseComponentTest {
     inventory.selectNext();
     use.create();
 
-    // A grapple projectile attaches during a later physics update, not while grappleFire is handled.
+    // A grapple projectile attaches during a later physics update, not while grappleFire is
+    // handled.
     assertTrue(use.useSelectedItem());
     assertFalse(use.isRopeReady());
     assertEquals(1, inventory.getItemCount(ItemType.RopeArrow));

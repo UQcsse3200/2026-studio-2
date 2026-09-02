@@ -75,8 +75,7 @@ public class GrappleComponent extends Component {
     }
 
     Vector2 start = entity.getCenterPosition();
-    Vector2 end =
-        start.cpy().mulAdd(direction.cpy().nor(), ProjectileFactory.GRAPPLE_ARROW_RANGE);
+    Vector2 end = start.cpy().mulAdd(direction.cpy().nor(), ProjectileFactory.GRAPPLE_ARROW_RANGE);
     RaycastHit hit = new RaycastHit();
 
     if (!ServiceLocator.getPhysicsService()
