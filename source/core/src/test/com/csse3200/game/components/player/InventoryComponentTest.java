@@ -357,6 +357,83 @@ class InventoryComponentTest {
   }
 
   @Test
+  void shouldSortOccupiedSlotsByNumericItemId() {
+    InventoryComponent inventory = new InventoryComponent(0, 5);
+    inventory.addItem(ItemType.ColdArrow, 5);
+    inventory.addItem(ItemType.CONSUMABLE, 3);
+    inventory.addItem(ItemType.FireArrow, 4);
+    inventory.addItem(ItemType.RopeArrow, 2);
+    inventory.addItem(ItemType.ARROW, 1);
+
+    assertTrue(inventory.sortByItemId());
+
+    assertEquals(ItemType.ARROW, inventory.getSlot(0).getItemType());
+    assertEquals(ItemType.RopeArrow, inventory.getSlot(1).getItemType());
+    assertEquals(ItemType.CONSUMABLE, inventory.getSlot(2).getItemType());
+    assertEquals(ItemType.FireArrow, inventory.getSlot(3).getItemType());
+    assertEquals(ItemType.ColdArrow, inventory.getSlot(4).getItemType());
+  }
+
+  @Test
+  void shouldSortOccupiedSlotsByItemIdAndMoveEmptySlotsToEnd() {
+    InventoryComponent inventory = new InventoryComponent(0, 5);
+    inventory.addItem(ItemType.CONSUMABLE, 3);
+    inventory.addItem(ItemType.RopeArrow, 2);
+    inventory.addItem(ItemType.ARROW, 1);
+
+    assertTrue(inventory.sortByItemId());
+
+    assertEquals(ItemType.ARROW, inventory.getSlot(0).getItemType());
+    assertEquals(1, inventory.getSlot(0).getQuantity());
+    assertEquals(ItemType.RopeArrow, inventory.getSlot(1).getItemType());
+    assertEquals(2, inventory.getSlot(1).getQuantity());
+    assertEquals(ItemType.CONSUMABLE, inventory.getSlot(2).getItemType());
+    assertEquals(3, inventory.getSlot(2).getQuantity());
+    assertTrue(inventory.isSlotEmpty(3));
+    assertTrue(inventory.isSlotEmpty(4));
+  }
+
+  @Test
+  void shouldKeepSelectedItemAndNotifyWhenSortingMovesIt() {
+    InventoryComponent inventory = new InventoryComponent(0, 3);
+    Entity player = new Entity().addComponent(inventory);
+    int[] inventoryEvents = {0};
+    int[] selectionEvents = {0};
+    player.getEvents().addListener("inventoryChanged", () -> inventoryEvents[0]++);
+    player.getEvents().addListener("inventorySelectionChanged", () -> selectionEvents[0]++);
+    inventory.addItem(ItemType.CONSUMABLE, 1);
+    inventory.addItem(ItemType.ARROW, 1);
+    inventoryEvents[0] = 0;
+    selectionEvents[0] = 0;
+
+    assertTrue(inventory.sortByItemId());
+
+    assertEquals(ItemType.CONSUMABLE, inventory.getSelectedItem());
+    assertEquals(1, inventory.getSelectedSlotIndex());
+    assertEquals(1, inventoryEvents[0]);
+    assertEquals(1, selectionEvents[0]);
+  }
+
+  @Test
+  void shouldNotNotifyWhenInventoryIsAlreadySorted() {
+    InventoryComponent inventory = new InventoryComponent(0, 3);
+    Entity player = new Entity().addComponent(inventory);
+    int[] inventoryEvents = {0};
+    int[] selectionEvents = {0};
+    player.getEvents().addListener("inventoryChanged", () -> inventoryEvents[0]++);
+    player.getEvents().addListener("inventorySelectionChanged", () -> selectionEvents[0]++);
+    inventory.addItem(ItemType.ARROW, 1);
+    inventory.addItem(ItemType.RopeArrow, 1);
+    inventoryEvents[0] = 0;
+    selectionEvents[0] = 0;
+
+    assertFalse(inventory.sortByItemId());
+
+    assertEquals(0, inventoryEvents[0]);
+    assertEquals(0, selectionEvents[0]);
+  }
+
+  @Test
   void shouldMapQuickSlotEventToPhysicalSlot() {
     InventoryComponent inventory = new InventoryComponent(0, 8);
     Entity player = new Entity().addComponent(inventory);

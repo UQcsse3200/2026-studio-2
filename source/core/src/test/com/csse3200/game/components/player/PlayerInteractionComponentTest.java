@@ -15,8 +15,8 @@ import com.csse3200.game.components.inventory.InventoryComponent;
 import com.csse3200.game.components.item.Item;
 import com.csse3200.game.components.item.ItemComponent;
 import com.csse3200.game.components.item.ItemType;
-import com.csse3200.game.components.item.RopeArr;
-import com.csse3200.game.components.item.StandardArr;
+import com.csse3200.game.components.item.weapons.RopeArr;
+import com.csse3200.game.components.item.weapons.StandardArr;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.extensions.GameExtension;
@@ -144,6 +144,26 @@ class PlayerInteractionComponentTest {
 
     assertTrue(player.getComponent(PlayerInteractionComponent.class).dropItem());
     assertEquals(0, inventory.getItemCount(ItemType.ARROW));
+  }
+
+  @Test
+  void shouldDropRopeArrowStackWithFullQuantity() {
+    Entity player = createPlayer(new InventoryComponent(0));
+    InventoryComponent inventory = player.getComponent(InventoryComponent.class);
+    inventory.addItem(ItemType.RopeArrow, 3);
+
+    assertTrue(player.getComponent(PlayerInteractionComponent.class).dropItem());
+    assertEquals(0, inventory.getItemCount(ItemType.RopeArrow));
+
+    int droppedQuantity = 0;
+    for (Entity entity : ServiceLocator.getEntityService().getEntities()) {
+      ItemComponent itemComponent = entity.getComponent(ItemComponent.class);
+      if (itemComponent != null && itemComponent.getItem().getItemType() == ItemType.RopeArrow) {
+        droppedQuantity = itemComponent.getItem().getQuantity();
+        break;
+      }
+    }
+    assertEquals(3, droppedQuantity);
   }
 
   @Test

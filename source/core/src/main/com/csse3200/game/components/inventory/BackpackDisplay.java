@@ -2,11 +2,14 @@ package com.csse3200.game.components.inventory;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.utils.DragListener;
 import com.csse3200.game.components.item.ItemType;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.UIComponent;
@@ -22,7 +25,8 @@ public class BackpackDisplay extends UIComponent {
   private Table inventoryTable;
   private Table detailsTable;
   private Table contentTable;
-  private ItemType selectedItem;
+  private Table highlightedSlot;
+  private float originalAlpha;
 
   private boolean visible = false;
 
@@ -40,6 +44,10 @@ public class BackpackDisplay extends UIComponent {
     inventoryTable = new Table();
     detailsTable = new Table();
 
+    detailsTable.setBackground(skin.getDrawable("button-c"));
+
+    detailsTable.pad(20f);
+
     Label title = new Label("Inventory", skin, "large");
 
     contentTable.add(title).colspan(2).padBottom(20f);
@@ -48,7 +56,7 @@ public class BackpackDisplay extends UIComponent {
 
     contentTable.add(inventoryTable).padRight(40f);
 
-    contentTable.add(detailsTable).width(250f).top();
+    contentTable.add(detailsTable).width(280f).top();
 
     table.add(contentTable);
 
@@ -75,7 +83,7 @@ public class BackpackDisplay extends UIComponent {
       InventorySlot inventorySlot = inventory.getSlot(slotIndex);
       Table slot;
       if (inventorySlot == null || inventorySlot.isEmpty()) {
-        slot = createEmptySlot(slotNumber);
+        slot = createEmptySlot(slotNumber, slotIndex);
       } else {
         slot =
             createItemSlot(
@@ -100,6 +108,7 @@ public class BackpackDisplay extends UIComponent {
   private Table createItemSlot(int slotNumber, int slotIndex, ItemType itemType, int quantity) {
 
     Table slot = new Table();
+    slot.setUserObject(slotIndex);
 
     InventoryComponent inventory = entity.getComponent(InventoryComponent.class);
 
@@ -114,41 +123,123 @@ public class BackpackDisplay extends UIComponent {
 
     Image icon = new Image(texture);
 
-    Label itemName = new Label(getItemDisplayName(itemType), skin);
-
-    itemName.setWrap(true);
-    itemName.setAlignment(1);
-
-    Label quantityLabel = new Label("x" + quantity, skin);
-
     Label slotLabel =
         new Label(
             slotNumber <= inventory.getHotbarSlotCount() ? Integer.toString(slotNumber) : "", skin);
 
     slot.add(slotLabel).width(18f).left().padLeft(2f);
 
-    slot.add(icon).size(40f, 40f).padRight(4f);
+    slot.add(icon).size(55f, 55f).padRight(4f);
 
     slot.row();
-
-    slot.row();
-
-    slot.add(itemName).colspan(2).width(85f).center();
-
-    slot.row();
-
-    slot.add(quantityLabel).colspan(2).center();
 
     slot.addListener(
         new ClickListener() {
           @Override
           public void clicked(InputEvent event, float x, float y) {
 
-            selectedItem = itemType;
+            InventoryComponent inventory = entity.getComponent(InventoryComponent.class);
+
+            inventory.selectSlot(slotIndex);
 
             showItemDetails(itemType, quantity);
+          }
+        });
 
-            populateSlots();
+    slot.addListener(
+        new DragListener() {
+          private int sourceSlotIndex;
+          private Image dragIcon;
+
+          @Override
+          public void dragStart(InputEvent event, float x, float y, int pointer) {
+
+            sourceSlotIndex = slotIndex;
+
+            originalAlpha = slot.getColor().a;
+            slot.getColor().a = 0.4f;
+
+            Texture dragTexture =
+                ServiceLocator.getResourceService()
+                    .getAsset(getItemTexture(itemType), Texture.class);
+
+            dragIcon = new Image(dragTexture);
+            dragIcon.setSize(45f, 45f);
+
+            // Prevent the floating icon from blocking hit detection.
+            dragIcon.setTouchable(Touchable.disabled);
+
+            stage.addActor(dragIcon);
+
+            dragIcon.setPosition(
+                event.getStageX() - dragIcon.getWidth() / 2f,
+                event.getStageY() - dragIcon.getHeight() / 2f);
+          }
+
+          @Override
+          public void drag(InputEvent event, float x, float y, int pointer) {
+
+            if (dragIcon != null) {
+              dragIcon.setPosition(
+                  event.getStageX() - dragIcon.getWidth() / 2f,
+                  event.getStageY() - dragIcon.getHeight() / 2f);
+            }
+
+            Actor target = stage.hit(event.getStageX(), event.getStageY(), true);
+
+            while (target != null && !(target.getUserObject() instanceof Integer)) {
+              target = target.getParent();
+            }
+
+            Table newHighlightedSlot = target instanceof Table ? (Table) target : null;
+
+            if (highlightedSlot != newHighlightedSlot) {
+              if (highlightedSlot != null) {
+                highlightedSlot.setBackground(skin.getDrawable("button-c"));
+              }
+
+              highlightedSlot = newHighlightedSlot;
+
+              if (highlightedSlot != null) {
+                highlightedSlot.setBackground(skin.getDrawable("selection"));
+              }
+            }
+          }
+
+          @Override
+          public void dragStop(InputEvent event, float x, float y, int pointer) {
+
+            slot.getColor().a = originalAlpha;
+
+            if (highlightedSlot != null) {
+              highlightedSlot.setBackground(skin.getDrawable("button-c"));
+              highlightedSlot = null;
+            }
+
+            if (dragIcon != null) {
+              dragIcon.remove();
+              dragIcon = null;
+            }
+
+            Actor target = stage.hit(event.getStageX(), event.getStageY(), true);
+
+            while (target != null && !(target.getUserObject() instanceof Integer)) {
+              target = target.getParent();
+            }
+
+            if (target == null) {
+              return;
+            }
+
+            int targetSlotIndex = (Integer) target.getUserObject();
+
+            if (sourceSlotIndex == targetSlotIndex) {
+              return;
+            }
+
+            InventoryComponent inventory = entity.getComponent(InventoryComponent.class);
+
+            inventory.swapSlots(sourceSlotIndex, targetSlotIndex);
           }
         });
 
@@ -160,8 +251,9 @@ public class BackpackDisplay extends UIComponent {
    *
    * @return empty slot table
    */
-  private Table createEmptySlot(int slotNumber) {
+  private Table createEmptySlot(int slotNumber, int slotIndex) {
     Table slot = new Table();
+    slot.setUserObject(slotIndex);
     slot.pad(8f);
     slot.setBackground(skin.getDrawable("button-c"));
 
@@ -170,11 +262,18 @@ public class BackpackDisplay extends UIComponent {
         new Label(
             slotNumber <= inventory.getHotbarSlotCount() ? Integer.toString(slotNumber) : "", skin);
 
-    Label emptyLabel = new Label("EMPTY", skin);
-
     slot.add(slotLabel).width(18f).left().padLeft(2f);
 
-    slot.add(emptyLabel).expandX().center();
+    slot.addListener(
+        new ClickListener() {
+          @Override
+          public void clicked(InputEvent event, float x, float y) {
+            InventoryComponent inventory = entity.getComponent(InventoryComponent.class);
+
+            inventory.selectSlot(slotIndex);
+            showEmptyDetails();
+          }
+        });
 
     return slot;
   }
@@ -238,30 +337,17 @@ public class BackpackDisplay extends UIComponent {
    * @return readable item name
    */
   private String getItemDisplayName(ItemType itemType) {
-    return switch (itemType) {
-      case ARROW -> "Arrow";
-      case RopeArrow -> "Rope Arrow";
-      default -> itemType.toString();
-    };
+    return itemType.getDisplayName();
   }
 
   /**
-   * Returns a short item description.
-   *
-   * <p>These descriptions are currently UI placeholders. They can later be obtained directly from
-   * the Item classes when the inventory stores full Item objects.
+   * Returns a short item description from the item catalog.
    *
    * @param itemType item type
    * @return item description
    */
   private String getItemDescription(ItemType itemType) {
-    return switch (itemType) {
-      case ARROW -> "A standard arrow used with the bow.";
-
-      case RopeArrow -> "A special arrow designed for utility and traversal.";
-
-      default -> "No description available.";
-    };
+    return itemType.getDescription();
   }
 
   /**
@@ -271,11 +357,7 @@ public class BackpackDisplay extends UIComponent {
    * @return texture path
    */
   private String getItemTexture(ItemType itemType) {
-    return switch (itemType) {
-      case ARROW -> "images/arrow.png";
-      case RopeArrow -> "images/rope_arrow.png";
-      default -> "images/heart.png";
-    };
+    return itemType.getTexturePath();
   }
 
   /** Refreshes the backpack after inventory data changes. */

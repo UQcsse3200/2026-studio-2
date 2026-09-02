@@ -5,12 +5,17 @@ import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.areas.terrain.TerrainFactory;
 import com.csse3200.game.areas.terrain.TerrainFactory.TerrainType;
+import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.components.gamearea.GameAreaDisplay;
+import com.csse3200.game.components.player.KeyboardPlayerInputComponent;
 import com.csse3200.game.entities.Entity;
+import com.csse3200.game.entities.factories.EnemyFactory;
 import com.csse3200.game.entities.factories.ItemFactory;
 import com.csse3200.game.entities.factories.NPCFactory;
 import com.csse3200.game.entities.factories.ObstacleFactory;
 import com.csse3200.game.entities.factories.PlayerFactory;
+import com.csse3200.game.entities.factories.TestCeilingFactory;
+import com.csse3200.game.entities.factories.TestFloorFactory;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.utils.math.GridPoint2Utils;
@@ -26,30 +31,42 @@ public class ForestGameArea extends GameArea {
   private static final GridPoint2 PLAYER_SPAWN = new GridPoint2(10, 10);
   private static final GridPoint2 ROPE_ARROW_SPAWN = new GridPoint2(12, 10);
   private static final GridPoint2 STANDARD_ARROW_SPAWN = new GridPoint2(8, 10);
+  private static final GridPoint2 FIRE_ARROW_SPAWN = new GridPoint2(6, 6);
+  private static final GridPoint2 COLD_ARROW_SPAWN = new GridPoint2(8, 8);
   private static final GridPoint2 HEALTH_POTION_SPAWN = new GridPoint2(10, 8);
   private static final int STANDARD_ARROW_QUANTITY = 5;
+  private static final int FIRE_ARROW_QUANTITY = 5;
+  private static final int COLD_ARROW_QUANTITY = 5;
   private static final int HEALTH_POTION_QUANTITY = 3;
   private static final float WALL_WIDTH = 0.1f;
   private static final String[] forestTextures = {
     "images/box_boy_leaf.png",
-    "images/heart.png",
     "images/tree.png",
+    "images/heart.png",
     "images/ghost_king.png",
+    "images/skeleton_warrior.png",
+    "images/skeleton_archer.png",
+    "images/arrow.png",
     "images/ghost_1.png",
     "images/grass_1.png",
     "images/grass_2.png",
     "images/grass_3.png",
+    "images/black_box.png",
     "images/hex_grass_1.png",
     "images/hex_grass_2.png",
     "images/hex_grass_3.png",
     "images/iso_grass_1.png",
     "images/iso_grass_2.png",
     "images/iso_grass_3.png",
-    "images/arrow.png",
     "images/rope_arrow.png",
+    "images/fire_arrow.png",
+    "images/cold_arrow.png"
   };
   private static final String[] forestTextureAtlases = {
-    "images/terrain_iso_grass.atlas", "images/ghost.atlas", "images/ghostKing.atlas"
+    "images/terrain_iso_grass.atlas",
+    "images/ghost.atlas",
+    "images/ghostKing.atlas",
+    "images/player.atlas"
   };
   private static final String[] forestSounds = {"sounds/Impact4.ogg"};
   private static final String backgroundMusic = "sounds/BGM_03_mp3.mp3";
@@ -62,12 +79,20 @@ public class ForestGameArea extends GameArea {
   /**
    * Initialise this ForestGameArea to use the provided TerrainFactory.
    *
+   * @param cameraComponent active camera component.
    * @param terrainFactory TerrainFactory used to create the terrain for the GameArea.
    * @requires terrainFactory != null
    */
-  public ForestGameArea(TerrainFactory terrainFactory) {
-    super();
+  public ForestGameArea(CameraComponent cameraComponent, TerrainFactory terrainFactory) {
+    super(cameraComponent);
     this.terrainFactory = terrainFactory;
+  }
+
+  /**
+   * @return the player entity after this area has been created
+   */
+  public Entity getPlayer() {
+    return player;
   }
 
   /** Create the game area, including terrain, static entities (trees), dynamic entities (player) */
@@ -79,12 +104,18 @@ public class ForestGameArea extends GameArea {
 
     spawnTerrain();
     spawnTrees();
+    spawnPlatforms();
     player = spawnPlayer();
+    spawnSkeletonWarrior();
+    spawnSkeletonArcher();
     spawnItems();
-    spawnGhosts();
-    spawnGhostKing();
+    spawnTestFloor();
+    spawnTestCeiling();
+    // spawnGhosts();
 
-    playMusic();
+    // spawnGhostKing();
+
+    // playMusic();
   }
 
   private void displayUI() {
@@ -134,21 +165,47 @@ public class ForestGameArea extends GameArea {
     }
   }
 
+  private void spawnPlatforms() {
+    GridPoint2 platformPos = new GridPoint2(10, 7);
+    Entity platform = ObstacleFactory.createPlatform(0);
+    spawnEntityAt(platform, platformPos, true, false);
+  }
+
   private Entity spawnPlayer() {
     Entity newPlayer = PlayerFactory.createPlayer();
+    KeyboardPlayerInputComponent input = newPlayer.getComponent(KeyboardPlayerInputComponent.class);
+    if (input != null) {
+      input.setCameraComponent(cameraComponent);
+    }
     spawnEntityAt(newPlayer, PLAYER_SPAWN, true, true);
     return newPlayer;
   }
 
   private void spawnItems() {
     spawnEntityAt(ItemFactory.createRopeArrow(), ROPE_ARROW_SPAWN, true, false);
+
     spawnEntityAt(
         ItemFactory.createStandardArrow(STANDARD_ARROW_QUANTITY),
         STANDARD_ARROW_SPAWN,
         true,
         false);
+
     spawnEntityAt(
         ItemFactory.createHealthPotion(HEALTH_POTION_QUANTITY), HEALTH_POTION_SPAWN, true, false);
+
+    spawnEntityAt(ItemFactory.createFireArrow(FIRE_ARROW_QUANTITY), FIRE_ARROW_SPAWN, true, false);
+
+    spawnEntityAt(ItemFactory.createColdArrow(COLD_ARROW_QUANTITY), COLD_ARROW_SPAWN, true, false);
+  }
+
+  private void spawnTestFloor() {
+    Entity floor = TestFloorFactory.createTestFloor();
+    spawnEntityAt(floor, new GridPoint2(5, 5), true, false);
+  }
+
+  private void spawnTestCeiling() {
+    Entity ceiling = TestCeilingFactory.createTestCeiling();
+    spawnEntityAt(ceiling, new GridPoint2(10, 16), true, false);
   }
 
   private void spawnGhosts() {
@@ -160,6 +217,23 @@ public class ForestGameArea extends GameArea {
       Entity ghost = NPCFactory.createGhost(player);
       spawnEntityAt(ghost, randomPos, true, true);
     }
+  }
+
+  private void spawnSkeletonWarrior() {
+    GridPoint2 minPos = new GridPoint2(0, 0);
+    GridPoint2 maxPos = terrain.getMapBounds(0).sub(2, 2);
+
+    Entity skeletonWarrior = EnemyFactory.createSkeletonWarrior(player);
+    spawnEntityAt(skeletonWarrior, new GridPoint2(5, 16), true, true);
+  }
+
+  private void spawnSkeletonArcher() {
+    GridPoint2 minPos = new GridPoint2(0, 0);
+    GridPoint2 maxPos = terrain.getMapBounds(0).sub(2, 2);
+
+    Entity skeletonArcher = EnemyFactory.createSkeletonArcher(player);
+
+    spawnEntityAt(skeletonArcher, new GridPoint2(5, 16), true, true);
   }
 
   private void spawnGhostKing() {

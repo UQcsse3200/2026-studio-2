@@ -1,11 +1,13 @@
 package com.csse3200.game.entities.factories;
 
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
-import com.csse3200.game.components.item.HealthPotion;
 import com.csse3200.game.components.item.Item;
 import com.csse3200.game.components.item.ItemComponent;
-import com.csse3200.game.components.item.RopeArr;
-import com.csse3200.game.components.item.StandardArr;
+import com.csse3200.game.components.item.consumables.HealthPotion;
+import com.csse3200.game.components.item.weapons.ColdArr;
+import com.csse3200.game.components.item.weapons.FireArr;
+import com.csse3200.game.components.item.weapons.RopeArr;
+import com.csse3200.game.components.item.weapons.StandardArr;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.physics.components.HitboxComponent;
@@ -21,23 +23,18 @@ import com.csse3200.game.rendering.TextureRenderComponent;
  * <p>Each item type should have a creation method that returns a corresponding entity.
  */
 public class ItemFactory {
-  private static final String STANDARD_ARROW_TEXTURE = "images/arrow.png";
-  private static final String ROPE_ARROW_TEXTURE = "images/rope_arrow.png";
-  private static final String CONSUMABLE_TEXTURE = "images/heart.png";
-
   private static final float ITEM_HEIGHT = 0.5f;
 
   /**
-   * Creates a world entity for an item.
+   * Creates a world entity for an item using the texture from its {@code ItemType}.
    *
    * @param item item this entity represents
-   * @param texturePath internal path of the texture to draw
    * @return entity
    */
-  public static Entity createItem(Item item, String texturePath) {
+  public static Entity createItem(Item item) {
     Entity itemEntity =
         new Entity()
-            .addComponent(new TextureRenderComponent(texturePath))
+            .addComponent(new TextureRenderComponent(item.getItemType().getTexturePath()))
             .addComponent(new PhysicsComponent().setBodyType(BodyType.StaticBody))
             .addComponent(new HitboxComponent().setLayer(PhysicsLayer.DEFAULT))
             .addComponent(new ItemComponent(item));
@@ -48,12 +45,22 @@ public class ItemFactory {
   }
 
   /**
-   * Creates a rope arrow lying in the world.
+   * Creates a single rope arrow lying in the world.
    *
    * @return entity
    */
   public static Entity createRopeArrow() {
-    return createItem(new RopeArr(), ROPE_ARROW_TEXTURE);
+    return createRopeArrow(1);
+  }
+
+  /**
+   * Creates a stack of rope arrows lying in the world.
+   *
+   * @param quantity number of rope arrows in the stack
+   * @return entity
+   */
+  public static Entity createRopeArrow(int quantity) {
+    return createItem(new RopeArr(quantity));
   }
 
   /**
@@ -63,7 +70,7 @@ public class ItemFactory {
    * @return entity
    */
   public static Entity createStandardArrow(int quantity) {
-    return createItem(new StandardArr(quantity), STANDARD_ARROW_TEXTURE);
+    return createItem(new StandardArr(quantity));
   }
 
   /**
@@ -73,7 +80,15 @@ public class ItemFactory {
    * @return entity
    */
   public static Entity createHealthPotion(int quantity) {
-    return createItem(new HealthPotion(quantity), CONSUMABLE_TEXTURE);
+    return createItem(new HealthPotion(quantity));
+  }
+
+  public static Entity createFireArrow(int quantity) {
+    return createItem(new FireArr(quantity));
+  }
+
+  public static Entity createColdArrow(int quantity) {
+    return createItem(new ColdArr(quantity));
   }
 
   private ItemFactory() {

@@ -6,14 +6,16 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.inventory.InventoryComponent;
-import com.csse3200.game.components.item.HealthPotion;
 import com.csse3200.game.components.item.ItemType;
+import com.csse3200.game.components.item.consumables.HealthPotion;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.services.GameTime;
 import com.csse3200.game.services.ServiceLocator;
+import java.util.concurrent.atomic.AtomicReference;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -39,16 +41,31 @@ class ItemUseComponentTest {
     player
         .getEvents()
         .addListener(
-            "arrowFired",
-            (Integer damage, Float range) -> {
+            "primaryAttack",
+            (Vector2 direction) -> {
               fired[0] = true;
-              assertEquals(10, damage);
-              assertEquals(15f, range, 0.001f);
+              assertFalse(direction.isZero());
             });
 
     assertTrue(player.getComponent(ItemUseComponent.class).useSelectedItem());
     assertEquals(2, inventory.getItemCount(ItemType.ARROW));
     assertTrue(fired[0]);
+  }
+
+  @Test
+  void shouldFireStandardArrowBeforeConsumingAmmo() {
+    Entity player = createPlayer();
+    InventoryComponent inventory = player.getComponent(InventoryComponent.class);
+    inventory.addItem(ItemType.ARROW, 3);
+
+    player
+        .getEvents()
+        .addListener(
+            "primaryAttack",
+            (Vector2 ignored) -> assertEquals(3, inventory.getItemCount(ItemType.ARROW)));
+
+    assertTrue(player.getComponent(ItemUseComponent.class).useSelectedItem());
+    assertEquals(2, inventory.getItemCount(ItemType.ARROW));
   }
 
   @Test
@@ -58,7 +75,7 @@ class ItemUseComponentTest {
     inventory.addItem(ItemType.ARROW, 1);
 
     int[] fired = {0};
-    player.getEvents().addListener("arrowFired", (Integer damage, Float range) -> fired[0]++);
+    player.getEvents().addListener("primaryAttack", (Vector2 ignored) -> fired[0]++);
 
     player.getEvents().trigger("attack");
     assertEquals(1, fired[0]);
@@ -66,13 +83,13 @@ class ItemUseComponentTest {
   }
 
   @Test
-  void shouldPlayMeleeFallbackWhenNoItemSelected() {
+  void shouldRejectAttackWhenNoArrowSelected() {
     Entity player = createPlayer();
-    boolean[] failed = {false};
-    player.getEvents().addListener("itemUseFailed", (ItemType type) -> failed[0] = true);
+    AtomicReference<Vector2> attackDirection = new AtomicReference<>();
+    player.getEvents().addListener("primaryAttack", attackDirection::set);
 
     assertFalse(player.getComponent(ItemUseComponent.class).useSelectedItem());
-    assertFalse(failed[0]);
+    assertEquals(null, attackDirection.get());
   }
 
   @Test
@@ -130,7 +147,7 @@ class ItemUseComponentTest {
 
     ItemUseComponent use = player.getComponent(ItemUseComponent.class);
     boolean[] grappled = {false};
-    player.getEvents().addListener("grappleFire", () -> grappled[0] = true);
+    player.getEvents().addListener("grappleFire", (Vector2 ignored) -> grappled[0] = true);
 
     assertEquals(ItemType.RopeArrow, inventory.getSelectedItem());
     assertTrue(use.useSelectedItem());
@@ -138,6 +155,22 @@ class ItemUseComponentTest {
     assertTrue(grappled[0]);
     assertFalse(use.isRopeReady());
     assertEquals(5f, use.getRopeCooldownRemaining(), 0.001f);
+  }
+
+  @Test
+  void shouldStartRopeCooldownAfterGrappleFires() {
+    Entity player = createPlayer();
+    InventoryComponent inventory = player.getComponent(InventoryComponent.class);
+    inventory.addItem(ItemType.RopeArrow, 1);
+    inventory.selectNext();
+
+    ItemUseComponent use = player.getComponent(ItemUseComponent.class);
+    player
+        .getEvents()
+        .addListener("grappleFire", (Vector2 ignored) -> assertTrue(use.isRopeReady()));
+
+    assertTrue(use.useSelectedItem());
+    assertFalse(use.isRopeReady());
   }
 
   @Test
@@ -149,7 +182,7 @@ class ItemUseComponentTest {
 
     ItemUseComponent use = player.getComponent(ItemUseComponent.class);
     int[] uses = {0};
-    player.getEvents().addListener("grappleFire", () -> uses[0]++);
+    player.getEvents().addListener("grappleFire", (Vector2 ignored) -> uses[0]++);
 
     assertTrue(use.useSelectedItem());
 

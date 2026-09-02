@@ -1,5 +1,6 @@
 package com.csse3200.game.components.mainmenu;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -27,63 +28,86 @@ public class MainMenuDisplay extends UIComponent {
   private void addActors() {
     table = new Table();
     table.setFillParent(true);
+    float screenWidth = Gdx.graphics.getWidth();
+    float screenHeight = Gdx.graphics.getHeight();
+    float pad = screenHeight * 0.02f;
+    // Background image generated using Google Gemini for sprint 1
+    Image background =
+        new Image(
+            ServiceLocator.getResourceService().getAsset("images/main_menu_bg.jpg", Texture.class));
+    background.setFillParent(true);
+    stage.addActor(background);
+
+    // title made in Canva
     Image title =
         new Image(
             ServiceLocator.getResourceService()
-                .getAsset("images/box_boy_title.png", Texture.class));
+                .getAsset("images/title_odysseus_logo.png", Texture.class));
 
-    TextButton startBtn = new TextButton("Start", skin);
-    TextButton loadBtn = new TextButton("Load", skin);
-    TextButton settingsBtn = new TextButton("Settings", skin);
-    TextButton exitBtn = new TextButton("Exit", skin);
+    TextButton PlayBtn = new TextButton("Play", skin);
+    TextButton ContinueBtn = new TextButton("Continue", skin);
+    TextButton MinigamesBtn = new TextButton("Minigames", skin);
+    TextButton SettingsBtn = new TextButton("Settings", skin);
+    TextButton ExitBtn = new TextButton("Quit", skin);
 
     // Triggers an event when the button is pressed
-    startBtn.addListener(
+    PlayBtn.addListener(
         new ChangeListener() {
           @Override
           public void changed(ChangeEvent changeEvent, Actor actor) {
-            logger.debug("Start button clicked");
-            entity.getEvents().trigger("start");
+            logger.debug("Play button clicked");
+            entity.getEvents().trigger("Play");
           }
         });
 
-    loadBtn.addListener(
+    ContinueBtn.addListener(
         new ChangeListener() {
           @Override
           public void changed(ChangeEvent changeEvent, Actor actor) {
-            logger.debug("Load button clicked");
-            entity.getEvents().trigger("load");
+            logger.debug("Continue button clicked");
+            entity.getEvents().trigger("Continue");
           }
         });
 
-    settingsBtn.addListener(
+    MinigamesBtn.addListener(
+        new ChangeListener() {
+          @Override
+          public void changed(ChangeEvent changeEvent, Actor actor) {
+            logger.debug("Minigames button clicked");
+            entity.getEvents().trigger("Minigames");
+          }
+        });
+
+    SettingsBtn.addListener(
         new ChangeListener() {
           @Override
           public void changed(ChangeEvent changeEvent, Actor actor) {
             logger.debug("Settings button clicked");
-            entity.getEvents().trigger("settings");
+            entity.getEvents().trigger("Settings");
           }
         });
 
-    exitBtn.addListener(
+    ExitBtn.addListener(
         new ChangeListener() {
           @Override
           public void changed(ChangeEvent changeEvent, Actor actor) {
 
             logger.debug("Exit button clicked");
-            entity.getEvents().trigger("exit");
+            entity.getEvents().trigger("Exit");
           }
         });
 
-    table.add(title);
+    table.add(title).width(screenWidth * 0.5f).height(screenHeight * 0.3f).padBottom(pad);
     table.row();
-    table.add(startBtn).padTop(30f);
+    table.add(PlayBtn);
     table.row();
-    table.add(loadBtn).padTop(15f);
+    table.add(ContinueBtn).padTop(pad);
     table.row();
-    table.add(settingsBtn).padTop(15f);
+    table.add(MinigamesBtn).padTop(pad);
     table.row();
-    table.add(exitBtn).padTop(15f);
+    table.add(SettingsBtn).padTop(pad);
+    table.row();
+    table.add(ExitBtn).padTop(pad);
 
     stage.addActor(table);
   }
