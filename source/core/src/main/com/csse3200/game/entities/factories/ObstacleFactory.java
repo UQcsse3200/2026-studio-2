@@ -34,7 +34,7 @@ public class ObstacleFactory {
         new Entity()
             .addComponent(new TextureRenderComponent("images/tree.png"))
             .addComponent(new PhysicsComponent())
-            .addComponent(new ColliderComponent().setLayer(PhysicsLayer.OBSTACLE));
+            .addComponent(new ColliderComponent().setLayer(PhysicsLayer.NONE));
 
     tree.getComponent(PhysicsComponent.class).setBodyType(BodyType.StaticBody);
     tree.getComponent(TextureRenderComponent.class).scaleEntity();
@@ -121,6 +121,18 @@ public class ObstacleFactory {
             .addComponent(new ColliderComponent().setLayer(PhysicsLayer.OBSTACLE));
     wall.setScale(width, height);
     return wall;
+  }
+
+  /**
+   * Creates a statue that is able to be stood infront of
+   *
+   * @return Statue entity
+   */
+  public static Entity createStatue() {
+    return new Entity()
+        .addComponent(new TextureRenderComponent("images/Greek Statues Pack I/Brute.png"))
+        .addComponent(new PhysicsComponent().setBodyType(BodyType.StaticBody))
+        .addComponent(new ColliderComponent().setLayer(PhysicsLayer.DEFAULT));
   }
 
   /**

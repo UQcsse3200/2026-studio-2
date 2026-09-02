@@ -15,6 +15,7 @@ import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.rendering.AnimationRenderComponent;
 import com.csse3200.game.rendering.GrappleRenderComponent;
+import com.csse3200.game.rendering.TextureRenderComponent;
 import com.csse3200.game.services.ServiceLocator;
 
 /**
@@ -70,6 +71,18 @@ public class PlayerFactory {
     player.getComponent(ColliderComponent.class).setDensity(1.5f);
     player.getComponent(AnimationRenderComponent.class).scaleEntity();
     player.scaleWidth(0.75f);
+    return player;
+  }
+
+  /**
+   * Create a player display entity.
+   *
+   * @return entity
+   */
+  public static Entity createPlayerDisplay() {
+    Entity player =
+        new Entity().addComponent(new TextureRenderComponent("images/box_boy_leaf.png"));
+    player.getComponent(TextureRenderComponent.class).scaleEntity();
     return player;
   }
 

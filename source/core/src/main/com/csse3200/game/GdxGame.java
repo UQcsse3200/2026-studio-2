@@ -11,7 +11,10 @@ import com.csse3200.game.screens.MainMenuScreen;
 import com.csse3200.game.screens.SettingsFromPauseScreen;
 import com.csse3200.game.screens.SettingsScreen;
 import com.csse3200.game.screens.TutorialGameScreen;
+import com.csse3200.game.screens.minigames.BlackjackScreen;
+import com.csse3200.game.screens.minigames.CyclopsMinigameRoomScreen;
 import com.csse3200.game.screens.minigames.MinigameSelectScreen;
+import com.csse3200.game.screens.minigames.spinthewheel.SpinTheWheelScreen;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -81,6 +84,12 @@ public class GdxGame extends Game {
         return new SettingsFromPauseScreen(this);
       case MINIGAME_SELECT:
         return new MinigameSelectScreen(this);
+      case CYCLOPS_MINIGAME:
+        return new CyclopsMinigameRoomScreen(this);
+      case MINIGAME_SPIN_THE_WHEEL:
+        return new SpinTheWheelScreen(this);
+      case MINIGAME_BLACKJACK:
+        return new BlackjackScreen(this);
       default:
         return null;
     }
@@ -92,7 +101,10 @@ public class GdxGame extends Game {
     TUTORIAL_GAME,
     SETTINGS,
     SETTINGS_FROM_PAUSE,
-    MINIGAME_SELECT
+    MINIGAME_SELECT,
+    MINIGAME_BLACKJACK,
+    CYCLOPS_MINIGAME,
+    MINIGAME_SPIN_THE_WHEEL
   }
 
   /** Exit the game. */

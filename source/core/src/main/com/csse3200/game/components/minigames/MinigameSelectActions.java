@@ -25,13 +25,26 @@ public class MinigameSelectActions extends Component {
   }
 
   /**
-   * Launches the chosen minigame. No minigames are implemented yet; each one will add its own
-   * screen and a case here as it lands.
+   * Launches the chosen minigame. Each minigame adds its own screen and a case here as it lands.
    *
    * @param minigame the minigame the player selected
    */
   private void onSelectMinigame(MinigameType minigame) {
-    logger.info("Selected minigame {}, not yet implemented", minigame);
+    switch (minigame) {
+      case CYCLOPS_TIMING:
+        game.setScreen(GdxGame.ScreenType.CYCLOPS_MINIGAME);
+        logger.info("Selected minigame {} loading...", minigame);
+        break;
+      case SPIN_THE_WHEEL:
+        game.setScreen(GdxGame.ScreenType.MINIGAME_SPIN_THE_WHEEL);
+        break;
+      case BLACKJACK:
+        game.setScreen(GdxGame.ScreenType.MINIGAME_BLACKJACK);
+        break;
+      default:
+        logger.warn("Minigame is not implemented yet");
+        break;
+    }
   }
 
   /** Swaps back to the Main Menu screen. */
