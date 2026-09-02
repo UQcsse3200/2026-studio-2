@@ -16,6 +16,7 @@ public abstract class UIComponent extends RenderComponent implements Renderable 
 
   @Override
   public void create() {
+    System.out.println("UIComponent.create() called for " + this.getClass().getSimpleName());
     super.create();
     stage = ServiceLocator.getRenderService().getStage();
   }
