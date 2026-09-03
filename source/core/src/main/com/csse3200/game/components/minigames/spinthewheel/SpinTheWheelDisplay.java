@@ -16,6 +16,9 @@ import com.badlogic.gdx.utils.Align;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.UIComponent;
 import java.util.List;
+
+import javax.swing.event.ChangeEvent;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,6 +37,8 @@ public class SpinTheWheelDisplay extends UIComponent {
   private static final float POINTER_ANGLE = 90f;
   private static final float SPIN_DURATION = 3.5f;
   private static final int FULL_TURNS = 4;
+  private static final float ICON_SIZE = 48f;
+  private static final float ICON_RADIUS_RATIO = 0.78f;
 
   private final WheelLogic wheel;
   private Table table;
@@ -114,8 +119,11 @@ public class SpinTheWheelDisplay extends UIComponent {
     }
 
     for (int i = 0; i < items.size(); i++) {
-      wheelGroup.addActor(createLabel(items.get(i), (seg * i) + seg / 2f, centre, radius));
+      float midAngle = (seg * i) + seg / 2f;
+      wheelGroup.addActor(createLabel(items.get(i), midAngle, centre, radius));
+      wheelGroup.addActor(createIcon(items.get(i), midAngle, centre, radius));
     }
+
 
     Image pointer = loadImage(POINTER_TEXTURE);
     pointer.setSize(POINTER_SIZE, POINTER_SIZE);
@@ -155,7 +163,7 @@ public class SpinTheWheelDisplay extends UIComponent {
    * @return an actor holding the label
    */
   private Actor createLabel(WheelItem item, float midAngle, float centre, float radius) {
-    Label label = new Label(item.name(), skin);
+    Label label = new Label(item.type().getDisplayName(), skin);
     label.pack();
     Group holder = new Group();
     holder.setSize(label.getWidth(), label.getHeight());
@@ -169,6 +177,25 @@ public class SpinTheWheelDisplay extends UIComponent {
         centre + distance * MathUtils.sinDeg(midAngle) - label.getHeight() / 2f);
     holder.setRotation(midAngle - POINTER_ANGLE);
     return holder;
+  }
+
+  private Actor createIcon(WheelItem item, float midAngle, float centre, float radius) {
+    Image icon = loadImage(item.type().getTexturePath());
+    icon.setSize(ICON_SIZE, ICON_SIZE);
+
+    Group holder = new Group();
+    holder.setSize(ICON_SIZE, ICON_SIZE);
+    holder.setOrigin(Align.center);
+    holder.setTransform(true);
+    holder.addActor(icon);
+
+    float distance = radius * ICON_RADIUS_RATIO;
+    holder.setPosition(
+      centre + distance * MathUtils.cosDeg(midAngle) - ICON_SIZE / 2f,
+      centre + distance * MathUtils.sinDeg(midAngle) - ICON_SIZE / 2f);
+    holder.setRotation(midAngle - POINTER_ANGLE);
+    return holder;
+
   }
 
   /**
@@ -199,7 +226,7 @@ public class SpinTheWheelDisplay extends UIComponent {
             Actions.run(
                 () -> {
                   wheelGroup.setRotation(wheelGroup.getRotation() % 360f);
-                  resultLabel.setText(result.name() + " x" + result.value());
+                  resultLabel.setText(result.type().getDisplayName() + " x" + result.value());
                   spinBtn.setDisabled(false);
                 })));
   }
