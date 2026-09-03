@@ -2,6 +2,7 @@ package com.csse3200.game.screens.minigames.spinthewheel;
 
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.csse3200.game.GdxGame;
+import com.csse3200.game.components.item.ItemType;
 import com.csse3200.game.components.minigames.spinthewheel.SpinTheWheelActions;
 import com.csse3200.game.components.minigames.spinthewheel.SpinTheWheelDisplay;
 import com.csse3200.game.components.minigames.spinthewheel.WheelItem;
@@ -9,9 +10,6 @@ import com.csse3200.game.entities.Entity;
 import com.csse3200.game.input.InputDecorator;
 import com.csse3200.game.screens.minigames.MinigameScreen;
 import com.csse3200.game.services.ServiceLocator;
-
-import com.csse3200.game.components.item.ItemType;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,7 +17,6 @@ import java.util.List;
 public class SpinTheWheelScreen extends MinigameScreen {
   private static final List<WheelItem> items = createItems();
   private static final String[] TEXTURES = createTextureList();
-  
 
   public SpinTheWheelScreen(GdxGame game) {
     super(game);
@@ -53,10 +50,12 @@ public class SpinTheWheelScreen extends MinigameScreen {
   }
 
   private static String[] createTextureList() {
-    List<String> paths = new ArrayList<>(List.of(
-        "images/minigames/spinthewheel/wheel-disc.png",
-        "images/minigames/spinthewheel/wheel-spoke.png",
-        "images/minigames/spinthewheel/wheel-pointer.png"));
+    List<String> paths =
+        new ArrayList<>(
+            List.of(
+                "images/minigames/spinthewheel/wheel-disc.png",
+                "images/minigames/spinthewheel/wheel-spoke.png",
+                "images/minigames/spinthewheel/wheel-pointer.png"));
     items.forEach(item -> paths.add(item.type().getTexturePath()));
     return paths.toArray(new String[0]);
   }
