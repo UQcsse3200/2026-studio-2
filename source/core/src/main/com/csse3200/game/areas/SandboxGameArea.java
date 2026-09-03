@@ -1,0 +1,139 @@
+package com.csse3200.game.areas;
+
+import com.badlogic.gdx.math.GridPoint2;
+import com.csse3200.game.areas.terrain.TerrainFactory;
+import com.csse3200.game.areas.terrain.TerrainFactory.TerrainType;
+import com.csse3200.game.components.CameraComponent;
+import com.csse3200.game.components.item.ItemType;
+import com.csse3200.game.components.player.KeyboardPlayerInputComponent;
+import com.csse3200.game.entities.Entity;
+import com.csse3200.game.entities.factories.ItemFactory;
+import com.csse3200.game.entities.factories.ObstacleFactory;
+import com.csse3200.game.entities.factories.PlayerFactory;
+import com.csse3200.game.services.ResourceService;
+import com.csse3200.game.services.ServiceLocator;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Stream;
+
+/** Minimal developer area for displaying every current item type. */
+public class SandboxGameArea extends GameArea {
+  // Deterministic left-to-right developer layout, measured in terrain tiles.
+  private static final GridPoint2 PLAYER_SPAWN = new GridPoint2(2, 2);
+  private static final int GROUND_START_X = -10;
+  private static final int GROUND_Y = 0;
+  private static final float GROUND_WIDTH = 50f;
+  private static final float GROUND_HEIGHT = 1f;
+  private static final int ITEM_START_X = 8;
+  private static final int ITEM_Y = 2;
+  private static final int ITEM_SPACING = 3;
+  private static final int ITEM_QUANTITY = 99;
+  private static final float ITEM_DISPLAY_HEIGHT = 1f;
+  private static final String TRANSPARENT_TEXTURE = "images/transparent.png";
+  private static final String PLATFORM_TEXTURE = "images/platform.png";
+  private static final String PLAYER_HEALTH_TEXTURE = "images/purple_heart.png";
+  private static final String PLAYER_ATLAS = "images/player.atlas";
+  private static final String[] SANDBOX_SOUNDS = {"sounds/Impact4.ogg"};
+
+  private final TerrainFactory terrainFactory;
+  private final String[] sandboxTextures;
+
+  /**
+   * Creates a sandbox area using the supplied terrain factory and camera.
+   *
+   * @param terrainFactory factory used to create the transparent terrain
+   * @param cameraComponent active camera component
+   */
+  public SandboxGameArea(TerrainFactory terrainFactory, CameraComponent cameraComponent) {
+    super(cameraComponent);
+    
+    this.terrainFactory = terrainFactory;
+    sandboxTextures = getSandboxTextures();
+  }
+
+  @Override
+  public void create() {
+    loadAssets();
+    spawnTerrain();
+    spawnGround();
+    player = spawnPlayer();
+    spawnItems();
+  }
+
+  /**
+   * @return the controllable player after this area has been created
+   */
+  public Entity getPlayer() {
+    return player;
+  }
+
+  static List<ItemType> getOrderedItemTypes() {
+    return Arrays.stream(ItemType.values())
+        .sorted(Comparator.comparingInt(ItemType::getId))
+        .toList();
+  }
+
+  static GridPoint2 getPlayerSpawn() {
+    return PLAYER_SPAWN.cpy();
+  }
+
+  static GridPoint2 getItemPosition(int index) {
+    return new GridPoint2(ITEM_START_X + index * ITEM_SPACING, ITEM_Y);
+  }
+
+  private static String[] getSandboxTextures() {
+    return Stream.concat(
+            Stream.of(TRANSPARENT_TEXTURE, PLATFORM_TEXTURE, PLAYER_HEALTH_TEXTURE),
+            Arrays.stream(ItemType.values()).map(ItemType::getTexturePath))
+        .distinct()
+        .toArray(String[]::new);
+  }
+
+  private void loadAssets() {
+    ResourceService resourceService = ServiceLocator.getResourceService();
+    resourceService.loadTextures(sandboxTextures);
+    resourceService.loadTextureAtlases(new String[] {PLAYER_ATLAS});
+    resourceService.loadSounds(SANDBOX_SOUNDS);
+    resourceService.loadAll();
+  }
+
+  private void spawnTerrain() {
+    terrain = terrainFactory.createTerrain(TerrainType.BACKGROUND_DESERT);
+    spawnEntity(new Entity().addComponent(terrain));
+  }
+
+  private void spawnGround() {
+    Entity ground = ObstacleFactory.createPlatform(0);
+    ground.setScale(GROUND_WIDTH, GROUND_HEIGHT);
+    spawnEntityAt(ground, new GridPoint2(GROUND_START_X, GROUND_Y), false, false);
+  }
+
+  private Entity spawnPlayer() {
+    Entity newPlayer = PlayerFactory.createPlayer();
+    KeyboardPlayerInputComponent input = newPlayer.getComponent(KeyboardPlayerInputComponent.class);
+    if (input != null) {
+      input.setCameraComponent(cameraComponent);
+    }
+    spawnEntityAt(newPlayer, getPlayerSpawn(), true, true);
+    return newPlayer;
+  }
+
+  private void spawnItems() {
+    List<ItemType> itemTypes = getOrderedItemTypes();
+    for (int index = 0; index < itemTypes.size(); index++) {
+      Entity item = ItemFactory.createItem(itemTypes.get(index), ITEM_QUANTITY);
+      item.scaleHeight(ITEM_DISPLAY_HEIGHT);
+      spawnEntityAt(item, getItemPosition(index), true, false);
+    }
+  }
+
+  @Override
+  public void dispose() {
+    super.dispose();
+    ResourceService resourceService = ServiceLocator.getResourceService();
+    resourceService.unloadAssets(sandboxTextures);
+    resourceService.unloadAssets(new String[] {PLAYER_ATLAS});
+    resourceService.unloadAssets(SANDBOX_SOUNDS);
+  }
+}

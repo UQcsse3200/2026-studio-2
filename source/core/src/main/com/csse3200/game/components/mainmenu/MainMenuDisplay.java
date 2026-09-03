@@ -47,6 +47,7 @@ public class MainMenuDisplay extends UIComponent {
     TextButton PlayBtn = new TextButton("Play", skin);
     TextButton ContinueBtn = new TextButton("Continue", skin);
     TextButton MinigamesBtn = new TextButton("Minigames", skin);
+    TextButton sandboxBtn = new TextButton("Sandbox", skin);
     TextButton SettingsBtn = new TextButton("Settings", skin);
     TextButton ExitBtn = new TextButton("Quit", skin);
 
@@ -78,6 +79,15 @@ public class MainMenuDisplay extends UIComponent {
           }
         });
 
+    sandboxBtn.addListener(
+        new ChangeListener() {
+          @Override
+          public void changed(ChangeEvent changeEvent, Actor actor) {
+            logger.debug("Sandbox button clicked");
+            entity.getEvents().trigger("Sandbox");
+          }
+        });
+
     SettingsBtn.addListener(
         new ChangeListener() {
           @Override
@@ -104,6 +114,8 @@ public class MainMenuDisplay extends UIComponent {
     table.add(ContinueBtn).padTop(pad);
     table.row();
     table.add(MinigamesBtn).padTop(pad);
+    table.row();
+    table.add(sandboxBtn).padTop(pad);
     table.row();
     table.add(SettingsBtn).padTop(pad);
     table.row();
