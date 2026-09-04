@@ -7,6 +7,8 @@ import static org.mockito.Mockito.when;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
@@ -14,6 +16,7 @@ import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.extensions.GameExtension;
+import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.rendering.RenderService;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
@@ -25,6 +28,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 @ExtendWith(GameExtension.class)
 class PlayerStatsDisplayTest {
   private static final String HEALTH_LABEL_NAME = "player-health-label";
+  private static final String SPEED_LABEL_NAME = "player-speed-label";
 
   private EntityService entityService;
   private Stage stage;
@@ -58,7 +62,7 @@ class PlayerStatsDisplayTest {
 
     Label healthLabel = stage.getRoot().findActor(HEALTH_LABEL_NAME);
     assertNotNull(healthLabel);
-    assertEquals("HP: 6 / 10", healthLabel.getText().toString());
+    assertEquals("Health: 6 / 10", healthLabel.getText().toString());
   }
 
   @Test
@@ -69,7 +73,25 @@ class PlayerStatsDisplayTest {
 
     Label healthLabel = stage.getRoot().findActor(HEALTH_LABEL_NAME);
     assertNotNull(healthLabel);
-    assertEquals("HP: 4 / 10", healthLabel.getText().toString());
+    assertEquals("Health: 4 / 10", healthLabel.getText().toString());
+  }
+
+  @Test
+  void shouldShowAbsoluteHorizontalSpeedWithTwoDecimalPlaces() {
+    CombatStatsComponent stats = new CombatStatsComponent(6, 10, 1);
+    Body body = mock(Body.class);
+    when(body.getLinearVelocity()).thenReturn(new Vector2(-3.456f, 42f));
+    PhysicsComponent physics = mock(PhysicsComponent.class);
+    when(physics.getBody()).thenReturn(body);
+    PlayerStatsDisplay display = new PlayerStatsDisplay();
+    Entity player = new Entity().addComponent(stats).addComponent(physics).addComponent(display);
+    entityService.register(player);
+
+    display.draw(mock(SpriteBatch.class));
+
+    Label speedLabel = stage.getRoot().findActor(SPEED_LABEL_NAME);
+    assertNotNull(speedLabel);
+    assertEquals("Speed: 3.46", speedLabel.getText().toString());
   }
 
   private CombatStatsComponent createPlayerWithHealth(int health, int maxHealth) {

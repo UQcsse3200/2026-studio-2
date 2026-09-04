@@ -1,11 +1,16 @@
 package com.csse3200.game.screens;
 
 import com.badlogic.gdx.ScreenAdapter;
+import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.csse3200.game.GdxGame;
 import com.csse3200.game.areas.SandboxGameArea;
 import com.csse3200.game.areas.terrain.TerrainFactory;
+import com.csse3200.game.components.maingame.MainGameActions;
+import com.csse3200.game.components.maingame.MainGameExitDisplay;
+import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.entities.factories.RenderFactory;
+import com.csse3200.game.input.InputDecorator;
 import com.csse3200.game.input.InputService;
 import com.csse3200.game.physics.PhysicsEngine;
 import com.csse3200.game.physics.PhysicsService;
@@ -48,7 +53,18 @@ public class SandboxGameScreen extends ScreenAdapter {
     TerrainFactory terrainFactory = new TerrainFactory(renderer.getCamera());
     sandboxGameArea = new SandboxGameArea(terrainFactory, renderer.getCamera());
     sandboxGameArea.create();
+    createUI(game);
     renderer.getCamera().setTarget(sandboxGameArea.getPlayer());
+  }
+
+  private void createUI(GdxGame game) {
+    Stage stage = ServiceLocator.getRenderService().getStage();
+    Entity ui =
+        new Entity()
+            .addComponent(new InputDecorator(stage, 10))
+            .addComponent(new MainGameActions(game))
+            .addComponent(new MainGameExitDisplay());
+    ServiceLocator.getEntityService().register(ui);
   }
 
   @Override
@@ -77,7 +93,6 @@ public class SandboxGameScreen extends ScreenAdapter {
   @Override
   public void dispose() {
     logger.debug("Disposing sandbox screen");
-    sandboxGameArea.dispose();
     ServiceLocator.getEntityService().dispose();
     ServiceLocator.getRenderService().dispose();
     renderer.dispose();

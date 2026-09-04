@@ -4,12 +4,15 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.csse3200.game.components.CombatStatsComponent;
+import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.UIComponent;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 /** A UI component that displays the player's health as a row of hearts. */
 public class PlayerStatsDisplay extends UIComponent {
@@ -18,11 +21,17 @@ public class PlayerStatsDisplay extends UIComponent {
   private static final int HP_PER_HEART = 2;
   private static final int FLICKER_COUNT = 3;
   private static final float FLICKER_DURATION = 0.1f;
+  private static final String HEALTH_LABEL_NAME = "player-health-label";
+  private static final String SPEED_LABEL_NAME = "player-speed-label";
 
   private Table table;
+  private Table heartTable;
   private final List<Image> heartImages = new ArrayList<>();
   private Texture heartTexture;
   private CombatStatsComponent combatStats;
+  private PhysicsComponent physicsComponent;
+  private Label healthLabel;
+  private Label speedLabel;
 
   @Override
   public void create() {
@@ -30,11 +39,24 @@ public class PlayerStatsDisplay extends UIComponent {
 
     heartTexture = ServiceLocator.getResourceService().getAsset(HEART_TEXTURE, Texture.class);
     combatStats = entity.getComponent(CombatStatsComponent.class);
+    physicsComponent = entity.getComponent(PhysicsComponent.class);
 
     table = new Table();
     table.top().left();
     table.setFillParent(true);
-    table.padTop(45f).padLeft(5f);
+    table.padTop(5f).padLeft(5f);
+
+    healthLabel = new Label("", skin);
+    healthLabel.setName(HEALTH_LABEL_NAME);
+    table.add(healthLabel).left().row();
+
+    heartTable = new Table();
+    table.add(heartTable).left().row();
+
+    speedLabel = new Label("Speed: 0.00", skin);
+    speedLabel.setName(SPEED_LABEL_NAME);
+    table.add(speedLabel).left();
+
     stage.addActor(table);
 
     entity.getEvents().addListener("updateHealth", this::updatePlayerHealthUI);
@@ -46,7 +68,11 @@ public class PlayerStatsDisplay extends UIComponent {
 
   @Override
   public void draw(SpriteBatch batch) {
-    // draw is handled by the stage
+    if (physicsComponent == null || physicsComponent.getBody() == null) {
+      return;
+    }
+    float horizontalSpeed = Math.abs(physicsComponent.getBody().getLinearVelocity().x);
+    speedLabel.setText(String.format(Locale.ROOT, "Speed: %.2f", horizontalSpeed));
   }
 
   /**
@@ -64,6 +90,7 @@ public class PlayerStatsDisplay extends UIComponent {
     growHeartsTo(Math.max(1, combatStats.getMaxHealth() / HP_PER_HEART));
 
     int cappedHealth = Math.max(0, Math.min(health, combatStats.getMaxHealth()));
+    healthLabel.setText("Health: " + cappedHealth + " / " + combatStats.getMaxHealth());
     int heartsRemaining = cappedHealth / HP_PER_HEART;
 
     for (int i = 0; i < heartImages.size(); i++) {
@@ -90,7 +117,7 @@ public class PlayerStatsDisplay extends UIComponent {
     while (heartImages.size() < desiredCount) {
       Image heart = new Image(heartTexture);
       heartImages.add(heart);
-      table.add(heart).size(HEART_SIDE_LENGTH).pad(5f);
+      heartTable.add(heart).size(HEART_SIDE_LENGTH).pad(5f);
     }
   }
 
