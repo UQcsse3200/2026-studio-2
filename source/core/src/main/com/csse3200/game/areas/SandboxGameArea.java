@@ -9,6 +9,7 @@ import com.csse3200.game.components.item.ItemLabelDisplay;
 import com.csse3200.game.components.item.ItemType;
 import com.csse3200.game.components.player.KeyboardPlayerInputComponent;
 import com.csse3200.game.entities.Entity;
+import com.csse3200.game.entities.factories.EnemyFactory;
 import com.csse3200.game.entities.factories.ItemFactory;
 import com.csse3200.game.entities.factories.ObstacleFactory;
 import com.csse3200.game.entities.factories.PlayerFactory;
@@ -41,9 +42,13 @@ public class SandboxGameArea extends GameArea {
   private static final int ITEM_SPACING = 3;
   private static final int ITEM_QUANTITY = 99;
   private static final float ITEM_DISPLAY_HEIGHT = 1f;
+  private static final GridPoint2 PASSIVE_WARRIOR_SPAWN = new GridPoint2(-4, 1);
+  private static final GridPoint2 PASSIVE_ARCHER_SPAWN = new GridPoint2(-6, 1);
   private static final String TRANSPARENT_TEXTURE = "images/transparent.png";
   private static final String PLATFORM_TEXTURE = "images/platform.png";
   private static final String PLAYER_HEALTH_TEXTURE = "images/purple_heart.png";
+  private static final String SKELETON_WARRIOR_TEXTURE = "images/skeleton_warrior.png";
+  private static final String SKELETON_ARCHER_TEXTURE = "images/skeleton_archer.png";
   private static final String PLAYER_ATLAS = "images/player.atlas";
   private static final String[] SANDBOX_SOUNDS = {"sounds/Impact4.ogg"};
 
@@ -70,6 +75,7 @@ public class SandboxGameArea extends GameArea {
     spawnGround();
     spawnGrapplePlatforms();
     player = spawnPlayer();
+    spawnPassiveEnemies();
     spawnItems();
   }
 
@@ -96,7 +102,12 @@ public class SandboxGameArea extends GameArea {
 
   private static String[] getSandboxTextures() {
     return Stream.concat(
-            Stream.of(TRANSPARENT_TEXTURE, PLATFORM_TEXTURE, PLAYER_HEALTH_TEXTURE),
+            Stream.of(
+                TRANSPARENT_TEXTURE,
+                PLATFORM_TEXTURE,
+                PLAYER_HEALTH_TEXTURE,
+                SKELETON_WARRIOR_TEXTURE,
+                SKELETON_ARCHER_TEXTURE),
             Arrays.stream(ItemType.values()).map(ItemType::getTexturePath))
         .distinct()
         .toArray(String[]::new);
@@ -119,8 +130,22 @@ public class SandboxGameArea extends GameArea {
     Vector2 worldBounds = new Vector2(tileBounds.x * tileSize, tileBounds.y * tileSize);
 
     // Left wall
+    // spawnEntityAt(
+    //     ObstacleFactory.createWall(WALL_WIDTH, worldBounds.y), GridPoint2Utils.ZERO, false,
+    // false);
+
+    // Right wall
+    /*
     spawnEntityAt(
-        ObstacleFactory.createWall(WALL_WIDTH, worldBounds.y), GridPoint2Utils.ZERO, false, false);
+        ObstacleFactory.createWall(
+            WALL_WIDTH,
+            worldBounds.y
+        ),
+        new GridPoint2(tileBounds.x, 0),
+        false,
+        false
+    );
+    */
 
     // Top wall
     spawnEntityAt(
@@ -135,7 +160,7 @@ public class SandboxGameArea extends GameArea {
   }
 
   private void spawnGround() {
-    for (int offset = 0; offset < GROUND_LENGTH; offset += GROUND_PLATFORM_WIDTH) {
+    for (int offset = -GROUND_LENGTH; offset < GROUND_LENGTH; offset += GROUND_PLATFORM_WIDTH) {
       spawnPlatform(
           0,
           GROUND_PLATFORM_WIDTH,
@@ -165,6 +190,11 @@ public class SandboxGameArea extends GameArea {
     }
     spawnEntityAt(newPlayer, getPlayerSpawn(), true, true);
     return newPlayer;
+  }
+
+  private void spawnPassiveEnemies() {
+    spawnEntityAt(EnemyFactory.createPassiveSkeletonWarrior(), PASSIVE_WARRIOR_SPAWN, true, true);
+    spawnEntityAt(EnemyFactory.createPassiveSkeletonArcher(), PASSIVE_ARCHER_SPAWN, true, true);
   }
 
   private void spawnItems() {

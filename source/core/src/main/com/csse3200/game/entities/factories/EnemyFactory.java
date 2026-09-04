@@ -1,6 +1,7 @@
 package com.csse3200.game.entities.factories;
 
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.csse3200.game.ai.tasks.AITaskComponent;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.EnemyDeathComponent;
@@ -70,6 +71,34 @@ public class EnemyFactory {
   }
 
   /**
+   * Creates a stationary skeleton warrior for combat testing. The enemy can take damage and die,
+   * but has no movement or attack AI.
+   *
+   * @return passive skeleton warrior entity
+   */
+  public static Entity createPassiveSkeletonWarrior() {
+    Entity skeletonWarrior = createPassiveEnemy(configs.skeletonWarrior);
+    skeletonWarrior.addComponent(new TextureRenderComponent("images/skeleton_warrior.png"));
+    skeletonWarrior.getComponent(TextureRenderComponent.class).scaleEntity();
+    PhysicsUtils.setScaledCollider(skeletonWarrior, 1.2f, 0.7f);
+    return skeletonWarrior;
+  }
+
+  /**
+   * Creates a stationary skeleton archer for combat testing. The enemy can take damage and die, but
+   * has no movement or attack AI.
+   *
+   * @return passive skeleton archer entity
+   */
+  public static Entity createPassiveSkeletonArcher() {
+    Entity skeletonArcher = createPassiveEnemy(configs.skeletonArcher);
+    skeletonArcher.addComponent(new TextureRenderComponent("images/skeleton_archer.png"));
+    skeletonArcher.getComponent(TextureRenderComponent.class).scaleEntity();
+    PhysicsUtils.setScaledCollider(skeletonArcher, 1.2f, 0.7f);
+    return skeletonArcher;
+  }
+
+  /**
    * Creates a base enemy entity
    *
    * @param target entity the enemy will chase
@@ -107,6 +136,15 @@ public class EnemyFactory {
     PhysicsUtils.setScaledCollider(enemy, 0.9f, 0.4f);
 
     return enemy;
+  }
+
+  private static Entity createPassiveEnemy(EnemyConfig config) {
+    return new Entity()
+        .addComponent(new PhysicsComponent().setBodyType(BodyType.StaticBody))
+        .addComponent(new ColliderComponent())
+        .addComponent(new HitboxComponent().setLayer(PhysicsLayer.NPC))
+        .addComponent(new CombatStatsComponent(config.health, config.baseAttack))
+        .addComponent(new EnemyDeathComponent());
   }
 
   private EnemyFactory() {
