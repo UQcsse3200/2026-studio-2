@@ -18,7 +18,7 @@ import java.util.Locale;
 public class PlayerStatsDisplay extends UIComponent {
   private static final String HEART_TEXTURE = "images/purple_heart.png";
   private static final float HEART_SIDE_LENGTH = 40f;
-  private static final int HP_PER_HEART = 2;
+  private static final int HP_PER_HEART = 25;
   private static final int FLICKER_COUNT = 3;
   private static final float FLICKER_DURATION = 0.1f;
   private static final String HEALTH_LABEL_NAME = "player-health-label";

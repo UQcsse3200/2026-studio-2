@@ -39,7 +39,21 @@ public class EnemyFactory {
    */
   public static Entity createSkeletonWarrior(Entity target) {
     EnemyConfig config = configs.skeletonWarrior;
-    Entity skeletonWarrior = createEnemy(target, config);
+    return createSkeletonWarrior(target, config.viewDistance, config.maxChaseDistance);
+  }
+
+  /**
+   * Creates a melee skeleton warrior with custom chase distances.
+   *
+   * @param target entity the enemy will chase and attack
+   * @param viewDistance distance at which chasing can begin
+   * @param maxChaseDistance distance at which an active chase ends
+   * @return skeleton warrior entity
+   */
+  public static Entity createSkeletonWarrior(
+      Entity target, float viewDistance, float maxChaseDistance) {
+    EnemyConfig config = configs.skeletonWarrior;
+    Entity skeletonWarrior = createEnemy(target, config, viewDistance, maxChaseDistance);
 
     skeletonWarrior.addComponent(new TextureRenderComponent("images/skeleton_warrior.png"));
     skeletonWarrior.getComponent(TextureRenderComponent.class).scaleEntity();
@@ -59,7 +73,21 @@ public class EnemyFactory {
    */
   public static Entity createSkeletonArcher(Entity target) {
     EnemyConfig config = configs.skeletonArcher;
-    Entity SkeletonArcher = createEnemy(target, config);
+    return createSkeletonArcher(target, config.viewDistance, config.maxChaseDistance);
+  }
+
+  /**
+   * Creates a ranged skeleton archer with custom chase distances.
+   *
+   * @param target entity the enemy will chase and attack
+   * @param viewDistance distance at which chasing can begin
+   * @param maxChaseDistance distance at which an active chase ends
+   * @return skeleton archer entity
+   */
+  public static Entity createSkeletonArcher(
+      Entity target, float viewDistance, float maxChaseDistance) {
+    EnemyConfig config = configs.skeletonArcher;
+    Entity SkeletonArcher = createEnemy(target, config, viewDistance, maxChaseDistance);
 
     SkeletonArcher
         // .addComponent(new CombatStatsComponent(config.health, config.baseAttack))
@@ -106,6 +134,11 @@ public class EnemyFactory {
    * @return base enemy entity, without a render component
    */
   public static Entity createEnemy(Entity target, EnemyConfig config) {
+    return createEnemy(target, config, config.viewDistance, config.maxChaseDistance);
+  }
+
+  private static Entity createEnemy(
+      Entity target, EnemyConfig config, float viewDistance, float maxChaseDistance) {
     AITaskComponent aiComponent =
         new AITaskComponent()
             .addTask(
@@ -114,8 +147,7 @@ public class EnemyFactory {
                     new Vector2(config.wanderRangeX, config.wanderRangeY), config.wanderWaitTime))
             .addTask(
                 // Adding the values for chase task from the enemy's config file
-                new ChaseTask(
-                    target, config.chasePriority, config.viewDistance, config.maxChaseDistance));
+                new ChaseTask(target, config.chasePriority, viewDistance, maxChaseDistance));
 
     // If the enemy is a range type, add a range task.
     if (config.attackType.equals("range")) {

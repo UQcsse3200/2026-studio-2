@@ -1,5 +1,5 @@
 {
-  "health": 10,
+  "health": 100,
   "baseAttack": 10,
   "invulnerabilityDuration": 1000,
   "gold": 50,

@@ -8,6 +8,8 @@ import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.components.item.ItemLabelDisplay;
 import com.csse3200.game.components.item.ItemType;
 import com.csse3200.game.components.player.KeyboardPlayerInputComponent;
+import com.csse3200.game.components.sandbox.MonsterSpawnerDisplay;
+import com.csse3200.game.components.sandbox.SandboxEnemyType;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.EnemyFactory;
 import com.csse3200.game.entities.factories.ItemFactory;
@@ -42,18 +44,22 @@ public class SandboxGameArea extends GameArea {
   private static final int ITEM_SPACING = 3;
   private static final int ITEM_QUANTITY = 99;
   private static final float ITEM_DISPLAY_HEIGHT = 1f;
-  private static final GridPoint2 PASSIVE_WARRIOR_SPAWN = new GridPoint2(-4, 1);
-  private static final GridPoint2 PASSIVE_ARCHER_SPAWN = new GridPoint2(-6, 1);
+  private static final GridPoint2 MONSTER_SPAWNER_NPC_POSITION = new GridPoint2(-4, 2);
+  private static final GridPoint2 SPAWNED_MONSTER_POSITION = new GridPoint2(-8, 2);
+  private static final float MONSTER_SPAWNER_NPC_WIDTH = 1.16f;
+  private static final float MONSTER_SPAWNER_NPC_HEIGHT = 1.5f;
+  private static final float SANDBOX_ACTIVE_CHASE_DISTANCE = 20f;
   private static final String TRANSPARENT_TEXTURE = "images/transparent.png";
   private static final String PLATFORM_TEXTURE = "images/platform.png";
   private static final String PLAYER_HEALTH_TEXTURE = "images/purple_heart.png";
   private static final String SKELETON_WARRIOR_TEXTURE = "images/skeleton_warrior.png";
   private static final String SKELETON_ARCHER_TEXTURE = "images/skeleton_archer.png";
-  private static final String PLAYER_ATLAS = "images/player.atlas";
+  private static final String[] SANDBOX_ATLASES = {"images/player.atlas", "images/ghost.atlas"};
   private static final String[] SANDBOX_SOUNDS = {"sounds/Impact4.ogg"};
 
   private final TerrainFactory terrainFactory;
   private final String[] sandboxTextures;
+  private Entity spawnedMonster;
 
   /**
    * Creates a sandbox area using the supplied terrain factory and camera.
@@ -75,7 +81,7 @@ public class SandboxGameArea extends GameArea {
     spawnGround();
     spawnGrapplePlatforms();
     player = spawnPlayer();
-    spawnPassiveEnemies();
+    spawnMonsterSpawnerNpc();
     spawnItems();
   }
 
@@ -116,7 +122,7 @@ public class SandboxGameArea extends GameArea {
   private void loadAssets() {
     ResourceService resourceService = ServiceLocator.getResourceService();
     resourceService.loadTextures(sandboxTextures);
-    resourceService.loadTextureAtlases(new String[] {PLAYER_ATLAS});
+    resourceService.loadTextureAtlases(SANDBOX_ATLASES);
     resourceService.loadSounds(SANDBOX_SOUNDS);
     resourceService.loadAll();
   }
@@ -192,9 +198,49 @@ public class SandboxGameArea extends GameArea {
     return newPlayer;
   }
 
-  private void spawnPassiveEnemies() {
-    spawnEntityAt(EnemyFactory.createPassiveSkeletonWarrior(), PASSIVE_WARRIOR_SPAWN, true, true);
-    spawnEntityAt(EnemyFactory.createPassiveSkeletonArcher(), PASSIVE_ARCHER_SPAWN, true, true);
+  private void spawnMonsterSpawnerNpc() {
+    Entity spawnerNpc =
+        new Entity()
+            .addComponent(new MonsterSpawnerDisplay(cameraComponent, this::replaceSpawnedMonster));
+    spawnerNpc.setScale(MONSTER_SPAWNER_NPC_WIDTH, MONSTER_SPAWNER_NPC_HEIGHT);
+    spawnEntityAt(spawnerNpc, MONSTER_SPAWNER_NPC_POSITION, true, true);
+  }
+
+  private void replaceSpawnedMonster(SandboxEnemyType enemyType, boolean active) {
+    removeSpawnedMonster();
+
+    spawnedMonster = createSelectedMonster(enemyType, active);
+    spawnEntityAt(spawnedMonster, SPAWNED_MONSTER_POSITION, true, true);
+  }
+
+  private Entity createSelectedMonster(SandboxEnemyType enemyType, boolean active) {
+    if (!active) {
+      return switch (enemyType) {
+        case SKELETON_WARRIOR -> EnemyFactory.createPassiveSkeletonWarrior();
+        case SKELETON_ARCHER -> EnemyFactory.createPassiveSkeletonArcher();
+      };
+    }
+
+    return switch (enemyType) {
+      case SKELETON_WARRIOR ->
+          EnemyFactory.createSkeletonWarrior(
+              player, SANDBOX_ACTIVE_CHASE_DISTANCE, SANDBOX_ACTIVE_CHASE_DISTANCE);
+      case SKELETON_ARCHER ->
+          EnemyFactory.createSkeletonArcher(
+              player, SANDBOX_ACTIVE_CHASE_DISTANCE, SANDBOX_ACTIVE_CHASE_DISTANCE);
+    };
+  }
+
+  private void removeSpawnedMonster() {
+    if (spawnedMonster == null) {
+      return;
+    }
+
+    areaEntities.remove(spawnedMonster);
+    if (ServiceLocator.getEntityService().getEntities().contains(spawnedMonster, true)) {
+      spawnedMonster.dispose();
+    }
+    spawnedMonster = null;
   }
 
   private void spawnItems() {
@@ -212,7 +258,7 @@ public class SandboxGameArea extends GameArea {
     super.dispose();
     ResourceService resourceService = ServiceLocator.getResourceService();
     resourceService.unloadAssets(sandboxTextures);
-    resourceService.unloadAssets(new String[] {PLAYER_ATLAS});
+    resourceService.unloadAssets(SANDBOX_ATLASES);
     resourceService.unloadAssets(SANDBOX_SOUNDS);
   }
 }
