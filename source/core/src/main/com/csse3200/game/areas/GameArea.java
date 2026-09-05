@@ -125,6 +125,10 @@ public abstract class GameArea implements Disposable {
    */
   public void checkSuccessfulGrapple(Vector2 raycastEnd) {
     Entity p = findTargetedPlatform(raycastEnd);
+    if (p == null) {
+      player.getEvents().trigger("grappleResponse", false);
+      return;
+    }
     PlatformGrappleComponent grappleComponent = p.getComponent(PlatformGrappleComponent.class);
     int hit = grappleComponent.checkSideHit(p, raycastEnd);
     boolean result = grappleComponent.successfulGrapple(hit);

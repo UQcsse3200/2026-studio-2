@@ -11,9 +11,6 @@ import org.slf4j.LoggerFactory;
  * extended for more specific combat needs.
  */
 public class CombatStatsComponent extends Component {
-  /** Default player maximum health. Other entities may use a higher per-instance maximum. */
-  public static final int MAX_HEALTH = 100;
-
   private static final Logger logger = LoggerFactory.getLogger(CombatStatsComponent.class);
   private int health;
   private int maxHealth;
@@ -21,8 +18,14 @@ public class CombatStatsComponent extends Component {
   private final long invulnerabilityDuration;
   private long invulnerableUntil;
 
+  /**
+   * Creates combat stats with only health and baseAttack with rest inferred.
+   *
+   * @param health initial current health
+   * @param baseAttack base attack damage
+   */
   public CombatStatsComponent(int health, int baseAttack) {
-    this(health, baseAttack, 0L);
+    this(health, baseAttack, health, 0L);
   }
 
   /**
@@ -33,7 +36,7 @@ public class CombatStatsComponent extends Component {
    * @param baseAttack base attack damage
    */
   public CombatStatsComponent(int health, int maxHealth, int baseAttack) {
-    this(health, maxHealth, baseAttack, 0);
+    this(health, baseAttack, maxHealth, 0);
   }
 
   /**
@@ -41,17 +44,11 @@ public class CombatStatsComponent extends Component {
    *
    * @param health initial health
    * @param baseAttack base attack damage
+   * @param maxHealth maximum health
    * @param invulnerabilityDuration invulnerability duration in milliseconds
    */
-  public CombatStatsComponent(int health, int baseAttack, long invulnerabilityDuration) {
-    this.invulnerabilityDuration = Math.max(0, invulnerabilityDuration);
-    this.maxHealth = Math.max(health, 0);
-    setHealth(health);
-    setBaseAttack(baseAttack);
-  }
-
   public CombatStatsComponent(
-      int health, int maxHealth, int baseAttack, long invulnerabilityDuration) {
+      int health, int baseAttack, int maxHealth, long invulnerabilityDuration) {
     this.invulnerabilityDuration = Math.max(0, invulnerabilityDuration);
     this.maxHealth = Math.max(maxHealth, 0);
     setHealth(health);

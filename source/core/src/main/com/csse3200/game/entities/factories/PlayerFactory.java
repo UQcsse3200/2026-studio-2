@@ -6,11 +6,13 @@ import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.inventory.BackpackDisplay;
 import com.csse3200.game.components.inventory.InventoryBarDisplay;
 import com.csse3200.game.components.inventory.InventoryComponent;
-import com.csse3200.game.components.player.*;
+import com.csse3200.game.components.player.ArrowSelectionComponent;
 import com.csse3200.game.components.player.BowComponent;
 import com.csse3200.game.components.player.GrappleComponent;
 import com.csse3200.game.components.player.ItemUseComponent;
+import com.csse3200.game.components.player.MeleeComponent;
 import com.csse3200.game.components.player.PlayerActions;
+import com.csse3200.game.components.player.PlayerAnimationController;
 import com.csse3200.game.components.player.PlayerAttackComponent;
 import com.csse3200.game.components.player.PlayerInteractionComponent;
 import com.csse3200.game.components.player.PlayerStatsDisplay;
@@ -25,6 +27,7 @@ import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.rendering.AnimationRenderComponent;
 import com.csse3200.game.rendering.GrappleRenderComponent;
+import com.csse3200.game.rendering.MeleeRenderComponent;
 import com.csse3200.game.rendering.TextureRenderComponent;
 import com.csse3200.game.services.ServiceLocator;
 
@@ -57,6 +60,10 @@ public class PlayerFactory {
     animator.addAnimation("sprint", 0.1f, PlayMode.LOOP);
     animator.addAnimation("jump", 0.05f, PlayMode.NORMAL);
     animator.addAnimation("hurt", 0.04f, PlayMode.NORMAL);
+    animator.addAnimation("bowDraw", 0.12f, PlayMode.NORMAL); // ~0.6s
+    animator.addAnimation("bowHold", 0.5f, PlayMode.LOOP);
+    animator.addAnimation("bowRelease", 0.05f, PlayMode.NORMAL);
+    animator.addAnimation("melee", 0.05f, PlayMode.NORMAL);
 
     Entity player =
         new Entity()
@@ -67,12 +74,10 @@ public class PlayerFactory {
             .addComponent(new PlayerActions())
             .addComponent(
                 new CombatStatsComponent(
-                    stats.health, stats.baseAttack, stats.invulnerabilityDuration))
+                    stats.health, stats.baseAttack, stats.health, stats.invulnerabilityDuration))
             .addComponent(bowComponent)
+            .addComponent(new MeleeComponent())
             .addComponent(new PlayerAttackComponent(bowComponent))
-            .addComponent(
-                new CombatStatsComponent(
-                    stats.health, CombatStatsComponent.MAX_HEALTH, stats.baseAttack))
             .addComponent(new InventoryComponent(stats.gold))
             .addComponent(new InventoryBarDisplay())
             .addComponent(new BackpackDisplay())
@@ -82,6 +87,8 @@ public class PlayerFactory {
             .addComponent(new PlayerStatsDisplay())
             .addComponent(new GrappleComponent())
             .addComponent(new GrappleRenderComponent())
+            .addComponent(new ArrowSelectionComponent())
+            .addComponent(new MeleeRenderComponent())
             .addComponent(new PlayerAnimationController());
 
     PhysicsUtils.setScaledCollider(player, 0.6f, 0.3f);

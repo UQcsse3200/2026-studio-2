@@ -7,24 +7,32 @@ import com.badlogic.gdx.physics.box2d.joints.DistanceJointDef;
 import com.csse3200.game.components.Component;
 import com.csse3200.game.components.inventory.InventoryComponent;
 import com.csse3200.game.components.item.ItemType;
+import com.csse3200.game.entities.Entity;
+import com.csse3200.game.entities.factories.ProjectileFactory;
 import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.physics.raycast.RaycastHit;
 import com.csse3200.game.services.ServiceLocator;
 
-/** Player fires a rope and swings from it like a pendulum. */
+/** Fires a grapple arrow, then swings from wherever it lands. */
 public class GrappleComponent extends Component {
-  private static final float MAX_RANGE = 8f;
+  private static final float GRAPPLE_COOLDOWN = 2f;
   private static final float SWING_FORCE = 5f;
   private static final float MAX_SWING_SPEED = 7f;
   private static final float SWING_DAMPING = 0.5f;
+  private static final float RELEASE_DAMPING = 2f;
 
   private PhysicsComponent physicsComponent;
   private InventoryComponent inventory;
   private DistanceJoint ropeJoint;
-  private RaycastHit raycastHit;
-  private Vector2 anchorPoint;
   private Body anchorBody;
+  private Vector2 anchorPoint;
+  private RaycastHit raycastHit;
+  private float cooldownRemaining;
+
+  // Box2D locks the world during a step, so attachments are queued and built next frame.
+  private Body pendingAnchorBody;
+  private Vector2 pendingAnchorPoint;
 
   @Override
   public void create() {
@@ -36,103 +44,135 @@ public class GrappleComponent extends Component {
     entity.getEvents().addListener("grappleResponse", this::handleSuccessfulFire);
   }
 
+  @Override
+  public void update() {
+    if (cooldownRemaining > 0f) {
+      cooldownRemaining -= ServiceLocator.getTimeSource().getDeltaTime();
+    }
+    if (pendingAnchorBody != null) {
+      createJoint(pendingAnchorBody, pendingAnchorPoint);
+      pendingAnchorBody = null;
+      pendingAnchorPoint = null;
+    }
+  }
+
   /**
-   * Fires the rope towards direction or detaches if already attached and sends a request event to
-   * determine if the impact point hit a valid platform side
+   * Validates and requests a grapple location before launching a grapple projectile.
+   *
+   * @param direction direction in which to fire
    */
   void fire(Vector2 direction) {
     if (inventory == null || !inventory.hasItem(ItemType.RopeArrow)) {
       entity.getEvents().trigger("itemUseFailed", ItemType.RopeArrow);
       return;
     }
-    // Determine raycast start (player center)
-    Vector2 start = entity.getCenterPosition();
-    Vector2 end = start.cpy().mulAdd(direction.cpy().nor(), MAX_RANGE);
-    raycastHit = new RaycastHit();
-
-    // Perform Box2D raycast against terrain/obstacle layers and exits if no surface was hit
-    if (!ServiceLocator.getPhysicsService()
-        .getPhysics()
-        .raycast(start, end, PhysicsLayer.SOLID, raycastHit)) {
+    if (direction == null
+        || direction.isZero()
+        || cooldownRemaining > 0f
+        || isAttached()
+        || raycastHit != null) {
       return;
     }
 
-    // send event to request whether the grapple raycast hits a valid platform side
-    entity.getEvents().trigger("grappleRequested", raycastHit.point.cpy());
+    Vector2 start = entity.getCenterPosition();
+    Vector2 end = start.cpy().mulAdd(direction.cpy().nor(), ProjectileFactory.GRAPPLE_ARROW_RANGE);
+    RaycastHit hit = new RaycastHit();
+
+    if (!ServiceLocator.getPhysicsService()
+        .getPhysics()
+        .raycast(start, end, PhysicsLayer.SOLID, hit)) {
+      return;
+    }
+
+    raycastHit = hit;
+    entity.getEvents().trigger("grappleRequested", hit.point.cpy());
   }
 
   /**
-   * Called from the response event from the GameArea and completes the grapple firing if the
-   * GameArea found a valid platform side to grapple to
+   * Launches the grapple projectile after the game area confirms that the requested location is a
+   * valid platform grapple point.
    *
-   * @param success whether the grapple point was valid
+   * @param success whether the requested grapple point was approved
    */
   void handleSuccessfulFire(boolean success) {
-    if (!success) return;
+    if (!success || raycastHit == null) {
+      raycastHit = null;
+      return;
+    }
 
-    // Store fired position and retrieve physics bodies for joint setup
     Vector2 start = entity.getCenterPosition();
-    anchorPoint = raycastHit.point.cpy();
+    Vector2 aim = raycastHit.point.cpy().sub(start).nor();
+    Vector2 spawn = start.cpy().mulAdd(aim, entity.getScale().x * 0.6f);
+
+    Entity arrow = ProjectileFactory.createGrappleArrow(spawn, aim);
+    arrow.addComponent(new GrappleArrowComponent(entity));
+    ServiceLocator.getEntityService().register(arrow);
+    cooldownRemaining = GRAPPLE_COOLDOWN;
+    raycastHit = null;
+  }
+
+  /**
+   * Queues a rope attachment. The grapple arrow calls this during a physics step, so the joint is
+   * built during the next entity update.
+   *
+   * @param anchorBody the body that was hit
+   * @param point where the arrow struck, in world coordinates
+   */
+  public void attachTo(Body anchorBody, Vector2 point) {
+    if (isAttached() || pendingAnchorBody != null || anchorBody == null || point == null) {
+      return;
+    }
+    pendingAnchorBody = anchorBody;
+    pendingAnchorPoint = point.cpy();
+  }
+
+  private void createJoint(Body anchorBody, Vector2 point) {
+    anchorPoint = point.cpy();
+    this.anchorBody = anchorBody;
     Body playerBody = physicsComponent.getBody();
-    this.anchorBody = raycastHit.fixture.getBody();
 
     DistanceJointDef def = new DistanceJointDef();
     def.bodyA = anchorBody;
     def.bodyB = playerBody;
-
-    // Convert world anchor coordinates to the anchor body's local space
     def.localAnchorA.set(anchorBody.getLocalPoint(anchorPoint));
-
-    // Pivot from the player's centre of mass so the pendulum hangs evenly
     def.localAnchorB.set(playerBody.getLocalCenter());
-
-    // Fixed length keeps the player on the arc so momentum carries to the other side
-    def.length = start.dst(anchorPoint);
-    def.frequencyHz = 0f; // 0 = rigid rod, raise for a springier rope
+    def.length = entity.getCenterPosition().dst(anchorPoint);
+    def.frequencyHz = 0f;
     def.dampingRatio = 0f;
     def.collideConnected = true;
 
     ropeJoint =
         (DistanceJoint) ServiceLocator.getPhysicsService().getPhysics().getWorld().createJoint(def);
 
-    // Stop the player spinning, and bleed the swing off over time
     playerBody.setFixedRotation(true);
     playerBody.setLinearDamping(SWING_DAMPING);
   }
 
-  /** Detaches the rope, restoring free movement. Momentum carries over. */
-  void release() {
-    if (!isAttached()) return;
-
+  /** Detaches the rope, restoring free movement while retaining swing momentum. */
+  public void release() {
+    if (!isAttached()) {
+      return;
+    }
     ServiceLocator.getPhysicsService().getPhysics().getWorld().destroyJoint(ropeJoint);
     ropeJoint = null;
+    anchorBody = null;
     anchorPoint = null;
-
-    physicsComponent.getBody().setLinearDamping(2f);
+    physicsComponent.getBody().setLinearDamping(RELEASE_DAMPING);
   }
 
-  /**
-   * Pushes along the swing arc while anchored, so holding a direction builds speed.
-   *
-   * @param direction -1 for left, +1 for right, 0 for no input
-   */
+  /** Pushes along the swing arc while anchored. */
   void swing(float direction) {
-    // No input means let the pendulum swing freely, otherwise it drifts to one side
-    if (!isAttached() || direction == 0f) return;
+    if (!isAttached() || direction == 0f) {
+      return;
+    }
 
     Body body = physicsComponent.getBody();
-
-    // Cap the speed so you can't pump forever
     if (body.getLinearVelocity().len() > MAX_SWING_SPEED) {
       return;
     }
 
-    // Vector from the anchor out to the player
     Vector2 r = entity.getCenterPosition().sub(anchorPoint);
-
-    // Rotate 90 degrees one way or the other depending on which key is held
     Vector2 tangent = direction > 0 ? new Vector2(-r.y, r.x).nor() : new Vector2(r.y, -r.x).nor();
-
     body.applyForceToCenter(tangent.scl(SWING_FORCE * body.getMass()), true);
   }
 
@@ -141,7 +181,6 @@ public class GrappleComponent extends Component {
   }
 
   public Vector2 getAnchorPoint() {
-    // return anchorPoint == null ? null : anchorPoint.cpy();
     if (!isAttached() || anchorBody == null) {
       return null;
     }

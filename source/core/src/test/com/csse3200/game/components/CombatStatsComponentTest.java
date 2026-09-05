@@ -22,7 +22,7 @@ class CombatStatsComponentTest {
     assertEquals(100, combat.getHealth());
 
     combat.setHealth(150);
-    assertEquals(CombatStatsComponent.MAX_HEALTH, combat.getHealth());
+    assertEquals(combat.getMaxHealth(), combat.getHealth());
 
     combat.setHealth(-50);
     assertEquals(0, combat.getHealth());
@@ -120,7 +120,7 @@ class CombatStatsComponentTest {
   void shouldIgnoreHitsDuringInvulnerabilityWindow() {
     GameTime gameTime = mock(GameTime.class);
     ServiceLocator.registerTimeSource(gameTime);
-    CombatStatsComponent target = new CombatStatsComponent(100, 0, 1000L);
+    CombatStatsComponent target = new CombatStatsComponent(100, 0, 100, 1000L);
     CombatStatsComponent attacker = new CombatStatsComponent(100, 10);
 
     when(gameTime.getTime()).thenReturn(100L, 500L, 1100L);
@@ -137,7 +137,7 @@ class CombatStatsComponentTest {
   void shouldIgnoreDamageEventsDuringInvulnerabilityWindow() {
     GameTime gameTime = mock(GameTime.class);
     ServiceLocator.registerTimeSource(gameTime);
-    CombatStatsComponent targetStats = new CombatStatsComponent(100, 0, 1000L);
+    CombatStatsComponent targetStats = new CombatStatsComponent(100, 0, 100, 1000L);
     Entity target = new Entity().addComponent(targetStats);
     CombatStatsComponent attacker = new CombatStatsComponent(100, 10);
     target.create();

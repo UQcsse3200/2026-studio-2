@@ -117,7 +117,7 @@ class ItemUseComponentTest {
     inventory.addItem(ItemType.CONSUMABLE, 1);
 
     assertTrue(player.getComponent(ItemUseComponent.class).useSelectedItem());
-    assertEquals(CombatStatsComponent.MAX_HEALTH, combat.getHealth());
+    assertEquals(combat.getMaxHealth(), combat.getHealth());
     assertEquals(0, inventory.getItemCount(ItemType.CONSUMABLE));
   }
 
@@ -133,7 +133,7 @@ class ItemUseComponentTest {
 
     assertTrue(combat.isHealthFull());
     assertFalse(player.getComponent(ItemUseComponent.class).useSelectedItem());
-    assertEquals(CombatStatsComponent.MAX_HEALTH, combat.getHealth());
+    assertEquals(combat.getMaxHealth(), combat.getHealth());
     assertEquals(1, inventory.getItemCount(ItemType.CONSUMABLE));
     assertTrue(failed[0]);
   }
@@ -171,6 +171,27 @@ class ItemUseComponentTest {
 
     assertTrue(use.useSelectedItem());
     assertFalse(use.isRopeReady());
+  }
+
+  @Test
+  void shouldNotRequireGrappleToAttachSynchronously() {
+    InventoryComponent inventory = new InventoryComponent(0);
+    ItemUseComponent use = new ItemUseComponent();
+    Entity player =
+        new Entity()
+            .addComponent(inventory)
+            .addComponent(new CombatStatsComponent(100, 10))
+            .addComponent(use)
+            .addComponent(new GrappleComponent());
+    inventory.addItem(ItemType.RopeArrow, 1);
+    inventory.selectNext();
+    use.create();
+
+    // A grapple projectile attaches during a later physics update, not while grappleFire is
+    // handled.
+    assertTrue(use.useSelectedItem());
+    assertFalse(use.isRopeReady());
+    assertEquals(1, inventory.getItemCount(ItemType.RopeArrow));
   }
 
   @Test

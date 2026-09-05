@@ -11,11 +11,28 @@ import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.services.ServiceLocator;
+import java.util.concurrent.atomic.AtomicReference;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 @ExtendWith(GameExtension.class)
 class GameAreaTest {
+  @Test
+  void rejectsGrappleWhenThereAreNoGrappleablePlatforms() {
+    GameArea gameArea =
+        new GameArea(new CameraComponent()) {
+          @Override
+          public void create() {}
+        };
+    gameArea.player = new Entity();
+    AtomicReference<Boolean> response = new AtomicReference<>();
+    gameArea.player.getEvents().addListener("grappleResponse", response::set);
+
+    gameArea.checkSuccessfulGrapple(Vector2.Zero.cpy());
+
+    assertFalse(response.get());
+  }
+
   @Test
   void shouldSpawnEntities() {
     TerrainFactory factory = mock(TerrainFactory.class);
