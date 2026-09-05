@@ -28,6 +28,14 @@ import com.csse3200.game.ui.GameEndDisplay;
 import com.csse3200.game.ui.GameEndState;
 import com.csse3200.game.ui.terminal.Terminal;
 import com.csse3200.game.ui.terminal.TerminalDisplay;
+
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
+import com.csse3200.game.components.minigames.spinthewheel.SpinTheWheelOverlay;
+import com.csse3200.game.components.minigames.spinthewheel.WheelConfig;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,13 +48,12 @@ public class TutorialGameScreen extends ScreenAdapter {
 
   private static final Logger logger = LoggerFactory.getLogger(TutorialGameScreen.class);
 
-  private static final String[] mainGameTextures = {
-    "images/heart.png", "images/title_odysseus_logo.png"
-  };
+  private static final String[] mainGameTextures = createTextures();
 
   private final GdxGame game;
   private final Renderer renderer;
   private final PhysicsEngine physicsEngine;
+  private final SpinTheWheelOverlay wheelOverlay = new SpinTheWheelOverlay(WheelConfig.ITEMS);
 
   public TutorialGameScreen(GdxGame game) {
     this.game = game;
@@ -89,11 +96,16 @@ public class TutorialGameScreen extends ScreenAdapter {
     renderer.getCamera().setTarget(tutorialGameArea.getPlayer());
   }
 
-  @Override
+   @Override
   public void render(float delta) {
+    if (Gdx.input.isKeyJustPressed(Input.Keys.K)) {
+      wheelOverlay.request();
+    }
+
     physicsEngine.update();
     ServiceLocator.getEntityService().update();
     renderer.render();
+    wheelOverlay.afterRender();
   }
 
   @Override
@@ -125,6 +137,19 @@ public class TutorialGameScreen extends ScreenAdapter {
 
     ServiceLocator.clear();
   }
+
+   /**
+   * The tutorial's textures and spin the wheel's so it can be opened as an overlay.
+   *
+   * @return every texture this screen needs loaded
+   */
+  private static String[] createTextures() {
+    List<String> paths =
+        new ArrayList<>(List.of("images/heart.png", "images/title_odysseus_logo.png"));
+    paths.addAll(List.of(WheelConfig.TEXTURES));
+    return paths.toArray(new String[0]);
+  }
+
 
   private void loadAssets() {
     logger.debug("Loading assets");

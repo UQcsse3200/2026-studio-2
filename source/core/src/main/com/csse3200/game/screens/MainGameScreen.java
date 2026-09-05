@@ -30,6 +30,13 @@ import com.csse3200.game.ui.GameEndDisplay;
 import com.csse3200.game.ui.GameEndState;
 import com.csse3200.game.ui.terminal.Terminal;
 import com.csse3200.game.ui.terminal.TerminalDisplay;
+import com.badlogic.gdx.Input;
+import com.csse3200.game.components.minigames.spinthewheel.SpinTheWheelOverlay;
+import com.csse3200.game.components.minigames.spinthewheel.WheelConfig;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,9 +47,7 @@ import org.slf4j.LoggerFactory;
  */
 public class MainGameScreen extends ScreenAdapter {
   private static final Logger logger = LoggerFactory.getLogger(MainGameScreen.class);
-  private static final String[] mainGameTextures = {
-    "images/purple_heart.png", "images/box_boy_title.png"
-  };
+  private static final String[] mainGameTextures = createTextures();
 
   private static final Vector2 CAMERA_POSITION = new Vector2(7.5f, 7.5f);
 
@@ -50,6 +55,7 @@ public class MainGameScreen extends ScreenAdapter {
   private final Renderer renderer;
   private final PhysicsEngine physicsEngine;
   private Entity player;
+  private final SpinTheWheelOverlay wheelOverlay = new SpinTheWheelOverlay(WheelConfig.ITEMS);
 
   public MainGameScreen(GdxGame game) {
     this.game = game;
@@ -91,9 +97,14 @@ public class MainGameScreen extends ScreenAdapter {
 
   @Override
   public void render(float delta) {
+    if (Gdx.input.isKeyJustPressed(Input.Keys.K)) {
+      wheelOverlay.request();
+    }
+
     physicsEngine.update();
     ServiceLocator.getEntityService().update();
     renderer.render();
+    wheelOverlay.afterRender();
   }
 
   @Override
@@ -124,6 +135,18 @@ public class MainGameScreen extends ScreenAdapter {
     ServiceLocator.getResourceService().dispose();
 
     ServiceLocator.clear();
+  }
+
+  /**
+   * The main game's textures and spin the wheel's so it can be opened as an overlay.
+   *
+   * @return every texture this screen needs loaded
+   */
+  private static String[] createTextures() {
+    List<String> paths =
+        new ArrayList<>(List.of("images/purple_heart.png", "images/box_boy_title.png"));
+    paths.addAll(List.of(WheelConfig.TEXTURES));
+    return paths.toArray(new String[0]);
   }
 
   private void loadAssets() {
