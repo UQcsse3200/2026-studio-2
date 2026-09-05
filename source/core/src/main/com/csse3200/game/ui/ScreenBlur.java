@@ -6,7 +6,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.ScreenUtils;
 
-/** Blurs the frame currently on screen*/
+/** Blurs the frame currently on screen */
 public final class ScreenBlur {
   private static final int DOWNSCALE = 8;
 
@@ -16,12 +16,10 @@ public final class ScreenBlur {
    * Captures the frame currently on screen and shrinks it. Drawing the result back at full size
    * relies on bilinear filtering to blur it.
    *
-   * <p> Must be called after the frame has been rendered, before the buffers are swapped.
+   * <p>Must be called after the frame has been rendered, before the buffers are swapped.
    *
-   * @return the blurred frame, flipped to match scene2d's coordinates. The caller owns the
-   *     texture behind it and must dispose it.
-   * 
-   * 
+   * @return the blurred frame, flipped to match scene2d's coordinates. The caller owns the texture
+   *     behind it and must dispose it.
    */
   public static TextureRegion capture() {
     int width = Gdx.graphics.getBackBufferWidth();

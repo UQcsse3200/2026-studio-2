@@ -2,19 +2,13 @@ package com.csse3200.game.screens.minigames.spinthewheel;
 
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.csse3200.game.GdxGame;
-import com.csse3200.game.components.item.ItemType;
 import com.csse3200.game.components.minigames.spinthewheel.SpinTheWheelActions;
 import com.csse3200.game.components.minigames.spinthewheel.SpinTheWheelDisplay;
-import com.csse3200.game.components.minigames.spinthewheel.WheelItem;
+import com.csse3200.game.components.minigames.spinthewheel.WheelConfig;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.input.InputDecorator;
 import com.csse3200.game.screens.minigames.MinigameScreen;
 import com.csse3200.game.services.ServiceLocator;
-
-import com.csse3200.game.components.minigames.spinthewheel.WheelConfig;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /** The screen for the spin the wheel minigame. */
 public class SpinTheWheelScreen extends MinigameScreen {
@@ -25,7 +19,7 @@ public class SpinTheWheelScreen extends MinigameScreen {
 
   @Override
   protected String[] getTextures() {
-    return  WheelConfig.TEXTURES;
+    return WheelConfig.TEXTURES;
   }
 
   @Override

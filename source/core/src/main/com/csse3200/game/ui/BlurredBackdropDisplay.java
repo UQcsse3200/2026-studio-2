@@ -35,8 +35,7 @@ public class BlurredBackdropDisplay extends UIComponent {
   }
 
   @Override
-  public void draw(SpriteBatch batch) {
-  }
+  public void draw(SpriteBatch batch) {}
 
   @Override
   public void dispose() {

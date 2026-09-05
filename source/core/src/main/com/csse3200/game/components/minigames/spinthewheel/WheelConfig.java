@@ -4,7 +4,7 @@ import com.csse3200.game.components.item.ItemType;
 import java.util.List;
 
 public final class WheelConfig {
-  /** The items on the wheel*/
+  /** The items on the wheel */
   public static final List<WheelItem> ITEMS =
       List.of(
           new WheelItem(ItemType.ARROW, 10),
@@ -16,4 +16,3 @@ public final class WheelConfig {
 
   private WheelConfig() {}
 }
-
