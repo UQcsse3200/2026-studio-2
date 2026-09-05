@@ -16,8 +16,12 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Scaling;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.UIComponent;
+
+import java.util.ArrayList;
 import java.util.List;
+
 import javax.swing.event.ChangeEvent;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,6 +51,20 @@ public class SpinTheWheelDisplay extends UIComponent {
   public SpinTheWheelDisplay(List<WheelItem> items) {
     this.wheel = new WheelLogic(items);
   }
+
+   /**
+   * The textures the wheel needs loaded
+   *
+   * @param items the items that will be shown on the wheel
+   * @return the wheel's textures and one sprite per item
+   */
+  public static String[] texturesFor(List<WheelItem> items) {
+    List<String> paths = new ArrayList<>(List.of(DISC_TEXTURE, SPOKE_TEXTURE, POINTER_TEXTURE));
+    items.forEach(item -> paths.add(item.type().getTexturePath()));
+    return paths.toArray(new String[0]);
+  }
+  
+  
 
   @Override
   public void create() {
@@ -212,6 +230,11 @@ public class SpinTheWheelDisplay extends UIComponent {
                 })));
   }
 
+  /** Brings the wheel above everything */
+  public void toFront() {
+    table.toFront();
+  }
+
   @Override
   public void draw(SpriteBatch batch) {}
 
@@ -222,7 +245,7 @@ public class SpinTheWheelDisplay extends UIComponent {
 
   @Override
   public void dispose() {
-    table.clear();
+    table.remove();
     super.dispose();
   }
 }
