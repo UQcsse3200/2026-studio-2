@@ -97,12 +97,19 @@ public class TutorialGameArea extends GameArea {
   private static final GridPoint2 STANDARD_ARROW_SPAWN = new GridPoint2(4, 4);
   private static final GridPoint2 FIRE_ARROW_SPAWN = new GridPoint2(6, 4);
   private static final GridPoint2 COLD_ARROW_SPAWN = new GridPoint2(8, 4);
+  private static final GridPoint2 SWORD_SPAWN = new GridPoint2(7, 1);
+  private static final GridPoint2 SPEAR_SPAWN = new GridPoint2(9, 1);
   private static final GridPoint2 HEALTH_POTION_SPAWN = new GridPoint2(10, 4);
+  private static final GridPoint2 SPEED_POTION_SPAWN = new GridPoint2(5, 1);
+  private static final GridPoint2 POISON_POTION_SPAWN = new GridPoint2(3, 1);
 
   private static final int STANDARD_ARROW_QUANTITY = 5;
   private static final int FIRE_ARROW_QUANTITY = 5;
   private static final int COLD_ARROW_QUANTITY = 5;
+
   private static final int HEALTH_POTION_QUANTITY = 3;
+  private static final int SPEED_POTION_QUANTITY = 3;
+  private static final int POISON_POTION_QUANTITY = 3;
 
   private static final float WALL_WIDTH = 0.1f;
 
@@ -142,6 +149,11 @@ public class TutorialGameArea extends GameArea {
     "images/rope_arrow.png",
     "images/fire_arrow.png",
     "images/cold_arrow.png",
+    "images/cold_arrow.png",
+    "images/sword.png",
+    "images/spear.png",
+    "images/speed_potion.png",
+    "images/poison_potion.png"
   };
 
   private static final String[] forestTextureAtlases = {
@@ -492,5 +504,15 @@ public class TutorialGameArea extends GameArea {
     spawnEntityAt(ItemFactory.createFireArrow(FIRE_ARROW_QUANTITY), FIRE_ARROW_SPAWN, true, false);
 
     spawnEntityAt(ItemFactory.createColdArrow(COLD_ARROW_QUANTITY), COLD_ARROW_SPAWN, true, false);
+
+    spawnEntityAt(ItemFactory.createSword(1), SWORD_SPAWN, true, false);
+
+    spawnEntityAt(ItemFactory.createSpear(1), SPEAR_SPAWN, true, false);
+
+    spawnEntityAt(
+        ItemFactory.createSpeedPotion(SPEED_POTION_QUANTITY), SPEED_POTION_SPAWN, true, false);
+
+    spawnEntityAt(
+        ItemFactory.createPoisonPotion(POISON_POTION_QUANTITY), POISON_POTION_SPAWN, true, false);
   }
 }

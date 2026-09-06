@@ -48,6 +48,10 @@ public enum ItemType {
       3f,
       5f,
       0f,
+      0f,
+      0f,
+      0f,
+      0f,
       0f),
   ColdArrow(
       5,
@@ -62,6 +66,61 @@ public enum ItemType {
       0f,
       0f,
       0.75f,
+      5f,
+      0f,
+      0f,
+      0f,
+      0f),
+
+  Sword(
+      6,
+      "Great Sword",
+      "A heavy sword with high damage.",
+      "images/sword.png",
+      20,
+      5f,
+      0f,
+      0,
+      false),
+
+  Spear(7, "Spear", "A long spear with extended range.", "images/spear.png", 12, 8f, 0f, 0, false),
+
+  SpeedPotion(
+      8,
+      "Speed Potion",
+      "Increases movement speed by 10% for 3 seconds.",
+      "images/speed_potion.png",
+      0,
+      0f,
+      0f,
+      0,
+      true,
+      0f,
+      0f,
+      0f,
+      0f,
+      0.5f,
+      3f,
+      0f,
+      0f),
+
+  PoisonPotion(
+      9,
+      "Poison Potion",
+      "Applies poison damage over time.",
+      "images/poison_potion.png",
+      0,
+      0f,
+      0f,
+      0,
+      true,
+      0f,
+      0f,
+      0f,
+      0f,
+      0f,
+      0f,
+      2f,
       5f);
 
   private final int id;
@@ -77,6 +136,10 @@ public enum ItemType {
   private final float burnTime;
   private final float slowSpeed;
   private final float slowTime;
+  private final float speedBoost;
+  private final float speedDuration;
+  private final float poisonDamagePerSecond;
+  private final float poisonDuration;
 
   ItemType(
       int id,
@@ -101,6 +164,10 @@ public enum ItemType {
         0f,
         0f,
         0f,
+        0f,
+        0f,
+        0f,
+        0f,
         0f);
   }
 
@@ -117,7 +184,11 @@ public enum ItemType {
       float burnDamagePerSecond,
       float burnTime,
       float slowSpeed,
-      float slowTime) {
+      float slowTime,
+      float speedBoost,
+      float speedDuration,
+      float poisonDamagePerSecond,
+      float poisonDuration) {
     this.id = id;
     this.displayName = displayName;
     this.description = description;
@@ -131,6 +202,10 @@ public enum ItemType {
     this.burnTime = burnTime;
     this.slowSpeed = slowSpeed;
     this.slowTime = slowTime;
+    this.speedBoost = speedBoost;
+    this.speedDuration = speedDuration;
+    this.poisonDamagePerSecond = poisonDamagePerSecond;
+    this.poisonDuration = poisonDuration;
   }
 
   public int getId() {
@@ -183,5 +258,21 @@ public enum ItemType {
 
   public float getSlowTime() {
     return slowTime;
+  }
+
+  public float getSpeedBoost() {
+    return speedBoost;
+  }
+
+  public float getDuration() {
+    return speedDuration;
+  }
+
+  public float getPoisonDamagePerSecond() {
+    return poisonDamagePerSecond;
+  }
+
+  public float getPoisonDuration() {
+    return poisonDuration;
   }
 }

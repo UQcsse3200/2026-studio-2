@@ -6,6 +6,7 @@ import com.csse3200.game.components.Component;
 import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.physics.raycast.RaycastHit;
+import com.csse3200.game.services.GameTime;
 import com.csse3200.game.services.ServiceLocator;
 
 /**
@@ -18,6 +19,9 @@ public class PlayerActions extends Component {
   private static final float SPRINT_MULTIPLIER = 1.75f;
   private static final float ROPE_JUMP_MULTIPLIER = 0.7f;
   private static final float AIR_CONTROL = 0.1f; // How much steering you get mid-air
+
+  private float extraSpeedMultiplier = 1f; // The Speed multiplier
+  private long speedPotionEndTimeMs = 0; // The time that speed_potion ends
 
   private PhysicsComponent physicsComponent;
   private GrappleComponent grapple;
@@ -37,6 +41,7 @@ public class PlayerActions extends Component {
     entity.getEvents().addListener("sprint", this::sprint);
     entity.getEvents().addListener("sprintStop", this::stopSprinting);
     entity.getEvents().addListener("togglePaused", this::togglePause);
+    entity.getEvents().addListener("speedPotionUsed", this::applySpeedPotion);
   }
 
   @Override
@@ -51,6 +56,11 @@ public class PlayerActions extends Component {
     } else {
       updateSpeed();
     }
+
+    GameTime time = ServiceLocator.getTimeSource();
+    if (extraSpeedMultiplier != 1f && time != null && time.getTime() >= speedPotionEndTimeMs) {
+      extraSpeedMultiplier = 1f;
+    }
   }
 
   private boolean isGrappling() {
@@ -60,8 +70,9 @@ public class PlayerActions extends Component {
   private void updateSpeed() {
     Body body = physicsComponent.getBody();
     Vector2 velocity = body.getLinearVelocity();
+
     float speedMultiplier = isSprinting ? SPRINT_MULTIPLIER : 1f;
-    float desiredVelocityX = walkDirection.x * MAX_SPEED.x * speedMultiplier;
+    float desiredVelocityX = walkDirection.x * MAX_SPEED.x * speedMultiplier * extraSpeedMultiplier;
 
     // Full control on the ground, weak in the air so swing momentum isn't wiped on landing
     float control = isGrounded ? 1f : AIR_CONTROL;
@@ -126,6 +137,16 @@ public class PlayerActions extends Component {
       isGrounded = false;
       entity.getEvents().trigger("jumpStart");
     }
+  }
+
+  // one para is the extraMutiplier, another one is the time the potion last
+  private void applySpeedPotion(float boost, float duration) {
+    extraSpeedMultiplier = 1f + boost;
+
+    long durationMs = (long) (duration * 1000f);
+    speedPotionEndTimeMs = ServiceLocator.getTimeSource().getTime() + durationMs;
+
+    updateSpeed();
   }
 
   void sprint() {
