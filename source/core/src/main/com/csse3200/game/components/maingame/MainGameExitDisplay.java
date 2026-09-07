@@ -53,6 +53,12 @@ public class MainGameExitDisplay extends UIComponent {
     return Z_INDEX;
   }
 
+  public void setVisible(boolean visible) {
+    if (table != null) {
+      table.setVisible(visible);
+    }
+  }
+
   @Override
   public void dispose() {
     table.clear();

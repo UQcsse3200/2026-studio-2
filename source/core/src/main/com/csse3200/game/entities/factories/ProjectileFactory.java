@@ -2,50 +2,38 @@ package com.csse3200.game.entities.factories;
 
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.components.CombatStatsComponent;
-import com.csse3200.game.components.ProjectileComponent;
-import com.csse3200.game.components.TouchAttackComponent;
+import com.csse3200.game.components.projectile.ArrowProjectileComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.physics.PhysicsLayer;
-import com.csse3200.game.physics.PhysicsUtils;
-import com.csse3200.game.physics.components.ColliderComponent;
 import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.physics.components.PhysicsComponent;
-import com.csse3200.game.physics.components.PhysicsMovementComponent;
-import com.csse3200.game.rendering.TextureRenderComponent;
+import com.csse3200.game.rendering.ArrowRenderComponent;
 
-/** Factory for creating enemy projectiles. */
+/** Factory for player and enemy projectile entities. */
 public class ProjectileFactory {
+  public static final int STANDARD_ARROW_DAMAGE = 10;
+  public static final float STANDARD_ARROW_SPEED = 15f;
+  public static final float STANDARD_ARROW_RANGE = 15f;
 
   /**
-   * Creates a projectile that travels towards a target position.
+   * Creates a standard player arrow with unlimited-ammo behaviour.
    *
-   * @param targetPosition position the projectile travels towards
-   * @param damage damage dealt when the projectile hits the player
-   * @param speed projectile movement speed
-   * @param lifetime maximum projectile lifetime in seconds
-   * @return projectile entity
+   * @param position projectile spawn position
+   * @param direction projectile travel direction
+   * @return unregistered arrow entity
    */
-  public static Entity createEnemyProjectile(
-      Vector2 targetPosition, int damage, float speed, float lifetime) {
-
-    PhysicsMovementComponent movement = new PhysicsMovementComponent(new Vector2(speed, speed));
-    movement.setTarget(targetPosition);
-
-    Entity projectile =
+  public static Entity createPlayerArrow(Vector2 position, Vector2 direction) {
+    Entity arrow =
         new Entity()
             .addComponent(new PhysicsComponent())
-            .addComponent(movement)
-            .addComponent(new HitboxComponent().setLayer(PhysicsLayer.NPC))
-            .addComponent(new CombatStatsComponent(1, damage))
-            .addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER))
-            .addComponent(new ProjectileComponent(lifetime))
-            .addComponent(new ColliderComponent())
-            .addComponent(new TextureRenderComponent("images/heart.png"));
-
-    PhysicsUtils.setScaledCollider(projectile, 0.3f, 0.3f);
-    projectile.setScale(0.3f, 0.3f);
-
-    return projectile;
+            .addComponent(new HitboxComponent().setLayer(PhysicsLayer.PLAYER_PROJECTILE))
+            .addComponent(new CombatStatsComponent(1, STANDARD_ARROW_DAMAGE))
+            .addComponent(
+                new ArrowProjectileComponent(direction, STANDARD_ARROW_SPEED, STANDARD_ARROW_RANGE))
+            .addComponent(new ArrowRenderComponent());
+    arrow.setScale(0.5f, 0.1f);
+    arrow.setPosition(position.x - arrow.getScale().x / 2f, position.y - arrow.getScale().y / 2f);
+    return arrow;
   }
 
   private ProjectileFactory() {

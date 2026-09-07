@@ -1,6 +1,7 @@
 package com.csse3200.game.services;
 
 import com.csse3200.game.entities.EntityService;
+import com.csse3200.game.events.EventHandler;
 import com.csse3200.game.input.InputService;
 import com.csse3200.game.physics.PhysicsService;
 import com.csse3200.game.rendering.RenderService;
@@ -23,6 +24,7 @@ public class ServiceLocator {
   private static GameTime timeSource;
   private static InputService inputService;
   private static ResourceService resourceService;
+  private static EventHandler gameEndEventHandler;
 
   public static EntityService getEntityService() {
     return entityService;
@@ -46,6 +48,15 @@ public class ServiceLocator {
 
   public static ResourceService getResourceService() {
     return resourceService;
+  }
+
+  public static EventHandler getGameEndEventHandler() {
+    return gameEndEventHandler;
+  }
+
+  public static void registerGameEndEventHandler(EventHandler eventHandler) {
+    logger.debug("Registering game end event handler {}", eventHandler);
+    gameEndEventHandler = eventHandler;
   }
 
   public static void registerEntityService(EntityService service) {
@@ -85,6 +96,7 @@ public class ServiceLocator {
     timeSource = null;
     inputService = null;
     resourceService = null;
+    gameEndEventHandler = null;
   }
 
   private ServiceLocator() {

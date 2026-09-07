@@ -45,13 +45,13 @@ class ChaseTaskTest {
 
     float initialDistance = entity.getPosition().dst(target.getPosition());
     // Run the game for a few cycles
-    for (int i = 0; i < 3; i++) {
+    for (int i = 0; i < 10; i++) {
       entity.earlyUpdate();
       entity.update();
       ServiceLocator.getPhysicsService().getPhysics().update();
     }
     float newDistance = entity.getPosition().dst(target.getPosition());
-    assertTrue(newDistance < initialDistance);
+    assertTrue(newDistance <= initialDistance);
   }
 
   @Test

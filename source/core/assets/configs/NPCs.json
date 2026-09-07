@@ -7,17 +7,6 @@
     "health": 100,
     "baseAttack": 25,
     "spookyFactor": 7
-  },
-  "chaser": {
-    "health": 50,
-    "baseAttack": 5,
-    "wanderRangeX": 4.0,
-    "wanderRangeY": 0.0,
-    "wanderWaitTime": 2.0,
-
-    "chasePriority": 10,
-    "viewDistance": 20.0,
-    "maxChaseDistance": 20.0
   }
 }
 

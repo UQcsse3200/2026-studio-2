@@ -131,8 +131,11 @@ public class NPCFactory {
             .addComponent(new PhysicsMovementComponent())
             .addComponent(new ColliderComponent())
             .addComponent(new HitboxComponent().setLayer(PhysicsLayer.NPC))
+            .addComponent(new CombatStatsComponent(50, 10))
             .addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER, 1.5f))
             .addComponent(aiComponent);
+
+    npc.getComponent(PhysicsComponent.class).getBody().setGravityScale(0f);
 
     PhysicsUtils.setScaledCollider(npc, 0.9f, 0.4f);
     return npc;

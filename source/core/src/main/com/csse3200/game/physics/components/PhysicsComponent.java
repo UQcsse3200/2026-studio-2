@@ -18,9 +18,10 @@ import com.csse3200.game.services.ServiceLocator;
  * {@link PhysicsContactListener }
  */
 public class PhysicsComponent extends Component {
-  private static final float GROUND_FRICTION = 5f;
+  private static final float GROUND_FRICTION = 2f;
   private final PhysicsEngine physics;
   private final Body body;
+  private boolean paused = false;
 
   /** Create a physics component with default settings. */
   public PhysicsComponent() {
@@ -74,6 +75,11 @@ public class PhysicsComponent extends Component {
     body.setUserData(userData);
 
     entity.getEvents().addListener("setPosition", (Vector2 pos) -> body.setTransform(pos, 0f));
+    entity.getEvents().addListener("togglePaused", this::togglePause);
+  }
+
+  private void togglePause() {
+    paused = !paused;
   }
 
   /**
@@ -82,9 +88,11 @@ public class PhysicsComponent extends Component {
    */
   @Override
   public void earlyUpdate() {
-    Vector2 bodyPos = body.getPosition();
-    // Don't notify position changes due to physics
-    entity.setPosition(bodyPos, false);
+    if (!paused) {
+      Vector2 bodyPos = body.getPosition();
+      // Don't notify position changes due to physics
+      entity.setPosition(bodyPos, false);
+    }
   }
 
   @Override

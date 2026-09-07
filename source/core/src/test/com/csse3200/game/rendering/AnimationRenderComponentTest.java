@@ -3,6 +3,7 @@ package com.csse3200.game.rendering;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
@@ -61,10 +62,22 @@ class AnimationRenderComponentTest {
     int numFrames = 5;
     String animName = "test_name";
     float frameTime = 1f;
+    int frameWidth = 10;
+    int frameHeight = 20;
 
-    // Mock texture atlas
-    TextureAtlas atlas = createMockAtlas(animName, numFrames);
-    Array<AtlasRegion> regions = atlas.findRegions(animName);
+    // Real (non-mock) regions backed by a mock texture, so each frame has distinct,
+    // inspectable UV coordinates.
+    Texture texture = mock(Texture.class);
+    when(texture.getWidth()).thenReturn(frameWidth * numFrames);
+    when(texture.getHeight()).thenReturn(frameHeight);
+
+    Array<AtlasRegion> regions = new Array<>(numFrames);
+    for (int i = 0; i < numFrames; i++) {
+      regions.add(new AtlasRegion(texture, i * frameWidth, 0, frameWidth, frameHeight));
+    }
+    TextureAtlas atlas = mock(TextureAtlas.class);
+    when(atlas.findRegions(animName)).thenReturn(regions);
+
     SpriteBatch batch = mock(SpriteBatch.class);
 
     // Mock game time
@@ -75,21 +88,138 @@ class AnimationRenderComponentTest {
     // Start animation
     AnimationRenderComponent animator = new AnimationRenderComponent(atlas);
     Entity entity = new Entity();
+    entity.setScale(3f, 999f);
     animator.setEntity(entity);
     animator.addAnimation(animName, frameTime);
     animator.startAnimation(animName);
 
-    for (int i = 0; i < 5; i++) {
+    float expectedWidth = entity.getScale().x;
+    float expectedHeight = entity.getScale().y;
+
+    for (int i = 0; i < numFrames; i++) {
       // Each draw advances 1 frame, check that it matches for each
       animator.draw(batch);
+      AtlasRegion expected = regions.get(i);
+      // v/v2 are swapped relative to the region's own fields, matching what
+      // SpriteBatch#draw(TextureRegion, ...) does internally so the frame isn't drawn upside down.
       verify(batch)
           .draw(
-              regions.get(i),
+              expected.getTexture(),
               entity.getPosition().x,
               entity.getPosition().y,
-              entity.getScale().x,
-              entity.getScale().y);
+              expectedWidth,
+              expectedHeight,
+              expected.getU(),
+              expected.getV2(),
+              expected.getU2(),
+              expected.getV());
     }
+  }
+
+  @Test
+  void shouldScaleFramesUniformlyAfterScaleEntity() {
+    String animName = "test_name";
+    float frameTime = 1f;
+
+    Texture texture = mock(Texture.class);
+    when(texture.getWidth()).thenReturn(100);
+    when(texture.getHeight()).thenReturn(100);
+
+    AtlasRegion defaultRegion = new AtlasRegion(texture, 0, 0, 10, 40);
+    AtlasRegion sameSizeAsDefault = new AtlasRegion(texture, 0, 40, 10, 40);
+    AtlasRegion biggerAndDifferentAspect = new AtlasRegion(texture, 0, 60, 20, 20);
+    Array<AtlasRegion> regions = new Array<>(2);
+    regions.add(sameSizeAsDefault);
+    regions.add(biggerAndDifferentAspect);
+
+    TextureAtlas atlas = mock(TextureAtlas.class);
+    when(atlas.findRegion("default")).thenReturn(defaultRegion);
+    when(atlas.findRegions(animName)).thenReturn(regions);
+
+    SpriteBatch batch = mock(SpriteBatch.class);
+
+    GameTime gameTime = mock(GameTime.class);
+    ServiceLocator.registerTimeSource(gameTime);
+    when(gameTime.getDeltaTime()).thenReturn(frameTime);
+
+    AnimationRenderComponent animator = new AnimationRenderComponent(atlas);
+    Entity entity = new Entity();
+    animator.setEntity(entity);
+    animator.scaleEntity();
+    animator.addAnimation(animName, frameTime);
+    animator.startAnimation(animName);
+
+    animator.draw(batch); // frame 0: same size as default (10x40) -> 1 x 4
+    verify(batch)
+        .draw(
+            eq(texture),
+            eq(entity.getPosition().x),
+            eq(entity.getPosition().y),
+            eq(1f),
+            eq(4f),
+            anyFloat(),
+            anyFloat(),
+            anyFloat(),
+            anyFloat());
+
+    animator.draw(batch); // frame 1: 20x20, double default's pixel width -> 2 x 2, not squashed
+    verify(batch)
+        .draw(
+            eq(texture),
+            eq(entity.getPosition().x),
+            eq(entity.getPosition().y),
+            eq(2f),
+            eq(2f),
+            anyFloat(),
+            anyFloat(),
+            anyFloat(),
+            anyFloat());
+  }
+
+  @Test
+  void shouldFlipHorizontally() {
+    String animName = "test_name";
+    float frameTime = 1f;
+    int frameWidth = 10;
+
+    Texture texture = mock(Texture.class);
+    when(texture.getWidth()).thenReturn(frameWidth);
+    when(texture.getHeight()).thenReturn(frameWidth);
+
+    AtlasRegion region = new AtlasRegion(texture, 0, 0, frameWidth, frameWidth);
+    Array<AtlasRegion> regions = new Array<>(1);
+    regions.add(region);
+    TextureAtlas atlas = mock(TextureAtlas.class);
+    when(atlas.findRegions(animName)).thenReturn(regions);
+
+    SpriteBatch batch = mock(SpriteBatch.class);
+
+    GameTime gameTime = mock(GameTime.class);
+    ServiceLocator.registerTimeSource(gameTime);
+    when(gameTime.getDeltaTime()).thenReturn(frameTime);
+
+    AnimationRenderComponent animator = new AnimationRenderComponent(atlas);
+    Entity entity = new Entity();
+    animator.setEntity(entity);
+    animator.addAnimation(animName, frameTime);
+    animator.startAnimation(animName);
+
+    animator.setFlipX(true);
+    animator.draw(batch);
+
+    // Flipping swaps u and u2 relative to the unflipped region; v/v2 are still swapped relative
+    // to the region's own fields (see shouldPlayAnimation), independent of the flip.
+    verify(batch)
+        .draw(
+            region.getTexture(),
+            entity.getPosition().x,
+            entity.getPosition().y,
+            entity.getScale().x,
+            entity.getScale().y,
+            region.getU2(),
+            region.getV2(),
+            region.getU(),
+            region.getV());
   }
 
   @Test

@@ -8,7 +8,13 @@ import com.badlogic.gdx.Screen;
 import com.csse3200.game.files.UserSettings;
 import com.csse3200.game.screens.MainGameScreen;
 import com.csse3200.game.screens.MainMenuScreen;
+import com.csse3200.game.screens.SettingsFromPauseScreen;
 import com.csse3200.game.screens.SettingsScreen;
+import com.csse3200.game.screens.TutorialGameScreen;
+import com.csse3200.game.screens.minigames.BlackjackScreen;
+import com.csse3200.game.screens.minigames.CyclopsMinigameRoomScreen;
+import com.csse3200.game.screens.minigames.MinigameSelectScreen;
+import com.csse3200.game.screens.minigames.spinthewheel.SpinTheWheelScreen;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -70,8 +76,20 @@ public class GdxGame extends Game {
         return new MainMenuScreen(this);
       case MAIN_GAME:
         return new MainGameScreen(this);
+      case TUTORIAL_GAME:
+        return new TutorialGameScreen(this);
       case SETTINGS:
         return new SettingsScreen(this);
+      case SETTINGS_FROM_PAUSE:
+        return new SettingsFromPauseScreen(this);
+      case MINIGAME_SELECT:
+        return new MinigameSelectScreen(this);
+      case CYCLOPS_MINIGAME:
+        return new CyclopsMinigameRoomScreen(this);
+      case MINIGAME_SPIN_THE_WHEEL:
+        return new SpinTheWheelScreen(this);
+      case MINIGAME_BLACKJACK:
+        return new BlackjackScreen(this);
       default:
         return null;
     }
@@ -80,7 +98,13 @@ public class GdxGame extends Game {
   public enum ScreenType {
     MAIN_MENU,
     MAIN_GAME,
-    SETTINGS
+    TUTORIAL_GAME,
+    SETTINGS,
+    SETTINGS_FROM_PAUSE,
+    MINIGAME_SELECT,
+    MINIGAME_BLACKJACK,
+    CYCLOPS_MINIGAME,
+    MINIGAME_SPIN_THE_WHEEL
   }
 
   /** Exit the game. */

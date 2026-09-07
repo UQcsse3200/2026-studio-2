@@ -34,6 +34,8 @@ public class SettingsMenuDisplay extends UIComponent {
   private Slider uiScaleSlider;
   private SelectBox<StringDecorator<DisplayMode>> displayModeSelect;
 
+  private ScreenType sourceScreen = ScreenType.MAIN_MENU;
+
   public SettingsMenuDisplay(GdxGame game) {
     super();
     this.game = game;

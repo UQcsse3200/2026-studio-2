@@ -19,32 +19,39 @@ public class MainMenuActions extends Component {
 
   @Override
   public void create() {
-    entity.getEvents().addListener("start", this::onStart);
-    entity.getEvents().addListener("load", this::onLoad);
-    entity.getEvents().addListener("exit", this::onExit);
-    entity.getEvents().addListener("settings", this::onSettings);
+    entity.getEvents().addListener("Play", this::onPlay);
+    entity.getEvents().addListener("Continue", this::onContinue);
+    entity.getEvents().addListener("Minigames", this::onMinigames);
+    entity.getEvents().addListener("Settings", this::onSettings);
+    entity.getEvents().addListener("Exit", this::onExit);
   }
 
-  /** Swaps to the Main Game screen. */
-  private void onStart() {
-    logger.info("Start game");
-    game.setScreen(GdxGame.ScreenType.MAIN_GAME);
+  /** Swaps to the Tutorial Game screen. */
+  private void onPlay() {
+    logger.info("Play");
+    game.setScreen(GdxGame.ScreenType.TUTORIAL_GAME);
   }
 
   /** Intended for loading a saved game state. Load functionality is not actually implemented. */
-  private void onLoad() {
-    logger.info("Load game");
+  private void onContinue() {
+    logger.info("Continue");
   }
 
-  /** Exits the game. */
-  private void onExit() {
-    logger.info("Exit game");
-    game.exit();
+  /** Swaps to the Mini Games Screen */
+  private void onMinigames() {
+    logger.info("Minigames");
+    game.setScreen(GdxGame.ScreenType.MINIGAME_SELECT);
   }
 
   /** Swaps to the Settings screen. */
   private void onSettings() {
-    logger.info("Launching settings screen");
+    logger.info("Settings");
     game.setScreen(GdxGame.ScreenType.SETTINGS);
+  }
+
+  /** Exits the game. */
+  private void onExit() {
+    logger.info("Exit");
+    game.exit();
   }
 }

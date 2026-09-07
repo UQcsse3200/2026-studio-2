@@ -1,23 +1,7 @@
 {
-  "ghoul": {
-    "health": 40,
-    "baseAttack": 10,
-    "speed": 3.0,
-    "behaviour": "chase",
-    "attackType": "melee",
-    "attackRange": 1.5,
-
-    "wanderRangeX": 2.0,
-    "wanderRangeY": 2.0,
-    "wanderWaitTime": 2.0,
-    "chasePriority": 10,
-    "viewDistance": 5.0,
-    "maxChaseDistance": 5.0
-  },
-
-  "chaser": {
-    "health": 50,
-    "baseAttack": 5,
+  "skeletonWarrior": {
+    "health": 30,
+    "baseAttack": 2,
     "speed": 3.0,
     "behaviour": "chase",
     "attackType": "melee",
@@ -27,13 +11,13 @@
     "wanderRangeY": 0.0,
     "wanderWaitTime": 2.0,
     "chasePriority": 10,
-    "viewDistance": 20.0,
-    "maxChaseDistance": 20.0
+    "viewDistance": 6.0,
+    "maxChaseDistance": 9.0
   },
 
-  "shooter": {
-    "health": 30,
-    "baseAttack": 5,
+  "skeletonArcher": {
+    "health": 20,
+    "baseAttack": 2,
     "speed": 2.5,
     "behaviour": "chase",
     "attackType": "range",
@@ -43,7 +27,41 @@
     "wanderRangeY": 0.0,
     "wanderWaitTime": 2.0,
     "chasePriority": 10,
-    "viewDistance": 12.0,
-    "maxChaseDistance": 15.0
+    "viewDistance": 10.0,
+    "maxChaseDistance": 12.5
+  },
+
+  "vulture": {
+    "health": 20,
+    "baseAttack": 2,
+    "speed": 2.5,
+    "behaviour": "chase",
+    "attackType": "melee",
+    "attackRange": 6.0,
+
+    "wanderRangeX": 4.0,
+    "wanderRangeY": 0.0,
+    "wanderWaitTime": 2.0,
+    "chasePriority": 10,
+    "viewDistance": 10.0,
+    "maxChaseDistance": 12.5
+  },
+
+  "necromancer": {
+    "health": 20,
+    "baseAttack": 2,
+    "speed": 2.5,
+    "behaviour": "chase",
+    "attackType": "range",
+    "attackRange": 6.0,
+
+    "wanderRangeX": 4.0,
+    "wanderRangeY": 0.0,
+    "wanderWaitTime": 2.0,
+    "chasePriority": 10,
+    "viewDistance": 10.0,
+    "maxChaseDistance": 12.5
   }
+
+
 }

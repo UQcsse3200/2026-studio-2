@@ -6,6 +6,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import com.csse3200.game.extensions.GameExtension;
+import com.csse3200.game.services.ServiceLocator;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -48,5 +49,22 @@ class EntityServiceTest {
     entityService.register(entity);
     entityService.dispose();
     verify(entity).dispose();
+  }
+
+  @Test
+  void shouldSafelyRemoveScheduledEntityAfterUpdate() {
+    EntityService entityService = new EntityService();
+    ServiceLocator.registerEntityService(entityService);
+    Entity removedEntity = spy(Entity.class);
+    Entity remainingEntity = spy(Entity.class);
+    entityService.register(removedEntity);
+    entityService.register(remainingEntity);
+
+    entityService.scheduleRemoval(removedEntity);
+    entityService.update();
+
+    verify(removedEntity).dispose();
+    verify(remainingEntity).earlyUpdate();
+    verify(remainingEntity).update();
   }
 }
