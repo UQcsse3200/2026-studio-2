@@ -14,6 +14,7 @@ import com.csse3200.game.components.player.PlayerActions;
 import com.csse3200.game.components.player.PlayerAttackComponent;
 import com.csse3200.game.components.player.PlayerInteractionComponent;
 import com.csse3200.game.components.player.PlayerStatsDisplay;
+import com.csse3200.game.components.shop.ShopComponent;
 import com.csse3200.game.components.shop.ShopDisplay;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.PlayerConfig;
@@ -78,6 +79,7 @@ public class PlayerFactory {
             .addComponent(new InventoryBarDisplay())
             .addComponent(new BackpackDisplay())
             .addComponent(new PlayerInteractionComponent())
+            .addComponent(new ShopComponent())
             .addComponent(new ShopDisplay())
             .addComponent(new ItemUseComponent())
             .addComponent(inputComponent)

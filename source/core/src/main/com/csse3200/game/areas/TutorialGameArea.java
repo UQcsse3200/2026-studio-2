@@ -158,7 +158,8 @@ public class TutorialGameArea extends GameArea {
     "images/arrow.png",
     "images/rope_arrow.png",
     "images/fire_arrow.png",
-    "images/cold_arrow.png"
+    "images/cold_arrow.png",
+    "images/heart.png"
   };
 
   private static final String[] forestTextureAtlases = {
