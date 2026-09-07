@@ -17,6 +17,7 @@ import com.csse3200.game.components.item.ItemComponent;
 import com.csse3200.game.components.item.ItemType;
 import com.csse3200.game.components.item.weapons.RopeArr;
 import com.csse3200.game.components.item.weapons.StandardArr;
+import com.csse3200.game.components.npc.ShopNpcComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.extensions.GameExtension;
@@ -208,6 +209,74 @@ class PlayerInteractionComponentTest {
     assertEquals(initial, inventory.getSelectedItem());
   }
 
+  @Test
+  void shouldFindShopNpcInRange() {
+    Entity player = createPlayer(new InventoryComponent(0));
+    Entity shopNpc = spawnShopNpc(new Vector2(0.5f, 0f));
+
+    PlayerInteractionComponent interaction = player.getComponent(PlayerInteractionComponent.class);
+
+    assertEquals(shopNpc, interaction.findNearestShopNpc());
+  }
+
+  @Test
+  void shouldNotFindShopNpcOutOfRange() {
+    Entity player = createPlayer(new InventoryComponent(0));
+    spawnShopNpc(new Vector2(10f, 10f));
+
+    PlayerInteractionComponent interaction = player.getComponent(PlayerInteractionComponent.class);
+
+    assertNull(interaction.findNearestShopNpc());
+  }
+
+  @Test
+  void shouldOpenShopWhenInteractingWithShopNpc() {
+    Entity player = createPlayer(new InventoryComponent(0));
+    spawnShopNpc(new Vector2(0.5f, 0f));
+
+    boolean[] opened = {false};
+    player.getEvents().addListener("openShop", () -> opened[0] = true);
+
+    PlayerInteractionComponent interaction = player.getComponent(PlayerInteractionComponent.class);
+
+    assertTrue(interaction.interact());
+    assertTrue(opened[0]);
+    assertTrue(interaction.isShopOpen());
+  }
+
+  @Test
+  void shouldPreferShopNpcOverItem() {
+    Entity player = createPlayer(new InventoryComponent(0));
+    spawnWorldItem(new RopeArr(), new Vector2(0.5f, 0f));
+    spawnShopNpc(new Vector2(0.5f, 0f));
+
+    boolean[] opened = {false};
+    player.getEvents().addListener("openShop", () -> opened[0] = true);
+
+    PlayerInteractionComponent interaction = player.getComponent(PlayerInteractionComponent.class);
+
+    assertTrue(interaction.interact());
+    assertTrue(opened[0]);
+    assertEquals(0, player.getComponent(InventoryComponent.class).getItemCount(ItemType.RopeArrow));
+  }
+
+  @Test
+  void shouldCloseShopOnSecondInteract() {
+    Entity player = createPlayer(new InventoryComponent(0));
+    spawnShopNpc(new Vector2(0.5f, 0f));
+
+    boolean[] closed = {false};
+    player.getEvents().addListener("closeShop", () -> closed[0] = true);
+
+    PlayerInteractionComponent interaction = player.getComponent(PlayerInteractionComponent.class);
+    interaction.interact();
+    assertTrue(interaction.isShopOpen());
+
+    assertTrue(interaction.interact());
+    assertTrue(closed[0]);
+    assertFalse(interaction.isShopOpen());
+  }
+
   Entity createPlayer(InventoryComponent inventory) {
     Entity player =
         new Entity()
@@ -228,5 +297,12 @@ class PlayerInteractionComponentTest {
     itemEntity.setPosition(position);
     ServiceLocator.getEntityService().register(itemEntity);
     return itemEntity;
+  }
+
+  Entity spawnShopNpc(Vector2 position) {
+    Entity shopNpc = new Entity().addComponent(new ShopNpcComponent());
+    shopNpc.setPosition(position);
+    ServiceLocator.getEntityService().register(shopNpc);
+    return shopNpc;
   }
 }
