@@ -70,6 +70,44 @@ public class EnemyFactory {
   }
 
   /**
+   * Creates a flying vulture that attack the player from the sky
+   *
+   * @param target entity the enemy will chase and shoot at
+   * @return skeleton archer entity
+   */
+  public static Entity createVulture(Entity target) {
+    EnemyConfig config = configs.vulture;
+    Entity Vulture = createEnemy(target, config);
+
+    Vulture
+        // .addComponent(new CombatStatsComponent(config.health, config.baseAttack))
+        .addComponent(new TextureRenderComponent("images/skeleton_archer.png"));
+
+    Vulture.getComponent(TextureRenderComponent.class).scaleEntity();
+
+    return Vulture;
+  }
+
+  /**
+   * Creates a necromancer that summons skeleton warriors and fire magic projectile
+   *
+   * @param target entity the enemy will chase and shoot at
+   * @return skeleton archer entity
+   */
+  public static Entity createNecromancer(Entity target) {
+    EnemyConfig config = configs.necromancer;
+    Entity Necromancer = createEnemy(target, config);
+
+    Necromancer
+        // .addComponent(new CombatStatsComponent(config.health, config.baseAttack))
+        .addComponent(new TextureRenderComponent("images/skeleton_archer.png"));
+
+    Necromancer.getComponent(TextureRenderComponent.class).scaleEntity();
+
+    return Necromancer;
+  }
+
+  /**
    * Creates a base enemy entity
    *
    * @param target entity the enemy will chase
