@@ -1,5 +1,6 @@
 package com.csse3200.game.components.inventory;
 
+import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
@@ -19,6 +20,8 @@ public class InventoryBarDisplay extends UIComponent {
   private static final float SLOT_HEIGHT = 72f;
   private static final float MAX_SLOT_WIDTH = 120f;
 
+  private Table root;
+  private Stack stack;
   private Table table;
 
   @Override
@@ -63,14 +66,14 @@ public class InventoryBarDisplay extends UIComponent {
 
   /** Creates and positions the inventory bar. */
   private void addActors() {
-    table = new Table();
-    table.bottom();
-    table.setFillParent(true);
-    table.padBottom(20f);
+    root = new Table();
+    root.bottom();
+    root.setFillParent(true);
+    root.padBottom(20f);
 
     populateSlots();
 
-    stage.addActor(table);
+    stage.addActor(root);
   }
 
   /** Populates the inventory bar with occupied and empty slots. */

@@ -211,6 +211,7 @@ public class TutorialGameArea extends GameArea {
     spawnWinCondition();
     spawnSkeletonArcher();
     spawnSkeletonWarrior();
+    spawnTestEnemyNearPlayer(); // Temporary enemy near player spawn for quick HUD/flicker testing
     // spawnTestWinCondition(); // Temporary test win condition near player spawn for quick testing
 
     // spawnGhosts();
@@ -400,6 +401,12 @@ public class TutorialGameArea extends GameArea {
     // Temporary test win condition near player spawn for quick testing
     Entity testWinCon = ObstacleFactory.createWinConEntity();
     spawnEntityAt(testWinCon, new GridPoint2(3, 4), true, true);
+  }
+
+  // Temporary enemy near player spawn for quick HUD/flicker testing
+  private void spawnTestEnemyNearPlayer() {
+    Entity testEnemy = EnemyFactory.createSkeletonWarrior(player);
+    spawnEntityAt(testEnemy, new GridPoint2(12, 4), true, true);
   }
 
   private void spawnGhosts() {
