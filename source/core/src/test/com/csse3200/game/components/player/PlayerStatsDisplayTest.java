@@ -2,6 +2,7 @@ package com.csse3200.game.components.player;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -57,6 +58,20 @@ class PlayerStatsDisplayTest {
   }
 
   @Test
+  void shouldHideStatTextByDefault() {
+    Entity player =
+        new Entity()
+            .addComponent(new CombatStatsComponent(100, 100, 1))
+            .addComponent(new PlayerStatsDisplay());
+    entityService.register(player);
+
+    assertNull(stage.getRoot().findActor(HEALTH_LABEL_NAME));
+    assertNull(stage.getRoot().findActor(SPEED_LABEL_NAME));
+    player.getComponent(CombatStatsComponent.class).setHealth(75);
+    player.getComponent(PlayerStatsDisplay.class).draw(mock(SpriteBatch.class));
+  }
+
+  @Test
   void shouldShowCurrentAndMaximumHealth() {
     createPlayerWithHealth(6, 10);
 
@@ -84,6 +99,7 @@ class PlayerStatsDisplayTest {
     PhysicsComponent physics = mock(PhysicsComponent.class);
     when(physics.getBody()).thenReturn(body);
     PlayerStatsDisplay display = new PlayerStatsDisplay();
+    display.setShowStatText(true);
     Entity player = new Entity().addComponent(stats).addComponent(physics).addComponent(display);
     entityService.register(player);
 
@@ -96,7 +112,9 @@ class PlayerStatsDisplayTest {
 
   private CombatStatsComponent createPlayerWithHealth(int health, int maxHealth) {
     CombatStatsComponent stats = new CombatStatsComponent(health, maxHealth, 1);
-    Entity player = new Entity().addComponent(stats).addComponent(new PlayerStatsDisplay());
+    PlayerStatsDisplay display = new PlayerStatsDisplay();
+    display.setShowStatText(true);
+    Entity player = new Entity().addComponent(stats).addComponent(display);
     entityService.register(player);
     return stats;
   }

@@ -32,6 +32,12 @@ public class PlayerStatsDisplay extends UIComponent {
   private PhysicsComponent physicsComponent;
   private Label healthLabel;
   private Label speedLabel;
+  private boolean showStatText;
+
+  /** Configures the optional sandbox readouts before this component is created. */
+  public void setShowStatText(boolean showStatText) {
+    this.showStatText = showStatText;
+  }
 
   @Override
   public void create() {
@@ -46,16 +52,20 @@ public class PlayerStatsDisplay extends UIComponent {
     table.setFillParent(true);
     table.padTop(5f).padLeft(5f);
 
-    healthLabel = new Label("", skin);
-    healthLabel.setName(HEALTH_LABEL_NAME);
-    table.add(healthLabel).left().row();
+    if (showStatText) {
+      healthLabel = new Label("", skin);
+      healthLabel.setName(HEALTH_LABEL_NAME);
+      table.add(healthLabel).left().row();
+    }
 
     heartTable = new Table();
     table.add(heartTable).left().row();
 
-    speedLabel = new Label("Speed: 0.00", skin);
-    speedLabel.setName(SPEED_LABEL_NAME);
-    table.add(speedLabel).left();
+    if (showStatText) {
+      speedLabel = new Label("Speed: 0.00", skin);
+      speedLabel.setName(SPEED_LABEL_NAME);
+      table.add(speedLabel).left();
+    }
 
     stage.addActor(table);
 
@@ -68,7 +78,7 @@ public class PlayerStatsDisplay extends UIComponent {
 
   @Override
   public void draw(SpriteBatch batch) {
-    if (physicsComponent == null || physicsComponent.getBody() == null) {
+    if (speedLabel == null || physicsComponent == null || physicsComponent.getBody() == null) {
       return;
     }
     float horizontalSpeed = Math.abs(physicsComponent.getBody().getLinearVelocity().x);
@@ -90,7 +100,9 @@ public class PlayerStatsDisplay extends UIComponent {
     growHeartsTo(Math.max(1, combatStats.getMaxHealth() / HP_PER_HEART));
 
     int cappedHealth = Math.max(0, Math.min(health, combatStats.getMaxHealth()));
-    healthLabel.setText("Health: " + cappedHealth + " / " + combatStats.getMaxHealth());
+    if (healthLabel != null) {
+      healthLabel.setText("Health: " + cappedHealth + " / " + combatStats.getMaxHealth());
+    }
     int heartsRemaining = cappedHealth / HP_PER_HEART;
 
     for (int i = 0; i < heartImages.size(); i++) {

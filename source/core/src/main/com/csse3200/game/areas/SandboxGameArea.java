@@ -8,6 +8,7 @@ import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.components.item.ItemLabelDisplay;
 import com.csse3200.game.components.item.ItemType;
 import com.csse3200.game.components.player.KeyboardPlayerInputComponent;
+import com.csse3200.game.components.player.PlayerStatsDisplay;
 import com.csse3200.game.components.sandbox.MonsterSpawnerDisplay;
 import com.csse3200.game.components.sandbox.SandboxEnemyType;
 import com.csse3200.game.entities.Entity;
@@ -189,6 +190,7 @@ public class SandboxGameArea extends GameArea {
 
   private Entity spawnPlayer() {
     Entity newPlayer = PlayerFactory.createPlayer();
+    newPlayer.getComponent(PlayerStatsDisplay.class).setShowStatText(true);
     newPlayer.getEvents().addListener("grappleRequested", this::checkSuccessfulGrapple);
     KeyboardPlayerInputComponent input = newPlayer.getComponent(KeyboardPlayerInputComponent.class);
     if (input != null) {
