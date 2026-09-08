@@ -12,9 +12,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class LevelTutorialConfig extends LevelConfig {
-    /**
-     * Creates the tutorial level config
-     */
+  /** Creates the tutorial level config */
   public LevelTutorialConfig() {
     playerSpawn = new GridPoint2(1, 4);
     winConditionSpawn = new GridPoint2(80, 18);
@@ -50,7 +48,6 @@ public class LevelTutorialConfig extends LevelConfig {
               new Vector2(9, 15),
               new Vector2(14, 15),
               new Vector2(3, 0)),
-
           new MovingPlatformConfig(
               new GridPoint2(25, 15),
               2,
@@ -59,7 +56,6 @@ public class LevelTutorialConfig extends LevelConfig {
               new Vector2(25, 15),
               new Vector2(36, 15),
               new Vector2(3, 0)),
-
           new MovingPlatformConfig(
               new GridPoint2(61, 10),
               1,
@@ -68,7 +64,6 @@ public class LevelTutorialConfig extends LevelConfig {
               new Vector2(61, 2),
               new Vector2(61, 10),
               new Vector2(0, 3)),
-
           new MovingPlatformConfig(
               new GridPoint2(60, 12),
               1,
@@ -77,7 +72,6 @@ public class LevelTutorialConfig extends LevelConfig {
               new Vector2(60, 12),
               new Vector2(60, 15),
               new Vector2(0, 3)),
-
           new MovingPlatformConfig(
               new GridPoint2(72, 2),
               1,

@@ -91,8 +91,8 @@ public abstract class GameArea implements Disposable {
   }
 
   /**
-   * Requests the game area's config file to create all level entities and then spawns them at
-   * their specified position
+   * Requests the game area's config file to create all level entities and then spawns them at their
+   * specified position
    */
   protected void spawnConfigEntities() {
     ArrayList<SpawnData> entities = config.createEntities();
