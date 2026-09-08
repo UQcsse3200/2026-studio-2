@@ -67,6 +67,10 @@ public class ItemFactory {
       case CONSUMABLE -> createHealthPotion(quantity);
       case FireArrow -> createFireArrow(quantity);
       case ColdArrow -> createColdArrow(quantity);
+      case Sword -> createSword(quantity);
+      case Spear -> createSpear(quantity);
+      case SpeedPotion -> createSpeedPotion(quantity);
+      case PoisonPotion -> createPoisonPotion(quantity);
     };
   }
 
