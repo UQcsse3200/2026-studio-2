@@ -4,6 +4,8 @@ import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Disposable;
 import com.csse3200.game.areas.terrain.TerrainComponent;
+import com.csse3200.game.areas.terrain.configs.LevelConfig;
+import com.csse3200.game.areas.terrain.configs.SpawnData;
 import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.components.level.PlatformGrappleComponent;
 import com.csse3200.game.entities.Entity;
@@ -25,6 +27,7 @@ public abstract class GameArea implements Disposable {
   protected List<Entity> areaEntities;
   protected List<Entity> platforms = new ArrayList<>();
   protected Entity player;
+  protected LevelConfig config;
 
   /**
    * Creates a game area using the provided camera component.
@@ -85,6 +88,18 @@ public abstract class GameArea implements Disposable {
 
     entity.setPosition(worldPos);
     spawnEntity(entity);
+  }
+
+  /**
+   * Requests the game area's config file to create all level entities and then spawns them at
+   * their specified position
+   */
+  protected void spawnConfigEntities() {
+    ArrayList<SpawnData> entities = config.createEntities();
+
+    for (SpawnData data : entities) {
+      spawnEntityAt(data.entity, data.pos, false, false);
+    }
   }
 
   /**
