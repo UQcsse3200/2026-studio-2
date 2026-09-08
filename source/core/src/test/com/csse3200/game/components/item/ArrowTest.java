@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.csse3200.game.components.inventory.InventoryComponent;
-import com.csse3200.game.components.item.ItemType;
 import com.csse3200.game.components.item.weapons.bow.arrow.Arrow;
 import com.csse3200.game.extensions.GameExtension;
 import org.junit.jupiter.api.Test;

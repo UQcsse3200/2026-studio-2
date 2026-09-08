@@ -47,24 +47,52 @@ public class ProjectileFactory {
 
   // Factory methods with shooter
   public static Entity createPlayerArrow(Entity shooter, Vector2 position, Vector2 direction) {
-    return createArrow(shooter, position, direction, STANDARD_ARROW_DAMAGE, STANDARD_ARROW_SPEED, STANDARD_ARROW_RANGE, ArrowType.STANDARD);
+    return createArrow(
+        shooter,
+        position,
+        direction,
+        STANDARD_ARROW_DAMAGE,
+        STANDARD_ARROW_SPEED,
+        STANDARD_ARROW_RANGE,
+        ArrowType.STANDARD);
   }
 
   public static Entity createColdArrow(Entity shooter, Vector2 position, Vector2 direction) {
-    return createArrow(shooter, position, direction, COLD_ARROW_DAMAGE, COLD_ARROW_SPEED, COLD_ARROW_RANGE, ArrowType.COLD);
+    return createArrow(
+        shooter,
+        position,
+        direction,
+        COLD_ARROW_DAMAGE,
+        COLD_ARROW_SPEED,
+        COLD_ARROW_RANGE,
+        ArrowType.COLD);
   }
 
   public static Entity createFireArrow(Entity shooter, Vector2 position, Vector2 direction) {
-    return createArrow(shooter, position, direction, FIRE_ARROW_DAMAGE, FIRE_ARROW_SPEED, FIRE_ARROW_RANGE, ArrowType.FIRE);
+    return createArrow(
+        shooter,
+        position,
+        direction,
+        FIRE_ARROW_DAMAGE,
+        FIRE_ARROW_SPEED,
+        FIRE_ARROW_RANGE,
+        ArrowType.FIRE);
   }
 
   public static Entity createGrappleArrow(Entity shooter, Vector2 position, Vector2 direction) {
     Vector2 normalizedDir = direction.cpy().nor();
 
-    Entity arrow = new Entity()
+    Entity arrow =
+        new Entity()
             .addComponent(new PhysicsComponent().setBodyType(BodyType.DynamicBody))
             .addComponent(new HitboxComponent().setLayer(PhysicsLayer.PLAYER_PROJECTILE))
-            .addComponent(new ArrowProjectileComponent(shooter, normalizedDir, GRAPPLE_ARROW_SPEED, GRAPPLE_ARROW_RANGE, ArrowType.GRAPPLE))
+            .addComponent(
+                new ArrowProjectileComponent(
+                    shooter,
+                    normalizedDir,
+                    GRAPPLE_ARROW_SPEED,
+                    GRAPPLE_ARROW_RANGE,
+                    ArrowType.GRAPPLE))
             .addComponent(new ArrowRenderComponent(ArrowType.GRAPPLE));
 
     arrow.setScale(0.6f, 0.2f);
@@ -74,20 +102,22 @@ public class ProjectileFactory {
   }
 
   private static Entity createArrow(
-          Entity shooter,
-          Vector2 position,
-          Vector2 direction,
-          int damage,
-          float speed,
-          float range,
-          ArrowType arrowType) {
+      Entity shooter,
+      Vector2 position,
+      Vector2 direction,
+      int damage,
+      float speed,
+      float range,
+      ArrowType arrowType) {
     Vector2 normalizedDir = direction.cpy().nor();
 
-    Entity arrow = new Entity()
+    Entity arrow =
+        new Entity()
             .addComponent(new PhysicsComponent().setBodyType(BodyType.DynamicBody))
             .addComponent(new HitboxComponent().setLayer(PhysicsLayer.PLAYER_PROJECTILE))
             .addComponent(new CombatStatsComponent(1, damage))
-            .addComponent(new ArrowProjectileComponent(shooter, normalizedDir, speed, range, arrowType))
+            .addComponent(
+                new ArrowProjectileComponent(shooter, normalizedDir, speed, range, arrowType))
             .addComponent(new ArrowRenderComponent(arrowType));
 
     arrow.setScale(0.6f, 0.2f);

@@ -13,9 +13,9 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.components.inventory.InventoryComponent;
 import com.csse3200.game.components.item.Item;
-import com.csse3200.game.components.item.weapons.bow.arrow.Arrow;
 import com.csse3200.game.components.item.ItemComponent;
 import com.csse3200.game.components.item.ItemType;
+import com.csse3200.game.components.item.weapons.bow.arrow.Arrow;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.extensions.GameExtension;
@@ -86,7 +86,8 @@ class PlayerInteractionComponentTest {
     PlayerInteractionComponent interaction = player.getComponent(PlayerInteractionComponent.class);
 
     assertTrue(interaction.pickup(item));
-    assertEquals(3, player.getComponent(InventoryComponent.class).getItemCount(ItemType.STANDARD_ARROW));
+    assertEquals(
+        3, player.getComponent(InventoryComponent.class).getItemCount(ItemType.STANDARD_ARROW));
   }
 
   @Test
@@ -198,7 +199,8 @@ class PlayerInteractionComponentTest {
 
     PlayerInteractionComponent interaction = player.getComponent(PlayerInteractionComponent.class);
     ItemType initial = inventory.getSelectedItem();
-    ItemType other = initial == ItemType.STANDARD_ARROW ? ItemType.ROPE_ARROW : ItemType.STANDARD_ARROW;
+    ItemType other =
+        initial == ItemType.STANDARD_ARROW ? ItemType.ROPE_ARROW : ItemType.STANDARD_ARROW;
 
     interaction.switchItem(1);
     assertEquals(other, inventory.getSelectedItem());

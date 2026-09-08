@@ -30,7 +30,8 @@ class ItemComponentTest {
 
   @Test
   void shouldKeepItemAttributes() {
-    Entity entity = new Entity().addComponent(new ItemComponent(new Arrow(ItemType.STANDARD_ARROW, 4)));
+    Entity entity =
+        new Entity().addComponent(new ItemComponent(new Arrow(ItemType.STANDARD_ARROW, 4)));
     entity.create();
 
     Item stored = entity.getComponent(ItemComponent.class).getItem();

@@ -32,17 +32,18 @@ public class ArrowProjectileComponent extends Component {
   private CombatStatsComponent combatStats;
   private Vector2 startPosition;
   private boolean spent;
-  private float spawnTimer = 0f;
 
   public ArrowProjectileComponent(Vector2 direction, float speed, float maximumRange) {
     this(null, direction, speed, maximumRange, ArrowType.STANDARD);
   }
 
-  public ArrowProjectileComponent(Vector2 direction, float speed, float maximumRange, ArrowType arrowType) {
+  public ArrowProjectileComponent(
+      Vector2 direction, float speed, float maximumRange, ArrowType arrowType) {
     this(null, direction, speed, maximumRange, arrowType);
   }
 
-  public ArrowProjectileComponent(Entity shooter, Vector2 direction, float speed, float maximumRange, ArrowType arrowType) {
+  public ArrowProjectileComponent(
+      Entity shooter, Vector2 direction, float speed, float maximumRange, ArrowType arrowType) {
     if (direction == null || direction.isZero()) {
       throw new IllegalArgumentException("Arrow direction must not be zero");
     }
@@ -69,6 +70,7 @@ public class ArrowProjectileComponent extends Component {
     body.setBullet(true);
     body.setLinearVelocity(direction.cpy().scl(speed));
     ignorePlayerCollisions(body);
+    startPosition = body.getPosition().cpy();
 
     entity.getEvents().addListener("collisionStart", this::onCollisionStart);
   }
@@ -88,13 +90,7 @@ public class ArrowProjectileComponent extends Component {
       return;
     }
 
-    spawnTimer += ServiceLocator.getTimeSource().getDeltaTime();
     Body body = physicsComponent.getBody();
-
-    if (startPosition == null) {
-      startPosition = body.getPosition().cpy();
-    }
-
     if (body.getPosition().dst2(startPosition) >= maximumRange * maximumRange) {
       expire();
       return;
@@ -137,9 +133,7 @@ public class ArrowProjectileComponent extends Component {
       damageTarget(other);
       expire();
     } else if (PhysicsLayer.contains(TERRAIN, otherLayer)) {
-      if (spawnTimer > 0.05f) {
-        expire();
-      }
+      expire();
     }
   }
 

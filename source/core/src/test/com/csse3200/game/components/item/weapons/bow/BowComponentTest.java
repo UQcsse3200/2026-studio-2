@@ -46,13 +46,13 @@ class BowComponentTest {
     AtomicReference<Vector2> projectileDirection = new AtomicReference<>();
 
     BowComponent component =
-            new BowComponent(
-                    (shooter, position, direction) -> {
-                      shooterRef.set(shooter);
-                      spawnPosition.set(position);
-                      projectileDirection.set(direction);
-                      return projectile;
-                    });
+        new BowComponent(
+            (shooter, position, direction) -> {
+              shooterRef.set(shooter);
+              spawnPosition.set(position);
+              projectileDirection.set(direction);
+              return projectile;
+            });
 
     Entity player = new Entity().addComponent(component);
     player.setPosition(1f, 2f);
@@ -60,8 +60,8 @@ class BowComponentTest {
 
     AtomicReference<Vector2> animationDirection = new AtomicReference<>();
     player
-            .getEvents()
-            .addListener("attackAnimation", (Vector2 direction) -> animationDirection.set(direction));
+        .getEvents()
+        .addListener("attackAnimation", (Vector2 direction) -> animationDirection.set(direction));
 
     component.attack(new Vector2(3f, 4f));
 

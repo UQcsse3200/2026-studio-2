@@ -4,8 +4,8 @@ import com.csse3200.game.components.item.Item;
 import com.csse3200.game.components.item.ItemType;
 
 /**
- * Concrete item representing stackable arrow ammunition in the inventory.
- * Stats and inventory slot separation are handled directly via ItemType.
+ * Concrete item representing stackable arrow ammunition in the inventory. Stats and inventory slot
+ * separation are handled directly via ItemType.
  */
 public class Arrow extends Item {
 

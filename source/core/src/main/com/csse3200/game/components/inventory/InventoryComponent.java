@@ -59,8 +59,8 @@ public class InventoryComponent extends Component {
     long capacity = (long) rows * columns;
     if (rows <= 0 || columns <= 0 || columns > MAX_COLUMNS || capacity > Integer.MAX_VALUE) {
       throw new IllegalArgumentException(
-              "Inventory rows must be positive, columns must be between 1 and 9, and total slots must "
-                      + "not exceed Integer.MAX_VALUE");
+          "Inventory rows must be positive, columns must be between 1 and 9, and total slots must "
+              + "not exceed Integer.MAX_VALUE");
     }
 
     this.rows = rows;
@@ -453,8 +453,8 @@ public class InventoryComponent extends Component {
    */
   public boolean swapSlots(int firstIndex, int secondIndex) {
     if (!isValidSlotIndex(firstIndex)
-            || !isValidSlotIndex(secondIndex)
-            || firstIndex == secondIndex) {
+        || !isValidSlotIndex(secondIndex)
+        || firstIndex == secondIndex) {
       return false;
     }
 
@@ -489,15 +489,15 @@ public class InventoryComponent extends Component {
     ItemType oldSelectedItem = getSelectedItem();
 
     slots.sort(
-            (first, second) -> {
-              if (first.isEmpty()) {
-                return second.isEmpty() ? 0 : 1;
-              }
-              if (second.isEmpty()) {
-                return -1;
-              }
-              return Integer.compare(first.getItemType().getId(), second.getItemType().getId());
-            });
+        (first, second) -> {
+          if (first.isEmpty()) {
+            return second.isEmpty() ? 0 : 1;
+          }
+          if (second.isEmpty()) {
+            return -1;
+          }
+          return Integer.compare(first.getItemType().getId(), second.getItemType().getId());
+        });
 
     if (slots.equals(previousSlots)) {
       return false;

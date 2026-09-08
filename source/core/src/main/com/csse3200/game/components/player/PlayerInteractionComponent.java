@@ -191,7 +191,7 @@ public class PlayerInteractionComponent extends Component {
   private Entity createItemEntity(ItemType type, int quantity) {
     return switch (type) {
       case STANDARD_ARROW -> ItemFactory.createStandardArrow(quantity);
-      case ROPE_ARROW -> ItemFactory.createRopeArrow();
+      case ROPE_ARROW -> ItemFactory.createRopeArrow(quantity);
       case FIRE_ARROW -> ItemFactory.createFireArrow(quantity);
       case COLD_ARROW -> ItemFactory.createColdArrow(quantity);
       case HEALTH_POTION -> ItemFactory.createHealthPotion(quantity);

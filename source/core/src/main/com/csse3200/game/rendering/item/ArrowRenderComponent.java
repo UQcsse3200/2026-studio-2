@@ -75,13 +75,21 @@ public class ArrowRenderComponent extends RenderComponent {
     batch.setColor(grapple ? Color.LIGHT_GRAY : Color.WHITE);
     batch.draw(
         texture,
-        x, y,
-        width / 2f, height / 2f,
-        width, height,
-        1f, 1f,
+        x,
+        y,
+        width / 2f,
+        height / 2f,
+        width,
+        height,
+        1f,
+        1f,
         rotationDeg,
-        0, 0, texture.getWidth(), texture.getHeight(),
-        false, false);
+        0,
+        0,
+        texture.getWidth(),
+        texture.getHeight(),
+        false,
+        false);
     batch.setColor(Color.WHITE);
   }
 

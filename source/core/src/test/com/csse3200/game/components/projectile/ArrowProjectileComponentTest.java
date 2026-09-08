@@ -31,12 +31,12 @@ class ArrowProjectileComponentTest {
   }
 
   @Test
-  void shouldConfigureStraightProjectileMotion() {
+  void shouldConfigureArcedProjectileMotion() {
     Entity arrow = createArrow(new Vector2(3f, 4f), 10f, 15f);
     PhysicsComponent physics = arrow.getComponent(PhysicsComponent.class);
 
     assertTrue(physics.getBody().getLinearVelocity().epsilonEquals(new Vector2(6f, 8f)));
-    assertEquals(0.05f, physics.getBody().getGravityScale());
+    assertEquals(0.4f, physics.getBody().getGravityScale());
     assertEquals(0f, physics.getBody().getLinearDamping());
     assertTrue(physics.getBody().isBullet());
   }

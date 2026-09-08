@@ -12,9 +12,7 @@ import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.rendering.TextureRenderComponent;
 
-/**
- * Factory to create item entities that sit in the world for the player to find or pick up.
- */
+/** Factory to create item entities that sit in the world for the player to find or pick up. */
 public class ItemFactory {
   private static final float ITEM_HEIGHT = 0.5f;
 
@@ -26,11 +24,11 @@ public class ItemFactory {
    */
   public static Entity createItem(Item item) {
     Entity itemEntity =
-            new Entity()
-                    .addComponent(new TextureRenderComponent(item.getItemType().getTexturePath()))
-                    .addComponent(new PhysicsComponent().setBodyType(BodyType.StaticBody))
-                    .addComponent(new HitboxComponent().setLayer(PhysicsLayer.DEFAULT))
-                    .addComponent(new ItemComponent(item));
+        new Entity()
+            .addComponent(new TextureRenderComponent(item.getItemType().getTexturePath()))
+            .addComponent(new PhysicsComponent().setBodyType(BodyType.StaticBody))
+            .addComponent(new HitboxComponent().setLayer(PhysicsLayer.DEFAULT))
+            .addComponent(new ItemComponent(item));
 
     itemEntity.getComponent(TextureRenderComponent.class).scaleEntity();
     itemEntity.scaleHeight(ITEM_HEIGHT);

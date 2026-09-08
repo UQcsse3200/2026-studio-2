@@ -9,9 +9,7 @@ import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.physics.raycast.RaycastHit;
 import com.csse3200.game.services.ServiceLocator;
 
-/**
- * Action component for interacting with the player
- */
+/** Action component for interacting with the player */
 public class PlayerActions extends Component {
   private static final float JUMP_FORCE = 5.5f;
   private static final Vector2 MAX_SPEED = new Vector2(5f, 5f); // Metres per second
