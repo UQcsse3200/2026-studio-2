@@ -1,6 +1,7 @@
-package com.csse3200.game.ui.dialogue;
+package com.csse3200.game.components;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
@@ -10,45 +11,55 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
+import com.csse3200.game.input.InputService;
 import com.csse3200.game.ui.UIComponent;
 
-public class TextBoxDisplay extends UIComponent {
+public class TextBoxComponent extends UIComponent {
 
-  // --- Tunables ---
-  private static final int MAX_WIDTH = 200;
-  private static final int PADDING = 16;
-  private static final int BORDER_THICKNESS = 3;
-  // change the characters per second based on the size of the given text
-  private static final int CHARS_PER_SECOND = 30;
-  private static final Color DEFAULT_TEXT_COLOR = Color.WHITE;
-
-  private static NinePatchDrawable cachedBackground;
-
-  private final float lifetime;
   private final float xPos;
   private final float yPos;
-  private final Text text;
-  private final TextBox parentTextBox;
-  private float age = 0f;
+  private final InputService inputService = new InputService();
+  private final Color textColor;
+  private final Color backgroundColour;
+  private final Color borderColour;
+  private final float charsPerSecond;
+  private final int maxWidth;
+  private final int padding;
+  private final int borderThickness;
+  private final String content;
+  private NinePatchDrawable cachedBackground;
   private float typeTimer = 0f;
   private int revealedChars = 0;
   private String fullContent = "";
   private String lastSourceContent = null;
-  private Color textColor = DEFAULT_TEXT_COLOR;
   private Table table;
   private Label label;
 
   // make the boxes stay on screen until an input is given to cycle to the next one.
   // (make this a method or builder or whatever)
   // Make it so that the box can stay on screen forever if there is no specified input.
-  public TextBoxDisplay(Text text, float lifetime, float xPos, float yPos, TextBox parentBox) {
-    this.text = text;
-    this.lifetime = lifetime;
+  public TextBoxComponent(
+      float xPos,
+      float yPos,
+      Color textColour,
+      Color backgroundColour,
+      Color borderColour,
+      float charsPerSecond,
+      int maxWidth,
+      int padding,
+      int borderThickness,
+      String text) {
+
     this.xPos = xPos;
     this.yPos = yPos;
-    this.table = new Table();
-    this.table.setPosition(xPos, yPos);
-    this.parentTextBox = parentBox;
+    this.textColor = textColour;
+    this.backgroundColour = backgroundColour;
+    this.charsPerSecond = charsPerSecond;
+    this.maxWidth = maxWidth;
+    this.padding = padding;
+    this.borderColour = borderColour;
+    this.borderThickness = borderThickness;
+    this.content = text;
   }
 
   /**
@@ -56,20 +67,20 @@ public class TextBoxDisplay extends UIComponent {
    * border, generated with a Pixmap so it doesn't rely on any particular asset existing in the
    * skin.
    */
-  private static NinePatchDrawable getBackgroundDrawable() {
+  private NinePatchDrawable getBackgroundDrawable() {
     if (cachedBackground != null) {
       return cachedBackground;
     }
 
-    int size = 16;
-    int border = BORDER_THICKNESS + 2;
+    int size = 64;
+    int border = this.borderThickness + 2;
 
     Pixmap pixmap = new Pixmap(size, size, Pixmap.Format.RGBA8888);
 
-    pixmap.setColor(new Color(0.08f, 0.08f, 0.1f, 0.85f));
+    pixmap.setColor(this.backgroundColour);
     pixmap.fill();
 
-    pixmap.setColor(new Color(0.85f, 0.75f, 0.4f, 1f));
+    pixmap.setColor(this.borderColour);
     for (int i = 0; i < border; i++) {
       pixmap.drawRectangle(i, i, size - i * 2, size - i * 2);
     }
@@ -82,13 +93,6 @@ public class TextBoxDisplay extends UIComponent {
     return cachedBackground;
   }
 
-  public void setTextColor(Color color) {
-    this.textColor = color == null ? DEFAULT_TEXT_COLOR : color;
-    if (label != null) {
-      applyTextColor();
-    }
-  }
-
   private void applyTextColor() {
     // Clone the style so we don't mutate a shared skin-wide style instance
     Label.LabelStyle style = new Label.LabelStyle(label.getStyle());
@@ -99,16 +103,17 @@ public class TextBoxDisplay extends UIComponent {
   @Override
   public void create() {
     super.create();
-    table = new Table();
-    table.setVisible(false);
-    table.setBackground(getBackgroundDrawable());
+    this.table = new Table();
+    this.table.setPosition(xPos, yPos);
+    this.table.setVisible(false);
+    this.table.setBackground(getBackgroundDrawable());
 
     label = new Label("", skin);
     label.setWrap(true);
     label.setAlignment(1);
     applyTextColor();
 
-    table.add(label).width(MAX_WIDTH).pad(PADDING);
+    table.add(label).width(this.maxWidth).pad(this.padding);
 
     stage.addActor(table);
   }
@@ -119,39 +124,48 @@ public class TextBoxDisplay extends UIComponent {
       create();
     }
 
-    String content = text == null ? "" : text.getContent();
-
-    if (content == null || content.isEmpty()) {
+    if (this.content == null || this.content.isEmpty()) {
       table.setVisible(false);
       return;
     }
 
-    // New/changed text -> restart the typing animation and lifetime timer
-    if (!content.equals(lastSourceContent)) {
-      lastSourceContent = content;
-      fullContent = content;
-      revealedChars = 0;
-      typeTimer = 0f;
-      age = 0f;
+    if (!this.content.equals(this.lastSourceContent)) {
+      this.lastSourceContent = content;
+      this.fullContent = content;
+      this.revealedChars = 0;
+      this.typeTimer = 0f;
     }
 
     // Reveal characters over time
-    if (revealedChars < fullContent.length()) {
-      typeTimer += Gdx.graphics.getDeltaTime();
-      int charsToShow = (int) (typeTimer * CHARS_PER_SECOND);
-      if (charsToShow > revealedChars) {
-        revealedChars = Math.min(charsToShow, fullContent.length());
-        label.setText(fullContent.substring(0, revealedChars));
-        table.pack(); // resize box to fit the new (wrapped) text height
+    if (this.revealedChars < this.fullContent.length()) {
+      this.typeTimer += Gdx.graphics.getDeltaTime();
+      int charsToShow = (int) (this.typeTimer * this.charsPerSecond);
+      if (charsToShow > this.revealedChars) {
+        this.revealedChars = Math.min(charsToShow, this.fullContent.length());
+        this.label.setText(this.fullContent.substring(0, this.revealedChars));
+        this.table.pack(); // resize box to fit the new (wrapped) textLoader height
+      }
+    }
+    // on keypress it should reveal the full content or remove the content if it's all already on
+    // screen
+    if (this.inputService.keyDown(Keys.TAB)) {
+      if (this.revealedChars < this.fullContent.length()) {
+        this.revealedChars = fullContent.length();
+        this.label.setText(fullContent);
+        this.table.pack();
+      } else if (revealedChars >= this.fullContent.length()) {
+        this.table.setVisible(false);
+        this.dispose();
+        return;
       }
     }
 
-    this.age += Gdx.graphics.getDeltaTime();
-    if (this.age >= lifetime) {
-      table.setVisible(false);
-      this.dispose();
-      return;
-    }
+    //    this.age += Gdx.graphics.getDeltaTime();
+    //    if (this.age >= lifetime) {
+    //      table.setVisible(false);
+    //      this.dispose();
+    //      return;
+    //    }
 
     float x = this.xPos;
     float y = this.yPos;
@@ -171,7 +185,6 @@ public class TextBoxDisplay extends UIComponent {
   @Override
   public void dispose() {
     super.dispose();
-    this.parentTextBox.dispose();
     if (label != null) {
       label.remove();
     }
