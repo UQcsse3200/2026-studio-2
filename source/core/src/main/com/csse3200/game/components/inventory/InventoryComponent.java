@@ -59,8 +59,8 @@ public class InventoryComponent extends Component {
     long capacity = (long) rows * columns;
     if (rows <= 0 || columns <= 0 || columns > MAX_COLUMNS || capacity > Integer.MAX_VALUE) {
       throw new IllegalArgumentException(
-          "Inventory rows must be positive, columns must be between 1 and 9, and total slots must "
-              + "not exceed Integer.MAX_VALUE");
+              "Inventory rows must be positive, columns must be between 1 and 9, and total slots must "
+                      + "not exceed Integer.MAX_VALUE");
     }
 
     this.rows = rows;
@@ -96,7 +96,7 @@ public class InventoryComponent extends Component {
    * @param gold required amount of gold
    * @return player has greater than or equal to the required amount of gold
    */
-  public Boolean hasGold(int gold) {
+  public boolean hasGold(int gold) {
     return this.gold >= gold;
   }
 
@@ -138,7 +138,7 @@ public class InventoryComponent extends Component {
       return false;
     }
 
-    if (item == ItemType.RopeArrow && hasItem(ItemType.RopeArrow)) {
+    if (item == ItemType.ROPE_ARROW && hasItem(ItemType.ROPE_ARROW)) {
       return false;
     }
 
@@ -453,8 +453,8 @@ public class InventoryComponent extends Component {
    */
   public boolean swapSlots(int firstIndex, int secondIndex) {
     if (!isValidSlotIndex(firstIndex)
-        || !isValidSlotIndex(secondIndex)
-        || firstIndex == secondIndex) {
+            || !isValidSlotIndex(secondIndex)
+            || firstIndex == secondIndex) {
       return false;
     }
 
@@ -489,15 +489,15 @@ public class InventoryComponent extends Component {
     ItemType oldSelectedItem = getSelectedItem();
 
     slots.sort(
-        (first, second) -> {
-          if (first.isEmpty()) {
-            return second.isEmpty() ? 0 : 1;
-          }
-          if (second.isEmpty()) {
-            return -1;
-          }
-          return Integer.compare(first.getItemType().getId(), second.getItemType().getId());
-        });
+            (first, second) -> {
+              if (first.isEmpty()) {
+                return second.isEmpty() ? 0 : 1;
+              }
+              if (second.isEmpty()) {
+                return -1;
+              }
+              return Integer.compare(first.getItemType().getId(), second.getItemType().getId());
+            });
 
     if (slots.equals(previousSlots)) {
       return false;
@@ -579,7 +579,6 @@ public class InventoryComponent extends Component {
 
   /** Triggers the inventory changed event after a successful inventory mutation. */
   private void notifyInventoryChanged() {
-    // Constructor operations happen before the component is attached to an Entity.
     if (entity != null) {
       entity.getEvents().trigger("inventoryChanged");
     }

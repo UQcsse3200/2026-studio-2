@@ -153,32 +153,51 @@ public class KeyboardPlayerInputComponent extends InputComponent {
   }
 
   /**
-   * Fires the grapple toward the clicked world position.
+   * Left click swings the melee weapon, right click fires the selected arrow. Both aim toward the
+   * clicked world position.
    *
    * @return whether the input was processed
    * @see InputProcessor#touchDown(int, int, int, int)
    */
   @Override
   public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-    if (button != Buttons.LEFT) {
+    if (button == Buttons.LEFT) {
+      return triggerAimedEvent("melee", screenX, screenY);
+    }
+    if (button == Buttons.RIGHT) {
+      return triggerAimedEvent("shoot", screenX, screenY);
+    }
+    return false;
+  }
+
+  private boolean triggerAimedEvent(String eventName, int screenX, int screenY) {
+    Vector2 aim = getAimDirection(screenX, screenY);
+    if (aim == null || aim.isZero()) {
       return false;
     }
-    Vector2 aimDirection = getAimDirection(screenX, screenY);
-    if (aimDirection.isZero()) {
-      return false;
-    }
-    entity.getEvents().trigger("grappleFire", aimDirection);
+    entity.getEvents().trigger(eventName, aim);
     return true;
   }
 
+  /**
+   * Signals that the fire button was let go, so the selected weapon or arrow can react.
+   *
+   * @return whether the input was processed
+   * @see InputProcessor#touchUp(int, int, int, int)
+   */
   @Override
   public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-    if (button != Buttons.LEFT) {
-      return false;
+    if (button == Buttons.LEFT) {
+      entity.getEvents().trigger("stopMelee");
+      return true;
     }
 
-    entity.getEvents().trigger("grappleRelease");
-    return true;
+    if (button == Buttons.RIGHT) {
+      entity.getEvents().trigger("stopShoot");
+      return true;
+    }
+
+    return false;
   }
 
   private void triggerAttackOrItemUse() {

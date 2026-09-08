@@ -1,10 +1,12 @@
-package com.csse3200.game.rendering;
+package com.csse3200.game.rendering.item;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Vector2;
+import com.csse3200.game.components.item.weapons.bow.grapple.GrappleComponent;
+import com.csse3200.game.rendering.RenderComponent;
 
 /** Draws the grapple rope between the player and its anchor point. */
 public class GrappleRenderComponent extends RenderComponent {

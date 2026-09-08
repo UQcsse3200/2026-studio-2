@@ -15,7 +15,7 @@ class HealthPotionTest {
   void shouldUseAndConsumePotion() {
     HealthPotion potion = new HealthPotion(2);
 
-    assertEquals(ItemType.CONSUMABLE, potion.getItemType());
+    assertEquals(ItemType.HEALTH_POTION, potion.getItemType());
     assertEquals(HealthPotion.HEAL_AMOUNT, potion.getTreatment());
     assertTrue(potion.useConsumable());
     assertEquals(1, potion.getQuantity());

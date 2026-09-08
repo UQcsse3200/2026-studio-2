@@ -67,8 +67,8 @@ class InventoryComponentTest {
     int[] selectionEvents = {0};
     player.getEvents().addListener("inventoryChanged", () -> inventoryEvents[0]++);
     player.getEvents().addListener("inventorySelectionChanged", () -> selectionEvents[0]++);
-    inventory.addItem(ItemType.ARROW, 1);
-    inventory.addItem(ItemType.RopeArrow, 1);
+    inventory.addItem(ItemType.STANDARD_ARROW, 1);
+    inventory.addItem(ItemType.ROPE_ARROW, 1);
     inventoryEvents[0] = 0;
     selectionEvents[0] = 0;
 
@@ -77,8 +77,8 @@ class InventoryComponentTest {
     assertEquals(3, inventory.getRows());
     assertEquals(3, inventory.getColumns());
     assertEquals(9, inventory.getCapacity());
-    assertEquals(ItemType.ARROW, inventory.getSlot(0).getItemType());
-    assertEquals(ItemType.RopeArrow, inventory.getSlot(1).getItemType());
+    assertEquals(ItemType.STANDARD_ARROW, inventory.getSlot(0).getItemType());
+    assertEquals(ItemType.ROPE_ARROW, inventory.getSlot(1).getItemType());
     assertTrue(inventory.isSlotEmpty(6));
     assertTrue(inventory.isSlotEmpty(8));
     assertEquals(1, inventoryEvents[0]);
@@ -93,9 +93,9 @@ class InventoryComponentTest {
     int[] selectionEvents = {0};
     player.getEvents().addListener("inventoryChanged", () -> inventoryEvents[0]++);
     player.getEvents().addListener("inventorySelectionChanged", () -> selectionEvents[0]++);
-    inventory.addItem(ItemType.ARROW, 1);
-    inventory.addItem(ItemType.RopeArrow, 1);
-    inventory.addItem(ItemType.CONSUMABLE, 1);
+    inventory.addItem(ItemType.STANDARD_ARROW, 1);
+    inventory.addItem(ItemType.ROPE_ARROW, 1);
+    inventory.addItem(ItemType.HEALTH_POTION, 1);
     inventory.selectSlot(2);
     inventoryEvents[0] = 0;
     selectionEvents[0] = 0;
@@ -105,12 +105,12 @@ class InventoryComponentTest {
     assertEquals(2, inventory.getRows());
     assertEquals(3, inventory.getColumns());
     assertEquals(6, inventory.getCapacity());
-    assertEquals(ItemType.ARROW, inventory.getSlot(0).getItemType());
-    assertEquals(ItemType.RopeArrow, inventory.getSlot(1).getItemType());
+    assertEquals(ItemType.STANDARD_ARROW, inventory.getSlot(0).getItemType());
+    assertEquals(ItemType.ROPE_ARROW, inventory.getSlot(1).getItemType());
     assertTrue(inventory.isSlotEmpty(2));
-    assertEquals(ItemType.CONSUMABLE, inventory.getSlot(3).getItemType());
+    assertEquals(ItemType.HEALTH_POTION, inventory.getSlot(3).getItemType());
     assertEquals(3, inventory.getSelectedSlotIndex());
-    assertEquals(ItemType.CONSUMABLE, inventory.getSelectedItem());
+    assertEquals(ItemType.HEALTH_POTION, inventory.getSelectedItem());
     assertEquals(1, inventoryEvents[0]);
     assertEquals(1, selectionEvents[0]);
   }
@@ -166,25 +166,25 @@ class InventoryComponentTest {
   void shouldPlaceAndStackItemsWithoutMovingSlots() {
     InventoryComponent inventory = new InventoryComponent(0, 3);
 
-    assertTrue(inventory.addItem(ItemType.ARROW, 2));
-    assertTrue(inventory.addItem(ItemType.ARROW, 3));
-    assertTrue(inventory.addItem(ItemType.RopeArrow, 1));
+    assertTrue(inventory.addItem(ItemType.STANDARD_ARROW, 2));
+    assertTrue(inventory.addItem(ItemType.STANDARD_ARROW, 3));
+    assertTrue(inventory.addItem(ItemType.ROPE_ARROW, 1));
 
-    assertEquals(ItemType.ARROW, inventory.getSlot(0).getItemType());
+    assertEquals(ItemType.STANDARD_ARROW, inventory.getSlot(0).getItemType());
     assertEquals(5, inventory.getSlot(0).getQuantity());
-    assertEquals(ItemType.RopeArrow, inventory.getSlot(1).getItemType());
+    assertEquals(ItemType.ROPE_ARROW, inventory.getSlot(1).getItemType());
     assertTrue(inventory.isSlotEmpty(2));
   }
 
   @Test
   void shouldClearSlotWhenFinalQuantityIsRemoved() {
     InventoryComponent inventory = new InventoryComponent(0, 2);
-    inventory.addItem(ItemType.ARROW, 2);
+    inventory.addItem(ItemType.STANDARD_ARROW, 2);
 
-    assertTrue(inventory.removeItem(ItemType.ARROW, 2));
+    assertTrue(inventory.removeItem(ItemType.STANDARD_ARROW, 2));
 
     assertTrue(inventory.isSlotEmpty(0));
-    assertEquals(0, inventory.getItemCount(ItemType.ARROW));
+    assertEquals(0, inventory.getItemCount(ItemType.STANDARD_ARROW));
   }
 
   @Test
@@ -203,19 +203,19 @@ class InventoryComponentTest {
     InventoryComponent inventory = new InventoryComponent(0, 2);
     List<InventorySlot> snapshot = inventory.getSlots();
 
-    inventory.addItem(ItemType.ARROW, 1);
+    inventory.addItem(ItemType.STANDARD_ARROW, 1);
 
     assertTrue(snapshot.get(0).isEmpty());
-    assertEquals(ItemType.ARROW, inventory.getSlot(0).getItemType());
+    assertEquals(ItemType.STANDARD_ARROW, inventory.getSlot(0).getItemType());
   }
 
   @Test
   void shouldRejectStackQuantityOverflowWithoutChangingInventory() {
     InventoryComponent inventory = new InventoryComponent(0, 1);
-    inventory.addItem(ItemType.ARROW, Integer.MAX_VALUE);
+    inventory.addItem(ItemType.STANDARD_ARROW, Integer.MAX_VALUE);
 
-    assertFalse(inventory.addItem(ItemType.ARROW, 1));
-    assertEquals(Integer.MAX_VALUE, inventory.getItemCount(ItemType.ARROW));
+    assertFalse(inventory.addItem(ItemType.STANDARD_ARROW, 1));
+    assertEquals(Integer.MAX_VALUE, inventory.getItemCount(ItemType.STANDARD_ARROW));
   }
 
   // ---------
@@ -225,7 +225,7 @@ class InventoryComponentTest {
   @Test
   void shouldSelectPhysicalSlotIncludingEmptySlot() {
     InventoryComponent inventory = new InventoryComponent(0, 3);
-    inventory.addItem(ItemType.ARROW, 1);
+    inventory.addItem(ItemType.STANDARD_ARROW, 1);
 
     assertTrue(inventory.selectSlot(2));
     assertEquals(2, inventory.getSelectedSlotIndex());
@@ -236,13 +236,13 @@ class InventoryComponentTest {
   @Test
   void shouldSwapOccupiedSlots() {
     InventoryComponent inventory = new InventoryComponent(0, 3);
-    inventory.addItem(ItemType.ARROW, 2);
-    inventory.addItem(ItemType.RopeArrow, 1);
+    inventory.addItem(ItemType.STANDARD_ARROW, 2);
+    inventory.addItem(ItemType.ROPE_ARROW, 1);
 
     assertTrue(inventory.swapSlots(0, 1));
 
-    assertEquals(ItemType.RopeArrow, inventory.getSlot(0).getItemType());
-    assertEquals(ItemType.ARROW, inventory.getSlot(1).getItemType());
+    assertEquals(ItemType.ROPE_ARROW, inventory.getSlot(0).getItemType());
+    assertEquals(ItemType.STANDARD_ARROW, inventory.getSlot(1).getItemType());
   }
 
   @Test
@@ -253,7 +253,7 @@ class InventoryComponentTest {
     int[] selectionEvents = {0};
     player.getEvents().addListener("inventoryChanged", () -> inventoryEvents[0]++);
     player.getEvents().addListener("inventorySelectionChanged", () -> selectionEvents[0]++);
-    inventory.addItem(ItemType.ARROW, 1);
+    inventory.addItem(ItemType.STANDARD_ARROW, 1);
     inventoryEvents[0] = 0;
     selectionEvents[0] = 0;
 
@@ -261,7 +261,7 @@ class InventoryComponentTest {
 
     assertEquals(0, inventory.getSelectedSlotIndex());
     assertTrue(inventory.isSlotEmpty(0));
-    assertEquals(ItemType.ARROW, inventory.getSlot(2).getItemType());
+    assertEquals(ItemType.STANDARD_ARROW, inventory.getSlot(2).getItemType());
     assertNull(inventory.getSelectedItem());
     assertEquals(1, inventoryEvents[0]);
     assertEquals(1, selectionEvents[0]);
@@ -275,15 +275,15 @@ class InventoryComponentTest {
     int[] selectionEvents = {0};
     player.getEvents().addListener("inventoryChanged", () -> inventoryEvents[0]++);
     player.getEvents().addListener("inventorySelectionChanged", () -> selectionEvents[0]++);
-    inventory.addItem(ItemType.ARROW, 1);
-    inventory.addItem(ItemType.RopeArrow, 1);
+    inventory.addItem(ItemType.STANDARD_ARROW, 1);
+    inventory.addItem(ItemType.ROPE_ARROW, 1);
     inventoryEvents[0] = 0;
     selectionEvents[0] = 0;
 
     assertTrue(inventory.swapSlots(0, 1));
 
     assertEquals(0, inventory.getSelectedSlotIndex());
-    assertEquals(ItemType.RopeArrow, inventory.getSelectedItem());
+    assertEquals(ItemType.ROPE_ARROW, inventory.getSelectedItem());
     assertEquals(1, inventoryEvents[0]);
     assertEquals(1, selectionEvents[0]);
   }
@@ -296,16 +296,16 @@ class InventoryComponentTest {
     int[] selectionEvents = {0};
     player.getEvents().addListener("inventoryChanged", () -> inventoryEvents[0]++);
     player.getEvents().addListener("inventorySelectionChanged", () -> selectionEvents[0]++);
-    inventory.addItem(ItemType.ARROW, 1);
-    inventory.addItem(ItemType.RopeArrow, 1);
-    inventory.addItem(ItemType.CONSUMABLE, 1);
+    inventory.addItem(ItemType.STANDARD_ARROW, 1);
+    inventory.addItem(ItemType.ROPE_ARROW, 1);
+    inventory.addItem(ItemType.HEALTH_POTION, 1);
     inventoryEvents[0] = 0;
     selectionEvents[0] = 0;
 
     assertTrue(inventory.swapSlots(1, 2));
 
     assertEquals(0, inventory.getSelectedSlotIndex());
-    assertEquals(ItemType.ARROW, inventory.getSelectedItem());
+    assertEquals(ItemType.STANDARD_ARROW, inventory.getSelectedItem());
     assertEquals(1, inventoryEvents[0]);
     assertEquals(0, selectionEvents[0]);
   }
@@ -336,58 +336,58 @@ class InventoryComponentTest {
     inventory.selectSlot(0);
     selectionEvents[0] = 0;
 
-    assertTrue(inventory.addItem(ItemType.ARROW, 1));
+    assertTrue(inventory.addItem(ItemType.STANDARD_ARROW, 1));
 
-    assertEquals(ItemType.ARROW, inventory.getSelectedItem());
+    assertEquals(ItemType.STANDARD_ARROW, inventory.getSelectedItem());
     assertEquals(1, selectionEvents[0]);
   }
 
   @Test
   void shouldCycleThroughItemsInPhysicalSlotOrder() {
     InventoryComponent inventory = new InventoryComponent(0, 3);
-    inventory.addItem(ItemType.ARROW, 1);
-    inventory.addItem(ItemType.RopeArrow, 1);
-    inventory.addItem(ItemType.CONSUMABLE, 1);
+    inventory.addItem(ItemType.STANDARD_ARROW, 1);
+    inventory.addItem(ItemType.ROPE_ARROW, 1);
+    inventory.addItem(ItemType.HEALTH_POTION, 1);
     inventory.swapSlots(0, 2);
 
-    assertEquals(ItemType.CONSUMABLE, inventory.getSelectedItem());
-    assertEquals(ItemType.RopeArrow, inventory.selectNext());
-    assertEquals(ItemType.ARROW, inventory.selectNext());
-    assertEquals(ItemType.RopeArrow, inventory.selectPrevious());
+    assertEquals(ItemType.HEALTH_POTION, inventory.getSelectedItem());
+    assertEquals(ItemType.ROPE_ARROW, inventory.selectNext());
+    assertEquals(ItemType.STANDARD_ARROW, inventory.selectNext());
+    assertEquals(ItemType.ROPE_ARROW, inventory.selectPrevious());
   }
 
   @Test
   void shouldSortOccupiedSlotsByNumericItemId() {
     InventoryComponent inventory = new InventoryComponent(0, 5);
-    inventory.addItem(ItemType.ColdArrow, 5);
-    inventory.addItem(ItemType.CONSUMABLE, 3);
-    inventory.addItem(ItemType.FireArrow, 4);
-    inventory.addItem(ItemType.RopeArrow, 2);
-    inventory.addItem(ItemType.ARROW, 1);
+    inventory.addItem(ItemType.COLD_ARROW, 5);
+    inventory.addItem(ItemType.HEALTH_POTION, 3);
+    inventory.addItem(ItemType.FIRE_ARROW, 4);
+    inventory.addItem(ItemType.ROPE_ARROW, 2);
+    inventory.addItem(ItemType.STANDARD_ARROW, 1);
 
     assertTrue(inventory.sortByItemId());
 
-    assertEquals(ItemType.ARROW, inventory.getSlot(0).getItemType());
-    assertEquals(ItemType.RopeArrow, inventory.getSlot(1).getItemType());
-    assertEquals(ItemType.CONSUMABLE, inventory.getSlot(2).getItemType());
-    assertEquals(ItemType.FireArrow, inventory.getSlot(3).getItemType());
-    assertEquals(ItemType.ColdArrow, inventory.getSlot(4).getItemType());
+    assertEquals(ItemType.STANDARD_ARROW, inventory.getSlot(0).getItemType());
+    assertEquals(ItemType.ROPE_ARROW, inventory.getSlot(1).getItemType());
+    assertEquals(ItemType.HEALTH_POTION, inventory.getSlot(2).getItemType());
+    assertEquals(ItemType.FIRE_ARROW, inventory.getSlot(3).getItemType());
+    assertEquals(ItemType.COLD_ARROW, inventory.getSlot(4).getItemType());
   }
 
   @Test
   void shouldSortOccupiedSlotsByItemIdAndMoveEmptySlotsToEnd() {
     InventoryComponent inventory = new InventoryComponent(0, 5);
-    inventory.addItem(ItemType.CONSUMABLE, 3);
-    inventory.addItem(ItemType.RopeArrow, 2);
-    inventory.addItem(ItemType.ARROW, 1);
+    inventory.addItem(ItemType.HEALTH_POTION, 3);
+    inventory.addItem(ItemType.ROPE_ARROW, 2);
+    inventory.addItem(ItemType.STANDARD_ARROW, 1);
 
     assertTrue(inventory.sortByItemId());
 
-    assertEquals(ItemType.ARROW, inventory.getSlot(0).getItemType());
+    assertEquals(ItemType.STANDARD_ARROW, inventory.getSlot(0).getItemType());
     assertEquals(1, inventory.getSlot(0).getQuantity());
-    assertEquals(ItemType.RopeArrow, inventory.getSlot(1).getItemType());
+    assertEquals(ItemType.ROPE_ARROW, inventory.getSlot(1).getItemType());
     assertEquals(2, inventory.getSlot(1).getQuantity());
-    assertEquals(ItemType.CONSUMABLE, inventory.getSlot(2).getItemType());
+    assertEquals(ItemType.HEALTH_POTION, inventory.getSlot(2).getItemType());
     assertEquals(3, inventory.getSlot(2).getQuantity());
     assertTrue(inventory.isSlotEmpty(3));
     assertTrue(inventory.isSlotEmpty(4));
@@ -401,14 +401,14 @@ class InventoryComponentTest {
     int[] selectionEvents = {0};
     player.getEvents().addListener("inventoryChanged", () -> inventoryEvents[0]++);
     player.getEvents().addListener("inventorySelectionChanged", () -> selectionEvents[0]++);
-    inventory.addItem(ItemType.CONSUMABLE, 1);
-    inventory.addItem(ItemType.ARROW, 1);
+    inventory.addItem(ItemType.HEALTH_POTION, 1);
+    inventory.addItem(ItemType.STANDARD_ARROW, 1);
     inventoryEvents[0] = 0;
     selectionEvents[0] = 0;
 
     assertTrue(inventory.sortByItemId());
 
-    assertEquals(ItemType.CONSUMABLE, inventory.getSelectedItem());
+    assertEquals(ItemType.HEALTH_POTION, inventory.getSelectedItem());
     assertEquals(1, inventory.getSelectedSlotIndex());
     assertEquals(1, inventoryEvents[0]);
     assertEquals(1, selectionEvents[0]);
@@ -422,8 +422,8 @@ class InventoryComponentTest {
     int[] selectionEvents = {0};
     player.getEvents().addListener("inventoryChanged", () -> inventoryEvents[0]++);
     player.getEvents().addListener("inventorySelectionChanged", () -> selectionEvents[0]++);
-    inventory.addItem(ItemType.ARROW, 1);
-    inventory.addItem(ItemType.RopeArrow, 1);
+    inventory.addItem(ItemType.STANDARD_ARROW, 1);
+    inventory.addItem(ItemType.ROPE_ARROW, 1);
     inventoryEvents[0] = 0;
     selectionEvents[0] = 0;
 
@@ -438,7 +438,7 @@ class InventoryComponentTest {
     InventoryComponent inventory = new InventoryComponent(0, 8);
     Entity player = new Entity().addComponent(inventory);
     player.create();
-    inventory.addItem(ItemType.ARROW, 1);
+    inventory.addItem(ItemType.STANDARD_ARROW, 1);
 
     player.getEvents().trigger("selectQuickSlot", 5);
 
@@ -524,74 +524,74 @@ class InventoryComponentTest {
   void shouldAddItemToInventory() {
     InventoryComponent inventory = new InventoryComponent(100);
 
-    assertTrue(inventory.addItem(ItemType.ARROW, 3));
+    assertTrue(inventory.addItem(ItemType.STANDARD_ARROW, 3));
 
-    assertTrue(inventory.hasItem(ItemType.ARROW));
-    assertEquals(3, inventory.getItemCount(ItemType.ARROW));
+    assertTrue(inventory.hasItem(ItemType.STANDARD_ARROW));
+    assertEquals(3, inventory.getItemCount(ItemType.STANDARD_ARROW));
   }
 
   @Test
   void shouldStackSameItemType() {
     InventoryComponent inventory = new InventoryComponent(100);
 
-    assertTrue(inventory.addItem(ItemType.ARROW, 2));
-    assertTrue(inventory.addItem(ItemType.ARROW, 3));
+    assertTrue(inventory.addItem(ItemType.STANDARD_ARROW, 2));
+    assertTrue(inventory.addItem(ItemType.STANDARD_ARROW, 3));
 
-    assertEquals(5, inventory.getItemCount(ItemType.ARROW));
+    assertEquals(5, inventory.getItemCount(ItemType.STANDARD_ARROW));
   }
 
   @Test
   void shouldRejectInvalidItemQuantities() {
     InventoryComponent inventory = new InventoryComponent(100);
 
-    assertFalse(inventory.addItem(ItemType.ARROW, 0));
-    assertFalse(inventory.addItem(ItemType.ARROW, -1));
+    assertFalse(inventory.addItem(ItemType.STANDARD_ARROW, 0));
+    assertFalse(inventory.addItem(ItemType.STANDARD_ARROW, -1));
     assertFalse(inventory.addItem(null, 1));
 
-    assertEquals(0, inventory.getItemCount(ItemType.ARROW));
+    assertEquals(0, inventory.getItemCount(ItemType.STANDARD_ARROW));
   }
 
   @Test
   void shouldRejectNewItemTypeWhenInventoryIsFull() {
     InventoryComponent inventory = new InventoryComponent(100, 1);
 
-    assertTrue(inventory.addItem(ItemType.ARROW, 1));
+    assertTrue(inventory.addItem(ItemType.STANDARD_ARROW, 1));
     assertTrue(inventory.isFull());
 
-    assertFalse(inventory.addItem(ItemType.RopeArrow, 1));
-    assertEquals(0, inventory.getItemCount(ItemType.RopeArrow));
+    assertFalse(inventory.addItem(ItemType.ROPE_ARROW, 1));
+    assertEquals(0, inventory.getItemCount(ItemType.ROPE_ARROW));
   }
 
   @Test
   void shouldAllowStackingWhenInventoryIsFull() {
     InventoryComponent inventory = new InventoryComponent(100, 1);
 
-    assertTrue(inventory.addItem(ItemType.ARROW, 1));
+    assertTrue(inventory.addItem(ItemType.STANDARD_ARROW, 1));
     assertTrue(inventory.isFull());
 
-    assertTrue(inventory.addItem(ItemType.ARROW, 2));
-    assertEquals(3, inventory.getItemCount(ItemType.ARROW));
+    assertTrue(inventory.addItem(ItemType.STANDARD_ARROW, 2));
+    assertEquals(3, inventory.getItemCount(ItemType.STANDARD_ARROW));
   }
 
   @Test
   void shouldRemoveItemQuantity() {
     InventoryComponent inventory = new InventoryComponent(100);
-    inventory.addItem(ItemType.ARROW, 5);
+    inventory.addItem(ItemType.STANDARD_ARROW, 5);
 
-    assertTrue(inventory.removeItem(ItemType.ARROW, 2));
+    assertTrue(inventory.removeItem(ItemType.STANDARD_ARROW, 2));
 
-    assertEquals(3, inventory.getItemCount(ItemType.ARROW));
-    assertTrue(inventory.hasItem(ItemType.ARROW));
+    assertEquals(3, inventory.getItemCount(ItemType.STANDARD_ARROW));
+    assertTrue(inventory.hasItem(ItemType.STANDARD_ARROW));
   }
 
   @Test
   void shouldNotRemoveMoreItemsThanStored() {
     InventoryComponent inventory = new InventoryComponent(100);
-    inventory.addItem(ItemType.ARROW, 2);
+    inventory.addItem(ItemType.STANDARD_ARROW, 2);
 
-    assertFalse(inventory.removeItem(ItemType.ARROW, 3));
+    assertFalse(inventory.removeItem(ItemType.STANDARD_ARROW, 3));
 
-    assertEquals(2, inventory.getItemCount(ItemType.ARROW));
+    assertEquals(2, inventory.getItemCount(ItemType.STANDARD_ARROW));
   }
 
   @Test
@@ -600,44 +600,44 @@ class InventoryComponentTest {
 
     assertNull(inventory.getSelectedItem());
 
-    inventory.addItem(ItemType.ARROW, 1);
+    inventory.addItem(ItemType.STANDARD_ARROW, 1);
 
-    assertEquals(ItemType.ARROW, inventory.getSelectedItem());
+    assertEquals(ItemType.STANDARD_ARROW, inventory.getSelectedItem());
   }
 
   @Test
   void shouldCycleThroughOwnedItems() {
     InventoryComponent inventory = new InventoryComponent(100);
-    inventory.addItem(ItemType.ARROW, 1);
-    inventory.addItem(ItemType.RopeArrow, 1);
+    inventory.addItem(ItemType.STANDARD_ARROW, 1);
+    inventory.addItem(ItemType.ROPE_ARROW, 1);
 
-    assertEquals(ItemType.ARROW, inventory.getSelectedItem());
+    assertEquals(ItemType.STANDARD_ARROW, inventory.getSelectedItem());
 
-    assertEquals(ItemType.RopeArrow, inventory.selectNext());
-    assertEquals(ItemType.ARROW, inventory.selectNext());
-    assertEquals(ItemType.RopeArrow, inventory.selectPrevious());
+    assertEquals(ItemType.ROPE_ARROW, inventory.selectNext());
+    assertEquals(ItemType.STANDARD_ARROW, inventory.selectNext());
+    assertEquals(ItemType.ROPE_ARROW, inventory.selectPrevious());
   }
 
   @Test
   void shouldClearSelectionWhenLastItemIsRemoved() {
     InventoryComponent inventory = new InventoryComponent(100);
-    inventory.addItem(ItemType.ARROW, 1);
+    inventory.addItem(ItemType.STANDARD_ARROW, 1);
 
-    assertTrue(inventory.removeItem(ItemType.ARROW, 1));
+    assertTrue(inventory.removeItem(ItemType.STANDARD_ARROW, 1));
 
-    assertFalse(inventory.hasItem(ItemType.ARROW));
+    assertFalse(inventory.hasItem(ItemType.STANDARD_ARROW));
     assertNull(inventory.getSelectedItem());
   }
 
   @Test
   void shouldSelectRemainingItemWhenSelectedItemIsRemoved() {
     InventoryComponent inventory = new InventoryComponent(100);
-    inventory.addItem(ItemType.ARROW, 1);
-    inventory.addItem(ItemType.RopeArrow, 1);
+    inventory.addItem(ItemType.STANDARD_ARROW, 1);
+    inventory.addItem(ItemType.ROPE_ARROW, 1);
 
-    assertTrue(inventory.removeItem(ItemType.ARROW, 1));
+    assertTrue(inventory.removeItem(ItemType.STANDARD_ARROW, 1));
 
-    assertEquals(ItemType.RopeArrow, inventory.getSelectedItem());
+    assertEquals(ItemType.ROPE_ARROW, inventory.getSelectedItem());
   }
 
   @Test
@@ -660,10 +660,10 @@ class InventoryComponentTest {
 
     player.getEvents().addListener("inventoryChanged", () -> eventCount[0]++);
 
-    inventory.addItem(ItemType.ARROW, 1);
+    inventory.addItem(ItemType.STANDARD_ARROW, 1);
     assertEquals(1, eventCount[0]);
 
-    inventory.removeItem(ItemType.ARROW, 1);
+    inventory.removeItem(ItemType.STANDARD_ARROW, 1);
     assertEquals(2, eventCount[0]);
   }
 
@@ -675,10 +675,10 @@ class InventoryComponentTest {
 
     player.getEvents().addListener("inventorySelectionChanged", () -> eventCount[0]++);
 
-    inventory.addItem(ItemType.ARROW, 1);
+    inventory.addItem(ItemType.STANDARD_ARROW, 1);
     assertEquals(1, eventCount[0]);
 
-    inventory.addItem(ItemType.RopeArrow, 1);
+    inventory.addItem(ItemType.ROPE_ARROW, 1);
     assertEquals(1, eventCount[0]);
 
     inventory.selectNext();

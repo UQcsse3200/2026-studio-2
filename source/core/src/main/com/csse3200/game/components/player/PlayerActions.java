@@ -3,14 +3,14 @@ package com.csse3200.game.components.player;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.csse3200.game.components.Component;
+import com.csse3200.game.components.item.weapons.bow.grapple.GrappleComponent;
 import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.physics.raycast.RaycastHit;
 import com.csse3200.game.services.ServiceLocator;
 
 /**
- * Action component for interacting with the player. Player events should be initialised in create()
- * and when triggered should call methods within this class.
+ * Action component for interacting with the player
  */
 public class PlayerActions extends Component {
   private static final float JUMP_FORCE = 5.5f;
