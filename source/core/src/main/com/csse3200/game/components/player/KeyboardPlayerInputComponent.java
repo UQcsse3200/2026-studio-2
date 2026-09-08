@@ -21,9 +21,16 @@ public class KeyboardPlayerInputComponent extends InputComponent {
   private boolean sprintHeld;
   private CameraComponent cameraComponent;
   private boolean attackHeld;
+  private boolean dead;
 
   public KeyboardPlayerInputComponent() {
     super(5);
+  }
+
+  @Override
+  public void create() {
+    super.create();
+    entity.getEvents().addListener("death", () -> dead = true);
   }
 
   /**
@@ -43,6 +50,9 @@ public class KeyboardPlayerInputComponent extends InputComponent {
    */
   @Override
   public boolean keyDown(int keycode) {
+    if (dead) {
+      return false;
+    }
     switch (keycode) {
       // Hotbar number keys
       case Keys.NUM_1:
@@ -128,6 +138,9 @@ public class KeyboardPlayerInputComponent extends InputComponent {
    */
   @Override
   public boolean keyUp(int keycode) {
+    if (dead) {
+      return false;
+    }
     switch (keycode) {
       case Keys.A:
       case Keys.LEFT:
@@ -160,7 +173,7 @@ public class KeyboardPlayerInputComponent extends InputComponent {
    */
   @Override
   public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-    if (button != Buttons.LEFT) {
+    if (dead || button != Buttons.LEFT) {
       return false;
     }
     Vector2 aimDirection = getAimDirection(screenX, screenY);
@@ -173,7 +186,7 @@ public class KeyboardPlayerInputComponent extends InputComponent {
 
   @Override
   public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-    if (button != Buttons.LEFT) {
+    if (dead || button != Buttons.LEFT) {
       return false;
     }
 

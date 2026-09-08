@@ -14,6 +14,8 @@ public class PlayerAnimationController extends Component {
   private boolean sprinting = false;
   private boolean jumping = false;
   private boolean hurt = false;
+  private boolean dead = false;
+  private boolean deathAnimationFinishedFired = false;
 
   @Override
   public void create() {
@@ -25,12 +27,20 @@ public class PlayerAnimationController extends Component {
     entity.getEvents().addListener("sprintStop", this::sprintStop);
     entity.getEvents().addListener("jumpStart", this::jumpStart);
     entity.getEvents().addListener("hurt", this::hurt);
+    entity.getEvents().addListener("death", this::death);
 
     animator.startAnimation("idle");
   }
 
   @Override
   public void update() {
+    if (dead) {
+      if (!deathAnimationFinishedFired && animator.isFinished()) {
+        deathAnimationFinishedFired = true;
+        entity.getEvents().trigger("deathAnimationFinished");
+      }
+      return;
+    }
     if (hurt && animator.isFinished()) {
       hurt = false;
       updateAnimation();
@@ -41,6 +51,9 @@ public class PlayerAnimationController extends Component {
   }
 
   void walk(Vector2 direction) {
+    if (dead) {
+      return;
+    }
     moving = true;
     if (direction.x != 0) {
       animator.setFlipX(direction.x < 0);
@@ -51,6 +64,9 @@ public class PlayerAnimationController extends Component {
   }
 
   void walkStop() {
+    if (dead) {
+      return;
+    }
     moving = false;
     if (!jumping) {
       updateAnimation();
@@ -58,6 +74,9 @@ public class PlayerAnimationController extends Component {
   }
 
   void sprint() {
+    if (dead) {
+      return;
+    }
     sprinting = true;
     if (!jumping) {
       updateAnimation();
@@ -65,6 +84,9 @@ public class PlayerAnimationController extends Component {
   }
 
   void sprintStop() {
+    if (dead) {
+      return;
+    }
     sprinting = false;
     if (!jumping) {
       updateAnimation();
@@ -72,14 +94,25 @@ public class PlayerAnimationController extends Component {
   }
 
   void jumpStart() {
+    if (dead) {
+      return;
+    }
     jumping = true;
     animator.startAnimation("jump");
   }
 
   void hurt() {
+    if (dead) {
+      return;
+    }
     jumping = false;
     hurt = true;
     animator.startAnimation("hurt");
+  }
+
+  void death() {
+    dead = true;
+    animator.startAnimation("death");
   }
 
   private void updateAnimation() {

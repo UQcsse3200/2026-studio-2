@@ -57,6 +57,8 @@ public class PlayerFactory {
     animator.addAnimation("sprint", 0.1f, PlayMode.LOOP);
     animator.addAnimation("jump", 0.05f, PlayMode.NORMAL);
     animator.addAnimation("hurt", 0.04f, PlayMode.NORMAL);
+    animator.addAnimation("death", 0.1458f, PlayMode.NORMAL);
+    animator.addAnimation("sleep", 0.1458f, PlayMode.LOOP);
 
     Entity player =
         new Entity()

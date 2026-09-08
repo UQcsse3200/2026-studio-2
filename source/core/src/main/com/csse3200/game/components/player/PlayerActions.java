@@ -26,6 +26,7 @@ public class PlayerActions extends Component {
   private boolean isGrounded = false;
   private boolean isSprinting = false;
   private boolean paused = false;
+  private boolean dead = false;
 
   @Override
   public void create() {
@@ -37,6 +38,7 @@ public class PlayerActions extends Component {
     entity.getEvents().addListener("sprint", this::sprint);
     entity.getEvents().addListener("sprintStop", this::stopSprinting);
     entity.getEvents().addListener("togglePaused", this::togglePause);
+    entity.getEvents().addListener("death", this::die);
   }
 
   @Override
@@ -87,12 +89,24 @@ public class PlayerActions extends Component {
     paused = !paused;
   }
 
+  /** Stops the player permanently reacting to input once they've died. */
+  void die() {
+    dead = true;
+    Body body = physicsComponent.getBody();
+    Vector2 velocity = body.getLinearVelocity();
+    body.setLinearVelocity(0f, velocity.y);
+    stopWalking();
+  }
+
   /**
    * Moves the player towards a given direction.
    *
    * @param direction direction to move in
    */
   void walk(Vector2 direction) {
+    if (dead) {
+      return;
+    }
     if (paused) {
       stopWalking();
     } else {
@@ -112,6 +126,9 @@ public class PlayerActions extends Component {
 
   /** Jump off the ground, or let go of the rope with a kick upward. */
   void jump() {
+    if (dead) {
+      return;
+    }
     Body body = physicsComponent.getBody();
 
     if (isGrappling()) {
@@ -129,6 +146,9 @@ public class PlayerActions extends Component {
   }
 
   void sprint() {
+    if (dead) {
+      return;
+    }
     this.isSprinting = true;
     if (!isGrappling()) {
       updateSpeed();
@@ -136,6 +156,9 @@ public class PlayerActions extends Component {
   }
 
   void stopSprinting() {
+    if (dead) {
+      return;
+    }
     this.isSprinting = false;
     if (!isGrappling()) {
       updateSpeed();
