@@ -1,14 +1,12 @@
 {
-  "test": {
-    "xPos": 100,
-    "yPos": 100,
-    "textColour": "WHITE",
-    "backgroundColour": "BLACK",
-    "borderColour": "WHITE",
-    "charsPerSecond": 30,
-    "maxWidth": 200,
-    "padding": 16,
-    "borderThickness": 3,
-    "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus felis arcu, imperdiet eget tellus sed, convallis faucibus est. Sed at turpis porttitor, tincidunt lectus eu, sagittis felis. Nam sed dignissim enim. Fusce a quam risus. Donec finibus vestibulum ante, et aliquam justo molestie id. Interdum et malesuada fames ac ante ipsum primis in faucibus. Maecenas eu facilisis dolor, sit amet porttitor arcu. Nunc ut sagittis eros, quis convallis eros. Etiam ut dolor nunc. Nam imperdiet enim vel elit scelerisque, a interdum quam dignissim. Integer vel ex velit. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Proin arcu risus, vehicula eu turpis et, vulputate bibendum augue."
-  }
+  "xPos": 100,
+  "yPos": 100,
+  "textColour": "Color.WHITE",
+  "backgroundColour": "Color.BLACK",
+  "borderColour": "Color.WHITE",
+  "charsPerSecond": 30,
+  "maxWidth": 200,
+  "padding": 16,
+  "borderThickness": 3,
+  "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus felis arcu, imperdiet eget tellus sed, convallis faucibus est. Sed at turpis porttitor, tincidunt lectus eu, sagittis felis. Nam sed dignissim enim. Fusce a quam risus. Donec finibus vestibulum ante, et aliquam justo molestie id. Interdum et malesuada fames ac ante ipsum primis in faucibus. Maecenas eu facilisis dolor, sit amet porttitor arcu. Nunc ut sagittis eros, quis convallis eros. Etiam ut dolor nunc. Nam imperdiet enim vel elit scelerisque, a interdum quam dignissim. Integer vel ex velit. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Proin arcu risus, vehicula eu turpis et, vulputate bibendum augue."
 }
