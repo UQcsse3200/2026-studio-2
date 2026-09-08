@@ -5,10 +5,14 @@ import com.csse3200.game.components.item.Item;
 import com.csse3200.game.components.item.ItemComponent;
 import com.csse3200.game.components.item.ItemType;
 import com.csse3200.game.components.item.consumables.HealthPotion;
+import com.csse3200.game.components.item.consumables.PoisonPotion;
+import com.csse3200.game.components.item.consumables.SpeedPotion;
 import com.csse3200.game.components.item.weapons.ColdArr;
 import com.csse3200.game.components.item.weapons.FireArr;
 import com.csse3200.game.components.item.weapons.RopeArr;
+import com.csse3200.game.components.item.weapons.Spear;
 import com.csse3200.game.components.item.weapons.StandardArr;
+import com.csse3200.game.components.item.weapons.Sword;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.physics.components.HitboxComponent;
@@ -43,6 +47,10 @@ public class ItemFactory {
     itemEntity.getComponent(TextureRenderComponent.class).scaleEntity();
     itemEntity.scaleHeight(ITEM_HEIGHT);
     return itemEntity;
+  }
+
+  public static Entity createStandardArrow(int quantity) {
+    return createItem(new StandardArr(quantity));
   }
 
   /**
@@ -81,32 +89,32 @@ public class ItemFactory {
     return createItem(new RopeArr(quantity));
   }
 
-  /**
-   * Creates a stack of standard arrows lying in the world.
-   *
-   * @param quantity number of arrows in the stack
-   * @return entity
-   */
-  public static Entity createStandardArrow(int quantity) {
-    return createItem(new StandardArr(quantity));
-  }
-
-  /**
-   * Creates a stack of health potions lying in the world.
-   *
-   * @param quantity number of potions in the stack
-   * @return entity
-   */
-  public static Entity createHealthPotion(int quantity) {
-    return createItem(new HealthPotion(quantity));
-  }
-
   public static Entity createFireArrow(int quantity) {
     return createItem(new FireArr(quantity));
   }
 
   public static Entity createColdArrow(int quantity) {
     return createItem(new ColdArr(quantity));
+  }
+
+  public static Entity createSword(int quantity) {
+    return createItem(new Sword(quantity));
+  }
+
+  public static Entity createSpear(int quantity) {
+    return createItem(new Spear(quantity));
+  }
+
+  public static Entity createHealthPotion(int quantity) {
+    return createItem(new HealthPotion(quantity));
+  }
+
+  public static Entity createSpeedPotion(int quantity) {
+    return createItem(new SpeedPotion(quantity));
+  }
+
+  public static Entity createPoisonPotion(int quantity) {
+    return createItem(new PoisonPotion(quantity));
   }
 
   private ItemFactory() {

@@ -79,6 +79,10 @@ public class ItemUseComponent extends Component {
       case CONSUMABLE -> useConsumable();
       case FireArrow -> useFireArrow();
       case ColdArrow -> useColdArrow();
+      case Sword -> useSword();
+      case Spear -> useSpear();
+      case SpeedPotion -> useSpeedPotion();
+      case PoisonPotion -> usePoisonPotion();
     };
   }
 
@@ -137,6 +141,62 @@ public class ItemUseComponent extends Component {
     return true;
   }
 
+  private boolean useFireArrow() {
+    if (!inventory.hasItem(ItemType.FireArrow)) {
+      logger.debug("No fire arrows left to fire");
+      entity.getEvents().trigger("itemUseFailed", ItemType.FireArrow);
+      return false;
+    }
+
+    FireArr arrow = new FireArr(1);
+    playAttackSound();
+    entity.getEvents().trigger("fireArrFired", arrow); // for animation
+    inventory.removeItem(ItemType.FireArrow, 1);
+    entity
+        .getEvents()
+        .trigger("itemUsed", ItemType.FireArrow); // notise listeners that item was used
+    return true;
+  }
+
+  private boolean useColdArrow() {
+    if (!inventory.hasItem(ItemType.ColdArrow)) {
+      logger.debug("No cold arrows left to fire");
+      entity.getEvents().trigger("itemUseFailed", ItemType.ColdArrow);
+      return false;
+    }
+
+    ColdArr arrow = new ColdArr(1);
+    playAttackSound();
+    entity.getEvents().trigger("coldArrFired", arrow);
+    inventory.removeItem(ItemType.ColdArrow, 1);
+    entity.getEvents().trigger("itemUsed", ItemType.ColdArrow);
+    return true;
+  }
+
+  private boolean useSword() {
+    if (!inventory.hasItem(ItemType.Sword)) {
+      logger.debug("No sword available to use");
+      entity.getEvents().trigger("itemUseFailed", ItemType.Sword);
+      return false;
+    }
+    entity
+        .getEvents()
+        .trigger("meleeAttack", ItemType.Sword.getDamage(), ItemType.Sword.getRange());
+    return true;
+  }
+
+  private boolean useSpear() {
+    if (!inventory.hasItem(ItemType.Spear)) {
+      logger.debug("No spear available to use");
+      entity.getEvents().trigger("itemUseFailed", ItemType.Spear);
+      return false;
+    }
+    entity
+        .getEvents()
+        .trigger("meleeAttack", ItemType.Spear.getDamage(), ItemType.Spear.getRange());
+    return true;
+  }
+
   private boolean useConsumable() {
     if (combatStats == null) {
       entity.getEvents().trigger("itemUseFailed", ItemType.CONSUMABLE);
@@ -159,33 +219,49 @@ public class ItemUseComponent extends Component {
     return true;
   }
 
-  private boolean useFireArrow() {
-    if (!inventory.hasItem(ItemType.FireArrow)) {
-      logger.debug("No fire arrows left to fire");
-      entity.getEvents().trigger("itemUseFailed", ItemType.FireArrow);
+  private boolean useSpeedPotion() {
+    if (!inventory.hasItem(ItemType.SpeedPotion)) {
+      logger.debug("No speed potion available to use");
+      entity.getEvents().trigger("itemUseFailed", ItemType.SpeedPotion);
       return false;
     }
 
-    FireArr arrow = new FireArr(1);
-    playAttackSound();
-    entity.getEvents().trigger("fireArrFired", arrow);
-    inventory.removeItem(ItemType.FireArrow, 1);
-    entity.getEvents().trigger("itemUsed", ItemType.FireArrow);
+    if (!inventory.removeItem(ItemType.SpeedPotion, 1)) {
+      entity.getEvents().trigger("itemUseFailed", ItemType.SpeedPotion);
+      return false;
+    }
+
+    entity
+        .getEvents()
+        .trigger(
+            "speedPotionUsed",
+            ItemType.SpeedPotion.getSpeedBoost(),
+            ItemType.SpeedPotion.getDuration());
+
+    entity.getEvents().trigger("itemUsed", ItemType.SpeedPotion);
     return true;
   }
 
-  private boolean useColdArrow() {
-    if (!inventory.hasItem(ItemType.ColdArrow)) {
-      logger.debug("No cold arrows left to fire");
-      entity.getEvents().trigger("itemUseFailed", ItemType.ColdArrow);
+  private boolean usePoisonPotion() {
+    if (!inventory.hasItem(ItemType.PoisonPotion)) {
+      logger.debug("No poison potion available to use");
+      entity.getEvents().trigger("itemUseFailed", ItemType.PoisonPotion);
       return false;
     }
 
-    ColdArr arrow = new ColdArr(1);
-    playAttackSound();
-    entity.getEvents().trigger("coldArrFired", arrow);
-    inventory.removeItem(ItemType.ColdArrow, 1);
-    entity.getEvents().trigger("itemUsed", ItemType.ColdArrow);
+    if (!inventory.removeItem(ItemType.PoisonPotion, 1)) {
+      entity.getEvents().trigger("itemUseFailed", ItemType.PoisonPotion);
+      return false;
+    }
+
+    entity
+        .getEvents()
+        .trigger(
+            "poisonPotionUsed",
+            ItemType.PoisonPotion.getPoisonDamagePerSecond(),
+            ItemType.PoisonPotion.getPoisonDuration());
+
+    entity.getEvents().trigger("itemUsed", ItemType.PoisonPotion);
     return true;
   }
 
