@@ -4,6 +4,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.TouchAttackComponent;
+import com.csse3200.game.components.level.LedgeComponent;
 import com.csse3200.game.components.level.MovingPlatformComponent;
 import com.csse3200.game.components.level.PlatformGrappleComponent;
 import com.csse3200.game.components.level.WinConditionComponent;
@@ -121,6 +122,17 @@ public class ObstacleFactory {
             .addComponent(new ColliderComponent().setLayer(PhysicsLayer.OBSTACLE));
     wall.setScale(width, height);
     return wall;
+  }
+
+  public static Entity createLedge() {
+    Entity ledge =
+        new Entity()
+            .addComponent(new TextureRenderComponent("images/platform.png"))
+            .addComponent(new LedgeComponent())
+            .addComponent(new PhysicsComponent().setBodyType(BodyType.StaticBody))
+            .addComponent(new ColliderComponent().setLayer(PhysicsLayer.OBSTACLE));
+
+    return ledge;
   }
 
   /**
