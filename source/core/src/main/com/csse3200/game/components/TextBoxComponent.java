@@ -11,14 +11,12 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
-import com.csse3200.game.input.InputService;
 import com.csse3200.game.ui.UIComponent;
 
 public class TextBoxComponent extends UIComponent {
 
   private final float xPos;
   private final float yPos;
-  private final InputService inputService = new InputService();
   private final Color textColor;
   private final Color backgroundColour;
   private final Color borderColour;
@@ -30,14 +28,14 @@ public class TextBoxComponent extends UIComponent {
   private NinePatchDrawable cachedBackground;
   private float typeTimer = 0f;
   private int revealedChars = 0;
+  private boolean dismissed = false;
   private String fullContent = "";
   private String lastSourceContent = null;
   private Table table;
   private Label label;
 
-  // make the boxes stay on screen until an input is given to cycle to the next one.
-  // (make this a method or builder or whatever)
-  // Make it so that the box can stay on screen forever if there is no specified input.
+  // Boxes stay on screen until ENTER is pressed: first press reveals the rest of the text
+  // immediately (if it's still typing), second press dismisses the box entirely.
   public TextBoxComponent(
       float xPos,
       float yPos,
@@ -120,6 +118,10 @@ public class TextBoxComponent extends UIComponent {
 
   @Override
   protected void draw(SpriteBatch batch) {
+    if (dismissed) {
+      return;
+    }
+
     if (label == null) {
       create();
     }
@@ -136,36 +138,33 @@ public class TextBoxComponent extends UIComponent {
       this.typeTimer = 0f;
     }
 
+    boolean fullyRevealed = this.revealedChars >= this.fullContent.length();
+
     // Reveal characters over time
-    if (this.revealedChars < this.fullContent.length()) {
+    if (!fullyRevealed) {
       this.typeTimer += Gdx.graphics.getDeltaTime();
       int charsToShow = (int) (this.typeTimer * this.charsPerSecond);
       if (charsToShow > this.revealedChars) {
         this.revealedChars = Math.min(charsToShow, this.fullContent.length());
         this.label.setText(this.fullContent.substring(0, this.revealedChars));
-        this.table.pack(); // resize box to fit the new (wrapped) textLoader height
+        this.table.pack(); // resize box to fit the new (wrapped) text height
+        fullyRevealed = this.revealedChars >= this.fullContent.length();
       }
     }
-    // on keypress it should reveal the full content or remove the content if it's all already on
-    // screen
-    if (this.inputService.keyDown(Keys.TAB)) {
-      if (this.revealedChars < this.fullContent.length()) {
+
+    // On ENTER: skip to the full text if it's still typing, otherwise dismiss the box entirely
+    if (Gdx.input.isKeyJustPressed(Keys.TAB)) {
+      if (!fullyRevealed) {
         this.revealedChars = fullContent.length();
         this.label.setText(fullContent);
         this.table.pack();
-      } else if (revealedChars >= this.fullContent.length()) {
+      } else {
+        this.dismissed = true;
         this.table.setVisible(false);
         this.dispose();
         return;
       }
     }
-
-    //    this.age += Gdx.graphics.getDeltaTime();
-    //    if (this.age >= lifetime) {
-    //      table.setVisible(false);
-    //      this.dispose();
-    //      return;
-    //    }
 
     float x = this.xPos;
     float y = this.yPos;

@@ -1,37 +1,43 @@
 package com.csse3200.game.entities.factories;
 
-import com.badlogic.gdx.graphics.Color;
 import com.csse3200.game.components.TextBoxComponent;
 import com.csse3200.game.entities.configs.TextConfig;
 import com.csse3200.game.files.FileLoader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class TextBoxFactory {
-  public static final TextConfig textConfig =
-      FileLoader.readClass(TextConfig.class, "configs/textBoxes.json");
+  private static final Logger logger = LoggerFactory.getLogger(TextBoxFactory.class);
 
-  /** Takes in an already created TextConfig file and extracts the parameters */
-  public TextBoxFactory() {
-    // this.textConfig = FileLoader.readClass(TextConfig.class, "configs/textBoxes.json");
-  }
+  public TextBoxFactory() {}
 
   /**
+   * Loads a text box config from the given JSON file and creates the resulting text box.
+   *
    * @param filePath the path from source. e.g: configs/textBoxes.json
    */
   public void createTextBox(String filePath) {
+    TextConfig textConfig = FileLoader.readClass(TextConfig.class, filePath);
+    if (textConfig == null) {
+      logger.error("Failed to load text box config from {}", filePath);
+      return;
+    }
+
     try {
       new TextBoxComponent(
-          textConfig.xPos,
-          textConfig.yPos,
-          Color.WHITE,
-          Color.BLACK,
-          Color.WHITE,
-          textConfig.charsPerSecond,
-          textConfig.maxWidth,
-          textConfig.padding,
-          textConfig.borderThickness,
-          textConfig.text).create();
+              textConfig.xPos,
+              textConfig.yPos,
+              textConfig.getTextColour(),
+              textConfig.getBackgroundColour(),
+              textConfig.getBorderColour(),
+              textConfig.charsPerSecond,
+              textConfig.maxWidth,
+              textConfig.padding,
+              textConfig.borderThickness,
+              textConfig.text)
+          .create();
     } catch (Exception e) {
-      System.out.println("Error: " + e.getMessage());
+      logger.error("Failed to create text box: {}", e.getMessage());
     }
   }
 }
