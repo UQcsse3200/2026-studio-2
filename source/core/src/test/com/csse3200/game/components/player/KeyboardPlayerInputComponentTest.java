@@ -8,6 +8,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Graphics;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Input.Buttons;
 import com.badlogic.gdx.Input.Keys;
@@ -179,5 +180,56 @@ class KeyboardPlayerInputComponentTest {
     assertFalse(component.touchDown(4, 2, 0, Buttons.RIGHT));
     assertTrue(component.touchDown(4, 2, 0, Buttons.LEFT));
     assertTrue(direction.get().epsilonEquals(new Vector2(9.5f, 4.5f)));
+  }
+
+  @Test
+  void shouldOpenAndCloseTheArrowWheelWithTab() {
+    KeyboardPlayerInputComponent component = new KeyboardPlayerInputComponent();
+    ArrowWheelComponent wheel = new ArrowWheelComponent();
+    Entity player = new Entity().addComponent(component).addComponent(wheel);
+    wheel.create();
+
+    assertTrue(component.keyDown(Keys.TAB));
+    assertTrue(wheel.isOpen());
+
+    assertTrue(component.keyUp(Keys.TAB));
+    assertFalse(wheel.isOpen());
+  }
+
+  @Test
+  void shouldHighlightFromThePointerOffsetToTheScreenCentre() {
+    Graphics graphics = mock(Graphics.class);
+    when(graphics.getWidth()).thenReturn(800);
+    when(graphics.getHeight()).thenReturn(600);
+    Gdx.graphics = graphics;
+    KeyboardPlayerInputComponent component = new KeyboardPlayerInputComponent();
+    ArrowWheelComponent wheel = new ArrowWheelComponent();
+    Entity player = new Entity().addComponent(component).addComponent(wheel);
+    wheel.create();
+    component.keyDown(Keys.TAB);
+
+    assertFalse(component.mouseMoved(400, 100));
+
+    assertEquals(ArrowType.NORMAL, wheel.getHighlighted());
+  }
+
+  @Test
+  void shouldBlockWeaponInputWhileTheArrowWheelIsOpen() {
+    KeyboardPlayerInputComponent component = new KeyboardPlayerInputComponent();
+    ArrowWheelComponent wheel = new ArrowWheelComponent();
+    Entity player = new Entity().addComponent(component).addComponent(wheel);
+    player.setPosition(0f, 0f);
+    wheel.create();
+    component.setCameraComponent(new CameraComponent(camera));
+    AtomicInteger grapples = new AtomicInteger();
+    player.getEvents().addListener("grappleFire", (Vector2 aim) -> grapples.incrementAndGet());
+
+    component.keyDown(Keys.TAB);
+    assertFalse(component.touchDown(4, 2, 0, Buttons.LEFT));
+    assertEquals(0, grapples.get());
+
+    component.keyUp(Keys.TAB);
+    assertTrue(component.touchDown(4, 2, 0, Buttons.LEFT));
+    assertEquals(1, grapples.get());
   }
 }

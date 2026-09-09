@@ -13,6 +13,7 @@ public class BowComponent extends Component implements AttackBehaviour {
   private static final String ATTACK_SOUND = "sounds/Impact4.ogg";
 
   private final BiFunction<Vector2, Vector2, Entity> projectileFactory;
+  private ArrowType arrowType = ArrowType.NORMAL;
 
   /** Creates a bow which fires standard arrows. */
   public BowComponent() {
@@ -21,6 +22,23 @@ public class BowComponent extends Component implements AttackBehaviour {
 
   BowComponent(BiFunction<Vector2, Vector2, Entity> projectileFactory) {
     this.projectileFactory = projectileFactory;
+  }
+
+  @Override
+  public void create() {
+    entity.getEvents().addListener("arrowSelected", this::setArrowType);
+  }
+
+  /** Returns the arrow type the bow fires. */
+  public ArrowType getArrowType() {
+    return arrowType;
+  }
+
+  /** Sets the arrow type the bow fires. A missing type leaves the current one in place. */
+  public void setArrowType(ArrowType type) {
+    if (type != null) {
+      arrowType = type;
+    }
   }
 
   @Override
@@ -38,5 +56,6 @@ public class BowComponent extends Component implements AttackBehaviour {
     Sound attackSound = ServiceLocator.getResourceService().getAsset(ATTACK_SOUND, Sound.class);
     attackSound.play();
     entity.getEvents().trigger("attackAnimation", normalizedDirection.cpy());
+    entity.getEvents().trigger("arrowFired", arrowType);
   }
 }
