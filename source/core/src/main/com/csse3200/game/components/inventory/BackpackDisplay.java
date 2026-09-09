@@ -66,6 +66,8 @@ public class BackpackDisplay extends UIComponent {
 
     entity.getEvents().addListener("inventorySelectionChanged", this::refresh);
 
+    entity.getEvents().addListener("dictionaryOpened", this::hideBackpack);
+
     populateSlots();
     showEmptyDetails();
 
