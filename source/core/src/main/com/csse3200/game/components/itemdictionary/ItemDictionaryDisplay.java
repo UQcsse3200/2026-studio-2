@@ -4,9 +4,11 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.csse3200.game.components.item.ItemType;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.UIComponent;
@@ -14,14 +16,24 @@ import com.csse3200.game.ui.UIComponent;
 /**
  * Displays the player's item dictionary.
  *
- * <p>The dictionary shows all item types. Discovered items display their icon, name and
- * description, while undiscovered items remain hidden.
+ * <p>The dictionary contains a grid of item entries. Discovered items display their icons and can
+ * be clicked to open a detailed information page. Undiscovered items remain locked.
  */
 public class ItemDictionaryDisplay extends UIComponent {
+  private enum DictionaryPage {
+    GRID,
+    DETAILS
+  }
+
+  private static final int GRID_COLUMNS = 5;
+
   private Table table;
   private Table contentTable;
   private ItemDictionaryComponent dictionary;
+
   private boolean visible = false;
+  private DictionaryPage currentPage = DictionaryPage.GRID;
+  private ItemType selectedItem;
 
   @Override
   public void create() {
@@ -41,102 +53,256 @@ public class ItemDictionaryDisplay extends UIComponent {
 
     entity.getEvents().addListener("backpackOpened", this::hideDictionary);
 
-    refresh();
-
     table.add(contentTable);
     stage.addActor(table);
+
+    showGridPage();
   }
 
-  /** Rebuilds the dictionary using the player's current discovery data. */
-  private void refresh() {
-    if (contentTable == null) {
-      return;
-    }
+  /** Displays the dictionary grid page. */
+  private void showGridPage() {
+    currentPage = DictionaryPage.GRID;
+    selectedItem = null;
 
     contentTable.clear();
 
     Label title = new Label("Item Dictionary", skin, "large");
 
-    contentTable.add(title).colspan(3).padBottom(20f);
+    contentTable.add(title).colspan(GRID_COLUMNS).padBottom(20f);
+
     contentTable.row();
 
+    int column = 0;
+
     for (ItemType itemType : ItemType.values()) {
-      addItemEntry(itemType);
+      Table slot = createDictionarySlot(itemType);
+
+      contentTable.add(slot).size(110f, 110f).pad(8f);
+
+      column++;
+
+      if (column % GRID_COLUMNS == 0) {
+        contentTable.row();
+      }
     }
   }
 
   /**
-   * Adds one item entry to the dictionary.
+   * Creates one dictionary grid slot.
    *
-   * @param itemType item type represented by this entry
+   * @param itemType item represented by this slot
+   * @return created slot
    */
-  private void addItemEntry(ItemType itemType) {
+  private Table createDictionarySlot(ItemType itemType) {
+    Table slot = new Table();
+    slot.setBackground(skin.getDrawable("button-c"));
+
     boolean discovered = dictionary != null && dictionary.isDiscovered(itemType);
 
     if (discovered) {
-      addDiscoveredEntry(itemType);
+      addDiscoveredSlotContent(slot, itemType);
+      addSlotClickListener(slot, itemType);
     } else {
-      addLockedEntry();
+      Label locked = new Label("?", skin, "large");
+      slot.add(locked).expand().center();
     }
 
-    contentTable.row();
+    return slot;
   }
 
   /**
-   * Adds an unlocked item entry containing its icon, name and description.
+   * Adds the icon of a discovered item to a dictionary slot.
    *
+   * @param slot slot receiving the item icon
    * @param itemType discovered item type
    */
-  private void addDiscoveredEntry(ItemType itemType) {
-    Image icon = null;
-
+  private void addDiscoveredSlotContent(Table slot, ItemType itemType) {
     String texturePath = itemType.getTexturePath();
 
     if (ServiceLocator.getResourceService().containsAsset(texturePath, Texture.class)) {
       Texture texture = ServiceLocator.getResourceService().getAsset(texturePath, Texture.class);
-      icon = new Image(texture);
+
+      Image icon = new Image(texture);
+
+      slot.add(icon).size(75f, 75f).expand().center();
+    } else {
+      Label missingIcon = new Label("?", skin, "large");
+      slot.add(missingIcon).expand().center();
+    }
+  }
+
+  /**
+   * Makes a discovered item slot clickable.
+   *
+   * @param slot slot receiving the click listener
+   * @param itemType item opened when clicked
+   */
+  private void addSlotClickListener(Table slot, ItemType itemType) {
+    slot.addListener(
+        new ClickListener() {
+          @Override
+          public void clicked(InputEvent event, float x, float y) {
+            showDetailsPage(itemType);
+          }
+        });
+  }
+
+  /**
+   * Displays the detailed page for an item.
+   *
+   * @param itemType item to display
+   */
+  private void showDetailsPage(ItemType itemType) {
+    if (itemType == null || dictionary == null || !dictionary.isDiscovered(itemType)) {
+      return;
     }
 
-    Label name = new Label(itemType.getDisplayName(), skin);
+    currentPage = DictionaryPage.DETAILS;
+    selectedItem = itemType;
+
+    contentTable.clear();
+
+    Label title = new Label(itemType.getDisplayName(), skin, "large");
+
+    contentTable.add(title).padBottom(20f);
+    contentTable.row();
+
+    addDetailsIcon(itemType);
+
+    contentTable.row();
+
     Label description = new Label(itemType.getDescription(), skin);
 
     description.setWrap(true);
 
-    if (icon != null) {
-      contentTable.add(icon).size(50f, 50f).padRight(15f).padBottom(10f);
-    } else {
-      contentTable
-          .add(new Label("?", skin, "large"))
-          .width(50f)
-          .height(50f)
-          .center()
-          .padRight(15f)
-          .padBottom(10f);
-    }
+    contentTable.add(description).width(350f).left().padTop(15f).padBottom(20f);
 
-    contentTable.add(name).width(150f).left().padRight(20f).padBottom(10f);
+    contentTable.row();
 
-    contentTable.add(description).width(300f).left().padBottom(10f);
+    addItemStats(itemType);
+
+    contentTable.row();
+
+    Label back = new Label("< Back", skin);
+
+    back.addListener(
+        new ClickListener() {
+          @Override
+          public void clicked(InputEvent event, float x, float y) {
+            showGridPage();
+          }
+        });
+
+    contentTable.add(back).padTop(20f);
   }
 
-  /** Adds an entry for an item that has not yet been discovered. */
-  private void addLockedEntry() {
-    Label iconPlaceholder = new Label("?", skin, "large");
-    Label name = new Label("???", skin);
-    Label description = new Label("Item not discovered", skin);
+  /**
+   * Adds the selected item's icon to the details page.
+   *
+   * @param itemType selected item
+   */
+  private void addDetailsIcon(ItemType itemType) {
+    String texturePath = itemType.getTexturePath();
 
-    contentTable.add(iconPlaceholder).width(50f).height(50f).center().padRight(15f).padBottom(10f);
+    if (ServiceLocator.getResourceService().containsAsset(texturePath, Texture.class)) {
+      Texture texture = ServiceLocator.getResourceService().getAsset(texturePath, Texture.class);
 
-    contentTable.add(name).width(150f).left().padRight(20f).padBottom(10f);
+      Image icon = new Image(texture);
 
-    contentTable.add(description).width(300f).left().padBottom(10f);
+      contentTable.add(icon).size(120f, 120f);
+    } else {
+      contentTable.add(new Label("?", skin, "large")).size(120f, 120f);
+    }
+  }
+
+  /**
+   * Adds basic item statistics to the details page.
+   *
+   * @param itemType selected item
+   */
+  private void addItemStats(ItemType itemType) {
+    Table statsTable = new Table();
+
+    statsTable.setBackground(skin.getDrawable("button-c"));
+    statsTable.pad(15f);
+
+    if (itemType.getDamage() > 0) {
+      statsTable.add(new Label("Damage: " + itemType.getDamage(), skin)).left();
+
+      statsTable.row();
+    }
+
+    if (itemType.getRange() > 0f) {
+      statsTable.add(new Label("Range: " + itemType.getRange(), skin)).left();
+
+      statsTable.row();
+    }
+
+    if (itemType.getCooldown() > 0f) {
+      statsTable.add(new Label("Cooldown: " + itemType.getCooldown(), skin)).left();
+
+      statsTable.row();
+    }
+
+    if (itemType.getHealAmount() > 0) {
+      statsTable.add(new Label("Heal: " + itemType.getHealAmount(), skin)).left();
+
+      statsTable.row();
+    }
+
+    if (itemType.getBurnDamagePerSecond() > 0f) {
+      statsTable.add(new Label("Burn Damage: " + itemType.getBurnDamagePerSecond(), skin)).left();
+
+      statsTable.row();
+    }
+
+    if (itemType.getBurnTime() > 0f) {
+      statsTable.add(new Label("Burn Time: " + itemType.getBurnTime(), skin)).left();
+
+      statsTable.row();
+    }
+
+    if (itemType.getSlowSpeed() > 0f) {
+      statsTable.add(new Label("Slow Speed: " + itemType.getSlowSpeed(), skin)).left();
+
+      statsTable.row();
+    }
+
+    if (itemType.getSlowTime() > 0f) {
+      statsTable.add(new Label("Slow Time: " + itemType.getSlowTime(), skin)).left();
+
+      statsTable.row();
+    }
+
+    contentTable.add(statsTable).width(300f);
+  }
+
+  /** Refreshes the currently displayed dictionary page. */
+  private void refresh() {
+    if (contentTable == null) {
+      return;
+    }
+
+    if (currentPage == DictionaryPage.DETAILS
+        && selectedItem != null
+        && dictionary != null
+        && dictionary.isDiscovered(selectedItem)) {
+      showDetailsPage(selectedItem);
+    } else {
+      showGridPage();
+    }
   }
 
   /** Displays the item dictionary. */
   public void showDictionary() {
     visible = true;
+
+    currentPage = DictionaryPage.GRID;
+    selectedItem = null;
+
     table.setVisible(true);
-    refresh();
+
+    showGridPage();
 
     entity.getEvents().trigger("dictionaryOpened");
   }
@@ -144,12 +310,16 @@ public class ItemDictionaryDisplay extends UIComponent {
   /** Hides the item dictionary. */
   public void hideDictionary() {
     visible = false;
+
     table.setVisible(false);
+
+    currentPage = DictionaryPage.GRID;
+    selectedItem = null;
 
     entity.getEvents().trigger("dictionaryClosed");
   }
 
-  /** Toggles the item dictionary between visible and hidden. */
+  /** Toggles the dictionary between visible and hidden. */
   public void toggleDictionary() {
     if (visible) {
       hideDictionary();
@@ -159,9 +329,9 @@ public class ItemDictionaryDisplay extends UIComponent {
   }
 
   /**
-   * Returns whether the dictionary is visible.
+   * Returns whether the dictionary is currently visible.
    *
-   * @return true if the dictionary is currently displayed
+   * @return true if visible
    */
   public boolean isDictionaryVisible() {
     return visible;
