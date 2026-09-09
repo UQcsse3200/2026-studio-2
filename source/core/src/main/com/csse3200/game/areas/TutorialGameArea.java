@@ -157,7 +157,8 @@ public class TutorialGameArea extends GameArea {
         new Vector2(0f, 0f),
         30f,
         15f,
-        3.5f);
+        3.5f,
+        BackgroundType.DEPENDENT);
 
     // Create the background entity.
     Entity background = new Entity().addComponent(backgroundComponent);
@@ -268,6 +269,12 @@ public class TutorialGameArea extends GameArea {
 
   public Entity getPlayer() {
     return player;
+  }
+
+  public enum BackgroundType {
+    STATIC,
+    DEPENDENT,
+    COMBINED
   }
 
   /** Dispose of the game area. */
