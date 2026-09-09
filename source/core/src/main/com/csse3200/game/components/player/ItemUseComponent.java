@@ -182,6 +182,9 @@ public class ItemUseComponent extends Component {
     entity
         .getEvents()
         .trigger("meleeAttack", ItemType.Sword.getDamage(), ItemType.Sword.getRange());
+
+    entity.getEvents().trigger("itemUsed", ItemType.Sword);
+
     return true;
   }
 
@@ -194,6 +197,9 @@ public class ItemUseComponent extends Component {
     entity
         .getEvents()
         .trigger("meleeAttack", ItemType.Spear.getDamage(), ItemType.Spear.getRange());
+
+    entity.getEvents().trigger("itemUsed", ItemType.Spear);
+
     return true;
   }
 
@@ -245,6 +251,13 @@ public class ItemUseComponent extends Component {
   private boolean usePoisonPotion() {
     if (!inventory.hasItem(ItemType.PoisonPotion)) {
       logger.debug("No poison potion available to use");
+      entity.getEvents().trigger("itemUseFailed", ItemType.PoisonPotion);
+      return false;
+    }
+
+    PoisonBuff poisonBuff = entity.getComponent(PoisonBuff.class);
+    if (poisonBuff != null && poisonBuff.isActive()) {
+      logger.debug("Poison potion buff is already active");
       entity.getEvents().trigger("itemUseFailed", ItemType.PoisonPotion);
       return false;
     }

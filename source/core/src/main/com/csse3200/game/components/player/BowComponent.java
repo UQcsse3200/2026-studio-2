@@ -13,6 +13,7 @@ public class BowComponent extends Component implements AttackBehaviour {
   private static final String ATTACK_SOUND = "sounds/Impact4.ogg";
 
   private final BiFunction<Vector2, Vector2, Entity> projectileFactory;
+  private PoisonBuff poisonBuff;
 
   /** Creates a bow which fires standard arrows. */
   public BowComponent() {
@@ -24,6 +25,11 @@ public class BowComponent extends Component implements AttackBehaviour {
   }
 
   @Override
+  public void create() {
+    poisonBuff = entity.getComponent(PoisonBuff.class);
+  }
+
+  @Override
   public void attack(Vector2 direction) {
     if (direction == null || direction.isZero()) {
       return;
@@ -32,7 +38,18 @@ public class BowComponent extends Component implements AttackBehaviour {
     Vector2 normalizedDirection = direction.cpy().nor();
     Vector2 spawnPosition =
         entity.getCenterPosition().mulAdd(normalizedDirection, entity.getScale().x * 0.6f);
-    Entity projectile = projectileFactory.apply(spawnPosition, normalizedDirection);
+    Entity projectile;
+    if (poisonBuff != null && poisonBuff.isActive()) {
+      projectile =
+          ProjectileFactory.createPlayerArrow(
+              spawnPosition,
+              normalizedDirection,
+              poisonBuff.getPoisonDamagePerSecond(),
+              poisonBuff.getPoisonDuration());
+    } else {
+      projectile = projectileFactory.apply(spawnPosition, normalizedDirection);
+    }
+
     ServiceLocator.getEntityService().register(projectile);
 
     Sound attackSound = ServiceLocator.getResourceService().getAsset(ATTACK_SOUND, Sound.class);
