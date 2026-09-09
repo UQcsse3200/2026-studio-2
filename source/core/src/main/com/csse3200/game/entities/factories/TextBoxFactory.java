@@ -34,7 +34,7 @@ public class TextBoxFactory {
               textConfig.maxWidth,
               textConfig.padding,
               textConfig.borderThickness,
-              textConfig.text)
+              textConfig.pages)
           .create();
     } catch (Exception e) {
       logger.error("Failed to create text box: {}", e.getMessage());

@@ -2,6 +2,8 @@ package com.csse3200.game.entities.configs;
 
 import com.badlogic.gdx.graphics.Color;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.List;
 
 /** Defines the configs to be loaded by TextBoxFactory */
 public class TextConfig {
@@ -12,11 +14,12 @@ public class TextConfig {
   public int yPos = 100;
 
   // The box display. Stored as colour names (e.g. "Color.WHITE" or "WHITE") because these are
-  // read straight from JSON, and Json can't deserialise a plain string into a Color object.
-  // Use getTextColour() / getBackgroundColour() / getBorderColour() to resolve the actual Color.
-  public String textColour = "Color.WHITE";
-  public String backgroundColour = "Color.BLACK";
-  public String borderColour = "Color.WHITE";
+  // read straight from JSON, and Json can't deserialise a plain string into a Colour object.
+  // Use getTextColour() / getBackgroundColour() / getBorderColour() to resolve the actual Colour.
+  // Defaults give a scroll look: dark ink text on tan parchment with brown wooden rollers.
+  public String textColour = "Color.BLACK";
+  public String backgroundColour = "Color.TAN";
+  public String borderColour = "Color.BROWN";
 
   // Typewriter effect characters per second
   public float charsPerSecond = 30f;
@@ -26,8 +29,10 @@ public class TextConfig {
   public int padding = 16;
   public int borderThickness = 3;
 
-  // The text to be displayed
-  public String text = "Test text";
+  // The pages of text to be displayed, in order. The box shows pages[0] first; each time the
+  // fully-revealed page is dismissed (ENTER), it moves on to the next entry, and only closes for
+  // good after the last one.
+  public List<String> pages = new ArrayList<>(List.of("Test text"));
 
   /**
    * Resolves a colour reference like "Color.WHITE" or "WHITE" against {@link Color}'s public static
@@ -55,14 +60,14 @@ public class TextConfig {
   }
 
   public Color getTextColour() {
-    return parseColor(textColour, Color.WHITE);
+    return parseColor(textColour, Color.BLACK);
   }
 
   public Color getBackgroundColour() {
-    return parseColor(backgroundColour, Color.BLACK);
+    return parseColor(backgroundColour, Color.TAN);
   }
 
   public Color getBorderColour() {
-    return parseColor(borderColour, Color.WHITE);
+    return parseColor(borderColour, Color.BROWN);
   }
 }
