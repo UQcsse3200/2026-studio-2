@@ -95,7 +95,10 @@ public class TutorialGameArea extends GameArea {
 
   private static final GridPoint2[] skeletonWarriorSpawnLocations =
       new GridPoint2[] {
-        new GridPoint2(45, 17), new GridPoint2(56, 16), new GridPoint2(77, 12),
+        new GridPoint2(45, 17),
+        new GridPoint2(56, 16),
+        new GridPoint2(77, 12),
+        new GridPoint2(30, 5),
       };
 
   private static final GridPoint2[] skeletonArcherSpawnLocations =

@@ -1,5 +1,8 @@
 package com.csse3200.game.entities.configs;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class EnemyConfig extends BaseEntityConfig {
   public float speed = 3f;
   public String behaviour = "chase";
@@ -13,4 +16,7 @@ public class EnemyConfig extends BaseEntityConfig {
   public int chasePriority;
   public float viewDistance;
   public float maxChaseDistance;
+
+  // !!! ADD COINS AND STUFF ONCE MERGED WITH ITEMS TEAM
+  public List<ItemDrop> itemDrops = new ArrayList<>();
 }

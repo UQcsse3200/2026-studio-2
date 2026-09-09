@@ -12,7 +12,20 @@
     "wanderWaitTime": 2.0,
     "chasePriority": 10,
     "viewDistance": 6.0,
-    "maxChaseDistance": 9.0
+    "maxChaseDistance": 9.0,
+
+    "itemDrops": [
+      {
+        "item": "standardArrow",
+        "dropHealth": 10,
+        "quantity": 1
+      },
+      {
+        "item": "standardArrow",
+        "dropHealth": 0,
+        "quantity": 2
+      }
+    ]
   },
 
   "skeletonArcher": {
@@ -28,6 +41,19 @@
     "wanderWaitTime": 2.0,
     "chasePriority": 10,
     "viewDistance": 10.0,
-    "maxChaseDistance": 12.5
+    "maxChaseDistance": 12.5,
+
+    "itemDrops": [
+      {
+        "item": "standardArrow",
+        "dropHealth": 10,
+        "quantity": 1
+      },
+      {
+        "item": "standardArrow",
+        "dropHealth": 0,
+        "quantity": 2
+      }
+    ]
   }
 }
