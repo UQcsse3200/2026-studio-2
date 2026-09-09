@@ -14,15 +14,23 @@ public class BackgroundRenderComponent extends RenderComponent {
   /** A single parallax background layer. */
   private static class ParallaxLayer {
     private final Texture texture;
-    private final float parallaxFactor;
+    private final Vector2 parallaxFactor;
+    private final Vector2 staticVelocity;
     private final float width;
     private final float height;
     private final float yOffset;
 
-    ParallaxLayer(Texture texture, float parallaxFactor, float width, float height, float yOffset) {
+    ParallaxLayer(
+        Texture texture,
+        Vector2 parallaxFactor,
+        Vector2 staticVelocity,
+        float width,
+        float height,
+        float yOffset) {
 
       this.texture = texture;
       this.parallaxFactor = parallaxFactor;
+      this.staticVelocity = staticVelocity;
       this.width = width;
       this.height = height;
       this.yOffset = yOffset;
@@ -51,11 +59,16 @@ public class BackgroundRenderComponent extends RenderComponent {
    * @param yOffset vertical position relative to the background entity
    */
   public void addLayer(
-      String texturePath, float parallaxFactor, float width, float height, float yOffset) {
+      String texturePath,
+      Vector2 parallaxFactor,
+      Vector2 staticVelocity,
+      float width,
+      float height,
+      float yOffset) {
 
     Texture texture = ServiceLocator.getResourceService().getAsset(texturePath, Texture.class);
 
-    layers.add(new ParallaxLayer(texture, parallaxFactor, width, height, yOffset));
+    layers.add(new ParallaxLayer(texture, parallaxFactor, staticVelocity, width, height, yOffset));
   }
 
   /**
@@ -68,9 +81,14 @@ public class BackgroundRenderComponent extends RenderComponent {
    * @param yOffset vertical position relative to the background entity
    */
   public void addLayer(
-      Texture texture, float parallaxFactor, float width, float height, float yOffset) {
+      Texture texture,
+      Vector2 parallaxFactor,
+      Vector2 staticVelocity,
+      float width,
+      float height,
+      float yOffset) {
 
-    layers.add(new ParallaxLayer(texture, parallaxFactor, width, height, yOffset));
+    layers.add(new ParallaxLayer(texture, parallaxFactor, staticVelocity, width, height, yOffset));
   }
 
   /** Scale is controlled individually for each layer. */
@@ -87,6 +105,7 @@ public class BackgroundRenderComponent extends RenderComponent {
     Vector2 position = entity.getPosition();
 
     float cameraX = camera.getCamera().position.x;
+    float cameraY = camera.getCamera().position.y;
 
     /*
      * Draw layers from back to front.
@@ -96,9 +115,8 @@ public class BackgroundRenderComponent extends RenderComponent {
      */
     for (ParallaxLayer layer : layers) {
 
-      float backgroundX = position.x + cameraX * (1f - layer.parallaxFactor);
-
-      float backgroundY = position.y + layer.yOffset;
+      float backgroundX = position.x + cameraX * (1f - layer.parallaxFactor.x);
+      float backgroundY = position.y + layer.yOffset + cameraY;
 
       batch.draw(layer.texture, backgroundX, backgroundY, layer.width, layer.height);
     }

@@ -152,13 +152,18 @@ public class TutorialGameArea extends GameArea {
 
     // Complete original background image
     backgroundComponent.addLayer(
-        "images/parallax/original_background.png", 0.30f, 60f, 33.515625f, -1.50f);
+        "images/parallax/original_background.png",
+        new Vector2(0.10f, 0f),
+        new Vector2(0f, 0f),
+        30f,
+        15f,
+        3.5f);
 
     // Create the background entity.
     Entity background = new Entity().addComponent(backgroundComponent);
 
     // Position the background in the game world.
-    background.setPosition(-20f, -10f);
+    background.setPosition(-10f, -10f);
 
     spawnEntity(background);
   }
