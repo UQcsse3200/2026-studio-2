@@ -3,6 +3,7 @@ package com.csse3200.game.entities.factories;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.csse3200.game.components.item.Item;
 import com.csse3200.game.components.item.ItemComponent;
+import com.csse3200.game.components.item.ItemType;
 import com.csse3200.game.components.item.consumables.HealthPotion;
 import com.csse3200.game.components.item.consumables.PoisonPotion;
 import com.csse3200.game.components.item.consumables.SpeedPotion;
@@ -50,6 +51,27 @@ public class ItemFactory {
 
   public static Entity createStandardArrow(int quantity) {
     return createItem(new StandardArr(quantity));
+  }
+
+  /**
+   * Creates a world entity containing the concrete item represented by the supplied type.
+   *
+   * @param type item type to create
+   * @param quantity number of items in the stack
+   * @return corresponding world item entity
+   */
+  public static Entity createItem(ItemType type, int quantity) {
+    return switch (type) {
+      case ARROW -> createStandardArrow(quantity);
+      case RopeArrow -> createRopeArrow(quantity);
+      case CONSUMABLE -> createHealthPotion(quantity);
+      case FireArrow -> createFireArrow(quantity);
+      case ColdArrow -> createColdArrow(quantity);
+      case Sword -> createSword(quantity);
+      case Spear -> createSpear(quantity);
+      case SpeedPotion -> createSpeedPotion(quantity);
+      case PoisonPotion -> createPoisonPotion(quantity);
+    };
   }
 
   /**

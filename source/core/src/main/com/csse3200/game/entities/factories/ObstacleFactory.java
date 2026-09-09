@@ -34,7 +34,7 @@ public class ObstacleFactory {
         new Entity()
             .addComponent(new TextureRenderComponent("images/tree.png"))
             .addComponent(new PhysicsComponent())
-            .addComponent(new ColliderComponent().setLayer(PhysicsLayer.OBSTACLE));
+            .addComponent(new ColliderComponent().setLayer(PhysicsLayer.NONE));
 
     tree.getComponent(PhysicsComponent.class).setBodyType(BodyType.StaticBody);
     tree.getComponent(TextureRenderComponent.class).scaleEntity();
@@ -124,6 +124,18 @@ public class ObstacleFactory {
   }
 
   /**
+   * Creates a statue that is able to be stood infront of
+   *
+   * @return Statue entity
+   */
+  public static Entity createStatue() {
+    return new Entity()
+        .addComponent(new TextureRenderComponent("images/Greek Statues Pack I/Brute.png"))
+        .addComponent(new PhysicsComponent().setBodyType(BodyType.StaticBody))
+        .addComponent(new ColliderComponent().setLayer(PhysicsLayer.DEFAULT));
+  }
+
+  /**
    * Creates a spike hazard entity with custom rotation.
    *
    * @param rotationAngle Angle in degrees to rotate the spike (0 = UP, 180 = DOWN, 270 = LEFT, 90 =
@@ -136,7 +148,7 @@ public class ObstacleFactory {
             .addComponent(new TextureRenderComponent("images/spike.png"))
             .addComponent(new PhysicsComponent())
             .addComponent(new ColliderComponent().setLayer(PhysicsLayer.OBSTACLE))
-            .addComponent(new CombatStatsComponent(100, 25))
+            .addComponent(new CombatStatsComponent(100, 2))
             .addComponent(new HitboxComponent().setLayer(PhysicsLayer.OBSTACLE))
             .addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER));
 

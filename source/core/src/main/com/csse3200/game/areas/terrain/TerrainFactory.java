@@ -80,13 +80,24 @@ public class TerrainFactory {
         TextureRegion hexRocks =
             new TextureRegion(resourceService.getAsset("images/hex_grass_3.png", Texture.class));
         return createForestDemoTerrain(1f, hexGrass, hexTuft, hexRocks);
-      case BACKGROUND_DESERT:
-        TextureRegion tile =
+      case CYCLOPS_ROOM:
+        TextureRegion cyclopsTile =
             new TextureRegion(resourceService.getAsset("images/transparent.png", Texture.class));
-        return createDesertTerrain(1f, tile);
+        return createCyclopsRoomTerrain(0.5f, cyclopsTile);
+      case BACKGROUND_DESERT:
+        TextureRegion desertTile =
+            new TextureRegion(resourceService.getAsset("images/transparent.png", Texture.class));
+        return createDesertTerrain(1f, desertTile);
       default:
         return null;
     }
+  }
+
+  private TerrainComponent createCyclopsRoomTerrain(float tileWorldSize, TextureRegion tile) {
+    GridPoint2 tilePixelSize = new GridPoint2(tile.getRegionWidth(), tile.getRegionHeight());
+    TiledMap tiledMap = createCyclopRoomTiles(tilePixelSize, tile);
+    TiledMapRenderer renderer = createRenderer(tiledMap, tileWorldSize / tilePixelSize.x);
+    return new TerrainComponent(camera, tiledMap, renderer, orientation, tileWorldSize);
   }
 
   private TerrainComponent createDesertTerrain(float tileWorldSize, TextureRegion tile) {
@@ -94,6 +105,17 @@ public class TerrainFactory {
     TiledMap tiledMap = createDesertTiles(tilePixelSize, tile);
     TiledMapRenderer renderer = createRenderer(tiledMap, tileWorldSize / tilePixelSize.x);
     return new TerrainComponent(camera, tiledMap, renderer, orientation, tileWorldSize);
+  }
+
+  private TiledMap createCyclopRoomTiles(GridPoint2 tileSize, TextureRegion tile) {
+    TiledMap tiledMap = new TiledMap();
+    TerrainTile transparentTile = new TerrainTile(tile);
+    TiledMapTileLayer layer = new TiledMapTileLayer(MAP_SIZE.x, MAP_SIZE.y, tileSize.x, tileSize.y);
+
+    fillTiles(layer, MAP_SIZE, transparentTile);
+
+    tiledMap.getLayers().add(layer);
+    return tiledMap;
   }
 
   private TiledMap createDesertTiles(GridPoint2 tileSize, TextureRegion tile) {
@@ -179,6 +201,7 @@ public class TerrainFactory {
     FOREST_DEMO,
     FOREST_DEMO_ISO,
     FOREST_DEMO_HEX,
+    CYCLOPS_ROOM,
     BACKGROUND_DESERT
   }
 }

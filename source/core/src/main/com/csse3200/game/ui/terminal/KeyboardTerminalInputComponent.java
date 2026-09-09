@@ -43,7 +43,7 @@ public class KeyboardTerminalInputComponent extends InputComponent {
    */
   @Override
   public boolean keyDown(int keycode) {
-    // handle open and close termina`l
+    // handle open and close terminal
     if (keycode == TOGGLE_OPEN_KEY) {
       terminal.toggleIsOpen();
       return true;
