@@ -14,6 +14,7 @@ public class LevelConfig {
   protected MovingPlatformConfig[] movingPlatforms;
   protected CrumblingPlatformConfig[] crumblingPlatforms;
   protected TriggerablePlatformConfig[] triggerablePlatforms;
+  protected PlatformConfig[] ledges;
   protected SpikeClusterConfig[] spikes;
   protected PlatformConfig[] bounds;
   protected PlatformConfig[] floors;
@@ -40,6 +41,7 @@ public class LevelConfig {
     createMovingPlatforms();
     createCrumblingPlatforms();
     createTriggerablePlatforms();
+    createLedges();
     createSpikes();
     createWinCondition();
     createItems();
@@ -106,6 +108,18 @@ public class LevelConfig {
   private void createTriggerablePlatforms() {
     if (triggerablePlatforms == null) {
       return;
+    }
+  }
+
+  private void createLedges() {
+    if (ledges == null) {
+      return;
+    }
+
+    for (PlatformConfig p : ledges) {
+      Entity ledge = ObstacleFactory.createLedge();
+      ledge.setScale(p.width, p.height);
+      entities.add(new SpawnData(p.position, ledge));
     }
   }
 
