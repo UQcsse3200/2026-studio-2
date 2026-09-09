@@ -3,7 +3,7 @@ package com.csse3200.game.screens;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.csse3200.game.GdxGame;
-import com.csse3200.game.areas.TutorialGameArea;
+import com.csse3200.game.areas.Level2GameArea;
 import com.csse3200.game.areas.terrain.TerrainFactory;
 import com.csse3200.game.components.gamearea.PerformanceDisplay;
 import com.csse3200.game.components.maingame.MainGameActions;
@@ -81,12 +81,12 @@ public class TutorialGameScreen extends ScreenAdapter {
 
     // Pass the same camera to the TutorialGameArea so that
     // the parallax background can follow camera movement.
-    TutorialGameArea tutorialGameArea = new TutorialGameArea(terrainFactory, renderer.getCamera());
+    Level2GameArea level2 = new Level2GameArea(terrainFactory, renderer.getCamera());
 
-    tutorialGameArea.create();
+    level2.create();
 
     // Follow the player with the camera.
-    renderer.getCamera().setTarget(tutorialGameArea.getPlayer());
+    renderer.getCamera().setTarget(level2.getPlayer());
   }
 
   @Override
