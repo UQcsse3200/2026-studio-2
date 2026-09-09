@@ -166,7 +166,8 @@ public class TutorialGameArea extends GameArea {
     "images/terrain_iso_grass.atlas",
     "images/ghost.atlas",
     "images/ghostKing.atlas",
-    "images/player.atlas"
+    "images/player.atlas",
+    "images/skeleton_archer.atlas"
   };
 
   private static final String[] forestSounds = {"sounds/Impact4.ogg"};
