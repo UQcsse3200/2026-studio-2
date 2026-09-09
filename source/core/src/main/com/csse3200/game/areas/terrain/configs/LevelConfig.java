@@ -60,6 +60,10 @@ public class LevelConfig {
    * Creates all platforms for this level and adds them to the entities Map for the level to spawn
    */
   private void createPlatforms() {
+    if (platforms == null) {
+      return;
+    }
+
     for (PlatformConfig p : platforms) {
       Entity platform = ObstacleFactory.createPlatform(p.grappleSides);
       platform.setScale(p.width, p.height);
@@ -72,6 +76,10 @@ public class LevelConfig {
    * spawn
    */
   private void createMovingPlatforms() {
+    if (movingPlatforms == null) {
+      return;
+    }
+
     for (MovingPlatformConfig p : movingPlatforms) {
       Entity platform =
           ObstacleFactory.createMovingPlatform(
@@ -86,7 +94,9 @@ public class LevelConfig {
    * to spawn
    */
   private void createCrumblingPlatforms() {
-    // stub
+    if (crumblingPlatforms == null) {
+      return;
+    }
   }
 
   /**
@@ -94,7 +104,9 @@ public class LevelConfig {
    * and adds them to the entities Map for the level to spawn
    */
   private void createTriggerablePlatforms() {
-    // stub
+    if (triggerablePlatforms == null) {
+      return;
+    }
   }
 
   /**
@@ -102,21 +114,29 @@ public class LevelConfig {
    * spawn
    */
   private void createFloors() {
-    for (PlatformConfig b : bounds) {
-      Entity bound = ObstacleFactory.createFloor(b.grappleSides);
-      bound.setScale(b.width, b.height);
-      entities.add(new SpawnData(b.position, bound));
+    if (bounds != null) {
+      for (PlatformConfig b : bounds) {
+        Entity bound = ObstacleFactory.createFloor(b.grappleSides);
+        bound.setScale(b.width, b.height);
+        entities.add(new SpawnData(b.position, bound));
+      }
     }
 
-    for (PlatformConfig f : floors) {
-      Entity bound = ObstacleFactory.createFloor(f.grappleSides);
-      bound.setScale(f.width, f.height);
-      entities.add(new SpawnData(f.position, bound));
+    if (floors != null) {
+      for (PlatformConfig f : floors) {
+        Entity bound = ObstacleFactory.createFloor(f.grappleSides);
+        bound.setScale(f.width, f.height);
+        entities.add(new SpawnData(f.position, bound));
+      }
     }
   }
 
   /** Creates all the spike clusters and adds them to the entities map for the level to spawn */
   private void createSpikes() {
+    if (spikes == null) {
+      return;
+    }
+
     for (SpikeClusterConfig s : spikes) {
       for (int i = s.xMin; i <= s.xMax; i++) {
         for (int j = s.yMin; j <= s.yMax; j++) {
@@ -129,6 +149,10 @@ public class LevelConfig {
 
   /** Creates the win condition entity and adds it to the entities Map for the level to spawn */
   private void createWinCondition() {
+    if (winConditionSpawn == null) {
+      return;
+    }
+
     Entity winCon = ObstacleFactory.createWinConEntity();
     entities.add(new SpawnData(winConditionSpawn, winCon));
   }
@@ -137,6 +161,10 @@ public class LevelConfig {
    * Creates all items specified for the level and adds them to the entity tracker when requested
    */
   private void createItems() {
+    if (items == null) {
+      return;
+    }
+
     for (Map.Entry<GridPoint2, Item> i : items.entrySet()) {
       Entity item = ItemFactory.createItem(i.getValue());
       entities.add(new SpawnData(i.getKey(), item));
