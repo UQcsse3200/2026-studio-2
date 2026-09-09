@@ -160,6 +160,15 @@ public class TutorialGameArea extends GameArea {
         3.5f,
         BackgroundType.DEPENDENT);
 
+    backgroundComponent.addLayer(
+        "images/parallax/Clouds.png",
+        new Vector2(0.1f, 0f),
+        new Vector2(0.1f, 0f),
+        30f,
+        15f,
+        3.5f,
+        BackgroundType.COMBINED);
+
     // Create the background entity.
     Entity background = new Entity().addComponent(backgroundComponent);
 

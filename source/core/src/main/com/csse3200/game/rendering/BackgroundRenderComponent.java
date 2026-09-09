@@ -117,16 +117,15 @@ public class BackgroundRenderComponent extends RenderComponent {
         staticVelocity.x + staticPosUpdate.x / 100, staticVelocity.y + staticPosUpdate.y / 100);
   }
 
-  private Vector2 getStaticPosition(
-      ParallaxLayer layer, Vector3 cameraPos, Vector2 position, Vector2 staticVelocity) {
+  private Vector2 getStaticPosition(ParallaxLayer layer, Vector3 cameraPos, Vector2 position) {
     // For components with constant velocity e.g. sky (velocity = 0), clouds (velocity = 1)
     // staticVelocity
 
     float cameraX = cameraPos.x;
     float cameraY = cameraPos.y;
-    Vector2 posUpdate = getPositionUpdate(staticVelocity);
+    Vector2 posUpdate = getPositionUpdate(layer.staticVelocity);
 
-    float backgroundX = position.x + cameraX + posUpdate.x;
+    float backgroundX = cameraX;
     float backgroundY = position.y + layer.yOffset + cameraY + posUpdate.y;
 
     return new Vector2(backgroundX, backgroundY);
@@ -146,9 +145,16 @@ public class BackgroundRenderComponent extends RenderComponent {
     return new Vector2(backgroundX, backgroundY);
   }
 
-  private Vector2 getCombinedPosition(Vector2 parallaxFactor, Vector2 staticVelocity) {
+  private Vector2 getCombinedPosition(ParallaxLayer layer, Vector3 cameraPos, Vector2 position) {
     // For components dependent on player pos + constant velocity e.g. ocean
-    return new Vector2(0, 0);
+    float cameraX = cameraPos.x;
+    float cameraY = cameraPos.y;
+    Vector2 posUpdate = getPositionUpdate(layer.staticVelocity);
+
+    float backgroundX = position.x + cameraX * (1f - layer.parallaxFactor.x) + posUpdate.x;
+    float backgroundY = position.y + layer.yOffset + cameraY + posUpdate.y;
+
+    return new Vector2(backgroundX, backgroundY);
   }
 
   @Override
@@ -174,7 +180,7 @@ public class BackgroundRenderComponent extends RenderComponent {
 
       switch (layer.backgroundType) {
         case STATIC:
-          backgroundPos = getStaticPosition(layer, cameraPos, position, layer.staticVelocity);
+          backgroundPos = getStaticPosition(layer, cameraPos, position);
           break;
 
         case DEPENDENT:
@@ -182,7 +188,7 @@ public class BackgroundRenderComponent extends RenderComponent {
           break;
 
         case COMBINED:
-          // backgroundPos = getCombinedPosition(layer, cameraX, cameraY, position);
+          backgroundPos = getCombinedPosition(layer, cameraPos, position);
           break;
       }
 
