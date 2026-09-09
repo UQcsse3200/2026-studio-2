@@ -49,6 +49,10 @@ public abstract class GameArea implements Disposable {
     }
   }
 
+  public Entity getPlayer() {
+    return player;
+  }
+
   /**
    * Spawn entity at its current position
    *
