@@ -8,6 +8,7 @@ import com.csse3200.game.areas.terrain.TerrainFactory;
 import com.csse3200.game.components.gamearea.PerformanceDisplay;
 import com.csse3200.game.components.maingame.MainGameActions;
 import com.csse3200.game.components.maingame.MainGameExitDisplay;
+import com.csse3200.game.components.maingame.PauseMenuDisplay;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.entities.factories.RenderFactory;
@@ -39,7 +40,9 @@ public class TutorialGameScreen extends ScreenAdapter {
 
   private static final Logger logger = LoggerFactory.getLogger(TutorialGameScreen.class);
 
-  private static final String[] mainGameTextures = {"images/heart.png"};
+  private static final String[] mainGameTextures = {
+    "images/heart.png", "images/title_odysseus_logo.png"
+  };
 
   private final GdxGame game;
   private final Renderer renderer;
@@ -163,7 +166,8 @@ public class TutorialGameScreen extends ScreenAdapter {
         .addComponent(new GameEndActions(this.game))
         .addComponent(new Terminal())
         .addComponent(inputComponent)
-        .addComponent(new TerminalDisplay());
+        .addComponent(new TerminalDisplay())
+        .addComponent(new PauseMenuDisplay(this.game));
 
     ServiceLocator.getEntityService().register(ui);
   }
