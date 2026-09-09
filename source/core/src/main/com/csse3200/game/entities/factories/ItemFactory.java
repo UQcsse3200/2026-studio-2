@@ -3,11 +3,16 @@ package com.csse3200.game.entities.factories;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.csse3200.game.components.item.Item;
 import com.csse3200.game.components.item.ItemComponent;
+import com.csse3200.game.components.item.ItemType;
 import com.csse3200.game.components.item.consumables.HealthPotion;
+import com.csse3200.game.components.item.consumables.PoisonPotion;
+import com.csse3200.game.components.item.consumables.SpeedPotion;
 import com.csse3200.game.components.item.weapons.ColdArr;
 import com.csse3200.game.components.item.weapons.FireArr;
 import com.csse3200.game.components.item.weapons.RopeArr;
+import com.csse3200.game.components.item.weapons.Spear;
 import com.csse3200.game.components.item.weapons.StandardArr;
+import com.csse3200.game.components.item.weapons.Sword;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.physics.components.HitboxComponent;
@@ -44,6 +49,31 @@ public class ItemFactory {
     return itemEntity;
   }
 
+  public static Entity createStandardArrow(int quantity) {
+    return createItem(new StandardArr(quantity));
+  }
+
+  /**
+   * Creates a world entity containing the concrete item represented by the supplied type.
+   *
+   * @param type item type to create
+   * @param quantity number of items in the stack
+   * @return corresponding world item entity
+   */
+  public static Entity createItem(ItemType type, int quantity) {
+    return switch (type) {
+      case ARROW -> createStandardArrow(quantity);
+      case RopeArrow -> createRopeArrow(quantity);
+      case CONSUMABLE -> createHealthPotion(quantity);
+      case FireArrow -> createFireArrow(quantity);
+      case ColdArrow -> createColdArrow(quantity);
+      case Sword -> createSword(quantity);
+      case Spear -> createSpear(quantity);
+      case SpeedPotion -> createSpeedPotion(quantity);
+      case PoisonPotion -> createPoisonPotion(quantity);
+    };
+  }
+
   /**
    * Creates a single rope arrow lying in the world.
    *
@@ -63,32 +93,32 @@ public class ItemFactory {
     return createItem(new RopeArr(quantity));
   }
 
-  /**
-   * Creates a stack of standard arrows lying in the world.
-   *
-   * @param quantity number of arrows in the stack
-   * @return entity
-   */
-  public static Entity createStandardArrow(int quantity) {
-    return createItem(new StandardArr(quantity));
-  }
-
-  /**
-   * Creates a stack of health potions lying in the world.
-   *
-   * @param quantity number of potions in the stack
-   * @return entity
-   */
-  public static Entity createHealthPotion(int quantity) {
-    return createItem(new HealthPotion(quantity));
-  }
-
   public static Entity createFireArrow(int quantity) {
     return createItem(new FireArr(quantity));
   }
 
   public static Entity createColdArrow(int quantity) {
     return createItem(new ColdArr(quantity));
+  }
+
+  public static Entity createSword(int quantity) {
+    return createItem(new Sword(quantity));
+  }
+
+  public static Entity createSpear(int quantity) {
+    return createItem(new Spear(quantity));
+  }
+
+  public static Entity createHealthPotion(int quantity) {
+    return createItem(new HealthPotion(quantity));
+  }
+
+  public static Entity createSpeedPotion(int quantity) {
+    return createItem(new SpeedPotion(quantity));
+  }
+
+  public static Entity createPoisonPotion(int quantity) {
+    return createItem(new PoisonPotion(quantity));
   }
 
   private ItemFactory() {

@@ -8,6 +8,7 @@ import com.badlogic.gdx.Screen;
 import com.csse3200.game.files.UserSettings;
 import com.csse3200.game.screens.MainGameScreen;
 import com.csse3200.game.screens.MainMenuScreen;
+import com.csse3200.game.screens.SandboxGameScreen;
 import com.csse3200.game.screens.SettingsFromPauseScreen;
 import com.csse3200.game.screens.SettingsScreen;
 import com.csse3200.game.screens.TutorialGameScreen;
@@ -78,6 +79,8 @@ public class GdxGame extends Game {
         return new MainGameScreen(this);
       case TUTORIAL_GAME:
         return new TutorialGameScreen(this);
+      case SANDBOX:
+        return new SandboxGameScreen(this);
       case SETTINGS:
         return new SettingsScreen(this);
       case SETTINGS_FROM_PAUSE:
@@ -99,6 +102,7 @@ public class GdxGame extends Game {
     MAIN_MENU,
     MAIN_GAME,
     TUTORIAL_GAME,
+    SANDBOX,
     SETTINGS,
     SETTINGS_FROM_PAUSE,
     MINIGAME_SELECT,

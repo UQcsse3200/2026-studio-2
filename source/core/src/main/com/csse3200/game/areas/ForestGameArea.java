@@ -59,8 +59,7 @@ public class ForestGameArea extends GameArea {
     "images/iso_grass_2.png",
     "images/iso_grass_3.png",
     "images/rope_arrow.png",
-    "images/fire_arrow.png",
-    "images/cold_arrow.png"
+    "images/fire_arrow.png"
   };
   private static final String[] forestTextureAtlases = {
     "images/terrain_iso_grass.atlas",
@@ -190,12 +189,12 @@ public class ForestGameArea extends GameArea {
         true,
         false);
 
-    spawnEntityAt(
-        ItemFactory.createHealthPotion(HEALTH_POTION_QUANTITY), HEALTH_POTION_SPAWN, true, false);
-
     spawnEntityAt(ItemFactory.createFireArrow(FIRE_ARROW_QUANTITY), FIRE_ARROW_SPAWN, true, false);
 
     spawnEntityAt(ItemFactory.createColdArrow(COLD_ARROW_QUANTITY), COLD_ARROW_SPAWN, true, false);
+
+    spawnEntityAt(
+        ItemFactory.createHealthPotion(HEALTH_POTION_QUANTITY), HEALTH_POTION_SPAWN, true, false);
   }
 
   private void spawnTestFloor() {
