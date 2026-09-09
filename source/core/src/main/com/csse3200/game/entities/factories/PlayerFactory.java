@@ -6,6 +6,8 @@ import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.inventory.BackpackDisplay;
 import com.csse3200.game.components.inventory.InventoryBarDisplay;
 import com.csse3200.game.components.inventory.InventoryComponent;
+import com.csse3200.game.components.itemdictionary.ItemDictionaryComponent;
+import com.csse3200.game.components.itemdictionary.ItemDictionaryDisplay;
 import com.csse3200.game.components.player.*;
 import com.csse3200.game.components.player.BowComponent;
 import com.csse3200.game.components.player.GrappleComponent;
@@ -76,6 +78,8 @@ public class PlayerFactory {
             .addComponent(new InventoryComponent(stats.gold))
             .addComponent(new InventoryBarDisplay())
             .addComponent(new BackpackDisplay())
+            .addComponent(new ItemDictionaryComponent())
+            .addComponent(new ItemDictionaryDisplay())
             .addComponent(new PlayerInteractionComponent())
             .addComponent(new ItemUseComponent())
             .addComponent(inputComponent)
