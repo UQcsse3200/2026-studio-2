@@ -22,7 +22,6 @@ import org.slf4j.LoggerFactory;
 
 /** Tutorial area for the game with platforms, enemies, and a player. */
 public class TutorialGameArea extends GameArea {
-
   private static final Logger logger = LoggerFactory.getLogger(TutorialGameArea.class);
 
   private static final GridPoint2[] skeletonWarriorSpawnLocations =
@@ -191,7 +190,6 @@ public class TutorialGameArea extends GameArea {
   }
 
   private Entity spawnPlayer() {
-
     Entity newPlayer = PlayerFactory.createPlayer();
     newPlayer.getEvents().addListener("grappleRequested", this::checkSuccessfulGrapple);
 
@@ -259,10 +257,6 @@ public class TutorialGameArea extends GameArea {
     resourceService.unloadAssets(forestTextureAtlases);
     resourceService.unloadAssets(forestSounds);
     resourceService.unloadAssets(forestMusic);
-  }
-
-  public Entity getPlayer() {
-    return player;
   }
 
   /** Dispose of the game area. */
