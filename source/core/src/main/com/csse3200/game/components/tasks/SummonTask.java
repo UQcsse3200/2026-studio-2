@@ -3,7 +3,7 @@ package com.csse3200.game.components.tasks;
 import com.csse3200.game.ai.tasks.DefaultTask;
 import com.csse3200.game.ai.tasks.PriorityTask;
 import com.csse3200.game.entities.Entity;
-import com.csse3200.game.entities.factories.ProjectileFact;
+import com.csse3200.game.entities.factories.EnemyFactory;
 import com.csse3200.game.services.ServiceLocator;
 
 /** AI task that allows an enemy to summon an enemy when the player is in range */
@@ -39,7 +39,7 @@ public class SummonTask extends DefaultTask implements PriorityTask {
   public void update() {
     long currentTime = ServiceLocator.getTimeSource().getTime();
 
-    if (currentTime - lastAttackTime >= cooldown * 1000) {
+    if (currentTime - lastSummonTime >= cooldown * 1000) {
       summonSkeleton();
       lastSummonTime = currentTime;
     }
@@ -49,22 +49,15 @@ public class SummonTask extends DefaultTask implements PriorityTask {
   public int getPriority() {
     float distance = owner.getEntity().getPosition().dst(target.getPosition());
 
-    if (distance <= attackRange) {
+    long currentTime = ServiceLocator.getTimeSource().getTime();
+
+    boolean canSummon = currentTime - lastSummonTime >= cooldown * 1000;
+
+    if (canSummon) {
       return priority;
     }
 
     return -1;
-  }
-
-  private void fireProjectile() {
-    Entity enemy = owner.getEntity();
-
-    Entity projectile =
-        ProjectileFact.createEnemyProjectile(
-            target.getPosition(), damage, projectileSpeed, projectileLifetime);
-
-    projectile.setPosition(enemy.getCenterPosition());
-    ServiceLocator.getEntityService().register(projectile);
   }
 
   private void summonSkeleton() {
@@ -74,6 +67,6 @@ public class SummonTask extends DefaultTask implements PriorityTask {
 
     skeletonWarrior.setPosition(necromancer.getPosition().x + 1f, necromancer.getPosition().y);
 
-    ServiceLocator.getEntityService().register(skeleton);
+    ServiceLocator.getEntityService().register(skeletonWarrior);
   }
 }

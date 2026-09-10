@@ -7,6 +7,7 @@ import com.csse3200.game.components.EnemyDeathComponent;
 import com.csse3200.game.components.tasks.ChaseTask;
 import com.csse3200.game.components.tasks.DelayedAttackTask;
 import com.csse3200.game.components.tasks.RangedAttackTask;
+import com.csse3200.game.components.tasks.SummonTask;
 import com.csse3200.game.components.tasks.WanderTask;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.EnemyConfig;
@@ -135,7 +136,7 @@ public class EnemyFactory {
       aiComponent
           .addTask(
               new RangedAttackTask(target, 20, config.attackRange, 2f, config.baseAttack, 5f, 5f))
-          .addTask(new SummonTask(target, 30, config.attackRange, 2f, config.baseAttack, 5f, 5f));
+          .addTask(new SummonTask(target, 30, config.attackRange, 5f));
     }
 
     Entity enemy =
