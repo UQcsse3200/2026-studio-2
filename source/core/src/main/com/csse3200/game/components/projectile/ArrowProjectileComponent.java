@@ -19,6 +19,8 @@ public class ArrowProjectileComponent extends Component {
   private final Vector2 direction;
   private final float speed;
   private final float maximumRange;
+  private final float poisonDamagePerSecond;
+  private final float poisonDuration;
 
   private PhysicsComponent physicsComponent;
   private HitboxComponent hitboxComponent;
@@ -34,15 +36,27 @@ public class ArrowProjectileComponent extends Component {
    * @param maximumRange maximum travel distance in world units
    */
   public ArrowProjectileComponent(Vector2 direction, float speed, float maximumRange) {
+    this(direction, speed, maximumRange, 0f, 0f);
+  }
+
+  public ArrowProjectileComponent(
+      Vector2 direction,
+      float speed,
+      float maximumRange,
+      float poisonDamagePerSecond,
+      float poisonDuration) {
     if (direction == null || direction.isZero()) {
       throw new IllegalArgumentException("Arrow direction must not be zero");
     }
     if (speed <= 0f || maximumRange <= 0f) {
       throw new IllegalArgumentException("Arrow speed and range must be positive");
     }
+
     this.direction = direction.cpy().nor();
     this.speed = speed;
     this.maximumRange = maximumRange;
+    this.poisonDamagePerSecond = poisonDamagePerSecond;
+    this.poisonDuration = poisonDuration;
   }
 
   @Override
@@ -89,12 +103,26 @@ public class ArrowProjectileComponent extends Component {
     if (!(userData instanceof BodyUserData)) {
       return;
     }
+
     Entity target = ((BodyUserData) userData).entity;
-    if (target == null) {
+    if (target == null || combatStats == null) {
       return;
     }
-    if (target.getComponent(CombatStatsComponent.class) != null) {
-      target.getEvents().trigger("takeDamage", combatStats);
+
+    CombatStatsComponent targetStats = target.getComponent(CombatStatsComponent.class);
+    if (targetStats == null || combatStats == null) {
+      return;
+    }
+
+    int healthBefore = targetStats.getHealth();
+
+    // Keep the existing damage system.
+    target.getEvents().trigger("takeDamage", combatStats);
+
+    boolean damaged = targetStats.getHealth() < healthBefore;
+
+    if (damaged && poisonDamagePerSecond > 0f && poisonDuration > 0f) {
+      target.getEvents().trigger("applyPoison", poisonDamagePerSecond, poisonDuration);
     }
   }
 

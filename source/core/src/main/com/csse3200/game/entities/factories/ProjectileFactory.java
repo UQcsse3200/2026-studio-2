@@ -23,14 +23,28 @@ public class ProjectileFactory {
    * @return unregistered arrow entity
    */
   public static Entity createPlayerArrow(Vector2 position, Vector2 direction) {
+    return createPlayerArrow(position, direction, 0f, 0f);
+  }
+
+  public static Entity createPlayerArrow(
+      Vector2 position,
+      Vector2 direction,
+      float poisonDamagePerSecond,
+      float poisonDurationSeconds) {
     Entity arrow =
         new Entity()
             .addComponent(new PhysicsComponent())
             .addComponent(new HitboxComponent().setLayer(PhysicsLayer.PLAYER_PROJECTILE))
             .addComponent(new CombatStatsComponent(1, STANDARD_ARROW_DAMAGE))
             .addComponent(
-                new ArrowProjectileComponent(direction, STANDARD_ARROW_SPEED, STANDARD_ARROW_RANGE))
+                new ArrowProjectileComponent(
+                    direction,
+                    STANDARD_ARROW_SPEED,
+                    STANDARD_ARROW_RANGE,
+                    poisonDamagePerSecond,
+                    poisonDurationSeconds))
             .addComponent(new ArrowRenderComponent());
+
     arrow.setScale(0.5f, 0.1f);
     arrow.setPosition(position.x - arrow.getScale().x / 2f, position.y - arrow.getScale().y / 2f);
     return arrow;

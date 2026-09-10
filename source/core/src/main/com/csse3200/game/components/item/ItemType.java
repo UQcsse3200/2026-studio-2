@@ -99,7 +99,7 @@ public enum ItemType {
       0f,
       0f,
       0f,
-      0.5f,
+      0.7f,
       3f,
       0f,
       0f),

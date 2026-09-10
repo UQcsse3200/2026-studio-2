@@ -5,6 +5,7 @@ import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.csse3200.game.ai.tasks.AITaskComponent;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.EnemyDeathComponent;
+import com.csse3200.game.components.PoisonStatsComponent;
 import com.csse3200.game.components.tasks.ChaseTask;
 import com.csse3200.game.components.tasks.DelayedAttackTask;
 import com.csse3200.game.components.tasks.RangedAttackTask;
@@ -163,6 +164,7 @@ public class EnemyFactory {
             .addComponent(new HitboxComponent().setLayer(PhysicsLayer.NPC))
             .addComponent(new CombatStatsComponent(config.health, config.baseAttack))
             .addComponent(new EnemyDeathComponent())
+            .addComponent(new PoisonStatsComponent())
             .addComponent(aiComponent);
 
     PhysicsUtils.setScaledCollider(enemy, 0.9f, 0.4f);

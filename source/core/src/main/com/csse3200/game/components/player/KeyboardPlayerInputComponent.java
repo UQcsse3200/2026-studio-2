@@ -173,7 +173,7 @@ public class KeyboardPlayerInputComponent extends InputComponent {
     if (aimDirection.isZero()) {
       return false;
     }
-    entity.getEvents().trigger("grappleFire", aimDirection);
+    entity.getEvents().trigger("attack");
     return true;
   }
 

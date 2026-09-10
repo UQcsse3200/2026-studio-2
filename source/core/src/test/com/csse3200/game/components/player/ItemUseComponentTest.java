@@ -201,12 +201,45 @@ class ItemUseComponentTest {
     assertEquals(5f, use.getRopeCooldownRemaining(), 0.001f);
   }
 
+  @Test
+  void shouldNotUseSecondPoisonPotionWhileBuffIsActive() {
+    Entity player = createPlayer();
+    InventoryComponent inventory = player.getComponent(InventoryComponent.class);
+    ItemUseComponent itemUse = player.getComponent(ItemUseComponent.class);
+
+    inventory.addItem(ItemType.PoisonPotion, 2);
+
+    assertTrue(itemUse.useSelectedItem());
+    assertEquals(1, inventory.getItemCount(ItemType.PoisonPotion));
+
+    assertFalse(itemUse.useSelectedItem());
+    assertEquals(1, inventory.getItemCount(ItemType.PoisonPotion));
+  }
+
+  @Test
+  void shouldAllowPoisonPotionAfterBuffExpires() {
+    Entity player = createPlayer();
+    InventoryComponent inventory = player.getComponent(InventoryComponent.class);
+    ItemUseComponent itemUse = player.getComponent(ItemUseComponent.class);
+
+    inventory.addItem(ItemType.PoisonPotion, 2);
+
+    assertTrue(itemUse.useSelectedItem());
+    assertEquals(1, inventory.getItemCount(ItemType.PoisonPotion));
+
+    when(time.getTime()).thenReturn(5000L);
+
+    assertTrue(itemUse.useSelectedItem());
+    assertEquals(0, inventory.getItemCount(ItemType.PoisonPotion));
+  }
+
   private Entity createPlayer() {
     Entity player =
         new Entity()
             .addComponent(new InventoryComponent(0))
             .addComponent(new CombatStatsComponent(100, 10))
-            .addComponent(new ItemUseComponent());
+            .addComponent(new ItemUseComponent())
+            .addComponent(new PoisonBuff());
     player.create();
     return player;
   }

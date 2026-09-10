@@ -75,6 +75,8 @@ public class PlayerFactory {
                     stats.health, stats.baseAttack, stats.invulnerabilityDuration))
             .addComponent(bowComponent)
             .addComponent(new PlayerAttackComponent(bowComponent))
+            .addComponent(new PoisonBuff())
+            .addComponent(new MeleeAttackComponent())
             .addComponent(new ArrowWheelComponent())
             .addComponent(
                 new CombatStatsComponent(
