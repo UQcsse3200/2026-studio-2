@@ -4,6 +4,7 @@ import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.csse3200.game.GdxGame;
 import com.csse3200.game.components.mainmenu.MainMenuActions;
+import com.badlogic.gdx.audio.Music;
 import com.csse3200.game.components.mainmenu.MainMenuDisplay;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
@@ -25,6 +26,8 @@ public class MainMenuScreen extends ScreenAdapter {
   private static final String[] mainMenuTextures = {
     "images/title_odysseus_logo.png", "images/main_menu_bg.jpg"
   };
+  private static final String mainMenuMusic = "sounds/Main_menu_sound.mp3";
+  private static final String[] mainMenuMusicFiles = {mainMenuMusic};
 
   public MainMenuScreen(GdxGame game) {
     this.game = game;
@@ -66,8 +69,8 @@ public class MainMenuScreen extends ScreenAdapter {
   @Override
   public void dispose() {
     logger.debug("Disposing main menu screen");
-
     renderer.dispose();
+    ServiceLocator.getResourceService().getAsset(mainMenuMusic, Music.class).stop();
     unloadAssets();
     ServiceLocator.getRenderService().dispose();
     ServiceLocator.getEntityService().dispose();
@@ -79,6 +82,7 @@ public class MainMenuScreen extends ScreenAdapter {
     logger.debug("Loading assets");
     ResourceService resourceService = ServiceLocator.getResourceService();
     resourceService.loadTextures(mainMenuTextures);
+    resourceService.loadMusic(mainMenuMusicFiles);
     ServiceLocator.getResourceService().loadAll();
   }
 
@@ -86,8 +90,14 @@ public class MainMenuScreen extends ScreenAdapter {
     logger.debug("Unloading assets");
     ResourceService resourceService = ServiceLocator.getResourceService();
     resourceService.unloadAssets(mainMenuTextures);
+    resourceService.unloadAssets(mainMenuMusicFiles);
   }
-
+  private void playMusic() {
+    Music music = ServiceLocator.getResourceService().getAsset(mainMenuMusic, Music.class);
+    music.setLooping(true);
+    music.setVolume(0.1f);
+    music.play();
+  }
   /**
    * Creates the main menu's ui including components for rendering ui elements to the screen and
    * capturing and handling ui input.
@@ -100,5 +110,6 @@ public class MainMenuScreen extends ScreenAdapter {
         .addComponent(new InputDecorator(stage, 10))
         .addComponent(new MainMenuActions(game));
     ServiceLocator.getEntityService().register(ui);
+    playMusic();
   }
 }
