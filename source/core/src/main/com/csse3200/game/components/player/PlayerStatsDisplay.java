@@ -35,7 +35,10 @@ public class PlayerStatsDisplay extends UIComponent {
     Stack stack = new Stack();
 
     Table backgroundContainer = new Table();
-    Image background = new Image(ServiceLocator.getResourceService().getAsset(HEALTH_BAR_BACKGROUND_TEXTURE, Texture.class));
+    Image background =
+        new Image(
+            ServiceLocator.getResourceService()
+                .getAsset(HEALTH_BAR_BACKGROUND_TEXTURE, Texture.class));
     backgroundContainer.add(background).size(400, 150).center();
 
     stack.add(backgroundContainer);
