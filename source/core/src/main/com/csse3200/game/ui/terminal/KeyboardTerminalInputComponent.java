@@ -52,7 +52,6 @@ public class KeyboardTerminalInputComponent extends InputComponent {
       ServiceLocator.getEntityService().togglePaused();
       entity.getEvents().trigger("togglePause");
 
-
       if (ServiceLocator.getEntityService().getPaused()) {
         entity.getEvents().trigger("showPauseMenu");
       } else {

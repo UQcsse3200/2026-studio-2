@@ -50,7 +50,13 @@ public class KeyboardPlayerInputComponent extends InputComponent {
    */
   @Override
   public boolean keyDown(int keycode) {
-    if (ServiceLocator.getEntityService().getPaused() && !(keycode == Keys.A || keycode == Keys.D || keycode == Keys.LEFT || keycode == Keys.RIGHT || keycode == Keys.SHIFT_LEFT || keycode == Keys.SHIFT_RIGHT)) {
+    if (ServiceLocator.getEntityService().getPaused()
+        && !(keycode == Keys.A
+            || keycode == Keys.D
+            || keycode == Keys.LEFT
+            || keycode == Keys.RIGHT
+            || keycode == Keys.SHIFT_LEFT
+            || keycode == Keys.SHIFT_RIGHT)) {
       return false;
     }
     switch (keycode) {
@@ -89,16 +95,16 @@ public class KeyboardPlayerInputComponent extends InputComponent {
       case Keys.A:
       case Keys.LEFT:
         keysHeld[LEFT] = true;
-          if (!ServiceLocator.getEntityService().getPaused()) {
-              triggerWalkEvent();
-          }
+        if (!ServiceLocator.getEntityService().getPaused()) {
+          triggerWalkEvent();
+        }
         return true;
       case Keys.D:
       case Keys.RIGHT:
         keysHeld[RIGHT] = true;
-          if (!ServiceLocator.getEntityService().getPaused()) {
-              triggerWalkEvent();
-          }
+        if (!ServiceLocator.getEntityService().getPaused()) {
+          triggerWalkEvent();
+        }
         return true;
       case Keys.SPACE:
         triggerJumpEvent();
@@ -107,7 +113,7 @@ public class KeyboardPlayerInputComponent extends InputComponent {
       case Keys.SHIFT_RIGHT:
         sprintHeld = true;
         if (!ServiceLocator.getEntityService().getPaused()) {
-            triggerSprintEvent();
+          triggerSprintEvent();
         }
         return true;
       case Keys.E:

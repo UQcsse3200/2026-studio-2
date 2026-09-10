@@ -77,7 +77,6 @@ public class PhysicsComponent extends Component {
     entity.getEvents().addListener("setPosition", (Vector2 pos) -> body.setTransform(pos, 0f));
   }
 
-
   /**
    * Entity position needs to be updated to match the new physics position. This should happen
    * before other updates, which may use the new position.
