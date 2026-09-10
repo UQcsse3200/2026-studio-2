@@ -50,6 +50,8 @@ public class KeyboardTerminalInputComponent extends InputComponent {
     }
     if (keycode == Input.Keys.ESCAPE) {
       ServiceLocator.getEntityService().togglePaused();
+      entity.getEvents().trigger("togglePause");
+
 
       if (ServiceLocator.getEntityService().getPaused()) {
         entity.getEvents().trigger("showPauseMenu");

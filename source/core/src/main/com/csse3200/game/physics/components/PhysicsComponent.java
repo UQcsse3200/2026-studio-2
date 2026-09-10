@@ -75,12 +75,8 @@ public class PhysicsComponent extends Component {
     body.setUserData(userData);
 
     entity.getEvents().addListener("setPosition", (Vector2 pos) -> body.setTransform(pos, 0f));
-    entity.getEvents().addListener("togglePaused", this::togglePause);
   }
 
-  private void togglePause() {
-    paused = !paused;
-  }
 
   /**
    * Entity position needs to be updated to match the new physics position. This should happen
