@@ -1,8 +1,10 @@
 package com.csse3200.game.components.minigames.spinthewheel;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.csse3200.game.components.inventory.InventoryComponent;
 import com.csse3200.game.components.item.ItemType;
 import com.csse3200.game.extensions.GameExtension;
 import java.util.Arrays;
@@ -29,5 +31,22 @@ class SpinTheWheelDisplayTest {
     int shared = SpinTheWheelDisplay.texturesFor(List.of()).length;
 
     assertEquals(shared + TWO_ITEMS.size(), SpinTheWheelDisplay.texturesFor(TWO_ITEMS).length);
+  }
+
+  @Test
+  void shouldStoreWhatTheWheelLandsOn() {
+    InventoryComponent inventory = new InventoryComponent(0, 3);
+    SpinTheWheelDisplay display = new SpinTheWheelDisplay(TWO_ITEMS, inventory);
+
+    display.award(new WheelItem(ItemType.ARROW, 10));
+
+    assertEquals(10, inventory.getItemCount(ItemType.ARROW));
+  }
+
+  @Test
+  void shouldKeepNothingWithoutAnInventory() {
+    SpinTheWheelDisplay display = new SpinTheWheelDisplay(TWO_ITEMS);
+
+    assertDoesNotThrow(() -> display.award(new WheelItem(ItemType.ARROW, 10)));
   }
 }

@@ -433,9 +433,11 @@ public class SpinTheWheelDisplay extends UIComponent {
   /**
    * Stores what the wheel landed on. Nothing is kept when the wheel is shown without a player.
    *
+   * <p>Package private so tests can award without a stage.
+   *
    * @param item the item that was won
    */
-  private void award(WheelItem item) {
+  void award(WheelItem item) {
     if (inventory != null && !inventory.addItem(item.type(), item.value())) {
       logger.info("No room for {} x{}", item.type().getDisplayName(), item.value());
     }
