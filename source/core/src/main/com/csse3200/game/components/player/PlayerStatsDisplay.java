@@ -14,7 +14,7 @@ import java.util.List;
 
 /** A UI component that displays the player's health as a row of hearts. */
 public class PlayerStatsDisplay extends UIComponent {
-  private static final String HEART_TEXTURE = "images/purple_heart.png";
+  private static final String HEART_TEXTURE = "images/red_heart.png";
   private static final String HEALTH_BAR_BACKGROUND_TEXTURE = "images/Health_Bar_Background.png";
   private static final float HEART_SIDE_LENGTH = 33f;
   private static final float HEART_SIDE_HEIGHT = 34f;
@@ -44,7 +44,7 @@ public class PlayerStatsDisplay extends UIComponent {
     combatStats = entity.getComponent(CombatStatsComponent.class);
 
     overlayTable = new Table();
-    overlayTable.padLeft(102f).padTop(5f);
+    overlayTable.padLeft(100.2f).padBottom(4.8f);
 
     root = new Table();
     root.top().left();

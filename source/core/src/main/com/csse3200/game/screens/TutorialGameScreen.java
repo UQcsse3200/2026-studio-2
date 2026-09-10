@@ -42,7 +42,7 @@ public class TutorialGameScreen extends ScreenAdapter {
   private static final Logger logger = LoggerFactory.getLogger(TutorialGameScreen.class);
 
   private static final String[] mainGameTextures = {
-    "images/heart.png", "images/title_odysseus_logo.png", "images/Health_Bar_Background.png", "images/Inventory_background.png",
+    "images/heart.png", "images/title_odysseus_logo.png", "images/Health_Bar_Background.png", "images/Inventory_background.png", "images/red_heart.png"
   };
 
   private final GdxGame game;
