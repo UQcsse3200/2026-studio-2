@@ -104,7 +104,7 @@ public class TutorialGameArea extends GameArea {
       };
 
   private static final GridPoint2 PLAYER_SPAWN = new GridPoint2(1, 4);
-  private static final GridPoint2 SHOPKEEPER_SPAWN = new GridPoint2(8, 1);
+  private static final GridPoint2 SHOPKEEPER_SPAWN = new GridPoint2(11, 1);
   private static final GridPoint2 ROPE_ARROW_SPAWN = new GridPoint2(2, 4);
   private static final GridPoint2 STANDARD_ARROW_SPAWN = new GridPoint2(4, 4);
   private static final GridPoint2 FIRE_ARROW_SPAWN = new GridPoint2(6, 4);
