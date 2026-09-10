@@ -156,6 +156,7 @@ public class TutorialGameScreen extends ScreenAdapter {
     ResourceService resourceService = ServiceLocator.getResourceService();
 
     resourceService.loadTextures(mainGameTextures);
+    resourceService.loadSounds(WheelConfig.SOUNDS);
     resourceService.loadAll();
   }
 
@@ -165,6 +166,7 @@ public class TutorialGameScreen extends ScreenAdapter {
     ResourceService resourceService = ServiceLocator.getResourceService();
 
     resourceService.unloadAssets(mainGameTextures);
+    resourceService.unloadAssets(WheelConfig.SOUNDS);
   }
 
   /**

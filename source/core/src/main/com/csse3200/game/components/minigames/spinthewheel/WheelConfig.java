@@ -14,5 +14,7 @@ public final class WheelConfig {
 
   public static final String[] TEXTURES = SpinTheWheelDisplay.texturesFor(ITEMS);
 
+  public static final String[] SOUNDS = SpinTheWheelDisplay.sounds();
+
   private WheelConfig() {}
 }

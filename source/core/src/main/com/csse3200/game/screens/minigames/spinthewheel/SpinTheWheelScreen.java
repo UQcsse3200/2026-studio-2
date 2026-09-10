@@ -23,6 +23,11 @@ public class SpinTheWheelScreen extends MinigameScreen {
   }
 
   @Override
+  protected String[] getSounds() {
+    return WheelConfig.SOUNDS;
+  }
+
+  @Override
   protected Entity createUI() {
     Stage stage = ServiceLocator.getRenderService().getStage();
     return new Entity()

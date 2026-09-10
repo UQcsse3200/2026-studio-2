@@ -1,5 +1,6 @@
 package com.csse3200.game.components.minigames.spinthewheel;
 
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.NinePatch;
@@ -24,6 +25,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Scaling;
 import com.csse3200.game.components.inventory.InventoryComponent;
+import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.UIComponent;
 import java.util.ArrayList;
@@ -36,6 +38,8 @@ public class SpinTheWheelDisplay extends UIComponent {
   private static final Logger logger = LoggerFactory.getLogger(SpinTheWheelDisplay.class);
   private static final float Z_INDEX = 2f;
 
+  private static final long NOT_PLAYING = -1L;
+
   private static final String DISC_TEXTURE = "images/minigames/spinthewheel/wheel-disc.png";
   private static final String SPOKE_TEXTURE = "images/minigames/spinthewheel/wheel-spoke.png";
   private static final String POINTER_TEXTURE = "images/minigames/spinthewheel/wheel-pointer.png";
@@ -44,6 +48,9 @@ public class SpinTheWheelDisplay extends UIComponent {
   private static final String BUTTON_DOWN_TEXTURE = "images/minigames/spinthewheel/button-down.png";
   private static final String GLOW_TEXTURE = "images/minigames/spinthewheel/glow-radial.png";
   private static final String RAYS_TEXTURE = "images/minigames/spinthewheel/glow-rays.png";
+
+  private static final String SPIN_SOUND = "sounds/minigames/spinthewheel/wheel-spin.wav";
+  private static final String PRIZE_SOUND = "sounds/minigames/spinthewheel/wheel-prize.wav";
 
   private static final float WHEEL_SIZE = 400f;
   private static final float SPOKE_THICKNESS = 6f;
@@ -83,6 +90,7 @@ public class SpinTheWheelDisplay extends UIComponent {
   private Image prizeIcon;
   private Label prizeName;
   private Label prizeAmount;
+  private long spinSoundId = NOT_PLAYING;
 
   /**
    * Creates a wheel that keeps nothing it lands on, for showing it without a player.
@@ -122,6 +130,15 @@ public class SpinTheWheelDisplay extends UIComponent {
                 RAYS_TEXTURE));
     items.forEach(item -> paths.add(item.type().getTexturePath()));
     return paths.toArray(new String[0]);
+  }
+
+  /**
+   * The sounds the wheel needs loaded.
+   *
+   * @return the sounds the wheel plays
+   */
+  public static String[] sounds() {
+    return new String[] {SPIN_SOUND, PRIZE_SOUND};
   }
 
   @Override
@@ -278,6 +295,7 @@ public class SpinTheWheelDisplay extends UIComponent {
    * @param item the item that was won
    */
   private void showPrize(WheelItem item) {
+    play(PRIZE_SOUND);
     Texture icon = texture(item.type().getTexturePath(), Texture.TextureFilter.Nearest);
     prizeIcon.setDrawable(new TextureRegionDrawable(new TextureRegion(icon)));
     prizeName.setText(item.type().getDisplayName());
@@ -444,12 +462,50 @@ public class SpinTheWheelDisplay extends UIComponent {
   }
 
   /**
+   * Finds a sound.
+   *
+   * @param path the path of the sound
+   * @return the sound, or null when it is not loaded
+   */
+  private Sound sound(String path) {
+    ResourceService resources = ServiceLocator.getResourceService();
+    if (resources == null || !resources.containsAsset(path, Sound.class)) {
+      return null;
+    }
+    return resources.getAsset(path, Sound.class);
+  }
+
+  /**
+   * Plays a sound, or nothing when the screen showing the wheel has not loaded it.
+   *
+   * @param path the path of the sound
+   * @return the id of the sound that started
+   */
+  private long play(String path) {
+    Sound sound = sound(path);
+    if (sound == null) {
+      return NOT_PLAYING;
+    }
+    return sound.play();
+  }
+
+  /** Silences the spin */
+  private void stopSpinSound() {
+    Sound spin = sound(SPIN_SOUND);
+    if (spinSoundId != NOT_PLAYING && spin != null) {
+      spin.stop(spinSoundId);
+    }
+    spinSoundId = NOT_PLAYING;
+  }
+
+  /**
    * Spins the wheel and animates it to a stop with the winning segment under the pointer.
    *
    * @param spinBtn the button that started the spin
    */
   private void spin(TextButton spinBtn) {
     spinBtn.setDisabled(true);
+    spinSoundId = play(SPIN_SOUND);
     WheelItem result = wheel.spin();
     float target = wheel.getTargetRotation(wheelGroup.getRotation(), POINTER_ANGLE, FULL_TURNS);
 
@@ -460,6 +516,7 @@ public class SpinTheWheelDisplay extends UIComponent {
                 () -> {
                   wheelGroup.setRotation(wheelGroup.getRotation() % 360f);
                   spinBtn.setDisabled(false);
+                  stopSpinSound();
                   award(result);
                   showPrize(result);
                 })));
@@ -481,6 +538,7 @@ public class SpinTheWheelDisplay extends UIComponent {
 
   @Override
   public void dispose() {
+    stopSpinSound();
     table.remove();
     prizeLayer.remove();
     super.dispose();
