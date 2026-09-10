@@ -21,7 +21,7 @@ public abstract class MinigameScreen extends ScreenAdapter {
   private static final Logger logger = LoggerFactory.getLogger(MinigameScreen.class);
 
   protected final GdxGame game;
-  private Renderer renderer;
+  protected Renderer renderer;
 
   protected MinigameScreen(GdxGame game) {
     this.game = game;

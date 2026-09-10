@@ -14,6 +14,7 @@ public class BowComponent extends Component implements AttackBehaviour {
 
   private final BiFunction<Vector2, Vector2, Entity> projectileFactory;
   private PoisonBuff poisonBuff;
+  private ArrowType arrowType = ArrowType.NORMAL;
 
   /** Creates a bow which fires standard arrows. */
   public BowComponent() {
@@ -27,6 +28,19 @@ public class BowComponent extends Component implements AttackBehaviour {
   @Override
   public void create() {
     poisonBuff = entity.getComponent(PoisonBuff.class);
+    entity.getEvents().addListener("arrowSelected", this::setArrowType);
+  }
+
+  /** Returns the arrow type the bow fires. */
+  public ArrowType getArrowType() {
+    return arrowType;
+  }
+
+  /** Sets the arrow type the bow fires. A missing type leaves the current one in place. */
+  public void setArrowType(ArrowType type) {
+    if (type != null) {
+      arrowType = type;
+    }
   }
 
   @Override
@@ -55,5 +69,6 @@ public class BowComponent extends Component implements AttackBehaviour {
     Sound attackSound = ServiceLocator.getResourceService().getAsset(ATTACK_SOUND, Sound.class);
     attackSound.play();
     entity.getEvents().trigger("attackAnimation", normalizedDirection.cpy());
+    entity.getEvents().trigger("arrowFired", arrowType);
   }
 }

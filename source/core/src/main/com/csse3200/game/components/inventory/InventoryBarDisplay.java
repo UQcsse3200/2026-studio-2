@@ -33,6 +33,10 @@ public class InventoryBarDisplay extends UIComponent {
 
     entity.getEvents().addListener("backpackClosed", this::showBar);
 
+    entity.getEvents().addListener("dictionaryOpened", this::hideBar);
+
+    entity.getEvents().addListener("dictionaryClosed", this::showBar);
+
     addActors();
   }
 

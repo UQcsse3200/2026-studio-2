@@ -1,5 +1,6 @@
 package com.csse3200.game.components.player;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -73,5 +74,35 @@ class BowComponentTest {
 
     verify(entityService, never()).register(projectile);
     verify(attackSound, never()).play();
+  }
+
+  @Test
+  void shouldFireTheArrowTypeChosenOnTheWheel() {
+    Entity projectile = mock(Entity.class);
+    BowComponent component = new BowComponent((position, direction) -> projectile);
+    Entity player = new Entity().addComponent(component);
+    player.create();
+    AtomicReference<ArrowType> fired = new AtomicReference<>();
+    player.getEvents().addListener("arrowFired", (ArrowType type) -> fired.set(type));
+
+    component.attack(new Vector2(1f, 0f));
+    assertEquals(ArrowType.NORMAL, fired.get());
+
+    player.getEvents().trigger("arrowSelected", ArrowType.POISON);
+    component.attack(new Vector2(1f, 0f));
+
+    assertEquals(ArrowType.POISON, component.getArrowType());
+    assertEquals(ArrowType.POISON, fired.get());
+  }
+
+  @Test
+  void shouldKeepTheCurrentArrowTypeWhenGivenNothing() {
+    BowComponent component = new BowComponent((position, direction) -> mock(Entity.class));
+    new Entity().addComponent(component);
+
+    component.setArrowType(ArrowType.FIRE);
+    component.setArrowType(null);
+
+    assertEquals(ArrowType.FIRE, component.getArrowType());
   }
 }

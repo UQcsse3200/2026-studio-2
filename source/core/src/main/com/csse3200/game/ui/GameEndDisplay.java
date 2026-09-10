@@ -10,6 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.Value;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
 import com.csse3200.game.components.maingame.MainGameExitDisplay;
@@ -23,7 +24,6 @@ import org.slf4j.LoggerFactory;
 public class GameEndDisplay extends UIComponent {
   private static final Logger logger = LoggerFactory.getLogger(GameEndDisplay.class);
   private static final float Z_INDEX = 20f;
-  private static final int PANEL_WIDTH = 520;
   private static final int BORDER_THICKNESS = 3;
   private static final float MESSAGE_SPEED = 21f;
 
@@ -122,10 +122,13 @@ public class GameEndDisplay extends UIComponent {
   }
 
   private void buildActors() {
+    Table root = new Table();
+    root.setFillParent(true);
+
     panel = new Table();
-    panel.setVisible(false);
+    panel.setVisible(visible);
     panel.setBackground(getBackgroundDrawable());
-    panel.center();
+    Value padding = Value.percentWidth(0.02f, root);
 
     titleLabel = new Label(titleText, skin);
     titleLabel.setFontScale(2f);
@@ -164,16 +167,17 @@ public class GameEndDisplay extends UIComponent {
           }
         });
 
-    panel.add(titleLabel).pad(20f).row();
-    panel.add(messageLabel).width(PANEL_WIDTH - 80).pad(10f, 20f, 20f, 20f).row();
-    panel.add(restartBtn).padBottom(10f).row();
-    panel.add(mainMenuBtn).padBottom(10f).row();
-    panel.add(exitDesktopBtn).padBottom(20f).row();
+    panel.add(titleLabel).pad(padding).row();
+    panel.add(messageLabel).fillX().expandX().pad(padding).row();
+    panel.add(restartBtn).padBottom(padding).row();
+    panel.add(mainMenuBtn).padBottom(padding).row();
+    panel.add(exitDesktopBtn).padBottom(padding).row();
     panel.pack();
-    panel.setPosition(
-        (stage.getWidth() - panel.getWidth()) / 2f, (stage.getHeight() - panel.getHeight()) / 2f);
 
-    stage.addActor(panel);
+    root.add(panel).width(Value.percentWidth(0.8f, root)).fillX().center();
+    stage.addActor(root);
+    root.invalidateHierarchy();
+    root.layout();
     updateMessageLabel();
   }
 

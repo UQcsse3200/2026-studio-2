@@ -115,6 +115,9 @@ public class KeyboardPlayerInputComponent extends InputComponent {
       case Keys.COMMA:
         entity.getEvents().trigger("switchItem", -1);
         return true;
+      case Keys.TAB:
+        entity.getEvents().trigger("openArrowWheel");
+        return true;
       default:
         return false;
     }
@@ -147,6 +150,9 @@ public class KeyboardPlayerInputComponent extends InputComponent {
       case Keys.E:
         attackHeld = false;
         return true;
+      case Keys.TAB:
+        entity.getEvents().trigger("closeArrowWheel");
+        return true;
       default:
         return false;
     }
@@ -160,7 +166,7 @@ public class KeyboardPlayerInputComponent extends InputComponent {
    */
   @Override
   public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-    if (button != Buttons.LEFT) {
+    if (button != Buttons.LEFT || isArrowWheelOpen()) {
       return false;
     }
     Vector2 aimDirection = getAimDirection(screenX, screenY);
@@ -181,8 +187,30 @@ public class KeyboardPlayerInputComponent extends InputComponent {
     return true;
   }
 
+  /** Reports the pointer's offset from the centre of the screen, where the wheel is drawn. */
+  @Override
+  public boolean mouseMoved(int screenX, int screenY) {
+    if (Gdx.graphics == null) {
+      return false;
+    }
+
+    float centreX = Gdx.graphics.getWidth() / 2f;
+    float centreY = Gdx.graphics.getHeight() / 2f;
+    // Screen y grows downwards, so flip it to match the wheel's y-up directions.
+    Vector2 offsetFromCentre = new Vector2(screenX - centreX, centreY - screenY);
+    entity.getEvents().trigger("arrowWheelPointerMoved", offsetFromCentre);
+
+    // Reported, not consumed, so other handlers still see the movement.
+    return false;
+  }
+
+  private boolean isArrowWheelOpen() {
+    ArrowWheelComponent wheel = entity.getComponent(ArrowWheelComponent.class);
+    return wheel != null && wheel.isOpen();
+  }
+
   private void triggerAttackOrItemUse() {
-    if (attackHeld) {
+    if (attackHeld || isArrowWheelOpen()) {
       return;
     }
     attackHeld = true;
