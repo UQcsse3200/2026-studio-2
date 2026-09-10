@@ -461,5 +461,6 @@ com.badlogic.gdx.scenes.scene2d.ui.Window$WindowStyle: {
 		titleFont: font
 		titleFontColor: white
 	}
-}
+},
+
 }

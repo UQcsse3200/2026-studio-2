@@ -1,6 +1,5 @@
 package com.csse3200.game.components.inventory;
 
-import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
@@ -8,6 +7,7 @@ import com.badlogic.gdx.graphics.g2d.NinePatch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
 import com.csse3200.game.components.item.ItemType;
@@ -17,12 +17,13 @@ import com.csse3200.game.ui.UIComponent;
 /** Displays the player's inventory bar at the bottom of the screen. */
 public class InventoryBarDisplay extends UIComponent {
   /** Windowed mode is 1280px wide; eight 160px cells plus padding would clip. */
-  //private static final float WINDOW_WIDTH = 1280f;
+  // private static final float WINDOW_WIDTH = 1280f;
 
-  //private static final float BAR_SIDE_MARGIN = 48f;
+  // private static final float BAR_SIDE_MARGIN = 48f;
   private static final float SLOT_PAD = 4f;
-  //private static final float SLOT_HEIGHT = 72f;
-  //private static final float MAX_SLOT_WIDTH = 120f;
+
+  // private static final float SLOT_HEIGHT = 72f;
+  // private static final float MAX_SLOT_WIDTH = 120f;
 
   private static final String INVENTORY_BACKGROUND_TEXTURE = "images/Inventory_background.png";
   private static final int BORDER_THICKNESS = 1;
@@ -80,7 +81,10 @@ public class InventoryBarDisplay extends UIComponent {
     root.padBottom(20f);
 
     stack = new Stack();
-    Image background = new Image(ServiceLocator.getResourceService().getAsset(INVENTORY_BACKGROUND_TEXTURE, Texture.class));
+    Image background =
+        new Image(
+            ServiceLocator.getResourceService()
+                .getAsset(INVENTORY_BACKGROUND_TEXTURE, Texture.class));
     stack.add(background);
     table = new Table();
     table.padRight(95f).padTop(69f);
@@ -132,11 +136,7 @@ public class InventoryBarDisplay extends UIComponent {
                 slotNumber, inventorySlot.getItemType(), inventorySlot.getQuantity(), selected);
       }
 
-      table
-          .add(slot)
-          .width(60f)
-          .height(65f)
-          .padRight(50f);
+      table.add(slot).width(60f).height(65f).padRight(50f);
     }
   }
 
@@ -170,17 +170,17 @@ public class InventoryBarDisplay extends UIComponent {
     slot.setBackground(selected ? getBackgroundDrawable() : slot.getBackground());
 
     Texture texture =
-    ServiceLocator.getResourceService().getAsset(getItemTexture(item), Texture.class);
+        ServiceLocator.getResourceService().getAsset(getItemTexture(item), Texture.class);
 
     Image icon = new Image(texture);
 
-    //Label numberLabel = new Label(Integer.toString(slotNumber), skin, "large");
+    // Label numberLabel = new Label(Integer.toString(slotNumber), skin, "large");
 
     Label countLabel =
-      new Label("x" + count, new Label.LabelStyle(skin.getFont("font"), Color.WHITE));
+        new Label("x" + count, new Label.LabelStyle(skin.getFont("font"), Color.WHITE));
     countLabel.setColor(Color.WHITE);
 
-    //slot.add(numberLabel).width(25f).left().padLeft(5f).padRight(5f);
+    // slot.add(numberLabel).width(25f).left().padLeft(5f).padRight(5f);
 
     slot.add(icon).size(40f, 40f).expand().center();
 
@@ -202,9 +202,9 @@ public class InventoryBarDisplay extends UIComponent {
     slot.pad(8f);
     slot.setBackground(selected ? getBackgroundDrawable() : slot.getBackground());
 
-    //Label numberLabel = new Label(Integer.toString(slotNumber), skin, "large");
+    // Label numberLabel = new Label(Integer.toString(slotNumber), skin, "large");
 
-    //slot.add(numberLabel).width(25f).left().padLeft(5f).padRight(5f);
+    // slot.add(numberLabel).width(25f).left().padLeft(5f).padRight(5f);
 
     slot.add().expand().fill();
 
