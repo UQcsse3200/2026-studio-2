@@ -17,6 +17,8 @@ import com.csse3200.game.components.player.PlayerActions;
 import com.csse3200.game.components.player.PlayerAttackComponent;
 import com.csse3200.game.components.player.PlayerInteractionComponent;
 import com.csse3200.game.components.player.PlayerStatsDisplay;
+import com.csse3200.game.components.shop.ShopComponent;
+import com.csse3200.game.components.shop.ShopDisplay;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.PlayerConfig;
 import com.csse3200.game.files.FileLoader;
@@ -83,6 +85,8 @@ public class PlayerFactory {
             .addComponent(new ItemDictionaryComponent())
             .addComponent(new ItemDictionaryDisplay())
             .addComponent(new PlayerInteractionComponent())
+            .addComponent(new ShopComponent())
+            .addComponent(new ShopDisplay())
             .addComponent(new ItemUseComponent())
             .addComponent(inputComponent)
             .addComponent(new PlayerStatsDisplay())

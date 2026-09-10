@@ -6,6 +6,7 @@ import com.csse3200.game.components.inventory.InventoryComponent;
 import com.csse3200.game.components.item.Item;
 import com.csse3200.game.components.item.ItemComponent;
 import com.csse3200.game.components.item.ItemType;
+import com.csse3200.game.components.npc.ShopNpcComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.ItemFactory;
 import com.csse3200.game.services.ServiceLocator;
@@ -13,18 +14,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Detects items within the player's interaction range and validates and performs pickup, drop,
- * delete and switch interactions on behalf of the player.
+ * Detects interactable entities within range and performs pickup, shop, drop, delete and switch
+ * actions on behalf of the player.
  *
  * <p>Requires an InventoryComponent on this entity.
  */
 public class PlayerInteractionComponent extends Component {
   private static final Logger logger = LoggerFactory.getLogger(PlayerInteractionComponent.class);
 
-  /** Maximum distance, in metres, at which the player can interact with an item. */
+  /** Maximum distance, in metres, at which the player can interact with an item or NPC. */
   public static final float INTERACTION_RANGE = 1.5f;
 
   private InventoryComponent inventory;
+  private boolean shopOpen;
 
   @Override
   public void create() {
@@ -33,21 +35,46 @@ public class PlayerInteractionComponent extends Component {
     entity.getEvents().addListener("dropItem", this::dropItem);
     entity.getEvents().addListener("deleteItem", this::deleteItem);
     entity.getEvents().addListener("switchItem", this::switchItem);
+    entity.getEvents().addListener("closeShop", this::onShopClosed);
   }
 
   /**
-   * Finds the nearest interactable item within range and attempts to pick it up.
+   * Interacts with the nearest shopkeeper, or the nearest item if no shop NPC is in range. Pressing
+   * interact again while the shop is open closes it.
    *
-   * @return true if an item was picked up
+   * @return true if a shop was opened or closed, or an item was picked up
    */
   boolean interact() {
+    if (shopOpen) {
+      entity.getEvents().trigger("closeShop");
+      return true;
+    }
+
+    Entity shopNpc = findNearestShopNpc();
+    if (shopNpc != null) {
+      shopOpen = true;
+      entity.getEvents().trigger("openShop");
+      return true;
+    }
+
     Entity target = findNearestItem();
     if (target == null) {
-      logger.debug("No interactable item in range of {}", entity);
+      logger.debug("No interactable entity in range of {}", entity);
       entity.getEvents().trigger("interactionFailed");
       return false;
     }
     return pickup(target);
+  }
+
+  /**
+   * @return true if the shop page is currently open
+   */
+  boolean isShopOpen() {
+    return shopOpen;
+  }
+
+  private void onShopClosed() {
+    shopOpen = false;
   }
 
   /**
@@ -156,12 +183,31 @@ public class PlayerInteractionComponent extends Component {
    * @return nearest interactable item entity, or null if none are in range
    */
   Entity findNearestItem() {
+    return findNearest(ItemComponent.class);
+  }
+
+  /**
+   * Finds the nearest shopkeeper within interaction range.
+   *
+   * @return nearest shop NPC, or null if none are in range
+   */
+  Entity findNearestShopNpc() {
+    return findNearest(ShopNpcComponent.class);
+  }
+
+  /**
+   * Finds the nearest entity that has the given component and is within interaction range.
+   *
+   * @param type component that marks an interactable entity
+   * @return nearest matching entity, or null if none are in range
+   */
+  private Entity findNearest(Class<? extends Component> type) {
     Entity nearest = null;
     float nearestDistance = Float.MAX_VALUE;
 
     Array<Entity> entities = ServiceLocator.getEntityService().getEntities();
     for (Entity candidate : entities) {
-      if (candidate.equals(entity) || candidate.getComponent(ItemComponent.class) == null) {
+      if (candidate.equals(entity) || candidate.getComponent(type) == null) {
         continue;
       }
 
