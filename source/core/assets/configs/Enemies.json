@@ -13,7 +13,7 @@
     "chasePriority": 10,
     "viewDistance": 6.0,
     "maxChaseDistance": 9.0,
-
+    "maxSpeed": 3.0,
     "itemDrops": [
       {
         "item": "standardArrow",
@@ -42,7 +42,7 @@
     "chasePriority": 10,
     "viewDistance": 10.0,
     "maxChaseDistance": 12.5,
-
+    "maxSpeed": 1.0,
     "itemDrops": [
       {
         "item": "standardArrow",
