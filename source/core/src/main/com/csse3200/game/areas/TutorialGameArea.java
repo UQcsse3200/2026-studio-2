@@ -103,7 +103,7 @@ public class TutorialGameArea extends GameArea {
 
   private static final GridPoint2[] skeletonArcherSpawnLocations =
       new GridPoint2[] {
-        new GridPoint2(60, 1), new GridPoint2(57, 10),
+        new GridPoint2(60, 1), new GridPoint2(57, 10), new GridPoint2(4, 4),
       };
 
   private static final GridPoint2 PLAYER_SPAWN = new GridPoint2(1, 4);
@@ -167,7 +167,8 @@ public class TutorialGameArea extends GameArea {
     "images/ghost.atlas",
     "images/ghostKing.atlas",
     "images/player.atlas",
-    "images/skeleton_archer.atlas"
+    "images/skeleton_archer.atlas",
+    "images/skeleton_warrior.atlas",
   };
 
   private static final String[] forestSounds = {"sounds/Impact4.ogg"};

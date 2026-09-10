@@ -46,8 +46,15 @@ public class EnemyFactory {
     EnemyConfig config = configs.skeletonWarrior;
     Entity skeletonWarrior = createEnemy(target, config);
 
-    skeletonWarrior.addComponent(new TextureRenderComponent("images/skeleton_warrior.png"));
-    skeletonWarrior.getComponent(TextureRenderComponent.class).scaleEntity();
+    AnimationRenderComponent animator =
+            new AnimationRenderComponent(
+                    ServiceLocator.getResourceService()
+                            .getAsset("images/skeleton_warrior.atlas", TextureAtlas.class));
+    animator.addAnimation("walk", 0.15f, Animation.PlayMode.LOOP);
+    animator.addAnimation("idle", 0.15f, Animation.PlayMode.LOOP);
+
+    skeletonWarrior.addComponent(new SkeletonAnimationController(target));
+    skeletonWarrior.addComponent(animator);
 
     skeletonWarrior
         .getComponent(AITaskComponent.class)
