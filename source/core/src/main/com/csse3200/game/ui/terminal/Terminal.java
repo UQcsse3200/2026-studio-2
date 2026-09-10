@@ -9,7 +9,6 @@ import com.csse3200.game.ui.terminal.commands.GameEndLoseCommand;
 import com.csse3200.game.ui.terminal.commands.GameEndWinCommand;
 import com.csse3200.game.ui.terminal.commands.KillAllEnemiesCommand;
 import com.csse3200.game.ui.terminal.commands.TextBoxCommand;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -31,9 +30,6 @@ public class Terminal extends Component {
     this(new HashMap<>());
   }
 
-  File textBoxTest =
-      new File("source/core/src/main/com/csse3200/game/ui/terminal/textBoxTestFile.txt");
-
   public Terminal(Map<String, Command> commands) {
     this.commands = commands;
 
@@ -44,10 +40,10 @@ public class Terminal extends Component {
     if (ServiceLocator.getGameEndEventHandler() == null) {
       ServiceLocator.registerGameEndEventHandler(new EventHandler());
     }
-    addCommand("textbox", new TextBoxCommand("Hello World"));
-    addCommand("textNewPos", new TextBoxCommand("Hello World", 3, 100, 100));
-    addCommand("textFromFile", new TextBoxCommand(textBoxTest));
-    addCommand("textFromFileNewPos", new TextBoxCommand(textBoxTest, 20, 50, 500));
+    addCommand("textbox", new TextBoxCommand("configs/textBoxes.json"));
+    //    addCommand("textNewPos", new TextBoxCommand(3, 100, 100));
+    //    addCommand("textFromFile", new TextBoxCommand(textBoxTestOld));
+    //    addCommand("textFromFileNewPos", new TextBoxCommand(20, 50, 500));
   }
 
   /**
@@ -55,6 +51,15 @@ public class Terminal extends Component {
    */
   public String getEnteredMessage() {
     return enteredMessage;
+  }
+
+  /**
+   * Sets the text shown on the terminal
+   *
+   * @param text Text to show
+   */
+  public void setEnteredMessage(String text) {
+    enteredMessage = text;
   }
 
   /**
@@ -141,14 +146,5 @@ public class Terminal extends Component {
     if (messageLength != 0) {
       enteredMessage = enteredMessage.substring(0, messageLength - 1);
     }
-  }
-
-  /**
-   * Sets the text shown on the terminal
-   *
-   * @param text Text to show
-   */
-  public void setEnteredMessage(String text) {
-    enteredMessage = text;
   }
 }
