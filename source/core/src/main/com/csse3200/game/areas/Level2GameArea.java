@@ -10,6 +10,7 @@ import com.csse3200.game.components.player.KeyboardPlayerInputComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.ObstacleFactory;
 import com.csse3200.game.entities.factories.PlayerFactory;
+import com.csse3200.game.rendering.BackgroundRenderComponent;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.utils.math.GridPoint2Utils;
@@ -22,6 +23,9 @@ public class Level2GameArea extends GameArea {
 
   /** Textures used by the level 2 game area. */
   private static final String[] level2Textures = {
+    // Level 2 background
+    "images/Background-2.png",
+
     // Existing game textures
     "images/black_roof.png",
     "images/purple_heart.png",
@@ -54,11 +58,14 @@ public class Level2GameArea extends GameArea {
   };
 
   private static final String[] level2TexturesAtlas = {
-    "images/terrain_iso_grass.atlas", "images/player.atlas"
+    "images/terrain_iso_grass.atlas",
+    "images/player.atlas"
   };
 
   private static final String[] level2Sounds = {"sounds/Impact4.ogg"};
+
   private static final String backgroundMusic = "sounds/BGM_03_mp3.mp3";
+
   private static final String[] level2Music = {backgroundMusic};
 
   private final TerrainFactory terrainFactory;
@@ -76,24 +83,67 @@ public class Level2GameArea extends GameArea {
   public void create() {
     loadAssets();
 
+    // Spawn the Level 2 background before the terrain.
+    spawnBackground();
+
     spawnTerrain();
     spawnConfigEntities();
     player = spawnPlayer();
   }
 
+  /**
+   * Creates the Level 2 background.
+   *
+   * <p>The background uses a single image, Background-2.png, with a
+   * parallax factor of 0.30. This means the background moves at 30%
+   * of the camera movement, creating the desired parallax effect.
+   */
+  private void spawnBackground() {
+    BackgroundRenderComponent backgroundComponent =
+        new BackgroundRenderComponent(camera);
+
+    // Level 2 background with 30% parallax.
+    backgroundComponent.addLayer(
+        "images/Background-2.png",
+        0.30f,
+        60f,
+        33.515625f,
+        -1.50f);
+
+    // Create the background entity.
+    Entity background =
+        new Entity().addComponent(backgroundComponent);
+
+    // Position the background in the game world.
+    background.setPosition(-20f, -10f);
+
+    // Add the background to the game area.
+    spawnEntity(background);
+  }
+
   private void spawnTerrain() {
     // Background terrain
-    terrain = terrainFactory.createTerrain(TerrainFactory.TerrainType.BACKGROUND_DESERT);
+    terrain =
+        terrainFactory.createTerrain(
+            TerrainFactory.TerrainType.BACKGROUND_DESERT);
+
     spawnEntity(new Entity().addComponent(terrain));
 
     // Terrain walls
     float tileSize = terrain.getTileSize();
     GridPoint2 tileBounds = terrain.getMapBounds(0);
-    Vector2 worldBounds = new Vector2(tileBounds.x * tileSize, tileBounds.y * tileSize);
+
+    Vector2 worldBounds =
+        new Vector2(
+            tileBounds.x * tileSize,
+            tileBounds.y * tileSize);
 
     // Left wall
     spawnEntityAt(
-        ObstacleFactory.createWall(WALL_WIDTH, worldBounds.y), GridPoint2Utils.ZERO, false, false);
+        ObstacleFactory.createWall(WALL_WIDTH, worldBounds.y),
+        GridPoint2Utils.ZERO,
+        false,
+        false);
 
     // Top wall
     spawnEntityAt(
@@ -104,25 +154,42 @@ public class Level2GameArea extends GameArea {
 
     // Bottom wall
     spawnEntityAt(
-        ObstacleFactory.createWall(worldBounds.x, WALL_WIDTH), GridPoint2Utils.ZERO, false, false);
+        ObstacleFactory.createWall(worldBounds.x, WALL_WIDTH),
+        GridPoint2Utils.ZERO,
+        false,
+        false);
   }
 
   private Entity spawnPlayer() {
     Entity newPlayer = PlayerFactory.createPlayer();
-    newPlayer.getEvents().addListener("grappleRequested", this::checkSuccessfulGrapple);
 
-    KeyboardPlayerInputComponent input = newPlayer.getComponent(KeyboardPlayerInputComponent.class);
+    newPlayer
+        .getEvents()
+        .addListener("grappleRequested", this::checkSuccessfulGrapple);
+
+    KeyboardPlayerInputComponent input =
+        newPlayer.getComponent(
+            KeyboardPlayerInputComponent.class);
+
     if (input != null) {
       input.setCameraComponent(cameraComponent);
     }
-    spawnEntityAt(newPlayer, config.getPlayerSpawn(), true, true);
+
+    spawnEntityAt(
+        newPlayer,
+        config.getPlayerSpawn(),
+        true,
+        true);
 
     return newPlayer;
   }
 
   /** Plays the background music. */
   private void playMusic() {
-    Music music = ServiceLocator.getResourceService().getAsset(backgroundMusic, Music.class);
+    Music music =
+        ServiceLocator.getResourceService()
+            .getAsset(backgroundMusic, Music.class);
+
     music.setLooping(true);
     music.setVolume(0.3f);
     music.play();
@@ -132,14 +199,18 @@ public class Level2GameArea extends GameArea {
   private void loadAssets() {
     logger.debug("Loading assets");
 
-    ResourceService resourceService = ServiceLocator.getResourceService();
+    ResourceService resourceService =
+        ServiceLocator.getResourceService();
+
     resourceService.loadTextures(level2Textures);
     resourceService.loadTextureAtlases(level2TexturesAtlas);
     resourceService.loadSounds(level2Sounds);
     resourceService.loadMusic(level2Music);
 
     while (!resourceService.loadForMillis(10)) {
-      logger.info("Loading... {}%", resourceService.getProgress());
+      logger.info(
+          "Loading... {}%",
+          resourceService.getProgress());
     }
   }
 
@@ -147,7 +218,9 @@ public class Level2GameArea extends GameArea {
   private void unloadAssets() {
     logger.debug("Unloading assets");
 
-    ResourceService resourceService = ServiceLocator.getResourceService();
+    ResourceService resourceService =
+        ServiceLocator.getResourceService();
+
     resourceService.unloadAssets(level2Textures);
     resourceService.unloadAssets(level2TexturesAtlas);
     resourceService.unloadAssets(level2Sounds);
@@ -158,7 +231,11 @@ public class Level2GameArea extends GameArea {
   @Override
   public void dispose() {
     super.dispose();
-    ServiceLocator.getResourceService().getAsset(backgroundMusic, Music.class).stop();
+
+    ServiceLocator.getResourceService()
+        .getAsset(backgroundMusic, Music.class)
+        .stop();
+
     this.unloadAssets();
   }
 }
