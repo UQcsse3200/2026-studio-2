@@ -132,7 +132,7 @@ public class ObstacleFactory {
     return new Entity()
         .addComponent(new TextureRenderComponent("images/Greek Statues Pack I/Brute.png"))
         .addComponent(new PhysicsComponent().setBodyType(BodyType.StaticBody))
-        .addComponent(new ColliderComponent().setLayer(PhysicsLayer.DEFAULT));
+        .addComponent(new ColliderComponent().setLayer(PhysicsLayer.NONE));
   }
 
   /**
