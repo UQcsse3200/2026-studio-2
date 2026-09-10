@@ -31,6 +31,9 @@ public class ItemUseComponent extends Component {
   private CombatStatsComponent combatStats;
   private long ropeReadyTimeMs;
 
+  private float extraSpeedMultiplier = 1f;
+  private long speedPotionEndTime;
+
   @Override
   public void create() {
     inventory = entity.getComponent(InventoryComponent.class);
@@ -228,6 +231,13 @@ public class ItemUseComponent extends Component {
   private boolean useSpeedPotion() {
     if (!inventory.hasItem(ItemType.SpeedPotion)) {
       logger.debug("No speed potion available to use");
+      entity.getEvents().trigger("itemUseFailed", ItemType.SpeedPotion);
+      return false;
+    }
+
+    PlayerActions playerActions = entity.getComponent(PlayerActions.class);
+    if (playerActions != null && playerActions.isSpeedPotionActive()) {
+      logger.debug("Speed potion buff is already active");
       entity.getEvents().trigger("itemUseFailed", ItemType.SpeedPotion);
       return false;
     }

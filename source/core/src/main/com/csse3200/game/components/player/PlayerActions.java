@@ -162,4 +162,10 @@ public class PlayerActions extends Component {
       updateSpeed();
     }
   }
+
+  public boolean isSpeedPotionActive() {
+    GameTime time = ServiceLocator.getTimeSource();
+
+    return extraSpeedMultiplier != 1f && time != null && time.getTime() < speedPotionEndTimeMs;
+  }
 }
