@@ -1,6 +1,7 @@
 package com.csse3200.game.entities.configs;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.utils.Align;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,10 +30,54 @@ public class TextConfig {
   public int padding = 16;
   public int borderThickness = 3;
 
+  // Optional path to a bitmap font (.fnt), relative to assets, e.g. "fonts/scroll.fnt".
+  // Leave null/omit to use the skin's default font.
+  public String fontPath = null;
+
+  // Horizontal alignment of the text within the box: "left", "center"/"centre", or "right".
+  public String textAlignment = "center";
+
   // The pages of text to be displayed, in order. The box shows pages[0] first; each time the
   // fully-revealed page is dismissed (ENTER), it moves on to the next entry, and only closes for
   // good after the last one.
   public List<String> pages = new ArrayList<>(List.of("Test text"));
+
+  public Color getTextColour() {
+    return parseColor(textColour, Color.BLACK);
+  }
+
+  public Color getBackgroundColour() {
+    return parseColor(backgroundColour, Color.TAN);
+  }
+
+  public Color getBorderColour() {
+    return parseColor(borderColour, Color.BROWN);
+  }
+
+  public int getTextAlignment() {
+    return parseAlignment(textAlignment);
+  }
+
+  /**
+   * Resolves a horizontal alignment name ("left", "center"/"centre", "right") to its {@link Align}
+   * constant. Falls back to {@code fallback} if the value is missing or unrecognised.
+   */
+  private static int parseAlignment(String value) {
+    if (value == null || value.isBlank()) {
+      return Align.center;
+    }
+    switch (value.trim().toLowerCase()) {
+      case "left":
+        return Align.left;
+      case "right":
+        return Align.right;
+      case "center":
+      case "centre":
+        return Align.center;
+      default:
+        return Align.center;
+    }
+  }
 
   /**
    * Resolves a colour reference like "Color.WHITE" or "WHITE" against {@link Color}'s public static
@@ -57,17 +102,5 @@ public class TextConfig {
       // fall through to fallback
     }
     return fallback;
-  }
-
-  public Color getTextColour() {
-    return parseColor(textColour, Color.BLACK);
-  }
-
-  public Color getBackgroundColour() {
-    return parseColor(backgroundColour, Color.TAN);
-  }
-
-  public Color getBorderColour() {
-    return parseColor(borderColour, Color.BROWN);
   }
 }

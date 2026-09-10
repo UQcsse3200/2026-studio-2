@@ -12,6 +12,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
+import com.badlogic.gdx.utils.Align;
 import com.csse3200.game.ui.UIComponent;
 import java.util.Collections;
 import java.util.List;
@@ -30,6 +31,7 @@ public class TextBoxComponent extends UIComponent {
   private final int maxWidth;
   private final int padding;
   private final int borderThickness;
+  private final int textAlignment;
   private final List<String> pages;
   private final BitmapFont customFont;
   private int currentPageIndex = 0;
@@ -42,13 +44,15 @@ public class TextBoxComponent extends UIComponent {
   private Table table;
   private Label label;
 
-  // Boxes stay on screen until ENTER is pressed: first press reveals the rest of the current
+  // Boxes stay on screen until TAB is pressed: first press reveals the rest of the current
   // page immediately (if it's still typing). A second press moves on to the next page, if any -
-  // only once the last page has been fully shown does ENTER dismiss the box entirely.
+  // only once the last page has been fully shown does TAB dismiss the box entirely.
 
   /**
    * @param fontPath path to a bitmap font (.fnt) file, relative to assets, e.g. "fonts/scroll.fnt".
    *     Pass {@code null} to use the skin's default font.
+   * @param textAlignment horizontal alignment of the text within the box, e.g. {@link Align#left},
+   *     {@link Align#center}, {@link Align#right}.
    */
   public TextBoxComponent(
       float xPos,
@@ -61,6 +65,7 @@ public class TextBoxComponent extends UIComponent {
       int padding,
       int borderThickness,
       String fontPath,
+      int textAlignment,
       List<String> pages) {
 
     this.xPos = xPos;
@@ -72,93 +77,9 @@ public class TextBoxComponent extends UIComponent {
     this.padding = padding;
     this.borderColour = borderColour;
     this.borderThickness = borderThickness;
+    this.textAlignment = textAlignment;
     this.pages = (pages == null || pages.isEmpty()) ? Collections.singletonList("") : pages;
     this.customFont = loadFont(fontPath);
-  }
-
-  /** Single-page convenience constructor with a custom font. */
-  public TextBoxComponent(
-      float xPos,
-      float yPos,
-      Color textColour,
-      Color backgroundColour,
-      Color borderColour,
-      float charsPerSecond,
-      int maxWidth,
-      int padding,
-      int borderThickness,
-      String fontPath,
-      String text) {
-    this(
-        xPos,
-        yPos,
-        textColour,
-        backgroundColour,
-        borderColour,
-        charsPerSecond,
-        maxWidth,
-        padding,
-        borderThickness,
-        fontPath,
-        Collections.singletonList(text));
-  }
-
-  /**
-   * Multi-page convenience constructor using the skin's default font (kept for backwards
-   * compatibility).
-   */
-  public TextBoxComponent(
-      float xPos,
-      float yPos,
-      Color textColour,
-      Color backgroundColour,
-      Color borderColour,
-      float charsPerSecond,
-      int maxWidth,
-      int padding,
-      int borderThickness,
-      List<String> pages) {
-    this(
-        xPos,
-        yPos,
-        textColour,
-        backgroundColour,
-        borderColour,
-        charsPerSecond,
-        maxWidth,
-        padding,
-        borderThickness,
-        null,
-        pages);
-  }
-
-  /**
-   * Single-page convenience constructor using the skin's default font (kept for backwards
-   * compatibility).
-   */
-  public TextBoxComponent(
-      float xPos,
-      float yPos,
-      Color textColour,
-      Color backgroundColour,
-      Color borderColour,
-      float charsPerSecond,
-      int maxWidth,
-      int padding,
-      int borderThickness,
-      String text) {
-    this(
-        xPos,
-        yPos,
-        textColour,
-        backgroundColour,
-        borderColour,
-        charsPerSecond,
-        maxWidth,
-        padding,
-        borderThickness,
-        null,
-        Collections.singletonList(text));
   }
 
   /** Loads a bitmap font from assets, or returns null (meaning "use the skin's default font"). */
@@ -198,7 +119,7 @@ public class TextBoxComponent extends UIComponent {
     pixmap.setColor(this.backgroundColour);
     pixmap.fill();
 
-    // Subtle curled shading down the paper's left and right edges
+    // Shading down the paper's left and right edges
     Color edgeHighlight = this.backgroundColour.cpy().lerp(Color.WHITE, 0.25f);
     Color edgeShadow = this.backgroundColour.cpy().mul(0.85f, 0.85f, 0.85f, 1f);
     pixmap.setColor(edgeHighlight);
@@ -225,7 +146,7 @@ public class TextBoxComponent extends UIComponent {
     pixmap.dispose();
 
     NinePatch patch = new NinePatch(texture, paperEdge, paperEdge, rodHeight, rodHeight);
-    cachedBackground = new NinePatchDrawable(patch);
+    this.cachedBackground = new NinePatchDrawable(patch);
     return cachedBackground;
   }
 
@@ -237,13 +158,15 @@ public class TextBoxComponent extends UIComponent {
     pixmap.setColor(this.borderColour);
     pixmap.fillRectangle(0, y, width, rodHeight);
 
-    Color highlight = this.borderColour.cpy().lerp(Color.WHITE, 0.4f);
+    Color highlight = this.borderColour.cpy().lerp(Color.WHITE, 0.3f);
     Color shadow = this.borderColour.cpy().mul(0.7f, 0.7f, 0.7f, 1f);
 
     pixmap.setColor(highlight);
     pixmap.drawLine(0, y + rodHeight / 4, width, y + rodHeight / 4);
     pixmap.setColor(shadow);
     pixmap.drawLine(0, y + rodHeight / 2, width, y + rodHeight / 2);
+    pixmap.setColor(highlight);
+    pixmap.drawLine(0, y + (rodHeight * 3) / 4, width, y + (rodHeight * 3) / 4);
   }
 
   private void applyTextColor() {
@@ -266,7 +189,7 @@ public class TextBoxComponent extends UIComponent {
 
     label = new Label("", skin);
     label.setWrap(true);
-    label.setAlignment(1);
+    label.setAlignment(this.textAlignment);
     applyTextColor();
 
     table.add(label).width(this.maxWidth).pad(this.padding);
@@ -340,7 +263,8 @@ public class TextBoxComponent extends UIComponent {
       y = (worldPos.y / 20f) * screenHeight + 18f;
     }
 
-    table.setPosition(x, y);
+    // alignment = 2 for top to bottom effect
+    table.setPosition(x, y, 2);
     table.setVisible(true);
     label.setVisible(true);
   }
