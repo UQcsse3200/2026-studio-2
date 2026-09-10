@@ -117,7 +117,7 @@ public class TextBoxComponent extends UIComponent {
 
     // Parchment fill
     pixmap.setColor(this.backgroundColour);
-    pixmap.fillRectangle(paperEdge, 0, width - 2*paperEdge, height);
+    pixmap.fillRectangle(paperEdge, 0, width - 2 * paperEdge, height);
 
     // Shading down the paper's left and right edges
     Color edgeShadow = this.backgroundColour.cpy().mul(Color.BROWN);

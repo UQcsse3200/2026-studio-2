@@ -10,7 +10,7 @@ import java.util.List;
 public class TextConfig {
   // All values are default
 
-  // positions
+  // Positions
   public int xPos = 100;
   public int yPos = 100;
 
