@@ -3,7 +3,6 @@ package com.csse3200.game.entities.factories;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.csse3200.game.ai.tasks.AITaskComponent;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.TouchAttackComponent;
@@ -124,19 +123,18 @@ public class NPCFactory {
   /**
    * Creates a stationary shopkeeper the player can interact with to open the shop page.
    *
+   * <p>The shopkeeper has no physics collider, so the player can walk through it.
+   *
    * @return shopkeeper entity
    */
   public static Entity createShopkeeper() {
     Entity shopkeeper =
         new Entity()
             .addComponent(new TextureRenderComponent(SHOPKEEPER_TEXTURE))
-            .addComponent(new PhysicsComponent().setBodyType(BodyType.StaticBody))
-            .addComponent(new ColliderComponent().setLayer(PhysicsLayer.OBSTACLE))
             .addComponent(new ShopNpcComponent());
 
     shopkeeper.getComponent(TextureRenderComponent.class).scaleEntity();
     shopkeeper.scaleHeight(1.5f);
-    PhysicsUtils.setScaledCollider(shopkeeper, 0.6f, 0.3f);
     return shopkeeper;
   }
 
