@@ -23,7 +23,6 @@ import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.physics.components.PhysicsMovementComponent;
 import com.csse3200.game.rendering.AnimationRenderComponent;
-import com.csse3200.game.rendering.TextureRenderComponent;
 import com.csse3200.game.services.ServiceLocator;
 
 /**
@@ -47,9 +46,9 @@ public class EnemyFactory {
     Entity skeletonWarrior = createEnemy(target, config);
 
     AnimationRenderComponent animator =
-            new AnimationRenderComponent(
-                    ServiceLocator.getResourceService()
-                            .getAsset("images/skeleton_warrior.atlas", TextureAtlas.class));
+        new AnimationRenderComponent(
+            ServiceLocator.getResourceService()
+                .getAsset("images/skeleton_warrior.atlas", TextureAtlas.class));
     animator.addAnimation("walk", 0.15f, Animation.PlayMode.LOOP);
     animator.addAnimation("idle", 0.15f, Animation.PlayMode.LOOP);
 
@@ -74,16 +73,16 @@ public class EnemyFactory {
     Entity SkeletonArcher = createEnemy(target, config);
 
     AnimationRenderComponent animator =
-            new AnimationRenderComponent(
-                    ServiceLocator.getResourceService()
-                            .getAsset("images/skeleton_archer.atlas", TextureAtlas.class));
+        new AnimationRenderComponent(
+            ServiceLocator.getResourceService()
+                .getAsset("images/skeleton_archer.atlas", TextureAtlas.class));
     animator.addAnimation("walk", 0.15f, Animation.PlayMode.LOOP);
     animator.addAnimation("idle", 0.15f, Animation.PlayMode.LOOP);
 
     SkeletonArcher
-            // .addComponent(new CombatStatsComponent(config.health, config.baseAttack))
-            .addComponent(animator)
-            .addComponent(new SkeletonAnimationController(target));
+        // .addComponent(new CombatStatsComponent(config.health, config.baseAttack))
+        .addComponent(animator)
+        .addComponent(new SkeletonAnimationController(target));
 
     SkeletonArcher.getComponent(AnimationRenderComponent.class).scaleEntity();
 
@@ -118,7 +117,8 @@ public class EnemyFactory {
     Entity enemy =
         new Entity()
             .addComponent(new PhysicsComponent())
-            .addComponent(new PhysicsMovementComponent())
+            .addComponent(
+                new PhysicsMovementComponent(new Vector2(config.maxSpeed, config.maxSpeed), true))
             .addComponent(new ColliderComponent())
             .addComponent(new HitboxComponent().setLayer(PhysicsLayer.NPC))
             .addComponent(new CombatStatsComponent(config.health, config.baseAttack))
