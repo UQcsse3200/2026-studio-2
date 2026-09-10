@@ -9,8 +9,8 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 /**
- * Pure unit tests for TextConfig. None of this touches Gdx graphics/input, so it runs as a
- * plain JUnit test with no game harness required.
+ * Pure unit tests for TextConfig. None of this touches Gdx graphics/input, so it runs as a plain
+ * JUnit test with no game harness required.
  */
 class TextConfigTest {
 

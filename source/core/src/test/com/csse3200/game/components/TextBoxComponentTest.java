@@ -21,20 +21,18 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 /**
- * NOTE ON TEST STRATEGY
- * ---------------------
- * TextBoxComponent is tightly coupled to LibGDX statics (Gdx.graphics, Gdx.input, Gdx.files) and
- * to scene2d (Stage/Skin via UIComponent.create()). Fully exercising create()/draw() - the
- * typewriter reveal timing, TAB-to-skip, TAB-to-advance-page, TAB-to-dismiss-on-last-page
- * behaviour, and the on-screen scroll rendering - needs a running (or headless) Gdx app, which
- * this project likely already provides via a shared test extension (e.g. GameExtension) used by
- * other *ComponentTest classes. If so, add `@ExtendWith(GameExtension.class)` here and extend
- * this class to cover that behaviour directly.
+ * NOTE ON TEST STRATEGY --------------------- TextBoxComponent is tightly coupled to LibGDX statics
+ * (Gdx.graphics, Gdx.input, Gdx.files) and to scene2d (Stage/Skin via UIComponent.create()). Fully
+ * exercising create()/draw() - the typewriter reveal timing, TAB-to-skip, TAB-to-advance-page,
+ * TAB-to-dismiss-on-last-page behaviour, and the on-screen scroll rendering - needs a running (or
+ * headless) Gdx app, which this project likely already provides via a shared test extension (e.g.
+ * GameExtension) used by other *ComponentTest classes. If so, add
+ * `@ExtendWith(GameExtension.class)` here and extend this class to cover that behaviour directly.
  *
- * <p>Without that harness, these tests are limited to what's reachable from the constructor
- * alone (which only touches Gdx.files, not graphics/input/scene2d), using a lightweight manual
- * stub of that one static. See TestPlan.md for the manual/integration test cases covering the
- * rest of the component's behaviour.
+ * <p>Without that harness, these tests are limited to what's reachable from the constructor alone
+ * (which only touches Gdx.files, not graphics/input/scene2d), using a lightweight manual stub of
+ * that one static. See TestPlan.md for the manual/integration test cases covering the rest of the
+ * component's behaviour.
  */
 class TextBoxComponentTest {
 
