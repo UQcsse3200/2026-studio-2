@@ -23,6 +23,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Scaling;
+import com.csse3200.game.components.inventory.InventoryComponent;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.UIComponent;
 import java.util.ArrayList;
@@ -73,6 +74,7 @@ public class SpinTheWheelDisplay extends UIComponent {
   private static final Color PRIZE_AMOUNT_COLOUR = new Color(1f, 0.8f, 0.35f, 1f);
 
   private final WheelLogic wheel;
+  private final InventoryComponent inventory;
   private Table table;
   private Group wheelGroup;
   private Table prizeLayer;
@@ -82,8 +84,22 @@ public class SpinTheWheelDisplay extends UIComponent {
   private Label prizeName;
   private Label prizeAmount;
 
+  /**
+   * Creates a wheel that keeps nothing it lands on, for showing it without a player.
+   *
+   * @param items the items the wheel can land on
+   */
   public SpinTheWheelDisplay(List<WheelItem> items) {
+    this(items, null);
+  }
+
+  /**
+   * @param items the items the wheel can land on
+   * @param inventory where prizes are stored, or null when nothing keeps them
+   */
+  public SpinTheWheelDisplay(List<WheelItem> items, InventoryComponent inventory) {
     this.wheel = new WheelLogic(items);
+    this.inventory = inventory;
   }
 
   /**
@@ -415,6 +431,17 @@ public class SpinTheWheelDisplay extends UIComponent {
   }
 
   /**
+   * Stores what the wheel landed on. Nothing is kept when the wheel is shown without a player.
+   *
+   * @param item the item that was won
+   */
+  private void award(WheelItem item) {
+    if (inventory != null && !inventory.addItem(item.type(), item.value())) {
+      logger.info("No room for {} x{}", item.type().getDisplayName(), item.value());
+    }
+  }
+
+  /**
    * Spins the wheel and animates it to a stop with the winning segment under the pointer.
    *
    * @param spinBtn the button that started the spin
@@ -431,6 +458,7 @@ public class SpinTheWheelDisplay extends UIComponent {
                 () -> {
                   wheelGroup.setRotation(wheelGroup.getRotation() % 360f);
                   spinBtn.setDisabled(false);
+                  award(result);
                   showPrize(result);
                 })));
   }

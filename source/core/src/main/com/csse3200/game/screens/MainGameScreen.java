@@ -53,7 +53,7 @@ public class MainGameScreen extends ScreenAdapter {
   private final Renderer renderer;
   private final PhysicsEngine physicsEngine;
   private Entity player;
-  private final SpinTheWheelOverlay wheelOverlay = new SpinTheWheelOverlay(WheelConfig.ITEMS);
+  private final SpinTheWheelOverlay wheelOverlay;
 
   public MainGameScreen(GdxGame game) {
     this.game = game;
@@ -85,6 +85,7 @@ public class MainGameScreen extends ScreenAdapter {
     forestGameArea.create();
     player = forestGameArea.getPlayer();
     player.getEvents().addListener("death", this::onPlayerDeath);
+    wheelOverlay = new SpinTheWheelOverlay(WheelConfig.ITEMS, player);
   }
 
   private void onPlayerDeath() {

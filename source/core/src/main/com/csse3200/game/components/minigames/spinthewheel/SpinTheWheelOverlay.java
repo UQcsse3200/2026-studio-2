@@ -1,5 +1,6 @@
 package com.csse3200.game.components.minigames.spinthewheel;
 
+import com.csse3200.game.components.inventory.InventoryComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.BlurredBackdropDisplay;
@@ -18,12 +19,15 @@ public class SpinTheWheelOverlay {
   private final List<WheelItem> items;
   private boolean openRequested = false;
   private Entity overlay;
+  private final InventoryComponent inventory;
 
   /**
    * @param items the items to show on the wheel
+   * @param player the entity that keeps what the wheel awards
    */
-  public SpinTheWheelOverlay(List<WheelItem> items) {
+  public SpinTheWheelOverlay(List<WheelItem> items, Entity player) {
     this.items = items;
+    this.inventory = player.getComponent(InventoryComponent.class);
   }
 
   /** Asks for the wheel to open. It appears at the end of the current frame. */
@@ -50,7 +54,7 @@ public class SpinTheWheelOverlay {
 
   private void open() {
     BlurredBackdropDisplay backdrop = new BlurredBackdropDisplay(ScreenBlur.capture());
-    SpinTheWheelDisplay display = new SpinTheWheelDisplay(items);
+    SpinTheWheelDisplay display = new SpinTheWheelDisplay(items, inventory);
 
     overlay =
         new Entity()

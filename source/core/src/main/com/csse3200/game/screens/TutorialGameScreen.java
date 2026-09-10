@@ -51,7 +51,7 @@ public class TutorialGameScreen extends ScreenAdapter {
   private final GdxGame game;
   private final Renderer renderer;
   private final PhysicsEngine physicsEngine;
-  private final SpinTheWheelOverlay wheelOverlay = new SpinTheWheelOverlay(WheelConfig.ITEMS);
+  private final SpinTheWheelOverlay wheelOverlay;
 
   public TutorialGameScreen(GdxGame game) {
     this.game = game;
@@ -91,7 +91,9 @@ public class TutorialGameScreen extends ScreenAdapter {
     tutorialGameArea.create();
 
     // Follow the player with the camera.
-    renderer.getCamera().setTarget(tutorialGameArea.getPlayer());
+    Entity player = tutorialGameArea.getPlayer();
+    renderer.getCamera().setTarget(player);
+    wheelOverlay = new SpinTheWheelOverlay(WheelConfig.ITEMS, player);
   }
 
   @Override
