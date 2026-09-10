@@ -6,81 +6,74 @@ import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.ProjectileFact;
 import com.csse3200.game.services.ServiceLocator;
 
-/**
- * AI task that allows an enemy to summon an enemy when the player is in range
- */
+/** AI task that allows an enemy to summon an enemy when the player is in range */
 public class SummonTask extends DefaultTask implements PriorityTask {
-    private final Entity target;
-    private final int priority;
-    private final float attackRange;
-    private final float cooldown;
+  private final Entity target;
+  private final int priority;
+  private final float attackRange;
+  private final float cooldown;
 
-    private long lastSummonTime;
+  private long lastSummonTime;
 
-    /**
-     * Creates a summon attack task
-     *
-     * @param target target entity to perform the summoning
-     * @param priority task priority while target is in range
-     * @param attackRange maximum distance at which the enemy can fire
-     * @param cooldown seconds between attacks
-     */
-    public SummonTask(
-            Entity target,
-            int priority,
-            float attackRange,
-            float cooldown,
-        this.target = target;
-        this.priority = priority;
-        this.attackRange = attackRange;
-        this.cooldown = cooldown;
+  /**
+   * Creates a summon attack task
+   *
+   * @param target target entity to perform the summoning
+   * @param priority task priority while target is in range
+   * @param attackRange maximum distance at which the enemy can fire
+   * @param cooldown seconds between attacks
+   */
+  public SummonTask(Entity target, int priority, float attackRange, float cooldown) {
+    this.target = target;
+    this.priority = priority;
+    this.attackRange = attackRange;
+    this.cooldown = cooldown;
+  }
+
+  @Override
+  public void start() {
+    super.start();
+  }
+
+  @Override
+  public void update() {
+    long currentTime = ServiceLocator.getTimeSource().getTime();
+
+    if (currentTime - lastAttackTime >= cooldown * 1000) {
+      summonSkeleton();
+      lastSummonTime = currentTime;
+    }
+  }
+
+  @Override
+  public int getPriority() {
+    float distance = owner.getEntity().getPosition().dst(target.getPosition());
+
+    if (distance <= attackRange) {
+      return priority;
     }
 
-    @Override
-    public void start() {
-        super.start();
-    }
+    return -1;
+  }
 
-    @Override
-    public void update() {
-        long currentTime = ServiceLocator.getTimeSource().getTime();
+  private void fireProjectile() {
+    Entity enemy = owner.getEntity();
 
-        if (currentTime - lastAttackTime >= cooldown * 1000) {
-            summonSkeleton();
-            lastSummonTime = currentTime;
-        }
-    }
+    Entity projectile =
+        ProjectileFact.createEnemyProjectile(
+            target.getPosition(), damage, projectileSpeed, projectileLifetime);
 
-    @Override
-    public int getPriority() {
-        float distance = owner.getEntity().getPosition().dst(target.getPosition());
+    projectile.setPosition(enemy.getCenterPosition());
+    ServiceLocator.getEntityService().register(projectile);
+  }
 
-        if (distance <= attackRange) {
-            return priority;
-        }
+  private void summonSkeleton() {
+    Entity necromancer = owner.getEntity();
 
-        return -1;
-    }
+    Entity skeletonWarrior = EnemyFactory.createSkeletonWarrior(target);
 
-    private void fireProjectile() {
-        Entity enemy = owner.getEntity();
+    skeletonWarrior.setPosition(necromancer.getPosition().x + 1f, necromancer.getPosition().y);
 
-        Entity projectile =
-                ProjectileFact.createEnemyProjectile(
-                        target.getPosition(), damage, projectileSpeed, projectileLifetime);
-
-        projectile.setPosition(enemy.getCenterPosition());
-        ServiceLocator.getEntityService().register(projectile);
-    }
-
-    private void summonSkeleton() {
-        Entity necromancer = owner.getEntity();
-
-        Entity skeletonWarrior = EnemyFactory.createSkeletonWarrior(target);
-
-        skeletonWarrior.setPosition(necromancer.getPosition().x + 1f, necromancer.getPosition().y);
-
-        ServiceLocator.getEntityService().register(skeleton);
-
-    }
+    ServiceLocator.getEntityService().register(skeleton);
+  }
 }
