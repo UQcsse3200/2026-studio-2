@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.csse3200.game.components.CameraComponent;
+import com.csse3200.game.components.item.weapons.bow.grapple.GrappleComponent;
 import com.csse3200.game.input.InputComponent;
 import com.csse3200.game.utils.math.Vector2Utils;
 
@@ -21,6 +22,7 @@ public class KeyboardPlayerInputComponent extends InputComponent {
   private boolean sprintHeld;
   private CameraComponent cameraComponent;
   private boolean attackHeld;
+  private boolean rightMouseHeld;
 
   public KeyboardPlayerInputComponent() {
     super(5);
@@ -165,9 +167,17 @@ public class KeyboardPlayerInputComponent extends InputComponent {
       return triggerAimedEvent("melee", screenX, screenY);
     }
     if (button == Buttons.RIGHT) {
+      rightMouseHeld = true;
       return triggerAimedEvent("shoot", screenX, screenY);
     }
     return false;
+  }
+
+  /**
+   * @return true while the right mouse button is being held down
+   */
+  public boolean isRightMouseHeld() {
+    return rightMouseHeld;
   }
 
   private boolean triggerAimedEvent(String eventName, int screenX, int screenY) {
@@ -193,6 +203,7 @@ public class KeyboardPlayerInputComponent extends InputComponent {
     }
 
     if (button == Buttons.RIGHT) {
+      rightMouseHeld = false;
       entity.getEvents().trigger("stopShoot");
       return true;
     }

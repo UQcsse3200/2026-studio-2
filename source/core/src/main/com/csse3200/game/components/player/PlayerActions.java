@@ -35,11 +35,18 @@ public class PlayerActions extends Component {
     entity.getEvents().addListener("sprint", this::sprint);
     entity.getEvents().addListener("sprintStop", this::stopSprinting);
     entity.getEvents().addListener("togglePaused", this::togglePause);
+
   }
 
   @Override
   public void update() {
     isGrounded = checkGrounded();
+
+    // The grapple is a hold action: let go of right click and the rope drops
+    if (isGrappling() && !isRightMouseHeld()) {
+      grapple.release();
+    }
+
     if (!moving) {
       return;
     }
@@ -53,6 +60,11 @@ public class PlayerActions extends Component {
 
   private boolean isGrappling() {
     return grapple != null && grapple.isAttached();
+  }
+
+  private boolean isRightMouseHeld() {
+    KeyboardPlayerInputComponent input = entity.getComponent(KeyboardPlayerInputComponent.class);
+    return input != null && input.isRightMouseHeld();
   }
 
   private void updateSpeed() {

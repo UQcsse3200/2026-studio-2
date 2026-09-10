@@ -2,9 +2,12 @@ package com.csse3200.game.components.item.weapons.bow.grapple;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.Joint;
 import com.badlogic.gdx.physics.box2d.joints.DistanceJoint;
 import com.badlogic.gdx.physics.box2d.joints.DistanceJointDef;
+import com.badlogic.gdx.utils.Array;
 import com.csse3200.game.components.Component;
+import com.csse3200.game.components.player.KeyboardPlayerInputComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.ProjectileFactory;
 import com.csse3200.game.physics.components.PhysicsComponent;
@@ -14,19 +17,21 @@ import com.csse3200.game.services.ServiceLocator;
 public class GrappleComponent extends Component {
 
   private static final float GRAPPLE_COOLDOWN = 2f;
-  private static final float SWING_FORCE = 5f;
+  private static final float SWING_FORCE = 7f;
   private static final float MAX_SWING_SPEED = 7f;
   private static final float SWING_DAMPING = 0.5f;
   private static final float RELEASE_DAMPING = 0f;
 
   private PhysicsComponent physicsComponent;
   private DistanceJoint ropeJoint;
-  private Vector2 anchorPoint;
   private float cooldownRemaining = 0f;
 
   // Box2D locks the world during a step, so attachments are queued and built next frame
   private Body pendingAnchorBody;
   private Vector2 pendingAnchorPoint;
+
+  // Reused when checking the joint is still alive, to avoid allocating every frame
+  private final Array<Joint> liveJoints = new Array<>();
 
   @Override
   public void create() {
@@ -41,11 +46,27 @@ public class GrappleComponent extends Component {
     if (cooldownRemaining > 0f) {
       cooldownRemaining -= ServiceLocator.getTimeSource().getDeltaTime();
     }
+    // Box2D silently destroys the joint if its anchor body is removed (e.g. a grappled enemy dies)
+    if (ropeJoint != null && !jointIsAlive()) {
+      forgetJoint();
+    }
     if (pendingAnchorBody != null) {
       createJoint(pendingAnchorBody, pendingAnchorPoint);
       pendingAnchorBody = null;
       pendingAnchorPoint = null;
     }
+  }
+
+  private boolean jointIsAlive() {
+    liveJoints.clear();
+    ServiceLocator.getPhysicsService().getPhysics().getWorld().getJoints(liveJoints);
+    return liveJoints.contains(ropeJoint, true);
+  }
+
+  /** Clears rope state after the joint has already gone, without touching the dead joint. */
+  private void forgetJoint() {
+    ropeJoint = null;
+    physicsComponent.getBody().setLinearDamping(RELEASE_DAMPING);
   }
 
   /** Launches a grapple arrow, unless one is in flight, attached, or still on cooldown. */
@@ -82,7 +103,6 @@ public class GrappleComponent extends Component {
   }
 
   private void createJoint(Body anchorBody, Vector2 point) {
-    anchorPoint = point.cpy();
     Body playerBody = physicsComponent.getBody();
 
     DistanceJointDef def = new DistanceJointDef();
@@ -90,13 +110,13 @@ public class GrappleComponent extends Component {
     def.bodyB = playerBody;
 
     // Convert world anchor coordinates to the anchor body's local space
-    def.localAnchorA.set(anchorBody.getLocalPoint(anchorPoint));
+    def.localAnchorA.set(anchorBody.getLocalPoint(point));
 
     // Pivot from the player's centre of mass so the pendulum hangs evenly
     def.localAnchorB.set(playerBody.getLocalCenter());
 
     // Fixed length keeps the player on the arc so momentum carries to the other side
-    def.length = playerBody.getPosition().dst(anchorPoint);
+    def.length = playerBody.getWorldCenter().dst(point);
     def.frequencyHz = 0f; // 0 = rigid rod, raise for a springier rope
     def.dampingRatio = 0f;
     def.collideConnected = true;
@@ -114,10 +134,16 @@ public class GrappleComponent extends Component {
     if (!isAttached()) {
       return;
     }
+
     ServiceLocator.getPhysicsService().getPhysics().getWorld().destroyJoint(ropeJoint);
+    forgetJoint();
+  }
+
+  @Override
+  public void dispose() {
+    // The physics world disposes its own joints on teardown, and destroying the player body
+    // takes this joint with it, so just drop the reference.
     ropeJoint = null;
-    anchorPoint = null;
-    physicsComponent.getBody().setLinearDamping(RELEASE_DAMPING);
   }
 
   /**
@@ -138,8 +164,8 @@ public class GrappleComponent extends Component {
       return;
     }
 
-    // Vector from the anchor out to the player
-    Vector2 r = entity.getCenterPosition().sub(anchorPoint);
+    // Vector from the anchor out to the player (live, so it tracks a moving anchor)
+    Vector2 r = entity.getCenterPosition().sub(ropeJoint.getAnchorA());
 
     // Rotate 90 degrees one way or the other depending on which key is held
     Vector2 tangent = direction > 0 ? new Vector2(-r.y, r.x).nor() : new Vector2(r.y, -r.x).nor();
@@ -151,7 +177,11 @@ public class GrappleComponent extends Component {
     return ropeJoint != null;
   }
 
+  /**
+   * @return the rope's current world anchor, tracking the anchor body if it moves, or null when not
+   *     attached
+   */
   public Vector2 getAnchorPoint() {
-    return anchorPoint == null ? null : anchorPoint.cpy();
+    return ropeJoint == null ? null : ropeJoint.getAnchorA().cpy();
   }
 }

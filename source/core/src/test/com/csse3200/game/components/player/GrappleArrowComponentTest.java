@@ -32,8 +32,10 @@ class GrappleArrowComponentTest {
     return fixture;
   }
 
+  /** An arrow already well clear of the shooter, so the "just left the player" guard is satisfied. */
   private Entity arrowFiredBy(Entity shooter) {
     Entity arrow = new Entity().addComponent(new GrappleArrowComponent(shooter));
+    arrow.setPosition(6f, 0f);
     arrow.create();
     return arrow;
   }
@@ -51,13 +53,31 @@ class GrappleArrowComponentTest {
   }
 
   @Test
-  void shouldIgnoreNonTerrainHits() {
+  void shouldAttachWhenHittingGround() {
     GrappleComponent grapple = spy(new GrappleComponent());
     Entity arrow = arrowFiredBy(new Entity().addComponent(grapple));
 
     arrow
         .getEvents()
-        .trigger("collisionStart", mock(Fixture.class), fixtureOnLayer(PhysicsLayer.NPC));
+        .trigger("collisionStart", mock(Fixture.class), fixtureOnLayer(PhysicsLayer.GROUND));
+
+    verify(grapple).attachTo(any(Body.class), any(Vector2.class));
+  }
+
+  @Test
+  void shouldOnlyLatchOntoSolidTerrain() {
+    GrappleComponent grapple = spy(new GrappleComponent());
+    Entity arrow = arrowFiredBy(new Entity().addComponent(grapple));
+
+    for (short layer :
+        new short[] {
+          PhysicsLayer.PLAYER,
+          PhysicsLayer.PLAYER_PROJECTILE,
+          PhysicsLayer.WALL,
+          PhysicsLayer.NPC
+        }) {
+      arrow.getEvents().trigger("collisionStart", mock(Fixture.class), fixtureOnLayer(layer));
+    }
 
     verify(grapple, never()).attachTo(any(Body.class), any(Vector2.class));
   }
@@ -72,6 +92,23 @@ class GrappleArrowComponentTest {
     arrow.getEvents().trigger("collisionStart", mock(Fixture.class), wall);
 
     verify(grapple, times(1)).attachTo(any(Body.class), any(Vector2.class));
+  }
+
+  @Test
+  void shouldNotLatchWhileStillOnTopOfTheShooter() {
+    Entity shooter = new Entity();
+    GrappleComponent grapple = spy(new GrappleComponent());
+    shooter.addComponent(grapple);
+
+    Entity arrow = new Entity().addComponent(new GrappleArrowComponent(shooter));
+    arrow.setPosition(0f, 0f); // spawned right on the player, overlapping their platform
+    arrow.create();
+
+    arrow
+        .getEvents()
+        .trigger("collisionStart", mock(Fixture.class), fixtureOnLayer(PhysicsLayer.GROUND));
+
+    verify(grapple, never()).attachTo(any(Body.class), any(Vector2.class));
   }
 
   @Test

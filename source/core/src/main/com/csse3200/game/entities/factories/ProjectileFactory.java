@@ -14,19 +14,19 @@ import com.csse3200.game.rendering.item.ArrowRenderComponent;
 /** Factory for player and enemy projectile entities. */
 public class ProjectileFactory {
   public static final int STANDARD_ARROW_DAMAGE = 10;
-  public static final float STANDARD_ARROW_SPEED = 15f;
-  public static final float STANDARD_ARROW_RANGE = 15f;
+  public static final float STANDARD_ARROW_SPEED = 18f;
+  public static final float STANDARD_ARROW_RANGE = 26f;
 
   public static final int COLD_ARROW_DAMAGE = 8;
-  public static final float COLD_ARROW_SPEED = 14f;
-  public static final float COLD_ARROW_RANGE = 15f;
+  public static final float COLD_ARROW_SPEED = 16f;
+  public static final float COLD_ARROW_RANGE = 24f;
 
   public static final int FIRE_ARROW_DAMAGE = 12;
-  public static final float FIRE_ARROW_SPEED = 15f;
-  public static final float FIRE_ARROW_RANGE = 15f;
+  public static final float FIRE_ARROW_SPEED = 18f;
+  public static final float FIRE_ARROW_RANGE = 26f;
 
-  public static final float GRAPPLE_ARROW_SPEED = 16f;
-  public static final float GRAPPLE_ARROW_RANGE = 16f;
+  public static final float GRAPPLE_ARROW_SPEED = 22f;
+  public static final float GRAPPLE_ARROW_RANGE = 28f;
 
   // Overloads
   public static Entity createPlayerArrow(Vector2 position, Vector2 direction) {

@@ -8,9 +8,9 @@ import com.badlogic.gdx.graphics.Color;
  */
 public enum ArrowType {
   STANDARD(Color.WHITE),
-  COLD(new Color(0.3f, 0.8f, 1f, 1f)), // Cyan / Ice Blue
-  FIRE(new Color(1f, 0.4f, 0.1f, 1f)), // Fiery Red-Orange
-  GRAPPLE(Color.LIGHT_GRAY);
+  COLD(Color.BLUE),
+  FIRE(Color.RED),
+  GRAPPLE(Color.BROWN);
 
   private static final String TEXTURE_PATH = "images/arrow.png";
   private final Color tintColor;

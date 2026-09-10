@@ -4,10 +4,16 @@ import com.badlogic.gdx.physics.box2d.Fixture;
 import com.csse3200.game.components.Component;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.physics.PhysicsLayer;
+import com.csse3200.game.services.ServiceLocator;
 
-/** Rides on a fired grapple arrow and hooks the player on when it hits something solid. */
+/** Rides on a fired grapple arrow and hooks the player onto solid ground or a platform. */
 public class GrappleArrowComponent extends Component {
-  private static final short TARGETS = (short) (PhysicsLayer.OBSTACLE | PhysicsLayer.GROUND);
+  /** The grapple only sticks to solid terrain - not enemies, boundary walls, or trigger zones. */
+  private static final short GRAPPLE_TARGETS = PhysicsLayer.SOLID; // GROUND | OBSTACLE
+
+  /** The arrow must get this far from the shooter before it can hook, so it doesn't grab the
+   * platform the player is standing on the instant it spawns. */
+  private static final float MIN_TRAVEL = 1.2f;
 
   private final Entity shooter;
   private boolean spent = false;
@@ -25,8 +31,10 @@ public class GrappleArrowComponent extends Component {
     if (spent) {
       return;
     }
-    // Only latch onto terrain, not enemies or pickups
-    if (!PhysicsLayer.contains(TARGETS, other.getFilterData().categoryBits)) {
+    if (!PhysicsLayer.contains(GRAPPLE_TARGETS, other.getFilterData().categoryBits)) {
+      return;
+    }
+    if (entity.getCenterPosition().dst2(shooter.getCenterPosition()) < MIN_TRAVEL * MIN_TRAVEL) {
       return;
     }
     spent = true;
@@ -34,6 +42,11 @@ public class GrappleArrowComponent extends Component {
     GrappleComponent grapple = shooter.getComponent(GrappleComponent.class);
     if (grapple != null) {
       grapple.attachTo(other.getBody(), entity.getCenterPosition());
+    }
+
+    // The rope takes over from here; drop the arrow so it doesn't fly on past the anchor
+    if (ServiceLocator.getEntityService() != null) {
+      ServiceLocator.getEntityService().scheduleRemoval(entity);
     }
   }
 }

@@ -21,6 +21,10 @@ public class ArrowProjectileComponent extends Component {
   private static final short TERRAIN = (short) (PhysicsLayer.GROUND | PhysicsLayer.OBSTACLE);
   private static final float ARC_GRAVITY_SCALE = 0.4f;
 
+  // An arrow ignores hits until it has cleared this distance from its spawn, so it doesn't die on
+  // frame one when it spawns touching the wall/platform the shooter is standing against.
+  private static final float MIN_TRAVEL = 0.5f;
+
   private final Entity shooter;
   private final Vector2 direction;
   private final float speed;
@@ -65,7 +69,8 @@ public class ArrowProjectileComponent extends Component {
 
     Body body = physicsComponent.getBody();
     body.setFixedRotation(true);
-    body.setGravityScale(ARC_GRAVITY_SCALE);
+    // The grapple line needs to fly straight so it lands where you aimed; combat arrows arc.
+    body.setGravityScale(arrowType == ArrowType.GRAPPLE ? 0f : ARC_GRAVITY_SCALE);
     body.setLinearDamping(0f);
     body.setBullet(true);
     body.setLinearVelocity(direction.cpy().scl(speed));
@@ -113,6 +118,12 @@ public class ArrowProjectileComponent extends Component {
       return;
     }
 
+    // The grapple line does no damage and sticks via GrappleArrowComponent; a miss just runs out
+    // of range. It should never be killed by a collision here.
+    if (arrowType == ArrowType.GRAPPLE) {
+      return;
+    }
+
     // Ignore collisions with the shooter entity
     Object userData = other.getBody().getUserData();
     if (userData instanceof BodyUserData) {
@@ -130,24 +141,38 @@ public class ArrowProjectileComponent extends Component {
     }
 
     if (PhysicsLayer.contains(TARGET_LAYERS, otherLayer)) {
-      damageTarget(other);
-      expire();
-    } else if (PhysicsLayer.contains(TERRAIN, otherLayer)) {
+      // Only stop on something we can actually damage; trigger sensors (e.g. the win zone) sit on
+      // the NPC layer too and the arrow should sail straight through them.
+      if (damageTarget(other)) {
+        expire();
+      }
+    } else if (PhysicsLayer.contains(TERRAIN, otherLayer) && hasClearedSpawn()) {
       expire();
     }
   }
 
-  private void damageTarget(Fixture other) {
+  private boolean hasClearedSpawn() {
+    return physicsComponent.getBody().getPosition().dst2(startPosition) > MIN_TRAVEL * MIN_TRAVEL;
+  }
+
+  /**
+   * @return true if a damageable target was hit (so the arrow should stop), false for a non-combat
+   *     collider such as a trigger sensor
+   */
+  private boolean damageTarget(Fixture other) {
     Object userData = other.getBody().getUserData();
     if (!(userData instanceof BodyUserData)) {
-      return;
+      return false;
     }
     Entity target = ((BodyUserData) userData).entity;
     if (target == null || target == entity) {
-      return;
+      return false;
+    }
+    if (target.getComponent(CombatStatsComponent.class) == null) {
+      return false;
     }
 
-    if (combatStats != null && target.getComponent(CombatStatsComponent.class) != null) {
+    if (combatStats != null) {
       target.getEvents().trigger("takeDamage", combatStats);
     }
 
@@ -165,6 +190,7 @@ public class ArrowProjectileComponent extends Component {
       default:
         break;
     }
+    return true;
   }
 
   private void expire() {
