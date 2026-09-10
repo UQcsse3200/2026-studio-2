@@ -16,6 +16,7 @@ public class EnemyConfig extends BaseEntityConfig {
   public int chasePriority;
   public float viewDistance;
   public float maxChaseDistance;
+  public float maxSpeed;
 
   // !!! ADD COINS AND STUFF ONCE MERGED WITH ITEMS TEAM
   public List<ItemDrop> itemDrops = new ArrayList<>();

@@ -117,7 +117,8 @@ public class EnemyFactory {
     Entity enemy =
         new Entity()
             .addComponent(new PhysicsComponent())
-            .addComponent(new PhysicsMovementComponent())
+            .addComponent(
+                new PhysicsMovementComponent(new Vector2(config.maxSpeed, config.maxSpeed), true))
             .addComponent(new ColliderComponent())
             .addComponent(new HitboxComponent().setLayer(PhysicsLayer.NPC))
             .addComponent(new CombatStatsComponent(config.health, config.baseAttack))

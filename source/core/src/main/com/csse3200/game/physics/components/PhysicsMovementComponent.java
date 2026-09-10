@@ -16,6 +16,7 @@ public class PhysicsMovementComponent extends Component implements MovementContr
   private PhysicsComponent physicsComponent;
   private Vector2 targetPosition;
   private boolean movementEnabled = true;
+  private boolean obeysGravity = false;
 
   public PhysicsMovementComponent() {}
 
@@ -23,9 +24,17 @@ public class PhysicsMovementComponent extends Component implements MovementContr
     this.maxSpeed = maxSpeed;
   }
 
+  public PhysicsMovementComponent(Vector2 maxSpeed, boolean obeysGravity) {
+    this.maxSpeed = maxSpeed;
+    this.obeysGravity = obeysGravity;
+  }
+
   @Override
   public void create() {
     physicsComponent = entity.getComponent(PhysicsComponent.class);
+    if (!obeysGravity && physicsComponent != null) {
+      physicsComponent.getBody().setGravityScale(0f);
+    }
   }
 
   @Override
@@ -76,7 +85,11 @@ public class PhysicsMovementComponent extends Component implements MovementContr
   }
 
   private void updateDirection(Body body) {
-    Vector2 desiredVelocity = getDirection().scl(maxSpeed);
+    float desiredX =
+        Math.clamp((targetPosition.cpy().x - entity.getPosition().x) * 10, -maxSpeed.x, maxSpeed.x);
+    float desiredY =
+        Math.clamp((targetPosition.cpy().y - entity.getPosition().y) * 10, -maxSpeed.y, maxSpeed.y);
+    Vector2 desiredVelocity = new Vector2(desiredX, desiredY);
     setToVelocity(body, desiredVelocity);
   }
 
@@ -84,11 +97,9 @@ public class PhysicsMovementComponent extends Component implements MovementContr
     // impulse force = (desired velocity - current velocity) * mass
     Vector2 velocity = body.getLinearVelocity();
     Vector2 impulse = desiredVelocity.cpy().sub(velocity).scl(body.getMass());
+    if (obeysGravity) {
+      impulse.y = 0;
+    }
     body.applyLinearImpulse(impulse, body.getWorldCenter(), true);
-  }
-
-  private Vector2 getDirection() {
-    // Move towards targetPosition based on our current position
-    return targetPosition.cpy().sub(entity.getPosition()).nor();
   }
 }
