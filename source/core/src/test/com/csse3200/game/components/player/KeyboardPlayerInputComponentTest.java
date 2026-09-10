@@ -222,15 +222,15 @@ class KeyboardPlayerInputComponentTest {
     player.setPosition(0f, 0f);
     wheel.create();
     component.setCameraComponent(new CameraComponent(camera));
-    AtomicInteger grapples = new AtomicInteger();
-    player.getEvents().addListener("grappleFire", (Vector2 aim) -> grapples.incrementAndGet());
+    AtomicInteger attacks = new AtomicInteger();
+    player.getEvents().addListener("attack", attacks::incrementAndGet);
 
     component.keyDown(Keys.TAB);
     assertFalse(component.touchDown(4, 2, 0, Buttons.LEFT));
-    assertEquals(0, grapples.get());
+    assertEquals(0, attacks.get());
 
     component.keyUp(Keys.TAB);
     assertTrue(component.touchDown(4, 2, 0, Buttons.LEFT));
-    assertEquals(1, grapples.get());
+    assertEquals(1, attacks.get());
   }
 }
