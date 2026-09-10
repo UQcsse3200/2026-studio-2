@@ -130,6 +130,12 @@ public class EnemyFactory {
     if (config.attackType.equals("range")) {
       aiComponent.addTask(
           new RangedAttackTask(target, 20, config.attackRange, 2f, config.baseAttack, 5f, 5f));
+      // If the enemy is a summon type, add summon + range task
+    } else if (config.attackType.equals("summon")) {
+      aiComponent
+          .addTask(
+              new RangedAttackTask(target, 20, config.attackRange, 2f, config.baseAttack, 5f, 5f))
+          .addTask(new SummonTask(target, 30, config.attackRange, 2f, config.baseAttack, 5f, 5f));
     }
 
     Entity enemy =

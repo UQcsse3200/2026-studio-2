@@ -52,7 +52,7 @@
     "baseAttack": 2,
     "speed": 2.5,
     "behaviour": "chase",
-    "attackType": "range",
+    "attackType": "summon",
     "attackRange": 6.0,
 
     "wanderRangeX": 4.0,
