@@ -117,29 +117,26 @@ public class TextBoxComponent extends UIComponent {
 
     // Parchment fill
     pixmap.setColor(this.backgroundColour);
-    pixmap.fill();
+    pixmap.fillRectangle(paperEdge, 0, width - 2*paperEdge, height);
 
     // Shading down the paper's left and right edges
-    Color edgeHighlight = this.backgroundColour.cpy().lerp(Color.WHITE, 0.25f);
-    Color edgeShadow = this.backgroundColour.cpy().mul(0.85f, 0.85f, 0.85f, 1f);
-    pixmap.setColor(edgeHighlight);
-    pixmap.drawLine(1, rodHeight, 1, height - rodHeight);
-    pixmap.drawLine(width - 2, rodHeight, width - 2, height - rodHeight);
+    Color edgeShadow = this.backgroundColour.cpy().mul(Color.BROWN);
     pixmap.setColor(edgeShadow);
-    pixmap.drawLine(4, rodHeight, 4, height - rodHeight);
-    pixmap.drawLine(width - 5, rodHeight, width - 5, height - rodHeight);
 
-    // Wooden rollers along the top and bottom
-    drawRoller(pixmap, 0, width, rodHeight);
-    drawRoller(pixmap, height - rodHeight, width, rodHeight);
+    drawTopAndBottom(pixmap, 0, width, rodHeight);
+    drawTopAndBottom(pixmap, height - rodHeight, width, rodHeight);
 
     // Rounded knobs where the rollers end, at all four corners
     Color knobColor = this.borderColour.cpy().mul(0.8f, 0.8f, 0.8f, 1f);
     int knobRadius = Math.min(paperEdge, rodHeight) / 2;
     pixmap.setColor(knobColor);
+    // top left
     pixmap.fillCircle(knobRadius, knobRadius, knobRadius);
+    // top right
     pixmap.fillCircle(width - knobRadius, knobRadius, knobRadius);
+    // bottom left
     pixmap.fillCircle(knobRadius, height - knobRadius, knobRadius);
+    // bottom right
     pixmap.fillCircle(width - knobRadius, height - knobRadius, knobRadius);
 
     Texture texture = new Texture(pixmap);
@@ -150,23 +147,13 @@ public class TextBoxComponent extends UIComponent {
     return cachedBackground;
   }
 
-  /**
-   * Draws a wood-grain roller bar spanning the full width at the given y, with light/dark
-   * horizontal banding to suggest a cylindrical rod.
-   */
-  private void drawRoller(Pixmap pixmap, int y, int width, int rodHeight) {
+  private void drawTopAndBottom(Pixmap pixmap, int y, int width, int rodHeight) {
     pixmap.setColor(this.borderColour);
-    pixmap.fillRectangle(0, y, width, rodHeight);
 
-    Color highlight = this.borderColour.cpy().lerp(Color.WHITE, 0.3f);
     Color shadow = this.borderColour.cpy().mul(0.7f, 0.7f, 0.7f, 1f);
 
-    pixmap.setColor(highlight);
-    pixmap.drawLine(0, y + rodHeight / 4, width, y + rodHeight / 4);
     pixmap.setColor(shadow);
     pixmap.drawLine(0, y + rodHeight / 2, width, y + rodHeight / 2);
-    pixmap.setColor(highlight);
-    pixmap.drawLine(0, y + (rodHeight * 3) / 4, width, y + (rodHeight * 3) / 4);
   }
 
   private void applyTextColor() {

@@ -30,15 +30,14 @@ public class TextConfig {
   public int padding = 16;
   public int borderThickness = 3;
 
-  // Optional path to a bitmap font (.fnt), relative to assets, e.g. "fonts/scroll.fnt".
-  // Leave null/omit to use the skin's default font.
-  public String fontPath = null;
+  // Bitmap font (.fnt), relative to assets, e.g. "fonts/scroll.fnt".
+  public String fontPath = "fonts/scroll.fnt";
 
   // Horizontal alignment of the text within the box: "left", "center"/"centre", or "right".
   public String textAlignment = "center";
 
   // The pages of text to be displayed, in order. The box shows pages[0] first; each time the
-  // fully-revealed page is dismissed (ENTER), it moves on to the next entry, and only closes for
+  // fully-revealed page is dismissed (TAB), it moves on to the next entry, and only closes for
   // good after the last one.
   public List<String> pages = new ArrayList<>(List.of("Test text"));
 
