@@ -6,7 +6,10 @@ import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.inventory.BackpackDisplay;
 import com.csse3200.game.components.inventory.InventoryBarDisplay;
 import com.csse3200.game.components.inventory.InventoryComponent;
+import com.csse3200.game.components.itemdictionary.ItemDictionaryComponent;
+import com.csse3200.game.components.itemdictionary.ItemDictionaryDisplay;
 import com.csse3200.game.components.player.*;
+import com.csse3200.game.components.player.ArrowWheelComponent;
 import com.csse3200.game.components.player.BowComponent;
 import com.csse3200.game.components.player.GrappleComponent;
 import com.csse3200.game.components.player.ItemUseComponent;
@@ -72,12 +75,15 @@ public class PlayerFactory {
                     stats.health, stats.baseAttack, stats.invulnerabilityDuration))
             .addComponent(bowComponent)
             .addComponent(new PlayerAttackComponent(bowComponent))
+            .addComponent(new ArrowWheelComponent())
             .addComponent(
                 new CombatStatsComponent(
                     stats.health, CombatStatsComponent.MAX_HEALTH, stats.baseAttack))
             .addComponent(new InventoryComponent(stats.gold))
             .addComponent(new InventoryBarDisplay())
             .addComponent(new BackpackDisplay())
+            .addComponent(new ItemDictionaryComponent())
+            .addComponent(new ItemDictionaryDisplay())
             .addComponent(new PlayerInteractionComponent())
             .addComponent(new ShopComponent())
             .addComponent(new ShopDisplay())

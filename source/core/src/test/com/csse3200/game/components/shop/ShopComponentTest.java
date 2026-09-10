@@ -48,9 +48,7 @@ class ShopComponentTest {
   @Test
   void shouldRejectPurchaseWhenInventoryIsFull() {
     Entity player =
-        new Entity()
-            .addComponent(new InventoryComponent(50, 1))
-            .addComponent(new ShopComponent());
+        new Entity().addComponent(new InventoryComponent(50, 1)).addComponent(new ShopComponent());
     player.create();
     InventoryComponent inventory = player.getComponent(InventoryComponent.class);
     inventory.addItem(ItemType.CONSUMABLE, 1);

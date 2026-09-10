@@ -22,6 +22,7 @@ public class MainMenuActions extends Component {
     entity.getEvents().addListener("Play", this::onPlay);
     entity.getEvents().addListener("Continue", this::onContinue);
     entity.getEvents().addListener("Minigames", this::onMinigames);
+    entity.getEvents().addListener("Sandbox", this::onSandbox);
     entity.getEvents().addListener("Settings", this::onSettings);
     entity.getEvents().addListener("Exit", this::onExit);
   }
@@ -41,6 +42,12 @@ public class MainMenuActions extends Component {
   private void onMinigames() {
     logger.info("Minigames");
     game.setScreen(GdxGame.ScreenType.MINIGAME_SELECT);
+  }
+
+  /** Swaps to the Sandbox screen. */
+  private void onSandbox() {
+    logger.info("Sandbox");
+    game.setScreen(GdxGame.ScreenType.SANDBOX);
   }
 
   /** Swaps to the Settings screen. */
