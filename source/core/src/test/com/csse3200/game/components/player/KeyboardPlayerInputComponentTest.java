@@ -168,16 +168,17 @@ class KeyboardPlayerInputComponentTest {
   }
 
   @Test
-  void shouldFireGrappleTowardClickedWorldPosition() {
+  void shouldTriggerAttackWhenLeftClicked() {
     KeyboardPlayerInputComponent component = new KeyboardPlayerInputComponent();
     Entity player = new Entity().addComponent(component);
     player.setPosition(0f, 0f);
     component.setCameraComponent(new CameraComponent(camera));
-    AtomicReference<Vector2> direction = new AtomicReference<>();
-    player.getEvents().addListener("grappleFire", (Vector2 aim) -> direction.set(aim));
+
+    AtomicInteger attacks = new AtomicInteger();
+    player.getEvents().addListener("attack", attacks::incrementAndGet);
 
     assertFalse(component.touchDown(4, 2, 0, Buttons.RIGHT));
     assertTrue(component.touchDown(4, 2, 0, Buttons.LEFT));
-    assertTrue(direction.get().epsilonEquals(new Vector2(9.5f, 4.5f)));
+    assertEquals(1, attacks.get());
   }
 }

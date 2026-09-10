@@ -167,10 +167,7 @@ public class KeyboardPlayerInputComponent extends InputComponent {
     if (aimDirection.isZero()) {
       return false;
     }
-    ItemUseComponent itemUse = entity.getComponent(ItemUseComponent.class);
-    if (itemUse != null) {
-      itemUse.useSelectedItem();
-    }
+    entity.getEvents().trigger("attack");
     return true;
   }
 
