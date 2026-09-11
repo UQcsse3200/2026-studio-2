@@ -32,6 +32,7 @@ import com.csse3200.game.ui.terminal.Terminal;
 import com.csse3200.game.ui.terminal.TerminalDisplay;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.badlogic.gdx.audio.Music;
 
 /**
  * The game screen containing the tutorial.
@@ -54,6 +55,8 @@ public class TutorialGameScreen extends ScreenAdapter {
   private final Renderer renderer;
   private final PhysicsEngine physicsEngine;
   private Entity player;
+  private static final String gameplayMusic = "sounds/gameplay_bg.ogg";
+  private static final String[] gameplayMusicFiles = {gameplayMusic};
 
   public TutorialGameScreen(GdxGame game) {
     this.game = game;
@@ -80,6 +83,7 @@ public class TutorialGameScreen extends ScreenAdapter {
 
     loadAssets();
     createUI();
+    playMusic();
 
     logger.debug("Initialising tutorial game screen entities");
 
@@ -146,6 +150,7 @@ public class TutorialGameScreen extends ScreenAdapter {
     logger.debug("Loading assets");
     ResourceService resourceService = ServiceLocator.getResourceService();
     resourceService.loadTextures(mainGameTextures);
+    resourceService.loadMusic(gameplayMusicFiles);
     ButtonSound.load(resourceService);
     resourceService.loadAll();
   }
@@ -154,9 +159,16 @@ public class TutorialGameScreen extends ScreenAdapter {
     logger.debug("Unloading assets");
     ResourceService resourceService = ServiceLocator.getResourceService();
     resourceService.unloadAssets(mainGameTextures);
+    resourceService.unloadAssets(gameplayMusicFiles);
     ButtonSound.unload(resourceService);
   }
 
+  private void playMusic() {
+    Music music = ServiceLocator.getResourceService().getAsset(gameplayMusic, Music.class);
+    music.setLooping(true);
+    music.setVolume(0.05f);
+    music.play();
+  }
   /**
    * Creates the main game's UI including components for rendering UI elements to the screen and
    * capturing and handling UI input.
@@ -186,3 +198,4 @@ public class TutorialGameScreen extends ScreenAdapter {
     ServiceLocator.getEntityService().register(ui);
   }
 }
+
