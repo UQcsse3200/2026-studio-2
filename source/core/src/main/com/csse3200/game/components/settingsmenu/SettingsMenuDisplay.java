@@ -2,6 +2,7 @@ package com.csse3200.game.components.settingsmenu;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Graphics.DisplayMode;
+import com.csse3200.game.components.ButtonSound;
 import com.badlogic.gdx.Graphics.Monitor;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -168,6 +169,7 @@ public class SettingsMenuDisplay extends UIComponent {
           @Override
           public void changed(ChangeEvent changeEvent, Actor actor) {
             logger.debug("Exit button clicked");
+            ButtonSound.playClick();
             exitMenu();
           }
         });
@@ -177,6 +179,7 @@ public class SettingsMenuDisplay extends UIComponent {
           @Override
           public void changed(ChangeEvent changeEvent, Actor actor) {
             logger.debug("Apply button clicked");
+            ButtonSound.playClick();
             applyChanges();
           }
         });

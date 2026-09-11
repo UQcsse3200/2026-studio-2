@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.csse3200.game.components.ButtonSound;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Array;
 import com.csse3200.game.GdxGame;
@@ -166,18 +167,20 @@ public class SettingsMenuDisplayFromPause extends UIComponent {
           @Override
           public void changed(ChangeEvent changeEvent, Actor actor) {
             logger.debug("Exit button clicked");
+            ButtonSound.playClick();
             exitMenu();
           }
         });
 
     applyBtn.addListener(
-        new ChangeListener() {
-          @Override
-          public void changed(ChangeEvent changeEvent, Actor actor) {
-            logger.debug("Apply button clicked");
-            applyChanges();
-          }
-        });
+            new ChangeListener() {
+              @Override
+              public void changed(ChangeEvent changeEvent, Actor actor) {
+                logger.debug("Apply button clicked");
+                ButtonSound.playClick();
+                applyChanges();
+              }
+            });
 
     Table table = new Table();
     table.add(exitBtn).expandX().left().pad(0f, 15f, 15f, 0f);

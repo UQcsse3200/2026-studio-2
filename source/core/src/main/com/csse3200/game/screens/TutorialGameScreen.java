@@ -2,6 +2,7 @@ package com.csse3200.game.screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ScreenAdapter;
+import com.csse3200.game.components.ButtonSound;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.csse3200.game.GdxGame;
 import com.csse3200.game.areas.TutorialGameArea;
@@ -143,19 +144,17 @@ public class TutorialGameScreen extends ScreenAdapter {
 
   private void loadAssets() {
     logger.debug("Loading assets");
-
     ResourceService resourceService = ServiceLocator.getResourceService();
-
     resourceService.loadTextures(mainGameTextures);
+    ButtonSound.load(resourceService);
     resourceService.loadAll();
   }
 
   private void unloadAssets() {
     logger.debug("Unloading assets");
-
     ResourceService resourceService = ServiceLocator.getResourceService();
-
     resourceService.unloadAssets(mainGameTextures);
+    ButtonSound.unload(resourceService);
   }
 
   /**

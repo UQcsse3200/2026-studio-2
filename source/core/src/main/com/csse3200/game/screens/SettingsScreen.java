@@ -7,6 +7,7 @@ import com.csse3200.game.components.settingsmenu.SettingsMenuDisplay;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.entities.factories.RenderFactory;
+import com.csse3200.game.components.ButtonSound;
 import com.csse3200.game.input.InputDecorator;
 import com.csse3200.game.input.InputService;
 import com.csse3200.game.rendering.RenderService;
@@ -37,7 +38,20 @@ public class SettingsScreen extends ScreenAdapter {
     renderer = RenderFactory.createRenderer();
     renderer.getCamera().getEntity().setPosition(5f, 5f);
 
+    loadAssets();
     createUI();
+  }
+
+  private void loadAssets() {
+    logger.debug("Loading assets");
+    ResourceService resourceService = ServiceLocator.getResourceService();
+    ButtonSound.load(resourceService);
+    resourceService.loadAll();
+  }
+
+  private void unloadAssets() {
+    logger.debug("Unloading assets");
+    ButtonSound.unload(ServiceLocator.getResourceService());
   }
 
   @Override

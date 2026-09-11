@@ -3,6 +3,7 @@ package com.csse3200.game.components.minigames;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.csse3200.game.components.ButtonSound;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
@@ -40,7 +41,9 @@ public class MinigameSelectDisplay extends UIComponent {
             @Override
             public void changed(ChangeEvent changeEvent, Actor actor) {
               logger.debug("{} button clicked", minigame);
-              entity.getEvents().trigger("selectMinigame", minigame);
+              ButtonSound.playClickThen(
+                      () -> entity.getEvents().trigger("selectMinigame", minigame)
+              );
             }
           });
 
@@ -54,7 +57,7 @@ public class MinigameSelectDisplay extends UIComponent {
           @Override
           public void changed(ChangeEvent changeEvent, Actor actor) {
             logger.debug("Back button clicked");
-            entity.getEvents().trigger("back");
+            ButtonSound.playClickThen(() -> entity.getEvents().trigger("back"));
           }
         });
 

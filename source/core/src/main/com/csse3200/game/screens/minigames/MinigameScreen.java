@@ -4,6 +4,7 @@ import com.badlogic.gdx.ScreenAdapter;
 import com.csse3200.game.GdxGame;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
+import com.csse3200.game.components.ButtonSound;
 import com.csse3200.game.entities.factories.RenderFactory;
 import com.csse3200.game.input.InputService;
 import com.csse3200.game.rendering.RenderService;
@@ -73,12 +74,14 @@ public abstract class MinigameScreen extends ScreenAdapter {
     logger.debug("Loading assets");
     ResourceService resourceService = ServiceLocator.getResourceService();
     resourceService.loadTextures(getTextures());
+    ButtonSound.load(resourceService);
     resourceService.loadAll();
   }
 
   private void unloadAssets() {
     logger.debug("Unloading assets");
     ResourceService resourceService = ServiceLocator.getResourceService();
+    ButtonSound.unload(resourceService);
     resourceService.unloadAssets(getTextures());
   }
 }
