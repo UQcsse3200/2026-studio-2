@@ -49,7 +49,15 @@ public class MainGameScreen extends ScreenAdapter {
     "images/red_heart.png",
     "images/PixelArt_HeartBack.png",
     "images/Damaged_heart.png",
-    "images/Last_Health.png"
+    "images/Last_Health.png",
+    "images/Buttons/continue_up_btn.png",
+    "images/Buttons/continue_down_btn.png",
+    "images/Buttons/settings_up_btn.png",
+    "images/Buttons/settings_down_btn.png",
+    "images/Buttons/quit_up_btn.png",
+    "images/Buttons/quit_down_btn.png",
+    "images/Buttons/exit_up_btn.png",
+    "images/Buttons/exit_down_btn.png"
   };
 
   private static final Vector2 CAMERA_POSITION = new Vector2(7.5f, 7.5f);

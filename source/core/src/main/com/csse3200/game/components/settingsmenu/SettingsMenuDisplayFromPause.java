@@ -3,11 +3,13 @@ package com.csse3200.game.components.settingsmenu;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Graphics.DisplayMode;
 import com.badlogic.gdx.Graphics.Monitor;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Array;
 import com.csse3200.game.GdxGame;
 import com.csse3200.game.GdxGame.ScreenType;
@@ -158,8 +160,30 @@ public class SettingsMenuDisplayFromPause extends UIComponent {
   }
 
   private Table makeMenuBtns() {
-    TextButton exitBtn = new TextButton("Exit", skin);
-    TextButton applyBtn = new TextButton("Apply", skin);
+    Texture exitUpTexture =
+        ServiceLocator.getResourceService().getAsset("images/Buttons/exit_up_btn.png", Texture.class);
+    Texture exitDownTexture =
+        ServiceLocator.getResourceService()
+            .getAsset("images/Buttons/exit_down_btn.png", Texture.class);
+
+    ImageButton.ImageButtonStyle exitButtonStyle = new ImageButton.ImageButtonStyle();
+    exitButtonStyle.up = new TextureRegionDrawable(exitUpTexture);
+    exitButtonStyle.down = new TextureRegionDrawable(exitDownTexture);
+
+    ImageButton exitBtn = new ImageButton(exitButtonStyle);
+
+    Texture applyUpTexture =
+        ServiceLocator.getResourceService()
+            .getAsset("images/Buttons/apply_up_btn.png", Texture.class);
+    Texture applyDownTexture =
+        ServiceLocator.getResourceService()
+            .getAsset("images/Buttons/apply_down_btn.png", Texture.class);
+
+    ImageButton.ImageButtonStyle applyButtonStyle = new ImageButton.ImageButtonStyle();
+    applyButtonStyle.up = new TextureRegionDrawable(applyUpTexture);
+    applyButtonStyle.down = new TextureRegionDrawable(applyDownTexture);
+
+    ImageButton applyBtn = new ImageButton(applyButtonStyle);
 
     exitBtn.addListener(
         new ChangeListener() {
@@ -180,8 +204,8 @@ public class SettingsMenuDisplayFromPause extends UIComponent {
         });
 
     Table table = new Table();
-    table.add(exitBtn).expandX().left().pad(0f, 15f, 15f, 0f);
-    table.add(applyBtn).expandX().right().pad(0f, 0f, 15f, 15f);
+    table.add(exitBtn).width(160f).height(56f).expandX().left().pad(0f, 15f, 15f, 0f);
+    table.add(applyBtn).width(160f).height(56f).expandX().right().pad(0f, 0f, 15f, 15f);
     return table;
   }
 
