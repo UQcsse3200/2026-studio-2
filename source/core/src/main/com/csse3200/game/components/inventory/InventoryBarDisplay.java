@@ -16,18 +16,39 @@ import com.csse3200.game.ui.UIComponent;
 
 /** Displays the player's inventory bar at the bottom of the screen. */
 public class InventoryBarDisplay extends UIComponent {
-  /** Windowed mode is 1280px wide; eight 160px cells plus padding would clip. */
-  // private static final float WINDOW_WIDTH = 1280f;
-
-  // private static final float BAR_SIDE_MARGIN = 48f;
-  private static final float SLOT_PAD = 4f;
-
-  // private static final float SLOT_HEIGHT = 72f;
-  // private static final float MAX_SLOT_WIDTH = 120f;
 
   private static final String INVENTORY_BACKGROUND_TEXTURE = "images/Inventory_background.png";
+
+  /** Native pixel size of the background art. */
+  private static final float BG_WIDTH = 853f;
+
+  private static final float BG_HEIGHT = 105f;
+
+  /** Number of hotbar slots the background art is drawn for. */
+  private static final int SLOT_COUNT = 8;
+
+  /**
+   * Gaps (in background-texture pixels) between the edge of the art and the first/last slot window,
+   * measured from the source image. The end-caps (scrollwork) live outside these gaps.
+   */
+  private static final float SLOT_AREA_LEFT = 82f;
+
+  private static final float SLOT_AREA_RIGHT_PAD = BG_WIDTH - 763f; // 90f
+  private static final float SLOT_AREA_TOP_PAD = 10f;
+  private static final float SLOT_AREA_BOTTOM_PAD = BG_HEIGHT - 86f; // 19f
+
+  /** Size of a single slot window inside the art (derived from the measured region). */
+  private static final float SLOT_WIDTH = (763f - SLOT_AREA_LEFT) / SLOT_COUNT; // ~85.1f
+
+  private static final float SLOT_HEIGHT = 86f - SLOT_AREA_TOP_PAD; // 76f
+
+  private static final float ICON_SIZE = 44f;
   private static final int BORDER_THICKNESS = 1;
-  private static NinePatchDrawable cachedBackground;
+
+  /** Alpha of the selection highlight so the underlying art still reads through it. */
+  private static final float SELECTION_ALPHA = 0.35f;
+
+  private static NinePatchDrawable cachedSelectionHighlight;
 
   private Table root;
   private Stack stack;
@@ -38,11 +59,8 @@ public class InventoryBarDisplay extends UIComponent {
     super.create();
 
     entity.getEvents().addListener("inventoryChanged", this::refresh);
-
     entity.getEvents().addListener("inventorySelectionChanged", this::refresh);
-
     entity.getEvents().addListener("backpackOpened", this::hideBar);
-
     entity.getEvents().addListener("backpackClosed", this::showBar);
 
     addActors();
@@ -61,15 +79,15 @@ public class InventoryBarDisplay extends UIComponent {
 
   /** Hides the quick bar while the backpack is open. */
   private void hideBar() {
-    if (table != null) {
-      table.setVisible(false);
+    if (stack != null) {
+      stack.setVisible(false);
     }
   }
 
   /** Displays the quick bar after the backpack is closed. */
   private void showBar() {
-    if (table != null) {
-      table.setVisible(true);
+    if (stack != null) {
+      stack.setVisible(true);
     }
   }
 
@@ -81,40 +99,48 @@ public class InventoryBarDisplay extends UIComponent {
     root.padBottom(20f);
 
     stack = new Stack();
+
     Image background =
         new Image(
             ServiceLocator.getResourceService()
                 .getAsset(INVENTORY_BACKGROUND_TEXTURE, Texture.class));
+    background.setSize(BG_WIDTH, BG_HEIGHT);
     stack.add(background);
+
     table = new Table();
-    table.padRight(95f).padTop(69f);
+    // Pad the table in from the edges of the art so each cell lands directly over
+    // one of the drawn slot windows instead of overlapping the scrollwork end-caps.
+    table
+        .padLeft(SLOT_AREA_LEFT)
+        .padRight(SLOT_AREA_RIGHT_PAD)
+        .padTop(SLOT_AREA_TOP_PAD)
+        .padBottom(SLOT_AREA_BOTTOM_PAD);
     populateSlots();
     stack.add(table);
 
-    root.add(stack);
+    root.add(stack).size(BG_WIDTH, BG_HEIGHT);
 
     stage.addActor(root);
   }
 
-  private static NinePatchDrawable getBackgroundDrawable() {
-    if (cachedBackground != null) {
-      return cachedBackground;
+  /** Builds a translucent NinePatch used to highlight the selected slot without hiding the art. */
+  static NinePatchDrawable getSelectionHighlightDrawable() {
+    if (cachedSelectionHighlight != null) {
+      return cachedSelectionHighlight;
     }
 
     int size = 16;
     int border = BORDER_THICKNESS + 2;
 
     Pixmap pixmap = new Pixmap(size, size, Pixmap.Format.RGBA8888);
-    pixmap.setColor(new Color(0.88f, 0.83f, 0.55f, 1f));
-    for (int i = 0; i < border; i++) {
-      pixmap.drawRectangle(i, i, size - i * 2, size - i * 2);
-    }
+    pixmap.setColor(new Color(0.95f, 0.85f, 0.55f, SELECTION_ALPHA));
+    pixmap.fillRectangle(0, 0, size, size);
     Texture texture = new Texture(pixmap);
     pixmap.dispose();
 
     NinePatch patch = new NinePatch(texture, border, border, border, border);
-    cachedBackground = new NinePatchDrawable(patch);
-    return cachedBackground;
+    cachedSelectionHighlight = new NinePatchDrawable(patch);
+    return cachedSelectionHighlight;
   }
 
   /** Populates the inventory bar with occupied and empty slots. */
@@ -124,69 +150,47 @@ public class InventoryBarDisplay extends UIComponent {
     InventoryComponent inventory = entity.getComponent(InventoryComponent.class);
 
     for (int slotIndex = 0; slotIndex < inventory.getHotbarSlotCount(); slotIndex++) {
-      int slotNumber = slotIndex + 1;
       boolean selected = inventory.getSelectedSlotIndex() == slotIndex;
       InventorySlot inventorySlot = inventory.getSlot(slotIndex);
       Table slot;
       if (inventorySlot == null || inventorySlot.isEmpty()) {
-        slot = createEmptySlot(slotNumber, selected);
+        slot = createEmptySlot(selected);
       } else {
-        slot =
-            createSlot(
-                slotNumber, inventorySlot.getItemType(), inventorySlot.getQuantity(), selected);
+        slot = createSlot(inventorySlot.getItemType(), inventorySlot.getQuantity(), selected);
       }
 
-      table.add(slot).width(60f).height(65f).padRight(50f);
+      // Slot windows sit flush against each other in the art, so no padding between cells.
+      table.add(slot).width(SLOT_WIDTH).height(SLOT_HEIGHT);
     }
   }
 
-  // /**
-  //  * Fits every hotbar cell inside the 1280px window, including per-cell padding.
-  //  *
-  //  * @param slotCount number of hotbar slots
-  //  * @return width of one slot
-  //  */
-  // private float slotWidth(int slotCount) {
-  //   int count = Math.max(slotCount, 1);
-  //   float available = WINDOW_WIDTH - BAR_SIDE_MARGIN;
-  //   float widthForSlot = available / count - SLOT_PAD * 2f;
-  //   return Math.min(MAX_SLOT_WIDTH, Math.max(widthForSlot, 1f));
-  // }
-
   /**
-   * Creates one inventory slot.
+   * Creates one occupied inventory slot.
    *
-   * @param slotNumber slot number displayed to the player
    * @param item item stored in the slot
    * @param count quantity of the item
    * @param selected whether this item is currently selected
    * @return the created slot table
    */
-  private Table createSlot(int slotNumber, ItemType item, int count, boolean selected) {
-
+  private Table createSlot(ItemType item, int count, boolean selected) {
     Table slot = new Table();
-    slot.pad(8f);
+    slot.pad(6f);
 
-    slot.setBackground(selected ? getBackgroundDrawable() : slot.getBackground());
+    if (selected) {
+      slot.setBackground(getSelectionHighlightDrawable());
+    }
 
     Texture texture =
         ServiceLocator.getResourceService().getAsset(getItemTexture(item), Texture.class);
-
     Image icon = new Image(texture);
-
-    // Label numberLabel = new Label(Integer.toString(slotNumber), skin, "large");
 
     Label countLabel =
         new Label("x" + count, new Label.LabelStyle(skin.getFont("font"), Color.WHITE));
     countLabel.setColor(Color.WHITE);
 
-    // slot.add(numberLabel).width(25f).left().padLeft(5f).padRight(5f);
-
-    slot.add(icon).size(40f, 40f).expand().center();
-
+    slot.add(icon).size(ICON_SIZE, ICON_SIZE).expand().center();
     slot.row();
-
-    slot.add(countLabel).colspan(3).right().padRight(5f).padBottom(3f);
+    slot.add(countLabel).right().padRight(4f).padBottom(2f);
 
     return slot;
   }
@@ -194,17 +198,16 @@ public class InventoryBarDisplay extends UIComponent {
   /**
    * Creates an empty inventory slot.
    *
-   * @param slotNumber slot number displayed to the player
+   * @param selected whether this slot is currently selected
    * @return the created empty slot
    */
-  private Table createEmptySlot(int slotNumber, boolean selected) {
+  private Table createEmptySlot(boolean selected) {
     Table slot = new Table();
-    slot.pad(8f);
-    slot.setBackground(selected ? getBackgroundDrawable() : slot.getBackground());
+    slot.pad(6f);
 
-    // Label numberLabel = new Label(Integer.toString(slotNumber), skin, "large");
-
-    // slot.add(numberLabel).width(25f).left().padLeft(5f).padRight(5f);
+    if (selected) {
+      slot.setBackground(getSelectionHighlightDrawable());
+    }
 
     slot.add().expand().fill();
 
@@ -220,8 +223,8 @@ public class InventoryBarDisplay extends UIComponent {
   public void dispose() {
     super.dispose();
 
-    if (table != null) {
-      table.remove();
+    if (root != null) {
+      root.remove();
     }
   }
 }
