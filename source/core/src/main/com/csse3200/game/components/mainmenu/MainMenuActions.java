@@ -1,7 +1,6 @@
 package com.csse3200.game.components.mainmenu;
 
 import com.csse3200.game.GdxGame;
-import com.badlogic.gdx.utils.Timer;
 import com.csse3200.game.components.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

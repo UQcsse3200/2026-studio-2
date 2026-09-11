@@ -1,7 +1,6 @@
 package com.csse3200.game.components.maingame;
 
 import com.badlogic.gdx.Input;
-import com.csse3200.game.components.ButtonSound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -10,6 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.csse3200.game.GdxGame;
+import com.csse3200.game.components.ButtonSound;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.UIComponent;
 
@@ -60,29 +60,29 @@ public class PauseMenuDisplay extends UIComponent {
         });
 
     settingsBtn.addListener(
-            new ChangeListener() {
-              @Override
-              public void changed(ChangeEvent changeEvent, Actor actor) {
-                if (ServiceLocator.getEntityService().getPaused()) {
-                  ButtonSound.playClickThen(
-                          () -> {
-                            entity.getEvents().trigger("settingsFromPause");
-                            game.setScreen(GdxGame.ScreenType.SETTINGS_FROM_PAUSE);
-                          });
-                }
-              }
-            });
+        new ChangeListener() {
+          @Override
+          public void changed(ChangeEvent changeEvent, Actor actor) {
+            if (ServiceLocator.getEntityService().getPaused()) {
+              ButtonSound.playClickThen(
+                  () -> {
+                    entity.getEvents().trigger("settingsFromPause");
+                    game.setScreen(GdxGame.ScreenType.SETTINGS_FROM_PAUSE);
+                  });
+            }
+          }
+        });
 
     exitBtn.addListener(
-            new ChangeListener() {
-              @Override
-              public void changed(ChangeEvent changeEvent, Actor actor) {
-                if (ServiceLocator.getEntityService().getPaused()) {
-                  ButtonSound.playClick();
-                  game.exit();
-                }
-              }
-            });
+        new ChangeListener() {
+          @Override
+          public void changed(ChangeEvent changeEvent, Actor actor) {
+            if (ServiceLocator.getEntityService().getPaused()) {
+              ButtonSound.playClick();
+              game.exit();
+            }
+          }
+        });
 
     Image title =
         new Image(

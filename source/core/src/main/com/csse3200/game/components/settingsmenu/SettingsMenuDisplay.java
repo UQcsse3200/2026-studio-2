@@ -2,7 +2,6 @@ package com.csse3200.game.components.settingsmenu;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Graphics.DisplayMode;
-import com.csse3200.game.components.ButtonSound;
 import com.badlogic.gdx.Graphics.Monitor;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -12,6 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Array;
 import com.csse3200.game.GdxGame;
 import com.csse3200.game.GdxGame.ScreenType;
+import com.csse3200.game.components.ButtonSound;
 import com.csse3200.game.files.UserSettings;
 import com.csse3200.game.files.UserSettings.DisplaySettings;
 import com.csse3200.game.services.ServiceLocator;
