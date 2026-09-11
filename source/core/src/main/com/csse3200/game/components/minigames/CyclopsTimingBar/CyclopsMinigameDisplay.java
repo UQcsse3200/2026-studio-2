@@ -29,7 +29,8 @@ public class CyclopsMinigameDisplay extends UIComponent {
     table.setFillParent(true);
 
     Texture exitUpTexture =
-        ServiceLocator.getResourceService().getAsset("images/Buttons/exit_up_btn.png", Texture.class);
+        ServiceLocator.getResourceService()
+            .getAsset("images/Buttons/exit_up_btn.png", Texture.class);
     Texture exitDownTexture =
         ServiceLocator.getResourceService()
             .getAsset("images/Buttons/exit_down_btn.png", Texture.class);

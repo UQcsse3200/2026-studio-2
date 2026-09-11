@@ -66,7 +66,8 @@ public class MinigameSelectDisplay extends UIComponent {
     }
 
     Texture backUpTexture =
-        ServiceLocator.getResourceService().getAsset("images/Buttons/back_up_btn.png", Texture.class);
+        ServiceLocator.getResourceService()
+            .getAsset("images/Buttons/back_up_btn.png", Texture.class);
     Texture backDownTexture =
         ServiceLocator.getResourceService()
             .getAsset("images/Buttons/back_down_btn.png", Texture.class);

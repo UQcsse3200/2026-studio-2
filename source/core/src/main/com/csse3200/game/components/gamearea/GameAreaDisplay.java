@@ -1,6 +1,7 @@
 package com.csse3200.game.components.gamearea;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.csse3200.game.ui.UIComponent;
@@ -21,17 +22,37 @@ public class GameAreaDisplay extends UIComponent {
   }
 
   private void addActors() {
-    title = new Label(this.gameAreaName, skin, "large");
+    title = new BoldLabel(this.gameAreaName.toUpperCase(), skin.get("large", Label.LabelStyle.class));
     stage.addActor(title);
+  }
+
+  /**
+   * Draws its text twice, offset by a pixel, to fake a bold weight — the pixel-font skin has no
+   * dedicated bold variant.
+   */
+  private static class BoldLabel extends Label {
+    BoldLabel(CharSequence text, LabelStyle style) {
+      super(text, style);
+    }
+
+    @Override
+    public void draw(Batch batch, float parentAlpha) {
+      float x = getX();
+      setX(x + 1f);
+      super.draw(batch, parentAlpha);
+      setX(x);
+      super.draw(batch, parentAlpha);
+    }
   }
 
   @Override
   public void draw(SpriteBatch batch) {
+    int screenWidth = Gdx.graphics.getWidth();
     int screenHeight = Gdx.graphics.getHeight();
-    float offsetX = 10f;
-    float offsetY = 30f;
+    float offsetY = 20f;
 
-    title.setPosition(offsetX, screenHeight - offsetY);
+    // Centered at the top, clear of the heart HUD (left) and exit button (right).
+    title.setPosition((screenWidth - title.getWidth()) / 2f, screenHeight - offsetY - title.getHeight());
   }
 
   @Override

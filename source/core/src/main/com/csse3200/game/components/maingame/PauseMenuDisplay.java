@@ -70,7 +70,8 @@ public class PauseMenuDisplay extends UIComponent {
     ImageButton settingsBtn = new ImageButton(settingsButtonStyle);
 
     Texture quitUpTexture =
-        ServiceLocator.getResourceService().getAsset("images/Buttons/quit_up_btn.png", Texture.class);
+        ServiceLocator.getResourceService()
+            .getAsset("images/Buttons/quit_up_btn.png", Texture.class);
     Texture quitDownTexture =
         ServiceLocator.getResourceService()
             .getAsset("images/Buttons/quit_down_btn.png", Texture.class);

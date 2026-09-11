@@ -44,7 +44,8 @@ public class MainMenuDisplay extends UIComponent {
                 .getAsset("images/title_odysseus_logo.png", Texture.class));
 
     Texture playUpTexture =
-        ServiceLocator.getResourceService().getAsset("images/Buttons/play_up_btn.png", Texture.class);
+        ServiceLocator.getResourceService()
+            .getAsset("images/Buttons/play_up_btn.png", Texture.class);
     Texture playDownTexture =
         ServiceLocator.getResourceService()
             .getAsset("images/Buttons/play_down_button.png", Texture.class);
@@ -95,7 +96,8 @@ public class MainMenuDisplay extends UIComponent {
     ImageButton settingsButton = new ImageButton(settingsButtonStyle);
 
     Texture quitUpTexture =
-        ServiceLocator.getResourceService().getAsset("images/Buttons/quit_up_btn.png", Texture.class);
+        ServiceLocator.getResourceService()
+            .getAsset("images/Buttons/quit_up_btn.png", Texture.class);
     Texture quitDownTexture =
         ServiceLocator.getResourceService()
             .getAsset("images/Buttons/quit_down_btn.png", Texture.class);
@@ -158,23 +160,11 @@ public class MainMenuDisplay extends UIComponent {
     table.row();
     table.add(playButton).width(screenWidth * 0.12f).height(screenHeight * 0.06f);
     table.row();
-    table
-        .add(continueButton)
-        .width(screenWidth * 0.12f)
-        .height(screenHeight * 0.06f)
-        .padTop(pad);
+    table.add(continueButton).width(screenWidth * 0.12f).height(screenHeight * 0.06f).padTop(pad);
     table.row();
-    table
-        .add(minigamesButton)
-        .width(screenWidth * 0.12f)
-        .height(screenHeight * 0.06f)
-        .padTop(pad);
+    table.add(minigamesButton).width(screenWidth * 0.12f).height(screenHeight * 0.06f).padTop(pad);
     table.row();
-    table
-        .add(settingsButton)
-        .width(screenWidth * 0.12f)
-        .height(screenHeight * 0.06f)
-        .padTop(pad);
+    table.add(settingsButton).width(screenWidth * 0.12f).height(screenHeight * 0.06f).padTop(pad);
     table.row();
     table.add(exitButton).width(screenWidth * 0.12f).height(screenHeight * 0.06f).padTop(pad);
 

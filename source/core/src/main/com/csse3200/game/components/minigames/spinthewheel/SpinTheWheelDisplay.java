@@ -58,7 +58,8 @@ public class SpinTheWheelDisplay extends UIComponent {
     resultLabel = new Label("", skin);
 
     Texture spinUpTexture =
-        ServiceLocator.getResourceService().getAsset("images/Buttons/spin_up_btn.png", Texture.class);
+        ServiceLocator.getResourceService()
+            .getAsset("images/Buttons/spin_up_btn.png", Texture.class);
     Texture spinDownTexture =
         ServiceLocator.getResourceService()
             .getAsset("images/Buttons/spin_down_btn.png", Texture.class);
@@ -85,7 +86,8 @@ public class SpinTheWheelDisplay extends UIComponent {
     table.add(spinBtn).width(160f).height(56f).padTop(30f);
 
     Texture backUpTexture =
-        ServiceLocator.getResourceService().getAsset("images/Buttons/back_up_btn.png", Texture.class);
+        ServiceLocator.getResourceService()
+            .getAsset("images/Buttons/back_up_btn.png", Texture.class);
     Texture backDownTexture =
         ServiceLocator.getResourceService()
             .getAsset("images/Buttons/back_down_btn.png", Texture.class);

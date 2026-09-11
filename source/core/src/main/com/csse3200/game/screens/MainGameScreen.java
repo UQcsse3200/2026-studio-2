@@ -46,7 +46,6 @@ public class MainGameScreen extends ScreenAdapter {
     "images/title_odysseus_logo.png",
     "images/box_boy_title.png",
     "images/Health_Bar_Background.png",
-    "images/Inventory_background.png",
     "images/red_heart.png",
     "images/PixelArt_HeartBack.png",
     "images/Damaged_heart.png",

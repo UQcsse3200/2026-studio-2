@@ -28,7 +28,7 @@ public class TutorialGameArea extends GameArea {
 
   private static final Logger logger = LoggerFactory.getLogger(TutorialGameArea.class);
 
-  //private static final int NUM_TREES = 7;
+  // private static final int NUM_TREES = 7;
   private static final int NUM_GHOSTS = 2;
 
   private static final PlatformConfig[] platforms = {

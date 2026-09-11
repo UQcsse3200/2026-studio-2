@@ -31,7 +31,8 @@ public class MainGameExitDisplay extends UIComponent {
     table.setFillParent(true);
 
     Texture exitUpTexture =
-        ServiceLocator.getResourceService().getAsset("images/Buttons/exit_up_btn.png", Texture.class);
+        ServiceLocator.getResourceService()
+            .getAsset("images/Buttons/exit_up_btn.png", Texture.class);
     Texture exitDownTexture =
         ServiceLocator.getResourceService()
             .getAsset("images/Buttons/exit_down_btn.png", Texture.class);
@@ -52,7 +53,7 @@ public class MainGameExitDisplay extends UIComponent {
           }
         });
 
-    table.add(mainMenuBtn).width(160f).height(56f).padTop(10f).padRight(10f);
+    table.add(mainMenuBtn).width(220f).height(80f).padTop(90f).padRight(20f);
 
     stage.addActor(table);
   }

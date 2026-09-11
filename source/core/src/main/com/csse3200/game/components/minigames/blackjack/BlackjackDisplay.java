@@ -63,7 +63,8 @@ public class BlackjackDisplay extends UIComponent {
     TextButton hitButton = new TextButton("Hit", skin);
     TextButton standButton = new TextButton("Stand", skin);
     Texture backUpTexture =
-        ServiceLocator.getResourceService().getAsset("images/Buttons/back_up_btn.png", Texture.class);
+        ServiceLocator.getResourceService()
+            .getAsset("images/Buttons/back_up_btn.png", Texture.class);
     Texture backDownTexture =
         ServiceLocator.getResourceService()
             .getAsset("images/Buttons/back_down_btn.png", Texture.class);
