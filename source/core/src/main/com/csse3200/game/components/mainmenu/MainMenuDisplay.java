@@ -3,7 +3,9 @@ package com.csse3200.game.components.mainmenu;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -35,8 +37,25 @@ public class MainMenuDisplay extends UIComponent {
     Image background =
         new Image(
             ServiceLocator.getResourceService().getAsset("images/main_menu_bg.png", Texture.class));
-    background.setFillParent(true);
+
+    // Oversized slightly so the shake below never reveals an edge/gap.
+    float overscan = 1.03f;
+    float bgWidth = screenWidth * overscan;
+    float bgHeight = screenHeight * overscan;
+    background.setSize(bgWidth, bgHeight);
+    background.setPosition(-(bgWidth - screenWidth) / 2f, -(bgHeight - screenHeight) / 2f);
     stage.addActor(background);
+
+    // Subtle continuous shake so the background feels a bit alive.
+    float shakeAmount = 3f;
+    float shakeDuration = 0.12f;
+    background.addAction(
+        Actions.forever(
+            Actions.sequence(
+                Actions.moveBy(shakeAmount, 0f, shakeDuration, Interpolation.sine),
+                Actions.moveBy(-shakeAmount, shakeAmount, shakeDuration, Interpolation.sine),
+                Actions.moveBy(-shakeAmount, -shakeAmount, shakeDuration, Interpolation.sine),
+                Actions.moveBy(shakeAmount, 0f, shakeDuration, Interpolation.sine))));
 
     Image title =
         new Image(
@@ -156,17 +175,40 @@ public class MainMenuDisplay extends UIComponent {
           }
         });
 
+    float buttonWidth = screenWidth * 0.12f;
+    float buttonHeight = screenHeight * 0.06f;
+
+    // Left column: Play, Continue.
+    Table leftColumn = new Table();
+    leftColumn.add(playButton).width(buttonWidth).height(buttonHeight);
+    leftColumn.row();
+    leftColumn.add(continueButton).width(buttonWidth).height(buttonHeight).padTop(pad);
+
+    // Right column: Minigames, Exit.
+    Table rightColumn = new Table();
+    rightColumn.add(minigamesButton).width(buttonWidth).height(buttonHeight);
+    rightColumn.row();
+    rightColumn.add(exitButton).width(buttonWidth).height(buttonHeight).padTop(pad);
+
+    // Left and right columns sit together as one centered pair, with a fixed gap between them
+    // instead of being pushed out to the screen edges.
+    Table columnPair = new Table();
+    columnPair.add(leftColumn).padRight(screenWidth * 0.05f);
+    columnPair.add(rightColumn).padLeft(screenWidth * 0.05f);
+
+    table.add().expandY(); // pushes the logo down from the very top, as far as it can go
+    table.row();
     table.add(title).width(screenWidth * 0.3f).height(screenHeight * 0.18f).padBottom(pad);
     table.row();
-    table.add(playButton).width(screenWidth * 0.12f).height(screenHeight * 0.06f);
+    table.add(columnPair).center().padTop(screenHeight * 0.02f);
     table.row();
-    table.add(continueButton).width(screenWidth * 0.12f).height(screenHeight * 0.06f).padTop(pad);
-    table.row();
-    table.add(minigamesButton).width(screenWidth * 0.12f).height(screenHeight * 0.06f).padTop(pad);
-    table.row();
-    table.add(settingsButton).width(screenWidth * 0.12f).height(screenHeight * 0.06f).padTop(pad);
-    table.row();
-    table.add(exitButton).width(screenWidth * 0.12f).height(screenHeight * 0.06f).padTop(pad);
+    table
+        .add(settingsButton)
+        .center()
+        .width(buttonWidth)
+        .height(buttonHeight)
+        .padTop(screenHeight * 0.05f)
+        .padBottom(screenHeight * 0.06f);
 
     stage.addActor(table);
   }
