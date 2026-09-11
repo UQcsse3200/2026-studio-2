@@ -1,6 +1,7 @@
 package com.csse3200.game.components.player;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Input.Buttons;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputProcessor;
@@ -114,6 +115,9 @@ public class KeyboardPlayerInputComponent extends InputComponent {
         return true;
       case Keys.COMMA:
         entity.getEvents().trigger("switchItem", -1);
+        return true;
+      case Input.Keys.S:
+        entity.getEvents().trigger("updateLedgeDrop", true);
         return true;
       default:
         return false;
