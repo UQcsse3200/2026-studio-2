@@ -282,116 +282,95 @@ filter: Nearest,Nearest
 repeat: none
 jump
   rotate: false
-  xy: 0, 0
+  xy: 48, 0
   size: 48, 100
   orig: 48, 100
   offset: 0, 0
   index: 0
 jump
   rotate: false
-  xy: 48, 0
+  xy: 96, 0
   size: 48, 100
   orig: 48, 100
   offset: 0, 0
   index: 1
 jump
   rotate: false
-  xy: 96, 0
+  xy: 144, 0
   size: 48, 100
   orig: 48, 100
   offset: 0, 0
   index: 2
 jump
   rotate: false
-  xy: 144, 0
+  xy: 0, 100
   size: 48, 100
   orig: 48, 100
   offset: 0, 0
   index: 3
 jump
   rotate: false
-  xy: 0, 100
+  xy: 48, 100
   size: 48, 100
   orig: 48, 100
   offset: 0, 0
   index: 4
 jump
   rotate: false
-  xy: 48, 100
+  xy: 96, 100
   size: 48, 100
   orig: 48, 100
   offset: 0, 0
   index: 5
 jump
   rotate: false
-  xy: 96, 100
+  xy: 144, 100
   size: 48, 100
   orig: 48, 100
   offset: 0, 0
   index: 6
 jump
   rotate: false
-  xy: 144, 100
+  xy: 0, 200
   size: 48, 100
   orig: 48, 100
   offset: 0, 0
   index: 7
 jump
   rotate: false
-  xy: 0, 200
+  xy: 48, 200
   size: 48, 100
   orig: 48, 100
   offset: 0, 0
   index: 8
 jump
   rotate: false
-  xy: 48, 200
+  xy: 96, 200
   size: 48, 100
   orig: 48, 100
   offset: 0, 0
   index: 9
 jump
   rotate: false
-  xy: 96, 200
+  xy: 144, 200
   size: 48, 100
   orig: 48, 100
   offset: 0, 0
   index: 10
 jump
   rotate: false
-  xy: 144, 200
+  xy: 0, 300
   size: 48, 100
   orig: 48, 100
   offset: 0, 0
   index: 11
 jump
   rotate: false
-  xy: 0, 300
-  size: 48, 100
-  orig: 48, 100
-  offset: 0, 0
-  index: 12
-jump
-  rotate: false
   xy: 48, 300
   size: 48, 100
   orig: 48, 100
   offset: 0, 0
-  index: 13
-jump
-  rotate: false
-  xy: 96, 300
-  size: 48, 100
-  orig: 48, 100
-  offset: 0, 0
-  index: 14
-jump
-  rotate: false
-  xy: 144, 300
-  size: 48, 100
-  orig: 48, 100
-  offset: 0, 0
-  index: 15
+  index: 12
 
 player_hurt.png
 size: 220, 288

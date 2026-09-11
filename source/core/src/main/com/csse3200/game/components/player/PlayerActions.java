@@ -18,7 +18,7 @@ public class PlayerActions extends Component {
   private static final float SPRINT_MULTIPLIER = 1.75f;
   private static final float ROPE_JUMP_MULTIPLIER = 0.7f;
   private static final float AIR_CONTROL = 0.1f; // How much steering you get mid-air
-  private static final long JUMP_WINDUP_MS = 80; // Anticipation delay before a ground jump lifts off
+  private static final long JUMP_WINDUP_MS = 90; // Anticipation delay before a ground jump lifts off
 
   private PhysicsComponent physicsComponent;
   private GrappleComponent grapple;
