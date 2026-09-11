@@ -7,11 +7,13 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.UIComponent;
@@ -55,7 +57,17 @@ public class SpinTheWheelDisplay extends UIComponent {
     table.setFillParent(true);
     resultLabel = new Label("", skin);
 
-    TextButton spinBtn = new TextButton("Spin", skin);
+    Texture spinUpTexture =
+        ServiceLocator.getResourceService().getAsset("images/Buttons/spin_up_btn.png", Texture.class);
+    Texture spinDownTexture =
+        ServiceLocator.getResourceService()
+            .getAsset("images/Buttons/spin_down_btn.png", Texture.class);
+
+    ImageButton.ImageButtonStyle spinButtonStyle = new ImageButton.ImageButtonStyle();
+    spinButtonStyle.up = new TextureRegionDrawable(spinUpTexture);
+    spinButtonStyle.down = new TextureRegionDrawable(spinDownTexture);
+
+    ImageButton spinBtn = new ImageButton(spinButtonStyle);
     spinBtn.addListener(
         new ChangeListener() {
           @Override
@@ -70,9 +82,19 @@ public class SpinTheWheelDisplay extends UIComponent {
     table.row();
     table.add(resultLabel).padTop(30f);
     table.row();
-    table.add(spinBtn).padTop(30f);
+    table.add(spinBtn).width(160f).height(56f).padTop(30f);
 
-    TextButton backBtn = new TextButton("Back", skin);
+    Texture backUpTexture =
+        ServiceLocator.getResourceService().getAsset("images/Buttons/back_up_btn.png", Texture.class);
+    Texture backDownTexture =
+        ServiceLocator.getResourceService()
+            .getAsset("images/Buttons/back_down_btn.png", Texture.class);
+
+    ImageButton.ImageButtonStyle backButtonStyle = new ImageButton.ImageButtonStyle();
+    backButtonStyle.up = new TextureRegionDrawable(backUpTexture);
+    backButtonStyle.down = new TextureRegionDrawable(backDownTexture);
+
+    ImageButton backBtn = new ImageButton(backButtonStyle);
     backBtn.addListener(
         new ChangeListener() {
           @Override
@@ -83,7 +105,7 @@ public class SpinTheWheelDisplay extends UIComponent {
         });
 
     table.row();
-    table.add(backBtn).padTop(30f);
+    table.add(backBtn).width(160f).height(56f).padTop(30f);
 
     stage.addActor(table);
   }
@@ -188,7 +210,7 @@ public class SpinTheWheelDisplay extends UIComponent {
    *
    * @param spinBtn the button that started the spin
    */
-  private void spin(TextButton spinBtn) {
+  private void spin(Button spinBtn) {
     spinBtn.setDisabled(true);
     WheelItem result = wheel.spin();
     float target = wheel.getTargetRotation(wheelGroup.getRotation(), POINTER_ANGLE, FULL_TURNS);

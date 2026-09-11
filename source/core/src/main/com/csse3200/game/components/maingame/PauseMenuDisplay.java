@@ -1,13 +1,13 @@
 package com.csse3200.game.components.maingame;
 
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.csse3200.game.GdxGame;
 import com.csse3200.game.components.ButtonSound;
 import com.csse3200.game.services.ServiceLocator;
@@ -43,9 +43,43 @@ public class PauseMenuDisplay extends UIComponent {
     table.setFillParent(true);
     table.setColor(1, 1, 1, 0);
 
-    TextButton resumeBtn = new TextButton("Resume", skin);
-    TextButton settingsBtn = new TextButton("Settings", skin);
-    TextButton exitBtn = new TextButton("Quit Game", skin);
+    Texture continueUpTexture =
+        ServiceLocator.getResourceService()
+            .getAsset("images/Buttons/continue_up_btn.png", Texture.class);
+    Texture continueDownTexture =
+        ServiceLocator.getResourceService()
+            .getAsset("images/Buttons/continue_down_btn.png", Texture.class);
+
+    ImageButton.ImageButtonStyle resumeButtonStyle = new ImageButton.ImageButtonStyle();
+    resumeButtonStyle.up = new TextureRegionDrawable(continueUpTexture);
+    resumeButtonStyle.down = new TextureRegionDrawable(continueDownTexture);
+
+    ImageButton resumeBtn = new ImageButton(resumeButtonStyle);
+
+    Texture settingsUpTexture =
+        ServiceLocator.getResourceService()
+            .getAsset("images/Buttons/settings_up_btn.png", Texture.class);
+    Texture settingsDownTexture =
+        ServiceLocator.getResourceService()
+            .getAsset("images/Buttons/settings_down_btn.png", Texture.class);
+
+    ImageButton.ImageButtonStyle settingsButtonStyle = new ImageButton.ImageButtonStyle();
+    settingsButtonStyle.up = new TextureRegionDrawable(settingsUpTexture);
+    settingsButtonStyle.down = new TextureRegionDrawable(settingsDownTexture);
+
+    ImageButton settingsBtn = new ImageButton(settingsButtonStyle);
+
+    Texture quitUpTexture =
+        ServiceLocator.getResourceService().getAsset("images/Buttons/quit_up_btn.png", Texture.class);
+    Texture quitDownTexture =
+        ServiceLocator.getResourceService()
+            .getAsset("images/Buttons/quit_down_btn.png", Texture.class);
+
+    ImageButton.ImageButtonStyle exitButtonStyle = new ImageButton.ImageButtonStyle();
+    exitButtonStyle.up = new TextureRegionDrawable(quitUpTexture);
+    exitButtonStyle.down = new TextureRegionDrawable(quitDownTexture);
+
+    ImageButton exitBtn = new ImageButton(exitButtonStyle);
 
     resumeBtn.addListener(
         new ChangeListener() {
@@ -54,7 +88,6 @@ public class PauseMenuDisplay extends UIComponent {
             if (ServiceLocator.getEntityService().getPaused()) {
               ButtonSound.playClick();
               unpause();
-              ServiceLocator.getInputService().keyDown(Input.Keys.ESCAPE);
             }
           }
         });
@@ -88,13 +121,13 @@ public class PauseMenuDisplay extends UIComponent {
         new Image(
             ServiceLocator.getResourceService()
                 .getAsset("images/title_odysseus_logo.png", Texture.class));
-    table.add(title).padTop(-35f);
+    table.add(title).width(350f).height(122f).padTop(-35f);
     table.row();
-    table.add(resumeBtn).padTop(30f);
+    table.add(resumeBtn).width(200f).height(70f).padTop(30f);
     table.row();
-    table.add(settingsBtn).padTop(15f);
+    table.add(settingsBtn).width(200f).height(70f).padTop(15f);
     table.row();
-    table.add(exitBtn).padTop(15f);
+    table.add(exitBtn).width(200f).height(70f).padTop(15f);
     table.row();
 
     stage.addActor(table);

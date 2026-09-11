@@ -5,9 +5,10 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.csse3200.game.components.ButtonSound;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.UIComponent;
@@ -33,7 +34,7 @@ public class MainMenuDisplay extends UIComponent {
     float pad = screenHeight * 0.02f;
     Image background =
         new Image(
-            ServiceLocator.getResourceService().getAsset("images/main_menu_bg.jpg", Texture.class));
+            ServiceLocator.getResourceService().getAsset("images/main_menu_bg.png", Texture.class));
     background.setFillParent(true);
     stage.addActor(background);
 
@@ -42,13 +43,73 @@ public class MainMenuDisplay extends UIComponent {
             ServiceLocator.getResourceService()
                 .getAsset("images/title_odysseus_logo.png", Texture.class));
 
-    TextButton PlayBtn = new TextButton("Play", skin);
-    TextButton ContinueBtn = new TextButton("Continue", skin);
-    TextButton MinigamesBtn = new TextButton("Minigames", skin);
-    TextButton SettingsBtn = new TextButton("Settings", skin);
-    TextButton ExitBtn = new TextButton("Quit", skin);
+    Texture playUpTexture =
+        ServiceLocator.getResourceService().getAsset("images/Buttons/play_up_btn.png", Texture.class);
+    Texture playDownTexture =
+        ServiceLocator.getResourceService()
+            .getAsset("images/Buttons/play_down_button.png", Texture.class);
 
-    PlayBtn.addListener(
+    ImageButton.ImageButtonStyle playButtonStyle = new ImageButton.ImageButtonStyle();
+    playButtonStyle.up = new TextureRegionDrawable(playUpTexture);
+    playButtonStyle.down = new TextureRegionDrawable(playDownTexture);
+
+    ImageButton playButton = new ImageButton(playButtonStyle);
+
+    Texture continueUpTexture =
+        ServiceLocator.getResourceService()
+            .getAsset("images/Buttons/continue_up_btn.png", Texture.class);
+    Texture continueDownTexture =
+        ServiceLocator.getResourceService()
+            .getAsset("images/Buttons/continue_down_btn.png", Texture.class);
+
+    ImageButton.ImageButtonStyle continueButtonStyle = new ImageButton.ImageButtonStyle();
+    continueButtonStyle.up = new TextureRegionDrawable(continueUpTexture);
+    continueButtonStyle.down = new TextureRegionDrawable(continueDownTexture);
+
+    ImageButton continueButton = new ImageButton(continueButtonStyle);
+
+    Texture minigamesUpTexture =
+        ServiceLocator.getResourceService()
+            .getAsset("images/Buttons/minigames_up_btn.png", Texture.class);
+    Texture minigamesDownTexture =
+        ServiceLocator.getResourceService()
+            .getAsset("images/Buttons/minigames_down_btn.png", Texture.class);
+
+    ImageButton.ImageButtonStyle minigamesButtonStyle = new ImageButton.ImageButtonStyle();
+    minigamesButtonStyle.up = new TextureRegionDrawable(minigamesUpTexture);
+    minigamesButtonStyle.down = new TextureRegionDrawable(minigamesDownTexture);
+
+    ImageButton minigamesButton = new ImageButton(minigamesButtonStyle);
+
+    Texture settingsUpTexture =
+        ServiceLocator.getResourceService()
+            .getAsset("images/Buttons/settings_up_btn.png", Texture.class);
+    Texture settingsDownTexture =
+        ServiceLocator.getResourceService()
+            .getAsset("images/Buttons/settings_down_btn.png", Texture.class);
+
+    ImageButton.ImageButtonStyle settingsButtonStyle = new ImageButton.ImageButtonStyle();
+    settingsButtonStyle.up = new TextureRegionDrawable(settingsUpTexture);
+    settingsButtonStyle.down = new TextureRegionDrawable(settingsDownTexture);
+
+    ImageButton settingsButton = new ImageButton(settingsButtonStyle);
+
+    Texture quitUpTexture =
+        ServiceLocator.getResourceService().getAsset("images/Buttons/quit_up_btn.png", Texture.class);
+    Texture quitDownTexture =
+        ServiceLocator.getResourceService()
+            .getAsset("images/Buttons/quit_down_btn.png", Texture.class);
+
+    ImageButton.ImageButtonStyle exitButtonStyle = new ImageButton.ImageButtonStyle();
+    exitButtonStyle.up = new TextureRegionDrawable(quitUpTexture);
+    exitButtonStyle.down = new TextureRegionDrawable(quitDownTexture);
+
+    ImageButton exitButton = new ImageButton(exitButtonStyle);
+
+    // Triggers an event when the button is pressed
+    // ImageButton automatically swaps to the "down" drawable while pressed and back to "up" on
+    // release, so no manual setDrawable(...) call is needed here.
+    playButton.addListener(
         new ChangeListener() {
           @Override
           public void changed(ChangeEvent changeEvent, Actor actor) {
@@ -57,7 +118,7 @@ public class MainMenuDisplay extends UIComponent {
           }
         });
 
-    ContinueBtn.addListener(
+    continueButton.addListener(
         new ChangeListener() {
           @Override
           public void changed(ChangeEvent changeEvent, Actor actor) {
@@ -66,7 +127,7 @@ public class MainMenuDisplay extends UIComponent {
           }
         });
 
-    MinigamesBtn.addListener(
+    minigamesButton.addListener(
         new ChangeListener() {
           @Override
           public void changed(ChangeEvent changeEvent, Actor actor) {
@@ -75,7 +136,7 @@ public class MainMenuDisplay extends UIComponent {
           }
         });
 
-    SettingsBtn.addListener(
+    settingsButton.addListener(
         new ChangeListener() {
           @Override
           public void changed(ChangeEvent changeEvent, Actor actor) {
@@ -84,7 +145,7 @@ public class MainMenuDisplay extends UIComponent {
           }
         });
 
-    ExitBtn.addListener(
+    exitButton.addListener(
         new ChangeListener() {
           @Override
           public void changed(ChangeEvent changeEvent, Actor actor) {
@@ -93,17 +154,29 @@ public class MainMenuDisplay extends UIComponent {
           }
         });
 
-    table.add(title).width(screenWidth * 0.5f).height(screenHeight * 0.3f).padBottom(pad);
+    table.add(title).width(screenWidth * 0.3f).height(screenHeight * 0.18f).padBottom(pad);
     table.row();
-    table.add(PlayBtn);
+    table.add(playButton).width(screenWidth * 0.12f).height(screenHeight * 0.06f);
     table.row();
-    table.add(ContinueBtn).padTop(pad);
+    table
+        .add(continueButton)
+        .width(screenWidth * 0.12f)
+        .height(screenHeight * 0.06f)
+        .padTop(pad);
     table.row();
-    table.add(MinigamesBtn).padTop(pad);
+    table
+        .add(minigamesButton)
+        .width(screenWidth * 0.12f)
+        .height(screenHeight * 0.06f)
+        .padTop(pad);
     table.row();
-    table.add(SettingsBtn).padTop(pad);
+    table
+        .add(settingsButton)
+        .width(screenWidth * 0.12f)
+        .height(screenHeight * 0.06f)
+        .padTop(pad);
     table.row();
-    table.add(ExitBtn).padTop(pad);
+    table.add(exitButton).width(screenWidth * 0.12f).height(screenHeight * 0.06f).padTop(pad);
 
     stage.addActor(table);
   }

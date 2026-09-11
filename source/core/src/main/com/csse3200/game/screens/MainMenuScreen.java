@@ -25,7 +25,18 @@ public class MainMenuScreen extends ScreenAdapter {
   private final GdxGame game;
   private final Renderer renderer;
   private static final String[] mainMenuTextures = {
-    "images/title_odysseus_logo.png", "images/main_menu_bg.jpg"
+    "images/title_odysseus_logo.png",
+    "images/main_menu_bg.png",
+    "images/Buttons/play_up_btn.png",
+    "images/Buttons/play_down_button.png",
+    "images/Buttons/continue_up_btn.png",
+    "images/Buttons/continue_down_btn.png",
+    "images/Buttons/minigames_up_btn.png",
+    "images/Buttons/minigames_down_btn.png",
+    "images/Buttons/settings_up_btn.png",
+    "images/Buttons/settings_down_btn.png",
+    "images/Buttons/quit_up_btn.png",
+    "images/Buttons/quit_down_btn.png"
   };
   private static final String mainMenuMusic = "sounds/Main_menu_sound.mp3";
   private static final String[] mainMenuMusicFiles = {mainMenuMusic};

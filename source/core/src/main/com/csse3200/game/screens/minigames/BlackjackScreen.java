@@ -19,7 +19,7 @@ public class BlackjackScreen extends MinigameScreen {
   }
 
   private static String[] createTextureList() {
-    String[] textures = new String[53];
+    String[] textures = new String[56];
     int index = 0;
 
     for (Blackjack.Suit suit : Blackjack.Suit.values()) {
@@ -33,7 +33,9 @@ public class BlackjackScreen extends MinigameScreen {
       }
     }
 
-    textures[index] = "images/minigames/blackjack/card_back.png";
+    textures[index++] = "images/minigames/blackjack/card_back.png";
+    textures[index++] = "images/Buttons/back_up_btn.png";
+    textures[index] = "images/Buttons/back_down_btn.png";
 
     return textures;
   }
