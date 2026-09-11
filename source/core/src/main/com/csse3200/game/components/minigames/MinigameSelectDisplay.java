@@ -3,10 +3,10 @@ package com.csse3200.game.components.minigames;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.csse3200.game.components.ButtonSound;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.csse3200.game.components.ButtonSound;
 import com.csse3200.game.screens.minigames.MinigameType;
 import com.csse3200.game.ui.UIComponent;
 import org.slf4j.Logger;
@@ -42,8 +42,7 @@ public class MinigameSelectDisplay extends UIComponent {
             public void changed(ChangeEvent changeEvent, Actor actor) {
               logger.debug("{} button clicked", minigame);
               ButtonSound.playClickThen(
-                      () -> entity.getEvents().trigger("selectMinigame", minigame)
-              );
+                  () -> entity.getEvents().trigger("selectMinigame", minigame));
             }
           });
 
