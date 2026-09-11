@@ -1,10 +1,10 @@
 package com.csse3200.game.screens;
 
 import com.badlogic.gdx.ScreenAdapter;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.csse3200.game.GdxGame;
 import com.csse3200.game.components.mainmenu.MainMenuActions;
-import com.badlogic.gdx.audio.Music;
 import com.csse3200.game.components.mainmenu.MainMenuDisplay;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
@@ -92,12 +92,14 @@ public class MainMenuScreen extends ScreenAdapter {
     resourceService.unloadAssets(mainMenuTextures);
     resourceService.unloadAssets(mainMenuMusicFiles);
   }
+
   private void playMusic() {
     Music music = ServiceLocator.getResourceService().getAsset(mainMenuMusic, Music.class);
     music.setLooping(true);
     music.setVolume(0.1f);
     music.play();
   }
+
   /**
    * Creates the main menu's ui including components for rendering ui elements to the screen and
    * capturing and handling ui input.
