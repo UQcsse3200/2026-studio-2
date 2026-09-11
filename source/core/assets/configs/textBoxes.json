@@ -8,7 +8,7 @@
   "maxWidth": 200,
   "padding": 16,
   "borderThickness": 3,
-  "fontPath": "fonts/scroll.fnt",
+  "fontPath": "flat-earth/skin/fonts/PixeloidSans.fnt",
   "textAlignment": "left",
   "pages": [
     "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus felis arcu, imperdiet eget tellus sed, convallis faucibus est.",

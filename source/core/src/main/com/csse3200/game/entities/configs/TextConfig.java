@@ -30,8 +30,8 @@ public class TextConfig {
   public int padding = 16;
   public int borderThickness = 3;
 
-  // Bitmap font (.fnt), relative to assets, e.g. "fonts/scroll.fnt".
-  public String fontPath = "fonts/scroll.fnt";
+  // Bitmap font (.fnt), relative to assets, e.g. "flat-earth/skin/fonts/PixeloidSans.fnt".
+  public String fontPath = "flat-earth/skin/fonts/PixeloidSans.fnt";
 
   // Horizontal alignment of the text within the box: "left", "center"/"centre", or "right".
   public String textAlignment = "center";
