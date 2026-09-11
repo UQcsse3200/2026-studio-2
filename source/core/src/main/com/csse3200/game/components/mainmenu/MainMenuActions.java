@@ -32,24 +32,20 @@ public class MainMenuActions extends Component {
     game.setScreen(GdxGame.ScreenType.TUTORIAL_GAME);
   }
 
-  /** Intended for loading a saved game state. Load functionality is not actually implemented. */
   private void onContinue() {
     logger.info("Continue");
   }
 
-  /** Swaps to the Mini Games Screen */
   private void onMinigames() {
     logger.info("Minigames");
     game.setScreen(GdxGame.ScreenType.MINIGAME_SELECT);
   }
 
-  /** Swaps to the Settings screen. */
   private void onSettings() {
     logger.info("Settings");
     game.setScreen(GdxGame.ScreenType.SETTINGS);
   }
 
-  /** Exits the game. */
   private void onExit() {
     logger.info("Exit");
     game.exit();

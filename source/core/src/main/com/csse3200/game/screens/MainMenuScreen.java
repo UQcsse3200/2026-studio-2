@@ -4,6 +4,7 @@ import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.csse3200.game.GdxGame;
+import com.csse3200.game.components.ButtonSound;
 import com.csse3200.game.components.mainmenu.MainMenuActions;
 import com.csse3200.game.components.mainmenu.MainMenuDisplay;
 import com.csse3200.game.entities.Entity;
@@ -28,10 +29,12 @@ public class MainMenuScreen extends ScreenAdapter {
   };
   private static final String mainMenuMusic = "sounds/Main_menu_sound.mp3";
   private static final String[] mainMenuMusicFiles = {mainMenuMusic};
+  private static final String[] mainMenuSounds = {
+    "sounds/mouse-click-press.wav", "sounds/mouse-click-release.wav"
+  };
 
   public MainMenuScreen(GdxGame game) {
     this.game = game;
-
     logger.debug("Initialising main menu screen services");
     ServiceLocator.registerInputService(new InputService());
     ServiceLocator.registerResourceService(new ResourceService());
@@ -83,6 +86,7 @@ public class MainMenuScreen extends ScreenAdapter {
     ResourceService resourceService = ServiceLocator.getResourceService();
     resourceService.loadTextures(mainMenuTextures);
     resourceService.loadMusic(mainMenuMusicFiles);
+    ButtonSound.load(resourceService);
     ServiceLocator.getResourceService().loadAll();
   }
 
@@ -91,6 +95,7 @@ public class MainMenuScreen extends ScreenAdapter {
     ResourceService resourceService = ServiceLocator.getResourceService();
     resourceService.unloadAssets(mainMenuTextures);
     resourceService.unloadAssets(mainMenuMusicFiles);
+    ButtonSound.unload(resourceService);
   }
 
   private void playMusic() {

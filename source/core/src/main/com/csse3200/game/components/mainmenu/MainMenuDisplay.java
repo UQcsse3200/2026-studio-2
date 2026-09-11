@@ -8,12 +8,12 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.csse3200.game.components.ButtonSound;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.UIComponent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/** A ui component for displaying the Main menu. */
 public class MainMenuDisplay extends UIComponent {
   private static final Logger logger = LoggerFactory.getLogger(MainMenuDisplay.class);
   private static final float Z_INDEX = 2f;
@@ -31,14 +31,12 @@ public class MainMenuDisplay extends UIComponent {
     float screenWidth = Gdx.graphics.getWidth();
     float screenHeight = Gdx.graphics.getHeight();
     float pad = screenHeight * 0.02f;
-    // Background image generated using Google Gemini for sprint 1
     Image background =
         new Image(
             ServiceLocator.getResourceService().getAsset("images/main_menu_bg.jpg", Texture.class));
     background.setFillParent(true);
     stage.addActor(background);
 
-    // title made in Canva
     Image title =
         new Image(
             ServiceLocator.getResourceService()
@@ -50,13 +48,12 @@ public class MainMenuDisplay extends UIComponent {
     TextButton SettingsBtn = new TextButton("Settings", skin);
     TextButton ExitBtn = new TextButton("Quit", skin);
 
-    // Triggers an event when the button is pressed
     PlayBtn.addListener(
         new ChangeListener() {
           @Override
           public void changed(ChangeEvent changeEvent, Actor actor) {
             logger.debug("Play button clicked");
-            entity.getEvents().trigger("Play");
+            ButtonSound.playClickThen(() -> entity.getEvents().trigger("Play"));
           }
         });
 
@@ -65,7 +62,7 @@ public class MainMenuDisplay extends UIComponent {
           @Override
           public void changed(ChangeEvent changeEvent, Actor actor) {
             logger.debug("Continue button clicked");
-            entity.getEvents().trigger("Continue");
+            ButtonSound.playClickThen(() -> entity.getEvents().trigger("Continue"));
           }
         });
 
@@ -74,7 +71,7 @@ public class MainMenuDisplay extends UIComponent {
           @Override
           public void changed(ChangeEvent changeEvent, Actor actor) {
             logger.debug("Minigames button clicked");
-            entity.getEvents().trigger("Minigames");
+            ButtonSound.playClickThen(() -> entity.getEvents().trigger("Minigames"));
           }
         });
 
@@ -83,7 +80,7 @@ public class MainMenuDisplay extends UIComponent {
           @Override
           public void changed(ChangeEvent changeEvent, Actor actor) {
             logger.debug("Settings button clicked");
-            entity.getEvents().trigger("Settings");
+            ButtonSound.playClickThen(() -> entity.getEvents().trigger("Settings"));
           }
         });
 
@@ -91,9 +88,8 @@ public class MainMenuDisplay extends UIComponent {
         new ChangeListener() {
           @Override
           public void changed(ChangeEvent changeEvent, Actor actor) {
-
             logger.debug("Exit button clicked");
-            entity.getEvents().trigger("Exit");
+            ButtonSound.playClickThen(() -> entity.getEvents().trigger("Exit"));
           }
         });
 
@@ -113,9 +109,7 @@ public class MainMenuDisplay extends UIComponent {
   }
 
   @Override
-  public void draw(SpriteBatch batch) {
-    // draw is handled by the stage
-  }
+  public void draw(SpriteBatch batch) {}
 
   @Override
   public float getZIndex() {

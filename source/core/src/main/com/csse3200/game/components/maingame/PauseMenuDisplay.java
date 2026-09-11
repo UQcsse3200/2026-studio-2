@@ -9,6 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.csse3200.game.GdxGame;
+import com.csse3200.game.components.ButtonSound;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.UIComponent;
 
@@ -51,6 +52,7 @@ public class PauseMenuDisplay extends UIComponent {
           @Override
           public void changed(ChangeEvent changeEvent, Actor actor) {
             if (ServiceLocator.getEntityService().getPaused()) {
+              ButtonSound.playClick();
               unpause();
               ServiceLocator.getInputService().keyDown(Input.Keys.ESCAPE);
             }
@@ -62,8 +64,11 @@ public class PauseMenuDisplay extends UIComponent {
           @Override
           public void changed(ChangeEvent changeEvent, Actor actor) {
             if (ServiceLocator.getEntityService().getPaused()) {
-              entity.getEvents().trigger("settingsFromPause");
-              game.setScreen(GdxGame.ScreenType.SETTINGS_FROM_PAUSE);
+              ButtonSound.playClickThen(
+                  () -> {
+                    entity.getEvents().trigger("settingsFromPause");
+                    game.setScreen(GdxGame.ScreenType.SETTINGS_FROM_PAUSE);
+                  });
             }
           }
         });
@@ -73,6 +78,7 @@ public class PauseMenuDisplay extends UIComponent {
           @Override
           public void changed(ChangeEvent changeEvent, Actor actor) {
             if (ServiceLocator.getEntityService().getPaused()) {
+              ButtonSound.playClick();
               game.exit();
             }
           }
