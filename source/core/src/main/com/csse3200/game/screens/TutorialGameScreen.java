@@ -2,6 +2,7 @@ package com.csse3200.game.screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ScreenAdapter;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.csse3200.game.GdxGame;
 import com.csse3200.game.areas.TutorialGameArea;
@@ -32,7 +33,6 @@ import com.csse3200.game.ui.terminal.Terminal;
 import com.csse3200.game.ui.terminal.TerminalDisplay;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.badlogic.gdx.audio.Music;
 
 /**
  * The game screen containing the tutorial.
@@ -169,6 +169,7 @@ public class TutorialGameScreen extends ScreenAdapter {
     music.setVolume(0.05f);
     music.play();
   }
+
   /**
    * Creates the main game's UI including components for rendering UI elements to the screen and
    * capturing and handling UI input.
@@ -198,4 +199,3 @@ public class TutorialGameScreen extends ScreenAdapter {
     ServiceLocator.getEntityService().register(ui);
   }
 }
-
