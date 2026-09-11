@@ -10,6 +10,7 @@ import com.csse3200.game.screens.MainGameScreen;
 import com.csse3200.game.screens.MainMenuScreen;
 import com.csse3200.game.screens.SettingsFromPauseScreen;
 import com.csse3200.game.screens.SettingsScreen;
+import com.csse3200.game.screens.TransitionScreen;
 import com.csse3200.game.screens.TutorialGameScreen;
 import com.csse3200.game.screens.minigames.BlackjackScreen;
 import com.csse3200.game.screens.minigames.CyclopsMinigameRoomScreen;
@@ -25,6 +26,8 @@ import org.slf4j.LoggerFactory;
  */
 public class GdxGame extends Game {
   private static final Logger logger = LoggerFactory.getLogger(GdxGame.class);
+
+  private boolean transitioning = false;
 
   @Override
   public void create() {
@@ -55,7 +58,37 @@ public class GdxGame extends Game {
     if (currentScreen != null) {
       currentScreen.dispose();
     }
-    setScreen(newScreen(screenType));
+    setScreen(createScreen(screenType));
+  }
+
+  /**
+   * Fades the current screen to black, swaps to the target screen, then fades back in. Ignored if
+   * a transition is already in progress.
+   *
+   * @param screenType screen type to transition to
+   */
+  public void transitionTo(ScreenType screenType) {
+    if (transitioning) {
+      return;
+    }
+    logger.info("Transitioning game screen to {}", screenType);
+    transitioning = true;
+    setScreen(new TransitionScreen(this, getScreen(), screenType));
+  }
+
+  /**
+   * Called by {@link TransitionScreen} once its fade-in has finished, handing control to the
+   * screen it faded into.
+   *
+   * @param toScreen the screen the transition faded into
+   */
+  public void finishTransition(Screen toScreen) {
+    Screen transitionScreen = getScreen();
+    transitioning = false;
+    setScreen(toScreen);
+    if (transitionScreen != null) {
+      transitionScreen.dispose();
+    }
   }
 
   @Override
@@ -70,7 +103,7 @@ public class GdxGame extends Game {
    * @param screenType screen type
    * @return new screen
    */
-  private Screen newScreen(ScreenType screenType) {
+  public Screen createScreen(ScreenType screenType) {
     switch (screenType) {
       case MAIN_MENU:
         return new MainMenuScreen(this);
