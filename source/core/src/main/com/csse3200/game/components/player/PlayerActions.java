@@ -13,11 +13,12 @@ import com.csse3200.game.services.ServiceLocator;
  * and when triggered should call methods within this class.
  */
 public class PlayerActions extends Component {
-  private static final float JUMP_FORCE = 5.5f;
+  private static final float JUMP_FORCE = 27f;
   private static final Vector2 MAX_SPEED = new Vector2(5f, 5f); // Metres per second
   private static final float SPRINT_MULTIPLIER = 1.75f;
   private static final float ROPE_JUMP_MULTIPLIER = 0.7f;
   private static final float AIR_CONTROL = 0.1f; // How much steering you get mid-air
+  private static final long JUMP_WINDUP_MS = 80; // Anticipation delay before a ground jump lifts off
 
   private PhysicsComponent physicsComponent;
   private GrappleComponent grapple;
@@ -27,6 +28,7 @@ public class PlayerActions extends Component {
   private boolean isSprinting = false;
   private boolean paused = false;
   private boolean dead = false;
+  private long jumpImpulseAt = -1; // Timestamp to apply the queued jump impulse, -1 if none queued
 
   @Override
   public void create() {
@@ -44,6 +46,7 @@ public class PlayerActions extends Component {
   @Override
   public void update() {
     isGrounded = checkGrounded();
+    checkJumpWindup();
     if (!moving) {
       return;
     }
@@ -57,6 +60,22 @@ public class PlayerActions extends Component {
 
   private boolean isGrappling() {
     return grapple != null && grapple.isAttached();
+  }
+
+  /** Applies the queued ground-jump impulse once its short wind-up has elapsed. */
+  private void checkJumpWindup() {
+    if (jumpImpulseAt < 0) {
+      return;
+    }
+    if (dead) {
+      jumpImpulseAt = -1;
+      return;
+    }
+    if (ServiceLocator.getTimeSource().getTime() >= jumpImpulseAt) {
+      jumpImpulseAt = -1;
+      Body body = physicsComponent.getBody();
+      body.applyLinearImpulse(new Vector2(0, JUMP_FORCE), body.getWorldCenter(), true);
+    }
   }
 
   private void updateSpeed() {
@@ -126,7 +145,7 @@ public class PlayerActions extends Component {
 
   /** Jump off the ground, or let go of the rope with a kick upward. */
   void jump() {
-    if (dead) {
+    if (dead || jumpImpulseAt >= 0) {
       return;
     }
     Body body = physicsComponent.getBody();
@@ -139,8 +158,8 @@ public class PlayerActions extends Component {
     }
 
     if (isGrounded) {
-      body.applyLinearImpulse(new Vector2(0, JUMP_FORCE), body.getWorldCenter(), true);
       isGrounded = false;
+      jumpImpulseAt = ServiceLocator.getTimeSource().getTime() + JUMP_WINDUP_MS;
       entity.getEvents().trigger("jumpStart");
     }
   }

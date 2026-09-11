@@ -86,10 +86,10 @@ public class PlayerFactory {
             .addComponent(new GrappleRenderComponent())
             .addComponent(new PlayerAnimationController());
 
-    PhysicsUtils.setScaledCollider(player, 0.6f, 0.3f);
     player.getComponent(ColliderComponent.class).setDensity(1.5f);
     player.getComponent(AnimationRenderComponent.class).scaleEntity();
-    player.scaleWidth(0.75f);
+    player.scaleWidth(0.6f);
+    PhysicsUtils.setScaledCollider(player, 0.9f, 0.9f);
     return player;
   }
 
