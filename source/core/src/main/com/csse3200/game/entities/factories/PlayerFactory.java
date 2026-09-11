@@ -52,10 +52,10 @@ public class PlayerFactory {
         new AnimationRenderComponent(
             ServiceLocator.getResourceService()
                 .getAsset("images/player.atlas", TextureAtlas.class));
-    animator.addAnimation("idle", 0.15f, PlayMode.LOOP);
+    animator.addAnimation("idle", 0.2f, PlayMode.LOOP);
     animator.addAnimation("walk", 0.1f, PlayMode.LOOP);
-    animator.addAnimation("sprint", 0.1f, PlayMode.LOOP);
-    animator.addAnimation("jump", 0.05f, PlayMode.NORMAL);
+    animator.addAnimation("sprint", 0.125f, PlayMode.LOOP);
+    animator.addAnimation("jump", 0.075f, PlayMode.NORMAL);
     animator.addAnimation("hurt", 0.04f, PlayMode.NORMAL);
     animator.addAnimation("death", 0.1458f, PlayMode.NORMAL);
     animator.addAnimation("sleep", 0.1458f, PlayMode.LOOP);
