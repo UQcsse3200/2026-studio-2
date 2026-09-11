@@ -28,7 +28,7 @@ public class TutorialGameArea extends GameArea {
 
   private static final Logger logger = LoggerFactory.getLogger(TutorialGameArea.class);
 
-  private static final int NUM_TREES = 7;
+  //private static final int NUM_TREES = 7;
   private static final int NUM_GHOSTS = 2;
 
   private static final PlatformConfig[] platforms = {
@@ -38,7 +38,7 @@ public class TutorialGameArea extends GameArea {
     new PlatformConfig(new GridPoint2(14, 6), 3, 1, 0),
     new PlatformConfig(new GridPoint2(19, 6), 3, 1, 0),
     new PlatformConfig(new GridPoint2(27, 2), 3, 1, 0),
-    new PlatformConfig(new GridPoint2(32, 3), 2, 2, 2),
+    new PlatformConfig(new GridPoint2(32, 3), 2, 2, 0),
     new PlatformConfig(new GridPoint2(30, 6), 3, 1, 0),
     new PlatformConfig(new GridPoint2(27, 8), 3, 1, 10),
     new PlatformConfig(new GridPoint2(23, 10), 3, 1, 2),
@@ -127,6 +127,8 @@ public class TutorialGameArea extends GameArea {
     "images/DevGridTile.png",
     "images/Tile_2.png",
     "images/platform.png",
+    "images/hook_platform.png",
+    "images/tall_platform.png",
     "images/box_boy_leaf.png",
     "images/spike.png",
     "images/tree.png",
@@ -341,7 +343,8 @@ public class TutorialGameArea extends GameArea {
   private void spawnPlatforms() {
 
     for (PlatformConfig config : platforms) {
-      Entity platform = ObstacleFactory.createPlatform(config.grappleSides);
+      boolean tall = config.height >= config.width;
+      Entity platform = ObstacleFactory.createPlatform(config.grappleSides, tall);
 
       platform.setScale(config.width, config.height);
 
