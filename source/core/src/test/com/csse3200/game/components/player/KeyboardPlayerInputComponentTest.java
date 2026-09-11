@@ -18,7 +18,9 @@ import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.components.inventory.InventoryComponent;
 import com.csse3200.game.components.item.ItemType;
 import com.csse3200.game.entities.Entity;
+import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.extensions.GameExtension;
+import com.csse3200.game.services.ServiceLocator;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,6 +31,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 class KeyboardPlayerInputComponentTest {
   private Input input;
   private Camera camera;
+  private EntityService entityService;
 
   @BeforeEach
   void setUp() {
@@ -41,6 +44,8 @@ class KeyboardPlayerInputComponentTest {
               Vector3 position = invocation.getArgument(0);
               return position.set(10f, 5f, 0f);
             });
+    entityService = mock(EntityService.class);
+    ServiceLocator.registerEntityService(entityService);
   }
 
   @Test

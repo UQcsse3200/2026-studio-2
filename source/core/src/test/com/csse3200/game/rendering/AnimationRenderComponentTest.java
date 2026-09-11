@@ -9,14 +9,24 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
 import com.badlogic.gdx.utils.Array;
 import com.csse3200.game.entities.Entity;
+import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.services.GameTime;
 import com.csse3200.game.services.ServiceLocator;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 @ExtendWith(GameExtension.class)
 class AnimationRenderComponentTest {
+  private EntityService entityService;
+
+  @BeforeEach
+  void setUp() {
+    entityService = mock(EntityService.class);
+    ServiceLocator.registerEntityService(entityService);
+  }
+
   @Test
   void shouldAddRemoveAnimation() {
     TextureAtlas atlas = createMockAtlas("test_name", 1);

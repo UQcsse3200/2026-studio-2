@@ -1,10 +1,15 @@
 package com.csse3200.game.components.inventory;
 
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.NinePatch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
 import com.csse3200.game.components.item.ItemType;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.UIComponent;
@@ -12,13 +17,20 @@ import com.csse3200.game.ui.UIComponent;
 /** Displays the player's inventory bar at the bottom of the screen. */
 public class InventoryBarDisplay extends UIComponent {
   /** Windowed mode is 1280px wide; eight 160px cells plus padding would clip. */
-  private static final float WINDOW_WIDTH = 1280f;
+  // private static final float WINDOW_WIDTH = 1280f;
 
-  private static final float BAR_SIDE_MARGIN = 48f;
+  // private static final float BAR_SIDE_MARGIN = 48f;
   private static final float SLOT_PAD = 4f;
-  private static final float SLOT_HEIGHT = 72f;
-  private static final float MAX_SLOT_WIDTH = 120f;
 
+  // private static final float SLOT_HEIGHT = 72f;
+  // private static final float MAX_SLOT_WIDTH = 120f;
+
+  private static final String INVENTORY_BACKGROUND_TEXTURE = "images/Inventory_background.png";
+  private static final int BORDER_THICKNESS = 1;
+  private static NinePatchDrawable cachedBackground;
+
+  private Table root;
+  private Stack stack;
   private Table table;
 
   @Override
@@ -63,14 +75,46 @@ public class InventoryBarDisplay extends UIComponent {
 
   /** Creates and positions the inventory bar. */
   private void addActors() {
+    root = new Table();
+    root.bottom();
+    root.setFillParent(true);
+    root.padBottom(20f);
+
+    stack = new Stack();
+    Image background =
+        new Image(
+            ServiceLocator.getResourceService()
+                .getAsset(INVENTORY_BACKGROUND_TEXTURE, Texture.class));
+    stack.add(background);
     table = new Table();
-    table.bottom();
-    table.setFillParent(true);
-    table.padBottom(20f);
-
+    table.padRight(95f).padTop(69f);
     populateSlots();
+    stack.add(table);
 
-    stage.addActor(table);
+    root.add(stack);
+
+    stage.addActor(root);
+  }
+
+  private static NinePatchDrawable getBackgroundDrawable() {
+    if (cachedBackground != null) {
+      return cachedBackground;
+    }
+
+    int size = 16;
+    int border = BORDER_THICKNESS + 2;
+
+    Pixmap pixmap = new Pixmap(size, size, Pixmap.Format.RGBA8888);
+    pixmap.setColor(new Color(0.88f, 0.83f, 0.55f, 1f));
+    for (int i = 0; i < border; i++) {
+      pixmap.drawRectangle(i, i, size - i * 2, size - i * 2);
+    }
+    Texture texture = new Texture(pixmap);
+    pixmap.dispose();
+
+    NinePatch patch = new NinePatch(texture, border, border, border, border);
+    cachedBackground = new NinePatchDrawable(patch);
+    return cachedBackground;
   }
 
   /** Populates the inventory bar with occupied and empty slots. */
@@ -92,26 +136,22 @@ public class InventoryBarDisplay extends UIComponent {
                 slotNumber, inventorySlot.getItemType(), inventorySlot.getQuantity(), selected);
       }
 
-      table
-          .add(slot)
-          .width(slotWidth(inventory.getHotbarSlotCount()))
-          .height(SLOT_HEIGHT)
-          .pad(SLOT_PAD);
+      table.add(slot).width(60f).height(65f).padRight(50f);
     }
   }
 
-  /**
-   * Fits every hotbar cell inside the 1280px window, including per-cell padding.
-   *
-   * @param slotCount number of hotbar slots
-   * @return width of one slot
-   */
-  private float slotWidth(int slotCount) {
-    int count = Math.max(slotCount, 1);
-    float available = WINDOW_WIDTH - BAR_SIDE_MARGIN;
-    float widthForSlot = available / count - SLOT_PAD * 2f;
-    return Math.min(MAX_SLOT_WIDTH, Math.max(widthForSlot, 1f));
-  }
+  // /**
+  //  * Fits every hotbar cell inside the 1280px window, including per-cell padding.
+  //  *
+  //  * @param slotCount number of hotbar slots
+  //  * @return width of one slot
+  //  */
+  // private float slotWidth(int slotCount) {
+  //   int count = Math.max(slotCount, 1);
+  //   float available = WINDOW_WIDTH - BAR_SIDE_MARGIN;
+  //   float widthForSlot = available / count - SLOT_PAD * 2f;
+  //   return Math.min(MAX_SLOT_WIDTH, Math.max(widthForSlot, 1f));
+  // }
 
   /**
    * Creates one inventory slot.
@@ -127,24 +167,22 @@ public class InventoryBarDisplay extends UIComponent {
     Table slot = new Table();
     slot.pad(8f);
 
-    if (selected) {
-      slot.setBackground(skin.getDrawable("selection"));
-    } else {
-      slot.setBackground(skin.getDrawable("button-c"));
-    }
+    slot.setBackground(selected ? getBackgroundDrawable() : slot.getBackground());
 
     Texture texture =
         ServiceLocator.getResourceService().getAsset(getItemTexture(item), Texture.class);
 
     Image icon = new Image(texture);
 
-    Label numberLabel = new Label(Integer.toString(slotNumber), skin, "large");
+    // Label numberLabel = new Label(Integer.toString(slotNumber), skin, "large");
 
-    Label countLabel = new Label("x" + count, skin);
+    Label countLabel =
+        new Label("x" + count, new Label.LabelStyle(skin.getFont("font"), Color.WHITE));
+    countLabel.setColor(Color.WHITE);
 
-    slot.add(numberLabel).width(25f).left().padLeft(5f).padRight(5f);
+    // slot.add(numberLabel).width(25f).left().padLeft(5f).padRight(5f);
 
-    slot.add(icon).size(50f, 50f).expand().center();
+    slot.add(icon).size(40f, 40f).expand().center();
 
     slot.row();
 
@@ -162,11 +200,11 @@ public class InventoryBarDisplay extends UIComponent {
   private Table createEmptySlot(int slotNumber, boolean selected) {
     Table slot = new Table();
     slot.pad(8f);
-    slot.setBackground(skin.getDrawable(selected ? "selection" : "button-c"));
+    slot.setBackground(selected ? getBackgroundDrawable() : slot.getBackground());
 
-    Label numberLabel = new Label(Integer.toString(slotNumber), skin, "large");
+    // Label numberLabel = new Label(Integer.toString(slotNumber), skin, "large");
 
-    slot.add(numberLabel).width(25f).left().padLeft(5f).padRight(5f);
+    // slot.add(numberLabel).width(25f).left().padLeft(5f).padRight(5f);
 
     slot.add().expand().fill();
 

@@ -1,5 +1,6 @@
 package com.csse3200.game.screens;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.csse3200.game.GdxGame;
@@ -41,12 +42,17 @@ public class TutorialGameScreen extends ScreenAdapter {
   private static final Logger logger = LoggerFactory.getLogger(TutorialGameScreen.class);
 
   private static final String[] mainGameTextures = {
-    "images/heart.png", "images/title_odysseus_logo.png"
+    "images/heart.png",
+    "images/title_odysseus_logo.png",
+    "images/Health_Bar_Background.png",
+    "images/Inventory_background.png",
+    "images/red_heart.png"
   };
 
   private final GdxGame game;
   private final Renderer renderer;
   private final PhysicsEngine physicsEngine;
+  private Entity player;
 
   public TutorialGameScreen(GdxGame game) {
     this.game = game;
@@ -85,8 +91,17 @@ public class TutorialGameScreen extends ScreenAdapter {
 
     tutorialGameArea.create();
 
+    player = tutorialGameArea.getPlayer();
+
     // Follow the player with the camera.
-    renderer.getCamera().setTarget(tutorialGameArea.getPlayer());
+    renderer.getCamera().setTarget(player);
+    player.getEvents().addListener("death", this::onPlayerDeath);
+  }
+
+  private void onPlayerDeath() {
+    ServiceLocator.getEntityService().scheduleRemoval(player);
+    Gdx.app.postRunnable(
+        () -> ServiceLocator.getGameEndEventHandler().trigger("gameEnd", GameEndState.LOSE));
   }
 
   @Override
