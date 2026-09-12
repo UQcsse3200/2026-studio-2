@@ -12,6 +12,7 @@ import com.csse3200.game.components.minigames.cyclopsMinigame.CyclopsMinigameDis
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.entities.factories.RenderFactory;
+import com.csse3200.game.events.EventHandler;
 import com.csse3200.game.input.InputComponent;
 import com.csse3200.game.input.InputDecorator;
 import com.csse3200.game.input.InputService;
@@ -27,6 +28,7 @@ import com.csse3200.game.ui.GameEndDisplay;
 import com.csse3200.game.ui.GameEndState;
 import com.csse3200.game.ui.terminal.Terminal;
 import com.csse3200.game.ui.terminal.TerminalDisplay;
+import com.csse3200.game.ui.terminal.commands.CyclopsMinigameCommand;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,6 +63,7 @@ public class CyclopsMinigameRoomScreen extends ScreenAdapter {
     ServiceLocator.registerResourceService(new ResourceService());
 
     ServiceLocator.registerEntityService(new EntityService());
+    ServiceLocator.registerCyclopsMinigameEventHandler(new EventHandler());
     ServiceLocator.registerRenderService(new RenderService());
 
     renderer = RenderFactory.createRenderer();
@@ -127,12 +130,15 @@ public class CyclopsMinigameRoomScreen extends ScreenAdapter {
     InputComponent inputComponent =
         ServiceLocator.getInputService().getInputFactory().createForTerminal();
 
+    Terminal terminal = new Terminal();
+    terminal.addCommand("cyclops", new CyclopsMinigameCommand());
+
     Entity ui = new Entity();
     ui.addComponent(new InputDecorator(stage, 10))
         .addComponent(new PerformanceDisplay())
         .addComponent(new CyclopsMinigameActions(this.game))
         .addComponent(new CyclopsMinigameDisplay())
-        .addComponent(new Terminal())
+        .addComponent(terminal)
         .addComponent(inputComponent)
         .addComponent(new GameEndDisplay(GameEndState.LOSE))
         .addComponent(new GameEndActions(this.game))

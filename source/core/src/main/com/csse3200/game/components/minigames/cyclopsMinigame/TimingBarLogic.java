@@ -73,6 +73,10 @@ public class TimingBarLogic {
     this.isStopped = false;
   }
 
+  public void resetMarker() {
+    this.markerX = 0;
+  }
+
   /**
    * Checks whether the marker is in the scoring green area.
    *

@@ -46,9 +46,12 @@ public class CyclopsMinigameArea extends GameArea {
 
   private static final String[] cyclopsMinigameTexturesAtlases = {"images/player.atlas"};
 
+  private static final String[] cyclopsMinigameSounds = {"sounds/walkingSounds/walkingSound.mp3"};
+
   private final TerrainFactory terrainFactory;
 
   private Entity player;
+  private Entity minigame;
 
   private static final GridPoint2 MAP_SIZE = new GridPoint2(40, 30);
   private static final int NUM_STATUES = 3;
@@ -95,10 +98,10 @@ public class CyclopsMinigameArea extends GameArea {
     cyclopsMinigameLogic.setSafeLocations(statueLocations);
     cyclopsMinigameLogic.setLossLocations(statueGapLocations);
 
-    Entity timingMinigameEntity = new Entity();
-    timingMinigameEntity.addComponent(timingBarDisplay);
-    timingMinigameEntity.addComponent(cyclopsMinigameLogic);
-    spawnEntity(timingMinigameEntity);
+    minigame = new Entity();
+    minigame.addComponent(timingBarDisplay);
+    minigame.addComponent(cyclopsMinigameLogic);
+    spawnEntity(minigame);
   }
 
   private void startTimingMinigame() {
@@ -168,6 +171,7 @@ public class CyclopsMinigameArea extends GameArea {
     ResourceService resourceService = ServiceLocator.getResourceService();
     resourceService.loadTextures(cyclopsMinigameTextures);
     resourceService.loadTextureAtlases(cyclopsMinigameTexturesAtlases);
+    resourceService.loadSounds(cyclopsMinigameSounds);
 
     while (!resourceService.loadForMillis(10)) {
       logger.info("Loading... {}%", resourceService.getProgress());
@@ -179,6 +183,7 @@ public class CyclopsMinigameArea extends GameArea {
     ResourceService resourceService = ServiceLocator.getResourceService();
     resourceService.unloadAssets(cyclopsMinigameTextures);
     resourceService.unloadAssets(cyclopsMinigameTexturesAtlases);
+    resourceService.unloadAssets(cyclopsMinigameSounds);
   }
 
   @Override

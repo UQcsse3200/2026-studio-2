@@ -25,6 +25,7 @@ public class ServiceLocator {
   private static InputService inputService;
   private static ResourceService resourceService;
   private static EventHandler gameEndEventHandler;
+  private static EventHandler cyclopsMinigameEventHandler;
 
   public static EntityService getEntityService() {
     return entityService;
@@ -54,9 +55,18 @@ public class ServiceLocator {
     return gameEndEventHandler;
   }
 
+  public static EventHandler getCyclopsMinigameEventHandler() {
+    return cyclopsMinigameEventHandler;
+  }
+
   public static void registerGameEndEventHandler(EventHandler eventHandler) {
     logger.debug("Registering game end event handler {}", eventHandler);
     gameEndEventHandler = eventHandler;
+  }
+
+  public static void registerCyclopsMinigameEventHandler(EventHandler eventHandler) {
+    logger.debug("Registering cyclops minigame event handler {}", eventHandler);
+    cyclopsMinigameEventHandler = eventHandler;
   }
 
   public static void registerEntityService(EntityService service) {
