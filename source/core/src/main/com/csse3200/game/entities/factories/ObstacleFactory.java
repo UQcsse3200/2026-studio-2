@@ -102,7 +102,7 @@ public class ObstacleFactory {
             ServiceLocator.getResourceService()
                 .getAsset("images/in_level_button.atlas", TextureAtlas.class));
     animator.addAnimation("default", 1f, Animation.PlayMode.LOOP);
-    animator.addAnimation("pressed", 0.15f, Animation.PlayMode.NORMAL);
+    animator.addAnimation("pressed", 0.075f, Animation.PlayMode.NORMAL);
     animator.startAnimation("default");
 
     Entity button =
