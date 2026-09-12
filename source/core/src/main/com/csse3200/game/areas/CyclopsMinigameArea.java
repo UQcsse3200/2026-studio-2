@@ -20,8 +20,26 @@ import org.slf4j.LoggerFactory;
 public class CyclopsMinigameArea extends GameArea {
   private static final Logger logger = LoggerFactory.getLogger(CyclopsMinigameArea.class);
   private static final String[] cyclopsMinigameTextures = {
-    "images/box_boy_leaf.png",
+    "images/black_roof.png",
     "images/purple_heart.png",
+    "images/transparent.png",
+    "images/DevGridTile.png",
+    "images/Tile_2.png",
+    "images/platform.png",
+    "images/box_boy_leaf.png",
+    "images/spike.png",
+    "images/tree.png",
+    "images/ghost_king.png",
+    "images/ghost_1.png",
+    "images/grass_1.png",
+    "images/grass_2.png",
+    "images/grass_3.png",
+    "images/hex_grass_1.png",
+    "images/hex_grass_2.png",
+    "images/hex_grass_3.png",
+    "images/iso_grass_1.png",
+    "images/iso_grass_2.png",
+    "images/iso_grass_3.png",
     "images/transparent.png",
     "images/Greek Statues Pack I/Brute.png",
     "images/CyclopsMinigameFloor.png"

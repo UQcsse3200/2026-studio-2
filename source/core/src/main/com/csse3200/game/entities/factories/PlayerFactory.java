@@ -120,8 +120,12 @@ public class PlayerFactory {
             .addComponent(new PhysicsComponent())
             .addComponent(new ColliderComponent())
             .addComponent(new HitboxComponent().setLayer(PhysicsLayer.PLAYER))
-            .addComponent(new CombatStatsComponent(stats.health, stats.baseAttack))
-            .addComponent(new InventoryComponent(stats.gold))
+            .addComponent(
+                new CombatStatsComponent(
+                    stats.health, stats.baseAttack, stats.invulnerabilityDuration))
+            .addComponent(
+                new CombatStatsComponent(
+                    stats.health, CombatStatsComponent.MAX_HEALTH, stats.baseAttack))
             .addComponent(new PlayerStatsDisplay())
             .addComponent(new PlayerAnimationController());
 
