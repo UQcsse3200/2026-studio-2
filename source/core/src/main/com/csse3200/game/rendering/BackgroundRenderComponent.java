@@ -13,34 +13,40 @@ import java.util.List;
 /** Render multiple layers of a parallax background. */
 public class BackgroundRenderComponent extends RenderComponent {
 
+  Vector2 backgroundPos;
+  Vector2 worldBounds;
+
   /** A single parallax background layer. */
   private static class ParallaxLayer {
     private final Texture texture;
     private final Vector2 parallaxFactor;
     private final float width;
     private final float height;
-    private final float yOffset;
+    private final Vector2 offset;
     private final BackgroundType backgroundType;
     private final Vector2 velocity;
     private Vector2 position;
+    private final boolean repeat;
 
     ParallaxLayer(
         Texture texture,
         Vector2 parallaxFactor,
         float width,
         float height,
-        float yOffset,
+        Vector2 offset,
         BackgroundType backgroundType,
-        Vector2 velocity) {
+        Vector2 velocity,
+        boolean repeat) {
 
       this.texture = texture;
       this.parallaxFactor = parallaxFactor;
       this.width = width;
       this.height = height;
-      this.yOffset = yOffset;
+      this.offset = offset;
       this.backgroundType = backgroundType;
       this.velocity = velocity;
       this.position = new Vector2(velocity);
+      this.repeat = repeat;
     }
   }
 
@@ -52,8 +58,11 @@ public class BackgroundRenderComponent extends RenderComponent {
    *
    * @param camera camera used to calculate parallax movement
    */
-  public BackgroundRenderComponent(CameraComponent camera) {
+  public BackgroundRenderComponent(
+      CameraComponent camera, Vector2 backgroundPos, Vector2 worldBounds) {
     this.camera = camera;
+    this.backgroundPos = backgroundPos;
+    this.worldBounds = worldBounds;
   }
 
   /**
@@ -63,22 +72,23 @@ public class BackgroundRenderComponent extends RenderComponent {
    * @param parallaxFactor controls how much the layer moves
    * @param width width of the layer in world units
    * @param height height of the layer in world units
-   * @param yOffset vertical position relative to the background entity
+   * @param offset position relative to the background entity
    */
   public void addLayer(
       String texturePath,
       Vector2 parallaxFactor,
       float width,
       float height,
-      float yOffset,
+      Vector2 offset,
       BackgroundType backgroundType,
-      Vector2 velocity) {
+      Vector2 velocity,
+      boolean repeat) {
 
     Texture texture = ServiceLocator.getResourceService().getAsset(texturePath, Texture.class);
 
     layers.add(
         new ParallaxLayer(
-            texture, parallaxFactor, width, height, yOffset, backgroundType, velocity));
+            texture, parallaxFactor, width, height, offset, backgroundType, velocity, repeat));
   }
 
   /**
@@ -88,20 +98,21 @@ public class BackgroundRenderComponent extends RenderComponent {
    * @param parallaxFactor controls how much the layer moves
    * @param width width of the layer in world units
    * @param height height of the layer in world units
-   * @param yOffset vertical position relative to the background entity
+   * @param offset position relative to the background entity
    */
   public void addLayer(
       Texture texture,
       Vector2 parallaxFactor,
       float width,
       float height,
-      float yOffset,
+      Vector2 offset,
       BackgroundType backgroundType,
-      Vector2 velocity) {
+      Vector2 velocity,
+      boolean repeat) {
 
     layers.add(
         new ParallaxLayer(
-            texture, parallaxFactor, width, height, yOffset, backgroundType, velocity));
+            texture, parallaxFactor, width, height, offset, backgroundType, velocity, repeat));
   }
 
   /** Scale is controlled individually for each layer. */
@@ -110,6 +121,7 @@ public class BackgroundRenderComponent extends RenderComponent {
   }
 
   private void getPosUpdate(ParallaxLayer layer) {
+    // Since this is called every frame, changing frame rates will change speed
     layer.position.x += layer.velocity.x / 100;
     layer.position.y += layer.velocity.y / 100;
   }
@@ -125,8 +137,8 @@ public class BackgroundRenderComponent extends RenderComponent {
     float cameraY = cameraPos.y;
     getPosUpdate(layer);
 
-    float backgroundX = cameraX;
-    float backgroundY = position.y + layer.yOffset + cameraY + layer.position.y;
+    float backgroundX = cameraX + layer.offset.x;
+    float backgroundY = cameraY + layer.offset.y + position.y + layer.position.y;
 
     return new Vector2(backgroundX, backgroundY);
   }
@@ -140,8 +152,9 @@ public class BackgroundRenderComponent extends RenderComponent {
     float cameraY = cameraPos.y;
     getPosUpdate(layer);
 
-    float backgroundX = position.x + cameraX * (1f - layer.parallaxFactor.x) + layer.position.x;
-    float backgroundY = position.y + layer.yOffset + cameraY + layer.position.y;
+    float backgroundX =
+        position.x + layer.offset.x + cameraX * (1f - layer.parallaxFactor.x) + layer.position.x;
+    float backgroundY = position.y + layer.offset.y + cameraY + layer.position.y;
 
     return new Vector2(backgroundX, backgroundY);
   }
@@ -181,6 +194,17 @@ public class BackgroundRenderComponent extends RenderComponent {
       backgroundY = backgroundPos.y;
 
       batch.draw(layer.texture, backgroundX, backgroundY, layer.width, layer.height);
+
+      if (layer.repeat) {
+        if (layer.position.x >= backgroundPos.x) {
+          batch.draw(
+              layer.texture,
+              backgroundX - layer.width + 0.35f,
+              backgroundY,
+              layer.width,
+              layer.height);
+        }
+      }
     }
   }
 
