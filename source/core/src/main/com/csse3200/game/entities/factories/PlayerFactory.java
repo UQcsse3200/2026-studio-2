@@ -94,10 +94,19 @@ public class PlayerFactory {
             .addComponent(new GrappleRenderComponent())
             .addComponent(new PlayerAnimationController());
 
-    PhysicsUtils.setScaledCollider(player, 0.6f, 0.3f);
-    player.getComponent(ColliderComponent.class).setDensity(1.5f);
     player.getComponent(AnimationRenderComponent.class).scaleEntity();
     player.scaleWidth(0.9f);
+    PhysicsUtils.setScaledCollider(player, 0.6f, 1f);
+    // Preserve the original 0.27 kg body mass so existing jump and movement impulses still fit.
+    player
+        .getComponent(ColliderComponent.class)
+        .setDensity(0.27f / (player.getScale().x * 0.6f * player.getScale().y));
+    player
+        .getComponent(HitboxComponent.class)
+        .setAsBoxAligned(
+            player.getScale().cpy().scl(0.6f, 1f),
+            PhysicsComponent.AlignX.CENTER,
+            PhysicsComponent.AlignY.BOTTOM);
     return player;
   }
 

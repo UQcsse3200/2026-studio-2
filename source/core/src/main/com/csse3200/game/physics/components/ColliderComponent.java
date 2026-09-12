@@ -96,6 +96,33 @@ public class ColliderComponent extends Component {
     return this;
   }
 
+  /** Replace a live box outside the physics step, preserving its collision properties. */
+  public void resizeBox(Vector2 size, Vector2 center) {
+    if (fixture == null) {
+      setAsBox(size, center);
+      return;
+    }
+    Body body = fixture.getBody();
+    float mass = body.getMass();
+    FixtureDef replacement = new FixtureDef();
+    replacement.density = fixture.getDensity();
+    replacement.friction = fixture.getFriction();
+    replacement.restitution = fixture.getRestitution();
+    replacement.isSensor = fixture.isSensor();
+    replacement.filter.set(fixture.getFilterData());
+    PolygonShape box = new PolygonShape();
+    box.setAsBox(size.x / 2f, size.y / 2f, center, 0f);
+    replacement.shape = box;
+    body.destroyFixture(fixture);
+    fixture = body.createFixture(replacement);
+    box.dispose();
+    // Changing posture must not change the impulses needed to move a dynamic body.
+    if (!fixture.isSensor() && mass > 0f && body.getMass() > 0f) {
+      fixture.setDensity(fixture.getDensity() * mass / body.getMass());
+      body.resetMassData();
+    }
+  }
+
   /**
    * Set friction. This affects the object when touching other objects, but does not affect friction
    * with the ground.

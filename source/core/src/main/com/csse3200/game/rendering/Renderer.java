@@ -136,9 +136,9 @@ public class Renderer implements Disposable {
   }
 
   /**
-   * Renders the game world into a small offscreen buffer, then stretches it back up onto the
-   * screen with linear filtering. The UI stage (including the pause menu itself) is drawn
-   * afterwards, on top, at full sharpness.
+   * Renders the game world into a small offscreen buffer, then stretches it back up onto the screen
+   * with linear filtering. The UI stage (including the pause menu itself) is drawn afterwards, on
+   * top, at full sharpness.
    */
   private void renderWorldBlurred(Matrix4 projMatrix) {
     ensureBlurFrameBuffer();

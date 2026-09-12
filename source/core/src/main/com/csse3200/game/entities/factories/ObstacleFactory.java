@@ -149,9 +149,9 @@ public class ObstacleFactory {
   }
 
   /**
-   * Creates an invisible sensor zone that fires "collisionStart" on overlap but applies no
-   * physical collision response. Pair with a behaviour component such as
-   * EnterZoneTriggerComponent to react to the overlap.
+   * Creates an invisible sensor zone that fires "collisionStart" on overlap but applies no physical
+   * collision response. Pair with a behaviour component such as EnterZoneTriggerComponent to react
+   * to the overlap.
    *
    * @param size box size in world units
    * @return sensor trigger entity
@@ -256,6 +256,23 @@ public class ObstacleFactory {
    */
   public static Entity createSpike() {
     return createSpike(0f);
+  }
+
+  /** Beach platform with a solid top and a damage sensor confined to its lower spikes. */
+  public static Entity createBeachSpikePlatform() {
+    Entity platform = createPlatform(0, "images/beach_spike.png");
+    platform.setScale(3f, 1.2f);
+    // Art includes transparent margins: visible top is at 70%, spike tips at 15%.
+    platform
+        .getComponent(ColliderComponent.class)
+        .setAsBox(new Vector2(2.9f, 0.42f), new Vector2(1.5f, 0.63f));
+    platform.addComponent(new CombatStatsComponent(100, 2));
+    platform.addComponent(new HitboxComponent().setLayer(PhysicsLayer.OBSTACLE));
+    platform
+        .getComponent(HitboxComponent.class)
+        .setAsBox(new Vector2(2.6f, 0.3f), new Vector2(1.5f, 0.33f));
+    platform.addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER));
+    return platform;
   }
 
   private ObstacleFactory() {

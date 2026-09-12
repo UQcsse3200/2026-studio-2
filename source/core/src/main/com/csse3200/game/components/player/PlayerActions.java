@@ -2,9 +2,10 @@ package com.csse3200.game.components.player;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
-import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.Component;
 import com.csse3200.game.physics.PhysicsLayer;
+import com.csse3200.game.physics.components.ColliderComponent;
+import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.physics.raycast.RaycastHit;
 import com.csse3200.game.services.ServiceLocator;
@@ -20,11 +21,10 @@ public class PlayerActions extends Component {
   private static final float ROPE_JUMP_MULTIPLIER = 0.7f;
   private static final float AIR_CONTROL = 0.1f; // How much steering you get mid-air
   private static final float ROLL_SPEED = 10f; // Metres per second at the start of a roll
-  private static final float ROLL_DURATION = 0.5f; // Seconds the roll (and its invulnerability) lasts
+  private static final float ROLL_DURATION = 0.5f; // Seconds the roll lasts
 
   private PhysicsComponent physicsComponent;
   private GrappleComponent grapple;
-  private CombatStatsComponent combatStats;
   private Vector2 walkDirection = Vector2.Zero.cpy();
   private float facing = 1f;
   private boolean moving = false;
@@ -38,7 +38,6 @@ public class PlayerActions extends Component {
   public void create() {
     physicsComponent = entity.getComponent(PhysicsComponent.class);
     grapple = entity.getComponent(GrappleComponent.class);
-    combatStats = entity.getComponent(CombatStatsComponent.class);
     entity.getEvents().addListener("walk", this::walk);
     entity.getEvents().addListener("walkStop", this::stopWalking);
     entity.getEvents().addListener("jump", this::jump);
@@ -54,6 +53,7 @@ public class PlayerActions extends Component {
       // Momentum carries the roll; steering is ignored until it ends.
       rollTimeLeft -= ServiceLocator.getTimeSource().getDeltaTime();
       if (!isRolling()) {
+        setRollingBounds(false);
         entity.getEvents().trigger("rollEnd");
       }
       return;
@@ -125,9 +125,7 @@ public class PlayerActions extends Component {
     }
   }
 
-  /**
-   * Dashes forward along the ground, briefly invulnerable — used to get past hazards like spikes.
-   */
+  /** Lowers the player to roll beneath overhead hazards. Contact still causes damage. */
   void roll() {
     if (isRolling() || !isGrounded || isGrappling()) {
       return;
@@ -135,10 +133,19 @@ public class PlayerActions extends Component {
     rollTimeLeft = ROLL_DURATION;
     Body body = physicsComponent.getBody();
     body.setLinearVelocity(facing * ROLL_SPEED + groundVelocityX, body.getLinearVelocity().y);
-    if (combatStats != null) {
-      combatStats.grantInvulnerability((long) (ROLL_DURATION * 1000f));
-    }
+    setRollingBounds(true);
     entity.getEvents().trigger("rollStart");
+  }
+
+  private void setRollingBounds(boolean rolling) {
+    Vector2 size = entity.getScale();
+    size.x *= 0.6f;
+    if (rolling) {
+      size.y *= 0.4f;
+    }
+    Vector2 center = new Vector2(entity.getScale().x / 2f, size.y / 2f);
+    entity.getComponent(ColliderComponent.class).resizeBox(size, center);
+    entity.getComponent(HitboxComponent.class).resizeBox(size, center);
   }
 
   boolean isRolling() {

@@ -202,8 +202,8 @@ public class KeyboardPlayerInputComponent extends InputComponent {
   }
 
   /**
-   * Releasing the mouse button lets go of the grapple and re-arms the click, so holding the
-   * button down fires only once.
+   * Releasing the mouse button lets go of the grapple and re-arms the click, so holding the button
+   * down fires only once.
    *
    * @return whether the input was processed
    * @see InputProcessor#touchUp(int, int, int, int)

@@ -5,7 +5,8 @@ import com.csse3200.game.components.Component;
 
 /**
  * Fires a callback once, the first time anything enters this entity's sensor collider. Pair with
- * {@link com.csse3200.game.entities.factories.ObstacleFactory#createTriggerZone(com.badlogic.gdx.math.Vector2)}.
+ * {@link
+ * com.csse3200.game.entities.factories.ObstacleFactory#createTriggerZone(com.badlogic.gdx.math.Vector2)}.
  */
 public class EnterZoneTriggerComponent extends Component {
   private final Runnable onEnter;

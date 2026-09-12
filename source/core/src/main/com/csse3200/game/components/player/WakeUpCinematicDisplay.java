@@ -120,7 +120,8 @@ public class WakeUpCinematicDisplay extends UIComponent {
 
   private ImageButton buildSkipButton() {
     Texture upTexture =
-        ServiceLocator.getResourceService().getAsset("images/Buttons/skip_up_btn.png", Texture.class);
+        ServiceLocator.getResourceService()
+            .getAsset("images/Buttons/skip_up_btn.png", Texture.class);
     Texture downTexture =
         ServiceLocator.getResourceService()
             .getAsset("images/Buttons/skip_down_btn.png", Texture.class);

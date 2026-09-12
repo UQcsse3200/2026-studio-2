@@ -31,6 +31,25 @@ class ColliderComponentTest {
   }
 
   @Test
+  void shouldResizeLiveColliderAndPreserveProperties() {
+    Entity entity = new Entity().addComponent(new PhysicsComponent());
+    ColliderComponent collider = new ColliderComponent();
+    entity.addComponent(collider);
+    collider.setDensity(1.5f).setFriction(0.7f).setSensor(true).setLayer(PhysicsLayer.PLAYER);
+    entity.create();
+    collider.resizeBox(new Vector2(0.6f, 0.8f), new Vector2(0.45f, 0.4f));
+    assertEquals(1, entity.getComponent(PhysicsComponent.class).getBody().getFixtureList().size);
+    assertEquals(1.5f, collider.getFixture().getDensity());
+    assertEquals(0.7f, collider.getFixture().getFriction());
+    assertEquals(PhysicsLayer.PLAYER, collider.getLayer());
+    assertTrue(collider.getFixture().isSensor());
+    assertTrue(collider.getFixture().testPoint(0.45f, 0.7f));
+    assertFalse(collider.getFixture().testPoint(0.45f, 1.2f));
+    collider.resizeBox(new Vector2(0.6f, 2f), new Vector2(0.45f, 1f));
+    assertTrue(collider.getFixture().testPoint(0.45f, 1.2f));
+  }
+
+  @Test
   void shouldSetFriction() {
     Entity entity = new Entity();
     entity.addComponent(new PhysicsComponent());
