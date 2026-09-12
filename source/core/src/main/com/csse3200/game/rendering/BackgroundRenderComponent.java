@@ -176,33 +176,43 @@ public class BackgroundRenderComponent extends RenderComponent {
      */
     for (ParallaxLayer layer : layers) {
 
-      Vector2 backgroundPos = null;
-      float backgroundX;
-      float backgroundY;
+      Vector2 layerPos = null;
+      float layerX;
+      float layerY;
 
       switch (layer.backgroundType) {
         case INDEPENDENT:
-          backgroundPos = getIndependentPosition(layer, cameraPos, position);
+          layerPos = getIndependentPosition(layer, cameraPos, position);
           break;
 
         case DEPENDENT:
-          backgroundPos = getDependentPosition(layer, cameraPos, position);
+          layerPos = getDependentPosition(layer, cameraPos, position);
           break;
       }
 
-      backgroundX = backgroundPos.x;
-      backgroundY = backgroundPos.y;
+      layerX = layerPos.x;
+      layerY = layerPos.y;
 
-      batch.draw(layer.texture, backgroundX, backgroundY, layer.width, layer.height);
+      batch.draw(layer.texture, layerX, layerY, layer.width, layer.height);
 
       if (layer.repeat) {
-        if (layer.position.x >= backgroundPos.x) {
-          batch.draw(
-              layer.texture,
-              backgroundX - layer.width + 0.35f,
-              backgroundY,
-              layer.width,
-              layer.height);
+
+        float newLeftDrawPosX = layerX - layer.width;
+        float newRightDrawPosX = layerX + layer.width;
+
+        // if left most x coord of layer >= left most x coord of background pos
+        // backgroundPos is used over worldBound.x since backgroundPos extends beyond worldBound
+        while (newLeftDrawPosX >= backgroundPos.x - layer.width) {
+          batch.draw(layer.texture, newLeftDrawPosX, layerY, layer.width, layer.height);
+          newLeftDrawPosX -= layer.width;
+        }
+
+        // if right most x coord of layer <= right of worldBound + extra you can see
+        // NOTE: this relies on backgroudPos starting at a negative value, which will always be
+        // true if player starts at x = 0
+        while (newRightDrawPosX <= worldBounds.x - backgroundPos.x) {
+          batch.draw(layer.texture, newRightDrawPosX, layerY, layer.width, layer.height);
+          newRightDrawPosX += layer.width;
         }
       }
     }
