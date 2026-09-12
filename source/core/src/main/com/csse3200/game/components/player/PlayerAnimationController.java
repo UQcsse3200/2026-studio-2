@@ -15,6 +15,7 @@ public class PlayerAnimationController extends Component {
   private boolean jumping = false;
   private boolean hurt = false;
   private boolean rolling = false;
+  private boolean firing = false;
 
   @Override
   public void create() {
@@ -28,6 +29,7 @@ public class PlayerAnimationController extends Component {
     entity.getEvents().addListener("rollStart", this::rollStart);
     entity.getEvents().addListener("rollEnd", this::rollEnd);
     entity.getEvents().addListener("hurt", this::hurt);
+    entity.getEvents().addListener("attackAnimation", this::fire);
 
     animator.startAnimation("idle");
   }
@@ -40,11 +42,14 @@ public class PlayerAnimationController extends Component {
     } else if (jumping && animator.isFinished()) {
       jumping = false;
       updateAnimation();
+    } else if (firing && animator.isFinished()) {
+      firing = false;
+      updateAnimation();
     }
   }
 
   private boolean locked() {
-    return jumping || rolling;
+    return jumping || rolling || firing;
   }
 
   void walk(Vector2 direction) {
@@ -101,6 +106,15 @@ public class PlayerAnimationController extends Component {
     jumping = false;
     hurt = true;
     animator.startAnimation("hurt");
+  }
+
+  /** Plays the draw-aim-release bow animation, facing the direction the shot is aimed. */
+  void fire(Vector2 direction) {
+    firing = true;
+    if (direction != null && direction.x != 0) {
+      animator.setFlipX(direction.x < 0);
+    }
+    animator.startAnimation("fire");
   }
 
   private void updateAnimation() {

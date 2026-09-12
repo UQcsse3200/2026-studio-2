@@ -30,10 +30,11 @@ class PlayerAtlasTest {
     assertEquals(7, atlas.findRegions("jump").size);
     assertEquals(7, atlas.findRegions("hurt").size);
     assertEquals(12, atlas.findRegions("roll").size);
+    assertEquals(7, atlas.findRegions("fire").size);
     // Upright poses share the standing cell height; leaning/crouching poses (sprint, roll) are a
     // little shorter and the arms-raised jump apex a little taller, so the character keeps one
     // consistent size across animations.
-    for (String animation : new String[] {"idle", "walk", "hurt"}) {
+    for (String animation : new String[] {"idle", "walk", "hurt", "fire"}) {
       assertEquals(204, atlas.findRegion(animation).getRegionHeight(), animation);
     }
     assertEquals(188, atlas.findRegion("sprint").getRegionHeight());

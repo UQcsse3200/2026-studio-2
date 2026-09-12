@@ -60,6 +60,7 @@ public class PlayerFactory {
     animator.addAnimation("sprint", 0.07f, PlayMode.LOOP); // 6 frames, ~0.42s cycle
     animator.addAnimation("jump", 0.12f, PlayMode.NORMAL); // 7 frames over the ~0.85s hop
     animator.addAnimation("hurt", 0.12f, PlayMode.NORMAL);
+    animator.addAnimation("fire", 0.05f, PlayMode.NORMAL); // 7-frame draw-aim-release, ~0.35s
     // Roll art isn't in the atlas yet; register it as soon as a "roll" region exists.
     TextureAtlas playerAtlas =
         ServiceLocator.getResourceService().getAsset("images/player.atlas", TextureAtlas.class);

@@ -376,3 +376,58 @@ roll
   orig: 150, 184
   offset: 0, 0
   index: 11
+
+player_firing_frames.png
+size: 1048, 225
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+fire
+  rotate: false
+  xy: 0, 21
+  size: 86, 204
+  orig: 86, 204
+  offset: 0, 0
+  index: 0
+fire
+  rotate: false
+  xy: 86, 5
+  size: 139, 220
+  orig: 139, 220
+  offset: 0, 0
+  index: 1
+fire
+  rotate: false
+  xy: 225, 6
+  size: 155, 219
+  orig: 155, 219
+  offset: 0, 0
+  index: 2
+fire
+  rotate: false
+  xy: 380, 0
+  size: 162, 225
+  orig: 162, 225
+  offset: 0, 0
+  index: 3
+fire
+  rotate: false
+  xy: 542, 0
+  size: 145, 225
+  orig: 145, 225
+  offset: 0, 0
+  index: 4
+fire
+  rotate: false
+  xy: 687, 0
+  size: 274, 225
+  orig: 274, 225
+  offset: 0, 0
+  index: 5
+fire
+  rotate: false
+  xy: 961, 21
+  size: 87, 204
+  orig: 87, 204
+  offset: 0, 0
+  index: 6

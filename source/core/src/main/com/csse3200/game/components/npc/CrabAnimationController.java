@@ -10,6 +10,7 @@ import com.csse3200.game.rendering.AnimationRenderComponent;
  */
 public class CrabAnimationController extends Component {
   AnimationRenderComponent animator;
+  private boolean attacking = false;
 
   @Override
   public void create() {
@@ -20,11 +21,24 @@ public class CrabAnimationController extends Component {
     entity.getEvents().addListener("attackStart", this::animateAttack);
   }
 
+  @Override
+  public void update() {
+    // The attack anim plays once (PlayMode.NORMAL) and holds its last frame; without this the crab
+    // would freeze there forever instead of resuming its scuttle between swings.
+    if (attacking && animator.isFinished()) {
+      attacking = false;
+      animateWalk();
+    }
+  }
+
   void animateWalk() {
-    animator.startAnimation("walk");
+    if (!attacking) {
+      animator.startAnimation("walk");
+    }
   }
 
   void animateAttack() {
+    attacking = true;
     animator.startAnimation("attack");
   }
 }
