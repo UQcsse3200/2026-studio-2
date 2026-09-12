@@ -126,7 +126,12 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-first">Constructor</div>
 <div class="table-header col-last">Description</div>
 <div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(java.util.List)" class="member-name-link">SpinTheWheelDisplay</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="WheelItem.html" title="class in com.csse3200.game.components.minigames.spinthewheel">WheelItem</a>&gt;&nbsp;items)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Creates a wheel that keeps nothing it lands on, for showing it without a player.</div>
+</div>
+<div class="col-constructor-name odd-row-color"><code><a href="#%3Cinit%3E(java.util.List,com.csse3200.game.components.inventory.InventoryComponent)" class="member-name-link">SpinTheWheelDisplay</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="WheelItem.html" title="class in com.csse3200.game.components.minigames.spinthewheel">WheelItem</a>&gt;&nbsp;items,
+ <a href="../../inventory/InventoryComponent.html" title="class in com.csse3200.game.components.inventory">InventoryComponent</a>&nbsp;inventory)</code></div>
+<div class="col-last odd-row-color">&nbsp;</div>
 </div>
 </section>
 </li>
@@ -135,7 +140,7 @@ loadScripts(document, 'script');</script>
 <section class="method-summary" id="method-summary">
 <h2>Method Summary</h2>
 <div id="method-summary-table">
-<div class="table-tabs" role="tablist" aria-orientation="horizontal"><button id="method-summary-table-tab0" role="tab" aria-selected="true" aria-controls="method-summary-table.tabpanel" tabindex="0" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table', 3)" class="active-table-tab">All Methods</button><button id="method-summary-table-tab2" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab2', 3)" class="table-tab">Instance Methods</button><button id="method-summary-table-tab4" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab4', 3)" class="table-tab">Concrete Methods</button></div>
+<div class="table-tabs" role="tablist" aria-orientation="horizontal"><button id="method-summary-table-tab0" role="tab" aria-selected="true" aria-controls="method-summary-table.tabpanel" tabindex="0" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table', 3)" class="active-table-tab">All Methods</button><button id="method-summary-table-tab1" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab1', 3)" class="table-tab">Static Methods</button><button id="method-summary-table-tab2" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab2', 3)" class="table-tab">Instance Methods</button><button id="method-summary-table-tab4" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab4', 3)" class="table-tab">Concrete Methods</button></div>
 <div id="method-summary-table.tabpanel" role="tabpanel" aria-labelledby="method-summary-table-tab0">
 <div class="summary-table three-column-summary">
 <div class="table-header col-first">Modifier and Type</div>
@@ -160,6 +165,21 @@ loadScripts(document, 'script');</script>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getZIndex()" class="member-name-link">getZIndex</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Z index controls rendering order within a layer.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>[]</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#sounds()" class="member-name-link">sounds</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">The sounds the wheel needs loaded.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>[]</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#texturesFor(java.util.List)" class="member-name-link">texturesFor</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="WheelItem.html" title="class in com.csse3200.game.components.minigames.spinthewheel">WheelItem</a>&gt;&nbsp;items)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">The textures the wheel needs loaded.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#toFront()" class="member-name-link">toFront</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Brings the wheel above everything</div>
 </div>
 </div>
 </div>
@@ -197,6 +217,23 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="&lt;init&gt;(java.util.List)">
 <h3>SpinTheWheelDisplay</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">SpinTheWheelDisplay</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="WheelItem.html" title="class in com.csse3200.game.components.minigames.spinthewheel">WheelItem</a>&gt;&nbsp;items)</span></div>
+<div class="block">Creates a wheel that keeps nothing it lands on, for showing it without a player.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>items</code> - the items the wheel can land on</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="&lt;init&gt;(java.util.List,com.csse3200.game.components.inventory.InventoryComponent)">
+<h3>SpinTheWheelDisplay</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">SpinTheWheelDisplay</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="WheelItem.html" title="class in com.csse3200.game.components.minigames.spinthewheel">WheelItem</a>&gt;&nbsp;items,
+ <a href="../../inventory/InventoryComponent.html" title="class in com.csse3200.game.components.inventory">InventoryComponent</a>&nbsp;inventory)</span></div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>items</code> - the items the wheel can land on</dd>
+<dd><code>inventory</code> - where prizes are stored, or null when nothing keeps them</dd>
+</dl>
 </section>
 </li>
 </ul>
@@ -208,6 +245,30 @@ loadScripts(document, 'script');</script>
 <h2>Method Details</h2>
 <ul class="member-list">
 <li>
+<section class="detail" id="texturesFor(java.util.List)">
+<h3>texturesFor</h3>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>[]</span>&nbsp;<span class="element-name">texturesFor</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="WheelItem.html" title="class in com.csse3200.game.components.minigames.spinthewheel">WheelItem</a>&gt;&nbsp;items)</span></div>
+<div class="block">The textures the wheel needs loaded.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>items</code> - the items that will be shown on the wheel</dd>
+<dt>Returns:</dt>
+<dd>the wheel's textures and one sprite per item</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="sounds()">
+<h3>sounds</h3>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>[]</span>&nbsp;<span class="element-name">sounds</span>()</div>
+<div class="block">The sounds the wheel needs loaded.</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>the sounds the wheel plays</dd>
+</dl>
+</section>
+</li>
+<li>
 <section class="detail" id="create()">
 <h3>create</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">create</span>()</div>
@@ -218,6 +279,13 @@ loadScripts(document, 'script');</script>
 <dt>Overrides:</dt>
 <dd><code><a href="../../../ui/UIComponent.html#create()">create</a></code>&nbsp;in class&nbsp;<code><a href="../../../ui/UIComponent.html" title="class in com.csse3200.game.ui">UIComponent</a></code></dd>
 </dl>
+</section>
+</li>
+<li>
+<section class="detail" id="toFront()">
+<h3>toFront</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">toFront</span>()</div>
+<div class="block">Brings the wheel above everything</div>
 </section>
 </li>
 <li>

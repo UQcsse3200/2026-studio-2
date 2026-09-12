@@ -92,11 +92,11 @@ loadScripts(document, 'script');</script>
 <section class="class-description" id="class-description">
 <dl class="notes">
 <dt>Record Components:</dt>
-<dd><code><span id="param-name">name</span></code> - the label on the segment</dd>
+<dd><code><span id="param-type">type</span></code> - the item awarded, supplying the name and sprite</dd>
 <dd><code><span id="param-value">value</span></code> - the amount awarded</dd>
 </dl>
 <hr>
-<div class="type-signature"><span class="modifiers">public record </span><span class="element-name type-name-label">WheelItem</span>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name, int&nbsp;value)
+<div class="type-signature"><span class="modifiers">public record </span><span class="element-name type-name-label">WheelItem</span>(<a href="../../item/ItemType.html" title="enum class in com.csse3200.game.components.item">ItemType</a>&nbsp;type, int&nbsp;value)
 <span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Record.html" title="class or interface in java.lang" class="external-link">Record</a></span></div>
 <div class="block">A single item on the wheel</div>
 </section>
@@ -110,7 +110,7 @@ loadScripts(document, 'script');</script>
 <div class="summary-table two-column-summary">
 <div class="table-header col-first">Constructor</div>
 <div class="table-header col-last">Description</div>
-<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(java.lang.String,int)" class="member-name-link">WheelItem</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
+<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(com.csse3200.game.components.item.ItemType,int)" class="member-name-link">WheelItem</a><wbr>(<a href="../../item/ItemType.html" title="enum class in com.csse3200.game.components.item">ItemType</a>&nbsp;type,
  int&nbsp;value)</code></div>
 <div class="col-last even-row-color">
 <div class="block">Creates an instance of a <code>WheelItem</code> record class.</div>
@@ -139,15 +139,15 @@ loadScripts(document, 'script');</script>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Returns a hash code value for this object.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#name()" class="member-name-link">name</a>()</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#toString()" class="member-name-link">toString</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Returns the value of the <a href="#param-name"><code>name</code></a> record component.</div>
-</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#toString()" class="member-name-link">toString</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Returns a string representation of this record class.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../../item/ItemType.html" title="enum class in com.csse3200.game.components.item">ItemType</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#type()" class="member-name-link">type</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns the value of the <a href="#param-type"><code>type</code></a> record component.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#value()" class="member-name-link">value</a>()</code></div>
@@ -172,14 +172,14 @@ loadScripts(document, 'script');</script>
 <h2>Constructor Details</h2>
 <ul class="member-list">
 <li>
-<section class="detail" id="&lt;init&gt;(java.lang.String,int)">
+<section class="detail" id="&lt;init&gt;(com.csse3200.game.components.item.ItemType,int)">
 <h3>WheelItem</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">WheelItem</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">WheelItem</span><wbr><span class="parameters">(<a href="../../item/ItemType.html" title="enum class in com.csse3200.game.components.item">ItemType</a>&nbsp;type,
  int&nbsp;value)</span></div>
 <div class="block">Creates an instance of a <code>WheelItem</code> record class.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
-<dd><code>name</code> - the value for the <a href="#param-name"><code>name</code></a> record component</dd>
+<dd><code>type</code> - the value for the <a href="#param-type"><code>type</code></a> record component</dd>
 <dd><code>value</code> - the value for the <a href="#param-value"><code>value</code></a> record component</dd>
 </dl>
 </section>
@@ -234,13 +234,13 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li>
-<section class="detail" id="name()">
-<h3>name</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">name</span>()</div>
-<div class="block">Returns the value of the <a href="#param-name"><code>name</code></a> record component.</div>
+<section class="detail" id="type()">
+<h3>type</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../../item/ItemType.html" title="enum class in com.csse3200.game.components.item">ItemType</a></span>&nbsp;<span class="element-name">type</span>()</div>
+<div class="block">Returns the value of the <a href="#param-type"><code>type</code></a> record component.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>the value of the <a href="#param-name"><code>name</code></a> record component</dd>
+<dd>the value of the <a href="#param-type"><code>type</code></a> record component</dd>
 </dl>
 </section>
 </li>
