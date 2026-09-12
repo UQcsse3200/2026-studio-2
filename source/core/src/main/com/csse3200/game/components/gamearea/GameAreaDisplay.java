@@ -22,7 +22,8 @@ public class GameAreaDisplay extends UIComponent {
   }
 
   private void addActors() {
-    title = new BoldLabel(this.gameAreaName.toUpperCase(), skin.get("large", Label.LabelStyle.class));
+    title =
+        new BoldLabel(this.gameAreaName.toUpperCase(), skin.get("large", Label.LabelStyle.class));
     stage.addActor(title);
   }
 
@@ -52,7 +53,8 @@ public class GameAreaDisplay extends UIComponent {
     float offsetY = 20f;
 
     // Centered at the top, clear of the heart HUD (left) and exit button (right).
-    title.setPosition((screenWidth - title.getWidth()) / 2f, screenHeight - offsetY - title.getHeight());
+    title.setPosition(
+        (screenWidth - title.getWidth()) / 2f, screenHeight - offsetY - title.getHeight());
   }
 
   @Override

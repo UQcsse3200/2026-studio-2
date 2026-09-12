@@ -10,9 +10,9 @@ import com.csse3200.game.GdxGame;
 import com.csse3200.game.GdxGame.ScreenType;
 
 /**
- * Fades the outgoing screen to black, swaps to the target screen once fully black, then fades
- * back in. Used by {@link GdxGame#transitionTo(ScreenType)} for a smooth screen change instead of
- * an instant cut.
+ * Fades the outgoing screen to black, swaps to the target screen once fully black, then fades back
+ * in. Used by {@link GdxGame#transitionTo(ScreenType)} for a smooth screen change instead of an
+ * instant cut.
  */
 public class TransitionScreen implements Screen {
   private static final float FADE_DURATION = 0.4f;
