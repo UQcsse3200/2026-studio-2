@@ -25,15 +25,19 @@ class PlayerAtlasTest {
         atlas.findRegion("idle").getRegionWidth(), atlas.findRegion("default").getRegionWidth());
     assertEquals(204, atlas.findRegion("default").getRegionHeight());
     assertEquals(8, atlas.findRegions("idle").size);
-    assertEquals(19, atlas.findRegions("walk").size);
-    assertEquals(19, atlas.findRegions("sprint").size);
+    assertEquals(8, atlas.findRegions("walk").size);
+    assertEquals(6, atlas.findRegions("sprint").size);
     assertEquals(7, atlas.findRegions("jump").size);
     assertEquals(7, atlas.findRegions("hurt").size);
     assertEquals(12, atlas.findRegions("roll").size);
-    for (String animation : new String[] {"idle", "walk", "sprint", "hurt", "roll"}) {
+    // Upright poses share the standing cell height; leaning/crouching poses (sprint, roll) are a
+    // little shorter and the arms-raised jump apex a little taller, so the character keeps one
+    // consistent size across animations.
+    for (String animation : new String[] {"idle", "walk", "hurt"}) {
       assertEquals(204, atlas.findRegion(animation).getRegionHeight(), animation);
     }
-    // The jump apex raises the arms above head height, so its cell is a little taller.
+    assertEquals(188, atlas.findRegion("sprint").getRegionHeight());
+    assertEquals(184, atlas.findRegion("roll").getRegionHeight());
     assertEquals(224, atlas.findRegion("jump").getRegionHeight());
 
     atlas.dispose();

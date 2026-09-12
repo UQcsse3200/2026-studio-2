@@ -1,546 +1,378 @@
 player_idle_frames.png
-size: 616, 204
+size: 680, 204
 format: RGBA8888
 filter: Nearest,Nearest
 repeat: none
 default
   rotate: false
   xy: 0, 0
-  size: 77, 204
-  orig: 77, 204
+  size: 85, 204
+  orig: 85, 204
   offset: 0, 0
   index: 0
 idle
   rotate: false
   xy: 0, 0
-  size: 77, 204
-  orig: 77, 204
+  size: 85, 204
+  orig: 85, 204
   offset: 0, 0
   index: 0
 idle
   rotate: false
-  xy: 77, 0
-  size: 77, 204
-  orig: 77, 204
+  xy: 85, 0
+  size: 85, 204
+  orig: 85, 204
   offset: 0, 0
   index: 1
 idle
   rotate: false
-  xy: 154, 0
-  size: 77, 204
-  orig: 77, 204
+  xy: 170, 0
+  size: 85, 204
+  orig: 85, 204
   offset: 0, 0
   index: 2
 idle
   rotate: false
-  xy: 231, 0
-  size: 77, 204
-  orig: 77, 204
+  xy: 255, 0
+  size: 85, 204
+  orig: 85, 204
   offset: 0, 0
   index: 3
 idle
   rotate: false
-  xy: 308, 0
-  size: 77, 204
-  orig: 77, 204
+  xy: 340, 0
+  size: 85, 204
+  orig: 85, 204
   offset: 0, 0
   index: 4
 idle
   rotate: false
-  xy: 385, 0
-  size: 77, 204
-  orig: 77, 204
+  xy: 425, 0
+  size: 85, 204
+  orig: 85, 204
   offset: 0, 0
   index: 5
 idle
   rotate: false
-  xy: 462, 0
-  size: 77, 204
-  orig: 77, 204
+  xy: 510, 0
+  size: 85, 204
+  orig: 85, 204
   offset: 0, 0
   index: 6
 idle
   rotate: false
-  xy: 539, 0
-  size: 77, 204
-  orig: 77, 204
+  xy: 595, 0
+  size: 85, 204
+  orig: 85, 204
   offset: 0, 0
   index: 7
 
 player_walking_frames.png
-size: 988, 204
+size: 984, 204
 format: RGBA8888
 filter: Nearest,Nearest
 repeat: none
 walk
   rotate: false
   xy: 0, 0
-  size: 52, 204
-  orig: 52, 204
+  size: 123, 204
+  orig: 123, 204
   offset: 0, 0
   index: 0
 walk
   rotate: false
-  xy: 52, 0
-  size: 52, 204
-  orig: 52, 204
+  xy: 123, 0
+  size: 123, 204
+  orig: 123, 204
   offset: 0, 0
   index: 1
 walk
   rotate: false
-  xy: 104, 0
-  size: 52, 204
-  orig: 52, 204
+  xy: 246, 0
+  size: 123, 204
+  orig: 123, 204
   offset: 0, 0
   index: 2
 walk
   rotate: false
-  xy: 156, 0
-  size: 52, 204
-  orig: 52, 204
+  xy: 369, 0
+  size: 123, 204
+  orig: 123, 204
   offset: 0, 0
   index: 3
 walk
   rotate: false
-  xy: 208, 0
-  size: 52, 204
-  orig: 52, 204
+  xy: 492, 0
+  size: 123, 204
+  orig: 123, 204
   offset: 0, 0
   index: 4
 walk
   rotate: false
-  xy: 260, 0
-  size: 52, 204
-  orig: 52, 204
+  xy: 615, 0
+  size: 123, 204
+  orig: 123, 204
   offset: 0, 0
   index: 5
 walk
   rotate: false
-  xy: 312, 0
-  size: 52, 204
-  orig: 52, 204
+  xy: 738, 0
+  size: 123, 204
+  orig: 123, 204
   offset: 0, 0
   index: 6
 walk
   rotate: false
-  xy: 364, 0
-  size: 52, 204
-  orig: 52, 204
+  xy: 861, 0
+  size: 123, 204
+  orig: 123, 204
   offset: 0, 0
   index: 7
-walk
-  rotate: false
-  xy: 416, 0
-  size: 52, 204
-  orig: 52, 204
-  offset: 0, 0
-  index: 8
-walk
-  rotate: false
-  xy: 468, 0
-  size: 52, 204
-  orig: 52, 204
-  offset: 0, 0
-  index: 9
-walk
-  rotate: false
-  xy: 520, 0
-  size: 52, 204
-  orig: 52, 204
-  offset: 0, 0
-  index: 10
-walk
-  rotate: false
-  xy: 572, 0
-  size: 52, 204
-  orig: 52, 204
-  offset: 0, 0
-  index: 11
-walk
-  rotate: false
-  xy: 624, 0
-  size: 52, 204
-  orig: 52, 204
-  offset: 0, 0
-  index: 12
-walk
-  rotate: false
-  xy: 676, 0
-  size: 52, 204
-  orig: 52, 204
-  offset: 0, 0
-  index: 13
-walk
-  rotate: false
-  xy: 728, 0
-  size: 52, 204
-  orig: 52, 204
-  offset: 0, 0
-  index: 14
-walk
-  rotate: false
-  xy: 780, 0
-  size: 52, 204
-  orig: 52, 204
-  offset: 0, 0
-  index: 15
-walk
-  rotate: false
-  xy: 832, 0
-  size: 52, 204
-  orig: 52, 204
-  offset: 0, 0
-  index: 16
-walk
-  rotate: false
-  xy: 884, 0
-  size: 52, 204
-  orig: 52, 204
-  offset: 0, 0
-  index: 17
-walk
-  rotate: false
-  xy: 936, 0
-  size: 52, 204
-  orig: 52, 204
-  offset: 0, 0
-  index: 18
 
 player_running_frames.png
-size: 1140, 204
+size: 906, 188
 format: RGBA8888
 filter: Nearest,Nearest
 repeat: none
 sprint
   rotate: false
   xy: 0, 0
-  size: 60, 204
-  orig: 60, 204
+  size: 151, 188
+  orig: 151, 188
   offset: 0, 0
   index: 0
 sprint
   rotate: false
-  xy: 60, 0
-  size: 60, 204
-  orig: 60, 204
+  xy: 151, 0
+  size: 151, 188
+  orig: 151, 188
   offset: 0, 0
   index: 1
 sprint
   rotate: false
-  xy: 120, 0
-  size: 60, 204
-  orig: 60, 204
+  xy: 302, 0
+  size: 151, 188
+  orig: 151, 188
   offset: 0, 0
   index: 2
 sprint
   rotate: false
-  xy: 180, 0
-  size: 60, 204
-  orig: 60, 204
+  xy: 453, 0
+  size: 151, 188
+  orig: 151, 188
   offset: 0, 0
   index: 3
 sprint
   rotate: false
-  xy: 240, 0
-  size: 60, 204
-  orig: 60, 204
+  xy: 604, 0
+  size: 151, 188
+  orig: 151, 188
   offset: 0, 0
   index: 4
 sprint
   rotate: false
-  xy: 300, 0
-  size: 60, 204
-  orig: 60, 204
+  xy: 755, 0
+  size: 151, 188
+  orig: 151, 188
   offset: 0, 0
   index: 5
-sprint
-  rotate: false
-  xy: 360, 0
-  size: 60, 204
-  orig: 60, 204
-  offset: 0, 0
-  index: 6
-sprint
-  rotate: false
-  xy: 420, 0
-  size: 60, 204
-  orig: 60, 204
-  offset: 0, 0
-  index: 7
-sprint
-  rotate: false
-  xy: 480, 0
-  size: 60, 204
-  orig: 60, 204
-  offset: 0, 0
-  index: 8
-sprint
-  rotate: false
-  xy: 540, 0
-  size: 60, 204
-  orig: 60, 204
-  offset: 0, 0
-  index: 9
-sprint
-  rotate: false
-  xy: 600, 0
-  size: 60, 204
-  orig: 60, 204
-  offset: 0, 0
-  index: 10
-sprint
-  rotate: false
-  xy: 660, 0
-  size: 60, 204
-  orig: 60, 204
-  offset: 0, 0
-  index: 11
-sprint
-  rotate: false
-  xy: 720, 0
-  size: 60, 204
-  orig: 60, 204
-  offset: 0, 0
-  index: 12
-sprint
-  rotate: false
-  xy: 780, 0
-  size: 60, 204
-  orig: 60, 204
-  offset: 0, 0
-  index: 13
-sprint
-  rotate: false
-  xy: 840, 0
-  size: 60, 204
-  orig: 60, 204
-  offset: 0, 0
-  index: 14
-sprint
-  rotate: false
-  xy: 900, 0
-  size: 60, 204
-  orig: 60, 204
-  offset: 0, 0
-  index: 15
-sprint
-  rotate: false
-  xy: 960, 0
-  size: 60, 204
-  orig: 60, 204
-  offset: 0, 0
-  index: 16
-sprint
-  rotate: false
-  xy: 1020, 0
-  size: 60, 204
-  orig: 60, 204
-  offset: 0, 0
-  index: 17
-sprint
-  rotate: false
-  xy: 1080, 0
-  size: 60, 204
-  orig: 60, 204
-  offset: 0, 0
-  index: 18
 
 player_jump_frames.png
-size: 763, 224
+size: 1029, 224
 format: RGBA8888
 filter: Nearest,Nearest
 repeat: none
 jump
   rotate: false
   xy: 0, 0
-  size: 109, 224
-  orig: 109, 224
+  size: 147, 224
+  orig: 147, 224
   offset: 0, 0
   index: 0
 jump
   rotate: false
-  xy: 109, 0
-  size: 109, 224
-  orig: 109, 224
+  xy: 147, 0
+  size: 147, 224
+  orig: 147, 224
   offset: 0, 0
   index: 1
 jump
   rotate: false
-  xy: 218, 0
-  size: 109, 224
-  orig: 109, 224
+  xy: 294, 0
+  size: 147, 224
+  orig: 147, 224
   offset: 0, 0
   index: 2
 jump
   rotate: false
-  xy: 327, 0
-  size: 109, 224
-  orig: 109, 224
+  xy: 441, 0
+  size: 147, 224
+  orig: 147, 224
   offset: 0, 0
   index: 3
 jump
   rotate: false
-  xy: 436, 0
-  size: 109, 224
-  orig: 109, 224
+  xy: 588, 0
+  size: 147, 224
+  orig: 147, 224
   offset: 0, 0
   index: 4
 jump
   rotate: false
-  xy: 545, 0
-  size: 109, 224
-  orig: 109, 224
+  xy: 735, 0
+  size: 147, 224
+  orig: 147, 224
   offset: 0, 0
   index: 5
 jump
   rotate: false
-  xy: 654, 0
-  size: 109, 224
-  orig: 109, 224
+  xy: 882, 0
+  size: 147, 224
+  orig: 147, 224
   offset: 0, 0
   index: 6
 
 player_hurt_frames.png
-size: 805, 204
+size: 889, 204
 format: RGBA8888
 filter: Nearest,Nearest
 repeat: none
 hurt
   rotate: false
   xy: 0, 0
-  size: 115, 204
-  orig: 115, 204
+  size: 127, 204
+  orig: 127, 204
   offset: 0, 0
   index: 0
 hurt
   rotate: false
-  xy: 115, 0
-  size: 115, 204
-  orig: 115, 204
+  xy: 127, 0
+  size: 127, 204
+  orig: 127, 204
   offset: 0, 0
   index: 1
 hurt
   rotate: false
-  xy: 230, 0
-  size: 115, 204
-  orig: 115, 204
+  xy: 254, 0
+  size: 127, 204
+  orig: 127, 204
   offset: 0, 0
   index: 2
 hurt
   rotate: false
-  xy: 345, 0
-  size: 115, 204
-  orig: 115, 204
+  xy: 381, 0
+  size: 127, 204
+  orig: 127, 204
   offset: 0, 0
   index: 3
 hurt
   rotate: false
-  xy: 460, 0
-  size: 115, 204
-  orig: 115, 204
+  xy: 508, 0
+  size: 127, 204
+  orig: 127, 204
   offset: 0, 0
   index: 4
 hurt
   rotate: false
-  xy: 575, 0
-  size: 115, 204
-  orig: 115, 204
+  xy: 635, 0
+  size: 127, 204
+  orig: 127, 204
   offset: 0, 0
   index: 5
 hurt
   rotate: false
-  xy: 690, 0
-  size: 115, 204
-  orig: 115, 204
+  xy: 762, 0
+  size: 127, 204
+  orig: 127, 204
   offset: 0, 0
   index: 6
 
 player_rolling_frames.png
-size: 876, 204
+size: 1800, 184
 format: RGBA8888
 filter: Nearest,Nearest
 repeat: none
 roll
   rotate: false
   xy: 0, 0
-  size: 73, 204
-  orig: 73, 204
+  size: 150, 184
+  orig: 150, 184
   offset: 0, 0
   index: 0
 roll
   rotate: false
-  xy: 73, 0
-  size: 73, 204
-  orig: 73, 204
+  xy: 150, 0
+  size: 150, 184
+  orig: 150, 184
   offset: 0, 0
   index: 1
 roll
   rotate: false
-  xy: 146, 0
-  size: 73, 204
-  orig: 73, 204
+  xy: 300, 0
+  size: 150, 184
+  orig: 150, 184
   offset: 0, 0
   index: 2
 roll
   rotate: false
-  xy: 219, 0
-  size: 73, 204
-  orig: 73, 204
+  xy: 450, 0
+  size: 150, 184
+  orig: 150, 184
   offset: 0, 0
   index: 3
 roll
   rotate: false
-  xy: 292, 0
-  size: 73, 204
-  orig: 73, 204
+  xy: 600, 0
+  size: 150, 184
+  orig: 150, 184
   offset: 0, 0
   index: 4
 roll
   rotate: false
-  xy: 365, 0
-  size: 73, 204
-  orig: 73, 204
+  xy: 750, 0
+  size: 150, 184
+  orig: 150, 184
   offset: 0, 0
   index: 5
 roll
   rotate: false
-  xy: 438, 0
-  size: 73, 204
-  orig: 73, 204
+  xy: 900, 0
+  size: 150, 184
+  orig: 150, 184
   offset: 0, 0
   index: 6
 roll
   rotate: false
-  xy: 511, 0
-  size: 73, 204
-  orig: 73, 204
+  xy: 1050, 0
+  size: 150, 184
+  orig: 150, 184
   offset: 0, 0
   index: 7
 roll
   rotate: false
-  xy: 584, 0
-  size: 73, 204
-  orig: 73, 204
+  xy: 1200, 0
+  size: 150, 184
+  orig: 150, 184
   offset: 0, 0
   index: 8
 roll
   rotate: false
-  xy: 657, 0
-  size: 73, 204
-  orig: 73, 204
+  xy: 1350, 0
+  size: 150, 184
+  orig: 150, 184
   offset: 0, 0
   index: 9
 roll
   rotate: false
-  xy: 730, 0
-  size: 73, 204
-  orig: 73, 204
+  xy: 1500, 0
+  size: 150, 184
+  orig: 150, 184
   offset: 0, 0
   index: 10
 roll
   rotate: false
-  xy: 803, 0
-  size: 73, 204
-  orig: 73, 204
+  xy: 1650, 0
+  size: 150, 184
+  orig: 150, 184
   offset: 0, 0
   index: 11
