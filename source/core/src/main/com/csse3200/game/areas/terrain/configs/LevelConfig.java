@@ -179,7 +179,7 @@ public class LevelConfig {
     for (SpikeClusterConfig s : spikes) {
       for (int i = s.xMin; i <= s.xMax; i++) {
         for (int j = s.yMin; j <= s.yMax; j++) {
-          Entity spike = ObstacleFactory.createSpike();
+          Entity spike = ObstacleFactory.createSpike(s.rotation);
           entities.add(new SpawnData(new GridPoint2(i, j), spike));
         }
       }

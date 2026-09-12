@@ -274,7 +274,7 @@ public class ObstacleFactory {
             .addComponent(new CombatStatsComponent(100, 2))
             .addComponent(new HitboxComponent().setLayer(PhysicsLayer.OBSTACLE))
             .addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER))
-            .addComponent(new RotatableMapComponent(90));
+            .addComponent(new RotatableMapComponent(rotationAngle));
 
     spike.getComponent(PhysicsComponent.class).setBodyType(BodyType.StaticBody);
 
