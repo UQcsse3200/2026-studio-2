@@ -8,6 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.csse3200.game.GdxGame;
 import com.csse3200.game.areas.ForestGameArea;
 import com.csse3200.game.areas.terrain.TerrainFactory;
+import com.csse3200.game.components.ButtonSound;
 import com.csse3200.game.components.gamearea.PerformanceDisplay;
 import com.csse3200.game.components.maingame.MainGameActions;
 import com.csse3200.game.components.maingame.MainGameExitDisplay;
@@ -143,7 +144,24 @@ public class MainGameScreen extends ScreenAdapter {
    */
   private static String[] createTextures() {
     List<String> paths =
-        new ArrayList<>(List.of("images/purple_heart.png", "images/box_boy_title.png"));
+        new ArrayList<>(
+            List.of(
+                "images/purple_heart.png",
+                "images/title_odysseus_logo.png",
+                "images/box_boy_title.png",
+                "images/Health_Bar_Background.png",
+                "images/red_heart.png",
+                "images/PixelArt_HeartBack.png",
+                "images/Damaged_heart.png",
+                "images/Last_Health.png",
+                "images/Buttons/continue_up_btn.png",
+                "images/Buttons/continue_down_btn.png",
+                "images/Buttons/settings_up_btn.png",
+                "images/Buttons/settings_down_btn.png",
+                "images/Buttons/quit_up_btn.png",
+                "images/Buttons/quit_down_btn.png",
+                "images/Buttons/exit_up_btn.png",
+                "images/Buttons/exit_down_btn.png"));
     paths.addAll(List.of(WheelConfig.TEXTURES));
     return paths.toArray(new String[0]);
   }
@@ -153,6 +171,7 @@ public class MainGameScreen extends ScreenAdapter {
     ResourceService resourceService = ServiceLocator.getResourceService();
     resourceService.loadTextures(mainGameTextures);
     resourceService.loadSounds(WheelConfig.SOUNDS);
+    ButtonSound.load(resourceService);
     ServiceLocator.getResourceService().loadAll();
   }
 
@@ -161,6 +180,7 @@ public class MainGameScreen extends ScreenAdapter {
     ResourceService resourceService = ServiceLocator.getResourceService();
     resourceService.unloadAssets(mainGameTextures);
     resourceService.unloadAssets(WheelConfig.SOUNDS);
+    ButtonSound.unload(resourceService);
   }
 
   /**

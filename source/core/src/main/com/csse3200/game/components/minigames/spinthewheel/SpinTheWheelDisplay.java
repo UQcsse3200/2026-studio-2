@@ -3,7 +3,6 @@ package com.csse3200.game.components.minigames.spinthewheel;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.NinePatch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Interpolation;
@@ -14,13 +13,13 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Scaling;
@@ -43,9 +42,10 @@ public class SpinTheWheelDisplay extends UIComponent {
   private static final String DISC_TEXTURE = "images/minigames/spinthewheel/wheel-disc.png";
   private static final String SPOKE_TEXTURE = "images/minigames/spinthewheel/wheel-spoke.png";
   private static final String POINTER_TEXTURE = "images/minigames/spinthewheel/wheel-pointer.png";
-  private static final String BUTTON_UP_TEXTURE = "images/minigames/spinthewheel/button-up.png";
-  private static final String BUTTON_OVER_TEXTURE = "images/minigames/spinthewheel/button-over.png";
-  private static final String BUTTON_DOWN_TEXTURE = "images/minigames/spinthewheel/button-down.png";
+  private static final String SPIN_UP_TEXTURE = "images/Buttons/spin_up_btn.png";
+  private static final String SPIN_DOWN_TEXTURE = "images/Buttons/spin_down_btn.png";
+  private static final String BACK_UP_TEXTURE = "images/Buttons/back_up_btn.png";
+  private static final String BACK_DOWN_TEXTURE = "images/Buttons/back_down_btn.png";
   private static final String GLOW_TEXTURE = "images/minigames/spinthewheel/glow-radial.png";
   private static final String RAYS_TEXTURE = "images/minigames/spinthewheel/glow-rays.png";
 
@@ -61,12 +61,8 @@ public class SpinTheWheelDisplay extends UIComponent {
   private static final float SEGMENT_RADIUS_RATIO = 0.62f;
   private static final float ICON_SIZE = 48f;
 
-  private static final int BUTTON_PATCH = 12;
-
-  private static final float BUTTON_WIDTH = 220f;
+  private static final float BUTTON_WIDTH = 160f;
   private static final float BUTTON_HEIGHT = 56f;
-  private static final Color BUTTON_TEXT_COLOUR = new Color(0.16f, 0.18f, 0.18f, 1f);
-  private static final Color BUTTON_PRESSED_TEXT_COLOUR = new Color(0.28f, 0.22f, 0.14f, 1f);
 
   private static final float CARD_SIZE = 340f;
   private static final float PRIZE_ICON_SIZE = 112f;
@@ -123,9 +119,10 @@ public class SpinTheWheelDisplay extends UIComponent {
                 DISC_TEXTURE,
                 SPOKE_TEXTURE,
                 POINTER_TEXTURE,
-                BUTTON_UP_TEXTURE,
-                BUTTON_OVER_TEXTURE,
-                BUTTON_DOWN_TEXTURE,
+                SPIN_UP_TEXTURE,
+                SPIN_DOWN_TEXTURE,
+                BACK_UP_TEXTURE,
+                BACK_DOWN_TEXTURE,
                 GLOW_TEXTURE,
                 RAYS_TEXTURE));
     items.forEach(item -> paths.add(item.type().getTexturePath()));
@@ -151,8 +148,7 @@ public class SpinTheWheelDisplay extends UIComponent {
     table = new Table();
     table.setFillParent(true);
 
-    TextButton.TextButtonStyle style = buttonStyle();
-    TextButton spinBtn = new TextButton("Spin", style);
+    ImageButton spinBtn = imageButton(SPIN_UP_TEXTURE, SPIN_DOWN_TEXTURE);
     spinBtn.addListener(
         new ChangeListener() {
           @Override
@@ -162,7 +158,7 @@ public class SpinTheWheelDisplay extends UIComponent {
           }
         });
 
-    TextButton backBtn = new TextButton("Back", style);
+    ImageButton backBtn = imageButton(BACK_UP_TEXTURE, BACK_DOWN_TEXTURE);
     backBtn.addListener(
         new ChangeListener() {
           @Override
@@ -185,31 +181,17 @@ public class SpinTheWheelDisplay extends UIComponent {
   }
 
   /**
-   * Builds the style shared by the wheel's buttons. The art is stretched as a nine patch so the
-   * corners stay crisp at any button size.
+   * Builds a button from the game's shared button art, which has its label drawn into it.
    *
-   * @return the wheel's button style
+   * @param upPath the texture shown while the button is idle
+   * @param downPath the texture shown while the button is pressed
+   * @return the button
    */
-  private TextButton.TextButtonStyle buttonStyle() {
-    TextButton.TextButtonStyle style =
-        new TextButton.TextButtonStyle(skin.get(TextButton.TextButtonStyle.class));
-    style.up = ninePatch(BUTTON_UP_TEXTURE);
-    style.over = ninePatch(BUTTON_OVER_TEXTURE);
-    style.down = ninePatch(BUTTON_DOWN_TEXTURE);
-    style.fontColor = BUTTON_TEXT_COLOUR;
-    style.overFontColor = BUTTON_TEXT_COLOUR;
-    style.downFontColor = BUTTON_PRESSED_TEXT_COLOUR;
-    return style;
-  }
-
-  /**
-   * @param path the path of the button texture
-   * @return the texture as a stretchable nine patch
-   */
-  private NinePatchDrawable ninePatch(String path) {
-    Texture texture = texture(path, Texture.TextureFilter.Nearest);
-    return new NinePatchDrawable(
-        new NinePatch(texture, BUTTON_PATCH, BUTTON_PATCH, BUTTON_PATCH, BUTTON_PATCH));
+  private ImageButton imageButton(String upPath, String downPath) {
+    ImageButton.ImageButtonStyle style = new ImageButton.ImageButtonStyle();
+    style.up = new TextureRegionDrawable(texture(upPath, Texture.TextureFilter.Nearest));
+    style.down = new TextureRegionDrawable(texture(downPath, Texture.TextureFilter.Nearest));
+    return new ImageButton(style);
   }
 
   /**
@@ -503,7 +485,7 @@ public class SpinTheWheelDisplay extends UIComponent {
    *
    * @param spinBtn the button that started the spin
    */
-  private void spin(TextButton spinBtn) {
+  private void spin(Button spinBtn) {
     spinBtn.setDisabled(true);
     spinSoundId = play(SPIN_SOUND);
     WheelItem result = wheel.spin();

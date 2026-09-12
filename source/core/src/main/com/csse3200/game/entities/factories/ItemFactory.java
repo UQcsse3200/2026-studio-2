@@ -23,7 +23,7 @@ import com.csse3200.game.rendering.TextureRenderComponent;
  * <p>Each item type should have a creation method that returns a corresponding entity.
  */
 public class ItemFactory {
-  private static final float ITEM_HEIGHT = 0.5f;
+  private static final float ITEM_HEIGHT = 0.85f;
 
   /**
    * Creates a world entity for an item using the texture from its {@code ItemType}.

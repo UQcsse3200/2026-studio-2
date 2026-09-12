@@ -1,0 +1,18 @@
+{
+  "xPos": 500,
+  "yPos": 500,
+  "textColour": "Color.BLACK",
+  "backgroundColour": "Color.TAN",
+  "borderColour": "Color.BROWN",
+  "charsPerSecond": 30,
+  "maxWidth": 200,
+  "padding": 16,
+  "borderThickness": 3,
+  "fontPath": "flat-earth/skin/fonts/PixeloidSans.fnt",
+  "textAlignment": "left",
+  "pages": [
+    "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus felis arcu, imperdiet eget tellus sed, convallis faucibus est.",
+    "Sed at turpis porttitor, tincidunt lectus eu, sagittis felis. Nam sed dignissim enim. Fusce a quam risus.",
+    "Donec finibus vestibulum ante, et aliquam justo molestie id. Interdum et malesuada fames ac ante ipsum primis in faucibus."
+  ]
+}

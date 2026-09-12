@@ -33,7 +33,9 @@ import org.slf4j.LoggerFactory;
 public class CyclopsMinigameRoomScreen extends ScreenAdapter {
 
   private static final Logger logger = LoggerFactory.getLogger(CyclopsMinigameRoomScreen.class);
-  private static final String[] cyclopsMinigameTextures = {"images/heart.png"};
+  private static final String[] cyclopsMinigameTextures = {
+    "images/heart.png", "images/Buttons/exit_up_btn.png", "images/Buttons/exit_down_btn.png"
+  };
   private static final Vector2 CAMERA_POSITION = new Vector2(7.5f, 7.5f);
 
   private final GdxGame game;
