@@ -12,15 +12,12 @@ import com.csse3200.game.components.gamearea.GameAreaDisplay;
 import com.csse3200.game.components.player.KeyboardPlayerInputComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.EnemyFactory;
-import com.csse3200.game.entities.factories.ItemFactory;
-import com.csse3200.game.entities.factories.NPCFactory;
 import com.csse3200.game.entities.factories.ObstacleFactory;
 import com.csse3200.game.entities.factories.PlayerFactory;
 import com.csse3200.game.rendering.BackgroundRenderComponent;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.utils.math.GridPoint2Utils;
-import com.csse3200.game.utils.math.RandomUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -153,11 +150,12 @@ public class TutorialGameArea extends GameArea {
     spawnBackground();
     spawnConfigEntities();
     player = spawnPlayer();
-    ////spawnItems(); // test items
-    ////spawnWinCondition();
+    //// spawnItems(); // test items
+    //// spawnWinCondition();
     spawnSkeletonArcher();
     spawnSkeletonWarrior();
-    ////spawnTestEnemyNearPlayer(); // Temporary enemy near player spawn for quick HUD/flicker testing
+    //// spawnTestEnemyNearPlayer(); // Temporary enemy near player spawn for quick HUD/flicker
+    // testing
     // spawnTestWinCondition(); // Temporary test win condition near player spawn for quick testing
 
     // playMusic();
@@ -239,7 +237,7 @@ public class TutorialGameArea extends GameArea {
     float tileSize = terrain.getTileSize();
     GridPoint2 tileBounds = terrain.getMapBounds(0);
     worldBounds = new Vector2(tileBounds.x * tileSize, tileBounds.y * tileSize);
-    ////spawnMovingPlatforms();
+    //// spawnMovingPlatforms();
 
     // Left wall
     spawnEntityAt(

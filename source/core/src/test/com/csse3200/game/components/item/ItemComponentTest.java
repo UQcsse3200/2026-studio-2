@@ -1,11 +1,8 @@
-package com.csse3200.game.components.Item;
+package com.csse3200.game.components.item;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 
-import com.csse3200.game.components.item.Item;
-import com.csse3200.game.components.item.ItemComponent;
-import com.csse3200.game.components.item.ItemType;
 import com.csse3200.game.components.item.weapons.RopeArr;
 import com.csse3200.game.components.item.weapons.StandardArr;
 import com.csse3200.game.entities.Entity;
