@@ -109,6 +109,9 @@ public class KeyboardPlayerInputComponent extends InputComponent {
       case Keys.SPACE:
         triggerJumpEvent();
         return true;
+      case Keys.M:
+        triggerDashEvent();
+        return true;
       case Keys.SHIFT_LEFT:
       case Keys.SHIFT_RIGHT:
         sprintHeld = true;
@@ -235,6 +238,9 @@ public class KeyboardPlayerInputComponent extends InputComponent {
   private void triggerJumpEvent() {
     entity.getEvents().trigger("jump");
   }
+  private void triggerDashEvent() {
+  entity.getEvents().trigger("dash");
+}
 
   /**
    * Aim direction from the current mouse position to the player, in world space.

@@ -18,6 +18,9 @@ public class PlayerActions extends Component {
   private static final float SPRINT_MULTIPLIER = 1.75f;
   private static final float ROPE_JUMP_MULTIPLIER = 0.7f;
   private static final float AIR_CONTROL = 0.1f; // How much steering you get mid-air
+  private static final float DASH_SPEED = 14f;
+  private static final float DASH_DURATION = 0.15f;
+  private static final float DASH_COOLDOWN = 1f;
 
   private PhysicsComponent physicsComponent;
   private GrappleComponent grapple;
@@ -26,6 +29,11 @@ public class PlayerActions extends Component {
   private boolean isGrounded = false;
   private boolean isSprinting = false;
   private boolean paused = false;
+  private boolean isDashing = false;
+  private float dashTimeRemaining = 0f;
+  private float dashCooldownRemaining = 0f;
+  private boolean airDashUsed = false;
+  private int facingDirection = 1;
 
   @Override
   public void create() {
@@ -36,21 +44,39 @@ public class PlayerActions extends Component {
     entity.getEvents().addListener("jump", this::jump);
     entity.getEvents().addListener("sprint", this::sprint);
     entity.getEvents().addListener("sprintStop", this::stopSprinting);
+    entity.getEvents().addListener("dash", this::dash);
   }
 
   @Override
-  public void update() {
-    isGrounded = checkGrounded();
-    if (!moving) {
+public void update() {
+  boolean wasGrounded = isGrounded;
+  isGrounded = checkGrounded();
+  if (isGrounded && !wasGrounded) {
+    airDashUsed = false;
+  }
+
+  if (dashCooldownRemaining > 0f) {
+    dashCooldownRemaining -= ServiceLocator.getTimeSource().getDeltaTime();
+  }
+
+  if (isDashing) {
+    dashTimeRemaining -= ServiceLocator.getTimeSource().getDeltaTime();
+    if (dashTimeRemaining <= 0f) {
+      isDashing = false;
+    } else {
       return;
     }
-    if (isGrappling()) {
-      // Walking is off while swinging, movement keys just add speed to the arc
-      entity.getEvents().trigger("grappleSwing", walkDirection.x);
-    } else {
-      updateSpeed();
-    }
   }
+
+  if (!moving) {
+    return;
+  }
+  if (isGrappling()) {
+    entity.getEvents().trigger("grappleSwing", walkDirection.x);
+  } else {
+    updateSpeed();
+  }
+}
 
   private boolean isGrappling() {
     return grapple != null && grapple.isAttached();
@@ -88,13 +114,16 @@ public class PlayerActions extends Component {
    * @param direction direction to move in
    */
   void walk(Vector2 direction) {
-    if (paused) {
-      stopWalking();
-    } else {
-      this.walkDirection = direction;
-      moving = true;
+  if (paused) {
+    stopWalking();
+  } else {
+    this.walkDirection = direction;
+    if (direction.x != 0) {
+      facingDirection = direction.x > 0 ? 1 : -1;
     }
+    moving = true;
   }
+}
 
   /** Stops the player from walking. */
   void stopWalking() {
@@ -136,4 +165,35 @@ public class PlayerActions extends Component {
       updateSpeed();
     }
   }
+
+  void dash() {
+  if (isDashing || dashCooldownRemaining > 0f || paused) {
+    return;
+  }
+  if (isGrappling()) {
+    return;
+  }
+  if (!isGrounded && airDashUsed) {
+    return;
+  }
+
+  int direction;
+  if (walkDirection.x > 0) {
+    direction = 1;
+  } else if (walkDirection.x < 0) {
+    direction = -1;
+  } else {
+    direction = facingDirection;
+  }
+
+  isDashing = true;
+  dashTimeRemaining = DASH_DURATION;
+  dashCooldownRemaining = DASH_COOLDOWN;
+  if (!isGrounded) {
+    airDashUsed = true;
+  }
+
+  Body body = physicsComponent.getBody();
+  body.setLinearVelocity(direction * DASH_SPEED, body.getLinearVelocity().y);
+}
 }
