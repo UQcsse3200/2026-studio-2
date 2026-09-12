@@ -148,7 +148,7 @@ public class CyclopsMinigameArea extends GameArea {
    * @return the created player Entity
    */
   private Entity spawnPlayer() {
-    Entity newPlayer = PlayerFactory.createPlayer();
+    Entity newPlayer = PlayerFactory.createPlayerDisplay();
     spawnEntityAt(newPlayer, statueLocations.getFirst(), false, true);
     return newPlayer;
   }

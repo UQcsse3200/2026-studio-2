@@ -15,7 +15,6 @@ import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.rendering.AnimationRenderComponent;
 import com.csse3200.game.rendering.GrappleRenderComponent;
-import com.csse3200.game.rendering.TextureRenderComponent;
 import com.csse3200.game.services.ServiceLocator;
 
 /**
@@ -75,12 +74,43 @@ public class PlayerFactory {
   /**
    * Create a player display entity.
    *
+   * <p>Takes away specific components from the user that are not needed in particular situations
+   * like minigames and cutscenes.
+   *
+   * <p>Currently removed: - Grappling Components - Player Actions Components - Bow Components
+   *
    * @return entity
    */
   public static Entity createPlayerDisplay() {
+    InputComponent inputComponent =
+        ServiceLocator.getInputService().getInputFactory().createForPlayer();
+
+    AnimationRenderComponent animator =
+        new AnimationRenderComponent(
+            ServiceLocator.getResourceService()
+                .getAsset("images/player.atlas", TextureAtlas.class));
+    animator.addAnimation("idle", 0.15f, PlayMode.LOOP);
+    animator.addAnimation("walk", 0.1f, PlayMode.LOOP);
+    animator.addAnimation("sprint", 0.1f, PlayMode.LOOP);
+    animator.addAnimation("jump", 0.05f, PlayMode.NORMAL);
+    animator.addAnimation("hurt", 0.04f, PlayMode.NORMAL);
+
     Entity player =
-        new Entity().addComponent(new TextureRenderComponent("images/box_boy_leaf.png"));
-    player.getComponent(TextureRenderComponent.class).scaleEntity();
+        new Entity()
+            .addComponent(animator)
+            .addComponent(new PhysicsComponent())
+            .addComponent(new ColliderComponent())
+            .addComponent(new HitboxComponent().setLayer(PhysicsLayer.PLAYER))
+            .addComponent(new CombatStatsComponent(stats.health, stats.baseAttack))
+            .addComponent(new InventoryComponent(stats.gold))
+            .addComponent(new PlayerStatsDisplay())
+            .addComponent(new PlayerAnimationController());
+
+    PhysicsUtils.setScaledCollider(player, 0.6f, 0.3f);
+    player.getComponent(ColliderComponent.class).setDensity(1.5f);
+    player.getComponent(AnimationRenderComponent.class).scaleEntity();
+    player.scaleWidth(0.75f);
+
     return player;
   }
 
