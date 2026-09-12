@@ -2,7 +2,9 @@ package com.csse3200.game.areas;
 
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.math.GridPoint2;
+import com.csse3200.game.physics.components.PhysicsComponent;
 import com.badlogic.gdx.math.Vector2;
+import com.csse3200.game.rendering.TextureRenderComponent;
 import com.csse3200.game.areas.terrain.PlatformConfig;
 import com.csse3200.game.areas.terrain.TerrainFactory;
 import com.csse3200.game.areas.terrain.TerrainFactory.TerrainType;
@@ -62,6 +64,7 @@ public class TutorialGameArea extends GameArea {
     // first half
     new PlatformConfig(new GridPoint2(0, 0), 3, 3, 0),
     new PlatformConfig(new GridPoint2(13, 0), 12, 5, 2),
+          // big wall
     new PlatformConfig(new GridPoint2(40, 0), 10, 15, 0),
     new PlatformConfig(new GridPoint2(40, 15), 10, 2, 8),
     new PlatformConfig(new GridPoint2(18, 15), 6, 2, 9),
@@ -364,19 +367,64 @@ public class TutorialGameArea extends GameArea {
   }
 
   private void spawnSpikes() {
-    // 1. Upper-Left Block Top Surface (Y = 17)
     for (int x = 53; x <= 55; x++) {
-      spawnEntityAt(ObstacleFactory.createSpike(), new GridPoint2(x, 17), true, true);
+      spawnRotatedSpike(0f, new GridPoint2(x, 17));
     }
 
-    // 2. Overhead T-Bar Top Surface (Y = 19)
     for (int x = 59; x <= 68; x++) {
-      spawnEntityAt(ObstacleFactory.createSpike(), new GridPoint2(x, 19), true, true);
+      spawnRotatedSpike(0f, new GridPoint2(x, 19));
     }
 
-    // 3. Ground Pit Surface (Y = 1)
     for (int x = 60; x <= 62; x++) {
-      spawnEntityAt(ObstacleFactory.createSpike(), new GridPoint2(x, 1), true, true);
+      spawnRotatedSpike(0f, new GridPoint2(x, 1));
+    }
+
+    for (int x = 13; x <= 23; x++) {
+      spawnRotatedSpike(0f, new GridPoint2(x, 5));
+    }
+
+    for (int x = 27; x <= 37; x++) {
+      spawnRotatedSpike(0f, new GridPoint2(x, 1));
+    }
+
+    for (int x = 2; x <= 15; x++) {
+      spawnRotatedSpike(180f, new GridPoint2(x, 20));
+    }
+
+    for (int y = 16; y <= 20; y++) {
+      spawnRotatedSpike(270f, new GridPoint2(1, y));
+    }
+
+    for (int y = 1; y <= 14; y++) {
+      spawnRotatedSpike(90f, new GridPoint2(38, y));
+    }
+  }
+
+  private void spawnRotatedSpike(float rotationAngle, GridPoint2 position) {
+    Entity spike = ObstacleFactory.createSpike();
+
+    TextureRenderComponent textureComponent = spike.getComponent(TextureRenderComponent.class);
+    if (textureComponent != null) {
+      textureComponent.setRotation(rotationAngle);
+    }
+
+    spawnEntityAt(spike, position, true, true);
+
+    Vector2 currentPos = spike.getPosition();
+    if (rotationAngle == 180f) {
+      spike.setPosition(currentPos.x, currentPos.y - 0.15f);
+    } else if (rotationAngle == 270f) {
+      spike.setPosition(currentPos.x + 0.15f, currentPos.y);
+    } else if (rotationAngle == 90f) {
+      spike.setPosition(currentPos.x + 0.85f, currentPos.y);
+    }
+
+    PhysicsComponent physicsComponent = spike.getComponent(PhysicsComponent.class);
+    if (physicsComponent != null && physicsComponent.getBody() != null) {
+      physicsComponent.getBody().setTransform(
+              spike.getPosition(),
+              (float) Math.toRadians(rotationAngle)
+      );
     }
   }
 

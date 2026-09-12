@@ -1,5 +1,6 @@
 package com.csse3200.game.entities.factories;
 
+
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.csse3200.game.components.CombatStatsComponent;
@@ -155,41 +156,29 @@ public class ObstacleFactory {
         .addComponent(new PhysicsComponent().setBodyType(BodyType.StaticBody))
         .addComponent(new ColliderComponent().setLayer(PhysicsLayer.DEFAULT));
   }
-
-  /**
-   * Creates a spike hazard entity with custom rotation.
-   *
-   * @param rotationAngle Angle in degrees to rotate the spike (0 = UP, 180 = DOWN, 270 = LEFT, 90 =
-   *     RIGHT)
-   * @return spike entity
-   */
-  public static Entity createSpike(float rotationAngle) {
-    Entity spike =
-        new Entity()
-            .addComponent(new TextureRenderComponent("images/spike.png"))
-            .addComponent(new PhysicsComponent())
-            .addComponent(new ColliderComponent().setLayer(PhysicsLayer.OBSTACLE))
-            .addComponent(new CombatStatsComponent(100, 2))
-            .addComponent(new HitboxComponent().setLayer(PhysicsLayer.OBSTACLE))
-            .addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER));
-
-    spike.getComponent(PhysicsComponent.class).setBodyType(BodyType.StaticBody);
-
-    // Scale slightly larger to close gaps
-    spike.setScale(1.25f, 1.25f);
-
-    PhysicsUtils.setScaledCollider(spike, 0.8f, 0.5f);
-
-    return spike;
-  }
-
   /**
    * Creates a default upward-facing spike hazard entity.
    *
    * @return spike entity
    */
   public static Entity createSpike() {
-    return createSpike(0f);
+    Entity spike =
+            new Entity()
+                    .addComponent(new TextureRenderComponent("images/spike.png"))
+                    .addComponent(new PhysicsComponent())
+                    .addComponent(new ColliderComponent().setLayer(PhysicsLayer.OBSTACLE))
+                    .addComponent(new CombatStatsComponent(100, 2))
+                    .addComponent(new HitboxComponent().setLayer(PhysicsLayer.OBSTACLE))
+                    .addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER));
+
+    spike.getComponent(PhysicsComponent.class).setBodyType(BodyType.StaticBody);
+
+    // Scale slightly larger to close grid gaps
+    spike.setScale(1.25f, 1.25f);
+
+    PhysicsUtils.setScaledCollider(spike, 0.8f, 0.5f);
+
+    return spike;
   }
 
   private ObstacleFactory() {
