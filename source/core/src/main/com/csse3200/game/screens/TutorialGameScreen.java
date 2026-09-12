@@ -47,8 +47,18 @@ public class TutorialGameScreen extends ScreenAdapter {
     "images/heart.png",
     "images/title_odysseus_logo.png",
     "images/Health_Bar_Background.png",
-    "images/Inventory_background.png",
-    "images/red_heart.png"
+    "images/red_heart.png",
+    "images/PixelArt_HeartBack.png",
+    "images/Damaged_heart.png",
+    "images/Last_Health.png",
+    "images/Buttons/continue_up_btn.png",
+    "images/Buttons/continue_down_btn.png",
+    "images/Buttons/settings_up_btn.png",
+    "images/Buttons/settings_down_btn.png",
+    "images/Buttons/quit_up_btn.png",
+    "images/Buttons/quit_down_btn.png",
+    "images/Buttons/exit_up_btn.png",
+    "images/Buttons/exit_down_btn.png"
   };
 
   private final GdxGame game;
