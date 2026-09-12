@@ -18,6 +18,10 @@ public class SpinTheWheelScreen extends MinigameScreen {
     "images/minigames/spinthewheel/wheel-disc.png",
     "images/minigames/spinthewheel/wheel-spoke.png",
     "images/minigames/spinthewheel/wheel-pointer.png",
+    "images/Buttons/spin_up_btn.png",
+    "images/Buttons/spin_down_btn.png",
+    "images/Buttons/back_up_btn.png",
+    "images/Buttons/back_down_btn.png",
   };
 
   public SpinTheWheelScreen(GdxGame game) {

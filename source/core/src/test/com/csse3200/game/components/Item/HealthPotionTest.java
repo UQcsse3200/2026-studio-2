@@ -1,9 +1,10 @@
-package com.csse3200.game.components.item;
+package com.csse3200.game.components.Item;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.csse3200.game.components.item.ItemType;
 import com.csse3200.game.components.item.consumables.HealthPotion;
 import com.csse3200.game.extensions.GameExtension;
 import org.junit.jupiter.api.Test;

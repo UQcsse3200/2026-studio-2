@@ -29,7 +29,7 @@ public enum ItemType {
       3,
       "Health Potion",
       "Restores a small amount of health.",
-      "images/heart.png",
+      "images/red_heart.png",
       0,
       0f,
       0f,

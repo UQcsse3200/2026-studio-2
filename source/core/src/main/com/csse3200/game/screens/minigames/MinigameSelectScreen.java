@@ -17,8 +17,16 @@ public class MinigameSelectScreen extends MinigameScreen {
 
   @Override
   protected String[] getTextures() {
-    // The menu is built entirely from the skin, so there is nothing extra to load.
-    return new String[0];
+    return new String[] {
+      "images/Buttons/back_up_btn.png",
+      "images/Buttons/back_down_btn.png",
+      "images/Buttons/spinTheWheel_up_btn.png",
+      "images/Buttons/spinTheWheel_down_btn.png",
+      "images/Buttons/blackJack_up_btn.png",
+      "images/Buttons/blackJack_down_btn.png",
+      "images/Buttons/cyclops_up_btn.png",
+      "images/Buttons/cyclops_down_btn.png"
+    };
   }
 
   @Override

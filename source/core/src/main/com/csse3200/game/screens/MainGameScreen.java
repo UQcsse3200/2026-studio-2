@@ -7,6 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.csse3200.game.GdxGame;
 import com.csse3200.game.areas.ForestGameArea;
 import com.csse3200.game.areas.terrain.TerrainFactory;
+import com.csse3200.game.components.ButtonSound;
 import com.csse3200.game.components.gamearea.PerformanceDisplay;
 import com.csse3200.game.components.maingame.MainGameActions;
 import com.csse3200.game.components.maingame.MainGameExitDisplay;
@@ -41,7 +42,22 @@ import org.slf4j.LoggerFactory;
 public class MainGameScreen extends ScreenAdapter {
   private static final Logger logger = LoggerFactory.getLogger(MainGameScreen.class);
   private static final String[] mainGameTextures = {
-    "images/purple_heart.png", "images/box_boy_title.png"
+    "images/purple_heart.png",
+    "images/title_odysseus_logo.png",
+    "images/box_boy_title.png",
+    "images/Health_Bar_Background.png",
+    "images/red_heart.png",
+    "images/PixelArt_HeartBack.png",
+    "images/Damaged_heart.png",
+    "images/Last_Health.png",
+    "images/Buttons/continue_up_btn.png",
+    "images/Buttons/continue_down_btn.png",
+    "images/Buttons/settings_up_btn.png",
+    "images/Buttons/settings_down_btn.png",
+    "images/Buttons/quit_up_btn.png",
+    "images/Buttons/quit_down_btn.png",
+    "images/Buttons/exit_up_btn.png",
+    "images/Buttons/exit_down_btn.png"
   };
 
   private static final Vector2 CAMERA_POSITION = new Vector2(7.5f, 7.5f);
@@ -130,6 +146,7 @@ public class MainGameScreen extends ScreenAdapter {
     logger.debug("Loading assets");
     ResourceService resourceService = ServiceLocator.getResourceService();
     resourceService.loadTextures(mainGameTextures);
+    ButtonSound.load(resourceService);
     ServiceLocator.getResourceService().loadAll();
   }
 
@@ -137,6 +154,7 @@ public class MainGameScreen extends ScreenAdapter {
     logger.debug("Unloading assets");
     ResourceService resourceService = ServiceLocator.getResourceService();
     resourceService.unloadAssets(mainGameTextures);
+    ButtonSound.unload(resourceService);
   }
 
   /**

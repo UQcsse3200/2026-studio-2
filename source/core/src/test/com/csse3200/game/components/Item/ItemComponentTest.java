@@ -1,8 +1,11 @@
-package com.csse3200.game.components.item;
+package com.csse3200.game.components.Item;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 
+import com.csse3200.game.components.item.Item;
+import com.csse3200.game.components.item.ItemComponent;
+import com.csse3200.game.components.item.ItemType;
 import com.csse3200.game.components.item.weapons.RopeArr;
 import com.csse3200.game.components.item.weapons.StandardArr;
 import com.csse3200.game.entities.Entity;
@@ -14,7 +17,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 class ItemComponentTest {
   @Test
   void shouldReturnTheItemItWasGiven() {
-    Item item = new RopeArr();
+    RopeArr item = new RopeArr();
     ItemComponent component = new ItemComponent(item);
 
     assertSame(item, component.getItem());
@@ -22,7 +25,7 @@ class ItemComponentTest {
 
   @Test
   void shouldBeRetrievableFromEntity() {
-    Item item = new StandardArr(4);
+    StandardArr item = new StandardArr(4);
     Entity entity = new Entity().addComponent(new ItemComponent(item));
     entity.create();
 
