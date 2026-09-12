@@ -6,12 +6,13 @@ import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.physics.components.PhysicsMovementComponent;
 
 public class MovingPlatformComponent extends PlatformGrappleComponent {
-
   private final Vector2 firstTarget;
   private final Vector2 secondTarget;
   private final Vector2 maxSpeed;
+  private Vector2 currentSpeed;
   private PhysicsMovementComponent movementComponent;
   private PhysicsComponent physicsComponent;
+  private ActivatableComponent activatableComponent;
 
   /**
    * Constructor for a new MovingPlatformComponent
@@ -34,8 +35,14 @@ public class MovingPlatformComponent extends PlatformGrappleComponent {
   public void create() {
     movementComponent = entity.getComponent(PhysicsMovementComponent.class);
     physicsComponent = entity.getComponent(PhysicsComponent.class);
-    movementComponent.setMoving(true);
+    activatableComponent = entity.getComponent(ActivatableComponent.class);
+
+    boolean active = activatableComponent.isActive();
+    movementComponent.setMoving(active);
     movementComponent.setTarget(firstTarget);
+    this.currentSpeed = active ? maxSpeed : new Vector2();
+
+    entity.getEvents().addListener("activatedMapComponent", this::activate);
   }
 
   @Override
@@ -49,7 +56,7 @@ public class MovingPlatformComponent extends PlatformGrappleComponent {
       Vector2 currentPosition = body.getPosition();
 
       // if moving horizontally
-      if (maxSpeed.y == 0) {
+      if (currentSpeed.y == 0) {
         if (currentPosition.x <= firstTarget.x) {
           movementComponent.setTarget(secondTarget);
         } else if (currentPosition.x >= secondTarget.x) {
@@ -60,7 +67,7 @@ public class MovingPlatformComponent extends PlatformGrappleComponent {
         body.setLinearVelocity(velocity);
       }
       // if moving vertically
-      if (maxSpeed.x == 0) {
+      if (currentSpeed.x == 0) {
         if (currentPosition.y <= firstTarget.y) {
           movementComponent.setTarget(secondTarget);
         } else if (currentPosition.y >= secondTarget.y) {
@@ -82,5 +89,16 @@ public class MovingPlatformComponent extends PlatformGrappleComponent {
   private Vector2 getDirection() {
     // Move towards targetPosition based on our current position
     return movementComponent.getTarget().cpy().sub(entity.getPosition()).nor();
+  }
+
+  /**
+   * Updates the current speed of the platform based on that activation state received through a
+   * trigger
+   *
+   * @param active whether the moving platform is now active
+   */
+  private void activate(boolean active) {
+    movementComponent.setMoving(active);
+    currentSpeed = active ? maxSpeed : new Vector2();
   }
 }
