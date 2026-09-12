@@ -47,7 +47,7 @@ public class MainMenuDisplay extends UIComponent {
     stage.addActor(background);
 
     // Subtle continuous shake so the background feels a bit alive.
-    float shakeAmount = 3f;
+    float shakeAmount = 2f;
     float shakeDuration = 0.12f;
     background.addAction(
         Actions.forever(

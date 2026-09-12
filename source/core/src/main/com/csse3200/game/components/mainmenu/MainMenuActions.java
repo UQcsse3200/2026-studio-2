@@ -26,10 +26,10 @@ public class MainMenuActions extends Component {
     entity.getEvents().addListener("Exit", this::onExit);
   }
 
-  /** Fades into the Tutorial Game screen. */
+  /** Fades into the new narrative intro level. */
   private void onPlay() {
     logger.info("Play");
-    game.transitionTo(GdxGame.ScreenType.TUTORIAL_GAME);
+    game.transitionTo(GdxGame.ScreenType.INTRO_TUTORIAL);
   }
 
   private void onContinue() {

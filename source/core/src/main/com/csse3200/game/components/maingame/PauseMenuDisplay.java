@@ -41,7 +41,9 @@ public class PauseMenuDisplay extends UIComponent {
   private void addActors() {
     table = new Table();
     table.setFillParent(true);
-    table.setColor(1, 1, 1, 0);
+    // Hidden actors don't receive clicks; a merely transparent table would still swallow input
+    // meant for whatever is drawn underneath it (e.g. an instruction overlay while paused).
+    table.setVisible(false);
 
     Texture continueUpTexture =
         ServiceLocator.getResourceService()
@@ -135,12 +137,14 @@ public class PauseMenuDisplay extends UIComponent {
   }
 
   private void pause() {
-    table.setColor(1, 1, 1, 1);
+    table.setVisible(true);
     ServiceLocator.getEntityService().setPaused(true);
   }
 
   private void unpause() {
-    table.setColor(1, 1, 1, 0);
+    // Hidden actors don't receive clicks; a merely transparent table would still swallow input
+    // meant for whatever is drawn underneath it (e.g. an instruction overlay while paused).
+    table.setVisible(false);
     ServiceLocator.getEntityService().setPaused(false);
   }
 

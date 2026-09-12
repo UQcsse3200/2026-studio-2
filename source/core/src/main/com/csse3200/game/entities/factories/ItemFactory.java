@@ -32,9 +32,21 @@ public class ItemFactory {
    * @return entity
    */
   public static Entity createItem(Item item) {
+    return createItem(item, item.getItemType().getTexturePath());
+  }
+
+  /**
+   * Creates an item entity drawn with a custom texture instead of the item type's default art, e.g.
+   * a stack of arrows presented as a bow found in the world.
+   *
+   * @param item item this entity represents
+   * @param texturePath texture to draw the item with
+   * @return entity
+   */
+  public static Entity createItem(Item item, String texturePath) {
     Entity itemEntity =
         new Entity()
-            .addComponent(new TextureRenderComponent(item.getItemType().getTexturePath()))
+            .addComponent(new TextureRenderComponent(texturePath))
             .addComponent(new PhysicsComponent().setBodyType(BodyType.StaticBody))
             .addComponent(new HitboxComponent().setLayer(PhysicsLayer.DEFAULT))
             .addComponent(new ItemComponent(item));

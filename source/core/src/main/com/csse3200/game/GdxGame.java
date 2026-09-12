@@ -6,6 +6,7 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.csse3200.game.files.UserSettings;
+import com.csse3200.game.screens.IntroTutorialScreen;
 import com.csse3200.game.screens.MainGameScreen;
 import com.csse3200.game.screens.MainMenuScreen;
 import com.csse3200.game.screens.SettingsFromPauseScreen;
@@ -28,6 +29,15 @@ public class GdxGame extends Game {
   private static final Logger logger = LoggerFactory.getLogger(GdxGame.class);
 
   private boolean transitioning = false;
+  private ScreenType screenToResume = ScreenType.TUTORIAL_GAME;
+
+  /**
+   * @return the gameplay screen that was open before the settings screen was entered, so
+   *     settings-from-pause can return to it rather than a fixed level
+   */
+  public ScreenType getScreenToResume() {
+    return screenToResume;
+  }
 
   @Override
   public void create() {
@@ -104,11 +114,16 @@ public class GdxGame extends Game {
    * @return new screen
    */
   public Screen createScreen(ScreenType screenType) {
+    if (screenType != ScreenType.SETTINGS && screenType != ScreenType.SETTINGS_FROM_PAUSE) {
+      screenToResume = screenType;
+    }
     switch (screenType) {
       case MAIN_MENU:
         return new MainMenuScreen(this);
       case MAIN_GAME:
         return new MainGameScreen(this);
+      case INTRO_TUTORIAL:
+        return new IntroTutorialScreen(this);
       case TUTORIAL_GAME:
         return new TutorialGameScreen(this);
       case SETTINGS:
@@ -131,6 +146,7 @@ public class GdxGame extends Game {
   public enum ScreenType {
     MAIN_MENU,
     MAIN_GAME,
+    INTRO_TUTORIAL,
     TUTORIAL_GAME,
     SETTINGS,
     SETTINGS_FROM_PAUSE,

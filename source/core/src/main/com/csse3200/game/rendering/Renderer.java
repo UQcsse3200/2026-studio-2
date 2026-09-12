@@ -2,12 +2,16 @@ package com.csse3200.game.rendering;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.csse3200.game.components.CameraComponent;
+import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.services.ServiceLocator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,6 +22,14 @@ import org.slf4j.LoggerFactory;
  */
 public class Renderer implements Disposable {
   private static final float GAME_SCREEN_WIDTH = 20f;
+
+  /**
+   * How much smaller the offscreen buffer is than the screen when blurring the paused game world.
+   * Rendering small then stretching back up with linear filtering gives a cheap but convincing
+   * blur, no custom shader needed.
+   */
+  private static final int BLUR_DOWNSCALE = 4;
+
   private static final Logger logger = LoggerFactory.getLogger(Renderer.class);
 
   private CameraComponent camera;
@@ -26,6 +38,8 @@ public class Renderer implements Disposable {
   private Stage stage;
   private RenderService renderService;
   private DebugRenderer debugRenderer;
+  private FrameBuffer blurFrameBuffer;
+  private final Matrix4 screenProjection = new Matrix4();
 
   /**
    * Create a new renderer with default settings
@@ -94,6 +108,20 @@ public class Renderer implements Disposable {
   /** Render everything to the render service. */
   public void render() {
     Matrix4 projMatrix = camera.getProjectionMatrix();
+    EntityService entityService = ServiceLocator.getEntityService();
+    boolean paused = entityService != null && entityService.getPaused();
+
+    if (paused) {
+      renderWorldBlurred(projMatrix);
+    } else {
+      renderWorldSharp(projMatrix);
+    }
+
+    stage.act();
+    stage.draw();
+  }
+
+  private void renderWorldSharp(Matrix4 projMatrix) {
     batch.setProjectionMatrix(projMatrix);
     Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
@@ -105,9 +133,68 @@ public class Renderer implements Disposable {
     renderService.render(batch);
     batch.end();
     debugRenderer.render(projMatrix);
+  }
 
-    stage.act();
-    stage.draw();
+  /**
+   * Renders the game world into a small offscreen buffer, then stretches it back up onto the
+   * screen with linear filtering. The UI stage (including the pause menu itself) is drawn
+   * afterwards, on top, at full sharpness.
+   */
+  private void renderWorldBlurred(Matrix4 projMatrix) {
+    ensureBlurFrameBuffer();
+
+    int screenWidth = Gdx.graphics.getWidth();
+    int screenHeight = Gdx.graphics.getHeight();
+
+    blurFrameBuffer.begin();
+    Gdx.gl.glClearColor(0f, 0f, 0f, 1f);
+    Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+    batch.setProjectionMatrix(projMatrix);
+    batch.setColor(1f, 1f, 1f, 1f);
+    batch.begin();
+    renderService.render(batch);
+    batch.end();
+    blurFrameBuffer.end();
+
+    Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+    screenProjection.setToOrtho2D(0, 0, screenWidth, screenHeight);
+    batch.setProjectionMatrix(screenProjection);
+    batch.begin();
+    Texture blurredTexture = blurFrameBuffer.getColorBufferTexture();
+    // FrameBuffer textures are stored upside-down relative to the screen, so flip on draw.
+    batch.draw(
+        blurredTexture,
+        0,
+        0,
+        screenWidth,
+        screenHeight,
+        0,
+        0,
+        blurredTexture.getWidth(),
+        blurredTexture.getHeight(),
+        false,
+        true);
+    batch.end();
+  }
+
+  private void ensureBlurFrameBuffer() {
+    int width = Math.max(1, Gdx.graphics.getWidth() / BLUR_DOWNSCALE);
+    int height = Math.max(1, Gdx.graphics.getHeight() / BLUR_DOWNSCALE);
+
+    if (blurFrameBuffer != null
+        && blurFrameBuffer.getWidth() == width
+        && blurFrameBuffer.getHeight() == height) {
+      return;
+    }
+
+    if (blurFrameBuffer != null) {
+      blurFrameBuffer.dispose();
+    }
+
+    blurFrameBuffer = new FrameBuffer(Pixmap.Format.RGBA8888, width, height, false);
+    blurFrameBuffer
+        .getColorBufferTexture()
+        .setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
   }
 
   /**
@@ -139,6 +226,9 @@ public class Renderer implements Disposable {
 
   @Override
   public void dispose() {
+    if (blurFrameBuffer != null) {
+      blurFrameBuffer.dispose();
+    }
     stage.dispose();
     batch.dispose();
   }

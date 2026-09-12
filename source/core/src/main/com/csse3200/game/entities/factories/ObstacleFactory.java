@@ -65,6 +65,18 @@ public class ObstacleFactory {
       texturePath = "images/platform.png";
     }
 
+    return createPlatform(grappleSides, texturePath);
+  }
+
+  /**
+   * Creates a platform entity using a custom texture, so a level can use different platform art
+   * without changing the default platform art used elsewhere.
+   *
+   * @param grappleSides sides the platform can be grappled from
+   * @param texturePath platform texture to use
+   * @return platform entity
+   */
+  public static Entity createPlatform(int grappleSides, String texturePath) {
     Entity platform =
         new Entity()
             .addComponent(new TextureRenderComponent(texturePath))
@@ -79,11 +91,32 @@ public class ObstacleFactory {
 
   public static Entity createMovingPlatform(
       int grappleSides, Vector2 firstTarget, Vector2 secondTarget, Vector2 maxSpeed) {
+    return createMovingPlatform(
+        grappleSides, firstTarget, secondTarget, maxSpeed, "images/platform.png");
+  }
+
+  /**
+   * Creates a moving platform using a custom texture, so a level can use different platform art
+   * without changing the default used elsewhere.
+   *
+   * @param grappleSides sides the platform can be grappled from
+   * @param firstTarget first position the platform moves between
+   * @param secondTarget second position the platform moves between
+   * @param maxSpeed movement speed
+   * @param texturePath platform texture to use
+   * @return moving platform entity
+   */
+  public static Entity createMovingPlatform(
+      int grappleSides,
+      Vector2 firstTarget,
+      Vector2 secondTarget,
+      Vector2 maxSpeed,
+      String texturePath) {
     PhysicsComponent physicsComponent = new PhysicsComponent();
     ColliderComponent colliderComponent = new ColliderComponent();
     Entity movingPlatform =
         new Entity()
-            .addComponent(new TextureRenderComponent("images/platform.png"))
+            .addComponent(new TextureRenderComponent(texturePath))
             .addComponent(physicsComponent)
             .addComponent(new PhysicsMovementComponent())
             .addComponent(colliderComponent.setLayer(PhysicsLayer.OBSTACLE))
@@ -115,10 +148,43 @@ public class ObstacleFactory {
     return winCon;
   }
 
+  /**
+   * Creates an invisible sensor zone that fires "collisionStart" on overlap but applies no
+   * physical collision response. Pair with a behaviour component such as
+   * EnterZoneTriggerComponent to react to the overlap.
+   *
+   * @param size box size in world units
+   * @return sensor trigger entity
+   */
+  public static Entity createTriggerZone(Vector2 size) {
+    ColliderComponent collider = new ColliderComponent();
+    collider.setLayer(PhysicsLayer.NPC);
+    collider.setSensor(true);
+
+    Entity zone = new Entity().addComponent(new PhysicsComponent()).addComponent(collider);
+
+    zone.getComponent(PhysicsComponent.class).setBodyType(BodyType.StaticBody);
+    zone.getComponent(ColliderComponent.class).setAsBox(size);
+
+    return zone;
+  }
+
   public static Entity createFloor(int grappleSides) {
+    return createFloor(grappleSides, "images/Tile_2.png");
+  }
+
+  /**
+   * Creates a floor entity tiled with a custom texture, so a level can use different ground art
+   * without changing the default floor used elsewhere.
+   *
+   * @param grappleSides sides the floor can be grappled from
+   * @param texturePath tileable floor texture to use
+   * @return floor entity
+   */
+  public static Entity createFloor(int grappleSides, String texturePath) {
     Entity floor =
         new Entity()
-            .addComponent(new TiledRenderComponent("images/Tile_2.png", 0.75f))
+            .addComponent(new TiledRenderComponent(texturePath, 0.75f))
             .addComponent(new PhysicsComponent().setBodyType(BodyType.StaticBody))
             .addComponent(new ColliderComponent().setLayer(PhysicsLayer.OBSTACLE))
             .addComponent(new PlatformGrappleComponent(grappleSides));

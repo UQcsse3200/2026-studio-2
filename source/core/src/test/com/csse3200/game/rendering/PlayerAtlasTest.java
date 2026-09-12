@@ -18,12 +18,18 @@ class PlayerAtlasTest {
 
     assertNotNull(atlas.findRegion("default"));
     assertNotNull(atlas.findRegion("idle"));
-    assertEquals(26, atlas.findRegion("default").getRegionWidth());
-    assertEquals(82, atlas.findRegion("default").getRegionHeight());
-    assertEquals(16, atlas.findRegions("idle").size);
+    // "default" is idle frame 0: every page shares a 204px-tall cell so animations draw at a
+    // consistent scale (see AnimationRenderComponent, which scales by the default region width).
+    assertEquals(78, atlas.findRegion("default").getRegionWidth());
+    assertEquals(204, atlas.findRegion("default").getRegionHeight());
+    assertEquals(8, atlas.findRegions("idle").size);
     assertEquals(8, atlas.findRegions("walk").size);
-    assertEquals(12, atlas.findRegions("sprint").size);
+    assertEquals(8, atlas.findRegions("sprint").size);
     assertEquals(16, atlas.findRegions("jump").size);
+    assertEquals(7, atlas.findRegions("hurt").size);
+    for (String animation : new String[] {"idle", "walk", "sprint", "jump", "hurt"}) {
+      assertEquals(204, atlas.findRegion(animation).getRegionHeight(), animation);
+    }
 
     atlas.dispose();
   }

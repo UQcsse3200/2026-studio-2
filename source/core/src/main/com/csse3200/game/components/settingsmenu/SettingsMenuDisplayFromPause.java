@@ -12,7 +12,6 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Array;
 import com.csse3200.game.GdxGame;
-import com.csse3200.game.GdxGame.ScreenType;
 import com.csse3200.game.components.ButtonSound;
 import com.csse3200.game.files.UserSettings;
 import com.csse3200.game.files.UserSettings.DisplaySettings;
@@ -229,7 +228,7 @@ public class SettingsMenuDisplayFromPause extends UIComponent {
   }
 
   private void exitMenu() {
-    game.setScreen(ScreenType.TUTORIAL_GAME);
+    game.setScreen(game.getScreenToResume());
   }
 
   private Integer parseOrNull(String num) {
