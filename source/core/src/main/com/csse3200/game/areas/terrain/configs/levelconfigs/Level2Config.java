@@ -5,10 +5,10 @@ import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.areas.terrain.configs.CrumblingPlatformConfig;
 import com.csse3200.game.areas.terrain.configs.LevelConfig;
 import com.csse3200.game.areas.terrain.configs.PlatformConfig;
-import com.csse3200.game.entities.Entity;
-import com.csse3200.game.entities.factories.ObstacleFactory;
 import com.csse3200.game.areas.terrain.configs.TriggerButtonConfig;
 import com.csse3200.game.components.item.weapons.StandardArr;
+import com.csse3200.game.entities.Entity;
+import com.csse3200.game.entities.factories.ObstacleFactory;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -30,25 +30,13 @@ public class Level2Config extends LevelConfig {
         new PlatformConfig[] {
 
           // P1 - starting platform
-          new PlatformConfig(
-              new GridPoint2(2, 4),
-              3,
-              1,
-              0),
+          new PlatformConfig(new GridPoint2(2, 4), 3, 1, 0),
 
           // P2
-          new PlatformConfig(
-              new GridPoint2(10, 7),
-              3,
-              1,
-              0),
+          new PlatformConfig(new GridPoint2(10, 7), 3, 1, 0),
 
           // P3
-          new PlatformConfig(
-              new GridPoint2(18, 9),
-              3,
-              1,
-              0)
+          new PlatformConfig(new GridPoint2(18, 9), 3, 1, 0)
         };
 
     // =========================
@@ -65,13 +53,7 @@ public class Level2Config extends LevelConfig {
           // just walking speed carried into a short hop. Short timings (2s / 2s) so the crumbling
           // platform chain can be manually verified in-game.
           // Revert to GridPoint2(14, 8), 1.5f, 0.5f once testing is complete.
-          new CrumblingPlatformConfig(
-              new GridPoint2(6, 4),
-              3,
-              1,
-              0,
-              2f,
-              2f)
+          new CrumblingPlatformConfig(new GridPoint2(6, 4), 3, 1, 0, 2f, 2f)
         };
 
     // =========================
@@ -84,11 +66,7 @@ public class Level2Config extends LevelConfig {
           // Ground_level-2.png is 2172x724px (an exact 3:1 aspect ratio). Width/height below
           // keep that same 3:1 ratio so the image isn't stretched, and the y position is
           // shifted down so the walkable top surface still sits at y=1, same as before.
-          new PlatformConfig(
-              new GridPoint2(0, -12),
-              39,
-              13,
-              0)
+          new PlatformConfig(new GridPoint2(0, -12), 39, 13, 0)
         };
     triggerButtons =
         new TriggerButtonConfig[] {

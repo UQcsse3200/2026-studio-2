@@ -7,10 +7,9 @@ import com.csse3200.game.rendering.TextureRenderComponent;
 import com.csse3200.game.services.ServiceLocator;
 
 /**
- * Causes a platform to crumble after the player stands on it. Once activated by player contact,
- * the platform waits for {@code timeBeforeCrumble} seconds, then spends {@code crumbleTime}
- * seconds crumbling before losing its collision and disappearing, allowing the player to fall
- * through it.
+ * Causes a platform to crumble after the player stands on it. Once activated by player contact, the
+ * platform waits for {@code timeBeforeCrumble} seconds, then spends {@code crumbleTime} seconds
+ * crumbling before losing its collision and disappearing, allowing the player to fall through it.
  */
 public class CrumblingPlatformComponent extends PlatformGrappleComponent {
   private enum CrumbleState {

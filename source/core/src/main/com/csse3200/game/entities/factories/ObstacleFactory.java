@@ -111,8 +111,7 @@ public class ObstacleFactory {
             .addComponent(new PhysicsMovementComponent())
             .addComponent(colliderComponent.setLayer(PhysicsLayer.OBSTACLE))
             .addComponent(
-                new MovingPlatformComponent(
-                    grappleSides, firstTarget, secondTarget, maxSpeed))
+                new MovingPlatformComponent(grappleSides, firstTarget, secondTarget, maxSpeed))
             .addComponent(new PlatformGrappleComponent(grappleSides))
             .addComponent(new ActivatableComponent(activateId));
 
@@ -149,8 +148,7 @@ public class ObstacleFactory {
             .addComponent(new PhysicsMovementComponent())
             .addComponent(colliderComponent.setLayer(PhysicsLayer.OBSTACLE))
             .addComponent(
-                new MovingPlatformComponent(
-                    grappleSides, firstTarget, secondTarget, maxSpeed))
+                new MovingPlatformComponent(grappleSides, firstTarget, secondTarget, maxSpeed))
             .addComponent(new PlatformGrappleComponent(grappleSides))
             .addComponent(new ActivatableComponent(activateId));
 
@@ -179,8 +177,7 @@ public class ObstacleFactory {
             .addComponent(new PhysicsComponent())
             .addComponent(new ColliderComponent().setLayer(PhysicsLayer.GROUND))
             .addComponent(
-                new CrumblingPlatformComponent(
-                    grappleSides, timeBeforeCrumble, crumbleTime));
+                new CrumblingPlatformComponent(grappleSides, timeBeforeCrumble, crumbleTime));
 
     platform.getComponent(PhysicsComponent.class).setBodyType(BodyType.StaticBody);
 
@@ -205,8 +202,7 @@ public class ObstacleFactory {
             .addComponent(new PhysicsComponent())
             .addComponent(new ColliderComponent().setLayer(PhysicsLayer.GROUND))
             .addComponent(
-                new CrumblingPlatformComponent(
-                    grappleSides, timeBeforeCrumble, crumbleTime));
+                new CrumblingPlatformComponent(grappleSides, timeBeforeCrumble, crumbleTime));
 
     platform.getComponent(PhysicsComponent.class).setBodyType(BodyType.StaticBody);
 
@@ -325,17 +321,12 @@ public class ObstacleFactory {
   public static Entity createLevel2Floor(int grappleSides) {
     Entity floor =
         new Entity()
-            .addComponent(
-                new TextureRenderComponent("images/Ground_level-2.png"))
-            .addComponent(
-                new PhysicsComponent().setBodyType(BodyType.StaticBody))
-            .addComponent(
-                new ColliderComponent().setLayer(PhysicsLayer.OBSTACLE))
-            .addComponent(
-                new PlatformGrappleComponent(grappleSides));
+            .addComponent(new TextureRenderComponent("images/Ground_level-2.png"))
+            .addComponent(new PhysicsComponent().setBodyType(BodyType.StaticBody))
+            .addComponent(new ColliderComponent().setLayer(PhysicsLayer.OBSTACLE))
+            .addComponent(new PlatformGrappleComponent(grappleSides));
 
-    floor.getComponent(PhysicsComponent.class)
-        .setBodyType(BodyType.StaticBody);
+    floor.getComponent(PhysicsComponent.class).setBodyType(BodyType.StaticBody);
 
     return floor;
   }
@@ -350,10 +341,8 @@ public class ObstacleFactory {
   public static Entity createWall(float width, float height) {
     Entity wall =
         new Entity()
-            .addComponent(
-                new PhysicsComponent().setBodyType(BodyType.StaticBody))
-            .addComponent(
-                new ColliderComponent().setLayer(PhysicsLayer.OBSTACLE));
+            .addComponent(new PhysicsComponent().setBodyType(BodyType.StaticBody))
+            .addComponent(new ColliderComponent().setLayer(PhysicsLayer.OBSTACLE));
 
     wall.setScale(width, height);
 
@@ -370,10 +359,8 @@ public class ObstacleFactory {
         new Entity()
             .addComponent(new TextureRenderComponent("images/platform.png"))
             .addComponent(new LedgeComponent())
-            .addComponent(
-                new PhysicsComponent().setBodyType(BodyType.StaticBody))
-            .addComponent(
-                new ColliderComponent().setLayer(PhysicsLayer.OBSTACLE));
+            .addComponent(new PhysicsComponent().setBodyType(BodyType.StaticBody))
+            .addComponent(new ColliderComponent().setLayer(PhysicsLayer.OBSTACLE));
 
     return ledge;
   }
@@ -385,13 +372,9 @@ public class ObstacleFactory {
    */
   public static Entity createStatue() {
     return new Entity()
-        .addComponent(
-            new TextureRenderComponent(
-                "images/Greek Statues Pack I/Brute.png"))
-        .addComponent(
-            new PhysicsComponent().setBodyType(BodyType.StaticBody))
-        .addComponent(
-            new ColliderComponent().setLayer(PhysicsLayer.DEFAULT));
+        .addComponent(new TextureRenderComponent("images/Greek Statues Pack I/Brute.png"))
+        .addComponent(new PhysicsComponent().setBodyType(BodyType.StaticBody))
+        .addComponent(new ColliderComponent().setLayer(PhysicsLayer.DEFAULT));
   }
 
   /**
@@ -405,16 +388,12 @@ public class ObstacleFactory {
         new Entity()
             .addComponent(new TextureRenderComponent("images/spike.png"))
             .addComponent(new PhysicsComponent())
-            .addComponent(
-                new ColliderComponent().setLayer(PhysicsLayer.OBSTACLE))
+            .addComponent(new ColliderComponent().setLayer(PhysicsLayer.OBSTACLE))
             .addComponent(new CombatStatsComponent(100, 2))
-            .addComponent(
-                new HitboxComponent().setLayer(PhysicsLayer.OBSTACLE))
-            .addComponent(
-                new TouchAttackComponent(PhysicsLayer.PLAYER));
+            .addComponent(new HitboxComponent().setLayer(PhysicsLayer.OBSTACLE))
+            .addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER));
 
-    spike.getComponent(PhysicsComponent.class)
-        .setBodyType(BodyType.StaticBody);
+    spike.getComponent(PhysicsComponent.class).setBodyType(BodyType.StaticBody);
 
     // Scale slightly larger to close gaps
     spike.setScale(1.25f, 1.25f);
