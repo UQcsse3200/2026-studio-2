@@ -125,9 +125,9 @@ public class IntroTutorialGameArea extends GameArea {
 
   // A moving platform shuttles across the gap between platform 2 (ends at x=20) and the landing
   // floor (starts at x=30), which is too wide to jump directly, so the player has to wait for it
-  // and time the hop on and off. At each end of its run it sits 2 tiles from the nearest ledge.
-  private static final Vector2 MOVING_PLATFORM_START = new Vector2(22f, 3f);
-  private static final Vector2 MOVING_PLATFORM_END = new Vector2(26f, 3f);
+  // and time the hop on and off. At each end of its run it sits 1 tile from the nearest ledge.
+  private static final Vector2 MOVING_PLATFORM_START = new Vector2(21f, 3f);
+  private static final Vector2 MOVING_PLATFORM_END = new Vector2(27f, 3f);
   private static final Vector2 MOVING_PLATFORM_SPEED = new Vector2(2.5f, 0f);
   private static final int MOVING_PLATFORM_WIDTH = 2;
 
