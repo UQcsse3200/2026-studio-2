@@ -1,6 +1,5 @@
 package com.csse3200.game.entities.factories;
 
-
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.csse3200.game.components.CombatStatsComponent;
@@ -156,6 +155,7 @@ public class ObstacleFactory {
         .addComponent(new PhysicsComponent().setBodyType(BodyType.StaticBody))
         .addComponent(new ColliderComponent().setLayer(PhysicsLayer.DEFAULT));
   }
+
   /**
    * Creates a default upward-facing spike hazard entity.
    *
@@ -163,13 +163,13 @@ public class ObstacleFactory {
    */
   public static Entity createSpike() {
     Entity spike =
-            new Entity()
-                    .addComponent(new TextureRenderComponent("images/spike.png"))
-                    .addComponent(new PhysicsComponent())
-                    .addComponent(new ColliderComponent().setLayer(PhysicsLayer.OBSTACLE))
-                    .addComponent(new CombatStatsComponent(100, 2))
-                    .addComponent(new HitboxComponent().setLayer(PhysicsLayer.OBSTACLE))
-                    .addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER));
+        new Entity()
+            .addComponent(new TextureRenderComponent("images/spike.png"))
+            .addComponent(new PhysicsComponent())
+            .addComponent(new ColliderComponent().setLayer(PhysicsLayer.OBSTACLE))
+            .addComponent(new CombatStatsComponent(100, 2))
+            .addComponent(new HitboxComponent().setLayer(PhysicsLayer.OBSTACLE))
+            .addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER));
 
     spike.getComponent(PhysicsComponent.class).setBodyType(BodyType.StaticBody);
 

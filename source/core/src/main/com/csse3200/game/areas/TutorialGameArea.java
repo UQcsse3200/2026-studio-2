@@ -2,9 +2,7 @@ package com.csse3200.game.areas;
 
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.math.GridPoint2;
-import com.csse3200.game.physics.components.PhysicsComponent;
 import com.badlogic.gdx.math.Vector2;
-import com.csse3200.game.rendering.TextureRenderComponent;
 import com.csse3200.game.areas.terrain.PlatformConfig;
 import com.csse3200.game.areas.terrain.TerrainFactory;
 import com.csse3200.game.areas.terrain.TerrainFactory.TerrainType;
@@ -17,7 +15,9 @@ import com.csse3200.game.entities.factories.ItemFactory;
 import com.csse3200.game.entities.factories.NPCFactory;
 import com.csse3200.game.entities.factories.ObstacleFactory;
 import com.csse3200.game.entities.factories.PlayerFactory;
+import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.rendering.BackgroundRenderComponent;
+import com.csse3200.game.rendering.TextureRenderComponent;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.utils.math.GridPoint2Utils;
@@ -64,7 +64,7 @@ public class TutorialGameArea extends GameArea {
     // first half
     new PlatformConfig(new GridPoint2(0, 0), 3, 3, 0),
     new PlatformConfig(new GridPoint2(13, 0), 12, 5, 2),
-          // big wall
+    // big wall
     new PlatformConfig(new GridPoint2(40, 0), 10, 15, 0),
     new PlatformConfig(new GridPoint2(40, 15), 10, 2, 8),
     new PlatformConfig(new GridPoint2(18, 15), 6, 2, 9),
@@ -421,10 +421,9 @@ public class TutorialGameArea extends GameArea {
 
     PhysicsComponent physicsComponent = spike.getComponent(PhysicsComponent.class);
     if (physicsComponent != null && physicsComponent.getBody() != null) {
-      physicsComponent.getBody().setTransform(
-              spike.getPosition(),
-              (float) Math.toRadians(rotationAngle)
-      );
+      physicsComponent
+          .getBody()
+          .setTransform(spike.getPosition(), (float) Math.toRadians(rotationAngle));
     }
   }
 

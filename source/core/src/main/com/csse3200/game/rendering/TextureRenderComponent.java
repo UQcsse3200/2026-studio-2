@@ -48,21 +48,21 @@ public class TextureRenderComponent extends RenderComponent {
 
     // Use LibGDX overload supporting origin and rotation angle
     batch.draw(
-            texture,
-            position.x,
-            position.y,
-            scale.x / 2f, // originX (pivot point center)
-            scale.y / 2f, // originY (pivot point center)
-            scale.x,
-            scale.y,
-            1f,
-            1f,
-            degrees,
-            0,
-            0,
-            texture.getWidth(),
-            texture.getHeight(),
-            false,
-            false);
+        texture,
+        position.x,
+        position.y,
+        scale.x / 2f, // originX (pivot point center)
+        scale.y / 2f, // originY (pivot point center)
+        scale.x,
+        scale.y,
+        1f,
+        1f,
+        degrees,
+        0,
+        0,
+        texture.getWidth(),
+        texture.getHeight(),
+        false,
+        false);
   }
 }

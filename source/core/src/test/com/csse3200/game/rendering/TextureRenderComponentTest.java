@@ -1,5 +1,6 @@
 package com.csse3200.game.rendering;
 
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -24,10 +25,30 @@ class TextureRenderComponentTest {
   void shouldDrawTexture() {
     when(entity.getPosition()).thenReturn(new Vector2(2f, 2f));
     when(entity.getScale()).thenReturn(new Vector2(1f, 1f));
+    when(texture.getWidth()).thenReturn(100);
+    when(texture.getHeight()).thenReturn(100);
+
     TextureRenderComponent component = new TextureRenderComponent(texture);
     component.setEntity(entity);
     component.render(spriteBatch);
 
-    verify(spriteBatch).draw(texture, 2f, 2f, 1f, 1f);
+    verify(spriteBatch)
+        .draw(
+            eq(texture),
+            eq(2f),
+            eq(2f),
+            eq(0.5f),
+            eq(0.5f),
+            eq(1f),
+            eq(1f),
+            eq(1f),
+            eq(1f),
+            eq(0f),
+            eq(0),
+            eq(0),
+            eq(100),
+            eq(100),
+            eq(false),
+            eq(false));
   }
 }
