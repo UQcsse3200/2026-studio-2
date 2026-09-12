@@ -154,20 +154,30 @@ public class TutorialGameArea extends GameArea {
     backgroundComponent.addLayer(
         "images/parallax/original_background.png",
         new Vector2(0.10f, 0f),
-        new Vector2(0f, 0f),
         30f,
         15f,
         3.5f,
-        BackgroundType.DEPENDENT);
+        BackgroundType.DEPENDENT,
+        new Vector2(0f, 0f));
 
     backgroundComponent.addLayer(
         "images/parallax/Clouds.png",
         new Vector2(0.1f, 0f),
-        new Vector2(0.1f, 0f),
         30f,
         15f,
         3.5f,
-        BackgroundType.COMBINED);
+        BackgroundType.DEPENDENT,
+        new Vector2(0.1f, 0f));
+    /*
+    backgroundComponent.addLayer(
+            "images/parallax/Mountains.png",
+            new Vector2(0f, 0f),
+            30f,
+            15f,
+            2f,
+            BackgroundType.INDEPENDENT,
+            new Vector2(0f, 0f));
+    */
 
     // Create the background entity.
     Entity background = new Entity().addComponent(backgroundComponent);
@@ -281,9 +291,8 @@ public class TutorialGameArea extends GameArea {
   }
 
   public enum BackgroundType {
-    STATIC,
-    DEPENDENT,
-    COMBINED
+    INDEPENDENT,
+    DEPENDENT
   }
 
   /** Dispose of the game area. */

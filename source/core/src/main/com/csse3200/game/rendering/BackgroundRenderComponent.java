@@ -13,34 +13,34 @@ import java.util.List;
 /** Render multiple layers of a parallax background. */
 public class BackgroundRenderComponent extends RenderComponent {
 
-  private Vector2 staticPosUpdate = new Vector2(0, 0);
-
   /** A single parallax background layer. */
   private static class ParallaxLayer {
     private final Texture texture;
     private final Vector2 parallaxFactor;
-    private final Vector2 staticVelocity;
     private final float width;
     private final float height;
     private final float yOffset;
     private final BackgroundType backgroundType;
+    private final Vector2 velocity;
+    private Vector2 position;
 
     ParallaxLayer(
         Texture texture,
         Vector2 parallaxFactor,
-        Vector2 staticVelocity,
         float width,
         float height,
         float yOffset,
-        BackgroundType backgroundType) {
+        BackgroundType backgroundType,
+        Vector2 velocity) {
 
       this.texture = texture;
       this.parallaxFactor = parallaxFactor;
-      this.staticVelocity = staticVelocity;
       this.width = width;
       this.height = height;
       this.yOffset = yOffset;
       this.backgroundType = backgroundType;
+      this.velocity = velocity;
+      this.position = new Vector2(velocity);
     }
   }
 
@@ -68,17 +68,17 @@ public class BackgroundRenderComponent extends RenderComponent {
   public void addLayer(
       String texturePath,
       Vector2 parallaxFactor,
-      Vector2 staticVelocity,
       float width,
       float height,
       float yOffset,
-      BackgroundType backgroundType) {
+      BackgroundType backgroundType,
+      Vector2 velocity) {
 
     Texture texture = ServiceLocator.getResourceService().getAsset(texturePath, Texture.class);
 
     layers.add(
         new ParallaxLayer(
-            texture, parallaxFactor, staticVelocity, width, height, yOffset, backgroundType));
+            texture, parallaxFactor, width, height, yOffset, backgroundType, velocity));
   }
 
   /**
@@ -93,15 +93,15 @@ public class BackgroundRenderComponent extends RenderComponent {
   public void addLayer(
       Texture texture,
       Vector2 parallaxFactor,
-      Vector2 staticVelocity,
       float width,
       float height,
       float yOffset,
-      BackgroundType backgroundType) {
+      BackgroundType backgroundType,
+      Vector2 velocity) {
 
     layers.add(
         new ParallaxLayer(
-            texture, parallaxFactor, staticVelocity, width, height, yOffset, backgroundType));
+            texture, parallaxFactor, width, height, yOffset, backgroundType, velocity));
   }
 
   /** Scale is controlled individually for each layer. */
@@ -109,50 +109,39 @@ public class BackgroundRenderComponent extends RenderComponent {
     // Layer sizes are defined when they are added.
   }
 
-  private Vector2 getPositionUpdate(Vector2 staticVelocity) {
-    staticPosUpdate.x += staticVelocity.x;
-    staticPosUpdate.y += staticVelocity.y;
-
-    return new Vector2(
-        staticVelocity.x + staticPosUpdate.x / 100, staticVelocity.y + staticPosUpdate.y / 100);
+  private void getPosUpdate(ParallaxLayer layer) {
+    layer.position.x += layer.velocity.x / 100;
+    layer.position.y += layer.velocity.y / 100;
   }
 
-  private Vector2 getStaticPosition(ParallaxLayer layer, Vector3 cameraPos, Vector2 position) {
-    // For components with constant velocity e.g. sky (velocity = 0), clouds (velocity = 1)
+  private Vector2 getIndependentPosition(ParallaxLayer layer, Vector3 cameraPos, Vector2 position) {
+    // For components with constant velocity e.g. sky (velocity = 0)
     // staticVelocity
+
+    // Static is currently static relative to player
+    // So will follow player and never change
 
     float cameraX = cameraPos.x;
     float cameraY = cameraPos.y;
-    Vector2 posUpdate = getPositionUpdate(layer.staticVelocity);
+    getPosUpdate(layer);
 
     float backgroundX = cameraX;
-    float backgroundY = position.y + layer.yOffset + cameraY + posUpdate.y;
+    float backgroundY = position.y + layer.yOffset + cameraY + layer.position.y;
 
     return new Vector2(backgroundX, backgroundY);
   }
 
   private Vector2 getDependentPosition(ParallaxLayer layer, Vector3 cameraPos, Vector2 position) {
-    // For components dependent on player position e.g. mountains, ground etc.
+    // For components dependent on player position e.g. mountains, ground, ocean, clouds, etc.
     // parallaxFactor
     // staticVelocity
 
     float cameraX = cameraPos.x;
     float cameraY = cameraPos.y;
+    getPosUpdate(layer);
 
-    float backgroundX = position.x + cameraX * (1f - layer.parallaxFactor.x);
-    float backgroundY = position.y + layer.yOffset + cameraY;
-
-    return new Vector2(backgroundX, backgroundY);
-  }
-
-  private Vector2 getCombinedPosition(ParallaxLayer layer, Vector3 cameraPos, Vector2 position) {
-    // For components dependent on player pos + constant velocity e.g. ocean
-    float cameraX = cameraPos.x;
-    float cameraY = cameraPos.y;
-    Vector2 posUpdate = getPositionUpdate(layer.staticVelocity);
-
-    float backgroundX = position.x + cameraX * (1f - layer.parallaxFactor.x) + posUpdate.x;
-    float backgroundY = position.y + layer.yOffset + cameraY + posUpdate.y;
+    float backgroundX = position.x + cameraX * (1f - layer.parallaxFactor.x) + layer.position.x;
+    float backgroundY = position.y + layer.yOffset + cameraY + layer.position.y;
 
     return new Vector2(backgroundX, backgroundY);
   }
@@ -179,16 +168,12 @@ public class BackgroundRenderComponent extends RenderComponent {
       float backgroundY;
 
       switch (layer.backgroundType) {
-        case STATIC:
-          backgroundPos = getStaticPosition(layer, cameraPos, position);
+        case INDEPENDENT:
+          backgroundPos = getIndependentPosition(layer, cameraPos, position);
           break;
 
         case DEPENDENT:
           backgroundPos = getDependentPosition(layer, cameraPos, position);
-          break;
-
-        case COMBINED:
-          backgroundPos = getCombinedPosition(layer, cameraPos, position);
           break;
       }
 
