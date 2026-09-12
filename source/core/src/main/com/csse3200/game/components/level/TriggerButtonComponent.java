@@ -2,15 +2,15 @@ package com.csse3200.game.components.level;
 
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.csse3200.game.components.Component;
-import com.csse3200.game.rendering.AnimationRenderComponent;
+import com.csse3200.game.rendering.RotatableAnimationRenderComponent;
 
 public class TriggerButtonComponent extends Component {
-  AnimationRenderComponent animator;
+  RotatableAnimationRenderComponent animator;
 
   @Override
   public void create() {
     entity.getEvents().addListener("collisionStart", this::onCollisionStart);
-    animator = entity.getComponent(AnimationRenderComponent.class);
+    animator = entity.getComponent(RotatableAnimationRenderComponent.class);
   }
 
   @Override
@@ -24,7 +24,7 @@ public class TriggerButtonComponent extends Component {
     ActivatableComponent activeComponent = entity.getComponent(ActivatableComponent.class);
     entity.getEvents().trigger("activateByKey", activeComponent.getId());
 
-    AnimationRenderComponent animator = entity.getComponent(AnimationRenderComponent.class);
+    animator = entity.getComponent(RotatableAnimationRenderComponent.class);
     animator.startAnimation("pressed");
   }
 }
