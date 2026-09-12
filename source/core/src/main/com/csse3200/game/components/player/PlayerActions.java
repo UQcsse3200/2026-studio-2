@@ -32,6 +32,7 @@ public class PlayerActions extends Component {
   private boolean isSprinting = false;
   private boolean paused = false;
   private float rollTimeLeft = 0f;
+  private float groundVelocityX = 0f;
 
   @Override
   public void create() {
@@ -76,7 +77,9 @@ public class PlayerActions extends Component {
     Body body = physicsComponent.getBody();
     Vector2 velocity = body.getLinearVelocity();
     float speedMultiplier = isSprinting ? SPRINT_MULTIPLIER : 1f;
-    float desiredVelocityX = walkDirection.x * MAX_SPEED.x * speedMultiplier;
+    // Relative to whatever we're standing on, so a moving platform carries the player instead of
+    // being fought against every frame.
+    float desiredVelocityX = walkDirection.x * MAX_SPEED.x * speedMultiplier + groundVelocityX;
 
     // Full control on the ground, weak in the air so swing momentum isn't wiped on landing
     float control = isGrounded ? 1f : AIR_CONTROL;
@@ -86,16 +89,23 @@ public class PlayerActions extends Component {
     body.applyLinearImpulse(new Vector2(impulseX, 0), body.getWorldCenter(), true);
   }
 
-  /** Short ray down from the player's feet to see if we're standing on something. */
+  /**
+   * Short ray down from the player's feet to see if we're standing on something, and remember how
+   * fast that something is moving sideways (non-zero on a moving platform).
+   */
   private boolean checkGrounded() {
     Vector2 position = entity.getCenterPosition();
     float halfHeight = entity.getScale().y / 2f;
     Vector2 rayStart = position.cpy().sub(0, halfHeight);
     Vector2 rayEnd = rayStart.cpy().sub(0, 0.15f);
     RaycastHit hit = new RaycastHit();
-    return ServiceLocator.getPhysicsService()
-        .getPhysics()
-        .raycast(rayStart, rayEnd, PhysicsLayer.SOLID, hit);
+    boolean grounded =
+        ServiceLocator.getPhysicsService()
+            .getPhysics()
+            .raycast(rayStart, rayEnd, PhysicsLayer.SOLID, hit);
+    groundVelocityX =
+        grounded && hit.fixture != null ? hit.fixture.getBody().getLinearVelocity().x : 0f;
+    return grounded;
   }
 
   /**
@@ -124,7 +134,7 @@ public class PlayerActions extends Component {
     }
     rollTimeLeft = ROLL_DURATION;
     Body body = physicsComponent.getBody();
-    body.setLinearVelocity(facing * ROLL_SPEED, body.getLinearVelocity().y);
+    body.setLinearVelocity(facing * ROLL_SPEED + groundVelocityX, body.getLinearVelocity().y);
     if (combatStats != null) {
       combatStats.grantInvulnerability((long) (ROLL_DURATION * 1000f));
     }
