@@ -49,7 +49,7 @@ class KeyboardPlayerInputComponentTest {
   }
 
   @Test
-  void shouldFireOncePerEPressTowardCursor() {
+  void shouldFireOncePerClickTowardCursor() {
     KeyboardPlayerInputComponent component = new KeyboardPlayerInputComponent();
     InventoryComponent inventory = new InventoryComponent(0);
     Entity player =
@@ -74,14 +74,14 @@ class KeyboardPlayerInputComponentTest {
               direction.set(aimDirection);
             });
 
-    assertTrue(component.keyDown(Keys.E));
-    assertTrue(component.keyDown(Keys.E));
+    assertTrue(component.touchDown(4, 2, 0, Buttons.LEFT));
+    assertTrue(component.touchDown(4, 2, 0, Buttons.LEFT));
     assertEquals(1, shots.get());
     assertEquals(1, inventory.getItemCount(ItemType.ARROW));
     assertTrue(direction.get().epsilonEquals(new Vector2(9.5f, 4.5f)));
 
-    assertTrue(component.keyUp(Keys.E));
-    assertTrue(component.keyDown(Keys.E));
+    assertTrue(component.touchUp(4, 2, 0, Buttons.LEFT));
+    assertTrue(component.touchDown(4, 2, 0, Buttons.LEFT));
     assertEquals(2, shots.get());
     assertEquals(0, inventory.getItemCount(ItemType.ARROW));
   }
@@ -95,7 +95,7 @@ class KeyboardPlayerInputComponentTest {
     AtomicInteger shots = new AtomicInteger();
     player.getEvents().addListener("primaryAttack", (Vector2 ignored) -> shots.incrementAndGet());
 
-    assertTrue(component.keyDown(Keys.E));
+    assertTrue(component.touchDown(4, 2, 0, Buttons.LEFT));
     assertEquals(0, shots.get());
   }
 
@@ -106,7 +106,7 @@ class KeyboardPlayerInputComponentTest {
     AtomicInteger shots = new AtomicInteger();
     player.getEvents().addListener("primaryAttack", (Vector2 ignored) -> shots.incrementAndGet());
 
-    assertTrue(component.keyDown(Keys.E));
+    assertFalse(component.touchDown(4, 2, 0, Buttons.LEFT));
     assertEquals(0, shots.get());
   }
 
@@ -173,16 +173,38 @@ class KeyboardPlayerInputComponentTest {
   }
 
   @Test
-  void shouldFireGrappleTowardClickedWorldPosition() {
+  void shouldFireSelectedRopeArrowTowardClickedWorldPosition() {
     KeyboardPlayerInputComponent component = new KeyboardPlayerInputComponent();
-    Entity player = new Entity().addComponent(component);
+    InventoryComponent inventory = new InventoryComponent(0);
+    Entity player =
+        new Entity()
+            .addComponent(component)
+            .addComponent(inventory)
+            .addComponent(new ItemUseComponent());
     player.setPosition(0f, 0f);
     component.setCameraComponent(new CameraComponent(camera));
+    inventory.addItem(ItemType.RopeArrow, 1);
+    player.getComponent(ItemUseComponent.class).create();
     AtomicReference<Vector2> direction = new AtomicReference<>();
     player.getEvents().addListener("grappleFire", (Vector2 aim) -> direction.set(aim));
 
     assertFalse(component.touchDown(4, 2, 0, Buttons.RIGHT));
     assertTrue(component.touchDown(4, 2, 0, Buttons.LEFT));
     assertTrue(direction.get().epsilonEquals(new Vector2(9.5f, 4.5f)));
+  }
+
+  @Test
+  void shouldInteractOnEAndRollOnS() {
+    KeyboardPlayerInputComponent component = new KeyboardPlayerInputComponent();
+    Entity player = new Entity().addComponent(component);
+    AtomicInteger interactions = new AtomicInteger();
+    AtomicInteger rolls = new AtomicInteger();
+    player.getEvents().addListener("interact", interactions::incrementAndGet);
+    player.getEvents().addListener("roll", rolls::incrementAndGet);
+
+    assertTrue(component.keyDown(Keys.E));
+    assertTrue(component.keyDown(Keys.S));
+    assertEquals(1, interactions.get());
+    assertEquals(1, rolls.get());
   }
 }

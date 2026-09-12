@@ -14,6 +14,7 @@ public class PlayerAnimationController extends Component {
   private boolean sprinting = false;
   private boolean jumping = false;
   private boolean hurt = false;
+  private boolean rolling = false;
 
   @Override
   public void create() {
@@ -24,6 +25,8 @@ public class PlayerAnimationController extends Component {
     entity.getEvents().addListener("sprint", this::sprint);
     entity.getEvents().addListener("sprintStop", this::sprintStop);
     entity.getEvents().addListener("jumpStart", this::jumpStart);
+    entity.getEvents().addListener("rollStart", this::rollStart);
+    entity.getEvents().addListener("rollEnd", this::rollEnd);
     entity.getEvents().addListener("hurt", this::hurt);
 
     animator.startAnimation("idle");
@@ -40,33 +43,37 @@ public class PlayerAnimationController extends Component {
     }
   }
 
+  private boolean locked() {
+    return jumping || rolling;
+  }
+
   void walk(Vector2 direction) {
     moving = true;
     if (direction.x != 0) {
       animator.setFlipX(direction.x < 0);
     }
-    if (!jumping) {
+    if (!locked()) {
       updateAnimation();
     }
   }
 
   void walkStop() {
     moving = false;
-    if (!jumping) {
+    if (!locked()) {
       updateAnimation();
     }
   }
 
   void sprint() {
     sprinting = true;
-    if (!jumping) {
+    if (!locked()) {
       updateAnimation();
     }
   }
 
   void sprintStop() {
     sprinting = false;
-    if (!jumping) {
+    if (!locked()) {
       updateAnimation();
     }
   }
@@ -74,6 +81,20 @@ public class PlayerAnimationController extends Component {
   void jumpStart() {
     jumping = true;
     animator.startAnimation("jump");
+  }
+
+  void rollStart() {
+    rolling = true;
+    // The roll animation is optional until its art is added; without it the current animation
+    // simply keeps playing through the dash.
+    if (animator.hasAnimation("roll")) {
+      animator.startAnimation("roll");
+    }
+  }
+
+  void rollEnd() {
+    rolling = false;
+    updateAnimation();
   }
 
   void hurt() {

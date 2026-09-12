@@ -117,10 +117,10 @@ public class KeyboardPlayerInputComponent extends InputComponent {
         }
         return true;
       case Keys.E:
-        triggerAttackOrItemUse();
-        return true;
-      case Keys.F:
         entity.getEvents().trigger("interact");
+        return true;
+      case Keys.S:
+        entity.getEvents().trigger("roll");
         return true;
       case Keys.B:
         entity.getEvents().trigger("toggleBackpack");
@@ -175,9 +175,6 @@ public class KeyboardPlayerInputComponent extends InputComponent {
           triggerSprintEvent();
         }
         return true;
-      case Keys.E:
-        attackHeld = false;
-        return true;
       default:
         return false;
     }
@@ -195,19 +192,29 @@ public class KeyboardPlayerInputComponent extends InputComponent {
       return false;
     }
     Vector2 aimDirection = getAimDirection(screenX, screenY);
-    if (aimDirection.isZero()) {
+    if (aimDirection == null || aimDirection.isZero()) {
       return false;
     }
-    entity.getEvents().trigger("grappleFire", aimDirection);
+    // Left click uses whatever is selected in the hotbar, aimed at the mouse: standard arrows
+    // shoot, the rope arrow fires the grapple, potions heal.
+    triggerAttackOrItemUse();
     return true;
   }
 
+  /**
+   * Releasing the mouse button lets go of the grapple and re-arms the click, so holding the
+   * button down fires only once.
+   *
+   * @return whether the input was processed
+   * @see InputProcessor#touchUp(int, int, int, int)
+   */
   @Override
   public boolean touchUp(int screenX, int screenY, int pointer, int button) {
     if (button != Buttons.LEFT) {
       return false;
     }
 
+    attackHeld = false;
     entity.getEvents().trigger("grappleRelease");
     return true;
   }

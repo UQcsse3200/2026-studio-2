@@ -57,7 +57,8 @@ public class IntroTutorialGameArea extends GameArea {
   private static final String BOW_TEXTURE = "images/odysseus_bow.png";
   private static final String ARROW_TEXTURE = "images/arrow.png";
   private static final int BOW_ARROW_QUANTITY = 5;
-  private static final float CHEST_HEIGHT = 1.3f;
+  private static final float CHEST_HEIGHT = 0.9f;
+  private static final String SPIKE_TEXTURE = "images/spike.png";
 
   // Uniform-grid frame sheets generated from the hand-drawn player_sleeping.png /
   // player_wakeup.png art (whose poses are packed freeform and can't be sliced evenly).
@@ -79,34 +80,45 @@ public class IntroTutorialGameArea extends GameArea {
   private static final float SLEEPING_FRAME_DURATION = 0.35f;
   private static final float WAKEUP_FRAME_DURATION = 0.15f;
   // How tall the standing figure is on screen during the cinematic, as a fraction of screen height.
-  private static final float CINEMATIC_STANDING_SCREEN_FRACTION = 0.45f;
+  private static final float CINEMATIC_STANDING_SCREEN_FRACTION = 0.3f;
   // Matches the trimmed wake-up voice clip's length.
   private static final float WAKEUP_HOLD_DURATION = 8f;
 
-  private static final int LEVEL_WIDTH_TILES = 38;
+  private static final int LEVEL_WIDTH_TILES = 62;
   private static final int LEVEL_HEIGHT_TILES = 14;
   private static final float WALL_WIDTH = 0.1f;
   private static final float FALL_THRESHOLD_Y = -2f;
 
   private static final GridPoint2 PLAYER_SPAWN = new GridPoint2(2, 3);
 
-  // The wreck Odysseus washed up from sits on the end floor, with a chest holding his bow in
-  // front of it.
-  private static final GridPoint2 SHIPWRECK_POSITION = new GridPoint2(31, 3);
-  private static final Vector2 SHIPWRECK_SIZE = new Vector2(6f, 4f); // 1536x1024 art, 3:2
-  private static final GridPoint2 CHEST_POSITION = new GridPoint2(34, 3);
-  private static final GridPoint2 WRECK_INSTRUCTION_ZONE = new GridPoint2(30, 0);
-  private static final GridPoint2 EXIT_ZONE = new GridPoint2(37, 0);
+  // Level flow, left to right: start floor -> two jump gaps -> timed moving platform -> landing
+  // floor with a spike strip to roll across -> two more jump gaps -> end floor with the wreck.
+  private static final GridPoint2[] SPIKE_POSITIONS = {
+    new GridPoint2(34, 3), new GridPoint2(35, 3), new GridPoint2(36, 3)
+  };
+
+  // The wreck Odysseus washed up from dominates the end floor, with a small chest holding his bow
+  // in front of it.
+  private static final GridPoint2 SHIPWRECK_POSITION = new GridPoint2(53, 3);
+  private static final Vector2 SHIPWRECK_SIZE = new Vector2(8f, 8f * 1024f / 1536f); // 3:2 art
+  private static final GridPoint2 CHEST_POSITION = new GridPoint2(60, 3);
+  private static final GridPoint2 JUMP_INSTRUCTION_ZONE = new GridPoint2(10, 0);
+  private static final GridPoint2 ROLL_INSTRUCTION_ZONE = new GridPoint2(32, 0);
+  private static final GridPoint2 WRECK_INSTRUCTION_ZONE = new GridPoint2(52, 0);
+  private static final GridPoint2 EXIT_ZONE = new GridPoint2(61, 0);
 
   private static final PlatformConfig[] groundFloors = {
     new PlatformConfig(new GridPoint2(0, 0), 12, 3, 0), // start floor
-    new PlatformConfig(new GridPoint2(30, 0), 8, 3, 0), // landing/end floor
+    new PlatformConfig(new GridPoint2(30, 0), 10, 3, 0), // landing floor (spike strip on top)
+    new PlatformConfig(new GridPoint2(52, 0), 10, 3, 0), // end floor (wreck + chest)
   };
 
   // Every gap is 2 tiles wide — a comfortable jump for the player's jump distance.
   private static final PlatformConfig[] jumpPlatforms = {
     new PlatformConfig(new GridPoint2(14, 3), 3, 1, 0), // platform after gap 1
     new PlatformConfig(new GridPoint2(19, 3), 3, 1, 0), // platform after gap 2
+    new PlatformConfig(new GridPoint2(42, 3), 3, 1, 0), // platform after the spikes
+    new PlatformConfig(new GridPoint2(47, 3), 3, 1, 0), // last platform before the end floor
   };
 
   // A moving platform shuttles across the final gap, which is too wide to jump directly (platform
@@ -126,13 +138,15 @@ public class IntroTutorialGameArea extends GameArea {
 
   private static final String MOVE_INSTRUCTIONS_TEXT = "Press A to move left, D to move right.";
   private static final String JUMP_INSTRUCTIONS_TEXT = "Press SPACE to jump.";
+  private static final String ROLL_INSTRUCTIONS_TEXT =
+      "Spikes ahead! Press S to roll. You can't be hurt while rolling, so roll across them.";
   private static final String WRECK_TEXT =
       "The wreck of your ship... a chest lies half-buried in the sand beside it. Walk up to it"
-          + " and press F to open it.";
+          + " and press E to open it.";
   private static final String FOUND_BOW_TEXT =
       "You opened the chest and found Odysseus' bow and " + BOW_ARROW_QUANTITY + " arrows!";
   private static final String SHOOT_INSTRUCTIONS_TEXT =
-      "Press E to fire an arrow. Aim with the mouse.";
+      "Left-click to fire an arrow towards the mouse.";
 
   private static final String[] introTextures = {
     BACKGROUND_TEXTURE,
@@ -144,6 +158,7 @@ public class IntroTutorialGameArea extends GameArea {
     CHEST_TEXTURE,
     BOW_TEXTURE,
     ARROW_TEXTURE,
+    SPIKE_TEXTURE,
     "images/Buttons/skip_up_btn.png",
     "images/Buttons/skip_down_btn.png",
     "images/transparent.png"
@@ -193,6 +208,7 @@ public class IntroTutorialGameArea extends GameArea {
     spawnFloors();
     spawnJumpPlatforms();
     spawnMovingPlatform();
+    spawnSpikes();
     spawnShipwreck();
     spawnChest();
 
@@ -200,8 +216,9 @@ public class IntroTutorialGameArea extends GameArea {
     player = createPlayer();
     spawnWakeUpCinematic();
 
-    spawnJumpInstructionZone();
-    spawnWreckInstructionZone();
+    spawnInstructionZone(JUMP_INSTRUCTION_ZONE, JUMP_INSTRUCTIONS_TEXT);
+    spawnInstructionZone(ROLL_INSTRUCTION_ZONE, ROLL_INSTRUCTIONS_TEXT);
+    spawnInstructionZone(WRECK_INSTRUCTION_ZONE, WRECK_TEXT);
     spawnExitZone();
 
     // Key releases during an overlay don't reach PlayerActions (input is gated while paused), so
@@ -222,8 +239,9 @@ public class IntroTutorialGameArea extends GameArea {
 
   private void spawnBackground() {
     BackgroundRenderComponent backgroundComponent = new BackgroundRenderComponent(camera);
-    // 1677x938 source image -> keep the same aspect ratio at a world-scale width.
-    float worldWidth = 50f;
+    // 1677x938 source image -> keep the same aspect ratio at a world-scale width wide enough to
+    // cover the whole level (parallax means it needs less than the level's full width).
+    float worldWidth = 80f;
     float worldHeight = worldWidth * (938f / 1677f);
     backgroundComponent.addLayer(BACKGROUND_TEXTURE, 0.3f, worldWidth, worldHeight, -1.5f);
 
@@ -407,17 +425,17 @@ public class IntroTutorialGameArea extends GameArea {
     }
   }
 
-  private void spawnJumpInstructionZone() {
-    Entity zone = ObstacleFactory.createTriggerZone(new Vector2(1f, LEVEL_HEIGHT_TILES));
-    zone.addComponent(
-        new EnterZoneTriggerComponent(() -> instructionOverlay.show(JUMP_INSTRUCTIONS_TEXT)));
-    spawnEntityAt(zone, new GridPoint2(10, 0), true, false);
+  private void spawnSpikes() {
+    for (GridPoint2 position : SPIKE_POSITIONS) {
+      spawnEntityAt(ObstacleFactory.createSpike(), position, true, true);
+    }
   }
 
-  private void spawnWreckInstructionZone() {
+  /** A full-height, one-tile-wide zone that shows an instruction the first time the player enters. */
+  private void spawnInstructionZone(GridPoint2 position, String text) {
     Entity zone = ObstacleFactory.createTriggerZone(new Vector2(1f, LEVEL_HEIGHT_TILES));
-    zone.addComponent(new EnterZoneTriggerComponent(() -> instructionOverlay.show(WRECK_TEXT)));
-    spawnEntityAt(zone, WRECK_INSTRUCTION_ZONE, true, false);
+    zone.addComponent(new EnterZoneTriggerComponent(() -> instructionOverlay.show(text)));
+    spawnEntityAt(zone, position, true, false);
   }
 
   private void spawnExitZone() {

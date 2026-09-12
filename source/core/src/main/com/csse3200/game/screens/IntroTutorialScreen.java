@@ -54,6 +54,8 @@ public class IntroTutorialScreen extends ScreenAdapter {
     "images/Last_Health.png",
     "images/Buttons/continue_up_btn.png",
     "images/Buttons/continue_down_btn.png",
+    "images/scroll_background.png",
+    "images/calypso.png",
     "images/Buttons/settings_up_btn.png",
     "images/Buttons/settings_down_btn.png",
     "images/Buttons/quit_up_btn.png",

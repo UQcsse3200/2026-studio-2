@@ -31,6 +31,8 @@ public class WakeUpCinematicDisplay extends UIComponent {
   private static final float SKIP_BUTTON_WIDTH = 340f;
   private static final float SKIP_BUTTON_HEIGHT = 124f;
   private static final float SKIP_BUTTON_MARGIN = 30f;
+  // Spotlight diameter relative to the standing figure's height.
+  private static final float SPOTLIGHT_DIAMETER_FACTOR = 1.5f;
 
   private final Animation<TextureRegion> sleeping;
   private final Animation<TextureRegion> rising;
@@ -42,9 +44,11 @@ public class WakeUpCinematicDisplay extends UIComponent {
   private final Runnable onRevealed;
 
   private Image blackout;
+  private Image spotlight;
   private Image figure;
   private ImageButton skipButton;
   private Texture blackTexture;
+  private Texture spotlightTexture;
   private long wakeUpSoundId = -1;
   private float stateTime = 0f;
   private boolean isRising = false;
@@ -94,16 +98,20 @@ public class WakeUpCinematicDisplay extends UIComponent {
     blackout = new Image(blackTexture);
     blackout.setFillParent(true);
 
+    spotlight = buildSpotlight();
+
     figure = new Image(new TextureRegionDrawable(sleeping.getKeyFrame(0f)));
     layoutFigure(sleepFrameSizePx);
 
     skipButton = buildSkipButton();
 
     stage.addActor(blackout);
+    stage.addActor(spotlight);
     stage.addActor(figure);
     stage.addActor(skipButton);
     // Cover any UI that was added to the stage before this cinematic (HUD, buttons, overlays).
     blackout.toFront();
+    spotlight.toFront();
     figure.toFront();
     skipButton.toFront();
 
@@ -137,11 +145,33 @@ public class WakeUpCinematicDisplay extends UIComponent {
     return button;
   }
 
+  /** A soft grey disc behind the figure so it reads clearly against the black. */
+  private Image buildSpotlight() {
+    int size = 256;
+    Pixmap pixmap = new Pixmap(size, size, Pixmap.Format.RGBA8888);
+    pixmap.setColor(new Color(0.42f, 0.42f, 0.45f, 1f));
+    pixmap.fillCircle(size / 2, size / 2, size / 2 - 1);
+    spotlightTexture = new Texture(pixmap);
+    spotlightTexture.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+    pixmap.dispose();
+
+    Image disc = new Image(spotlightTexture);
+    float diameter = riseFrameSizePx.y * SPOTLIGHT_DIAMETER_FACTOR;
+    disc.setSize(diameter, diameter);
+    // Centred on the middle of the standing figure, which stands on the shared baseline.
+    float centreY = figureBaselineY() + riseFrameSizePx.y / 2f;
+    disc.setPosition((Gdx.graphics.getWidth() - diameter) / 2f, centreY - diameter / 2f);
+    return disc;
+  }
+
+  private float figureBaselineY() {
+    return Gdx.graphics.getHeight() * 0.3f;
+  }
+
   private void layoutFigure(Vector2 sizePx) {
     figure.setSize(sizePx.x, sizePx.y);
     // Bottom-centre anchored at a fixed point so the figure stays "on the ground" as frames change.
-    float baselineY = Gdx.graphics.getHeight() * 0.3f;
-    figure.setPosition((Gdx.graphics.getWidth() - sizePx.x) / 2f, baselineY);
+    figure.setPosition((Gdx.graphics.getWidth() - sizePx.x) / 2f, figureBaselineY());
   }
 
   @Override
@@ -186,6 +216,7 @@ public class WakeUpCinematicDisplay extends UIComponent {
     }
     // Hand the scene over: the figure gives way to the real player as the world fades in.
     figure.setVisible(false);
+    spotlight.setVisible(false);
     skipButton.remove();
     blackout.addAction(
         Actions.sequence(
@@ -193,6 +224,7 @@ public class WakeUpCinematicDisplay extends UIComponent {
             Actions.run(
                 () -> {
                   blackout.remove();
+                  spotlight.remove();
                   figure.remove();
                   if (onRevealed != null) {
                     onRevealed.run();
@@ -210,6 +242,9 @@ public class WakeUpCinematicDisplay extends UIComponent {
     if (blackout != null) {
       blackout.remove();
     }
+    if (spotlight != null) {
+      spotlight.remove();
+    }
     if (figure != null) {
       figure.remove();
     }
@@ -218,6 +253,9 @@ public class WakeUpCinematicDisplay extends UIComponent {
     }
     if (blackTexture != null) {
       blackTexture.dispose();
+    }
+    if (spotlightTexture != null) {
+      spotlightTexture.dispose();
     }
     super.dispose();
   }

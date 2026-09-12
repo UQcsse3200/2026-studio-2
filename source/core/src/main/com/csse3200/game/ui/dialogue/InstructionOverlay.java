@@ -3,9 +3,7 @@ package com.csse3200.game.ui.dialogue;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.NinePatch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Cell;
@@ -13,9 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.Value;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.badlogic.gdx.utils.Scaling;
@@ -27,21 +23,33 @@ import java.util.List;
 import java.util.Queue;
 
 /**
- * A reusable "blurred background + (optional image) + text + Continue button" overlay. Showing a
- * line pauses the game (which blurs the world via {@code Renderer}); the overlay itself is UI and
- * always renders sharp. Dismissing the last queued line unpauses and hides it.
+ * Instructions delivered by Calypso: the world blurs, she appears beside an unrolled scroll, and
+ * her words are written onto the parchment (with an optional item image) above a Continue button.
+ * Showing a line pauses the game (which blurs the world via {@code Renderer}); dismissing the last
+ * queued line unpauses and hides it.
  */
 public class InstructionOverlay extends UIComponent {
   private static final float Z_INDEX = 22f;
-  private static final int BORDER_THICKNESS = 3;
   private static final float MESSAGE_SPEED = 30f;
-  private static final float IMAGE_SIZE = 220f;
 
-  private static NinePatchDrawable cachedBackground;
+  private static final String SCROLL_TEXTURE = "images/scroll_background.png";
+  private static final String SPEAKER_TEXTURE = "images/calypso.png";
+  private static final String SPEAKER_NAME = "Calypso";
+  private static final Color INK_COLOR = new Color(0.24f, 0.16f, 0.08f, 1f);
+  private static final Color NAME_COLOR = new Color(0.55f, 0.35f, 0.08f, 1f);
+
+  // The scroll art is 3:2; the parchment is inset from the rollers/edges by these fractions.
+  private static final float SCROLL_ASPECT = 1536f / 1024f;
+  private static final float SCROLL_SCREEN_WIDTH_FRACTION = 0.5f;
+  private static final float PARCHMENT_INSET_X = 0.15f;
+  private static final float PARCHMENT_INSET_TOP = 0.18f;
+  private static final float PARCHMENT_INSET_BOTTOM = 0.16f;
+  private static final float SPEAKER_SCREEN_HEIGHT_FRACTION = 0.55f;
+  private static final float ITEM_IMAGE_SIZE = 140f;
 
   /**
-   * One line of text, with an optional sound clip, an optional image shown above the text (e.g. an
-   * item that was just found), and a callback for when it is dismissed.
+   * One line of Calypso's dialogue, with an optional sound clip, an optional item image shown
+   * above the text (e.g. something just found), and a callback for when it is dismissed.
    */
   public static final class Line {
     final String text;
@@ -69,7 +77,7 @@ public class InstructionOverlay extends UIComponent {
   private final TypewriterEffect typewriterEffect = new TypewriterEffect(MESSAGE_SPEED);
 
   private Table root;
-  private Table panel;
+  private Table scroll;
   private Image image;
   private Cell<Image> imageCell;
   private Label messageLabel;
@@ -92,13 +100,28 @@ public class InstructionOverlay extends UIComponent {
   }
 
   private void buildActors() {
+    float screenWidth = Gdx.graphics.getWidth();
+    float screenHeight = Gdx.graphics.getHeight();
+    float scrollWidth = screenWidth * SCROLL_SCREEN_WIDTH_FRACTION;
+    float scrollHeight = scrollWidth / SCROLL_ASPECT;
+
     root = new Table();
     root.setFillParent(true);
+    root.setVisible(false);
 
-    panel = new Table();
-    panel.setVisible(false);
-    panel.setBackground(getBackgroundDrawable());
-    Value padding = Value.percentWidth(0.02f, root);
+    Texture scrollTexture =
+        ServiceLocator.getResourceService().getAsset(SCROLL_TEXTURE, Texture.class);
+    scroll = new Table();
+    scroll.setBackground(new TextureRegionDrawable(scrollTexture));
+    scroll
+        .pad(
+            scrollHeight * PARCHMENT_INSET_TOP,
+            scrollWidth * PARCHMENT_INSET_X,
+            scrollHeight * PARCHMENT_INSET_BOTTOM,
+            scrollWidth * PARCHMENT_INSET_X);
+
+    Label nameLabel = new Label(SPEAKER_NAME, skin, "large");
+    nameLabel.setColor(NAME_COLOR);
 
     image = new Image();
     image.setScaling(Scaling.fit);
@@ -106,8 +129,29 @@ public class InstructionOverlay extends UIComponent {
     messageLabel = new Label("", skin);
     messageLabel.setWrap(true);
     messageLabel.setAlignment(1);
-    messageLabel.setColor(Color.WHITE);
+    messageLabel.setColor(INK_COLOR);
 
+    ImageButton continueButton = buildContinueButton();
+
+    scroll.add(nameLabel).top().row();
+    imageCell = scroll.add(image).size(0f).padTop(4f);
+    scroll.row();
+    scroll.add(messageLabel).fillX().expandX().expandY().padTop(6f).row();
+    scroll.add(continueButton).width(160f).height(56f).padTop(6f).row();
+
+    Texture speakerTexture =
+        ServiceLocator.getResourceService().getAsset(SPEAKER_TEXTURE, Texture.class);
+    Image speaker = new Image(speakerTexture);
+    speaker.setScaling(Scaling.fit);
+    float speakerHeight = screenHeight * SPEAKER_SCREEN_HEIGHT_FRACTION;
+    float speakerWidth = speakerHeight * speakerTexture.getWidth() / speakerTexture.getHeight();
+
+    root.add(speaker).size(speakerWidth, speakerHeight).bottom().padRight(-speakerWidth * 0.15f);
+    root.add(scroll).size(scrollWidth, scrollHeight).center();
+    stage.addActor(root);
+  }
+
+  private ImageButton buildContinueButton() {
     Texture continueUpTexture =
         ServiceLocator.getResourceService()
             .getAsset("images/Buttons/continue_up_btn.png", Texture.class);
@@ -127,15 +171,7 @@ public class InstructionOverlay extends UIComponent {
             onContinueClicked();
           }
         });
-
-    imageCell = panel.add(image).size(0f).padTop(padding);
-    panel.row();
-    panel.add(messageLabel).fillX().expandX().pad(padding).row();
-    panel.add(continueButton).width(160f).height(56f).padTop(padding).row();
-    panel.pack();
-
-    root.add(panel).width(Value.percentWidth(0.6f, root)).fillX().center();
-    stage.addActor(root);
+    return continueButton;
   }
 
   /** Shows a single plain-text line, queued after anything already showing. */
@@ -182,7 +218,7 @@ public class InstructionOverlay extends UIComponent {
     }
 
     visible = true;
-    panel.setVisible(true);
+    root.setVisible(true);
     // UI components are created in hash order, so make sure nothing added later sits over us.
     root.toFront();
     ServiceLocator.getEntityService().setPaused(true);
@@ -196,9 +232,9 @@ public class InstructionOverlay extends UIComponent {
     } else {
       image.setDrawable(new TextureRegionDrawable(texture));
       image.setVisible(true);
-      imageCell.size(IMAGE_SIZE);
+      imageCell.size(ITEM_IMAGE_SIZE);
     }
-    panel.invalidateHierarchy();
+    scroll.invalidateHierarchy();
   }
 
   private void playLineSound(String soundPath) {
@@ -222,7 +258,7 @@ public class InstructionOverlay extends UIComponent {
   private void hide() {
     currentLine = null;
     visible = false;
-    panel.setVisible(false);
+    root.setVisible(false);
     ServiceLocator.getEntityService().setPaused(false);
     if (onHidden != null) {
       onHidden.run();
@@ -256,28 +292,5 @@ public class InstructionOverlay extends UIComponent {
       root.remove();
     }
     super.dispose();
-  }
-
-  private static NinePatchDrawable getBackgroundDrawable() {
-    if (cachedBackground != null) {
-      return cachedBackground;
-    }
-
-    int size = 16;
-    int border = BORDER_THICKNESS + 2;
-
-    Pixmap pixmap = new Pixmap(size, size, Pixmap.Format.RGBA8888);
-    pixmap.setColor(new Color(0.35f, 0.35f, 0.38f, 0.88f));
-    pixmap.fill();
-    pixmap.setColor(new Color(0.85f, 0.8f, 0.4f, 1f));
-    for (int i = 0; i < border; i++) {
-      pixmap.drawRectangle(i, i, size - i * 2, size - i * 2);
-    }
-    Texture texture = new Texture(pixmap);
-    pixmap.dispose();
-
-    NinePatch patch = new NinePatch(texture, border, border, border, border);
-    cachedBackground = new NinePatchDrawable(patch);
-    return cachedBackground;
   }
 }

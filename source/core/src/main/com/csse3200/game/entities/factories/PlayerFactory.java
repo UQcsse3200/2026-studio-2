@@ -59,6 +59,12 @@ public class PlayerFactory {
     animator.addAnimation("sprint", 0.12f, PlayMode.LOOP);
     animator.addAnimation("jump", 0.05f, PlayMode.NORMAL);
     animator.addAnimation("hurt", 0.12f, PlayMode.NORMAL);
+    // Roll art isn't in the atlas yet; register it as soon as a "roll" region exists.
+    TextureAtlas playerAtlas =
+        ServiceLocator.getResourceService().getAsset("images/player.atlas", TextureAtlas.class);
+    if (playerAtlas.findRegions("roll").size > 0) {
+      animator.addAnimation("roll", 0.06f, PlayMode.NORMAL);
+    }
 
     Entity player =
         new Entity()

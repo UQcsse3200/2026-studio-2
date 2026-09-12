@@ -1,248 +1,248 @@
 player_idle_frames.png
-size: 624, 204
+size: 680, 204
 format: RGBA8888
 filter: Nearest,Nearest
 repeat: none
 default
   rotate: false
   xy: 0, 0
-  size: 78, 204
-  orig: 78, 204
+  size: 85, 204
+  orig: 85, 204
   offset: 0, 0
   index: 0
 idle
   rotate: false
   xy: 0, 0
-  size: 78, 204
-  orig: 78, 204
+  size: 85, 204
+  orig: 85, 204
   offset: 0, 0
   index: 0
 idle
   rotate: false
-  xy: 78, 0
-  size: 78, 204
-  orig: 78, 204
+  xy: 85, 0
+  size: 85, 204
+  orig: 85, 204
   offset: 0, 0
   index: 1
 idle
   rotate: false
-  xy: 156, 0
-  size: 78, 204
-  orig: 78, 204
+  xy: 170, 0
+  size: 85, 204
+  orig: 85, 204
   offset: 0, 0
   index: 2
 idle
   rotate: false
-  xy: 234, 0
-  size: 78, 204
-  orig: 78, 204
+  xy: 255, 0
+  size: 85, 204
+  orig: 85, 204
   offset: 0, 0
   index: 3
 idle
   rotate: false
-  xy: 312, 0
-  size: 78, 204
-  orig: 78, 204
+  xy: 340, 0
+  size: 85, 204
+  orig: 85, 204
   offset: 0, 0
   index: 4
 idle
   rotate: false
-  xy: 390, 0
-  size: 78, 204
-  orig: 78, 204
+  xy: 425, 0
+  size: 85, 204
+  orig: 85, 204
   offset: 0, 0
   index: 5
 idle
   rotate: false
-  xy: 468, 0
-  size: 78, 204
-  orig: 78, 204
+  xy: 510, 0
+  size: 85, 204
+  orig: 85, 204
   offset: 0, 0
   index: 6
 idle
   rotate: false
-  xy: 546, 0
-  size: 78, 204
-  orig: 78, 204
+  xy: 595, 0
+  size: 85, 204
+  orig: 85, 204
   offset: 0, 0
   index: 7
 
 player_walking_frames.png
-size: 816, 204
+size: 944, 204
 format: RGBA8888
 filter: Nearest,Nearest
 repeat: none
 walk
   rotate: false
   xy: 0, 0
-  size: 102, 204
-  orig: 102, 204
+  size: 118, 204
+  orig: 118, 204
   offset: 0, 0
   index: 0
 walk
   rotate: false
-  xy: 102, 0
-  size: 102, 204
-  orig: 102, 204
+  xy: 118, 0
+  size: 118, 204
+  orig: 118, 204
   offset: 0, 0
   index: 1
 walk
   rotate: false
-  xy: 204, 0
-  size: 102, 204
-  orig: 102, 204
+  xy: 236, 0
+  size: 118, 204
+  orig: 118, 204
   offset: 0, 0
   index: 2
 walk
   rotate: false
-  xy: 306, 0
-  size: 102, 204
-  orig: 102, 204
+  xy: 354, 0
+  size: 118, 204
+  orig: 118, 204
   offset: 0, 0
   index: 3
 walk
   rotate: false
-  xy: 408, 0
-  size: 102, 204
-  orig: 102, 204
+  xy: 472, 0
+  size: 118, 204
+  orig: 118, 204
   offset: 0, 0
   index: 4
 walk
   rotate: false
-  xy: 510, 0
-  size: 102, 204
-  orig: 102, 204
+  xy: 590, 0
+  size: 118, 204
+  orig: 118, 204
   offset: 0, 0
   index: 5
 walk
   rotate: false
-  xy: 612, 0
-  size: 102, 204
-  orig: 102, 204
+  xy: 708, 0
+  size: 118, 204
+  orig: 118, 204
   offset: 0, 0
   index: 6
 walk
   rotate: false
-  xy: 714, 0
-  size: 102, 204
-  orig: 102, 204
+  xy: 826, 0
+  size: 118, 204
+  orig: 118, 204
   offset: 0, 0
   index: 7
 
 player_running_frames.png
-size: 800, 204
+size: 1112, 204
 format: RGBA8888
 filter: Nearest,Nearest
 repeat: none
 sprint
   rotate: false
   xy: 0, 0
-  size: 100, 204
-  orig: 100, 204
+  size: 139, 204
+  orig: 139, 204
   offset: 0, 0
   index: 0
 sprint
   rotate: false
-  xy: 100, 0
-  size: 100, 204
-  orig: 100, 204
+  xy: 139, 0
+  size: 139, 204
+  orig: 139, 204
   offset: 0, 0
   index: 1
 sprint
   rotate: false
-  xy: 200, 0
-  size: 100, 204
-  orig: 100, 204
+  xy: 278, 0
+  size: 139, 204
+  orig: 139, 204
   offset: 0, 0
   index: 2
 sprint
   rotate: false
-  xy: 300, 0
-  size: 100, 204
-  orig: 100, 204
+  xy: 417, 0
+  size: 139, 204
+  orig: 139, 204
   offset: 0, 0
   index: 3
 sprint
   rotate: false
-  xy: 400, 0
-  size: 100, 204
-  orig: 100, 204
+  xy: 556, 0
+  size: 139, 204
+  orig: 139, 204
   offset: 0, 0
   index: 4
 sprint
   rotate: false
-  xy: 500, 0
-  size: 100, 204
-  orig: 100, 204
+  xy: 695, 0
+  size: 139, 204
+  orig: 139, 204
   offset: 0, 0
   index: 5
 sprint
   rotate: false
-  xy: 600, 0
-  size: 100, 204
-  orig: 100, 204
+  xy: 834, 0
+  size: 139, 204
+  orig: 139, 204
   offset: 0, 0
   index: 6
 sprint
   rotate: false
-  xy: 700, 0
-  size: 100, 204
-  orig: 100, 204
+  xy: 973, 0
+  size: 139, 204
+  orig: 139, 204
   offset: 0, 0
   index: 7
 
 player_hurt_frames.png
-size: 749, 204
+size: 889, 204
 format: RGBA8888
 filter: Nearest,Nearest
 repeat: none
 hurt
   rotate: false
   xy: 0, 0
-  size: 107, 204
-  orig: 107, 204
+  size: 127, 204
+  orig: 127, 204
   offset: 0, 0
   index: 0
 hurt
   rotate: false
-  xy: 107, 0
-  size: 107, 204
-  orig: 107, 204
+  xy: 127, 0
+  size: 127, 204
+  orig: 127, 204
   offset: 0, 0
   index: 1
 hurt
   rotate: false
-  xy: 214, 0
-  size: 107, 204
-  orig: 107, 204
+  xy: 254, 0
+  size: 127, 204
+  orig: 127, 204
   offset: 0, 0
   index: 2
 hurt
   rotate: false
-  xy: 321, 0
-  size: 107, 204
-  orig: 107, 204
+  xy: 381, 0
+  size: 127, 204
+  orig: 127, 204
   offset: 0, 0
   index: 3
 hurt
   rotate: false
-  xy: 428, 0
-  size: 107, 204
-  orig: 107, 204
+  xy: 508, 0
+  size: 127, 204
+  orig: 127, 204
   offset: 0, 0
   index: 4
 hurt
   rotate: false
-  xy: 535, 0
-  size: 107, 204
-  orig: 107, 204
+  xy: 635, 0
+  size: 127, 204
+  orig: 127, 204
   offset: 0, 0
   index: 5
 hurt
   rotate: false
-  xy: 642, 0
-  size: 107, 204
-  orig: 107, 204
+  xy: 762, 0
+  size: 127, 204
+  orig: 127, 204
   offset: 0, 0
   index: 6
 
