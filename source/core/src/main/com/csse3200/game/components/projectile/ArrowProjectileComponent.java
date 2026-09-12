@@ -13,10 +13,13 @@ import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.services.ServiceLocator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** Moves a projectile, handles parabolic flight, and triggers elemental status effects. */
 public class ArrowProjectileComponent extends Component {
 
+  private static final Logger logger = LoggerFactory.getLogger(ArrowProjectileComponent.class);
   private static final short TARGET_LAYERS = PhysicsLayer.NPC;
   private static final short TERRAIN = (short) (PhysicsLayer.GROUND | PhysicsLayer.OBSTACLE);
   private static final float ARC_GRAVITY_SCALE = 0.4f;
@@ -96,12 +99,30 @@ public class ArrowProjectileComponent extends Component {
     }
 
     Body body = physicsComponent.getBody();
-    if (body.getPosition().dst2(startPosition) >= maximumRange * maximumRange) {
+    Vector2 origin = rangeOrigin();
+    if (body.getPosition().dst2(origin) >= maximumRange * maximumRange) {
+      logger.info(
+          "{} arrow hit max range: origin={} ({}) arrowPos={} distance={} maxRange={}",
+          arrowType,
+          origin,
+          shooter != null ? "live shooter position" : "spawn point, no shooter given",
+          body.getPosition(),
+          body.getPosition().dst(origin),
+          maximumRange);
       expire();
       return;
     }
 
     updateRotation(body);
+  }
+
+  /**
+   * Range is measured live from the shooter's current position, not the arrow's spawn point, so a
+   * shot lands relative to wherever the shooter ends up while it's in flight. Falls back to the
+   * spawn point if no shooter was given.
+   */
+  private Vector2 rangeOrigin() {
+    return shooter != null ? shooter.getCenterPosition() : startPosition;
   }
 
   private void updateRotation(Body body) {

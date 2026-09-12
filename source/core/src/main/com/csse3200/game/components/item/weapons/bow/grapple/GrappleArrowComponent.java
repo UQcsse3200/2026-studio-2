@@ -2,6 +2,7 @@ package com.csse3200.game.components.item.weapons.bow.grapple;
 
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.csse3200.game.components.Component;
+import com.csse3200.game.components.player.KeyboardPlayerInputComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.services.ServiceLocator;
@@ -39,14 +40,23 @@ public class GrappleArrowComponent extends Component {
     }
     spent = true;
 
-    GrappleComponent grapple = shooter.getComponent(GrappleComponent.class);
-    if (grapple != null) {
-      grapple.attachTo(other.getBody(), entity.getCenterPosition());
+    // If the button was already released before the arrow landed, don't attach at all - otherwise
+    // the rope grabs on for a frame and then immediately lets go again.
+    if (shouldAttach()) {
+      GrappleComponent grapple = shooter.getComponent(GrappleComponent.class);
+      if (grapple != null) {
+        grapple.attachTo(other.getBody(), entity.getCenterPosition());
+      }
     }
 
-    // The rope takes over from here; drop the arrow so it doesn't fly on past the anchor
+    // The rope takes over from here (or the shot's abandoned); either way the arrow is done
     if (ServiceLocator.getEntityService() != null) {
       ServiceLocator.getEntityService().scheduleRemoval(entity);
     }
+  }
+
+  private boolean shouldAttach() {
+    KeyboardPlayerInputComponent input = shooter.getComponent(KeyboardPlayerInputComponent.class);
+    return input == null || input.isRightMouseHeld();
   }
 }

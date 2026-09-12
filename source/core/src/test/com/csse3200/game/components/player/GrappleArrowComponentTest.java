@@ -119,4 +119,33 @@ class GrappleArrowComponentTest {
         .getEvents()
         .trigger("collisionStart", mock(Fixture.class), fixtureOnLayer(PhysicsLayer.GROUND));
   }
+
+  @Test
+  void shouldNotAttachIfButtonWasReleasedBeforeLanding() {
+    GrappleComponent grapple = spy(new GrappleComponent());
+    Entity shooter = new Entity().addComponent(grapple).addComponent(new KeyboardPlayerInputComponent());
+    // Right click was never held down (or was already released), so isRightMouseHeld() is false
+    Entity arrow = arrowFiredBy(shooter);
+
+    arrow
+        .getEvents()
+        .trigger("collisionStart", mock(Fixture.class), fixtureOnLayer(PhysicsLayer.GROUND));
+
+    verify(grapple, never()).attachTo(any(Body.class), any(Vector2.class));
+  }
+
+  @Test
+  void shouldAttachIfButtonIsStillHeldWhenLanding() {
+    GrappleComponent grapple = spy(new GrappleComponent());
+    KeyboardPlayerInputComponent input = new KeyboardPlayerInputComponent();
+    Entity shooter = new Entity().addComponent(grapple).addComponent(input);
+    input.touchDown(0, 0, 0, com.badlogic.gdx.Input.Buttons.RIGHT);
+    Entity arrow = arrowFiredBy(shooter);
+
+    arrow
+        .getEvents()
+        .trigger("collisionStart", mock(Fixture.class), fixtureOnLayer(PhysicsLayer.GROUND));
+
+    verify(grapple).attachTo(any(Body.class), any(Vector2.class));
+  }
 }

@@ -180,6 +180,35 @@ class ArrowProjectileComponentTest {
     assertTrue(projectile.isSpent());
   }
 
+  @Test
+  void shouldMeasureRangeFromTheShootersCurrentPositionNotTheSpawnPoint() {
+    Entity shooter = new Entity();
+    shooter.setPosition(0f, 0f);
+
+    Entity arrow =
+        new Entity()
+            .addComponent(new PhysicsComponent())
+            .addComponent(new HitboxComponent().setLayer(PhysicsLayer.PLAYER_PROJECTILE))
+            .addComponent(
+                new ArrowProjectileComponent(shooter, Vector2.X, 10f, 15f, ArrowType.STANDARD));
+    arrow.setPosition(0f, 0f);
+    entityService.register(arrow);
+    ArrowProjectileComponent projectile = arrow.getComponent(ArrowProjectileComponent.class);
+
+    // Arrow is 20 units from where it spawned - past the 15-unit range - but the shooter has
+    // chased it and is close by, so it should still be alive.
+    arrow.getComponent(PhysicsComponent.class).getBody().setTransform(20f, 0f, 0f);
+    shooter.setPosition(19f, 0f);
+    projectile.update();
+    assertFalse(projectile.isSpent());
+
+    // Shooter falls back behind the spawn point, putting the arrow more than 15 units from the
+    // shooter even though it hasn't moved.
+    shooter.setPosition(-10f, 0f);
+    projectile.update();
+    assertTrue(projectile.isSpent());
+  }
+
   private Entity createArrow(Vector2 direction, float speed, float range) {
     Entity arrow =
         new Entity()
