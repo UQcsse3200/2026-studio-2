@@ -1,10 +1,7 @@
 package com.csse3200.game.areas.terrain.configs.levelconfigs;
 
 import com.badlogic.gdx.math.GridPoint2;
-import com.csse3200.game.areas.terrain.configs.CrumblingPlatformConfig;
-import com.csse3200.game.areas.terrain.configs.LevelConfig;
-import com.csse3200.game.areas.terrain.configs.PlatformConfig;
-import com.csse3200.game.areas.terrain.configs.TriggerButtonConfig;
+import com.csse3200.game.areas.terrain.configs.*;
 import com.csse3200.game.components.item.weapons.StandardArr;
 import java.util.HashMap;
 import java.util.Map;
@@ -61,9 +58,14 @@ public class Level2Config extends LevelConfig {
 
     triggerButtons =
         new TriggerButtonConfig[] {
-          new TriggerButtonConfig(new GridPoint2(3, 2), "moving-platform-1")
+          new TriggerButtonConfig(new GridPoint2(3, 2), 90f, "moving-platform-1")
         };
 
     items = new HashMap<>(Map.of(new GridPoint2(2, 4), new StandardArr(99)));
+
+    spikes =
+        new SpikeClusterConfig[] {
+          // new SpikeClusterConfig(2, 4, 2, 2, 90f)
+        };
   }
 }
