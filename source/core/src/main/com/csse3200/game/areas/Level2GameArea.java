@@ -58,7 +58,7 @@ public class Level2GameArea extends GameArea {
   };
 
   private static final String[] level2TexturesAtlas = {
-    "images/terrain_iso_grass.atlas", "images/player.atlas"
+    "images/terrain_iso_grass.atlas", "images/player.atlas", "images/in_level_button.atlas"
   };
 
   private static final String[] level2Sounds = {"sounds/Impact4.ogg"};
