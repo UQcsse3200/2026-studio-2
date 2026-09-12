@@ -1,11 +1,17 @@
 package com.csse3200.game.components.minigames.spinthewheel;
 
+import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Group;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
+import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
@@ -13,10 +19,15 @@ import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
+import com.badlogic.gdx.utils.Scaling;
+import com.csse3200.game.components.inventory.InventoryComponent;
+import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.UIComponent;
+import java.util.ArrayList;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,24 +37,105 @@ public class SpinTheWheelDisplay extends UIComponent {
   private static final Logger logger = LoggerFactory.getLogger(SpinTheWheelDisplay.class);
   private static final float Z_INDEX = 2f;
 
+  private static final long NOT_PLAYING = -1L;
+
   private static final String DISC_TEXTURE = "images/minigames/spinthewheel/wheel-disc.png";
   private static final String SPOKE_TEXTURE = "images/minigames/spinthewheel/wheel-spoke.png";
   private static final String POINTER_TEXTURE = "images/minigames/spinthewheel/wheel-pointer.png";
+  private static final String SPIN_UP_TEXTURE = "images/Buttons/spin_up_btn.png";
+  private static final String SPIN_DOWN_TEXTURE = "images/Buttons/spin_down_btn.png";
+  private static final String BACK_UP_TEXTURE = "images/Buttons/back_up_btn.png";
+  private static final String BACK_DOWN_TEXTURE = "images/Buttons/back_down_btn.png";
+  private static final String GLOW_TEXTURE = "images/minigames/spinthewheel/glow-radial.png";
+  private static final String RAYS_TEXTURE = "images/minigames/spinthewheel/glow-rays.png";
+
+  private static final String SPIN_SOUND = "sounds/minigames/spinthewheel/wheel-spin.wav";
+  private static final String PRIZE_SOUND = "sounds/minigames/spinthewheel/wheel-prize.wav";
+
   private static final float WHEEL_SIZE = 400f;
   private static final float SPOKE_THICKNESS = 6f;
   private static final float POINTER_SIZE = 32f;
-  private static final float LABEL_RADIUS_RATIO = 0.65f;
   private static final float POINTER_ANGLE = 90f;
   private static final float SPIN_DURATION = 3.5f;
   private static final int FULL_TURNS = 4;
+  private static final float SEGMENT_RADIUS_RATIO = 0.62f;
+  private static final float ICON_SIZE = 48f;
+
+  private static final float BUTTON_WIDTH = 160f;
+  private static final float BUTTON_HEIGHT = 56f;
+
+  private static final float CARD_SIZE = 340f;
+  private static final float PRIZE_ICON_SIZE = 112f;
+  private static final float RAY_SPIN_DURATION = 16f;
+  private static final float CARD_GROW_DURATION = 0.4f;
+  private static final float CARD_FADE_DURATION = 0.3f;
+  private static final float CARD_START_SCALE = 0.6f;
+  private static final float WHEEL_FADE_DURATION = 0.25f;
+  private static final Color GLOW_COLOUR = new Color(1f, 0.82f, 0.42f, 0.9f);
+  private static final Color RAYS_COLOUR = new Color(1f, 0.88f, 0.55f, 0.55f);
+  private static final Color PRIZE_NAME_COLOUR = new Color(0.99f, 0.9f, 0.79f, 1f);
+  private static final Color PRIZE_AMOUNT_COLOUR = new Color(1f, 0.8f, 0.35f, 1f);
 
   private final WheelLogic wheel;
+  private final InventoryComponent inventory;
   private Table table;
-  private Label resultLabel;
   private Group wheelGroup;
+  private Table prizeLayer;
+  private Group prizeCard;
+  private Table prizeContent;
+  private Image prizeIcon;
+  private Label prizeName;
+  private Label prizeAmount;
+  private long spinSoundId = NOT_PLAYING;
 
+  /**
+   * Creates a wheel that keeps nothing it lands on, for showing it without a player.
+   *
+   * @param items the items the wheel can land on
+   */
   public SpinTheWheelDisplay(List<WheelItem> items) {
+    this(items, null);
+  }
+
+  /**
+   * @param items the items the wheel can land on
+   * @param inventory where prizes are stored, or null when nothing keeps them
+   */
+  public SpinTheWheelDisplay(List<WheelItem> items, InventoryComponent inventory) {
     this.wheel = new WheelLogic(items);
+    this.inventory = inventory;
+  }
+
+  /**
+   * The textures the wheel needs loaded.
+   *
+   * @param items the items that will be shown on the wheel
+   * @return the wheel's textures and one sprite per item
+   */
+  public static String[] texturesFor(List<WheelItem> items) {
+    List<String> paths =
+        new ArrayList<>(
+            List.of(
+                DISC_TEXTURE,
+                SPOKE_TEXTURE,
+                POINTER_TEXTURE,
+                SPIN_UP_TEXTURE,
+                SPIN_DOWN_TEXTURE,
+                BACK_UP_TEXTURE,
+                BACK_DOWN_TEXTURE,
+                GLOW_TEXTURE,
+                RAYS_TEXTURE));
+    items.forEach(item -> paths.add(item.type().getTexturePath()));
+    return paths.toArray(new String[0]);
+  }
+
+  /**
+   * The sounds the wheel needs loaded.
+   *
+   * @return the sounds the wheel plays
+   */
+  public static String[] sounds() {
+    return new String[] {SPIN_SOUND, PRIZE_SOUND};
   }
 
   @Override
@@ -55,20 +147,8 @@ public class SpinTheWheelDisplay extends UIComponent {
   private void addActors() {
     table = new Table();
     table.setFillParent(true);
-    resultLabel = new Label("", skin);
 
-    Texture spinUpTexture =
-        ServiceLocator.getResourceService()
-            .getAsset("images/Buttons/spin_up_btn.png", Texture.class);
-    Texture spinDownTexture =
-        ServiceLocator.getResourceService()
-            .getAsset("images/Buttons/spin_down_btn.png", Texture.class);
-
-    ImageButton.ImageButtonStyle spinButtonStyle = new ImageButton.ImageButtonStyle();
-    spinButtonStyle.up = new TextureRegionDrawable(spinUpTexture);
-    spinButtonStyle.down = new TextureRegionDrawable(spinDownTexture);
-
-    ImageButton spinBtn = new ImageButton(spinButtonStyle);
+    ImageButton spinBtn = imageButton(SPIN_UP_TEXTURE, SPIN_DOWN_TEXTURE);
     spinBtn.addListener(
         new ChangeListener() {
           @Override
@@ -78,25 +158,7 @@ public class SpinTheWheelDisplay extends UIComponent {
           }
         });
 
-    table.row();
-    table.add(createWheel()).size(WHEEL_SIZE).padTop(30f);
-    table.row();
-    table.add(resultLabel).padTop(30f);
-    table.row();
-    table.add(spinBtn).width(160f).height(56f).padTop(30f);
-
-    Texture backUpTexture =
-        ServiceLocator.getResourceService()
-            .getAsset("images/Buttons/back_up_btn.png", Texture.class);
-    Texture backDownTexture =
-        ServiceLocator.getResourceService()
-            .getAsset("images/Buttons/back_down_btn.png", Texture.class);
-
-    ImageButton.ImageButtonStyle backButtonStyle = new ImageButton.ImageButtonStyle();
-    backButtonStyle.up = new TextureRegionDrawable(backUpTexture);
-    backButtonStyle.down = new TextureRegionDrawable(backDownTexture);
-
-    ImageButton backBtn = new ImageButton(backButtonStyle);
+    ImageButton backBtn = imageButton(BACK_UP_TEXTURE, BACK_DOWN_TEXTURE);
     backBtn.addListener(
         new ChangeListener() {
           @Override
@@ -106,10 +168,150 @@ public class SpinTheWheelDisplay extends UIComponent {
           }
         });
 
+    table.add(createWheel()).size(WHEEL_SIZE).padTop(30f);
     table.row();
-    table.add(backBtn).width(160f).height(56f).padTop(30f);
+    table.add(spinBtn).size(BUTTON_WIDTH, BUTTON_HEIGHT).padTop(24f);
+    table.row();
+    table.add(backBtn).size(BUTTON_WIDTH, BUTTON_HEIGHT).padTop(12f);
+
+    prizeLayer = createPrizeLayer();
 
     stage.addActor(table);
+    stage.addActor(prizeLayer);
+  }
+
+  /**
+   * Builds a button from the game's shared button art, which has its label drawn into it.
+   *
+   * @param upPath the texture shown while the button is idle
+   * @param downPath the texture shown while the button is pressed
+   * @return the button
+   */
+  private ImageButton imageButton(String upPath, String downPath) {
+    ImageButton.ImageButtonStyle style = new ImageButton.ImageButtonStyle();
+    style.up = new TextureRegionDrawable(texture(upPath, Texture.TextureFilter.Nearest));
+    style.down = new TextureRegionDrawable(texture(downPath, Texture.TextureFilter.Nearest));
+    return new ImageButton(style);
+  }
+
+  /**
+   * Copies one of the skin's label styles so the wheel can recolour it. Colouring the label itself
+   * would tint the skin's colour rather than replace it, and the skin draws these styles in black
+   * and orange.
+   *
+   * @param name the name of the style in the skin
+   * @param colour the colour to draw the text in
+   * @return the recoloured style
+   */
+  private Label.LabelStyle labelStyle(String name, Color colour) {
+    Label.LabelStyle style = new Label.LabelStyle(skin.get(name, Label.LabelStyle.class));
+    style.fontColor = colour;
+    return style;
+  }
+
+  /**
+   * Builds the prize card and the full screen layer that catches the input dismissing it. The layer
+   * stays hidden until the wheel lands on an item.
+   *
+   * @return the layer holding the prize card
+   */
+  private Table createPrizeLayer() {
+    Image rays = loadImage(RAYS_TEXTURE, Texture.TextureFilter.Linear);
+    rays.setSize(CARD_SIZE, CARD_SIZE);
+    rays.setOrigin(CARD_SIZE / 2f, CARD_SIZE / 2f);
+    rays.setColor(RAYS_COLOUR);
+    rays.addAction(Actions.forever(Actions.rotateBy(360f, RAY_SPIN_DURATION)));
+
+    Image glow = loadImage(GLOW_TEXTURE);
+    glow.setSize(CARD_SIZE, CARD_SIZE);
+    glow.setColor(GLOW_COLOUR);
+
+    prizeIcon = new Image();
+    prizeIcon.setScaling(Scaling.fit);
+    prizeName = new Label("", labelStyle("title", PRIZE_NAME_COLOUR));
+    prizeAmount = new Label("", labelStyle("large", PRIZE_AMOUNT_COLOUR));
+
+    prizeContent = new Table();
+    prizeContent.add(prizeIcon).size(PRIZE_ICON_SIZE);
+    prizeContent.row();
+    prizeContent.add(prizeName).padTop(12f);
+    prizeContent.row();
+    prizeContent.add(prizeAmount).padTop(2f);
+
+    prizeCard = new Group();
+    prizeCard.setSize(CARD_SIZE, CARD_SIZE);
+    prizeCard.setOrigin(CARD_SIZE / 2f, CARD_SIZE / 2f);
+    prizeCard.setTransform(true);
+    prizeCard.addActor(rays);
+    prizeCard.addActor(glow);
+    prizeCard.addActor(prizeContent);
+
+    Table layer = new Table();
+    layer.setFillParent(true);
+    layer.setTouchable(Touchable.enabled);
+    layer.setVisible(false);
+    layer.add(prizeCard).size(CARD_SIZE, CARD_SIZE);
+
+    layer.addListener(
+        new ClickListener() {
+          @Override
+          public void clicked(InputEvent event, float x, float y) {
+            dismissPrize();
+          }
+        });
+    layer.addListener(
+        new InputListener() {
+          @Override
+          public boolean keyDown(InputEvent event, int keycode) {
+            dismissPrize();
+            return true;
+          }
+        });
+    return layer;
+  }
+
+  /**
+   * Shows what the wheel landed on, growing the card in over a glow. Any click or key press then
+   * dismisses it.
+   *
+   * @param item the item that was won
+   */
+  private void showPrize(WheelItem item) {
+    play(PRIZE_SOUND);
+    Texture icon = texture(item.type().getTexturePath(), Texture.TextureFilter.Nearest);
+    prizeIcon.setDrawable(new TextureRegionDrawable(new TextureRegion(icon)));
+    prizeName.setText(item.type().getDisplayName());
+    prizeAmount.setText("x" + item.value());
+
+    prizeContent.pack();
+    prizeContent.setPosition(
+        (CARD_SIZE - prizeContent.getWidth()) / 2f, (CARD_SIZE - prizeContent.getHeight()) / 2f);
+
+    table.clearActions();
+    table.addAction(Actions.sequence(Actions.fadeOut(WHEEL_FADE_DURATION), Actions.visible(false)));
+
+    prizeLayer.setVisible(true);
+    prizeLayer.toFront();
+    stage.setKeyboardFocus(prizeLayer);
+
+    prizeCard.clearActions();
+    prizeCard.setScale(CARD_START_SCALE);
+    prizeCard.getColor().a = 0f;
+    prizeCard.addAction(
+        Actions.parallel(
+            Actions.scaleTo(1f, 1f, CARD_GROW_DURATION, Interpolation.swingOut),
+            Actions.fadeIn(CARD_FADE_DURATION)));
+  }
+
+  /** Hides the prize and closes the wheel. */
+  private void dismissPrize() {
+    if (!prizeLayer.isVisible()) {
+      return;
+    }
+    logger.debug("Prize dismissed");
+    prizeLayer.setVisible(false);
+    stage.setKeyboardFocus(null);
+    entity.getEvents().trigger("back");
   }
 
   /**
@@ -138,7 +340,7 @@ public class SpinTheWheelDisplay extends UIComponent {
     }
 
     for (int i = 0; i < items.size(); i++) {
-      wheelGroup.addActor(createLabel(items.get(i), (seg * i) + seg / 2f, centre, radius));
+      wheelGroup.addActor(createSegment(items.get(i), (seg * i) + seg / 2f, centre, radius));
     }
 
     Image pointer = loadImage(POINTER_TEXTURE);
@@ -170,41 +372,112 @@ public class SpinTheWheelDisplay extends UIComponent {
   }
 
   /**
-   * Places an item's label in the middle of its segment
+   * Places an item's sprite and the amount it awards in the middle of its segment.
    *
-   * @param item the item to label
+   * @param item the item to show
    * @param midAngle the angle at the centre of the item's segment
    * @param centre the hub's position within the wheel group
    * @param radius the wheel's radius
-   * @return an actor holding the label
+   * @return an actor holding the sprite and amount
    */
-  private Actor createLabel(WheelItem item, float midAngle, float centre, float radius) {
-    Label label = new Label(item.name(), skin);
-    label.pack();
-    Group holder = new Group();
-    holder.setSize(label.getWidth(), label.getHeight());
-    holder.setOrigin(Align.center);
-    holder.setTransform(true);
-    holder.addActor(label);
+  private Actor createSegment(WheelItem item, float midAngle, float centre, float radius) {
+    Image icon = loadImage(item.type().getTexturePath());
+    icon.setScaling(Scaling.fit);
 
-    float distance = radius * LABEL_RADIUS_RATIO;
-    holder.setPosition(
-        centre + distance * MathUtils.cosDeg(midAngle) - label.getWidth() / 2f,
-        centre + distance * MathUtils.sinDeg(midAngle) - label.getHeight() / 2f);
-    holder.setRotation(midAngle - POINTER_ANGLE);
-    return holder;
+    Table content = new Table();
+    content.add(icon).size(ICON_SIZE);
+    content.row();
+    content.add(new Label("x" + item.value(), skin));
+    content.pack();
+    content.setOrigin(Align.center);
+    content.setTransform(true);
+
+    float distance = radius * SEGMENT_RADIUS_RATIO;
+    content.setPosition(
+        centre + distance * MathUtils.cosDeg(midAngle) - content.getWidth() / 2f,
+        centre + distance * MathUtils.sinDeg(midAngle) - content.getHeight() / 2f);
+    content.setRotation(midAngle - POINTER_ANGLE);
+    return content;
   }
 
   /**
    * Loads a texture through the resource service.
    *
    * @param path the path of the texture
-   * @return an image
+   * @param filter how the texture is sampled when it is not drawn at its own size
+   * @return the texture
+   */
+  private Texture texture(String path, Texture.TextureFilter filter) {
+    Texture texture = ServiceLocator.getResourceService().getAsset(path, Texture.class);
+    texture.setFilter(filter, filter);
+    return texture;
+  }
+
+  /**
+   * @param path the path of the texture
+   * @return an image, sampled so its pixels stay sharp
    */
   private Image loadImage(String path) {
-    Texture texture = ServiceLocator.getResourceService().getAsset(path, Texture.class);
-    texture.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
-    return new Image(texture);
+    return loadImage(path, Texture.TextureFilter.Nearest);
+  }
+
+  /**
+   * @param path the path of the texture
+   * @param filter how the texture is sampled when it is not drawn at its own size
+   * @return an image
+   */
+  private Image loadImage(String path, Texture.TextureFilter filter) {
+    return new Image(texture(path, filter));
+  }
+
+  /**
+   * Stores what the wheel landed on. Nothing is kept when the wheel is shown without a player.
+   *
+   * <p>Package private so tests can award without a stage.
+   *
+   * @param item the item that was won
+   */
+  void award(WheelItem item) {
+    if (inventory != null && !inventory.addItem(item.type(), item.value())) {
+      logger.info("No room for {} x{}", item.type().getDisplayName(), item.value());
+    }
+  }
+
+  /**
+   * Finds a sound.
+   *
+   * @param path the path of the sound
+   * @return the sound, or null when it is not loaded
+   */
+  private Sound sound(String path) {
+    ResourceService resources = ServiceLocator.getResourceService();
+    if (resources == null || !resources.containsAsset(path, Sound.class)) {
+      return null;
+    }
+    return resources.getAsset(path, Sound.class);
+  }
+
+  /**
+   * Plays a sound, or nothing when the screen showing the wheel has not loaded it.
+   *
+   * @param path the path of the sound
+   * @return the id of the sound that started
+   */
+  private long play(String path) {
+    Sound sound = sound(path);
+    if (sound == null) {
+      return NOT_PLAYING;
+    }
+    return sound.play();
+  }
+
+  /** Silences the spin */
+  private void stopSpinSound() {
+    Sound spin = sound(SPIN_SOUND);
+    if (spinSoundId != NOT_PLAYING && spin != null) {
+      spin.stop(spinSoundId);
+    }
+    spinSoundId = NOT_PLAYING;
   }
 
   /**
@@ -214,6 +487,7 @@ public class SpinTheWheelDisplay extends UIComponent {
    */
   private void spin(Button spinBtn) {
     spinBtn.setDisabled(true);
+    spinSoundId = play(SPIN_SOUND);
     WheelItem result = wheel.spin();
     float target = wheel.getTargetRotation(wheelGroup.getRotation(), POINTER_ANGLE, FULL_TURNS);
 
@@ -223,9 +497,17 @@ public class SpinTheWheelDisplay extends UIComponent {
             Actions.run(
                 () -> {
                   wheelGroup.setRotation(wheelGroup.getRotation() % 360f);
-                  resultLabel.setText(result.name() + " x" + result.value());
                   spinBtn.setDisabled(false);
+                  stopSpinSound();
+                  award(result);
+                  showPrize(result);
                 })));
+  }
+
+  /** Brings the wheel above everything */
+  public void toFront() {
+    table.toFront();
+    prizeLayer.toFront();
   }
 
   @Override
@@ -238,7 +520,9 @@ public class SpinTheWheelDisplay extends UIComponent {
 
   @Override
   public void dispose() {
-    table.clear();
+    stopSpinSound();
+    table.remove();
+    prizeLayer.remove();
     super.dispose();
   }
 }

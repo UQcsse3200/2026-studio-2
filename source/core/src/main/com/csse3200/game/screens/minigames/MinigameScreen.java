@@ -44,6 +44,15 @@ public abstract class MinigameScreen extends ScreenAdapter {
 
   protected abstract String[] getTextures();
 
+  /**
+   * The sounds this minigame needs loaded. Silent minigames keep the default.
+   *
+   * @return the sounds to load
+   */
+  protected String[] getSounds() {
+    return new String[0];
+  }
+
   protected abstract Entity createUI();
 
   @Override
@@ -74,6 +83,7 @@ public abstract class MinigameScreen extends ScreenAdapter {
     logger.debug("Loading assets");
     ResourceService resourceService = ServiceLocator.getResourceService();
     resourceService.loadTextures(getTextures());
+    resourceService.loadSounds(getSounds());
     ButtonSound.load(resourceService);
     resourceService.loadAll();
   }
@@ -83,5 +93,6 @@ public abstract class MinigameScreen extends ScreenAdapter {
     ResourceService resourceService = ServiceLocator.getResourceService();
     ButtonSound.unload(resourceService);
     resourceService.unloadAssets(getTextures());
+    resourceService.unloadAssets(getSounds());
   }
 }
