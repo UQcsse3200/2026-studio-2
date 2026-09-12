@@ -7,10 +7,13 @@ import com.csse3200.game.areas.terrain.TerrainComponent;
 import com.csse3200.game.areas.terrain.configs.LevelConfig;
 import com.csse3200.game.areas.terrain.configs.SpawnData;
 import com.csse3200.game.components.CameraComponent;
+import com.csse3200.game.components.level.ActivatableComponent;
 import com.csse3200.game.components.level.PlatformGrappleComponent;
+import com.csse3200.game.components.level.TriggerButtonComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -26,6 +29,7 @@ public abstract class GameArea implements Disposable {
   protected TerrainComponent terrain;
   protected List<Entity> areaEntities;
   protected List<Entity> platforms = new ArrayList<>();
+  protected HashMap<String, ArrayList<Entity>> triggerableEntities = new HashMap<>();
   protected Entity player;
   protected LevelConfig config;
 
@@ -67,6 +71,24 @@ public abstract class GameArea implements Disposable {
       platforms.add(entity);
     }
 
+    // keep track of all triggerable objects
+    ActivatableComponent activate = entity.getComponent(ActivatableComponent.class);
+    if (activate != null) {
+      String id = activate.getId();
+
+      // add new list to the map if the id is not present
+      if (!triggerableEntities.containsKey(id)) {
+        triggerableEntities.put(id, new ArrayList<>());
+      }
+      // add entity to the respective id's list
+      triggerableEntities.get(id).add(entity);
+
+      // listen for trigger buttons' activation event call
+      TriggerButtonComponent trigger = entity.getComponent(TriggerButtonComponent.class);
+      if (trigger != null) {
+        entity.getEvents().addListener("activateByKey", this::onButtonActivated);
+      }
+    }
     ServiceLocator.getEntityService().register(entity);
   }
 
@@ -144,9 +166,24 @@ public abstract class GameArea implements Disposable {
    */
   public void checkSuccessfulGrapple(Vector2 raycastEnd) {
     Entity p = findTargetedPlatform(raycastEnd);
+    if (p == null) {
+      return;
+    }
+
     PlatformGrappleComponent grappleComponent = p.getComponent(PlatformGrappleComponent.class);
     int hit = grappleComponent.checkSideHit(p, raycastEnd);
     boolean result = grappleComponent.successfulGrapple(hit);
     player.getEvents().trigger("grappleResponse", result);
+  }
+
+  private void onButtonActivated(String id) {
+    ArrayList<Entity> entities = triggerableEntities.get(id);
+    for (Entity entity : entities) {
+      ActivatableComponent activate = entity.getComponent(ActivatableComponent.class);
+      boolean newActive = !activate.isActive();
+      entity.getEvents().trigger("activatedMapComponent", newActive);
+
+      activate.setActive(newActive);
+    }
   }
 }

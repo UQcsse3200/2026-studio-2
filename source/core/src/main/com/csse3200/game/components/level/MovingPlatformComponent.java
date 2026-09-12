@@ -13,6 +13,7 @@ public class MovingPlatformComponent extends PlatformGrappleComponent {
   private PhysicsMovementComponent movementComponent;
   private PhysicsComponent physicsComponent;
   private ActivatableComponent activatableComponent;
+  private boolean initialised = false;
 
   /**
    * Constructor for a new MovingPlatformComponent
@@ -38,8 +39,6 @@ public class MovingPlatformComponent extends PlatformGrappleComponent {
     activatableComponent = entity.getComponent(ActivatableComponent.class);
 
     boolean active = activatableComponent.isActive();
-    movementComponent.setMoving(active);
-    movementComponent.setTarget(firstTarget);
     this.currentSpeed = active ? maxSpeed : new Vector2();
 
     entity.getEvents().addListener("activatedMapComponent", this::activate);
@@ -51,6 +50,13 @@ public class MovingPlatformComponent extends PlatformGrappleComponent {
    * reaching its first target, its speed is reversed and its target is set to the second target.
    */
   public void update() {
+    if (!initialised) {
+      boolean active = activatableComponent.isActive();
+      movementComponent.setMoving(active);
+      movementComponent.setTarget(firstTarget);
+      initialised = true;
+    }
+
     if (movementComponent.getMoving() && movementComponent.getTarget() != null) {
       Body body = physicsComponent.getBody();
       Vector2 currentPosition = body.getPosition();
@@ -98,7 +104,12 @@ public class MovingPlatformComponent extends PlatformGrappleComponent {
    * @param active whether the moving platform is now active
    */
   private void activate(boolean active) {
-    movementComponent.setMoving(active);
+    movementComponent.setMoving(active); // update internal moving reference
     currentSpeed = active ? maxSpeed : new Vector2();
+
+    if (!active) {
+      Body body = physicsComponent.getBody();
+      body.setLinearVelocity(0f, 0f); // override force the body's velocity to exactly 0
+    }
   }
 }

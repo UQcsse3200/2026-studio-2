@@ -16,7 +16,6 @@ public class WinConditionComponent extends Component {
   }
 
   private void onCollisionStart(Fixture me, Fixture other) {
-    System.out.println("collision start"); // confirms
     ServiceLocator.getGameEndEventHandler().trigger("gameEnd", GameEndState.WIN);
   }
 }

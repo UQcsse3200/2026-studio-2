@@ -7,6 +7,10 @@ import com.csse3200.game.areas.terrain.configs.LevelConfig;
 import com.csse3200.game.areas.terrain.configs.PlatformConfig;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.ObstacleFactory;
+import com.csse3200.game.areas.terrain.configs.TriggerButtonConfig;
+import com.csse3200.game.components.item.weapons.StandardArr;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Level2Config extends LevelConfig {
 
@@ -86,6 +90,11 @@ public class Level2Config extends LevelConfig {
               13,
               0)
         };
+    triggerButtons =
+        new TriggerButtonConfig[] {
+          new TriggerButtonConfig(new GridPoint2(3, 2), "moving-platform-1")
+        };
+    items = new HashMap<>(Map.of(new GridPoint2(2, 4), new StandardArr(99)));
   }
 
   @Override
