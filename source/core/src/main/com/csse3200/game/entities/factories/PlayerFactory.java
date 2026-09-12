@@ -55,10 +55,9 @@ public class PlayerFactory {
     // 8-frame loops (idle/walk/sprint) and a 7-frame hurt: durations are tuned so each cycle takes
     // roughly the same time as the older, higher-frame-count sheets did.
     animator.addAnimation("idle", 0.25f, PlayMode.LOOP);
-    // Cycle lengths are matched to ground speed so the feet don't slide: a 2-step walk cycle
-    // covers ~1.7 units at this sprite size, and the player walks at 5 units/s (sprints at 8.75).
-    animator.addAnimation("walk", 0.045f, PlayMode.LOOP); // 8 frames, ~0.36s cycle
-    animator.addAnimation("sprint", 0.05f, PlayMode.LOOP); // 6 frames, ~0.3s cycle
+    // Paced so each step reads clearly; a little foot-slide at 5 units/s is accepted for that.
+    animator.addAnimation("walk", 0.09f, PlayMode.LOOP); // 8 frames, ~0.72s cycle
+    animator.addAnimation("sprint", 0.07f, PlayMode.LOOP); // 6 frames, ~0.42s cycle
     animator.addAnimation("jump", 0.12f, PlayMode.NORMAL); // 7 frames over the ~0.85s hop
     animator.addAnimation("hurt", 0.12f, PlayMode.NORMAL);
     // Roll art isn't in the atlas yet; register it as soon as a "roll" region exists.
