@@ -1,4 +1,4 @@
-package com.csse3200.game.components.minigames.CyclopsTimingBar;
+package com.csse3200.game.components.minigames.cyclopsMinigame;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;

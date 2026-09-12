@@ -1,4 +1,4 @@
-package com.csse3200.game.components.minigames.CyclopsTimingBar;
+package com.csse3200.game.components.minigames.cyclopsMinigame;
 
 import static org.junit.jupiter.api.Assertions.*;
 

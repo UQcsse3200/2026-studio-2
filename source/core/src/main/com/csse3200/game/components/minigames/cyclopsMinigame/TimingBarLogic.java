@@ -1,4 +1,4 @@
-package com.csse3200.game.components.minigames.CyclopsTimingBar;
+package com.csse3200.game.components.minigames.cyclopsMinigame;
 
 /**
  * Mathematical state of the components in the timing bar. Keeps track of size and location of

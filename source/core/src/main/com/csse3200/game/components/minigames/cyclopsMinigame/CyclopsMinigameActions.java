@@ -1,4 +1,4 @@
-package com.csse3200.game.components.minigames.CyclopsTimingBar;
+package com.csse3200.game.components.minigames.cyclopsMinigame;
 
 import com.csse3200.game.GdxGame;
 import com.csse3200.game.components.Component;
