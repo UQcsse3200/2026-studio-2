@@ -48,8 +48,8 @@ public class InstructionOverlay extends UIComponent {
   private static final float ITEM_IMAGE_SIZE = 140f;
 
   /**
-   * One line of Calypso's dialogue, with an optional sound clip, an optional item image shown
-   * above the text (e.g. something just found), and a callback for when it is dismissed.
+   * One line of Calypso's dialogue, with an optional sound clip, an optional item image shown above
+   * the text (e.g. something just found), and a callback for when it is dismissed.
    */
   public static final class Line {
     final String text;
@@ -113,12 +113,11 @@ public class InstructionOverlay extends UIComponent {
         ServiceLocator.getResourceService().getAsset(SCROLL_TEXTURE, Texture.class);
     scroll = new Table();
     scroll.setBackground(new TextureRegionDrawable(scrollTexture));
-    scroll
-        .pad(
-            scrollHeight * PARCHMENT_INSET_TOP,
-            scrollWidth * PARCHMENT_INSET_X,
-            scrollHeight * PARCHMENT_INSET_BOTTOM,
-            scrollWidth * PARCHMENT_INSET_X);
+    scroll.pad(
+        scrollHeight * PARCHMENT_INSET_TOP,
+        scrollWidth * PARCHMENT_INSET_X,
+        scrollHeight * PARCHMENT_INSET_BOTTOM,
+        scrollWidth * PARCHMENT_INSET_X);
 
     Label nameLabel = new Label(SPEAKER_NAME, skin, "large");
     nameLabel.setColor(NAME_COLOR);

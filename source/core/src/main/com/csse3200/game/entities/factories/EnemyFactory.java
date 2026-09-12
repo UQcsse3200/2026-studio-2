@@ -1,9 +1,12 @@
 package com.csse3200.game.entities.factories;
 
+import com.badlogic.gdx.graphics.g2d.Animation.PlayMode;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.ai.tasks.AITaskComponent;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.EnemyDeathComponent;
+import com.csse3200.game.components.npc.CrabAnimationController;
 import com.csse3200.game.components.tasks.ChaseTask;
 import com.csse3200.game.components.tasks.DelayedAttackTask;
 import com.csse3200.game.components.tasks.RangedAttackTask;
@@ -18,7 +21,9 @@ import com.csse3200.game.physics.components.ColliderComponent;
 import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.physics.components.PhysicsMovementComponent;
+import com.csse3200.game.rendering.AnimationRenderComponent;
 import com.csse3200.game.rendering.TextureRenderComponent;
+import com.csse3200.game.services.ServiceLocator;
 
 /**
  * Factory to create enemy entities.
@@ -67,6 +72,37 @@ public class EnemyFactory {
     SkeletonArcher.getComponent(TextureRenderComponent.class).scaleEntity();
 
     return SkeletonArcher;
+  }
+
+  /**
+   * Creates a small melee crab that scuttles, chases and claws at the target — a low-stakes first
+   * combat encounter.
+   *
+   * @param target entity the crab will chase and attack
+   * @return crab entity
+   */
+  public static Entity createCrab(Entity target) {
+    EnemyConfig config = configs.crab;
+    Entity crab = createEnemy(target, config);
+
+    AnimationRenderComponent animator =
+        new AnimationRenderComponent(
+            ServiceLocator.getResourceService().getAsset("images/crab.atlas", TextureAtlas.class));
+    animator.addAnimation("walk", 0.12f, PlayMode.LOOP);
+    animator.addAnimation("attack", 0.08f, PlayMode.NORMAL);
+
+    crab.addComponent(animator).addComponent(new CrabAnimationController());
+
+    crab.getComponent(AITaskComponent.class)
+        .addTask(new DelayedAttackTask(target, 20, config.attackRange, 0.8f));
+
+    crab.getComponent(AnimationRenderComponent.class).scaleEntity();
+    // The art is a low, wide crab; a taller/narrower default collider (from createEnemy) would
+    // leave most of the shell outside its own hitbox.
+    PhysicsUtils.setScaledCollider(crab, 0.8f, 0.55f);
+    animator.startAnimation("walk");
+
+    return crab;
   }
 
   /**

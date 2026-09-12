@@ -29,5 +29,21 @@
     "chasePriority": 10,
     "viewDistance": 10.0,
     "maxChaseDistance": 12.5
+  },
+
+  "crab": {
+    "health": 8,
+    "baseAttack": 1,
+    "speed": 2.0,
+    "behaviour": "chase",
+    "attackType": "melee",
+    "attackRange": 1.0,
+
+    "wanderRangeX": 2.0,
+    "wanderRangeY": 0.0,
+    "wanderWaitTime": 1.5,
+    "chasePriority": 10,
+    "viewDistance": 4.0,
+    "maxChaseDistance": 5.0
   }
 }

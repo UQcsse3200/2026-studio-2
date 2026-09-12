@@ -1,0 +1,80 @@
+crab_walking_frames.png
+size: 593, 111
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+default
+  rotate: false
+  xy: 0, 1
+  size: 146, 110
+  orig: 146, 110
+  offset: 0, 0
+  index: -1
+walk
+  rotate: false
+  xy: 0, 1
+  size: 146, 110
+  orig: 146, 110
+  offset: 0, 0
+  index: 0
+walk
+  rotate: false
+  xy: 146, 5
+  size: 146, 106
+  orig: 146, 106
+  offset: 0, 0
+  index: 1
+walk
+  rotate: false
+  xy: 292, 0
+  size: 153, 111
+  orig: 153, 111
+  offset: 0, 0
+  index: 2
+walk
+  rotate: false
+  xy: 445, 0
+  size: 148, 111
+  orig: 148, 111
+  offset: 0, 0
+  index: 3
+crab_attack_frames.png
+size: 624, 91
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+attack
+  rotate: false
+  xy: 0, 15
+  size: 105, 76
+  orig: 105, 76
+  offset: 0, 0
+  index: 0
+attack
+  rotate: false
+  xy: 105, 7
+  size: 117, 84
+  orig: 117, 84
+  offset: 0, 0
+  index: 1
+attack
+  rotate: false
+  xy: 222, 17
+  size: 137, 74
+  orig: 137, 74
+  offset: 0, 0
+  index: 2
+attack
+  rotate: false
+  xy: 359, 0
+  size: 149, 91
+  orig: 149, 91
+  offset: 0, 0
+  index: 3
+attack
+  rotate: false
+  xy: 508, 15
+  size: 116, 76
+  orig: 116, 76
+  offset: 0, 0
+  index: 4

@@ -20,6 +20,7 @@ import com.csse3200.game.components.player.FallDeathComponent;
 import com.csse3200.game.components.player.KeyboardPlayerInputComponent;
 import com.csse3200.game.components.player.WakeUpCinematicDisplay;
 import com.csse3200.game.entities.Entity;
+import com.csse3200.game.entities.factories.EnemyFactory;
 import com.csse3200.game.entities.factories.ItemFactory;
 import com.csse3200.game.entities.factories.ObstacleFactory;
 import com.csse3200.game.entities.factories.PlayerFactory;
@@ -36,9 +37,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * A short, narrative-driven intro level: Odysseus wakes up on a beach, is taught the controls,
- * then crosses a few platform gaps (falling is instant death) before handing off into the
- * existing {@link TutorialGameArea}.
+ * A short, narrative-driven intro level: Odysseus wakes up on a beach, is taught the controls, then
+ * crosses a few platform gaps (falling is instant death) before handing off into the existing
+ * {@link TutorialGameArea}.
  */
 public class IntroTutorialGameArea extends GameArea {
   private static final Logger logger = LoggerFactory.getLogger(IntroTutorialGameArea.class);
@@ -58,7 +59,7 @@ public class IntroTutorialGameArea extends GameArea {
   private static final String ARROW_TEXTURE = "images/arrow.png";
   private static final int BOW_ARROW_QUANTITY = 5;
   private static final float CHEST_HEIGHT = 0.9f;
-  private static final String SPIKE_TEXTURE = "images/spike.png";
+  private static final String SPIKE_TEXTURE = "images/beach_spike.png";
 
   // Uniform-grid frame sheets generated from the hand-drawn player_sleeping.png /
   // player_wakeup.png art (whose poses are packed freeform and can't be sliced evenly).
@@ -92,16 +93,17 @@ public class IntroTutorialGameArea extends GameArea {
   private static final GridPoint2 PLAYER_SPAWN = new GridPoint2(2, 3);
 
   // Level flow, left to right: start floor -> two jump gaps -> timed moving platform -> landing
-  // floor with a spike strip to roll across -> two more jump gaps -> end floor with the wreck.
-  private static final GridPoint2[] SPIKE_POSITIONS = {
-    new GridPoint2(34, 3), new GridPoint2(35, 3), new GridPoint2(36, 3)
-  };
+  // floor with an overhead spike platform to roll under -> two more jump gaps -> end floor with the
+  // wreck.
+  private static final GridPoint2 SPIKE_PLATFORM_POSITION = new GridPoint2(34, 4);
 
   // The wreck Odysseus washed up from dominates the end floor, with a small chest holding his bow
   // in front of it.
   private static final GridPoint2 SHIPWRECK_POSITION = new GridPoint2(52, 3);
   private static final Vector2 SHIPWRECK_SIZE = new Vector2(8f, 8f * 1024f / 1536f); // 3:2 art
   private static final GridPoint2 CHEST_POSITION = new GridPoint2(59, 3);
+  // A single crab guards the wreck — a low-stakes first target once the bow is found.
+  private static final GridPoint2 CRAB_POSITION = new GridPoint2(55, 3);
   private static final GridPoint2 JUMP_INSTRUCTION_ZONE = new GridPoint2(10, 0);
   private static final GridPoint2 ROLL_INSTRUCTION_ZONE = new GridPoint2(32, 0);
   private static final GridPoint2 WRECK_INSTRUCTION_ZONE = new GridPoint2(50, 0);
@@ -109,7 +111,8 @@ public class IntroTutorialGameArea extends GameArea {
 
   private static final PlatformConfig[] groundFloors = {
     new PlatformConfig(new GridPoint2(0, 0), 12, 3, 0), // start floor
-    new PlatformConfig(new GridPoint2(30, 0), 10, 3, 0), // landing floor (spike strip on top)
+    new PlatformConfig(
+        new GridPoint2(30, 0), 10, 3, 0), // landing floor (roll beneath the spike platform)
     new PlatformConfig(new GridPoint2(50, 0), 12, 3, 0), // end floor (wreck + chest)
   };
 
@@ -141,7 +144,7 @@ public class IntroTutorialGameArea extends GameArea {
   private static final String MOVE_INSTRUCTIONS_TEXT = "Press A to move left, D to move right.";
   private static final String JUMP_INSTRUCTIONS_TEXT = "Press SPACE to jump.";
   private static final String ROLL_INSTRUCTIONS_TEXT =
-      "Spikes ahead! Press S to roll. You can't be hurt while rolling, so roll across them.";
+      "Press S to roll under the platform. Touching the spikes underneath hurts you!";
   private static final String WRECK_TEXT =
       "The wreck of your ship... a chest lies half-buried in the sand beside it. Walk up to it"
           + " and press E to open it.";
@@ -166,7 +169,7 @@ public class IntroTutorialGameArea extends GameArea {
     "images/transparent.png"
   };
 
-  private static final String[] introTextureAtlases = {"images/player.atlas"};
+  private static final String[] introTextureAtlases = {"images/player.atlas", "images/crab.atlas"};
 
   private static final String[] introSounds = {WAKEUP_SOUND, ATTACK_SOUND};
   private static final String[] optionalSounds = {ITEM_FOUND_SOUND};
@@ -216,6 +219,7 @@ public class IntroTutorialGameArea extends GameArea {
 
     // Built now so its scale is known, but only spawned into the world once Odysseus stands up.
     player = createPlayer();
+    spawnCrab();
     spawnWakeUpCinematic();
 
     spawnInstructionZone(JUMP_INSTRUCTION_ZONE, JUMP_INSTRUCTIONS_TEXT);
@@ -362,6 +366,12 @@ public class IntroTutorialGameArea extends GameArea {
     spawnEntityAt(chest, CHEST_POSITION, true, false);
   }
 
+  /** A single crab wanders near the wreck, giving the player something to try the new bow on. */
+  private void spawnCrab() {
+    Entity crab = EnemyFactory.createCrab(player);
+    spawnEntityAt(crab, CRAB_POSITION, true, true);
+  }
+
   private void onItemPickedUp(Item item) {
     if (bowFound || item == null || item.getItemType() != ItemType.ARROW) {
       return;
@@ -428,12 +438,13 @@ public class IntroTutorialGameArea extends GameArea {
   }
 
   private void spawnSpikes() {
-    for (GridPoint2 position : SPIKE_POSITIONS) {
-      spawnEntityAt(ObstacleFactory.createSpike(), position, true, true);
-    }
+    spawnEntityAt(
+        ObstacleFactory.createBeachSpikePlatform(), SPIKE_PLATFORM_POSITION, false, false);
   }
 
-  /** A full-height, one-tile-wide zone that shows an instruction the first time the player enters. */
+  /**
+   * A full-height, one-tile-wide zone that shows an instruction the first time the player enters.
+   */
   private void spawnInstructionZone(GridPoint2 position, String text) {
     Entity zone = ObstacleFactory.createTriggerZone(new Vector2(1f, LEVEL_HEIGHT_TILES));
     zone.addComponent(new EnterZoneTriggerComponent(() -> instructionOverlay.show(text)));

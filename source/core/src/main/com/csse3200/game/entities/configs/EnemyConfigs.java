@@ -5,4 +5,5 @@ public class EnemyConfigs {
   // public ShooterConfig shooter = new ShooterConfig();
   public SkeletonWarriorConfig skeletonWarrior = new SkeletonWarriorConfig();
   public SkeletonArcherConfig skeletonArcher = new SkeletonArcherConfig();
+  public CrabConfig crab = new CrabConfig();
 }
