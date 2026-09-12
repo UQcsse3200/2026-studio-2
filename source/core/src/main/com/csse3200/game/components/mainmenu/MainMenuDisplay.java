@@ -3,17 +3,20 @@ package com.csse3200.game.components.mainmenu;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.csse3200.game.components.ButtonSound;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.UIComponent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/** A ui component for displaying the Main menu. */
 public class MainMenuDisplay extends UIComponent {
   private static final Logger logger = LoggerFactory.getLogger(MainMenuDisplay.class);
   private static final float Z_INDEX = 2f;
@@ -31,91 +34,187 @@ public class MainMenuDisplay extends UIComponent {
     float screenWidth = Gdx.graphics.getWidth();
     float screenHeight = Gdx.graphics.getHeight();
     float pad = screenHeight * 0.02f;
-    // Background image generated using Google Gemini for sprint 1
     Image background =
         new Image(
-            ServiceLocator.getResourceService().getAsset("images/main_menu_bg.jpg", Texture.class));
-    background.setFillParent(true);
+            ServiceLocator.getResourceService().getAsset("images/main_menu_bg.png", Texture.class));
+
+    // Oversized slightly so the shake below never reveals an edge/gap.
+    float overscan = 1.03f;
+    float bgWidth = screenWidth * overscan;
+    float bgHeight = screenHeight * overscan;
+    background.setSize(bgWidth, bgHeight);
+    background.setPosition(-(bgWidth - screenWidth) / 2f, -(bgHeight - screenHeight) / 2f);
     stage.addActor(background);
 
-    // title made in Canva
+    // Subtle continuous shake so the background feels a bit alive.
+    float shakeAmount = 3f;
+    float shakeDuration = 0.12f;
+    background.addAction(
+        Actions.forever(
+            Actions.sequence(
+                Actions.moveBy(shakeAmount, 0f, shakeDuration, Interpolation.sine),
+                Actions.moveBy(-shakeAmount, shakeAmount, shakeDuration, Interpolation.sine),
+                Actions.moveBy(-shakeAmount, -shakeAmount, shakeDuration, Interpolation.sine),
+                Actions.moveBy(shakeAmount, 0f, shakeDuration, Interpolation.sine))));
+
     Image title =
         new Image(
             ServiceLocator.getResourceService()
                 .getAsset("images/title_odysseus_logo.png", Texture.class));
 
-    TextButton PlayBtn = new TextButton("Play", skin);
-    TextButton ContinueBtn = new TextButton("Continue", skin);
-    TextButton MinigamesBtn = new TextButton("Minigames", skin);
-    TextButton SettingsBtn = new TextButton("Settings", skin);
-    TextButton ExitBtn = new TextButton("Quit", skin);
+    Texture playUpTexture =
+        ServiceLocator.getResourceService()
+            .getAsset("images/Buttons/play_up_btn.png", Texture.class);
+    Texture playDownTexture =
+        ServiceLocator.getResourceService()
+            .getAsset("images/Buttons/play_down_button.png", Texture.class);
+
+    ImageButton.ImageButtonStyle playButtonStyle = new ImageButton.ImageButtonStyle();
+    playButtonStyle.up = new TextureRegionDrawable(playUpTexture);
+    playButtonStyle.down = new TextureRegionDrawable(playDownTexture);
+
+    ImageButton playButton = new ImageButton(playButtonStyle);
+
+    Texture continueUpTexture =
+        ServiceLocator.getResourceService()
+            .getAsset("images/Buttons/continue_up_btn.png", Texture.class);
+    Texture continueDownTexture =
+        ServiceLocator.getResourceService()
+            .getAsset("images/Buttons/continue_down_btn.png", Texture.class);
+
+    ImageButton.ImageButtonStyle continueButtonStyle = new ImageButton.ImageButtonStyle();
+    continueButtonStyle.up = new TextureRegionDrawable(continueUpTexture);
+    continueButtonStyle.down = new TextureRegionDrawable(continueDownTexture);
+
+    ImageButton continueButton = new ImageButton(continueButtonStyle);
+
+    Texture minigamesUpTexture =
+        ServiceLocator.getResourceService()
+            .getAsset("images/Buttons/minigames_up_btn.png", Texture.class);
+    Texture minigamesDownTexture =
+        ServiceLocator.getResourceService()
+            .getAsset("images/Buttons/minigames_down_btn.png", Texture.class);
+
+    ImageButton.ImageButtonStyle minigamesButtonStyle = new ImageButton.ImageButtonStyle();
+    minigamesButtonStyle.up = new TextureRegionDrawable(minigamesUpTexture);
+    minigamesButtonStyle.down = new TextureRegionDrawable(minigamesDownTexture);
+
+    ImageButton minigamesButton = new ImageButton(minigamesButtonStyle);
+
+    Texture settingsUpTexture =
+        ServiceLocator.getResourceService()
+            .getAsset("images/Buttons/settings_up_btn.png", Texture.class);
+    Texture settingsDownTexture =
+        ServiceLocator.getResourceService()
+            .getAsset("images/Buttons/settings_down_btn.png", Texture.class);
+
+    ImageButton.ImageButtonStyle settingsButtonStyle = new ImageButton.ImageButtonStyle();
+    settingsButtonStyle.up = new TextureRegionDrawable(settingsUpTexture);
+    settingsButtonStyle.down = new TextureRegionDrawable(settingsDownTexture);
+
+    ImageButton settingsButton = new ImageButton(settingsButtonStyle);
+
+    Texture quitUpTexture =
+        ServiceLocator.getResourceService()
+            .getAsset("images/Buttons/quit_up_btn.png", Texture.class);
+    Texture quitDownTexture =
+        ServiceLocator.getResourceService()
+            .getAsset("images/Buttons/quit_down_btn.png", Texture.class);
+
+    ImageButton.ImageButtonStyle exitButtonStyle = new ImageButton.ImageButtonStyle();
+    exitButtonStyle.up = new TextureRegionDrawable(quitUpTexture);
+    exitButtonStyle.down = new TextureRegionDrawable(quitDownTexture);
+
+    ImageButton exitButton = new ImageButton(exitButtonStyle);
 
     // Triggers an event when the button is pressed
-    PlayBtn.addListener(
+    // ImageButton automatically swaps to the "down" drawable while pressed and back to "up" on
+    // release, so no manual setDrawable(...) call is needed here.
+    playButton.addListener(
         new ChangeListener() {
           @Override
           public void changed(ChangeEvent changeEvent, Actor actor) {
             logger.debug("Play button clicked");
-            entity.getEvents().trigger("Play");
+            ButtonSound.playClickThen(() -> entity.getEvents().trigger("Play"));
           }
         });
 
-    ContinueBtn.addListener(
+    continueButton.addListener(
         new ChangeListener() {
           @Override
           public void changed(ChangeEvent changeEvent, Actor actor) {
             logger.debug("Continue button clicked");
-            entity.getEvents().trigger("Continue");
+            ButtonSound.playClickThen(() -> entity.getEvents().trigger("Continue"));
           }
         });
 
-    MinigamesBtn.addListener(
+    minigamesButton.addListener(
         new ChangeListener() {
           @Override
           public void changed(ChangeEvent changeEvent, Actor actor) {
             logger.debug("Minigames button clicked");
-            entity.getEvents().trigger("Minigames");
+            ButtonSound.playClickThen(() -> entity.getEvents().trigger("Minigames"));
           }
         });
 
-    SettingsBtn.addListener(
+    settingsButton.addListener(
         new ChangeListener() {
           @Override
           public void changed(ChangeEvent changeEvent, Actor actor) {
             logger.debug("Settings button clicked");
-            entity.getEvents().trigger("Settings");
+            ButtonSound.playClickThen(() -> entity.getEvents().trigger("Settings"));
           }
         });
 
-    ExitBtn.addListener(
+    exitButton.addListener(
         new ChangeListener() {
           @Override
           public void changed(ChangeEvent changeEvent, Actor actor) {
-
             logger.debug("Exit button clicked");
-            entity.getEvents().trigger("Exit");
+            ButtonSound.playClickThen(() -> entity.getEvents().trigger("Exit"));
           }
         });
 
-    table.add(title).width(screenWidth * 0.5f).height(screenHeight * 0.3f).padBottom(pad);
+    float buttonWidth = screenWidth * 0.12f;
+    float buttonHeight = screenHeight * 0.06f;
+
+    // Left column: Play, Continue.
+    Table leftColumn = new Table();
+    leftColumn.add(playButton).width(buttonWidth).height(buttonHeight);
+    leftColumn.row();
+    leftColumn.add(continueButton).width(buttonWidth).height(buttonHeight).padTop(pad);
+
+    // Right column: Minigames, Exit.
+    Table rightColumn = new Table();
+    rightColumn.add(minigamesButton).width(buttonWidth).height(buttonHeight);
+    rightColumn.row();
+    rightColumn.add(exitButton).width(buttonWidth).height(buttonHeight).padTop(pad);
+
+    // Left and right columns sit together as one centered pair, with a fixed gap between them
+    // instead of being pushed out to the screen edges.
+    Table columnPair = new Table();
+    columnPair.add(leftColumn).padRight(screenWidth * 0.05f);
+    columnPair.add(rightColumn).padLeft(screenWidth * 0.05f);
+
+    table.add().expandY(); // pushes the logo down from the very top, as far as it can go
     table.row();
-    table.add(PlayBtn);
+    table.add(title).width(screenWidth * 0.3f).height(screenHeight * 0.18f).padBottom(pad);
     table.row();
-    table.add(ContinueBtn).padTop(pad);
+    table.add(columnPair).center().padTop(screenHeight * 0.02f);
     table.row();
-    table.add(MinigamesBtn).padTop(pad);
-    table.row();
-    table.add(SettingsBtn).padTop(pad);
-    table.row();
-    table.add(ExitBtn).padTop(pad);
+    table
+        .add(settingsButton)
+        .center()
+        .width(buttonWidth)
+        .height(buttonHeight)
+        .padTop(screenHeight * 0.05f)
+        .padBottom(screenHeight * 0.06f);
 
     stage.addActor(table);
   }
 
   @Override
-  public void draw(SpriteBatch batch) {
-    // draw is handled by the stage
-  }
+  public void draw(SpriteBatch batch) {}
 
   @Override
   public float getZIndex() {

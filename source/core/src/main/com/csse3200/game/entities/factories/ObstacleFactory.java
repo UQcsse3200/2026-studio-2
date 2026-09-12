@@ -44,9 +44,30 @@ public class ObstacleFactory {
   }
 
   public static Entity createPlatform(int grappleSides) {
+    return createPlatform(grappleSides, false);
+  }
+
+  /**
+   * Creates a platform entity.
+   *
+   * @param grappleSides sides the platform can be grappled from
+   * @param tall use the tall platform art instead of stretching the default wide plank onto a
+   *     tall/square shape
+   * @return platform entity
+   */
+  public static Entity createPlatform(int grappleSides, boolean tall) {
+    String texturePath;
+    if (tall) {
+      texturePath = "images/tall_platform.png";
+    } else if (grappleSides != 0) {
+      texturePath = "images/hook_platform.png";
+    } else {
+      texturePath = "images/platform.png";
+    }
+
     Entity platform =
         new Entity()
-            .addComponent(new TextureRenderComponent("images/platform.png"))
+            .addComponent(new TextureRenderComponent(texturePath))
             .addComponent(new PhysicsComponent())
             .addComponent(new ColliderComponent().setLayer(PhysicsLayer.GROUND))
             .addComponent(new PlatformGrappleComponent(grappleSides));

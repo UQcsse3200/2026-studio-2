@@ -12,8 +12,10 @@ public class GrappleArrowComponent extends Component {
   /** The grapple only sticks to solid terrain - not enemies, boundary walls, or trigger zones. */
   private static final short GRAPPLE_TARGETS = PhysicsLayer.SOLID; // GROUND | OBSTACLE
 
-  /** The arrow must get this far from the shooter before it can hook, so it doesn't grab the
-   * platform the player is standing on the instant it spawns. */
+  /**
+   * The arrow must get this far from the shooter before it can hook, so it doesn't grab the
+   * platform the player is standing on the instant it spawns.
+   */
   private static final float MIN_TRAVEL = 1.2f;
 
   private final Entity shooter;

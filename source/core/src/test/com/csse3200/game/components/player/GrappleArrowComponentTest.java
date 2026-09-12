@@ -32,7 +32,9 @@ class GrappleArrowComponentTest {
     return fixture;
   }
 
-  /** An arrow already well clear of the shooter, so the "just left the player" guard is satisfied. */
+  /**
+   * An arrow already well clear of the shooter, so the "just left the player" guard is satisfied.
+   */
   private Entity arrowFiredBy(Entity shooter) {
     Entity arrow = new Entity().addComponent(new GrappleArrowComponent(shooter));
     arrow.setPosition(6f, 0f);
@@ -71,10 +73,7 @@ class GrappleArrowComponentTest {
 
     for (short layer :
         new short[] {
-          PhysicsLayer.PLAYER,
-          PhysicsLayer.PLAYER_PROJECTILE,
-          PhysicsLayer.WALL,
-          PhysicsLayer.NPC
+          PhysicsLayer.PLAYER, PhysicsLayer.PLAYER_PROJECTILE, PhysicsLayer.WALL, PhysicsLayer.NPC
         }) {
       arrow.getEvents().trigger("collisionStart", mock(Fixture.class), fixtureOnLayer(layer));
     }
@@ -123,7 +122,8 @@ class GrappleArrowComponentTest {
   @Test
   void shouldNotAttachIfButtonWasReleasedBeforeLanding() {
     GrappleComponent grapple = spy(new GrappleComponent());
-    Entity shooter = new Entity().addComponent(grapple).addComponent(new KeyboardPlayerInputComponent());
+    Entity shooter =
+        new Entity().addComponent(grapple).addComponent(new KeyboardPlayerInputComponent());
     // Right click was never held down (or was already released), so isRightMouseHeld() is false
     Entity arrow = arrowFiredBy(shooter);
 

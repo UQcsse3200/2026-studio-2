@@ -14,7 +14,7 @@ import com.csse3200.game.rendering.TextureRenderComponent;
 
 /** Factory to create item entities that sit in the world for the player to find or pick up. */
 public class ItemFactory {
-  private static final float ITEM_HEIGHT = 0.5f;
+  private static final float ITEM_HEIGHT = 0.85f;
 
   /**
    * Creates a world entity for an item using the texture from its {@code ItemType}.
