@@ -1,5 +1,7 @@
 package com.csse3200.game.entities.factories;
 
+import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.csse3200.game.components.CombatStatsComponent;
@@ -12,8 +14,10 @@ import com.csse3200.game.physics.components.ColliderComponent;
 import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.physics.components.PhysicsMovementComponent;
+import com.csse3200.game.rendering.AnimationRenderComponent;
 import com.csse3200.game.rendering.TextureRenderComponent;
 import com.csse3200.game.rendering.TiledRenderComponent;
+import com.csse3200.game.services.ServiceLocator;
 
 /**
  * Factory to create obstacle entities.
@@ -73,7 +77,6 @@ public class ObstacleFactory {
             .addComponent(new PlatformGrappleComponent(grappleSides))
             .addComponent(new ActivatableComponent(activateId));
 
-    physicsComponent.getBody().setGravityScale(0f);
     physicsComponent.setBodyType(BodyType.KinematicBody);
     colliderComponent.setFriction(1.5f);
     return movingPlatform;
@@ -91,6 +94,28 @@ public class ObstacleFactory {
     platform.setEnabled(false);
 
     return platform;
+  }
+
+  public static Entity createButton(String activationId) {
+    AnimationRenderComponent animator =
+        new AnimationRenderComponent(
+            ServiceLocator.getResourceService()
+                .getAsset("images/in_level_button.atlas", TextureAtlas.class));
+    animator.addAnimation("default", 1f, Animation.PlayMode.LOOP);
+    animator.addAnimation("pressed", 0.15f, Animation.PlayMode.NORMAL);
+    animator.startAnimation("default");
+
+    Entity button =
+        new Entity()
+            .addComponent(animator)
+            .addComponent(new PhysicsComponent())
+            .addComponent(new HitboxComponent().setLayer(PhysicsLayer.NPC))
+            .addComponent(new ActivatableComponent(activationId))
+            .addComponent(new TriggerButtonComponent());
+
+    button.getComponent(PhysicsComponent.class).setBodyType(BodyType.StaticBody);
+
+    return button;
   }
 
   public static Entity createWinConEntity() {
