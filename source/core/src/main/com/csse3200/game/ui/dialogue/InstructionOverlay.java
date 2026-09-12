@@ -40,11 +40,11 @@ public class InstructionOverlay extends UIComponent {
 
   // The scroll art is 3:2; the parchment is inset from the rollers/edges by these fractions.
   private static final float SCROLL_ASPECT = 1536f / 1024f;
-  private static final float SCROLL_SCREEN_WIDTH_FRACTION = 0.5f;
+  private static final float SCROLL_SCREEN_WIDTH_FRACTION = 0.36f;
   private static final float PARCHMENT_INSET_X = 0.15f;
   private static final float PARCHMENT_INSET_TOP = 0.18f;
   private static final float PARCHMENT_INSET_BOTTOM = 0.16f;
-  private static final float SPEAKER_SCREEN_HEIGHT_FRACTION = 0.55f;
+  private static final float SPEAKER_SCREEN_HEIGHT_FRACTION = 0.45f;
   private static final float ITEM_IMAGE_SIZE = 140f;
 
   /**
@@ -137,7 +137,7 @@ public class InstructionOverlay extends UIComponent {
     imageCell = scroll.add(image).size(0f).padTop(4f);
     scroll.row();
     scroll.add(messageLabel).fillX().expandX().expandY().padTop(6f).row();
-    scroll.add(continueButton).width(160f).height(56f).padTop(6f).row();
+    scroll.add(continueButton).width(230f).height(80f).padTop(6f).row();
 
     Texture speakerTexture =
         ServiceLocator.getResourceService().getAsset(SPEAKER_TEXTURE, Texture.class);

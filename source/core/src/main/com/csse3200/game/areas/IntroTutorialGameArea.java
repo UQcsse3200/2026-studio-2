@@ -99,33 +99,35 @@ public class IntroTutorialGameArea extends GameArea {
 
   // The wreck Odysseus washed up from dominates the end floor, with a small chest holding his bow
   // in front of it.
-  private static final GridPoint2 SHIPWRECK_POSITION = new GridPoint2(53, 3);
+  private static final GridPoint2 SHIPWRECK_POSITION = new GridPoint2(52, 3);
   private static final Vector2 SHIPWRECK_SIZE = new Vector2(8f, 8f * 1024f / 1536f); // 3:2 art
-  private static final GridPoint2 CHEST_POSITION = new GridPoint2(60, 3);
+  private static final GridPoint2 CHEST_POSITION = new GridPoint2(59, 3);
   private static final GridPoint2 JUMP_INSTRUCTION_ZONE = new GridPoint2(10, 0);
   private static final GridPoint2 ROLL_INSTRUCTION_ZONE = new GridPoint2(32, 0);
-  private static final GridPoint2 WRECK_INSTRUCTION_ZONE = new GridPoint2(52, 0);
+  private static final GridPoint2 WRECK_INSTRUCTION_ZONE = new GridPoint2(50, 0);
   private static final GridPoint2 EXIT_ZONE = new GridPoint2(61, 0);
 
   private static final PlatformConfig[] groundFloors = {
     new PlatformConfig(new GridPoint2(0, 0), 12, 3, 0), // start floor
     new PlatformConfig(new GridPoint2(30, 0), 10, 3, 0), // landing floor (spike strip on top)
-    new PlatformConfig(new GridPoint2(52, 0), 10, 3, 0), // end floor (wreck + chest)
+    new PlatformConfig(new GridPoint2(50, 0), 12, 3, 0), // end floor (wreck + chest)
   };
 
-  // Every gap is 2 tiles wide — a comfortable jump for the player's jump distance.
+  // Small 2x0.75 platforms; every gap is 2 tiles wide — a comfortable jump.
+  private static final int JUMP_PLATFORM_WIDTH = 2;
+  private static final float JUMP_PLATFORM_HEIGHT = 0.75f;
   private static final PlatformConfig[] jumpPlatforms = {
-    new PlatformConfig(new GridPoint2(14, 3), 3, 1, 0), // platform after gap 1
-    new PlatformConfig(new GridPoint2(19, 3), 3, 1, 0), // platform after gap 2
-    new PlatformConfig(new GridPoint2(42, 3), 3, 1, 0), // platform after the spikes
-    new PlatformConfig(new GridPoint2(47, 3), 3, 1, 0), // last platform before the end floor
+    new PlatformConfig(new GridPoint2(14, 3), JUMP_PLATFORM_WIDTH, 1, 0), // after gap 1
+    new PlatformConfig(new GridPoint2(18, 3), JUMP_PLATFORM_WIDTH, 1, 0), // after gap 2
+    new PlatformConfig(new GridPoint2(42, 3), JUMP_PLATFORM_WIDTH, 1, 0), // after the spikes
+    new PlatformConfig(new GridPoint2(46, 3), JUMP_PLATFORM_WIDTH, 1, 0), // last before the end
   };
 
-  // A moving platform shuttles across the final gap, which is too wide to jump directly (platform
-  // 2 ends at x=22, the end floor starts at x=30), so the player has to wait for it and time the
-  // hop on and off. At each end of its run it sits 1 tile from the nearest ledge.
-  private static final Vector2 MOVING_PLATFORM_START = new Vector2(23f, 3f);
-  private static final Vector2 MOVING_PLATFORM_END = new Vector2(27f, 3f);
+  // A moving platform shuttles across the gap between platform 2 (ends at x=20) and the landing
+  // floor (starts at x=30), which is too wide to jump directly, so the player has to wait for it
+  // and time the hop on and off. At each end of its run it sits 2 tiles from the nearest ledge.
+  private static final Vector2 MOVING_PLATFORM_START = new Vector2(22f, 3f);
+  private static final Vector2 MOVING_PLATFORM_END = new Vector2(26f, 3f);
   private static final Vector2 MOVING_PLATFORM_SPEED = new Vector2(2.5f, 0f);
   private static final int MOVING_PLATFORM_WIDTH = 2;
 
@@ -290,7 +292,7 @@ public class IntroTutorialGameArea extends GameArea {
   private void spawnJumpPlatforms() {
     for (PlatformConfig config : jumpPlatforms) {
       Entity platform = ObstacleFactory.createPlatform(config.grappleSides, JUMP_PLATFORM_TEXTURE);
-      platform.setScale(config.width, config.height);
+      platform.setScale(config.width, JUMP_PLATFORM_HEIGHT);
       fitColliderToSand(platform);
       spawnEntityAt(platform, config.position, false, false);
     }

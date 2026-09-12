@@ -55,15 +55,16 @@ public class PlayerFactory {
     // 8-frame loops (idle/walk/sprint) and a 7-frame hurt: durations are tuned so each cycle takes
     // roughly the same time as the older, higher-frame-count sheets did.
     animator.addAnimation("idle", 0.25f, PlayMode.LOOP);
-    animator.addAnimation("walk", 0.16f, PlayMode.LOOP);
-    animator.addAnimation("sprint", 0.12f, PlayMode.LOOP);
-    animator.addAnimation("jump", 0.05f, PlayMode.NORMAL);
+    animator.addAnimation("walk", 0.07f, PlayMode.LOOP); // 19-frame cycle
+    animator.addAnimation("sprint", 0.05f, PlayMode.LOOP); // 19-frame cycle
+    animator.addAnimation("jump", 0.12f, PlayMode.NORMAL); // 7 frames over the ~0.85s hop
     animator.addAnimation("hurt", 0.12f, PlayMode.NORMAL);
     // Roll art isn't in the atlas yet; register it as soon as a "roll" region exists.
     TextureAtlas playerAtlas =
         ServiceLocator.getResourceService().getAsset("images/player.atlas", TextureAtlas.class);
     if (playerAtlas.findRegions("roll").size > 0) {
-      animator.addAnimation("roll", 0.06f, PlayMode.NORMAL);
+      // 12 frames spread over the ~0.5s roll in PlayerActions.
+      animator.addAnimation("roll", 0.04f, PlayMode.NORMAL);
     }
 
     Entity player =
@@ -95,7 +96,7 @@ public class PlayerFactory {
     PhysicsUtils.setScaledCollider(player, 0.6f, 0.3f);
     player.getComponent(ColliderComponent.class).setDensity(1.5f);
     player.getComponent(AnimationRenderComponent.class).scaleEntity();
-    player.scaleWidth(0.75f);
+    player.scaleWidth(0.9f);
     return player;
   }
 
