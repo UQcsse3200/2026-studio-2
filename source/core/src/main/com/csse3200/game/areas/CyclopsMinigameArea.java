@@ -69,7 +69,6 @@ public class CyclopsMinigameArea extends GameArea {
   public void create() {
     loadAssets();
 
-    displayUI();
     spawnTerrain();
     displayFloor();
     spawnStatues();
@@ -105,12 +104,6 @@ public class CyclopsMinigameArea extends GameArea {
 
   private void startTimingMinigame() {
     cyclopsMinigameLogic.startMinigame();
-  }
-
-  private void displayUI() {
-    Entity ui = new Entity();
-    ui.addComponent(new GameAreaDisplay("Cyclops Minigame Room"));
-    spawnEntity(ui);
   }
 
   private void spawnTerrain() {
