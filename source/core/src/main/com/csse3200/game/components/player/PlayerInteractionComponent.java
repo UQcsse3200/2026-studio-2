@@ -15,8 +15,6 @@ import org.slf4j.LoggerFactory;
 /**
  * Detects items within the player's interaction range and validates and performs pickup, drop,
  * delete and switch interactions on behalf of the player.
- *
- * <p>Requires an InventoryComponent on this entity.
  */
 public class PlayerInteractionComponent extends Component {
   private static final Logger logger = LoggerFactory.getLogger(PlayerInteractionComponent.class);
@@ -52,8 +50,7 @@ public class PlayerInteractionComponent extends Component {
 
   /**
    * Attempts to pick up the given item entity. The item's availability and the player's range to it
-   * are both re-validated at the time of interaction, since either may have changed since the item
-   * was first detected.
+   * are both re-validated at the time of interaction.
    *
    * @param itemEntity item entity to pick up
    * @return true if the item was picked up
@@ -66,7 +63,6 @@ public class PlayerInteractionComponent extends Component {
 
     ItemComponent itemComponent = itemEntity.getComponent(ItemComponent.class);
     if (itemComponent == null) {
-      // Not an interactable item.
       entity.getEvents().trigger("interactionFailed");
       return false;
     }
@@ -90,9 +86,14 @@ public class PlayerInteractionComponent extends Component {
    */
   boolean dropItem() {
     ItemType selected = inventory.getSelectedItem();
+    if (selected == null) {
+      entity.getEvents().trigger("interactionFailed");
+      return false;
+    }
+
     int quantity = inventory.getItemCount(selected);
 
-    if (selected == null || !inventory.removeItem(selected, quantity)) {
+    if (!inventory.removeItem(selected, quantity)) {
       entity.getEvents().trigger("interactionFailed");
       return false;
     }
@@ -112,9 +113,14 @@ public class PlayerInteractionComponent extends Component {
    */
   boolean deleteItem() {
     ItemType selected = inventory.getSelectedItem();
+    if (selected == null) {
+      entity.getEvents().trigger("interactionFailed");
+      return false;
+    }
+
     int quantity = inventory.getItemCount(selected);
 
-    if (selected == null || !inventory.removeItem(selected, quantity)) {
+    if (!inventory.removeItem(selected, quantity)) {
       entity.getEvents().trigger("interactionFailed");
       return false;
     }
@@ -126,7 +132,7 @@ public class PlayerInteractionComponent extends Component {
   /**
    * Switches the selected inventory item.
    *
-   * @param direction positive to select the next item, negative to select the previous item
+   * @param direction positive to select next item, negative to select previous item
    */
   void switchItem(Integer direction) {
     if (direction != null && direction < 0) {
@@ -184,11 +190,11 @@ public class PlayerInteractionComponent extends Component {
    */
   private Entity createItemEntity(ItemType type, int quantity) {
     return switch (type) {
-      case ARROW -> ItemFactory.createStandardArrow(quantity);
-      case RopeArrow -> ItemFactory.createRopeArrow(quantity);
-      case FireArrow -> ItemFactory.createFireArrow(quantity);
-      case ColdArrow -> ItemFactory.createColdArrow(quantity);
-      case CONSUMABLE -> ItemFactory.createHealthPotion(quantity);
+      case STANDARD_ARROW -> ItemFactory.createStandardArrow(quantity);
+      case ROPE_ARROW -> ItemFactory.createRopeArrow(quantity);
+      case FIRE_ARROW -> ItemFactory.createFireArrow(quantity);
+      case COLD_ARROW -> ItemFactory.createColdArrow(quantity);
+      case HEALTH_POTION -> ItemFactory.createHealthPotion(quantity);
     };
   }
 }

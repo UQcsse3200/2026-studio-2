@@ -96,7 +96,7 @@ public class InventoryComponent extends Component {
    * @param gold required amount of gold
    * @return player has greater than or equal to the required amount of gold
    */
-  public Boolean hasGold(int gold) {
+  public boolean hasGold(int gold) {
     return this.gold >= gold;
   }
 
@@ -138,7 +138,7 @@ public class InventoryComponent extends Component {
       return false;
     }
 
-    if (item == ItemType.RopeArrow && hasItem(ItemType.RopeArrow)) {
+    if (item == ItemType.ROPE_ARROW && hasItem(ItemType.ROPE_ARROW)) {
       return false;
     }
 
@@ -579,7 +579,6 @@ public class InventoryComponent extends Component {
 
   /** Triggers the inventory changed event after a successful inventory mutation. */
   private void notifyInventoryChanged() {
-    // Constructor operations happen before the component is attached to an Entity.
     if (entity != null) {
       entity.getEvents().trigger("inventoryChanged");
     }

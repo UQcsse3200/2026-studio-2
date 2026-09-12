@@ -20,6 +20,8 @@ import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.utils.math.GridPoint2Utils;
 import com.csse3200.game.utils.math.RandomUtils;
+import java.util.List;
+import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -519,19 +521,13 @@ public class TutorialGameArea extends GameArea {
 
   /** generate items */
   private void spawnItems() {
-    spawnEntityAt(ItemFactory.createRopeArrow(), ROPE_ARROW_SPAWN, true, false);
-
-    spawnEntityAt(
-        ItemFactory.createStandardArrow(STANDARD_ARROW_QUANTITY),
-        STANDARD_ARROW_SPAWN,
-        true,
-        false);
-
-    spawnEntityAt(
-        ItemFactory.createHealthPotion(HEALTH_POTION_QUANTITY), HEALTH_POTION_SPAWN, true, false);
-
-    spawnEntityAt(ItemFactory.createFireArrow(FIRE_ARROW_QUANTITY), FIRE_ARROW_SPAWN, true, false);
-
-    spawnEntityAt(ItemFactory.createColdArrow(COLD_ARROW_QUANTITY), COLD_ARROW_SPAWN, true, false);
+    List.of(
+            Map.entry(ItemFactory.createRopeArrow(), ROPE_ARROW_SPAWN),
+            Map.entry(
+                ItemFactory.createStandardArrow(STANDARD_ARROW_QUANTITY), STANDARD_ARROW_SPAWN),
+            Map.entry(ItemFactory.createHealthPotion(HEALTH_POTION_QUANTITY), HEALTH_POTION_SPAWN),
+            Map.entry(ItemFactory.createFireArrow(FIRE_ARROW_QUANTITY), FIRE_ARROW_SPAWN),
+            Map.entry(ItemFactory.createColdArrow(COLD_ARROW_QUANTITY), COLD_ARROW_SPAWN))
+        .forEach(entry -> spawnEntityAt(entry.getKey(), entry.getValue(), true, false));
   }
 }

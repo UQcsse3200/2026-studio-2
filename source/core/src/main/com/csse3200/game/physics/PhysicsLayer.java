@@ -14,6 +14,8 @@ public class PhysicsLayer {
   public static final short SOLID = GROUND | OBSTACLE;
   // Projectiles fired by the player
   public static final short PLAYER_PROJECTILE = (1 << 5);
+  // Invisible level-boundary walls: keep characters in, let projectiles pass
+  public static final short WALL = (1 << 6);
   public static final short ALL = ~0;
 
   public static boolean contains(short filterBits, short layer) {

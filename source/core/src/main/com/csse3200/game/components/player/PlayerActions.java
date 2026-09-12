@@ -3,15 +3,13 @@ package com.csse3200.game.components.player;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.csse3200.game.components.Component;
+import com.csse3200.game.components.item.weapons.bow.grapple.GrappleComponent;
 import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.physics.raycast.RaycastHit;
 import com.csse3200.game.services.ServiceLocator;
 
-/**
- * Action component for interacting with the player. Player events should be initialised in create()
- * and when triggered should call methods within this class.
- */
+/** Action component for interacting with the player */
 public class PlayerActions extends Component {
   private static final float JUMP_FORCE = 5.5f;
   private static final Vector2 MAX_SPEED = new Vector2(5f, 5f); // Metres per second
@@ -36,11 +34,18 @@ public class PlayerActions extends Component {
     entity.getEvents().addListener("jump", this::jump);
     entity.getEvents().addListener("sprint", this::sprint);
     entity.getEvents().addListener("sprintStop", this::stopSprinting);
+    entity.getEvents().addListener("togglePaused", this::togglePause);
   }
 
   @Override
   public void update() {
     isGrounded = checkGrounded();
+
+    // The grapple is a hold action: let go of right click and the rope drops
+    if (isGrappling() && !isRightMouseHeld()) {
+      grapple.release();
+    }
+
     if (!moving) {
       return;
     }
@@ -54,6 +59,11 @@ public class PlayerActions extends Component {
 
   private boolean isGrappling() {
     return grapple != null && grapple.isAttached();
+  }
+
+  private boolean isRightMouseHeld() {
+    KeyboardPlayerInputComponent input = entity.getComponent(KeyboardPlayerInputComponent.class);
+    return input != null && input.isRightMouseHeld();
   }
 
   private void updateSpeed() {
@@ -80,6 +90,10 @@ public class PlayerActions extends Component {
     return ServiceLocator.getPhysicsService()
         .getPhysics()
         .raycast(rayStart, rayEnd, PhysicsLayer.SOLID, hit);
+  }
+
+  void togglePause() {
+    paused = !paused;
   }
 
   /**

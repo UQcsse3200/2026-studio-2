@@ -31,14 +31,27 @@ class ArrowProjectileComponentTest {
   }
 
   @Test
-  void shouldConfigureStraightProjectileMotion() {
+  void shouldConfigureArcedProjectileMotion() {
     Entity arrow = createArrow(new Vector2(3f, 4f), 10f, 15f);
     PhysicsComponent physics = arrow.getComponent(PhysicsComponent.class);
 
     assertTrue(physics.getBody().getLinearVelocity().epsilonEquals(new Vector2(6f, 8f)));
-    assertEquals(0.05f, physics.getBody().getGravityScale());
+    assertEquals(0.4f, physics.getBody().getGravityScale());
     assertEquals(0f, physics.getBody().getLinearDamping());
     assertTrue(physics.getBody().isBullet());
+  }
+
+  @Test
+  void grappleArrowFliesStraight() {
+    Entity arrow =
+        new Entity()
+            .addComponent(new PhysicsComponent())
+            .addComponent(new HitboxComponent().setLayer(PhysicsLayer.PLAYER_PROJECTILE))
+            .addComponent(new ArrowProjectileComponent(Vector2.X, 16f, 16f, ArrowType.GRAPPLE));
+    arrow.setPosition(0f, 0f);
+    entityService.register(arrow);
+
+    assertEquals(0f, arrow.getComponent(PhysicsComponent.class).getBody().getGravityScale());
   }
 
   @Test
@@ -46,6 +59,7 @@ class ArrowProjectileComponentTest {
     Entity arrow = createArrow(Vector2.X, 10f, 15f);
     Entity terrain = createTarget(PhysicsLayer.GROUND, false);
     ArrowProjectileComponent projectile = arrow.getComponent(ArrowProjectileComponent.class);
+    arrow.getComponent(PhysicsComponent.class).getBody().setTransform(2f, 0f, 0f);
 
     arrow
         .getEvents()
@@ -55,6 +69,34 @@ class ArrowProjectileComponentTest {
             terrain.getComponent(HitboxComponent.class).getFixture());
 
     assertTrue(projectile.isSpent());
+  }
+
+  @Test
+  void shouldSurviveTerrainItSpawnsInsideUntilItHasMoved() {
+    Entity arrow = createArrow(Vector2.X, 10f, 15f);
+    Entity terrain = createTarget(PhysicsLayer.GROUND, false);
+    ArrowProjectileComponent projectile = arrow.getComponent(ArrowProjectileComponent.class);
+
+    // Collision on the spawn frame, before the arrow has cleared the shooter's own footing
+    arrow
+        .getEvents()
+        .trigger(
+            "collisionStart",
+            arrow.getComponent(HitboxComponent.class).getFixture(),
+            terrain.getComponent(HitboxComponent.class).getFixture());
+
+    assertFalse(projectile.isSpent());
+  }
+
+  @Test
+  void shouldPassThroughNpcLayerColliderWithNoCombatStats() {
+    Entity arrow = createArrow(Vector2.X, 10f, 15f);
+    Entity triggerZone = createTarget(PhysicsLayer.NPC, false); // e.g. the win-condition sensor
+    ArrowProjectileComponent projectile = arrow.getComponent(ArrowProjectileComponent.class);
+
+    triggerCollision(arrow, triggerZone);
+
+    assertFalse(projectile.isSpent());
   }
 
   @Test
@@ -103,10 +145,28 @@ class ArrowProjectileComponentTest {
     Entity arrow = createArrow(Vector2.X, 10f, 15f);
     Entity obstacle = createTarget(PhysicsLayer.OBSTACLE, false);
     ArrowProjectileComponent projectile = arrow.getComponent(ArrowProjectileComponent.class);
+    arrow.getComponent(PhysicsComponent.class).getBody().setTransform(2f, 0f, 0f);
 
     triggerCollision(arrow, obstacle);
 
     assertTrue(projectile.isSpent());
+  }
+
+  @Test
+  void grappleArrowIsNotKilledByCollisions() {
+    Entity arrow =
+        new Entity()
+            .addComponent(new PhysicsComponent())
+            .addComponent(new HitboxComponent().setLayer(PhysicsLayer.PLAYER_PROJECTILE))
+            .addComponent(new ArrowProjectileComponent(Vector2.X, 16f, 16f, ArrowType.GRAPPLE));
+    arrow.setPosition(0f, 0f);
+    entityService.register(arrow);
+    arrow.getComponent(PhysicsComponent.class).getBody().setTransform(5f, 0f, 0f);
+    Entity terrain = createTarget(PhysicsLayer.GROUND, false);
+
+    triggerCollision(arrow, terrain);
+
+    assertFalse(arrow.getComponent(ArrowProjectileComponent.class).isSpent());
   }
 
   @Test
@@ -117,6 +177,35 @@ class ArrowProjectileComponentTest {
 
     projectile.update();
 
+    assertTrue(projectile.isSpent());
+  }
+
+  @Test
+  void shouldMeasureRangeFromTheShootersCurrentPositionNotTheSpawnPoint() {
+    Entity shooter = new Entity();
+    shooter.setPosition(0f, 0f);
+
+    Entity arrow =
+        new Entity()
+            .addComponent(new PhysicsComponent())
+            .addComponent(new HitboxComponent().setLayer(PhysicsLayer.PLAYER_PROJECTILE))
+            .addComponent(
+                new ArrowProjectileComponent(shooter, Vector2.X, 10f, 15f, ArrowType.STANDARD));
+    arrow.setPosition(0f, 0f);
+    entityService.register(arrow);
+    ArrowProjectileComponent projectile = arrow.getComponent(ArrowProjectileComponent.class);
+
+    // Arrow is 20 units from where it spawned - past the 15-unit range - but the shooter has
+    // chased it and is close by, so it should still be alive.
+    arrow.getComponent(PhysicsComponent.class).getBody().setTransform(20f, 0f, 0f);
+    shooter.setPosition(19f, 0f);
+    projectile.update();
+    assertFalse(projectile.isSpent());
+
+    // Shooter falls back behind the spawn point, putting the arrow more than 15 units from the
+    // shooter even though it hasn't moved.
+    shooter.setPosition(-10f, 0f);
+    projectile.update();
     assertTrue(projectile.isSpent());
   }
 
