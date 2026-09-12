@@ -14,10 +14,7 @@ import com.csse3200.game.physics.components.ColliderComponent;
 import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.physics.components.PhysicsMovementComponent;
-import com.csse3200.game.rendering.AnimationRenderComponent;
-import com.csse3200.game.rendering.DynamicTextureRenderComponent;
-import com.csse3200.game.rendering.TextureRenderComponent;
-import com.csse3200.game.rendering.TiledRenderComponent;
+import com.csse3200.game.rendering.*;
 import com.csse3200.game.services.ServiceLocator;
 
 /**
@@ -158,8 +155,8 @@ public class ObstacleFactory {
    * @return win condition entity
    */
   public static Entity createButton(String activationId) {
-    AnimationRenderComponent animator =
-        new AnimationRenderComponent(
+    RotatableAnimationRenderComponent animator =
+        new RotatableAnimationRenderComponent(
             ServiceLocator.getResourceService()
                 .getAsset("images/in_level_button.atlas", TextureAtlas.class));
     animator.addAnimation("default", 1f, Animation.PlayMode.LOOP);
@@ -172,7 +169,8 @@ public class ObstacleFactory {
             .addComponent(new PhysicsComponent())
             .addComponent(new HitboxComponent().setLayer(PhysicsLayer.NPC))
             .addComponent(new ActivatableComponent(activationId))
-            .addComponent(new TriggerButtonComponent());
+            .addComponent(new TriggerButtonComponent())
+            .addComponent(new RotatableMapComponent(90f));
 
     button.getComponent(PhysicsComponent.class).setBodyType(BodyType.StaticBody);
 
@@ -206,25 +204,6 @@ public class ObstacleFactory {
     Entity floor =
         new Entity()
             .addComponent(new TiledRenderComponent("images/Tile_2.png", 0.75f))
-            .addComponent(new PhysicsComponent().setBodyType(BodyType.StaticBody))
-            .addComponent(new ColliderComponent().setLayer(PhysicsLayer.OBSTACLE))
-            .addComponent(new PlatformGrappleComponent(grappleSides));
-
-    floor.getComponent(PhysicsComponent.class).setBodyType(BodyType.StaticBody);
-
-    return floor;
-  }
-
-  /**
-   * Creates the Level 2 ground as one complete image.
-   *
-   * @param grappleSides number of sides that can be grappled
-   * @return Level 2 ground entity
-   */
-  public static Entity createLevel2Floor(int grappleSides) {
-    Entity floor =
-        new Entity()
-            .addComponent(new TextureRenderComponent("images/Ground_level-2.png"))
             .addComponent(new PhysicsComponent().setBodyType(BodyType.StaticBody))
             .addComponent(new ColliderComponent().setLayer(PhysicsLayer.OBSTACLE))
             .addComponent(new PlatformGrappleComponent(grappleSides));
@@ -289,12 +268,13 @@ public class ObstacleFactory {
   public static Entity createSpike(float rotationAngle) {
     Entity spike =
         new Entity()
-            .addComponent(new TextureRenderComponent("images/spike.png"))
+            .addComponent(new DynamicTextureRenderComponent("images/spike.png"))
             .addComponent(new PhysicsComponent())
             .addComponent(new ColliderComponent().setLayer(PhysicsLayer.OBSTACLE))
             .addComponent(new CombatStatsComponent(100, 2))
             .addComponent(new HitboxComponent().setLayer(PhysicsLayer.OBSTACLE))
-            .addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER));
+            .addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER))
+            .addComponent(new RotatableMapComponent(90));
 
     spike.getComponent(PhysicsComponent.class).setBodyType(BodyType.StaticBody);
 
