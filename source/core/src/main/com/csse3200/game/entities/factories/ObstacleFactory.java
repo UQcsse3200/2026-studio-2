@@ -15,6 +15,7 @@ import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.physics.components.PhysicsMovementComponent;
 import com.csse3200.game.rendering.AnimationRenderComponent;
+import com.csse3200.game.rendering.DynamicTextureRenderComponent;
 import com.csse3200.game.rendering.TextureRenderComponent;
 import com.csse3200.game.rendering.TiledRenderComponent;
 import com.csse3200.game.services.ServiceLocator;
@@ -52,29 +53,10 @@ public class ObstacleFactory {
    * @param grappleSides number of sides that can be grappled
    * @return platform entity
    */
-  public static Entity createPlatform(int grappleSides) {
+  public static Entity createPlatform(int grappleSides, String textureFilepath) {
     Entity platform =
         new Entity()
-            .addComponent(new TextureRenderComponent("images/platform.png"))
-            .addComponent(new PhysicsComponent())
-            .addComponent(new ColliderComponent().setLayer(PhysicsLayer.GROUND))
-            .addComponent(new PlatformGrappleComponent(grappleSides));
-
-    platform.getComponent(PhysicsComponent.class).setBodyType(BodyType.StaticBody);
-
-    return platform;
-  }
-
-  /**
-   * Creates the Level 2 platform.
-   *
-   * @param grappleSides number of sides that can be grappled
-   * @return Level 2 platform entity
-   */
-  public static Entity createLevel2Platform(int grappleSides) {
-    Entity platform =
-        new Entity()
-            .addComponent(new TextureRenderComponent("images/Platform_level-2.png"))
+            .addComponent(new TextureRenderComponent(textureFilepath))
             .addComponent(new PhysicsComponent())
             .addComponent(new ColliderComponent().setLayer(PhysicsLayer.GROUND))
             .addComponent(new PlatformGrappleComponent(grappleSides));
@@ -96,6 +78,7 @@ public class ObstacleFactory {
    */
   public static Entity createMovingPlatform(
       int grappleSides,
+      String textureFilepath,
       Vector2 firstTarget,
       Vector2 secondTarget,
       Vector2 maxSpeed,
@@ -106,7 +89,7 @@ public class ObstacleFactory {
 
     Entity movingPlatform =
         new Entity()
-            .addComponent(new TextureRenderComponent("images/platform.png"))
+            .addComponent(new TextureRenderComponent(textureFilepath))
             .addComponent(physicsComponent)
             .addComponent(new PhysicsMovementComponent())
             .addComponent(colliderComponent.setLayer(PhysicsLayer.OBSTACLE))
@@ -115,44 +98,6 @@ public class ObstacleFactory {
             .addComponent(new PlatformGrappleComponent(grappleSides))
             .addComponent(new ActivatableComponent(activateId));
 
-    physicsComponent.setBodyType(BodyType.KinematicBody);
-    colliderComponent.setFriction(1.5f);
-
-    return movingPlatform;
-  }
-
-  /**
-   * Creates a Level 2 moving platform.
-   *
-   * @param grappleSides number of sides that can be grappled
-   * @param firstTarget first movement target
-   * @param secondTarget second movement target
-   * @param maxSpeed maximum movement speed
-   * @param activateId activation ID
-   * @return Level 2 moving platform entity
-   */
-  public static Entity createLevel2MovingPlatform(
-      int grappleSides,
-      Vector2 firstTarget,
-      Vector2 secondTarget,
-      Vector2 maxSpeed,
-      String activateId) {
-
-    PhysicsComponent physicsComponent = new PhysicsComponent();
-    ColliderComponent colliderComponent = new ColliderComponent();
-
-    Entity movingPlatform =
-        new Entity()
-            .addComponent(new TextureRenderComponent("images/Platform_level-2.png"))
-            .addComponent(physicsComponent)
-            .addComponent(new PhysicsMovementComponent())
-            .addComponent(colliderComponent.setLayer(PhysicsLayer.OBSTACLE))
-            .addComponent(
-                new MovingPlatformComponent(grappleSides, firstTarget, secondTarget, maxSpeed))
-            .addComponent(new PlatformGrappleComponent(grappleSides))
-            .addComponent(new ActivatableComponent(activateId));
-
-    physicsComponent.getBody().setGravityScale(0f);
     physicsComponent.setBodyType(BodyType.KinematicBody);
     colliderComponent.setFriction(1.5f);
 
@@ -169,36 +114,11 @@ public class ObstacleFactory {
    * @return crumbling platform entity
    */
   public static Entity createCrumblingPlatform(
-      int grappleSides, float timeBeforeCrumble, float crumbleTime) {
+      int grappleSides, String textureFilepath, float timeBeforeCrumble, float crumbleTime) {
 
     Entity platform =
         new Entity()
-            .addComponent(new TextureRenderComponent("images/platform.png"))
-            .addComponent(new PhysicsComponent())
-            .addComponent(new ColliderComponent().setLayer(PhysicsLayer.GROUND))
-            .addComponent(
-                new CrumblingPlatformComponent(grappleSides, timeBeforeCrumble, crumbleTime));
-
-    platform.getComponent(PhysicsComponent.class).setBodyType(BodyType.StaticBody);
-
-    return platform;
-  }
-
-  /**
-   * Creates a Level 2 crumbling platform.
-   *
-   * @param grappleSides number of sides that can be grappled
-   * @param timeBeforeCrumble how long the player can stand on the platform before it starts to
-   *     crumble, in seconds
-   * @param crumbleTime how long the crumbling takes before the platform is destroyed, in seconds
-   * @return Level 2 crumbling platform entity
-   */
-  public static Entity createLevel2CrumblingPlatform(
-      int grappleSides, float timeBeforeCrumble, float crumbleTime) {
-
-    Entity platform =
-        new Entity()
-            .addComponent(new TextureRenderComponent("images/Platform_level-2.png"))
+            .addComponent(new TextureRenderComponent(textureFilepath))
             .addComponent(new PhysicsComponent())
             .addComponent(new ColliderComponent().setLayer(PhysicsLayer.GROUND))
             .addComponent(
@@ -215,33 +135,16 @@ public class ObstacleFactory {
    * @param grappleSides number of sides that can be grappled
    * @return triggerable platform entity
    */
-  public static Entity createTriggerablePlatform(int grappleSides) {
+  public static Entity createTriggerablePlatform(
+      int grappleSides, String textureFilepath, String activationId) {
     Entity platform =
         new Entity()
-            .addComponent(new TextureRenderComponent("images/platform.png"))
+            .addComponent(new DynamicTextureRenderComponent(textureFilepath))
             .addComponent(new PhysicsComponent())
             .addComponent(new ColliderComponent().setLayer(PhysicsLayer.GROUND))
-            .addComponent(new PlatformGrappleComponent(grappleSides));
-
-    platform.getComponent(PhysicsComponent.class).setBodyType(BodyType.StaticBody);
-    platform.setEnabled(false);
-
-    return platform;
-  }
-
-  /**
-   * Creates a Level 2 triggerable platform.
-   *
-   * @param grappleSides number of sides that can be grappled
-   * @return Level 2 triggerable platform entity
-   */
-  public static Entity createLevel2TriggerablePlatform(int grappleSides) {
-    Entity platform =
-        new Entity()
-            .addComponent(new TextureRenderComponent("images/Platform_level-2.png"))
-            .addComponent(new PhysicsComponent())
-            .addComponent(new ColliderComponent().setLayer(PhysicsLayer.GROUND))
-            .addComponent(new PlatformGrappleComponent(grappleSides));
+            .addComponent(new PlatformGrappleComponent(grappleSides))
+            .addComponent(new ActivatableComponent(activationId))
+            .addComponent(new TriggerablePlatformComponent());
 
     platform.getComponent(PhysicsComponent.class).setBodyType(BodyType.StaticBody);
     platform.setEnabled(false);
