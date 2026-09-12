@@ -7,6 +7,7 @@ public class MovingPlatformConfig extends PlatformConfig {
   public Vector2 firstTarget;
   public Vector2 secondTarget;
   public Vector2 speed;
+  public String activateId;
 
   public MovingPlatformConfig(
       GridPoint2 position,
@@ -15,10 +16,12 @@ public class MovingPlatformConfig extends PlatformConfig {
       int grappleSides,
       Vector2 firstTarget,
       Vector2 secondTarget,
-      Vector2 speed) {
+      Vector2 speed,
+      String activateId) {
     super(position, width, height, grappleSides);
     this.firstTarget = firstTarget;
     this.secondTarget = secondTarget;
     this.speed = speed;
+    this.activateId = activateId;
   }
 }

@@ -85,7 +85,7 @@ public class LevelConfig {
     for (MovingPlatformConfig p : movingPlatforms) {
       Entity platform =
           ObstacleFactory.createMovingPlatform(
-              p.grappleSides, p.firstTarget, p.secondTarget, p.speed);
+              p.grappleSides, p.firstTarget, p.secondTarget, p.speed, p.activateId);
       platform.setScale(p.width, p.height);
       entities.add(new SpawnData(p.position, platform));
     }
@@ -108,6 +108,12 @@ public class LevelConfig {
   private void createTriggerablePlatforms() {
     if (triggerablePlatforms == null) {
       return;
+    }
+
+    for (TriggerablePlatformConfig t : triggerablePlatforms) {
+      Entity triggerablePlatform = ObstacleFactory.createTriggerablePlatform(t.grappleSides);
+      triggerablePlatform.setScale(t.width, t.height);
+      entities.add(new SpawnData(t.position, triggerablePlatform));
     }
   }
 

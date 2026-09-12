@@ -4,10 +4,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.TouchAttackComponent;
-import com.csse3200.game.components.level.LedgeComponent;
-import com.csse3200.game.components.level.MovingPlatformComponent;
-import com.csse3200.game.components.level.PlatformGrappleComponent;
-import com.csse3200.game.components.level.WinConditionComponent;
+import com.csse3200.game.components.level.*;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.physics.PhysicsUtils;
@@ -58,7 +55,11 @@ public class ObstacleFactory {
   }
 
   public static Entity createMovingPlatform(
-      int grappleSides, Vector2 firstTarget, Vector2 secondTarget, Vector2 maxSpeed) {
+      int grappleSides,
+      Vector2 firstTarget,
+      Vector2 secondTarget,
+      Vector2 maxSpeed,
+      String activateId) {
     PhysicsComponent physicsComponent = new PhysicsComponent();
     ColliderComponent colliderComponent = new ColliderComponent();
     Entity movingPlatform =
@@ -69,12 +70,27 @@ public class ObstacleFactory {
             .addComponent(colliderComponent.setLayer(PhysicsLayer.OBSTACLE))
             .addComponent(
                 new MovingPlatformComponent(grappleSides, firstTarget, secondTarget, maxSpeed))
-            .addComponent(new PlatformGrappleComponent(grappleSides));
+            .addComponent(new PlatformGrappleComponent(grappleSides))
+            .addComponent(new ActivatableComponent(activateId));
 
     physicsComponent.getBody().setGravityScale(0f);
     physicsComponent.setBodyType(BodyType.KinematicBody);
     colliderComponent.setFriction(1.5f);
     return movingPlatform;
+  }
+
+  public static Entity createTriggerablePlatform(int grappleSides) {
+    Entity platform =
+        new Entity()
+            .addComponent(new TextureRenderComponent("images/platform.png"))
+            .addComponent(new PhysicsComponent())
+            .addComponent(new ColliderComponent().setLayer(PhysicsLayer.GROUND))
+            .addComponent(new PlatformGrappleComponent(grappleSides));
+
+    platform.getComponent(PhysicsComponent.class).setBodyType(BodyType.StaticBody);
+    platform.setEnabled(false);
+
+    return platform;
   }
 
   public static Entity createWinConEntity() {
