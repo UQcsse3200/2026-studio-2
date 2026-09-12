@@ -1,7 +1,6 @@
 package com.csse3200.game.areas.terrain.configs;
 
 import com.badlogic.gdx.math.GridPoint2;
-import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.components.item.Item;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.EnemyConfig;
@@ -11,6 +10,9 @@ import java.util.ArrayList;
 import java.util.Map;
 
 public class LevelConfig {
+  protected String platformTFP;
+  protected String groundTFP;
+
   protected PlatformConfig[] platforms;
   protected MovingPlatformConfig[] movingPlatforms;
   protected CrumblingPlatformConfig[] crumblingPlatforms;
@@ -70,21 +72,10 @@ public class LevelConfig {
     }
 
     for (PlatformConfig p : platforms) {
-      Entity platform = createPlatformEntity(p.grappleSides);
+      Entity platform = ObstacleFactory.createPlatform(p.grappleSides, p.textureFilepath);
       platform.setScale(p.width, p.height);
       entities.add(new SpawnData(p.position, platform));
     }
-  }
-
-  /**
-   * Creates the entity used for a normal platform. Subclasses may override this to use a
-   * level-specific platform texture.
-   *
-   * @param grappleSides number of sides that can be grappled
-   * @return platform entity
-   */
-  protected Entity createPlatformEntity(int grappleSides) {
-    return ObstacleFactory.createPlatform(grappleSides);
   }
 
   /**
@@ -98,32 +89,16 @@ public class LevelConfig {
 
     for (MovingPlatformConfig p : movingPlatforms) {
       Entity platform =
-          createMovingPlatformEntity(
-              p.grappleSides, p.firstTarget, p.secondTarget, p.speed, p.activateId);
+          ObstacleFactory.createMovingPlatform(
+              p.grappleSides,
+              p.textureFilepath,
+              p.firstTarget,
+              p.secondTarget,
+              p.speed,
+              p.activateId);
       platform.setScale(p.width, p.height);
       entities.add(new SpawnData(p.position, platform));
     }
-  }
-
-  /**
-   * Creates the entity used for a moving platform. Subclasses may override this to use a
-   * level-specific platform texture.
-   *
-   * @param grappleSides number of sides that can be grappled
-   * @param firstTarget first movement target
-   * @param secondTarget second movement target
-   * @param maxSpeed maximum movement speed
-   * @param activateId activation ID
-   * @return moving platform entity
-   */
-  protected Entity createMovingPlatformEntity(
-      int grappleSides,
-      Vector2 firstTarget,
-      Vector2 secondTarget,
-      Vector2 maxSpeed,
-      String activateId) {
-    return ObstacleFactory.createMovingPlatform(
-        grappleSides, firstTarget, secondTarget, maxSpeed, activateId);
   }
 
   /**
@@ -137,25 +112,11 @@ public class LevelConfig {
 
     for (CrumblingPlatformConfig c : crumblingPlatforms) {
       Entity platform =
-          createCrumblingPlatformEntity(c.grappleSides, c.timeBeforeCrumble, c.crumbleTime);
+          ObstacleFactory.createCrumblingPlatform(
+              c.grappleSides, c.textureFilepath, c.timeBeforeCrumble, c.crumbleTime);
       platform.setScale(c.width, c.height);
       entities.add(new SpawnData(c.position, platform));
     }
-  }
-
-  /**
-   * Creates the entity used for a crumbling platform. Subclasses may override this to use a
-   * level-specific platform texture.
-   *
-   * @param grappleSides number of sides that can be grappled
-   * @param timeBeforeCrumble how long the player can stand on the platform before it starts to
-   *     crumble, in seconds
-   * @param crumbleTime how long the crumbling takes before the platform is destroyed, in seconds
-   * @return crumbling platform entity
-   */
-  protected Entity createCrumblingPlatformEntity(
-      int grappleSides, float timeBeforeCrumble, float crumbleTime) {
-    return ObstacleFactory.createCrumblingPlatform(grappleSides, timeBeforeCrumble, crumbleTime);
   }
 
   /**
@@ -168,21 +129,11 @@ public class LevelConfig {
     }
 
     for (TriggerablePlatformConfig t : triggerablePlatforms) {
-      Entity triggerablePlatform = createTriggerablePlatformEntity(t.grappleSides);
+      Entity triggerablePlatform =
+          ObstacleFactory.createTriggerablePlatform(t.grappleSides, t.textureFilepath, t.id);
       triggerablePlatform.setScale(t.width, t.height);
       entities.add(new SpawnData(t.position, triggerablePlatform));
     }
-  }
-
-  /**
-   * Creates the entity used for a triggerable platform. Subclasses may override this to use a
-   * level-specific platform texture.
-   *
-   * @param grappleSides number of sides that can be grappled
-   * @return triggerable platform entity
-   */
-  protected Entity createTriggerablePlatformEntity(int grappleSides) {
-    return ObstacleFactory.createTriggerablePlatform(grappleSides);
   }
 
   private void createLedges() {
@@ -204,7 +155,7 @@ public class LevelConfig {
   private void createFloors() {
     if (bounds != null) {
       for (PlatformConfig b : bounds) {
-        Entity bound = createFloorEntity(b.grappleSides);
+        Entity bound = ObstacleFactory.createFloor(b.grappleSides);
         bound.setScale(b.width, b.height);
         entities.add(new SpawnData(b.position, bound));
       }
@@ -212,22 +163,11 @@ public class LevelConfig {
 
     if (floors != null) {
       for (PlatformConfig f : floors) {
-        Entity bound = createFloorEntity(f.grappleSides);
+        Entity bound = ObstacleFactory.createFloor(f.grappleSides);
         bound.setScale(f.width, f.height);
         entities.add(new SpawnData(f.position, bound));
       }
     }
-  }
-
-  /**
-   * Creates the entity used for the floor/ground. Subclasses may override this to use a
-   * level-specific ground texture.
-   *
-   * @param grappleSides number of sides that can be grappled
-   * @return floor entity
-   */
-  protected Entity createFloorEntity(int grappleSides) {
-    return ObstacleFactory.createFloor(grappleSides);
   }
 
   /** Creates all the spike clusters and adds them to the entities map for the level to spawn */

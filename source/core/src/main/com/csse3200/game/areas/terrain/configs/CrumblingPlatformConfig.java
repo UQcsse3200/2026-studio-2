@@ -11,9 +11,10 @@ public class CrumblingPlatformConfig extends PlatformConfig {
       int width,
       int height,
       int grappleSides,
+      String textureFilepath,
       float timeBeforeCrumble,
       float crumbleTime) {
-    super(position, width, height, grappleSides);
+    super(position, width, height, grappleSides, textureFilepath);
     this.timeBeforeCrumble = timeBeforeCrumble;
     this.crumbleTime = crumbleTime;
   }

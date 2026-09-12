@@ -14,11 +14,12 @@ public class MovingPlatformConfig extends PlatformConfig {
       int width,
       int height,
       int grappleSides,
+      String textureFilepath,
       Vector2 firstTarget,
       Vector2 secondTarget,
       Vector2 speed,
       String activateId) {
-    super(position, width, height, grappleSides);
+    super(position, width, height, grappleSides, textureFilepath);
     this.firstTarget = firstTarget;
     this.secondTarget = secondTarget;
     this.speed = speed;
