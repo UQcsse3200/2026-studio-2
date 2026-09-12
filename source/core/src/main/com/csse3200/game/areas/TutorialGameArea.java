@@ -35,6 +35,7 @@ public class TutorialGameArea extends GameArea {
       };
 
   private static final float WALL_WIDTH = 0.1f;
+  private Vector2 worldBounds;
 
   /** Textures used by the tutorial game area. */
   private static final String[] forestTextures = {
@@ -147,17 +148,36 @@ public class TutorialGameArea extends GameArea {
    * the subtle effect you originally wanted.
    */
   private void spawnBackground() {
-    BackgroundRenderComponent backgroundComponent = new BackgroundRenderComponent(camera);
+    final Vector2 backgroundPos = new Vector2(-10f, -10f);
+    BackgroundRenderComponent backgroundComponent =
+        new BackgroundRenderComponent(camera, backgroundPos, worldBounds);
 
     // Complete original background image
     backgroundComponent.addLayer(
-        "images/parallax/original_background.png", 0.30f, 60f, 33.515625f, -1.50f);
+        "images/parallax/original_background.png",
+        new Vector2(0.10f, 0f), // Parallax factor
+        30f,
+        15f,
+        new Vector2(0f, 3.5f), // Positional offset
+        BackgroundType.DEPENDENT,
+        new Vector2(0f, 0f), // Independent velocity
+        false);
+
+    backgroundComponent.addLayer(
+        "images/parallax/Clouds.png",
+        new Vector2(0.1f, 0f), // Parallax factor
+        30f,
+        15f,
+        new Vector2(0f, 3.5f), // Positional offset
+        BackgroundType.DEPENDENT,
+        new Vector2(0.1f, 0f), // Independent velocity
+        true);
 
     // Create the background entity.
     Entity background = new Entity().addComponent(backgroundComponent);
 
     // Position the background in the game world.
-    background.setPosition(-20f, -10f);
+    background.setPosition(backgroundPos);
 
     spawnEntity(background);
   }
@@ -171,7 +191,7 @@ public class TutorialGameArea extends GameArea {
     // Terrain walls
     float tileSize = terrain.getTileSize();
     GridPoint2 tileBounds = terrain.getMapBounds(0);
-    Vector2 worldBounds = new Vector2(tileBounds.x * tileSize, tileBounds.y * tileSize);
+    worldBounds = new Vector2(tileBounds.x * tileSize, tileBounds.y * tileSize);
 
     // Left wall
     spawnEntityAt(

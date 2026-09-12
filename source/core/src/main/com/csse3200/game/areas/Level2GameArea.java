@@ -20,6 +20,7 @@ import org.slf4j.LoggerFactory;
 public class Level2GameArea extends GameArea {
   private static final Logger logger = LoggerFactory.getLogger(Level2GameArea.class);
   private static final float WALL_WIDTH = 0.1f;
+  private Vector2 worldBounds;
 
   /** Textures used by the level 2 game area. */
   private static final String[] level2Textures = {
@@ -99,16 +100,28 @@ public class Level2GameArea extends GameArea {
    * means the background moves at 30% of the camera movement, creating the desired parallax effect.
    */
   private void spawnBackground() {
-    BackgroundRenderComponent backgroundComponent = new BackgroundRenderComponent(camera);
+    final Vector2 backgroundPos = new Vector2(-15f, -10f);
+    BackgroundRenderComponent backgroundComponent =
+        new BackgroundRenderComponent(camera, backgroundPos, worldBounds);
 
     // Level 2 background with 30% parallax.
-    backgroundComponent.addLayer("images/Background-2.png", 0.30f, 60f, 33.515625f, -1.50f);
+    // backgroundComponent.addLayer("images/Background-2.png", 0.30f, 60f, 33.515625f, -1.50f);
+    backgroundComponent.addLayer(
+        "images/Background-2.png",
+        new Vector2(0.10f, 0f), // Parallax factor
+        30f,
+        15f,
+        new Vector2(0f, 3.5f), // Positional offset
+        BackgroundType.DEPENDENT,
+        new Vector2(0f, 0f), // Independent velocity
+        false);
 
     // Create the background entity.
     Entity background = new Entity().addComponent(backgroundComponent);
 
     // Position the background in the game world.
-    background.setPosition(-20f, -10f);
+    background.setPosition(backgroundPos);
+    // background.setPosition(-20f, -10f);
 
     // Add the background to the game area.
     spawnEntity(background);
@@ -124,7 +137,7 @@ public class Level2GameArea extends GameArea {
     float tileSize = terrain.getTileSize();
     GridPoint2 tileBounds = terrain.getMapBounds(0);
 
-    Vector2 worldBounds = new Vector2(tileBounds.x * tileSize, tileBounds.y * tileSize);
+    worldBounds = new Vector2(tileBounds.x * tileSize, tileBounds.y * tileSize);
 
     // Left wall
     spawnEntityAt(

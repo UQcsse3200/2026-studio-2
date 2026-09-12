@@ -176,6 +176,11 @@ public abstract class GameArea implements Disposable {
     player.getEvents().trigger("grappleResponse", result);
   }
 
+  public enum BackgroundType {
+    INDEPENDENT,
+    DEPENDENT
+  }
+
   private void onButtonActivated(String id) {
     ArrayList<Entity> entities = triggerableEntities.get(id);
     for (Entity entity : entities) {

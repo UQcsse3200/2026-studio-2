@@ -29,7 +29,7 @@ public class MainMenuActions extends Component {
   /** Swaps to the Tutorial Game screen. */
   private void onPlay() {
     logger.info("Play");
-    game.setScreen(GdxGame.ScreenType.TUTORIAL_GAME);
+    game.setScreen(GdxGame.ScreenType.LEVEL_2_GAME);
   }
 
   /** Intended for loading a saved game state. Load functionality is not actually implemented. */

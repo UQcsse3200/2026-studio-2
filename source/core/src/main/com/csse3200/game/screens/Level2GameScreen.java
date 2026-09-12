@@ -3,7 +3,7 @@ package com.csse3200.game.screens;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.csse3200.game.GdxGame;
-import com.csse3200.game.areas.TutorialGameArea;
+import com.csse3200.game.areas.Level2GameArea;
 import com.csse3200.game.areas.terrain.TerrainFactory;
 import com.csse3200.game.components.gamearea.PerformanceDisplay;
 import com.csse3200.game.components.maingame.MainGameActions;
@@ -32,13 +32,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The game screen containing the tutorial.
+ * The game screen containing level 2.
  *
  * <p>Details on libGDX screens: https://happycoding.io/tutorials/libgdx/game-screens
  */
-public class TutorialGameScreen extends ScreenAdapter {
+public class Level2GameScreen extends ScreenAdapter {
 
-  private static final Logger logger = LoggerFactory.getLogger(TutorialGameScreen.class);
+  private static final Logger logger = LoggerFactory.getLogger(Level2GameScreen.class);
 
   private static final String[] mainGameTextures = {
     "images/heart.png", "images/title_odysseus_logo.png"
@@ -48,7 +48,7 @@ public class TutorialGameScreen extends ScreenAdapter {
   private final Renderer renderer;
   private final PhysicsEngine physicsEngine;
 
-  public TutorialGameScreen(GdxGame game) {
+  public Level2GameScreen(GdxGame game) {
     this.game = game;
 
     logger.debug("Initialising main game screen services");
@@ -74,19 +74,19 @@ public class TutorialGameScreen extends ScreenAdapter {
     loadAssets();
     createUI();
 
-    logger.debug("Initialising tutorial game screen entities");
+    logger.debug("Initialising level 2 game screen entities");
 
     // Pass the renderer's camera to the terrain factory.
     TerrainFactory terrainFactory = new TerrainFactory(renderer.getCamera());
 
-    // Pass the same camera to the TutorialGameArea so that
+    // Pass the same camera to the Level2GameArea so that
     // the parallax background can follow camera movement.
-    TutorialGameArea tutorialGameArea = new TutorialGameArea(terrainFactory, renderer.getCamera());
+    Level2GameArea level2 = new Level2GameArea(terrainFactory, renderer.getCamera());
 
-    tutorialGameArea.create();
+    level2.create();
 
     // Follow the player with the camera.
-    renderer.getCamera().setTarget(tutorialGameArea.getPlayer());
+    renderer.getCamera().setTarget(level2.getPlayer());
   }
 
   @Override
