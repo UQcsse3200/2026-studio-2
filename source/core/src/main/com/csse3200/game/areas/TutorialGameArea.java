@@ -10,6 +10,8 @@ import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.components.gamearea.GameAreaDisplay;
 import com.csse3200.game.components.player.KeyboardPlayerInputComponent;
 import com.csse3200.game.entities.Entity;
+import com.csse3200.game.entities.factories.EnemyFactory;
+import com.csse3200.game.entities.factories.ItemFactory;
 import com.csse3200.game.entities.factories.NPCFactory;
 import com.csse3200.game.entities.factories.ObstacleFactory;
 import com.csse3200.game.entities.factories.PlayerFactory;
@@ -36,7 +38,7 @@ public class TutorialGameArea extends GameArea {
     new PlatformConfig(new GridPoint2(14, 6), 3, 1, 0),
     new PlatformConfig(new GridPoint2(19, 6), 3, 1, 0),
     new PlatformConfig(new GridPoint2(27, 2), 3, 1, 0),
-    new PlatformConfig(new GridPoint2(32, 3), 2, 2, 1),
+    new PlatformConfig(new GridPoint2(32, 3), 2, 2, 2),
     new PlatformConfig(new GridPoint2(30, 6), 3, 1, 0),
     new PlatformConfig(new GridPoint2(27, 8), 3, 1, 10),
     new PlatformConfig(new GridPoint2(23, 10), 3, 1, 2),
@@ -91,7 +93,27 @@ public class TutorialGameArea extends GameArea {
     new GridPoint2(10, 2), new GridPoint2(20, 2), new GridPoint2(35, 2)
   };
 
+  private static final GridPoint2[] skeletonWarriorSpawnLocations =
+      new GridPoint2[] {
+        new GridPoint2(45, 17), new GridPoint2(56, 16), new GridPoint2(77, 12),
+      };
+
+  private static final GridPoint2[] skeletonArcherSpawnLocations =
+      new GridPoint2[] {
+        new GridPoint2(60, 1), new GridPoint2(57, 10),
+      };
+
   private static final GridPoint2 PLAYER_SPAWN = new GridPoint2(1, 4);
+  private static final GridPoint2 ROPE_ARROW_SPAWN = new GridPoint2(2, 4);
+  private static final GridPoint2 STANDARD_ARROW_SPAWN = new GridPoint2(4, 4);
+  private static final GridPoint2 FIRE_ARROW_SPAWN = new GridPoint2(6, 4);
+  private static final GridPoint2 COLD_ARROW_SPAWN = new GridPoint2(8, 4);
+  private static final GridPoint2 HEALTH_POTION_SPAWN = new GridPoint2(10, 4);
+
+  private static final int STANDARD_ARROW_QUANTITY = 5;
+  private static final int FIRE_ARROW_QUANTITY = 5;
+  private static final int COLD_ARROW_QUANTITY = 5;
+  private static final int HEALTH_POTION_QUANTITY = 3;
 
   private static final float WALL_WIDTH = 0.1f;
 
@@ -126,7 +148,15 @@ public class TutorialGameArea extends GameArea {
     "images/parallax/Clouds.png",
     "images/parallax/Mountains.png",
     "images/parallax/ground.png",
-    "images/parallax/Rocks.png"
+    "images/parallax/Rocks.png",
+
+    // Enemy textures
+    "images/skeleton_warrior.png",
+    "images/skeleton_archer.png",
+    "images/arrow.png",
+    "images/rope_arrow.png",
+    "images/fire_arrow.png",
+    "images/cold_arrow.png"
   };
 
   private static final String[] forestTextureAtlases = {
@@ -177,7 +207,11 @@ public class TutorialGameArea extends GameArea {
     spawnSpikes();
 
     player = spawnPlayer();
+    spawnItems(); // test items
     spawnWinCondition();
+    spawnSkeletonArcher();
+    spawnSkeletonWarrior();
+    // spawnTestWinCondition(); // Temporary test win condition near player spawn for quick testing
 
     // spawnGhosts();
     // spawnGhostKing();
@@ -361,6 +395,13 @@ public class TutorialGameArea extends GameArea {
     spawnEntityAt(winCon, new GridPoint2(80, 18), true, true);
   }
 
+  // Temporary test win condition near player spawn for quick testing
+  private void spawnTestWinCondition() {
+    // Temporary test win condition near player spawn for quick testing
+    Entity testWinCon = ObstacleFactory.createWinConEntity();
+    spawnEntityAt(testWinCon, new GridPoint2(3, 4), true, true);
+  }
+
   private void spawnGhosts() {
 
     GridPoint2 minPos = new GridPoint2(0, 0);
@@ -374,6 +415,20 @@ public class TutorialGameArea extends GameArea {
       Entity ghost = NPCFactory.createGhost(player);
 
       spawnEntityAt(ghost, randomPos, true, true);
+    }
+  }
+
+  private void spawnSkeletonWarrior() {
+    for (GridPoint2 spawnLocation : skeletonWarriorSpawnLocations) {
+      Entity enemy = EnemyFactory.createSkeletonWarrior(player);
+      spawnEntityAt(enemy, spawnLocation, true, true);
+    }
+  }
+
+  private void spawnSkeletonArcher() {
+    for (GridPoint2 spawnLocation : skeletonArcherSpawnLocations) {
+      Entity enemy = EnemyFactory.createSkeletonArcher(player);
+      spawnEntityAt(enemy, spawnLocation, true, true);
     }
   }
 
@@ -450,5 +505,23 @@ public class TutorialGameArea extends GameArea {
     ServiceLocator.getResourceService().getAsset(backgroundMusic, Music.class).stop();
 
     this.unloadAssets();
+  }
+
+  /** generate items */
+  private void spawnItems() {
+    spawnEntityAt(ItemFactory.createRopeArrow(), ROPE_ARROW_SPAWN, true, false);
+
+    spawnEntityAt(
+        ItemFactory.createStandardArrow(STANDARD_ARROW_QUANTITY),
+        STANDARD_ARROW_SPAWN,
+        true,
+        false);
+
+    spawnEntityAt(
+        ItemFactory.createHealthPotion(HEALTH_POTION_QUANTITY), HEALTH_POTION_SPAWN, true, false);
+
+    spawnEntityAt(ItemFactory.createFireArrow(FIRE_ARROW_QUANTITY), FIRE_ARROW_SPAWN, true, false);
+
+    spawnEntityAt(ItemFactory.createColdArrow(COLD_ARROW_QUANTITY), COLD_ARROW_SPAWN, true, false);
   }
 }

@@ -9,6 +9,8 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.input.InputComponent;
+import com.csse3200.game.services.ServiceLocator;
+import com.csse3200.game.utils.math.Vector2Utils;
 
 /** Input handler for player keyboard and mouse controls. */
 public class KeyboardPlayerInputComponent extends InputComponent {
@@ -23,6 +25,12 @@ public class KeyboardPlayerInputComponent extends InputComponent {
 
   public KeyboardPlayerInputComponent() {
     super(5);
+  }
+
+  @Override
+  public void create() {
+    super.create();
+    entity.getEvents().addListener("togglePause", this::triggerWalkEvent);
   }
 
   /**
@@ -42,16 +50,61 @@ public class KeyboardPlayerInputComponent extends InputComponent {
    */
   @Override
   public boolean keyDown(int keycode) {
+    if (ServiceLocator.getEntityService().getPaused()
+        && !(keycode == Keys.A
+            || keycode == Keys.D
+            || keycode == Keys.LEFT
+            || keycode == Keys.RIGHT
+            || keycode == Keys.SHIFT_LEFT
+            || keycode == Keys.SHIFT_RIGHT)) {
+      return false;
+    }
     switch (keycode) {
+      // Hotbar number keys
+      case Keys.NUM_1:
+        entity.getEvents().trigger("selectQuickSlot", 0);
+        return true;
+      case Keys.NUM_2:
+        entity.getEvents().trigger("selectQuickSlot", 1);
+        return true;
+      case Keys.NUM_3:
+        entity.getEvents().trigger("selectQuickSlot", 2);
+        return true;
+      case Keys.NUM_4:
+        entity.getEvents().trigger("selectQuickSlot", 3);
+        return true;
+      case Keys.NUM_5:
+        entity.getEvents().trigger("selectQuickSlot", 4);
+        return true;
+      case Keys.NUM_6:
+        entity.getEvents().trigger("selectQuickSlot", 5);
+        return true;
+      case Keys.NUM_7:
+        entity.getEvents().trigger("selectQuickSlot", 6);
+        return true;
+      case Keys.NUM_8:
+        entity.getEvents().trigger("selectQuickSlot", 7);
+        return true;
+      case Keys.NUM_9:
+        entity.getEvents().trigger("selectQuickSlot", 8);
+        return true;
+      case Keys.W:
+        walkDirection.add(Vector2Utils.UP);
+        triggerWalkEvent();
+        return true;
       case Keys.A:
       case Keys.LEFT:
         keysHeld[LEFT] = true;
-        triggerWalkEvent();
+        if (!ServiceLocator.getEntityService().getPaused()) {
+          triggerWalkEvent();
+        }
         return true;
       case Keys.D:
       case Keys.RIGHT:
         keysHeld[RIGHT] = true;
-        triggerWalkEvent();
+        if (!ServiceLocator.getEntityService().getPaused()) {
+          triggerWalkEvent();
+        }
         return true;
       case Keys.SPACE:
         triggerJumpEvent();
@@ -59,17 +112,34 @@ public class KeyboardPlayerInputComponent extends InputComponent {
       case Keys.SHIFT_LEFT:
       case Keys.SHIFT_RIGHT:
         sprintHeld = true;
-        triggerSprintEvent();
-        return true;
-      case Keys.E:
-        if (!attackHeld) {
-          Vector2 aimDirection = getMouseAimDirection();
-          if (aimDirection != null && !aimDirection.isZero()) {
-            entity.getEvents().trigger("primaryAttack", aimDirection);
-          }
-          attackHeld = true;
+        if (!ServiceLocator.getEntityService().getPaused()) {
+          triggerSprintEvent();
         }
         return true;
+      case Keys.E:
+        triggerAttackOrItemUse();
+        return true;
+      case Keys.F:
+        entity.getEvents().trigger("interact");
+        return true;
+      case Keys.B:
+        entity.getEvents().trigger("toggleBackpack");
+        return true;
+      case Keys.R:
+        entity.getEvents().trigger("dropItem");
+        return true;
+      case Keys.FORWARD_DEL:
+        entity.getEvents().trigger("deleteItem");
+        return true;
+      case Keys.PERIOD:
+        entity.getEvents().trigger("switchItem", 1);
+        return true;
+      case Keys.COMMA:
+        entity.getEvents().trigger("switchItem", -1);
+        return true;
+      case Keys.ESCAPE:
+        triggerWalkEvent();
+        triggerSprintEvent();
       default:
         return false;
     }
@@ -87,17 +157,23 @@ public class KeyboardPlayerInputComponent extends InputComponent {
       case Keys.A:
       case Keys.LEFT:
         keysHeld[LEFT] = false;
-        triggerWalkEvent();
+        if (!ServiceLocator.getEntityService().getPaused()) {
+          triggerWalkEvent();
+        }
         return true;
       case Keys.D:
       case Keys.RIGHT:
         keysHeld[RIGHT] = false;
-        triggerWalkEvent();
+        if (!ServiceLocator.getEntityService().getPaused()) {
+          triggerWalkEvent();
+        }
         return true;
       case Keys.SHIFT_LEFT:
       case Keys.SHIFT_RIGHT:
         sprintHeld = false;
-        triggerSprintEvent();
+        if (!ServiceLocator.getEntityService().getPaused()) {
+          triggerSprintEvent();
+        }
         return true;
       case Keys.E:
         attackHeld = false;
@@ -115,7 +191,7 @@ public class KeyboardPlayerInputComponent extends InputComponent {
    */
   @Override
   public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-    if (button != Buttons.LEFT) {
+    if (button != Buttons.LEFT || ServiceLocator.getEntityService().getPaused()) {
       return false;
     }
     Vector2 aimDirection = getAimDirection(screenX, screenY);
@@ -136,6 +212,18 @@ public class KeyboardPlayerInputComponent extends InputComponent {
     return true;
   }
 
+  private void triggerAttackOrItemUse() {
+    if (attackHeld) {
+      return;
+    }
+    attackHeld = true;
+
+    ItemUseComponent itemUse = entity.getComponent(ItemUseComponent.class);
+    if (itemUse != null) {
+      itemUse.useSelectedItem();
+    }
+  }
+
   private void triggerSprintEvent() {
     if (sprintHeld) {
       entity.getEvents().trigger("sprint");
@@ -148,7 +236,12 @@ public class KeyboardPlayerInputComponent extends InputComponent {
     entity.getEvents().trigger("jump");
   }
 
-  private Vector2 getMouseAimDirection() {
+  /**
+   * Aim direction from the current mouse position to the player, in world space.
+   *
+   * @return aim vector, or null if the camera is unavailable
+   */
+  public Vector2 getMouseAimDirection() {
     return getAimDirection(Gdx.input.getX(), Gdx.input.getY());
   }
 

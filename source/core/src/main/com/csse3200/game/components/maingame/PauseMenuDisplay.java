@@ -1,5 +1,6 @@
 package com.csse3200.game.components.maingame;
 
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -8,6 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.csse3200.game.GdxGame;
+import com.csse3200.game.components.ButtonSound;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.UIComponent;
 
@@ -50,7 +52,9 @@ public class PauseMenuDisplay extends UIComponent {
           @Override
           public void changed(ChangeEvent changeEvent, Actor actor) {
             if (ServiceLocator.getEntityService().getPaused()) {
+              ButtonSound.playClick();
               unpause();
+              ServiceLocator.getInputService().keyDown(Input.Keys.ESCAPE);
             }
           }
         });
@@ -60,8 +64,11 @@ public class PauseMenuDisplay extends UIComponent {
           @Override
           public void changed(ChangeEvent changeEvent, Actor actor) {
             if (ServiceLocator.getEntityService().getPaused()) {
-              entity.getEvents().trigger("settingsFromPause");
-              game.setScreen(GdxGame.ScreenType.SETTINGS_FROM_PAUSE);
+              ButtonSound.playClickThen(
+                  () -> {
+                    entity.getEvents().trigger("settingsFromPause");
+                    game.setScreen(GdxGame.ScreenType.SETTINGS_FROM_PAUSE);
+                  });
             }
           }
         });
@@ -71,6 +78,7 @@ public class PauseMenuDisplay extends UIComponent {
           @Override
           public void changed(ChangeEvent changeEvent, Actor actor) {
             if (ServiceLocator.getEntityService().getPaused()) {
+              ButtonSound.playClick();
               game.exit();
             }
           }
@@ -79,8 +87,8 @@ public class PauseMenuDisplay extends UIComponent {
     Image title =
         new Image(
             ServiceLocator.getResourceService()
-                .getAsset("images/box_boy_title.png", Texture.class));
-    table.add(title).padTop(30f);
+                .getAsset("images/title_odysseus_logo.png", Texture.class));
+    table.add(title).padTop(-35f);
     table.row();
     table.add(resumeBtn).padTop(30f);
     table.row();

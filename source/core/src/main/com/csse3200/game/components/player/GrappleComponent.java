@@ -5,6 +5,8 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.joints.DistanceJoint;
 import com.badlogic.gdx.physics.box2d.joints.DistanceJointDef;
 import com.csse3200.game.components.Component;
+import com.csse3200.game.components.inventory.InventoryComponent;
+import com.csse3200.game.components.item.ItemType;
 import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.physics.raycast.RaycastHit;
@@ -18,6 +20,7 @@ public class GrappleComponent extends Component {
   private static final float SWING_DAMPING = 0.5f;
 
   private PhysicsComponent physicsComponent;
+  private InventoryComponent inventory;
   private DistanceJoint ropeJoint;
   private RaycastHit raycastHit;
   private Vector2 anchorPoint;
@@ -26,6 +29,7 @@ public class GrappleComponent extends Component {
   @Override
   public void create() {
     physicsComponent = entity.getComponent(PhysicsComponent.class);
+    inventory = entity.getComponent(InventoryComponent.class);
     entity.getEvents().addListener("grappleFire", this::fire);
     entity.getEvents().addListener("grappleRelease", this::release);
     entity.getEvents().addListener("grappleSwing", this::swing);
@@ -37,6 +41,10 @@ public class GrappleComponent extends Component {
    * determine if the impact point hit a valid platform side
    */
   void fire(Vector2 direction) {
+    if (inventory == null || !inventory.hasItem(ItemType.RopeArrow)) {
+      entity.getEvents().trigger("itemUseFailed", ItemType.RopeArrow);
+      return;
+    }
     // Determine raycast start (player center)
     Vector2 start = entity.getCenterPosition();
     Vector2 end = start.cpy().mulAdd(direction.cpy().nor(), MAX_RANGE);

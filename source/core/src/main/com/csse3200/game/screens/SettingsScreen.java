@@ -3,6 +3,7 @@ package com.csse3200.game.screens;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.csse3200.game.GdxGame;
+import com.csse3200.game.components.ButtonSound;
 import com.csse3200.game.components.settingsmenu.SettingsMenuDisplay;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
@@ -37,7 +38,20 @@ public class SettingsScreen extends ScreenAdapter {
     renderer = RenderFactory.createRenderer();
     renderer.getCamera().getEntity().setPosition(5f, 5f);
 
+    loadAssets();
     createUI();
+  }
+
+  private void loadAssets() {
+    logger.debug("Loading assets");
+    ResourceService resourceService = ServiceLocator.getResourceService();
+    ButtonSound.load(resourceService);
+    resourceService.loadAll();
+  }
+
+  private void unloadAssets() {
+    logger.debug("Unloading assets");
+    ButtonSound.unload(ServiceLocator.getResourceService());
   }
 
   @Override

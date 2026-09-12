@@ -60,11 +60,6 @@ public class EntityService {
     pendingRemoval.add(entity);
   }
 
-  /**
-   * Schedules an entity to be disposed after the current update cycle.
-   *
-   * @param entity entity to dispose
-   */
   public void scheduleForDisposal(Entity entity) {
     if (!entitiesToDispose.contains(entity, true)) {
       entitiesToDispose.add(entity);

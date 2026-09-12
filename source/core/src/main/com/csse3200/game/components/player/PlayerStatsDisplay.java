@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.services.ServiceLocator;
@@ -13,13 +14,16 @@ import java.util.List;
 
 /** A UI component that displays the player's health as a row of hearts. */
 public class PlayerStatsDisplay extends UIComponent {
-  private static final String HEART_TEXTURE = "images/purple_heart.png";
-  private static final float HEART_SIDE_LENGTH = 40f;
-  private static final int HP_PER_HEART = 25;
+  private static final String HEART_TEXTURE = "images/red_heart.png";
+  private static final String HEALTH_BAR_BACKGROUND_TEXTURE = "images/Health_Bar_Background.png";
+  private static final float HEART_SIDE_LENGTH = 33f;
+  private static final float HEART_SIDE_HEIGHT = 34f;
+  private static final int HP_PER_HEART = 2;
   private static final int FLICKER_COUNT = 3;
   private static final float FLICKER_DURATION = 0.1f;
 
-  private Table table;
+  private Table overlayTable;
+  private Table root;
   private final List<Image> heartImages = new ArrayList<>();
   private Texture heartTexture;
   private CombatStatsComponent combatStats;
@@ -28,20 +32,38 @@ public class PlayerStatsDisplay extends UIComponent {
   public void create() {
     super.create();
 
+    Stack stack = new Stack();
+
+    Table backgroundContainer = new Table();
+    Image background =
+        new Image(
+            ServiceLocator.getResourceService()
+                .getAsset(HEALTH_BAR_BACKGROUND_TEXTURE, Texture.class));
+    backgroundContainer.add(background).size(400, 150).center();
+
+    stack.add(backgroundContainer);
+
     heartTexture = ServiceLocator.getResourceService().getAsset(HEART_TEXTURE, Texture.class);
     combatStats = entity.getComponent(CombatStatsComponent.class);
 
-    table = new Table();
-    table.top().left();
-    table.setFillParent(true);
-    table.padTop(45f).padLeft(5f);
-    stage.addActor(table);
+    overlayTable = new Table();
+    overlayTable.padLeft(100.2f).padBottom(4.8f);
+
+    root = new Table();
+    root.top().left();
+    root.setFillParent(true);
+    root.padTop(45f).padLeft(5f);
+
+    stack.add(overlayTable);
 
     entity.getEvents().addListener("updateHealth", this::updatePlayerHealthUI);
 
     if (combatStats != null) {
       updatePlayerHealthUI(combatStats.getHealth());
     }
+
+    root.add(stack);
+    stage.addActor(root);
   }
 
   @Override
@@ -90,7 +112,7 @@ public class PlayerStatsDisplay extends UIComponent {
     while (heartImages.size() < desiredCount) {
       Image heart = new Image(heartTexture);
       heartImages.add(heart);
-      table.add(heart).size(HEART_SIDE_LENGTH).pad(5f);
+      overlayTable.add(heart).size(HEART_SIDE_LENGTH, HEART_SIDE_HEIGHT).padRight(9f);
     }
   }
 
@@ -113,8 +135,8 @@ public class PlayerStatsDisplay extends UIComponent {
   @Override
   public void dispose() {
     super.dispose();
-    if (table != null) {
-      table.remove();
+    if (overlayTable != null) {
+      overlayTable.remove();
     }
     heartImages.clear();
   }

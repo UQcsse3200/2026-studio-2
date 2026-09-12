@@ -10,18 +10,20 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.Value;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
 import com.csse3200.game.components.maingame.MainGameExitDisplay;
 import com.csse3200.game.events.EventHandler;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.dialogue.TypewriterEffect;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** Displays a game-ending result in a modal panel over the gameplay. */
 public class GameEndDisplay extends UIComponent {
+  private static final Logger logger = LoggerFactory.getLogger(GameEndDisplay.class);
   private static final float Z_INDEX = 20f;
-  private static final int PANEL_WIDTH = 520;
-  private static final int PANEL_HEIGHT = 310;
   private static final int BORDER_THICKNESS = 3;
   private static final float MESSAGE_SPEED = 21f;
 
@@ -38,6 +40,7 @@ public class GameEndDisplay extends UIComponent {
   private Label messageLabel;
 
   public GameEndDisplay(GameEndState state) {
+    logger.info(">>> GameEndDisplay CONSTRUCTOR START with state: {}", state);
     this.state = state;
     this.titleText = state == GameEndState.WIN ? "YOU WIN!" : "GAME OVER!";
     this.resultText =
@@ -53,6 +56,7 @@ public class GameEndDisplay extends UIComponent {
   }
 
   public void setState(GameEndState state) {
+    logger.info("GameEndDisplay.setState() called with state: {}", state);
     this.state = state;
     if (titleLabel != null) {
       titleLabel.setText(state == GameEndState.WIN ? "YOU WIN!" : "GAME OVER!");
@@ -67,7 +71,13 @@ public class GameEndDisplay extends UIComponent {
       typewriterEffect.setText(this.resultText);
     }
     if (panel != null) {
+      logger.info(
+          "Panel is not null, setting visibility to true. Panel size: {} x {}",
+          panel.getWidth(),
+          panel.getHeight());
       panel.setVisible(true);
+    } else {
+      logger.warn("Panel is NULL in setState()! buildActors() may not have been called.");
     }
     if (entity != null) {
       MainGameExitDisplay exitDisplay = entity.getComponent(MainGameExitDisplay.class);
@@ -91,19 +101,34 @@ public class GameEndDisplay extends UIComponent {
 
   @Override
   public void create() {
+    logger.info(">>> GameEndDisplay.create() START");
     super.create();
     if (ServiceLocator.getGameEndEventHandler() == null) {
+      logger.warn("GameEndEventHandler was null, creating new EventHandler");
       ServiceLocator.registerGameEndEventHandler(new EventHandler());
     }
-    ServiceLocator.getGameEndEventHandler().addListener("gameEnd", this::setState);
+    logger.info(">>> Registering gameEnd listener for GameEndDisplay");
+    ServiceLocator.getGameEndEventHandler()
+        .addListener(
+            "gameEnd",
+            new com.csse3200.game.events.listeners.EventListener1<GameEndState>() {
+              @Override
+              public void handle(GameEndState state) {
+                logger.info("GameEndDisplay received gameEnd event with state: {}", state);
+                setState(state);
+              }
+            });
     buildActors();
   }
 
   private void buildActors() {
+    Table root = new Table();
+    root.setFillParent(true);
+
     panel = new Table();
-    panel.setVisible(false);
+    panel.setVisible(visible);
     panel.setBackground(getBackgroundDrawable());
-    panel.center();
+    Value padding = Value.percentWidth(0.02f, root);
 
     titleLabel = new Label(titleText, skin);
     titleLabel.setFontScale(2f);
@@ -142,16 +167,17 @@ public class GameEndDisplay extends UIComponent {
           }
         });
 
-    panel.add(titleLabel).pad(20f).row();
-    panel.add(messageLabel).width(PANEL_WIDTH - 80).pad(10f, 20f, 20f, 20f).row();
-    panel.add(restartBtn).padBottom(10f).row();
-    panel.add(mainMenuBtn).padBottom(10f).row();
-    panel.add(exitDesktopBtn).padBottom(20f).row();
+    panel.add(titleLabel).pad(padding).row();
+    panel.add(messageLabel).fillX().expandX().pad(padding).row();
+    panel.add(restartBtn).padBottom(padding).row();
+    panel.add(mainMenuBtn).padBottom(padding).row();
+    panel.add(exitDesktopBtn).padBottom(padding).row();
     panel.pack();
-    panel.setPosition(
-        (stage.getWidth() - panel.getWidth()) / 2f, (stage.getHeight() - panel.getHeight()) / 2f);
 
-    stage.addActor(panel);
+    root.add(panel).width(Value.percentWidth(0.8f, root)).fillX().center();
+    stage.addActor(root);
+    root.invalidateHierarchy();
+    root.layout();
     updateMessageLabel();
   }
 
