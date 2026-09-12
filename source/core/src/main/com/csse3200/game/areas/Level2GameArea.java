@@ -25,6 +25,8 @@ public class Level2GameArea extends GameArea {
   private static final String[] level2Textures = {
     // Level 2 background
     "images/Background-2.png",
+    "images/Platform_level-2.png",
+    "images/Ground_level-2.png",
 
     // Existing game textures
     "images/black_roof.png",
@@ -32,7 +34,7 @@ public class Level2GameArea extends GameArea {
     "images/transparent.png",
     "images/DevGridTile.png",
     "images/Tile_2.png",
-    "images/platform.png",
+    "images/Platform_level-2.png",
     "images/box_boy_leaf.png",
     "images/spike.png",
     "images/tree.png",
