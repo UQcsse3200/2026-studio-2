@@ -137,7 +137,13 @@ public class InstructionOverlay extends UIComponent {
     imageCell = scroll.add(image).size(0f).padTop(4f);
     scroll.row();
     scroll.add(messageLabel).fillX().expandX().expandY().padTop(6f).row();
-    scroll.add(continueButton).width(230f).height(80f).padTop(6f).padBottom(scrollHeight * 0.08f).row();
+    scroll
+        .add(continueButton)
+        .width(230f)
+        .height(80f)
+        .padTop(6f)
+        .padBottom(scrollHeight * 0.18f)
+        .row();
 
     Texture speakerTexture =
         ServiceLocator.getResourceService().getAsset(SPEAKER_TEXTURE, Texture.class);
