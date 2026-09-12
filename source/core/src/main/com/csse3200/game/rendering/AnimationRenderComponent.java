@@ -234,7 +234,9 @@ public class AnimationRenderComponent extends RenderComponent {
       u2 = tmp;
     }
     batch.draw(region.getTexture(), pos.x, pos.y, width, height, u, v, u2, v2);
-    animationPlayTime += timeSource.getDeltaTime();
+    if (!ServiceLocator.getEntityService().getPaused()) {
+      animationPlayTime += timeSource.getDeltaTime();
+    }
   }
 
   @Override
