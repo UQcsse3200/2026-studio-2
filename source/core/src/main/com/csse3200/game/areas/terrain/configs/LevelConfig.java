@@ -16,6 +16,7 @@ public class LevelConfig {
   protected TriggerablePlatformConfig[] triggerablePlatforms;
   protected PlatformConfig[] ledges;
   protected SpikeClusterConfig[] spikes;
+  protected TriggerButtonConfig[] triggerButtons;
   protected PlatformConfig[] bounds;
   protected PlatformConfig[] floors;
   protected Map<GridPoint2, EnemyConfig> enemies;
@@ -43,6 +44,7 @@ public class LevelConfig {
     createTriggerablePlatforms();
     createLedges();
     createSpikes();
+    createTriggerButtons();
     createWinCondition();
     createItems();
 
@@ -164,6 +166,17 @@ public class LevelConfig {
           entities.add(new SpawnData(new GridPoint2(i, j), spike));
         }
       }
+    }
+  }
+
+  private void createTriggerButtons() {
+    if (triggerButtons == null) {
+      return;
+    }
+
+    for (TriggerButtonConfig t : triggerButtons) {
+      Entity button = ObstacleFactory.createButton(t.id);
+      entities.add(new SpawnData(t.position, button));
     }
   }
 

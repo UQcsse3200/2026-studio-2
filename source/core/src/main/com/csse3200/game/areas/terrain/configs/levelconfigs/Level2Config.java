@@ -5,6 +5,10 @@ import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.areas.terrain.configs.LevelConfig;
 import com.csse3200.game.areas.terrain.configs.MovingPlatformConfig;
 import com.csse3200.game.areas.terrain.configs.PlatformConfig;
+import com.csse3200.game.areas.terrain.configs.TriggerButtonConfig;
+import com.csse3200.game.components.item.weapons.StandardArr;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Level2Config extends LevelConfig {
   public Level2Config() {
@@ -27,5 +31,10 @@ public class Level2Config extends LevelConfig {
               new Vector2(3, 0),
               "moving-platform-1")
         };
+    triggerButtons =
+        new TriggerButtonConfig[] {
+          new TriggerButtonConfig(new GridPoint2(3, 2), "moving-platform-1")
+        };
+    items = new HashMap<>(Map.of(new GridPoint2(2, 4), new StandardArr(99)));
   }
 }
