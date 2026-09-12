@@ -7,7 +7,6 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Fixture;
 import com.csse3200.game.areas.terrain.PlatformConfig;
 import com.csse3200.game.areas.terrain.TerrainFactory;
 import com.csse3200.game.areas.terrain.TerrainFactory.TerrainType;
@@ -17,6 +16,7 @@ import com.csse3200.game.components.item.Item;
 import com.csse3200.game.components.item.ItemType;
 import com.csse3200.game.components.item.weapons.StandardArr;
 import com.csse3200.game.components.level.EnterZoneTriggerComponent;
+import com.csse3200.game.components.level.PlayerExitComponent;
 import com.csse3200.game.components.player.FallDeathComponent;
 import com.csse3200.game.components.player.KeyboardPlayerInputComponent;
 import com.csse3200.game.components.player.WakeUpCinematicDisplay;
@@ -112,13 +112,12 @@ public class IntroTutorialGameArea extends GameArea {
   private static final GridPoint2 JUMP_INSTRUCTION_ZONE = new GridPoint2(10, 0);
   private static final GridPoint2 ROLL_INSTRUCTION_ZONE = new GridPoint2(32, 0);
   private static final GridPoint2 WRECK_INSTRUCTION_ZONE = new GridPoint2(50, 0);
-  private static final GridPoint2 EXIT_ZONE = new GridPoint2(61, 0);
-  // Purely decorative marker tiles that appear once every crab is defeated, framing the exit tile
-  // to signal it's now the way forward.
-  private static final GridPoint2 GATE_MARKER_LEFT = new GridPoint2(60, 3);
-  private static final GridPoint2 GATE_MARKER_RIGHT = new GridPoint2(61, 3);
-  private static final float GATE_MARKER_WIDTH = 0.6f;
-  private static final float GATE_MARKER_HEIGHT = 0.6f;
+  private static final GridPoint2 EXIT_ZONE = new GridPoint2(61, 3);
+  // An EXIT sign appears above the sand once every crab is defeated.
+  private static final GridPoint2 GATE_MARKER_POSITION = new GridPoint2(60, 4);
+  private static final String GATE_MARKER_TEXTURE = "images/Buttons/exit_up_btn.png";
+  private static final float GATE_MARKER_WIDTH = 1.5f;
+  private static final float GATE_MARKER_HEIGHT = 0.5f;
 
   private static final PlatformConfig[] groundFloors = {
     new PlatformConfig(new GridPoint2(0, 0), 12, 3, 0), // start floor
@@ -163,11 +162,8 @@ public class IntroTutorialGameArea extends GameArea {
       "You opened the chest and found Odysseus' bow and " + BOW_ARROW_QUANTITY + " arrows!";
   private static final String SHOOT_INSTRUCTIONS_TEXT =
       "Left-click to fire an arrow towards the mouse.";
-  private static final String CRABS_BLOCK_EXIT_TEXT =
-      "Crabs are still scuttling around the wreck — clear them out before you move on.";
   private static final String GATE_OPEN_TEXT =
-      "The last crab falls! A marker lights the sand by the wreck's edge — walk through it to"
-          + " move on.";
+      "The last crab falls! Walk right past the EXIT sign to move on.";
 
   private static final String[] introTextures = {
     BACKGROUND_TEXTURE,
@@ -180,6 +176,7 @@ public class IntroTutorialGameArea extends GameArea {
     BOW_TEXTURE,
     ARROW_TEXTURE,
     SPIKE_TEXTURE,
+    GATE_MARKER_TEXTURE,
     "images/Buttons/skip_up_btn.png",
     "images/Buttons/skip_down_btn.png",
     "images/transparent.png"
@@ -194,7 +191,6 @@ public class IntroTutorialGameArea extends GameArea {
   private boolean bowFound = false;
   private int crabsRemaining = 0;
   private boolean gateOpened = false;
-  private boolean warnedAboutCrabs = false;
 
   private final TerrainFactory terrainFactory;
   private final CameraComponent camera;
@@ -404,19 +400,18 @@ public class IntroTutorialGameArea extends GameArea {
     }
   }
 
-  /** Spawns purely decorative marker tiles framing the exit, signalling it's now the way out. */
+  /** Reveals the EXIT sign and announces that the way forward is open. */
   private void openGate() {
     if (gateOpened) {
       return;
     }
     gateOpened = true;
-    spawnGateMarker(GATE_MARKER_LEFT);
-    spawnGateMarker(GATE_MARKER_RIGHT);
+    spawnGateMarker(GATE_MARKER_POSITION);
     instructionOverlay.show(GATE_OPEN_TEXT);
   }
 
   private void spawnGateMarker(GridPoint2 position) {
-    Entity marker = new Entity().addComponent(new TextureRenderComponent(JUMP_PLATFORM_TEXTURE));
+    Entity marker = new Entity().addComponent(new TextureRenderComponent(GATE_MARKER_TEXTURE));
     marker.setScale(GATE_MARKER_WIDTH, GATE_MARKER_HEIGHT);
     spawnEntityAt(marker, position, true, true);
   }
@@ -501,27 +496,15 @@ public class IntroTutorialGameArea extends GameArea {
     spawnEntityAt(zone, position, true, false);
   }
 
-  /**
-   * Unlike the other zones, this one can't use {@link EnterZoneTriggerComponent}'s fire-once
-   * semantics: if the player reached this tile before the crabs were cleared, a one-shot trigger
-   * would burn itself out on that early, blocked visit and never fire again once they're actually
-   * free to leave. So this listens directly and re-checks every entry; calling onLevelComplete more
-   * than once is harmless since {@code GdxGame#transitionTo} ignores repeats.
-   */
+  /** The exit spans above the floor and waits for the player and the unlocked gate. */
   private void spawnExitZone() {
-    Entity zone = ObstacleFactory.createTriggerZone(new Vector2(1f, 3f));
-    zone.getEvents().addListener("collisionStart", (Fixture me, Fixture other) -> onExitReached());
-    spawnEntityAt(zone, EXIT_ZONE, true, false);
+    Entity zone = ObstacleFactory.createTriggerZone(new Vector2(1f, LEVEL_HEIGHT_TILES - 3f));
+    zone.addComponent(new PlayerExitComponent(
+        player, () -> gateOpened, this::onExitReached));
+    spawnEntityAt(zone, EXIT_ZONE, false, false);
   }
 
   private void onExitReached() {
-    if (crabsRemaining > 0) {
-      if (!warnedAboutCrabs) {
-        warnedAboutCrabs = true;
-        instructionOverlay.show(CRABS_BLOCK_EXIT_TEXT);
-      }
-      return;
-    }
     if (onLevelComplete != null) {
       onLevelComplete.run();
     }

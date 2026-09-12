@@ -28,6 +28,19 @@ class AnimationRenderComponentTest {
   }
 
   @Test
+  void removingOneAnimatorMustNotDisposeSharedAtlas() {
+    RenderService renderService = mock(RenderService.class);
+    ServiceLocator.registerRenderService(renderService);
+    TextureAtlas atlas = createMockAtlas("walk", 1);
+    AnimationRenderComponent first = new AnimationRenderComponent(atlas);
+    AnimationRenderComponent survivor = new AnimationRenderComponent(atlas);
+    first.dispose();
+    verify(atlas, never()).dispose();
+    verify(renderService).unregister(first);
+    assertTrue(survivor.addAnimation("walk", 0.1f));
+  }
+
+  @Test
   void shouldAddRemoveAnimation() {
     TextureAtlas atlas = createMockAtlas("test_name", 1);
     AnimationRenderComponent animator = new AnimationRenderComponent(atlas);

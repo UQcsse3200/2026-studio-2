@@ -121,7 +121,7 @@ public class BackpackDisplay extends UIComponent {
     Texture texture =
         ServiceLocator.getResourceService().getAsset(getItemTexture(itemType), Texture.class);
 
-    Image icon = new Image(texture);
+    Image icon = ItemIcon.create(itemType, texture);
 
     Label slotLabel =
         new Label(
@@ -163,7 +163,7 @@ public class BackpackDisplay extends UIComponent {
                 ServiceLocator.getResourceService()
                     .getAsset(getItemTexture(itemType), Texture.class);
 
-            dragIcon = new Image(dragTexture);
+            dragIcon = ItemIcon.create(itemType, dragTexture);
             dragIcon.setSize(45f, 45f);
 
             // Prevent the floating icon from blocking hit detection.

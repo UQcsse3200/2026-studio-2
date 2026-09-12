@@ -110,7 +110,7 @@ public class InventoryBarDisplay extends UIComponent {
 
     Texture texture =
         ServiceLocator.getResourceService().getAsset(getItemTexture(item), Texture.class);
-    Image icon = new Image(texture);
+    Image icon = ItemIcon.create(item, texture);
 
     Label countLabel =
         new Label("x" + count, new Label.LabelStyle(skin.getFont("font"), Color.WHITE));

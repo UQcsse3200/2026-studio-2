@@ -241,7 +241,7 @@ public class AnimationRenderComponent extends RenderComponent {
 
   @Override
   public void dispose() {
-    atlas.dispose();
+    // ResourceService owns the atlas; other entities may still be rendering from it.
     super.dispose();
   }
 }
