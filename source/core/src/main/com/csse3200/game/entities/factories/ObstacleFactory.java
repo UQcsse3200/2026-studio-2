@@ -157,13 +157,11 @@ public class ObstacleFactory {
   }
 
   /**
-   * Creates a spike hazard entity with custom rotation.
+   * Creates a default upward-facing spike hazard entity.
    *
-   * @param rotationAngle Angle in degrees to rotate the spike (0 = UP, 180 = DOWN, 270 = LEFT, 90 =
-   *     RIGHT)
    * @return spike entity
    */
-  public static Entity createSpike(float rotationAngle) {
+  public static Entity createSpike() {
     Entity spike =
         new Entity()
             .addComponent(new TextureRenderComponent("images/spike.png"))
@@ -175,21 +173,12 @@ public class ObstacleFactory {
 
     spike.getComponent(PhysicsComponent.class).setBodyType(BodyType.StaticBody);
 
-    // Scale slightly larger to close gaps
+    // Scale slightly larger to close grid gaps
     spike.setScale(1.25f, 1.25f);
 
     PhysicsUtils.setScaledCollider(spike, 0.8f, 0.5f);
 
     return spike;
-  }
-
-  /**
-   * Creates a default upward-facing spike hazard entity.
-   *
-   * @return spike entity
-   */
-  public static Entity createSpike() {
-    return createSpike(0f);
   }
 
   private ObstacleFactory() {

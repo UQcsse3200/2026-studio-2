@@ -3,15 +3,16 @@ package com.csse3200.game.areas;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
-import com.csse3200.game.areas.terrain.TerrainComponent;
+import com.csse3200.game.areas.terrain.PlatformConfig;
 import com.csse3200.game.areas.terrain.TerrainFactory;
 import com.csse3200.game.areas.terrain.TerrainFactory.TerrainType;
-import com.csse3200.game.areas.terrain.configs.levelconfigs.LevelTutorialConfig;
 import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.components.gamearea.GameAreaDisplay;
 import com.csse3200.game.components.player.KeyboardPlayerInputComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.EnemyFactory;
+import com.csse3200.game.entities.factories.ItemFactory;
+import com.csse3200.game.entities.factories.NPCFactory;
 import com.csse3200.game.entities.factories.ObstacleFactory;
 import com.csse3200.game.entities.factories.PlayerFactory;
 import com.csse3200.game.physics.components.PhysicsComponent;
@@ -20,6 +21,7 @@ import com.csse3200.game.rendering.TextureRenderComponent;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.utils.math.GridPoint2Utils;
+import com.csse3200.game.utils.math.RandomUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,7 +30,29 @@ public class TutorialGameArea extends GameArea {
 
   private static final Logger logger = LoggerFactory.getLogger(TutorialGameArea.class);
 
-  /*
+  // private static final int NUM_TREES = 7;
+  private static final int NUM_GHOSTS = 2;
+
+  private static final PlatformConfig[] platforms = {
+    // first half
+    new PlatformConfig(new GridPoint2(4, 2), 3, 1, 0),
+    new PlatformConfig(new GridPoint2(8, 3), 3, 1, 0),
+    new PlatformConfig(new GridPoint2(14, 6), 3, 1, 0),
+    new PlatformConfig(new GridPoint2(19, 6), 3, 1, 0),
+    new PlatformConfig(new GridPoint2(27, 2), 3, 1, 0),
+    new PlatformConfig(new GridPoint2(32, 3), 2, 2, 0),
+    new PlatformConfig(new GridPoint2(30, 6), 3, 1, 0),
+    new PlatformConfig(new GridPoint2(27, 8), 3, 1, 10),
+    new PlatformConfig(new GridPoint2(23, 10), 3, 1, 2),
+    new PlatformConfig(new GridPoint2(14, 11), 3, 1, 0),
+    new PlatformConfig(new GridPoint2(9, 13), 3, 1, 0),
+
+    // second half
+    new PlatformConfig(new GridPoint2(56, 22), 3, 1, 1),
+    new PlatformConfig(new GridPoint2(60, 23), 3, 1, 1),
+    new PlatformConfig(new GridPoint2(64, 22), 3, 1, 1),
+  };
+
   private static final PlatformConfig[] floors = {
     // borders
     new PlatformConfig(new GridPoint2(0, 0), 100, 1, 0),
@@ -71,7 +95,6 @@ public class TutorialGameArea extends GameArea {
   private static final GridPoint2[] spikes = {
     new GridPoint2(10, 2), new GridPoint2(20, 2), new GridPoint2(35, 2)
   };
-   */
 
   private static final GridPoint2[] skeletonWarriorSpawnLocations =
       new GridPoint2[] {
@@ -96,7 +119,6 @@ public class TutorialGameArea extends GameArea {
   private static final int HEALTH_POTION_QUANTITY = 3;
 
   private static final float WALL_WIDTH = 0.1f;
-  private Vector2 worldBounds;
 
   /** Textures used by the tutorial game area. */
   private static final String[] forestTextures = {
@@ -167,7 +189,6 @@ public class TutorialGameArea extends GameArea {
   public TutorialGameArea(TerrainFactory terrainFactory, CameraComponent camera) {
     super(camera);
 
-    config = new LevelTutorialConfig();
     this.terrainFactory = terrainFactory;
     this.camera = camera;
   }
@@ -175,27 +196,41 @@ public class TutorialGameArea extends GameArea {
   /** Create the game area, including terrain, background, platforms and a player. */
   @Override
   public void create() {
+
     loadAssets();
+
     displayUI();
 
     spawnTerrain();
+
     spawnBackground();
-    spawnConfigEntities();
+
+    // spawnTrees();
+
+    spawnPlatforms();
+    spawnFloors();
+    spawnSpikes();
+
     player = spawnPlayer();
-    //// spawnItems(); // test items
-    //// spawnWinCondition();
+    spawnItems(); // test items
+    spawnWinCondition();
     spawnSkeletonArcher();
     spawnSkeletonWarrior();
-    //// spawnTestEnemyNearPlayer(); // Temporary enemy near player spawn for quick HUD/flicker
-    // testing
+    spawnTestEnemyNearPlayer(); // Temporary enemy near player spawn for quick HUD/flicker testing
     // spawnTestWinCondition(); // Temporary test win condition near player spawn for quick testing
+
+    // spawnGhosts();
+    // spawnGhostKing();
 
     // playMusic();
   }
 
   private void displayUI() {
+
     Entity ui = new Entity();
+
     ui.addComponent(new GameAreaDisplay("Tutorial"));
+
     spawnEntity(ui);
   }
 
@@ -215,46 +250,20 @@ public class TutorialGameArea extends GameArea {
    * the subtle effect you originally wanted.
    */
   private void spawnBackground() {
-    final Vector2 backgroundPos = new Vector2(-10f, -10f);
-    BackgroundRenderComponent backgroundComponent =
-        new BackgroundRenderComponent(camera, backgroundPos, worldBounds);
+
+    BackgroundRenderComponent backgroundComponent = new BackgroundRenderComponent(camera);
 
     // Complete original background image
     backgroundComponent.addLayer(
-        "images/parallax/original_background.png",
-        new Vector2(0.10f, 0f), // Parallax factor
-        30f,
-        15f,
-        new Vector2(0f, 3.5f), // Positional offset
-        BackgroundType.DEPENDENT,
-        new Vector2(0f, 0f), // Independent velocity
-        false);
-
-    backgroundComponent.addLayer(
-        "images/parallax/Clouds.png",
-        new Vector2(0.1f, 0f),
-        30f,
-        15f,
-        new Vector2(0f, 3.5f),
-        BackgroundType.DEPENDENT,
-        new Vector2(0.1f, 0f),
-        true);
-    /*
-    backgroundComponent.addLayer(
-            "images/parallax/Mountains.png",
-            new Vector2(0f, 0f),
-            30f,
-            15f,
-            2f,
-            BackgroundType.INDEPENDENT,
-            new Vector2(0f, 0f));
-    */
+        "images/parallax/original_background.png", 0.30f, 60f, 33.515625f, -1.50f);
 
     // Create the background entity.
     Entity background = new Entity().addComponent(backgroundComponent);
 
-    // Position the background in the game world.
-    background.setPosition(backgroundPos);
+    /*
+     * Position the background in the game world.
+     */
+    background.setPosition(-20f, -10f);
 
     spawnEntity(background);
   }
@@ -263,17 +272,34 @@ public class TutorialGameArea extends GameArea {
 
     // Background terrain
     terrain = terrainFactory.createTerrain(TerrainType.BACKGROUND_DESERT);
+
     spawnEntity(new Entity().addComponent(terrain));
 
     // Terrain walls
     float tileSize = terrain.getTileSize();
+
     GridPoint2 tileBounds = terrain.getMapBounds(0);
-    worldBounds = new Vector2(tileBounds.x * tileSize, tileBounds.y * tileSize);
-    //// spawnMovingPlatforms();
+
+    Vector2 worldBounds = new Vector2(tileBounds.x * tileSize, tileBounds.y * tileSize);
+
+    spawnMovingPlatforms();
 
     // Left wall
     spawnEntityAt(
         ObstacleFactory.createWall(WALL_WIDTH, worldBounds.y), GridPoint2Utils.ZERO, false, false);
+
+    // Right wall
+    /*
+    spawnEntityAt(
+        ObstacleFactory.createWall(
+            WALL_WIDTH,
+            worldBounds.y
+        ),
+        new GridPoint2(tileBounds.x, 0),
+        false,
+        false
+    );
+    */
 
     // Top wall
     spawnEntityAt(
@@ -410,9 +436,14 @@ public class TutorialGameArea extends GameArea {
     if (input != null) {
       input.setCameraComponent(cameraComponent);
     }
-    spawnEntityAt(newPlayer, config.getPlayerSpawn(), true, true);
+    spawnEntityAt(newPlayer, PLAYER_SPAWN, true, true);
 
     return newPlayer;
+  }
+
+  private void spawnWinCondition() {
+    Entity winCon = ObstacleFactory.createWinConEntity();
+    spawnEntityAt(winCon, new GridPoint2(80, 18), true, true);
   }
 
   // Temporary test win condition near player spawn for quick testing
@@ -426,6 +457,22 @@ public class TutorialGameArea extends GameArea {
   private void spawnTestEnemyNearPlayer() {
     Entity testEnemy = EnemyFactory.createSkeletonWarrior(player);
     spawnEntityAt(testEnemy, new GridPoint2(12, 4), true, true);
+  }
+
+  private void spawnGhosts() {
+
+    GridPoint2 minPos = new GridPoint2(0, 0);
+
+    GridPoint2 maxPos = terrain.getMapBounds(0).sub(2, 2);
+
+    for (int i = 0; i < NUM_GHOSTS; i++) {
+
+      GridPoint2 randomPos = RandomUtils.random(minPos, maxPos);
+
+      Entity ghost = NPCFactory.createGhost(player);
+
+      spawnEntityAt(ghost, randomPos, true, true);
+    }
   }
 
   private void spawnSkeletonWarrior() {
@@ -442,6 +489,19 @@ public class TutorialGameArea extends GameArea {
     }
   }
 
+  private void spawnGhostKing() {
+
+    GridPoint2 minPos = new GridPoint2(0, 0);
+
+    GridPoint2 maxPos = terrain.getMapBounds(0).sub(2, 2);
+
+    GridPoint2 randomPos = RandomUtils.random(minPos, maxPos);
+
+    Entity ghostKing = NPCFactory.createGhostKing(player);
+
+    spawnEntityAt(ghostKing, randomPos, true, true);
+  }
+
   /** Plays the background music. */
   private void playMusic() {
 
@@ -454,27 +514,38 @@ public class TutorialGameArea extends GameArea {
 
   /** Loads all assets. */
   private void loadAssets() {
+
     logger.debug("Loading assets");
 
     ResourceService resourceService = ServiceLocator.getResourceService();
+
     resourceService.loadTextures(forestTextures);
+
     resourceService.loadTextureAtlases(forestTextureAtlases);
+
     resourceService.loadSounds(forestSounds);
+
     resourceService.loadMusic(forestMusic);
 
     while (!resourceService.loadForMillis(10)) {
+
       logger.info("Loading... {}%", resourceService.getProgress());
     }
   }
 
   /** Unloads all assets. */
   private void unloadAssets() {
+
     logger.debug("Unloading assets");
 
     ResourceService resourceService = ServiceLocator.getResourceService();
+
     resourceService.unloadAssets(forestTextures);
+
     resourceService.unloadAssets(forestTextureAtlases);
+
     resourceService.unloadAssets(forestSounds);
+
     resourceService.unloadAssets(forestMusic);
   }
 
@@ -482,25 +553,18 @@ public class TutorialGameArea extends GameArea {
     return player;
   }
 
-  public TerrainComponent getTerrain() {
-    return terrain;
-  }
-
-  public enum BackgroundType {
-    INDEPENDENT,
-    DEPENDENT
-  }
-
   /** Dispose of the game area. */
   @Override
   public void dispose() {
+
     super.dispose();
+
     ServiceLocator.getResourceService().getAsset(backgroundMusic, Music.class).stop();
+
     this.unloadAssets();
   }
 
   /** generate items */
-  /*
   private void spawnItems() {
     spawnEntityAt(ItemFactory.createRopeArrow(), ROPE_ARROW_SPAWN, true, false);
 
@@ -517,5 +581,4 @@ public class TutorialGameArea extends GameArea {
 
     spawnEntityAt(ItemFactory.createColdArrow(COLD_ARROW_QUANTITY), COLD_ARROW_SPAWN, true, false);
   }
-  */
 }
