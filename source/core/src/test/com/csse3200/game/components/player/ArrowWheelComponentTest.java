@@ -18,7 +18,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 class ArrowWheelComponentTest {
   private static final float FAR = ArrowType.DEADZONE_RADIUS * 3f;
   private static final Vector2 TOWARDS_FIRE = new Vector2(FAR, 0f);
-  private static final Vector2 TOWARDS_ICE = new Vector2(0f, -FAR);
+  private static final Vector2 TOWARDS_COLD = new Vector2(0f, -FAR);
   private static final Vector2 CENTRE = new Vector2(0f, 0f);
 
   private ArrowWheelComponent wheel;
@@ -68,19 +68,19 @@ class ArrowWheelComponentTest {
     player.getEvents().addListener("arrowHighlighted", (ArrowType type) -> announced.set(type));
 
     wheel.open();
-    assertTrue(wheel.highlightFromPointer(TOWARDS_ICE));
+    assertTrue(wheel.highlightFromPointer(TOWARDS_COLD));
 
-    assertEquals(ArrowType.ICE, wheel.getHighlighted());
-    assertEquals(ArrowType.ICE, announced.get());
+    assertEquals(ArrowType.COLD, wheel.getHighlighted());
+    assertEquals(ArrowType.COLD, announced.get());
   }
 
   @Test
   void shouldReportNoChangeWhenThePointerStaysInTheSameWedge() {
     wheel.open();
-    wheel.highlightFromPointer(TOWARDS_ICE);
+    wheel.highlightFromPointer(TOWARDS_COLD);
 
     assertFalse(wheel.highlightFromPointer(new Vector2(FAR * 0.2f, -FAR)));
-    assertEquals(ArrowType.ICE, wheel.getHighlighted());
+    assertEquals(ArrowType.COLD, wheel.getHighlighted());
   }
 
   @Test
@@ -110,14 +110,14 @@ class ArrowWheelComponentTest {
     player
         .getEvents()
         .addListener("arrowSelectionRejected", (ArrowType type) -> rejected.set(type));
-    wheel.setAvailable(ArrowType.ICE, false);
+    wheel.setAvailable(ArrowType.COLD, false);
 
     wheel.open();
-    wheel.highlightFromPointer(TOWARDS_ICE);
+    wheel.highlightFromPointer(TOWARDS_COLD);
     assertFalse(wheel.close());
 
     assertEquals(ArrowType.NORMAL, wheel.getSelected());
-    assertEquals(ArrowType.ICE, rejected.get());
+    assertEquals(ArrowType.COLD, rejected.get());
   }
 
   @Test
