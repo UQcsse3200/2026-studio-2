@@ -9,7 +9,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.csse3200.game.GdxGame;
+import com.csse3200.game.areas.GameArea;
 import com.csse3200.game.components.ButtonSound;
+import com.csse3200.game.entities.Entity;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.UIComponent;
 
@@ -24,24 +26,24 @@ public class PauseMenuDisplay extends UIComponent {
   boolean paused = false;
 
   private GdxGame game;
+  private GameArea area;
 
-  public PauseMenuDisplay(GdxGame game) {
+  private Entity overlay;
+
+  public PauseMenuDisplay(GdxGame game, GameArea area) {
     this.game = game;
+    this.area = area;
   }
 
   @Override
   public void create() {
     super.create();
     addActors();
-
-    entity.getEvents().addListener("showPauseMenu", this::pause);
-    entity.getEvents().addListener("hidePauseMenu", this::unpause);
   }
 
   private void addActors() {
     table = new Table();
     table.setFillParent(true);
-    table.setColor(1, 1, 1, 0);
 
     Texture continueUpTexture =
         ServiceLocator.getResourceService()
@@ -101,7 +103,8 @@ public class PauseMenuDisplay extends UIComponent {
           public void changed(ChangeEvent changeEvent, Actor actor) {
             if (ServiceLocator.getEntityService().getPaused()) {
               ButtonSound.playClick();
-              unpause();
+              entity.getEvents().trigger("togglePause");
+              area.getInput().unpause();
             }
           }
         });
@@ -149,18 +152,18 @@ public class PauseMenuDisplay extends UIComponent {
     stage.addActor(table);
   }
 
-  private void pause() {
-    table.setColor(1, 1, 1, 1);
-    ServiceLocator.getEntityService().setPaused(true);
-  }
-
-  private void unpause() {
-    table.setColor(1, 1, 1, 0);
-    ServiceLocator.getEntityService().setPaused(false);
-  }
-
   @Override
   public void draw(SpriteBatch batch) {
     // draw is handled by the stage
+  }
+
+  public void toFront() {
+    table.toFront();
+  }
+
+  @Override
+  public void dispose() {
+    table.remove();
+    super.dispose();
   }
 }

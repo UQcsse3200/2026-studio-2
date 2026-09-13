@@ -27,6 +27,7 @@ import org.slf4j.LoggerFactory;
 public class TutorialGameArea extends GameArea {
 
   private static final Logger logger = LoggerFactory.getLogger(TutorialGameArea.class);
+  private KeyboardPlayerInputComponent input;
 
   // private static final int NUM_TREES = 7;
   private static final int NUM_GHOSTS = 2;
@@ -222,6 +223,10 @@ public class TutorialGameArea extends GameArea {
     // playMusic();
   }
 
+  public KeyboardPlayerInputComponent getInput() {
+    return input;
+  }
+
   private void displayUI() {
 
     Entity ui = new Entity();
@@ -385,7 +390,7 @@ public class TutorialGameArea extends GameArea {
     Entity newPlayer = PlayerFactory.createPlayer();
     newPlayer.getEvents().addListener("grappleRequested", this::checkSuccessfulGrapple);
 
-    KeyboardPlayerInputComponent input = newPlayer.getComponent(KeyboardPlayerInputComponent.class);
+    input = newPlayer.getComponent(KeyboardPlayerInputComponent.class);
     if (input != null) {
       input.setCameraComponent(cameraComponent);
     }

@@ -6,6 +6,7 @@ import com.badlogic.gdx.utils.Disposable;
 import com.csse3200.game.areas.terrain.TerrainComponent;
 import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.components.level.PlatformGrappleComponent;
+import com.csse3200.game.components.player.KeyboardPlayerInputComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.ArrayList;
@@ -25,6 +26,7 @@ public abstract class GameArea implements Disposable {
   protected List<Entity> areaEntities;
   protected List<Entity> platforms = new ArrayList<>();
   protected Entity player;
+  protected KeyboardPlayerInputComponent input;
 
   /**
    * Creates a game area using the provided camera component.
@@ -129,5 +131,9 @@ public abstract class GameArea implements Disposable {
     int hit = grappleComponent.checkSideHit(p, raycastEnd);
     boolean result = grappleComponent.successfulGrapple(hit);
     player.getEvents().trigger("grappleResponse", result);
+  }
+
+  public KeyboardPlayerInputComponent getInput() {
+    return input;
   }
 }

@@ -1,6 +1,7 @@
 package com.csse3200.game.screens;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -12,6 +13,9 @@ import com.csse3200.game.components.gamearea.PerformanceDisplay;
 import com.csse3200.game.components.maingame.MainGameActions;
 import com.csse3200.game.components.maingame.MainGameExitDisplay;
 import com.csse3200.game.components.maingame.PauseMenuDisplay;
+import com.csse3200.game.components.maingame.PauseMenuOverlay;
+import com.csse3200.game.components.minigames.spinthewheel.SpinTheWheelOverlay;
+import com.csse3200.game.components.minigames.spinthewheel.WheelConfig;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.entities.factories.RenderFactory;
@@ -31,6 +35,8 @@ import com.csse3200.game.ui.GameEndDisplay;
 import com.csse3200.game.ui.GameEndState;
 import com.csse3200.game.ui.terminal.Terminal;
 import com.csse3200.game.ui.terminal.TerminalDisplay;
+import java.util.ArrayList;
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,9 +72,12 @@ public class TutorialGameScreen extends ScreenAdapter {
   private final GdxGame game;
   private final Renderer renderer;
   private final PhysicsEngine physicsEngine;
+  private final SpinTheWheelOverlay wheelOverlay;
+  private final PauseMenuOverlay pauseOverlay;
   private Entity player;
   private static final String gameplayMusic = "sounds/gameplay_bg.ogg";
   private static final String[] gameplayMusicFiles = {gameplayMusic};
+  private final TutorialGameArea tutorialGameArea;
 
   public TutorialGameScreen(GdxGame game) {
     this.game = game;
@@ -104,7 +113,7 @@ public class TutorialGameScreen extends ScreenAdapter {
 
     // Pass the same camera to the TutorialGameArea so that
     // the parallax background can follow camera movement.
-    TutorialGameArea tutorialGameArea = new TutorialGameArea(terrainFactory, renderer.getCamera());
+    tutorialGameArea = new TutorialGameArea(terrainFactory, renderer.getCamera());
 
     tutorialGameArea.create();
 
@@ -113,6 +122,8 @@ public class TutorialGameScreen extends ScreenAdapter {
     // Follow the player with the camera.
     renderer.getCamera().setTarget(player);
     player.getEvents().addListener("death", this::onPlayerDeath);
+    wheelOverlay = new SpinTheWheelOverlay(WheelConfig.ITEMS, player);
+    pauseOverlay = new PauseMenuOverlay(game, tutorialGameArea);
   }
 
   private void onPlayerDeath() {
@@ -123,9 +134,18 @@ public class TutorialGameScreen extends ScreenAdapter {
 
   @Override
   public void render(float delta) {
+    if (Gdx.input.isKeyJustPressed(Input.Keys.K)) {
+      wheelOverlay.request();
+    } else if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
+      pauseOverlay.request();
+      tutorialGameArea.getInput().unpause();
+    }
+
     physicsEngine.update();
     ServiceLocator.getEntityService().update();
     renderer.render();
+    wheelOverlay.afterRender();
+    pauseOverlay.afterRender();
   }
 
   @Override
@@ -158,10 +178,41 @@ public class TutorialGameScreen extends ScreenAdapter {
     ServiceLocator.clear();
   }
 
+  /**
+   * The tutorial's textures and spin the wheel's so it can be opened as an overlay.
+   *
+   * @return every texture this screen needs loaded
+   */
+  private static String[] createTextures() {
+    List<String> paths =
+        new ArrayList<>(
+            List.of(
+                "images/heart.png",
+                "images/title_odysseus_logo.png",
+                "images/Health_Bar_Background.png",
+                "images/red_heart.png",
+                "images/PixelArt_HeartBack.png",
+                "images/Damaged_heart.png",
+                "images/Last_Health.png",
+                "images/Buttons/continue_up_btn.png",
+                "images/Buttons/continue_down_btn.png",
+                "images/Buttons/settings_up_btn.png",
+                "images/Buttons/settings_down_btn.png",
+                "images/Buttons/quit_up_btn.png",
+                "images/Buttons/quit_down_btn.png",
+                "images/Buttons/exit_up_btn.png",
+                "images/Buttons/exit_down_btn.png",
+                "images/Buttons/control_up_btn.png",
+                "images/Buttons/control_down_btn.png"));
+    paths.addAll(List.of(WheelConfig.TEXTURES));
+    return paths.toArray(new String[0]);
+  }
+
   private void loadAssets() {
     logger.debug("Loading assets");
     ResourceService resourceService = ServiceLocator.getResourceService();
     resourceService.loadTextures(mainGameTextures);
+    resourceService.loadSounds(WheelConfig.SOUNDS);
     resourceService.loadMusic(gameplayMusicFiles);
     ButtonSound.load(resourceService);
     resourceService.loadAll();
@@ -171,6 +222,7 @@ public class TutorialGameScreen extends ScreenAdapter {
     logger.debug("Unloading assets");
     ResourceService resourceService = ServiceLocator.getResourceService();
     resourceService.unloadAssets(mainGameTextures);
+    resourceService.unloadAssets(WheelConfig.SOUNDS);
     resourceService.unloadAssets(gameplayMusicFiles);
     ButtonSound.unload(resourceService);
   }
@@ -205,8 +257,7 @@ public class TutorialGameScreen extends ScreenAdapter {
         .addComponent(new GameEndActions(this.game))
         .addComponent(new Terminal())
         .addComponent(inputComponent)
-        .addComponent(new TerminalDisplay())
-        .addComponent(new PauseMenuDisplay(this.game));
+        .addComponent(new TerminalDisplay());
 
     ServiceLocator.getEntityService().register(ui);
   }
