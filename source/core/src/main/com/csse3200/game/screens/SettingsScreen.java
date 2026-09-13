@@ -21,6 +21,12 @@ import org.slf4j.LoggerFactory;
 /** The game screen containing the settings. */
 public class SettingsScreen extends ScreenAdapter {
   private static final Logger logger = LoggerFactory.getLogger(SettingsScreen.class);
+  private static final String[] settingsTextures = {
+    "images/Buttons/exit_up_btn.png",
+    "images/Buttons/exit_down_btn.png",
+    "images/Buttons/apply_up_btn.png",
+    "images/Buttons/apply_down_btn.png"
+  };
 
   private final GdxGame game;
   private final Renderer renderer;
@@ -42,18 +48,6 @@ public class SettingsScreen extends ScreenAdapter {
     createUI();
   }
 
-  private void loadAssets() {
-    logger.debug("Loading assets");
-    ResourceService resourceService = ServiceLocator.getResourceService();
-    ButtonSound.load(resourceService);
-    resourceService.loadAll();
-  }
-
-  private void unloadAssets() {
-    logger.debug("Unloading assets");
-    ButtonSound.unload(ServiceLocator.getResourceService());
-  }
-
   @Override
   public void render(float delta) {
     ServiceLocator.getEntityService().update();
@@ -68,10 +62,26 @@ public class SettingsScreen extends ScreenAdapter {
   @Override
   public void dispose() {
     renderer.dispose();
+    unloadAssets();
     ServiceLocator.getRenderService().dispose();
     ServiceLocator.getEntityService().dispose();
 
     ServiceLocator.clear();
+  }
+
+  private void loadAssets() {
+    logger.debug("Loading assets");
+    ResourceService resourceService = ServiceLocator.getResourceService();
+    resourceService.loadTextures(settingsTextures);
+    ButtonSound.load(resourceService);
+    resourceService.loadAll();
+  }
+
+  private void unloadAssets() {
+    logger.debug("Unloading assets");
+    ResourceService resourceService = ServiceLocator.getResourceService();
+    resourceService.unloadAssets(settingsTextures);
+    ButtonSound.unload(resourceService);
   }
 
   /**

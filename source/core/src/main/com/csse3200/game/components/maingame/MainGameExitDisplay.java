@@ -1,11 +1,14 @@
 package com.csse3200.game.components.maingame;
 
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.csse3200.game.components.ButtonSound;
+import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.UIComponent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,7 +30,18 @@ public class MainGameExitDisplay extends UIComponent {
     table.top().right();
     table.setFillParent(true);
 
-    TextButton mainMenuBtn = new TextButton("Exit", skin);
+    Texture exitUpTexture =
+        ServiceLocator.getResourceService()
+            .getAsset("images/Buttons/exit_up_btn.png", Texture.class);
+    Texture exitDownTexture =
+        ServiceLocator.getResourceService()
+            .getAsset("images/Buttons/exit_down_btn.png", Texture.class);
+
+    ImageButton.ImageButtonStyle exitButtonStyle = new ImageButton.ImageButtonStyle();
+    exitButtonStyle.up = new TextureRegionDrawable(exitUpTexture);
+    exitButtonStyle.down = new TextureRegionDrawable(exitDownTexture);
+
+    ImageButton mainMenuBtn = new ImageButton(exitButtonStyle);
 
     // Triggers an event when the button is pressed.
     mainMenuBtn.addListener(
@@ -39,7 +53,7 @@ public class MainGameExitDisplay extends UIComponent {
           }
         });
 
-    table.add(mainMenuBtn).padTop(10f).padRight(10f);
+    table.add(mainMenuBtn).width(220f).height(80f).padTop(90f).padRight(20f);
 
     stage.addActor(table);
   }

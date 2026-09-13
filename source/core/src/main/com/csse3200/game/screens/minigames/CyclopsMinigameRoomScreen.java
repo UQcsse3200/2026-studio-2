@@ -41,7 +41,10 @@ public class CyclopsMinigameRoomScreen extends ScreenAdapter {
     "images/box_boy_title.png",
     "images/Health_Bar_Background.png",
     "images/Inventory_background.png",
-    "images/red_heart.png"
+    "images/red_heart.png",
+    "images/heart.png",
+    "images/Buttons/exit_up_btn.png",
+    "images/Buttons/exit_down_btn.png"
   };
   private static final Vector2 CAMERA_POSITION = new Vector2(7.5f, 7.5f);
 
