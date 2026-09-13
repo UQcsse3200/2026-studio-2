@@ -27,6 +27,10 @@ public class DynamicTextureRenderComponent extends RenderComponent {
     rotateComponent = entity.getComponent(RotatableMapComponent.class);
   }
 
+  public Texture getTexture() {
+    return texture;
+  }
+
   public void setTexture(String texturePath) {
     texture = ServiceLocator.getResourceService().getAsset(texturePath, Texture.class);
     textureRegion = new TextureRegion(texture);
@@ -45,7 +49,7 @@ public class DynamicTextureRenderComponent extends RenderComponent {
   protected void draw(SpriteBatch batch) {
     Vector2 position = entity.getPosition();
     Vector2 scale = entity.getScale();
-    rotation = rotateComponent.getRotation();
+    rotation = rotateComponent != null ? rotateComponent.getRotation() : 0f;
     batch.draw(
         textureRegion,
         position.x,

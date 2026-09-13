@@ -1,9 +1,10 @@
 package com.csse3200.game.components.level;
 
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.csse3200.game.physics.PhysicsLayer;
-import com.csse3200.game.physics.components.ColliderComponent;
-import com.csse3200.game.rendering.TextureRenderComponent;
+import com.csse3200.game.physics.components.PhysicsComponent;
+import com.csse3200.game.rendering.DynamicTextureRenderComponent;
 import com.csse3200.game.services.ServiceLocator;
 
 /**
@@ -15,7 +16,6 @@ import com.csse3200.game.services.ServiceLocator;
  * respawnTime seconds before becoming active again.
  */
 public class CrumblingPlatformComponent extends PlatformGrappleComponent {
-
   private enum CrumbleState {
     NORMAL,
     WAITING_TO_CRUMBLE,
@@ -26,6 +26,7 @@ public class CrumblingPlatformComponent extends PlatformGrappleComponent {
   private final float timeBeforeCrumble;
   private final float crumbleTime;
   private final float respawnTime;
+  private Texture platformTexture;
 
   private CrumbleState state = CrumbleState.NORMAL;
   private float stateTime = 0f;
@@ -60,7 +61,6 @@ public class CrumblingPlatformComponent extends PlatformGrappleComponent {
    * @param other the fixture that made contact with the platform
    */
   private void onCollisionStart(Fixture me, Fixture other) {
-
     // Only allow activation while the platform is in its normal state.
     if (state != CrumbleState.NORMAL) {
       return;
@@ -78,7 +78,6 @@ public class CrumblingPlatformComponent extends PlatformGrappleComponent {
 
   @Override
   public void update() {
-
     float deltaTime = ServiceLocator.getTimeSource().getDeltaTime();
 
     switch (state) {
@@ -115,43 +114,36 @@ public class CrumblingPlatformComponent extends PlatformGrappleComponent {
 
   /** Makes the platform disappear and disables its collision. */
   private void crumble() {
-
     state = CrumbleState.CRUMBLED;
     stateTime = 0f;
 
     // Disable collision so the player can fall through.
-    ColliderComponent collider = entity.getComponent(ColliderComponent.class);
-
-    if (collider != null) {
-      collider.setEnabled(false);
+    PhysicsComponent physicsComponent = entity.getComponent(PhysicsComponent.class);
+    if (physicsComponent != null) {
+      physicsComponent.setEnabled(false);
     }
 
     // Hide the platform without destroying its render component.
-    TextureRenderComponent renderComponent = entity.getComponent(TextureRenderComponent.class);
-
-    if (renderComponent != null) {
-      renderComponent.setEnabled(false);
-    }
+    DynamicTextureRenderComponent renderComponent =
+        entity.getComponent(DynamicTextureRenderComponent.class);
+    platformTexture = renderComponent.getTexture();
+    renderComponent.setTexture("images/transparent.png");
   }
 
   /** Restores the platform after the respawn timer finishes. */
   private void respawn() {
-
     state = CrumbleState.NORMAL;
     stateTime = 0f;
 
     // Enable collision again.
-    ColliderComponent collider = entity.getComponent(ColliderComponent.class);
-
-    if (collider != null) {
-      collider.setEnabled(true);
+    PhysicsComponent physicsComponent = entity.getComponent(PhysicsComponent.class);
+    if (physicsComponent != null) {
+      physicsComponent.setEnabled(true);
     }
 
     // Show the platform again.
-    TextureRenderComponent renderComponent = entity.getComponent(TextureRenderComponent.class);
-
-    if (renderComponent != null) {
-      renderComponent.setEnabled(true);
-    }
+    DynamicTextureRenderComponent renderComponent =
+        entity.getComponent(DynamicTextureRenderComponent.class);
+    renderComponent.setTexture(platformTexture);
   }
 }
