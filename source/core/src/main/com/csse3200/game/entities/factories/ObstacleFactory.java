@@ -28,7 +28,7 @@ public class ObstacleFactory {
   /**
    * Creates a tree entity.
    *
-   * @return entity
+   * @return tree entity
    */
   public static Entity createTree() {
     Entity tree =
@@ -48,16 +48,33 @@ public class ObstacleFactory {
   /**
    * Creates the normal platform used by the other levels.
    *
-   * @param config the configuration object for this platform
+   * <p>Level 2's tiled ground uses TiledRenderComponent so the tile texture repeats instead of
+   * stretching across the entire floor.
+   *
+   * @param config configuration object for this platform
    * @return platform entity
    */
   public static Entity createPlatform(PlatformConfig config) {
-    Entity platform =
-        new Entity()
-            .addComponent(new TextureRenderComponent(config.textureFilepath))
-            .addComponent(new PhysicsComponent())
-            .addComponent(new ColliderComponent().setLayer(PhysicsLayer.GROUND))
-            .addComponent(new PlatformGrappleComponent(config.grappleSides));
+
+    Entity platform = new Entity();
+
+    /*
+     * Use the tiled renderer only for the Level 2 ground texture.
+     * All normal platforms continue to use TextureRenderComponent.
+     */
+    if ("images/tile-level2.png".equals(config.textureFilepath)) {
+
+      platform.addComponent(new TiledRenderComponent("images/tile-level2.png", 0.75f));
+
+    } else {
+
+      platform.addComponent(new TextureRenderComponent(config.textureFilepath));
+    }
+
+    platform
+        .addComponent(new PhysicsComponent())
+        .addComponent(new ColliderComponent().setLayer(PhysicsLayer.GROUND))
+        .addComponent(new PlatformGrappleComponent(config.grappleSides));
 
     platform.getComponent(PhysicsComponent.class).setBodyType(BodyType.StaticBody);
 
@@ -67,7 +84,7 @@ public class ObstacleFactory {
   /**
    * Creates a normal moving platform.
    *
-   * @param config the configuration object for this platform
+   * @param config configuration object for this platform
    * @return moving platform entity
    */
   public static Entity createMovingPlatform(MovingPlatformConfig config) {
@@ -99,7 +116,7 @@ public class ObstacleFactory {
   /**
    * Creates a normal crumbling platform.
    *
-   * @param config the configuration object for this platform
+   * @param config configuration object for this platform
    * @return crumbling platform entity
    */
   public static Entity createCrumblingPlatform(CrumblingPlatformConfig config) {
@@ -111,7 +128,10 @@ public class ObstacleFactory {
             .addComponent(new ColliderComponent().setLayer(PhysicsLayer.GROUND))
             .addComponent(
                 new CrumblingPlatformComponent(
-                    config.grappleSides, config.getTimeBeforeCrumble(), config.getCrumbleTime()));
+                    config.grappleSides,
+                    config.getTimeBeforeCrumble(),
+                    config.getCrumbleTime(),
+                    config.getRespawnTime()));
 
     platform.getComponent(PhysicsComponent.class).setBodyType(BodyType.StaticBody);
 
@@ -121,7 +141,7 @@ public class ObstacleFactory {
   /**
    * Creates a normal triggerable platform.
    *
-   * @param config the configuration object for this platform
+   * @param config configuration object for this platform
    * @return triggerable platform entity
    */
   public static Entity createTriggerablePlatform(TriggerablePlatformConfig config) {
@@ -141,9 +161,9 @@ public class ObstacleFactory {
   }
 
   /**
-   * Creates a new trigger button entity
+   * Creates a new trigger button entity.
    *
-   * @param config the configuration to use for the creation of this button
+   * @param config configuration to use for the creation of this button
    * @return button entity
    */
   public static Entity createButton(TriggerButtonConfig config) {
@@ -151,6 +171,7 @@ public class ObstacleFactory {
         new RotatableAnimationRenderComponent(
             ServiceLocator.getResourceService()
                 .getAsset("images/in_level_button.atlas", TextureAtlas.class));
+
     animator.addAnimation("default", 1f, Animation.PlayMode.LOOP);
     animator.addAnimation("pressed", 0.075f, Animation.PlayMode.NORMAL);
     animator.startAnimation("default");
@@ -164,7 +185,7 @@ public class ObstacleFactory {
             .addComponent(new TriggerButtonComponent())
             .addComponent(new RotatableMapComponent(config.getRotation()));
 
-    // if attach is requested, add component
+    // If attach is requested, add component.
     if (config.getAttached()) {
       button.addComponent(new AttachableMapComponent());
     }
@@ -236,6 +257,7 @@ public class ObstacleFactory {
   /**
    * Creates a ledge entity.
    *
+   * @param config configuration object for this ledge
    * @return ledge entity
    */
   public static Entity createLedge(PlatformConfig config) {
@@ -264,7 +286,7 @@ public class ObstacleFactory {
   /**
    * Creates a spike hazard entity with custom rotation.
    *
-   * @param config the configuration object for the spike to create
+   * @param config configuration object for the spike
    * @return spike entity
    */
   public static Entity createSpike(SpikeClusterConfig config) {
@@ -278,14 +300,14 @@ public class ObstacleFactory {
             .addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER))
             .addComponent(new RotatableMapComponent(config.getRotation()));
 
-    // if attachment requested, add component
+    // If attachment is requested, add component.
     if (config.getAttached()) {
       spike.addComponent(new AttachableMapComponent());
     }
 
     spike.getComponent(PhysicsComponent.class).setBodyType(BodyType.KinematicBody);
 
-    // Scale slightly larger to close gaps
+    // Scale slightly larger to close gaps.
     spike.setScale(1.25f, 1.25f);
 
     PhysicsUtils.setScaledCollider(spike, 0.8f, 0.5f);

@@ -2,16 +2,20 @@ package com.csse3200.game.components.level;
 
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.csse3200.game.physics.PhysicsLayer;
-import com.csse3200.game.physics.components.PhysicsComponent;
+import com.csse3200.game.physics.components.ColliderComponent;
 import com.csse3200.game.rendering.TextureRenderComponent;
 import com.csse3200.game.services.ServiceLocator;
 
 /**
- * Causes a platform to crumble after the player stands on it. Once activated by player contact, the
- * platform waits for {@code timeBeforeCrumble} seconds, then spends {@code crumbleTime} seconds
- * crumbling before losing its collision and disappearing, allowing the player to fall through it.
+ * Causes a platform to crumble after the player touches it.
+ *
+ * <p>The platform starts in a normal state and does nothing until the player makes contact. Once
+ * touched, the platform waits for timeBeforeCrumble seconds, then crumbles for crumbleTime seconds.
+ * After crumbling, the platform disappears and its collision is disabled. It then waits for
+ * respawnTime seconds before becoming active again.
  */
 public class CrumblingPlatformComponent extends PlatformGrappleComponent {
+
   private enum CrumbleState {
     NORMAL,
     WAITING_TO_CRUMBLE,
@@ -21,20 +25,27 @@ public class CrumblingPlatformComponent extends PlatformGrappleComponent {
 
   private final float timeBeforeCrumble;
   private final float crumbleTime;
+  private final float respawnTime;
+
   private CrumbleState state = CrumbleState.NORMAL;
-  private float stateTime;
+  private float stateTime = 0f;
 
   /**
+   * Creates a crumbling platform component.
+   *
    * @param grappleSides the base 10 integer representing which sides can be grappled to
-   * @param timeBeforeCrumble how long the player can stand on the platform before it starts to
-   *     crumble, in seconds
-   * @param crumbleTime how long the crumbling animation takes before the platform is destroyed, in
-   *     seconds
+   * @param timeBeforeCrumble how long to wait after player contact before crumbling, in seconds
+   * @param crumbleTime how long the platform spends crumbling, in seconds
+   * @param respawnTime how long the platform stays gone before returning, in seconds
    */
-  public CrumblingPlatformComponent(int grappleSides, float timeBeforeCrumble, float crumbleTime) {
+  public CrumblingPlatformComponent(
+      int grappleSides, float timeBeforeCrumble, float crumbleTime, float respawnTime) {
+
     super(grappleSides);
+
     this.timeBeforeCrumble = timeBeforeCrumble;
     this.crumbleTime = crumbleTime;
+    this.respawnTime = respawnTime;
   }
 
   @Override
@@ -43,55 +54,104 @@ public class CrumblingPlatformComponent extends PlatformGrappleComponent {
   }
 
   /**
-   * Starts the crumble countdown the first time the player makes contact with the platform.
+   * Starts the crumble countdown when the player touches the platform.
    *
    * @param me this platform's fixture
    * @param other the fixture that made contact with the platform
    */
   private void onCollisionStart(Fixture me, Fixture other) {
+
+    // Only allow activation while the platform is in its normal state.
     if (state != CrumbleState.NORMAL) {
       return;
     }
 
+    // Ignore anything that is not the player.
     if (!PhysicsLayer.contains(PhysicsLayer.PLAYER, other.getFilterData().categoryBits)) {
       return;
     }
 
+    // Player has touched the platform, so start the countdown.
     state = CrumbleState.WAITING_TO_CRUMBLE;
     stateTime = 0f;
   }
 
   @Override
   public void update() {
-    if (state == CrumbleState.NORMAL || state == CrumbleState.CRUMBLED) {
-      return;
-    }
 
-    stateTime += ServiceLocator.getTimeSource().getDeltaTime();
+    float deltaTime = ServiceLocator.getTimeSource().getDeltaTime();
 
-    if (state == CrumbleState.WAITING_TO_CRUMBLE && stateTime >= timeBeforeCrumble) {
-      state = CrumbleState.CRUMBLING;
-      stateTime = 0f;
-    } else if (state == CrumbleState.CRUMBLING && stateTime >= crumbleTime) {
-      crumble();
+    switch (state) {
+      case NORMAL:
+        // Platform is waiting for the player to touch it.
+        break;
+
+      case WAITING_TO_CRUMBLE:
+        stateTime += deltaTime;
+
+        if (stateTime >= timeBeforeCrumble) {
+          state = CrumbleState.CRUMBLING;
+          stateTime = 0f;
+        }
+        break;
+
+      case CRUMBLING:
+        stateTime += deltaTime;
+
+        if (stateTime >= crumbleTime) {
+          crumble();
+        }
+        break;
+
+      case CRUMBLED:
+        stateTime += deltaTime;
+
+        if (stateTime >= respawnTime) {
+          respawn();
+        }
+        break;
     }
   }
 
-  /**
-   * Finalises the crumble: disables the platform's physics so the player can fall through it, and
-   * removes its texture so it disappears.
-   */
+  /** Makes the platform disappear and disables its collision. */
   private void crumble() {
-    state = CrumbleState.CRUMBLED;
 
-    PhysicsComponent physicsComponent = entity.getComponent(PhysicsComponent.class);
-    if (physicsComponent != null) {
-      physicsComponent.setEnabled(false);
+    state = CrumbleState.CRUMBLED;
+    stateTime = 0f;
+
+    // Disable collision so the player can fall through.
+    ColliderComponent collider = entity.getComponent(ColliderComponent.class);
+
+    if (collider != null) {
+      collider.setEnabled(false);
     }
 
+    // Hide the platform without destroying its render component.
     TextureRenderComponent renderComponent = entity.getComponent(TextureRenderComponent.class);
+
     if (renderComponent != null) {
-      renderComponent.dispose();
+      renderComponent.setEnabled(false);
+    }
+  }
+
+  /** Restores the platform after the respawn timer finishes. */
+  private void respawn() {
+
+    state = CrumbleState.NORMAL;
+    stateTime = 0f;
+
+    // Enable collision again.
+    ColliderComponent collider = entity.getComponent(ColliderComponent.class);
+
+    if (collider != null) {
+      collider.setEnabled(true);
+    }
+
+    // Show the platform again.
+    TextureRenderComponent renderComponent = entity.getComponent(TextureRenderComponent.class);
+
+    if (renderComponent != null) {
+      renderComponent.setEnabled(true);
     }
   }
 }

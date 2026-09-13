@@ -10,14 +10,23 @@ import java.util.Map;
 public class Level2Config extends LevelConfig {
 
   public Level2Config() {
-    // Textures
-    platformTFP = "images/Platform_level-2.png";
-    groundTFP = "images/Ground_level-2.png";
 
-    // Player starting position
+    // =========================
+    // TEXTURES
+    // =========================
+    platformTFP = "images/Platform_level-2.png";
+
+    // NEW LEVEL 2 GREEN GROUND TILE
+    groundTFP = "images/tile-level2.png";
+
+    // =========================
+    // PLAYER START
+    // =========================
     playerSpawn = new GridPoint2(2, 5);
 
-    // Temporary win condition
+    // =========================
+    // WIN CONDITION
+    // =========================
     winConditionSpawn = new GridPoint2(80, 18);
 
     // =========================
@@ -30,6 +39,9 @@ public class Level2Config extends LevelConfig {
           new PlatformConfig(new GridPoint2(18, 9), 3, 1, 0, platformTFP) // P3
         };
 
+    // =========================
+    // MOVING PLATFORM
+    // =========================
     movingPlatforms =
         new MovingPlatformConfig[] {
           new MovingPlatformConfig(
@@ -45,48 +57,44 @@ public class Level2Config extends LevelConfig {
         };
 
     // =========================
-    // LEVEL 2 CRUMBLING PLATFORMS
+    // CRUMBLING PLATFORM
     // =========================
     crumblingPlatforms =
         new CrumblingPlatformConfig[] {
 
-          // TEST C1 - TEMPORARY: kept at the SAME height as the spawn platform (P1) with only a
-          // small horizontal gap, since Level 2's gravity is strong (-50 m/s^2 in
-          // PhysicsEngine.GRAVITY) and this game's big gaps (e.g. P1 -> P2) are meant to be
-          // crossed with the grapple, not a plain jump. A same-height gap needs no vertical lift,
-          // just walking speed carried into a short hop. Short timings (2s / 2s) so the crumbling
-          // platform chain can be manually verified in-game.
-          // Revert to GridPoint2(14, 8), 1.5f, 0.5f once testing is complete.
-          new CrumblingPlatformConfig(new GridPoint2(6, 2), 3, 1, 0, platformTFP, 2f, 2f)
+          // 2 seconds before crumbling
+          // 2 seconds spent crumbling
+          // 3 seconds before respawning
+          new CrumblingPlatformConfig(new GridPoint2(6, 2), 3, 1, 0, platformTFP, 2f, 2f, 3f)
         };
 
     // =========================
-    // TEMPORARY GROUND
+    // LEVEL 2 GROUND
     // =========================
     floors =
-        new PlatformConfig[] {
-          // Ground_level-2.png is 2172x724px (an exact 3:1 aspect ratio). Width/height below
-          // keep that same 3:1 ratio so the image isn't stretched, and the y position is
-          // shifted down so the walkable top surface still sits at y=1, same as before.
-          new PlatformConfig(new GridPoint2(0, -12), 39, 13, 0, groundTFP),
-        };
+        new PlatformConfig[] {new PlatformConfig(new GridPoint2(0, -12), 39, 13, 0, groundTFP)};
 
+    // =========================
+    // TRIGGER BUTTON
+    // =========================
     triggerButtons =
         new TriggerButtonConfig[] {
           new TriggerButtonConfig(new GridPoint2(6, 5), 0f, true, "moving-platform-1")
         };
 
+    // =========================
+    // ITEMS
+    // =========================
     items = new HashMap<>(Map.of(new GridPoint2(2, 4), new StandardArr(99)));
 
-    ledges =
-        new PlatformConfig[] {
-          new PlatformConfig(new GridPoint2(7, 3), 3, 1, 0, platformTFP),
-        };
+    // =========================
+    // LEDGES
+    // =========================
+    ledges = new PlatformConfig[] {new PlatformConfig(new GridPoint2(7, 3), 3, 1, 0, platformTFP)};
 
-    spikes =
-        new SpikeClusterConfig[] {
-          // new SpikeClusterConfig(2, 4, 2, 2, 90f)
-          new SpikeClusterConfig(4, 5, 5, 5, 0, true)
-        };
+    // =========================
+    // SPIKES
+    // =========================
+    spikes = new SpikeClusterConfig[] {new SpikeClusterConfig(4, 5, 5, 5, 0, true)};
   }
 }
