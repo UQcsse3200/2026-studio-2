@@ -8,13 +8,11 @@ import com.csse3200.game.areas.terrain.configs.levelconfigs.Level2Config;
 import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.components.player.KeyboardPlayerInputComponent;
 import com.csse3200.game.entities.Entity;
-import com.csse3200.game.entities.factories.ObstacleFactory;
 import com.csse3200.game.entities.factories.PlayerFactory;
 import com.csse3200.game.rendering.BackgroundRenderComponent;
 import com.csse3200.game.rendering.TiledRenderComponent;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
-import com.csse3200.game.utils.math.GridPoint2Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -116,7 +114,7 @@ public class Level2GameArea extends GameArea {
      * Draw the new green Level 2 tiled ground on top of the
      * transparent physics floor.
      */
-    spawnLevel2Ground();
+    // spawnLevel2Ground();
 
     player = spawnPlayer();
   }
@@ -179,21 +177,6 @@ public class Level2GameArea extends GameArea {
     GridPoint2 tileBounds = terrain.getMapBounds(0);
 
     worldBounds = new Vector2(tileBounds.x * tileSize, tileBounds.y * tileSize);
-
-    // Left wall
-    spawnEntityAt(
-        ObstacleFactory.createWall(WALL_WIDTH, worldBounds.y), GridPoint2Utils.ZERO, false, false);
-
-    // Top wall
-    spawnEntityAt(
-        ObstacleFactory.createWall(worldBounds.x, WALL_WIDTH),
-        new GridPoint2(0, tileBounds.y),
-        false,
-        false);
-
-    // Bottom wall
-    spawnEntityAt(
-        ObstacleFactory.createWall(worldBounds.x, WALL_WIDTH), GridPoint2Utils.ZERO, false, false);
   }
 
   /** Creates the Level 2 player. */
