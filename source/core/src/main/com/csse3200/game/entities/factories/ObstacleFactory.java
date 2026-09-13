@@ -122,12 +122,11 @@ public class ObstacleFactory {
    * @return crumbling platform entity
    */
   public static Entity createCrumblingPlatform(CrumblingPlatformConfig config) {
-
     Entity platform =
         new Entity()
-            .addComponent(new TextureRenderComponent(config.textureFilepath))
+            .addComponent(new DynamicTextureRenderComponent(config.textureFilepath))
             .addComponent(new PhysicsComponent())
-            .addComponent(new ColliderComponent().setLayer(PhysicsLayer.GROUND))
+            .addComponent(new ColliderComponent().setLayer(PhysicsLayer.OBSTACLE))
             .addComponent(
                 new CrumblingPlatformComponent(
                     config.grappleSides,
@@ -151,7 +150,7 @@ public class ObstacleFactory {
         new Entity()
             .addComponent(new DynamicTextureRenderComponent(config.textureFilepath))
             .addComponent(new PhysicsComponent())
-            .addComponent(new ColliderComponent().setLayer(PhysicsLayer.GROUND))
+            .addComponent(new ColliderComponent().setLayer(PhysicsLayer.OBSTACLE))
             .addComponent(new PlatformGrappleComponent(config.grappleSides))
             .addComponent(new ActivatableComponent(config.getId()))
             .addComponent(new TriggerablePlatformComponent());
