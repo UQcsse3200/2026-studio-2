@@ -101,6 +101,11 @@ public class TutorialGameArea extends GameArea {
         new GridPoint2(30, 5),
       };
 
+  private static final GridPoint2[] VultureSpawnLocations =
+      new GridPoint2[] {
+        new GridPoint2(6, 10),
+      };
+
   private static final GridPoint2[] NecromancerSpawnLocations =
       new GridPoint2[] {
         new GridPoint2(6, 4),
@@ -174,6 +179,8 @@ public class TutorialGameArea extends GameArea {
     "images/player.atlas",
     "images/skeleton_archer.atlas",
     "images/skeleton_warrior.atlas",
+    "images/necromancer.atlas",
+    "images/vulture.atlas",
   };
 
   private static final String[] forestSounds = {"sounds/Impact4.ogg"};
@@ -221,8 +228,8 @@ public class TutorialGameArea extends GameArea {
     spawnWinCondition();
     spawnSkeletonArcher();
     spawnSkeletonWarrior();
-    // spawnVulture();
-    // spawnNecromancer();
+    spawnVulture();
+    spawnNecromancer();
     // spawnTestWinCondition(); // Temporary test win condition near player spawn for quick testing
 
   }

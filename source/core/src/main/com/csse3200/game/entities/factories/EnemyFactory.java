@@ -102,11 +102,19 @@ public class EnemyFactory {
     EnemyConfig config = configs.vulture;
     Entity Vulture = createEnemy(target, config);
 
-    Vulture
-        // .addComponent(new CombatStatsComponent(config.health, config.baseAttack))
-        .addComponent(new TextureRenderComponent("images/skeleton_archer.png"));
+    AnimationRenderComponent animator =
+            new AnimationRenderComponent(
+                    ServiceLocator.getResourceService()
+                            .getAsset("images/vulture.atlas", TextureAtlas.class));
+    animator.addAnimation("walk", 0.15f, Animation.PlayMode.LOOP);
+    animator.addAnimation("idle", 0.15f, Animation.PlayMode.LOOP);
 
-    Vulture.getComponent(TextureRenderComponent.class).scaleEntity();
+    Vulture
+            // .addComponent(new CombatStatsComponent(config.health, config.baseAttack))
+            .addComponent(animator)
+            .addComponent(new SkeletonAnimationController(target));
+
+    Vulture.getComponent(AnimationRenderComponent.class).scaleEntity();
 
     return Vulture;
   }
@@ -121,11 +129,19 @@ public class EnemyFactory {
     EnemyConfig config = configs.necromancer;
     Entity Necromancer = createEnemy(target, config);
 
-    Necromancer
-        // .addComponent(new CombatStatsComponent(config.health, config.baseAttack))
-        .addComponent(new TextureRenderComponent("images/skeleton_archer.png"));
+    AnimationRenderComponent animator =
+            new AnimationRenderComponent(
+                    ServiceLocator.getResourceService()
+                            .getAsset("images/necromancer.atlas", TextureAtlas.class));
+    animator.addAnimation("walk", 0.15f, Animation.PlayMode.LOOP);
+    animator.addAnimation("idle", 0.15f, Animation.PlayMode.LOOP);
 
-    Necromancer.getComponent(TextureRenderComponent.class).scaleEntity();
+    Necromancer
+            // .addComponent(new CombatStatsComponent(config.health, config.baseAttack))
+            .addComponent(animator)
+            .addComponent(new SkeletonAnimationController(target));
+
+    Necromancer.getComponent(AnimationRenderComponent.class).scaleEntity();
 
     return Necromancer;
   }
