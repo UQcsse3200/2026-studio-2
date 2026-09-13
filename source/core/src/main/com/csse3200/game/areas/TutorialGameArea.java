@@ -221,13 +221,10 @@ public class TutorialGameArea extends GameArea {
     spawnWinCondition();
     spawnSkeletonArcher();
     spawnSkeletonWarrior();
-    spawnNecromancer();
+    // spawnVulture();
+    // spawnNecromancer();
     // spawnTestWinCondition(); // Temporary test win condition near player spawn for quick testing
 
-    // spawnGhosts();
-    // spawnGhostKing();
-
-    // playMusic();
   }
 
   private void displayUI() {
@@ -446,6 +443,13 @@ public class TutorialGameArea extends GameArea {
   private void spawnSkeletonArcher() {
     for (GridPoint2 spawnLocation : skeletonArcherSpawnLocations) {
       Entity enemy = EnemyFactory.createSkeletonArcher(player);
+      spawnEntityAt(enemy, spawnLocation, true, true);
+    }
+  }
+
+  private void spawnVulture() {
+    for (GridPoint2 spawnLocation : NecromancerSpawnLocations) {
+      Entity enemy = EnemyFactory.createVulture(player);
       spawnEntityAt(enemy, spawnLocation, true, true);
     }
   }

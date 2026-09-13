@@ -1,7 +1,7 @@
 {
   "skeletonWarrior": {
     "health": 30,
-    "baseAttack": 2,
+    "baseAttack": 25,
     "speed": 3.0,
     "behaviour": "chase",
     "attackType": "melee",
@@ -12,12 +12,27 @@
     "wanderWaitTime": 2.0,
     "chasePriority": 10,
     "viewDistance": 6.0,
-    "maxChaseDistance": 9.0
+    "maxChaseDistance": 9.0,
+    "maxSpeed": 3.0,
+    "gravity": true,
+
+    "itemDrops": [
+      {
+        "item": "standardArrow",
+        "dropHealth": 10,
+        "quantity": 1
+      },
+      {
+        "item": "standardArrow",
+        "dropHealth": 0,
+        "quantity": 2
+      }
+    ]
   },
 
   "skeletonArcher": {
     "health": 20,
-    "baseAttack": 2,
+    "baseAttack": 25,
     "speed": 2.5,
     "behaviour": "chase",
     "attackType": "range",
@@ -28,7 +43,22 @@
     "wanderWaitTime": 2.0,
     "chasePriority": 10,
     "viewDistance": 10.0,
-    "maxChaseDistance": 12.5
+    "maxChaseDistance": 12.5,
+    "maxSpeed": 2.0,
+    "gravity": true,
+
+    "itemDrops": [
+      {
+        "item": "standardArrow",
+        "dropHealth": 10,
+        "quantity": 1
+      },
+      {
+        "item": "standardArrow",
+        "dropHealth": 0,
+        "quantity": 2
+      }
+    ]
   },
 
   "vulture": {
@@ -44,7 +74,21 @@
     "wanderWaitTime": 2.0,
     "chasePriority": 10,
     "viewDistance": 10.0,
-    "maxChaseDistance": 12.5
+    "maxChaseDistance": 12.5,
+    "maxSpeed": 4.5,
+    "gravity": false,
+
+    "itemDrops": [
+      {
+        "item": "standardArrow",
+        "dropHealth": 10,
+        "quantity": 1
+      },
+      {
+        "item": "standardArrow",
+        "dropHealth": 0,
+        "quantity": 2
+      }]
   },
 
   "necromancer": {
@@ -60,7 +104,21 @@
     "wanderWaitTime": 2.0,
     "chasePriority": 10,
     "viewDistance": 10.0,
-    "maxChaseDistance": 12.5
+    "maxChaseDistance": 12.5,
+    "maxSpeed": 1.0,
+    "gravity": true,
+
+    "itemDrops": [
+      {
+        "item": "standardArrow",
+        "dropHealth": 10,
+        "quantity": 1
+      },
+      {
+        "item": "standardArrow",
+        "dropHealth": 0,
+        "quantity": 2
+      }]
   }
 
 
