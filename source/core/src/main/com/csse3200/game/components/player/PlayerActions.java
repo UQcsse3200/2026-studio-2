@@ -21,6 +21,9 @@ public class PlayerActions extends Component {
   private static final float DASH_SPEED = 14f;
   private static final float DASH_DURATION = 0.15f;
   private static final float DASH_COOLDOWN = 1f;
+  private static final float DASH_RECOVERY = 0.1f;
+  private static final float DASH_RECOVERY_CONTROL = 0.2f;
+
 
   private PhysicsComponent physicsComponent;
   private GrappleComponent grapple;
@@ -34,6 +37,8 @@ public class PlayerActions extends Component {
   private float dashCooldownRemaining = 0f;
   private boolean airDashUsed = false;
   private int facingDirection = 1;
+  private int dashDirection = 1;
+  private float dashRecoveryRemaining = 0f;
 
   @Override
   public void create() {
@@ -63,9 +68,20 @@ public void update() {
     dashTimeRemaining -= ServiceLocator.getTimeSource().getDeltaTime();
     if (dashTimeRemaining <= 0f) {
       isDashing = false;
+      dashRecoveryRemaining = DASH_RECOVERY;
     } else {
+      Body body = physicsComponent.getBody();
+      body.setLinearVelocity(dashDirection * DASH_SPEED, body.getLinearVelocity().y);
       return;
     }
+  }
+
+  if (dashRecoveryRemaining > 0f) {
+    dashRecoveryRemaining -= ServiceLocator.getTimeSource().getDeltaTime();
+    if (!isGrappling()) {
+      updateSpeed();
+    }
+    return;
   }
 
   if (!moving) {
@@ -89,8 +105,7 @@ public void update() {
     float desiredVelocityX = walkDirection.x * MAX_SPEED.x * speedMultiplier;
 
     // Full control on the ground, weak in the air so swing momentum isn't wiped on landing
-    float control = isGrounded ? 1f : AIR_CONTROL;
-
+    float control = dashRecoveryRemaining > 0f ? DASH_RECOVERY_CONTROL : (isGrounded ? 1f : AIR_CONTROL);
     // impulse = (desiredVel - currentVel) * mass
     float impulseX = (desiredVelocityX - velocity.x) * body.getMass() * control;
     body.applyLinearImpulse(new Vector2(impulseX, 0), body.getWorldCenter(), true);
@@ -193,6 +208,7 @@ public void update() {
     airDashUsed = true;
   }
 
+  dashDirection = direction;
   Body body = physicsComponent.getBody();
   body.setLinearVelocity(direction * DASH_SPEED, body.getLinearVelocity().y);
 }
