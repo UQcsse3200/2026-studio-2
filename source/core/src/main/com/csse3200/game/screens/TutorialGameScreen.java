@@ -102,7 +102,7 @@ public class TutorialGameScreen extends ScreenAdapter {
 
     // Follow the player with the camera.
     renderer.getCamera().setTarget(player);
-    player.getEvents().addListener("death", this::onPlayerDeath);
+    player.getEvents().addListener("deathAnimationFinished", this::onPlayerDeath);
     wheelOverlay = new SpinTheWheelOverlay(WheelConfig.ITEMS, player);
     pauseOverlay = new PauseMenuOverlay(game, tutorialGameArea);
   }

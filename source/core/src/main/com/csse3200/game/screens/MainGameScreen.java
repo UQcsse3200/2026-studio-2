@@ -86,7 +86,7 @@ public class MainGameScreen extends ScreenAdapter {
     ForestGameArea forestGameArea = new ForestGameArea(renderer.getCamera(), terrainFactory);
     forestGameArea.create();
     player = forestGameArea.getPlayer();
-    player.getEvents().addListener("death", this::onPlayerDeath);
+    player.getEvents().addListener("deathAnimationFinished", this::onPlayerDeath);
     wheelOverlay = new SpinTheWheelOverlay(WheelConfig.ITEMS, player);
     pauseOverlay = new PauseMenuOverlay(game, forestGameArea);
   }
