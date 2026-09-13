@@ -86,6 +86,8 @@ public class ItemUseComponent extends Component {
       case Spear -> useSpear();
       case SpeedPotion -> useSpeedPotion();
       case PoisonPotion -> usePoisonPotion();
+      case ShieldPotion -> useShieldPotion();
+
     };
   }
 
@@ -285,6 +287,30 @@ public class ItemUseComponent extends Component {
             ItemType.PoisonPotion.getPoisonDuration());
 
     entity.getEvents().trigger("itemUsed", ItemType.PoisonPotion);
+    return true;
+  }
+
+  private boolean useShieldPotion() {
+    if (!inventory.hasItem(ItemType.ShieldPotion)) {
+      logger.debug("No shield potion available to use");
+      entity.getEvents().trigger("itemUseFailed", ItemType.ShieldPotion);
+      return false;
+    }
+
+    if (combatStats == null) {
+      entity.getEvents().trigger("itemUseFailed", ItemType.ShieldPotion);
+      return false;
+    }
+
+    if (!inventory.removeItem(ItemType.ShieldPotion, 1)) {
+      entity.getEvents().trigger("itemUseFailed", ItemType.ShieldPotion);
+      return false;
+    }
+
+    combatStats.makeInvulnerable(
+        (long) (ItemType.ShieldPotion.getShieldDuration() * 1000f));
+
+    entity.getEvents().trigger("itemUsed", ItemType.ShieldPotion);
     return true;
   }
 

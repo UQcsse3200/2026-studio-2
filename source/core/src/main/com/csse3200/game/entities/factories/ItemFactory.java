@@ -18,6 +18,7 @@ import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.rendering.TextureRenderComponent;
+import com.csse3200.game.components.item.consumables.ShieldPotion;
 
 /**
  * Factory to create item entities that sit in the world for the player to find.
@@ -71,6 +72,7 @@ public class ItemFactory {
       case Spear -> createSpear(quantity);
       case SpeedPotion -> createSpeedPotion(quantity);
       case PoisonPotion -> createPoisonPotion(quantity);
+      case ShieldPotion -> createShieldPotion(quantity);
     };
   }
 
@@ -120,6 +122,10 @@ public class ItemFactory {
   public static Entity createPoisonPotion(int quantity) {
     return createItem(new PoisonPotion(quantity));
   }
+
+  public static Entity createShieldPotion(int quantity) {
+  return createItem(new ShieldPotion(quantity));
+}
 
   private ItemFactory() {
     throw new IllegalStateException("Instantiating static util class");

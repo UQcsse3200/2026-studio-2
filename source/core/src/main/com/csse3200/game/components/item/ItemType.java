@@ -104,7 +104,7 @@ public enum ItemType {
       0f,
       0f),
 
-  PoisonPotion(
+    PoisonPotion(
       9,
       "Poison Potion",
       "Applies poison damage over time.",
@@ -121,6 +121,18 @@ public enum ItemType {
       0f,
       0f,
       2f,
+      5f),
+
+  ShieldPotion(
+      10,
+      "Shield Potion",
+      "Makes the player invulnerable for 5 seconds.",
+      "images/shield_potion.png",
+      0,
+      0f,
+      0f,
+      0,
+      true,
       5f);
 
   private final int id;
@@ -140,6 +152,7 @@ public enum ItemType {
   private final float speedDuration;
   private final float poisonDamagePerSecond;
   private final float poisonDuration;
+  private float shieldDuration = 0f;
 
   ItemType(
       int id,
@@ -169,6 +182,31 @@ public enum ItemType {
         0f,
         0f,
         0f);
+  }
+
+   ItemType(
+      int id,
+      String displayName,
+      String description,
+      String texturePath,
+      int damage,
+      float range,
+      float cooldown,
+      int healAmount,
+      boolean consumeAmmo,
+      float shieldDuration) {
+    this(
+        id,
+        displayName,
+        description,
+        texturePath,
+        damage,
+        range,
+        cooldown,
+        healAmount,
+        consumeAmmo);
+
+    this.shieldDuration = shieldDuration;
   }
 
   ItemType(
@@ -274,5 +312,9 @@ public enum ItemType {
 
   public float getPoisonDuration() {
     return poisonDuration;
+  }
+
+  public float getShieldDuration() {
+  return shieldDuration;
   }
 }

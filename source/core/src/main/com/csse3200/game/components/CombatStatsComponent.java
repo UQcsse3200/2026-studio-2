@@ -161,6 +161,19 @@ public class CombatStatsComponent extends Component {
     }
   }
 
+
+  /**
+ * Makes this entity invulnerable for the given duration.
+ *
+ * @param durationMs duration of invulnerability in milliseconds
+ */
+public void makeInvulnerable(long durationMs) {
+  GameTime timeSource = ServiceLocator.getTimeSource();
+  long currentTime = timeSource == null ? 0 : timeSource.getTime();
+
+  invulnerableUntil =
+      Math.max(invulnerableUntil, currentTime + Math.max(0, durationMs));
+}
   public void hit(CombatStatsComponent attacker) {
     GameTime timeSource = ServiceLocator.getTimeSource();
     long currentTime = timeSource == null ? 0 : timeSource.getTime();

@@ -19,6 +19,8 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import com.csse3200.game.components.item.consumables.ShieldPotion;
+
 
 @ExtendWith(GameExtension.class)
 class ItemUseComponentTest {
@@ -231,6 +233,56 @@ class ItemUseComponentTest {
 
     assertTrue(itemUse.useSelectedItem());
     assertEquals(0, inventory.getItemCount(ItemType.PoisonPotion));
+  }
+
+    @Test
+  void shouldConsumeShieldPotionAndMakePlayerInvulnerable() {
+    Entity player = createPlayer();
+    InventoryComponent inventory = player.getComponent(InventoryComponent.class);
+    CombatStatsComponent combat = player.getComponent(CombatStatsComponent.class);
+    ItemUseComponent itemUse = player.getComponent(ItemUseComponent.class);
+
+    inventory.addItem(ItemType.ShieldPotion, 1);
+
+    assertTrue(itemUse.useSelectedItem());
+    assertEquals(0, inventory.getItemCount(ItemType.ShieldPotion));
+
+    combat.hit(new CombatStatsComponent(100, 10));
+    assertEquals(100, combat.getHealth());
+  }
+
+  @Test
+  void shouldBlockDamageDuringShieldPotionDuration() {
+    Entity player = createPlayer();
+    InventoryComponent inventory = player.getComponent(InventoryComponent.class);
+    CombatStatsComponent combat = player.getComponent(CombatStatsComponent.class);
+    ItemUseComponent itemUse = player.getComponent(ItemUseComponent.class);
+
+    inventory.addItem(ItemType.ShieldPotion, 1);
+
+    assertTrue(itemUse.useSelectedItem());
+
+    when(time.getTime()).thenReturn(4999L);
+
+    combat.hit(new CombatStatsComponent(100, 10));
+    assertEquals(100, combat.getHealth());
+  }
+
+  @Test
+  void shouldAllowDamageAfterShieldPotionExpires() {
+    Entity player = createPlayer();
+    InventoryComponent inventory = player.getComponent(InventoryComponent.class);
+    CombatStatsComponent combat = player.getComponent(CombatStatsComponent.class);
+    ItemUseComponent itemUse = player.getComponent(ItemUseComponent.class);
+
+    inventory.addItem(ItemType.ShieldPotion, 1);
+
+    assertTrue(itemUse.useSelectedItem());
+
+    when(time.getTime()).thenReturn(5000L);
+
+    combat.hit(new CombatStatsComponent(100, 10));
+    assertEquals(90, combat.getHealth());
   }
 
   private Entity createPlayer() {

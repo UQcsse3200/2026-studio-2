@@ -113,6 +113,7 @@ public class TutorialGameArea extends GameArea {
   private static final GridPoint2 SPEAR_SPAWN = new GridPoint2(9, 1);
   private static final GridPoint2 HEALTH_POTION_SPAWN = new GridPoint2(10, 4);
   private static final GridPoint2 SPEED_POTION_SPAWN = new GridPoint2(5, 1);
+  private static final GridPoint2 SHIELD_POTION_SPAWN = new GridPoint2(4, 1);
   private static final GridPoint2 POISON_POTION_SPAWN = new GridPoint2(3, 1);
 
   private static final int STANDARD_ARROW_QUANTITY = 5;
@@ -120,6 +121,7 @@ public class TutorialGameArea extends GameArea {
   private static final int COLD_ARROW_QUANTITY = 5;
 
   private static final int HEALTH_POTION_QUANTITY = 3;
+  private static final int SHIELD_POTION_QUANTITY = 3;
   private static final int SPEED_POTION_QUANTITY = 3;
   private static final int POISON_POTION_QUANTITY = 3;
 
@@ -171,7 +173,8 @@ public class TutorialGameArea extends GameArea {
     "images/spear.png",
     "images/health_potion.png",
     "images/speed_potion.png",
-    "images/poison_potion.png"
+    "images/poison_potion.png",
+    "images/shield_potion.png"
   };
 
   private static final String[] forestTextureAtlases = {
@@ -554,5 +557,9 @@ public class TutorialGameArea extends GameArea {
 
     spawnEntityAt(
         ItemFactory.createPoisonPotion(POISON_POTION_QUANTITY), POISON_POTION_SPAWN, true, false);
+
+    spawnEntityAt(
+        ItemFactory.createShieldPotion(SHIELD_POTION_QUANTITY), SHIELD_POTION_SPAWN, true, false);
   }
+  
 }

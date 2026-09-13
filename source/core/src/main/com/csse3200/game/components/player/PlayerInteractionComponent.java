@@ -239,6 +239,7 @@ public class PlayerInteractionComponent extends Component {
       case Spear -> ItemFactory.createSpear(quantity);
       case SpeedPotion -> ItemFactory.createSpeedPotion(quantity);
       case PoisonPotion -> ItemFactory.createPoisonPotion(quantity);
+      case ShieldPotion -> ItemFactory.createShieldPotion(quantity);
     };
   }
 }
