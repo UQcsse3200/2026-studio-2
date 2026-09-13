@@ -132,7 +132,7 @@ public class LevelConfig {
     }
 
     for (PlatformConfig p : ledges) {
-      Entity ledge = ObstacleFactory.createLedge();
+      Entity ledge = ObstacleFactory.createLedge(p);
       ledge.setScale(p.width, p.height);
       entities.add(new SpawnData(p.position, ledge));
     }

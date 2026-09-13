@@ -238,10 +238,10 @@ public class ObstacleFactory {
    *
    * @return ledge entity
    */
-  public static Entity createLedge() {
+  public static Entity createLedge(PlatformConfig config) {
     Entity ledge =
         new Entity()
-            .addComponent(new TextureRenderComponent("images/platform.png"))
+            .addComponent(new TextureRenderComponent(config.textureFilepath))
             .addComponent(new LedgeComponent())
             .addComponent(new PhysicsComponent().setBodyType(BodyType.StaticBody))
             .addComponent(new ColliderComponent().setLayer(PhysicsLayer.OBSTACLE));

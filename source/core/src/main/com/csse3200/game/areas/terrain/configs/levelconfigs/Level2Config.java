@@ -41,7 +41,7 @@ public class Level2Config extends LevelConfig {
               new Vector2(4, 4),
               new Vector2(6, 4),
               new Vector2(2, 0),
-              "")
+              "moving-platform-1")
         };
 
     // =========================
@@ -77,6 +77,11 @@ public class Level2Config extends LevelConfig {
         };
 
     items = new HashMap<>(Map.of(new GridPoint2(2, 4), new StandardArr(99)));
+
+    ledges =
+        new PlatformConfig[] {
+          new PlatformConfig(new GridPoint2(7, 3), 3, 1, 0, platformTFP),
+        };
 
     spikes =
         new SpikeClusterConfig[] {
