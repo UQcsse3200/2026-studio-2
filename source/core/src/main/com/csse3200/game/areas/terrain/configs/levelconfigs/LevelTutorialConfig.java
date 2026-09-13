@@ -97,9 +97,9 @@ public class LevelTutorialConfig extends LevelConfig {
 
     spikes =
         new SpikeClusterConfig[] {
-          new SpikeClusterConfig(53, 55, 17, 17, 0f),
-          new SpikeClusterConfig(59, 68, 19, 19, 0f),
-          new SpikeClusterConfig(60, 62, 1, 1, 0f)
+          new SpikeClusterConfig(53, 55, 17, 17, 0f, false),
+          new SpikeClusterConfig(59, 68, 19, 19, 0f, false),
+          new SpikeClusterConfig(60, 62, 1, 1, 0f, false)
         };
 
     bounds =
