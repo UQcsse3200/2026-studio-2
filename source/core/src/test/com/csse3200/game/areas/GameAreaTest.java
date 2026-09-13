@@ -9,6 +9,7 @@ import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.components.level.PlatformGrappleComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
+import com.csse3200.game.events.EventHandler;
 import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.services.ServiceLocator;
 import org.junit.jupiter.api.Test;
@@ -28,6 +29,9 @@ class GameAreaTest {
 
     ServiceLocator.registerEntityService(new EntityService());
     Entity entity = mock(Entity.class);
+    EventHandler mockEventHandler = mock(EventHandler.class);
+
+    when(entity.getEvents()).thenReturn(mockEventHandler);
 
     gameArea.spawnEntity(entity);
     verify(entity).create();

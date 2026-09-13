@@ -65,6 +65,10 @@ public abstract class GameArea implements Disposable {
   protected void spawnEntity(Entity entity) {
     areaEntities.add(entity);
 
+    // listen for child entities that may wish to spawn their own entities, like traps and
+    // enemy spawners
+    entity.getEvents().addListener("spawnEntity", this::spawnEntity);
+
     // keep track of all grappleable platforms
     PlatformGrappleComponent platform = entity.getComponent(PlatformGrappleComponent.class);
     if (platform != null && platform.getGrappleSides() != 0) {
@@ -181,6 +185,13 @@ public abstract class GameArea implements Disposable {
     DEPENDENT
   }
 
+  /**
+   * Triggers the activated component on all stored entities that require an update for a specific
+   * activation id
+   *
+   * @param id a String of an activation id to search the HashMap for a list of entities that are
+   *     activated by this id
+   */
   private void onButtonActivated(String id) {
     ArrayList<Entity> entities = triggerableEntities.get(id);
     for (Entity entity : entities) {
