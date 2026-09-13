@@ -17,6 +17,8 @@ import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.physics.components.PhysicsMovementComponent;
 import com.csse3200.game.rendering.*;
 import com.csse3200.game.services.ServiceLocator;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Factory to create obstacle entities.
@@ -313,6 +315,39 @@ public class ObstacleFactory {
     PhysicsUtils.setScaledCollider(spike, 0.8f, 0.5f);
 
     return spike;
+  }
+
+  public static Entity createSpikyBallTrap(SpikyBallTrapConfig config) {
+    Entity trap =
+        new Entity()
+            .addComponent(new DynamicTextureRenderComponent("images/spiky_ball_trap.png"))
+            .addComponent(new PhysicsComponent().setBodyType(BodyType.StaticBody))
+            .addComponent(new ActivatableComponent(config.getId()))
+            .addComponent(
+                new SpawnerComponent(
+                    new ArrayList<>(List.of(ObstacleFactory::createSpikyBall)),
+                    config.getSpawnInterval(),
+                    -1,
+                    true))
+            .addComponent(new RotatableMapComponent(config.getRotation()));
+
+    return trap;
+  }
+
+  public static Entity createSpikyBall() {
+    Entity spikyBall =
+        new Entity()
+            .addComponent(new TextureRenderComponent("images/spiky_ball.png"))
+            .addComponent(new PhysicsComponent().setBodyType(BodyType.DynamicBody))
+            .addComponent(new ColliderComponent().setLayer(PhysicsLayer.ALL))
+            .addComponent(new HitboxComponent().setLayer(PhysicsLayer.ALL))
+            .addComponent(new CombatStatsComponent(100, 4))
+            .addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER))
+            .addComponent(new SpikyBallComponent());
+
+    spikyBall.getComponent(PhysicsComponent.class).getBody().setGravityScale(0f);
+
+    return spikyBall;
   }
 
   private ObstacleFactory() {
