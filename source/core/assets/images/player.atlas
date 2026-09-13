@@ -547,78 +547,78 @@ hurt
   index: 20
 
 player_dash.png
-size: 800, 320
+size: 1050, 320
 format: RGBA8888
 filter: Nearest,Nearest
 repeat: none
 dash
   rotate: false
   xy: 0, 0
-  size: 160, 160
-  orig: 160, 160
+  size: 210, 160
+  orig: 210, 160
   offset: 0, 0
   index: 0
 dash
   rotate: false
-  xy: 160, 0
-  size: 160, 160
-  orig: 160, 160
+  xy: 210, 0
+  size: 210, 160
+  orig: 210, 160
   offset: 0, 0
   index: 1
 dash
   rotate: false
-  xy: 320, 0
-  size: 160, 160
-  orig: 160, 160
+  xy: 420, 0
+  size: 210, 160
+  orig: 210, 160
   offset: 0, 0
   index: 2
 dash
   rotate: false
-  xy: 480, 0
-  size: 160, 160
-  orig: 160, 160
+  xy: 630, 0
+  size: 210, 160
+  orig: 210, 160
   offset: 0, 0
   index: 3
 dash
   rotate: false
-  xy: 640, 0
-  size: 160, 160
-  orig: 160, 160
+  xy: 840, 0
+  size: 210, 160
+  orig: 210, 160
   offset: 0, 0
   index: 4
 dash
   rotate: false
   xy: 0, 160
-  size: 160, 160
-  orig: 160, 160
+  size: 210, 160
+  orig: 210, 160
   offset: 0, 0
   index: 5
 dash
   rotate: false
-  xy: 160, 160
-  size: 160, 160
-  orig: 160, 160
+  xy: 210, 160
+  size: 210, 160
+  orig: 210, 160
   offset: 0, 0
   index: 6
 dash
   rotate: false
-  xy: 320, 160
-  size: 160, 160
-  orig: 160, 160
+  xy: 420, 160
+  size: 210, 160
+  orig: 210, 160
   offset: 0, 0
   index: 7
 dash
   rotate: false
-  xy: 480, 160
-  size: 160, 160
-  orig: 160, 160
+  xy: 630, 160
+  size: 210, 160
+  orig: 210, 160
   offset: 0, 0
   index: 8
 dash
   rotate: false
-  xy: 640, 160
-  size: 160, 160
-  orig: 160, 160
+  xy: 840, 160
+  size: 210, 160
+  orig: 210, 160
   offset: 0, 0
   index: 9
 
