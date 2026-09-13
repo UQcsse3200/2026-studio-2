@@ -41,9 +41,6 @@ public class Terminal extends Component {
       ServiceLocator.registerGameEndEventHandler(new EventHandler());
     }
     addCommand("textbox", new TextBoxCommand("configs/textBoxes.json"));
-    //    addCommand("textNewPos", new TextBoxCommand(3, 100, 100));
-    //    addCommand("textFromFile", new TextBoxCommand(textBoxTestOld));
-    //    addCommand("textFromFileNewPos", new TextBoxCommand(20, 50, 500));
   }
 
   /**

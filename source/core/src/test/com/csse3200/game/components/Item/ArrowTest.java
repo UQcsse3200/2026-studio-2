@@ -1,4 +1,4 @@
-package com.csse3200.game.components.item;
+package com.csse3200.game.components.Item;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;

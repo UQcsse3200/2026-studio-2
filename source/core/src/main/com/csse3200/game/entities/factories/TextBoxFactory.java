@@ -34,6 +34,8 @@ public class TextBoxFactory {
               textConfig.maxWidth,
               textConfig.padding,
               textConfig.borderThickness,
+              textConfig.fontPath,
+              textConfig.getTextAlignment(),
               textConfig.pages)
           .create();
     } catch (Exception e) {
