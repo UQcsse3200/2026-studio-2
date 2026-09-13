@@ -19,6 +19,7 @@ public class LevelConfig {
   protected TriggerablePlatformConfig[] triggerablePlatforms;
   protected PlatformConfig[] ledges;
   protected SpikeClusterConfig[] spikes;
+  protected SpikyBallTrapConfig[] ballTraps;
   protected TriggerButtonConfig[] triggerButtons;
   protected PlatformConfig[] bounds;
   protected PlatformConfig[] floors;
@@ -47,6 +48,7 @@ public class LevelConfig {
     createTriggerablePlatforms();
     createLedges();
     createSpikes();
+    createTraps();
     createTriggerButtons();
     createWinCondition();
     createItems();
@@ -173,6 +175,17 @@ public class LevelConfig {
           entities.add(new SpawnData(new GridPoint2(i, j), spike));
         }
       }
+    }
+  }
+
+  private void createTraps() {
+    if (ballTraps == null) {
+      return;
+    }
+
+    for (SpikyBallTrapConfig b : ballTraps) {
+      Entity trap = ObstacleFactory.createSpikyBallTrap(b);
+      entities.add(new SpawnData(b.position, trap));
     }
   }
 
