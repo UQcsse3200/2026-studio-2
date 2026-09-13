@@ -137,6 +137,7 @@ public class CyclopsMinigameLogic extends Component {
       movePlayer(safeLocations.get(currentSafeLoc));
     } else {
       movePlayer(lossLocations.get(currentSafeLoc));
+      state = State.GAME_OVER;
     }
   }
 
