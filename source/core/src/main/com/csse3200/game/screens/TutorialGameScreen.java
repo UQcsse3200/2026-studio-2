@@ -16,6 +16,8 @@ import com.csse3200.game.components.maingame.PauseMenuDisplay;
 import com.csse3200.game.components.maingame.PauseMenuOverlay;
 import com.csse3200.game.components.minigames.spinthewheel.SpinTheWheelOverlay;
 import com.csse3200.game.components.minigames.spinthewheel.WheelConfig;
+import com.csse3200.game.components.minigames.spinthewheel.SpinTheWheelOverlay;
+import com.csse3200.game.components.minigames.spinthewheel.WheelConfig;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.entities.factories.RenderFactory;
@@ -49,25 +51,7 @@ public class TutorialGameScreen extends ScreenAdapter {
 
   private static final Logger logger = LoggerFactory.getLogger(TutorialGameScreen.class);
 
-  private static final String[] mainGameTextures = {
-    "images/heart.png",
-    "images/title_odysseus_logo.png",
-    "images/Health_Bar_Background.png",
-    "images/red_heart.png",
-    "images/PixelArt_HeartBack.png",
-    "images/Damaged_heart.png",
-    "images/Last_Health.png",
-    "images/Buttons/continue_up_btn.png",
-    "images/Buttons/continue_down_btn.png",
-    "images/Buttons/settings_up_btn.png",
-    "images/Buttons/settings_down_btn.png",
-    "images/Buttons/quit_up_btn.png",
-    "images/Buttons/quit_down_btn.png",
-    "images/Buttons/exit_up_btn.png",
-    "images/Buttons/exit_down_btn.png",
-      "images/Buttons/control_up_btn.png",
-      "images/Buttons/control_down_btn.png"
-  };
+  private static final String[] mainGameTextures = createTextures();
 
   private final GdxGame game;
   private final Renderer renderer;
@@ -203,7 +187,8 @@ public class TutorialGameScreen extends ScreenAdapter {
                 "images/Buttons/exit_up_btn.png",
                 "images/Buttons/exit_down_btn.png",
                 "images/Buttons/control_up_btn.png",
-                "images/Buttons/control_down_btn.png"));
+                "images/Buttons/control_down_btn.png",
+                "images/controls_graphic.png"));
     paths.addAll(List.of(WheelConfig.TEXTURES));
     return paths.toArray(new String[0]);
   }

@@ -23,7 +23,7 @@ import com.csse3200.game.ui.UIComponent;
  */
 public class PauseMenuDisplay extends UIComponent {
   Table table;
-  boolean paused = false;
+  Table controlsGraphicTable;
 
   private GdxGame game;
   private GameArea area;
@@ -97,6 +97,10 @@ public class PauseMenuDisplay extends UIComponent {
 
       ImageButton controlsBtn = new ImageButton(controlsButtonStyle);
 
+    Texture controlsGraphicTexture =
+        ServiceLocator.getResourceService()
+            .getAsset("images/controls_graphic.png", Texture.class);
+
     resumeBtn.addListener(
         new ChangeListener() {
           @Override
@@ -134,6 +138,30 @@ public class PauseMenuDisplay extends UIComponent {
           }
         });
 
+    controlsBtn.addListener(
+        new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent changeEvent, Actor actor) {
+                Image controlsGraphic = new Image(controlsGraphicTexture);
+                ImageButton controlsBackBtn = new ImageButton(exitButtonStyle);
+                controlsBackBtn.addListener(
+                    new ChangeListener() {
+                        @Override
+                        public void changed(ChangeEvent changeEvent, Actor actor) {
+                            controlsGraphicTable.remove();
+                        }
+                    }
+                );
+                controlsGraphicTable = new Table();
+                controlsGraphicTable.setFillParent(true);
+                controlsGraphicTable.add(controlsGraphic).width(1000f).height(630f);
+                controlsGraphicTable.row();
+                controlsGraphicTable.add(controlsBackBtn).width(200f).height(70f).padTop(15f);
+                stage.addActor(controlsGraphicTable);
+            }
+        }
+    );
+
     Image title =
         new Image(
             ServiceLocator.getResourceService()
@@ -144,8 +172,8 @@ public class PauseMenuDisplay extends UIComponent {
     table.row();
     table.add(settingsBtn).width(200f).height(70f).padTop(15f);
     table.row();
-      table.add(controlsBtn).width(200f).height(70f).padTop(15f);
-      table.row();
+    table.add(controlsBtn).width(200f).height(70f).padTop(15f);
+    table.row();
     table.add(exitBtn).width(200f).height(70f).padTop(15f);
     table.row();
 
@@ -165,5 +193,8 @@ public class PauseMenuDisplay extends UIComponent {
   public void dispose() {
     table.remove();
     super.dispose();
+    if (controlsGraphicTable != null) {
+        controlsGraphicTable.remove();
+    }
   }
 }
