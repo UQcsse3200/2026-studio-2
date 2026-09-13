@@ -2,6 +2,7 @@ package com.csse3200.game.areas.terrain.configs;
 
 import com.badlogic.gdx.math.GridPoint2;
 import com.csse3200.game.components.item.Item;
+import com.csse3200.game.components.level.CheckpointComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.EnemyConfig;
 import com.csse3200.game.entities.factories.ItemFactory;
@@ -19,6 +20,7 @@ public class LevelConfig {
   protected PlatformConfig[] floors;
   protected Map<GridPoint2, EnemyConfig> enemies;
   protected Map<GridPoint2, Item> items;
+  public CheckpointConfig[] checkpoints;
 
   protected GridPoint2 playerSpawn;
   protected GridPoint2 winConditionSpawn;
@@ -43,6 +45,7 @@ public class LevelConfig {
     createSpikes();
     createWinCondition();
     createItems();
+    createCheckpoints();
 
     return entities;
   }
@@ -140,6 +143,14 @@ public class LevelConfig {
     for (Map.Entry<GridPoint2, Item> i : items.entrySet()) {
       Entity item = ItemFactory.createItem(i.getValue());
       entities.add(new SpawnData(i.getKey(), item));
+    }
+  }
+
+  private void createCheckpoints() {
+    for (CheckpointConfig c : checkpoints) {
+      Entity checkpoint = new Entity();
+      checkpoint.addComponent(new CheckpointComponent(false, c.getPosition()));
+      entities.add(new SpawnData(c.getPosition(), checkpoint));
     }
   }
 }

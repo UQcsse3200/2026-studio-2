@@ -88,15 +88,14 @@ public class LevelTutorialConfig extends LevelConfig {
           new SpikeClusterConfig(59, 68, 19, 19),
           new SpikeClusterConfig(60, 62, 1, 1),
           new SpikeClusterConfig(13, 23, 5, 5),
-          new SpikeClusterConfig(27, 38, 1, 1),
           new SpikeClusterConfig(2, 14, 20, 20), // 180
           new SpikeClusterConfig(1, 1, 16, 20), // 270
-          new SpikeClusterConfig(39, 39, 1, 16), // 90
+          new SpikeClusterConfig(39, 39, 0, 16), // 90
         };
 
     bounds =
         new PlatformConfig[] {
-          new PlatformConfig(new GridPoint2(0, 0), 90, 1, 0), // bottom
+          new PlatformConfig(new GridPoint2(40, 0), 50, 1, 0), // bottom
           new PlatformConfig(new GridPoint2(0, 24), 90, 1, 0), // top
           new PlatformConfig(new GridPoint2(0, 0), 1, 22, 0), // left
           new PlatformConfig(new GridPoint2(90, 0), 1, 22, 0) // right
@@ -142,5 +141,10 @@ public class LevelTutorialConfig extends LevelConfig {
                 new GridPoint2(6, 4), new FireArr(5),
                 new GridPoint2(8, 5), new ColdArr(5),
                 new GridPoint2(10, 5), new HealthPotion(3)));
+
+    checkpoints =
+        new CheckpointConfig[] {
+          new CheckpointConfig(new GridPoint2(1, 3)),
+        };
   }
 }

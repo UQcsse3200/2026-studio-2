@@ -4,6 +4,7 @@ import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Disposable;
 import com.csse3200.game.areas.terrain.TerrainComponent;
+import com.csse3200.game.areas.terrain.configs.CheckpointConfig;
 import com.csse3200.game.areas.terrain.configs.LevelConfig;
 import com.csse3200.game.areas.terrain.configs.SpawnData;
 import com.csse3200.game.components.CameraComponent;
@@ -153,5 +154,19 @@ public abstract class GameArea implements Disposable {
     int hit = grappleComponent.checkSideHit(p, raycastEnd);
     boolean result = grappleComponent.successfulGrapple(hit);
     player.getEvents().trigger("grappleResponse", result);
+  }
+
+  public void respawn() {
+    // Set respawnPoint to starting point initially
+    GridPoint2 respawnPoint = config.checkpoints[0].getPosition();
+
+    // Get last collected checkpoint
+    // Note: may need to manually get latest checkpoint instead of last collected
+    for (CheckpointConfig checkpoint : config.checkpoints) {
+      respawnPoint = checkpoint.getPosition();
+    }
+    float x = respawnPoint.x;
+    float y = respawnPoint.y;
+    player.setPosition(x, y);
   }
 }

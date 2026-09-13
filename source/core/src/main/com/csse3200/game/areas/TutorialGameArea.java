@@ -262,14 +262,16 @@ public class TutorialGameArea extends GameArea {
         false);
 
     // Bottom wall
-    spawnEntityAt(
-        ObstacleFactory.createWall(worldBounds.x, WALL_WIDTH), GridPoint2Utils.ZERO, false, false);
+    // spawnEntityAt(
+    //    ObstacleFactory.createWall(worldBounds.x, WALL_WIDTH), GridPoint2Utils.ZERO, false,
+    // false);
   }
 
   private Entity spawnPlayer() {
 
     Entity newPlayer = PlayerFactory.createPlayer();
     newPlayer.getEvents().addListener("grappleRequested", this::checkSuccessfulGrapple);
+    newPlayer.getEvents().addListener("respawnAtCheckpoint", this::respawn);
 
     KeyboardPlayerInputComponent input = newPlayer.getComponent(KeyboardPlayerInputComponent.class);
     if (input != null) {
