@@ -61,6 +61,18 @@ public class AnimationRenderComponent extends RenderComponent {
   private final Map<String, Vector2> animationAnchors = new HashMap<>(4);
 
   /**
+   * Register an animation from the texture atlas. Will play once when called with startAnimation()
+   *
+   * @param name Name of the animation. Must match the name of this animation inside the texture
+   *     atlas.
+   * @param frameDuration How long, in seconds, to show each frame of the animation for when playing
+   * @return true if added successfully, false otherwise
+   */
+  public boolean addAnimation(String name, float frameDuration) {
+    return addAnimation(name, frameDuration, PlayMode.NORMAL);
+  }
+
+  /**
    * Register an animation whose frames are drawn on a larger canvas than the default region,
    * specifying where the character sits within that canvas so it lines up with other animations.
    *
