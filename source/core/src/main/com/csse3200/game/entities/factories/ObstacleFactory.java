@@ -343,7 +343,7 @@ public class ObstacleFactory {
             .addComponent(new HitboxComponent().setLayer(PhysicsLayer.ALL))
             .addComponent(new CombatStatsComponent(100, 4))
             .addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER))
-            .addComponent(new SpikyBallComponent());
+            .addComponent(new SpikyBallComponent(new Vector2(-1, 0)));
 
     spikyBall.getComponent(PhysicsComponent.class).getBody().setGravityScale(0f);
 
