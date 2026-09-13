@@ -11,6 +11,7 @@ import com.csse3200.game.components.npc.SkeletonAnimationController;
 import com.csse3200.game.components.tasks.ChaseTask;
 import com.csse3200.game.components.tasks.DelayedAttackTask;
 import com.csse3200.game.components.tasks.RangedAttackTask;
+import com.csse3200.game.components.tasks.SummonTask;
 import com.csse3200.game.components.tasks.WanderTask;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.EnemyConfig;
@@ -91,6 +92,44 @@ public class EnemyFactory {
   }
 
   /**
+   * Creates a flying vulture that attack the player from the sky
+   *
+   * @param target entity the enemy will chase and shoot at
+   * @return skeleton archer entity
+   */
+  public static Entity createVulture(Entity target) {
+    EnemyConfig config = configs.vulture;
+    Entity Vulture = createEnemy(target, config);
+
+    Vulture
+        // .addComponent(new CombatStatsComponent(config.health, config.baseAttack))
+        .addComponent(new TextureRenderComponent("images/skeleton_archer.png"));
+
+    Vulture.getComponent(TextureRenderComponent.class).scaleEntity();
+
+    return Vulture;
+  }
+
+  /**
+   * Creates a necromancer that summons skeleton warriors and fire magic projectile
+   *
+   * @param target entity the enemy will chase and shoot at
+   * @return skeleton archer entity
+   */
+  public static Entity createNecromancer(Entity target) {
+    EnemyConfig config = configs.necromancer;
+    Entity Necromancer = createEnemy(target, config);
+
+    Necromancer
+        // .addComponent(new CombatStatsComponent(config.health, config.baseAttack))
+        .addComponent(new TextureRenderComponent("images/skeleton_archer.png"));
+
+    Necromancer.getComponent(TextureRenderComponent.class).scaleEntity();
+
+    return Necromancer;
+  }
+
+  /**
    * Creates a base enemy entity
    *
    * @param target entity the enemy will chase
@@ -113,6 +152,12 @@ public class EnemyFactory {
     if (config.attackType.equals("range")) {
       aiComponent.addTask(
           new RangedAttackTask(target, 20, config.attackRange, 2f, config.baseAttack, 5f, 5f));
+      // If the enemy is a summon type, add summon + range task
+    } else if (config.attackType.equals("summon")) {
+      aiComponent
+          .addTask(
+              new RangedAttackTask(target, 20, config.attackRange, 2f, config.baseAttack, 5f, 5f))
+          .addTask(new SummonTask(target, 30, config.attackRange, 5f));
     }
 
     Entity enemy =

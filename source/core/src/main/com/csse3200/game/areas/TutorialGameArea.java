@@ -101,6 +101,11 @@ public class TutorialGameArea extends GameArea {
         new GridPoint2(30, 5),
       };
 
+  private static final GridPoint2[] NecromancerSpawnLocations =
+      new GridPoint2[] {
+        new GridPoint2(6, 4),
+      };
+
   private static final GridPoint2[] skeletonArcherSpawnLocations =
       new GridPoint2[] {
         new GridPoint2(60, 1), new GridPoint2(57, 10), new GridPoint2(4, 4),
@@ -216,6 +221,7 @@ public class TutorialGameArea extends GameArea {
     spawnWinCondition();
     spawnSkeletonArcher();
     spawnSkeletonWarrior();
+    spawnNecromancer();
     // spawnTestWinCondition(); // Temporary test win condition near player spawn for quick testing
 
     // spawnGhosts();
@@ -426,6 +432,13 @@ public class TutorialGameArea extends GameArea {
   private void spawnSkeletonWarrior() {
     for (GridPoint2 spawnLocation : skeletonWarriorSpawnLocations) {
       Entity enemy = EnemyFactory.createSkeletonWarrior(player);
+      spawnEntityAt(enemy, spawnLocation, true, true);
+    }
+  }
+
+  private void spawnNecromancer() {
+    for (GridPoint2 spawnLocation : NecromancerSpawnLocations) {
+      Entity enemy = EnemyFactory.createNecromancer(player);
       spawnEntityAt(enemy, spawnLocation, true, true);
     }
   }

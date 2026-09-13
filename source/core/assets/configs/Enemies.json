@@ -1,7 +1,7 @@
 {
   "skeletonWarrior": {
     "health": 30,
-    "baseAttack": 25,
+    "baseAttack": 2,
     "speed": 3.0,
     "behaviour": "chase",
     "attackType": "melee",
@@ -12,25 +12,12 @@
     "wanderWaitTime": 2.0,
     "chasePriority": 10,
     "viewDistance": 6.0,
-    "maxChaseDistance": 9.0,
-    "maxSpeed": 3.0,
-    "itemDrops": [
-      {
-        "item": "standardArrow",
-        "dropHealth": 10,
-        "quantity": 1
-      },
-      {
-        "item": "standardArrow",
-        "dropHealth": 0,
-        "quantity": 2
-      }
-    ]
+    "maxChaseDistance": 9.0
   },
 
   "skeletonArcher": {
     "health": 20,
-    "baseAttack": 25,
+    "baseAttack": 2,
     "speed": 2.5,
     "behaviour": "chase",
     "attackType": "range",
@@ -41,19 +28,40 @@
     "wanderWaitTime": 2.0,
     "chasePriority": 10,
     "viewDistance": 10.0,
-    "maxChaseDistance": 12.5,
-    "maxSpeed": 1.0,
-    "itemDrops": [
-      {
-        "item": "standardArrow",
-        "dropHealth": 10,
-        "quantity": 1
-      },
-      {
-        "item": "standardArrow",
-        "dropHealth": 0,
-        "quantity": 2
-      }
-    ]
+    "maxChaseDistance": 12.5
+  },
+
+  "vulture": {
+    "health": 20,
+    "baseAttack": 2,
+    "speed": 2.5,
+    "behaviour": "chase",
+    "attackType": "melee",
+    "attackRange": 6.0,
+
+    "wanderRangeX": 4.0,
+    "wanderRangeY": 0.0,
+    "wanderWaitTime": 2.0,
+    "chasePriority": 10,
+    "viewDistance": 10.0,
+    "maxChaseDistance": 12.5
+  },
+
+  "necromancer": {
+    "health": 20,
+    "baseAttack": 2,
+    "speed": 2.5,
+    "behaviour": "chase",
+    "attackType": "summon",
+    "attackRange": 6.0,
+
+    "wanderRangeX": 4.0,
+    "wanderRangeY": 0.0,
+    "wanderWaitTime": 2.0,
+    "chasePriority": 10,
+    "viewDistance": 10.0,
+    "maxChaseDistance": 12.5
   }
+
+
 }
