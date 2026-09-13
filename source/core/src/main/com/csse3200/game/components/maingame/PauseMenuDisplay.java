@@ -84,22 +84,21 @@ public class PauseMenuDisplay extends UIComponent {
 
     ImageButton exitBtn = new ImageButton(exitButtonStyle);
 
-      Texture controlsUpTexture =
-          ServiceLocator.getResourceService()
-              .getAsset("images/Buttons/control_up_btn.png", Texture.class);
-      Texture controlsDownTexture =
-          ServiceLocator.getResourceService()
-              .getAsset("images/Buttons/control_down_btn.png", Texture.class);
+    Texture controlsUpTexture =
+        ServiceLocator.getResourceService()
+            .getAsset("images/Buttons/control_up_btn.png", Texture.class);
+    Texture controlsDownTexture =
+        ServiceLocator.getResourceService()
+            .getAsset("images/Buttons/control_down_btn.png", Texture.class);
 
-      ImageButton.ImageButtonStyle controlsButtonStyle = new ImageButton.ImageButtonStyle();
-      controlsButtonStyle.up = new TextureRegionDrawable(controlsUpTexture);
-      controlsButtonStyle.down = new TextureRegionDrawable(controlsDownTexture);
+    ImageButton.ImageButtonStyle controlsButtonStyle = new ImageButton.ImageButtonStyle();
+    controlsButtonStyle.up = new TextureRegionDrawable(controlsUpTexture);
+    controlsButtonStyle.down = new TextureRegionDrawable(controlsDownTexture);
 
-      ImageButton controlsBtn = new ImageButton(controlsButtonStyle);
+    ImageButton controlsBtn = new ImageButton(controlsButtonStyle);
 
     Texture controlsGraphicTexture =
-        ServiceLocator.getResourceService()
-            .getAsset("images/controls_graphic.png", Texture.class);
+        ServiceLocator.getResourceService().getAsset("images/controls_graphic.png", Texture.class);
 
     resumeBtn.addListener(
         new ChangeListener() {
@@ -140,27 +139,25 @@ public class PauseMenuDisplay extends UIComponent {
 
     controlsBtn.addListener(
         new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent changeEvent, Actor actor) {
-                Image controlsGraphic = new Image(controlsGraphicTexture);
-                ImageButton controlsBackBtn = new ImageButton(exitButtonStyle);
-                controlsBackBtn.addListener(
-                    new ChangeListener() {
-                        @Override
-                        public void changed(ChangeEvent changeEvent, Actor actor) {
-                            controlsGraphicTable.remove();
-                        }
-                    }
-                );
-                controlsGraphicTable = new Table();
-                controlsGraphicTable.setFillParent(true);
-                controlsGraphicTable.add(controlsGraphic).width(1000f).height(630f);
-                controlsGraphicTable.row();
-                controlsGraphicTable.add(controlsBackBtn).width(200f).height(70f).padTop(15f);
-                stage.addActor(controlsGraphicTable);
-            }
-        }
-    );
+          @Override
+          public void changed(ChangeEvent changeEvent, Actor actor) {
+            Image controlsGraphic = new Image(controlsGraphicTexture);
+            ImageButton controlsBackBtn = new ImageButton(exitButtonStyle);
+            controlsBackBtn.addListener(
+                new ChangeListener() {
+                  @Override
+                  public void changed(ChangeEvent changeEvent, Actor actor) {
+                    controlsGraphicTable.remove();
+                  }
+                });
+            controlsGraphicTable = new Table();
+            controlsGraphicTable.setFillParent(true);
+            controlsGraphicTable.add(controlsGraphic).width(1000f).height(630f);
+            controlsGraphicTable.row();
+            controlsGraphicTable.add(controlsBackBtn).width(200f).height(70f).padTop(15f);
+            stage.addActor(controlsGraphicTable);
+          }
+        });
 
     Image title =
         new Image(
@@ -194,7 +191,7 @@ public class PauseMenuDisplay extends UIComponent {
     table.remove();
     super.dispose();
     if (controlsGraphicTable != null) {
-        controlsGraphicTable.remove();
+      controlsGraphicTable.remove();
     }
   }
 }
