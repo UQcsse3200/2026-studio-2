@@ -9,6 +9,7 @@ import com.csse3200.game.components.gamearea.PerformanceDisplay;
 import com.csse3200.game.components.maingame.MainGameActions;
 import com.csse3200.game.components.maingame.MainGameExitDisplay;
 import com.csse3200.game.components.maingame.PauseMenuDisplay;
+import com.csse3200.game.components.player.KeyboardPlayerInputComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.entities.factories.RenderFactory;
@@ -18,6 +19,7 @@ import com.csse3200.game.input.InputDecorator;
 import com.csse3200.game.input.InputService;
 import com.csse3200.game.physics.PhysicsEngine;
 import com.csse3200.game.physics.PhysicsService;
+import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.rendering.RenderService;
 import com.csse3200.game.rendering.Renderer;
 import com.csse3200.game.services.GameTime;
@@ -47,6 +49,7 @@ public class Level2GameScreen extends ScreenAdapter {
   private final GdxGame game;
   private final Renderer renderer;
   private final PhysicsEngine physicsEngine;
+  private boolean cheats = true;
 
   public Level2GameScreen(GdxGame game) {
     this.game = game;
@@ -87,6 +90,10 @@ public class Level2GameScreen extends ScreenAdapter {
 
     // Follow the player with the camera.
     renderer.getCamera().setTarget(level2.getPlayer());
+    if (cheats) {
+      level2.getPlayer().getComponent(PhysicsComponent.class).getBody().setGravityScale(0);
+      level2.getPlayer().getComponent(KeyboardPlayerInputComponent.class).toggleCheats();
+    }
   }
 
   @Override
