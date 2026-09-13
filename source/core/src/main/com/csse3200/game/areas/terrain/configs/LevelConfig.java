@@ -72,7 +72,7 @@ public class LevelConfig {
     }
 
     for (PlatformConfig p : platforms) {
-      Entity platform = ObstacleFactory.createPlatform(p.grappleSides, p.textureFilepath);
+      Entity platform = ObstacleFactory.createPlatform(p);
       platform.setScale(p.width, p.height);
       entities.add(new SpawnData(p.position, platform));
     }
@@ -88,14 +88,7 @@ public class LevelConfig {
     }
 
     for (MovingPlatformConfig p : movingPlatforms) {
-      Entity platform =
-          ObstacleFactory.createMovingPlatform(
-              p.grappleSides,
-              p.textureFilepath,
-              p.firstTarget,
-              p.secondTarget,
-              p.speed,
-              p.activateId);
+      Entity platform = ObstacleFactory.createMovingPlatform(p);
       platform.setScale(p.width, p.height);
       entities.add(new SpawnData(p.position, platform));
     }
@@ -111,9 +104,7 @@ public class LevelConfig {
     }
 
     for (CrumblingPlatformConfig c : crumblingPlatforms) {
-      Entity platform =
-          ObstacleFactory.createCrumblingPlatform(
-              c.grappleSides, c.textureFilepath, c.timeBeforeCrumble, c.crumbleTime);
+      Entity platform = ObstacleFactory.createCrumblingPlatform(c);
       platform.setScale(c.width, c.height);
       entities.add(new SpawnData(c.position, platform));
     }
@@ -129,8 +120,7 @@ public class LevelConfig {
     }
 
     for (TriggerablePlatformConfig t : triggerablePlatforms) {
-      Entity triggerablePlatform =
-          ObstacleFactory.createTriggerablePlatform(t.grappleSides, t.textureFilepath, t.id);
+      Entity triggerablePlatform = ObstacleFactory.createTriggerablePlatform(t);
       triggerablePlatform.setScale(t.width, t.height);
       entities.add(new SpawnData(t.position, triggerablePlatform));
     }
@@ -179,7 +169,7 @@ public class LevelConfig {
     for (SpikeClusterConfig s : spikes) {
       for (int i = s.xMin; i <= s.xMax; i++) {
         for (int j = s.yMin; j <= s.yMax; j++) {
-          Entity spike = ObstacleFactory.createSpike(s.rotation);
+          Entity spike = ObstacleFactory.createSpike(s);
           entities.add(new SpawnData(new GridPoint2(i, j), spike));
         }
       }
@@ -192,7 +182,7 @@ public class LevelConfig {
     }
 
     for (TriggerButtonConfig t : triggerButtons) {
-      Entity button = ObstacleFactory.createButton(t.id);
+      Entity button = ObstacleFactory.createButton(t);
       entities.add(new SpawnData(t.position, button));
     }
   }

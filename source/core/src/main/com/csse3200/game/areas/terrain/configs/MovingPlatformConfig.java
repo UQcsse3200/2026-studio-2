@@ -25,4 +25,20 @@ public class MovingPlatformConfig extends PlatformConfig {
     this.speed = speed;
     this.activateId = activateId;
   }
+
+  public Vector2 getFirstTarget() {
+    return firstTarget;
+  }
+
+  public Vector2 getSecondTarget() {
+    return secondTarget;
+  }
+
+  public Vector2 getSpeed() {
+    return speed;
+  }
+
+  public String getActivateId() {
+    return activateId;
+  }
 }

@@ -18,4 +18,12 @@ public class CrumblingPlatformConfig extends PlatformConfig {
     this.timeBeforeCrumble = timeBeforeCrumble;
     this.crumbleTime = crumbleTime;
   }
+
+  public float getTimeBeforeCrumble() {
+    return timeBeforeCrumble;
+  }
+
+  public float getCrumbleTime() {
+    return crumbleTime;
+  }
 }

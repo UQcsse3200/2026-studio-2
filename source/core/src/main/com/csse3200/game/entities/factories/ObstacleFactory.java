@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
+import com.csse3200.game.areas.terrain.configs.*;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.TouchAttackComponent;
 import com.csse3200.game.components.level.*;
@@ -47,16 +48,16 @@ public class ObstacleFactory {
   /**
    * Creates the normal platform used by the other levels.
    *
-   * @param grappleSides number of sides that can be grappled
+   * @param config the configuration object for this platform
    * @return platform entity
    */
-  public static Entity createPlatform(int grappleSides, String textureFilepath) {
+  public static Entity createPlatform(PlatformConfig config) {
     Entity platform =
         new Entity()
-            .addComponent(new TextureRenderComponent(textureFilepath))
+            .addComponent(new TextureRenderComponent(config.textureFilepath))
             .addComponent(new PhysicsComponent())
             .addComponent(new ColliderComponent().setLayer(PhysicsLayer.GROUND))
-            .addComponent(new PlatformGrappleComponent(grappleSides));
+            .addComponent(new PlatformGrappleComponent(config.grappleSides));
 
     platform.getComponent(PhysicsComponent.class).setBodyType(BodyType.StaticBody);
 
@@ -66,34 +67,28 @@ public class ObstacleFactory {
   /**
    * Creates a normal moving platform.
    *
-   * @param grappleSides number of sides that can be grappled
-   * @param firstTarget first movement target
-   * @param secondTarget second movement target
-   * @param maxSpeed maximum movement speed
-   * @param activateId activation ID
+   * @param config the configuration object for this platform
    * @return moving platform entity
    */
-  public static Entity createMovingPlatform(
-      int grappleSides,
-      String textureFilepath,
-      Vector2 firstTarget,
-      Vector2 secondTarget,
-      Vector2 maxSpeed,
-      String activateId) {
+  public static Entity createMovingPlatform(MovingPlatformConfig config) {
 
     PhysicsComponent physicsComponent = new PhysicsComponent();
     ColliderComponent colliderComponent = new ColliderComponent();
 
     Entity movingPlatform =
         new Entity()
-            .addComponent(new TextureRenderComponent(textureFilepath))
+            .addComponent(new TextureRenderComponent(config.textureFilepath))
             .addComponent(physicsComponent)
             .addComponent(new PhysicsMovementComponent())
             .addComponent(colliderComponent.setLayer(PhysicsLayer.OBSTACLE))
             .addComponent(
-                new MovingPlatformComponent(grappleSides, firstTarget, secondTarget, maxSpeed))
-            .addComponent(new PlatformGrappleComponent(grappleSides))
-            .addComponent(new ActivatableComponent(activateId));
+                new MovingPlatformComponent(
+                    config.grappleSides,
+                    config.getFirstTarget(),
+                    config.getSecondTarget(),
+                    config.getSpeed()))
+            .addComponent(new PlatformGrappleComponent(config.grappleSides))
+            .addComponent(new ActivatableComponent(config.activateId));
 
     physicsComponent.setBodyType(BodyType.KinematicBody);
     colliderComponent.setFriction(1.5f);
@@ -104,22 +99,19 @@ public class ObstacleFactory {
   /**
    * Creates a normal crumbling platform.
    *
-   * @param grappleSides number of sides that can be grappled
-   * @param timeBeforeCrumble how long the player can stand on the platform before it starts to
-   *     crumble, in seconds
-   * @param crumbleTime how long the crumbling takes before the platform is destroyed, in seconds
+   * @param config the configuration object for this platform
    * @return crumbling platform entity
    */
-  public static Entity createCrumblingPlatform(
-      int grappleSides, String textureFilepath, float timeBeforeCrumble, float crumbleTime) {
+  public static Entity createCrumblingPlatform(CrumblingPlatformConfig config) {
 
     Entity platform =
         new Entity()
-            .addComponent(new TextureRenderComponent(textureFilepath))
+            .addComponent(new TextureRenderComponent(config.textureFilepath))
             .addComponent(new PhysicsComponent())
             .addComponent(new ColliderComponent().setLayer(PhysicsLayer.GROUND))
             .addComponent(
-                new CrumblingPlatformComponent(grappleSides, timeBeforeCrumble, crumbleTime));
+                new CrumblingPlatformComponent(
+                    config.grappleSides, config.getTimeBeforeCrumble(), config.getCrumbleTime()));
 
     platform.getComponent(PhysicsComponent.class).setBodyType(BodyType.StaticBody);
 
@@ -129,18 +121,17 @@ public class ObstacleFactory {
   /**
    * Creates a normal triggerable platform.
    *
-   * @param grappleSides number of sides that can be grappled
+   * @param config the configuration object for this platform
    * @return triggerable platform entity
    */
-  public static Entity createTriggerablePlatform(
-      int grappleSides, String textureFilepath, String activationId) {
+  public static Entity createTriggerablePlatform(TriggerablePlatformConfig config) {
     Entity platform =
         new Entity()
-            .addComponent(new DynamicTextureRenderComponent(textureFilepath))
+            .addComponent(new DynamicTextureRenderComponent(config.textureFilepath))
             .addComponent(new PhysicsComponent())
             .addComponent(new ColliderComponent().setLayer(PhysicsLayer.GROUND))
-            .addComponent(new PlatformGrappleComponent(grappleSides))
-            .addComponent(new ActivatableComponent(activationId))
+            .addComponent(new PlatformGrappleComponent(config.grappleSides))
+            .addComponent(new ActivatableComponent(config.getId()))
             .addComponent(new TriggerablePlatformComponent());
 
     platform.getComponent(PhysicsComponent.class).setBodyType(BodyType.StaticBody);
@@ -150,11 +141,12 @@ public class ObstacleFactory {
   }
 
   /**
-   * Creates a win condition entity.
+   * Creates a new trigger button entity
    *
-   * @return win condition entity
+   * @param config the configuration to use for the creation of this button
+   * @return button entity
    */
-  public static Entity createButton(String activationId) {
+  public static Entity createButton(TriggerButtonConfig config) {
     RotatableAnimationRenderComponent animator =
         new RotatableAnimationRenderComponent(
             ServiceLocator.getResourceService()
@@ -168,15 +160,25 @@ public class ObstacleFactory {
             .addComponent(animator)
             .addComponent(new PhysicsComponent())
             .addComponent(new HitboxComponent().setLayer(PhysicsLayer.NPC))
-            .addComponent(new ActivatableComponent(activationId))
+            .addComponent(new ActivatableComponent(config.getId()))
             .addComponent(new TriggerButtonComponent())
-            .addComponent(new RotatableMapComponent(90f));
+            .addComponent(new RotatableMapComponent(config.getRotation()));
 
-    button.getComponent(PhysicsComponent.class).setBodyType(BodyType.StaticBody);
+    // if attach is requested, add component
+    if (config.getAttached()) {
+      button.addComponent(new AttachableMapComponent());
+    }
+
+    button.getComponent(PhysicsComponent.class).setBodyType(BodyType.KinematicBody);
 
     return button;
   }
 
+  /**
+   * Creates a win condition entity.
+   *
+   * @return win condition entity
+   */
   public static Entity createWinConEntity() {
     ColliderComponent collider = new ColliderComponent();
     collider.setLayer(PhysicsLayer.NPC);
@@ -262,10 +264,10 @@ public class ObstacleFactory {
   /**
    * Creates a spike hazard entity with custom rotation.
    *
-   * @param rotationAngle angle in degrees to rotate the spike
+   * @param config the configuration object for the spike to create
    * @return spike entity
    */
-  public static Entity createSpike(float rotationAngle) {
+  public static Entity createSpike(SpikeClusterConfig config) {
     Entity spike =
         new Entity()
             .addComponent(new DynamicTextureRenderComponent("images/spike.png"))
@@ -274,9 +276,14 @@ public class ObstacleFactory {
             .addComponent(new CombatStatsComponent(100, 2))
             .addComponent(new HitboxComponent().setLayer(PhysicsLayer.OBSTACLE))
             .addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER))
-            .addComponent(new RotatableMapComponent(rotationAngle));
+            .addComponent(new RotatableMapComponent(config.getRotation()));
 
-    spike.getComponent(PhysicsComponent.class).setBodyType(BodyType.StaticBody);
+    // if attachment requested, add component
+    if (config.getAttached()) {
+      spike.addComponent(new AttachableMapComponent());
+    }
+
+    spike.getComponent(PhysicsComponent.class).setBodyType(BodyType.KinematicBody);
 
     // Scale slightly larger to close gaps
     spike.setScale(1.25f, 1.25f);
@@ -284,15 +291,6 @@ public class ObstacleFactory {
     PhysicsUtils.setScaledCollider(spike, 0.8f, 0.5f);
 
     return spike;
-  }
-
-  /**
-   * Creates a default upward-facing spike hazard.
-   *
-   * @return spike entity
-   */
-  public static Entity createSpike() {
-    return createSpike(0f);
   }
 
   private ObstacleFactory() {

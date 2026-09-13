@@ -15,4 +15,8 @@ public class TriggerablePlatformConfig extends PlatformConfig {
     super(position, width, height, grappleSides, textureFilepath);
     this.id = id;
   }
+
+  public String getId() {
+    return id;
+  }
 }
