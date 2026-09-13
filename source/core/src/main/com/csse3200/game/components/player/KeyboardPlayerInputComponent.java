@@ -23,6 +23,7 @@ public class KeyboardPlayerInputComponent extends InputComponent {
   private CameraComponent cameraComponent;
   private boolean attackHeld;
   private boolean dead;
+  private boolean rightMouseHeld;
 
   public KeyboardPlayerInputComponent() {
     super(5);
@@ -52,15 +53,6 @@ public class KeyboardPlayerInputComponent extends InputComponent {
    */
   @Override
   public boolean keyDown(int keycode) {
-    if (ServiceLocator.getEntityService().getPaused()
-        && !(keycode == Keys.A
-            || keycode == Keys.D
-            || keycode == Keys.LEFT
-            || keycode == Keys.RIGHT
-            || keycode == Keys.SHIFT_LEFT
-            || keycode == Keys.SHIFT_RIGHT)) {
-      return false;
-    }
     if (dead) {
       return false;
     }
@@ -100,16 +92,12 @@ public class KeyboardPlayerInputComponent extends InputComponent {
       case Keys.A:
       case Keys.LEFT:
         keysHeld[LEFT] = true;
-        if (!ServiceLocator.getEntityService().getPaused()) {
-          triggerWalkEvent();
-        }
+        triggerWalkEvent();
         return true;
       case Keys.D:
       case Keys.RIGHT:
         keysHeld[RIGHT] = true;
-        if (!ServiceLocator.getEntityService().getPaused()) {
-          triggerWalkEvent();
-        }
+        triggerWalkEvent();
         return true;
       case Keys.SPACE:
         triggerJumpEvent();
@@ -117,9 +105,7 @@ public class KeyboardPlayerInputComponent extends InputComponent {
       case Keys.SHIFT_LEFT:
       case Keys.SHIFT_RIGHT:
         sprintHeld = true;
-        if (!ServiceLocator.getEntityService().getPaused()) {
-          triggerSprintEvent();
-        }
+        triggerSprintEvent();
         return true;
       case Keys.E:
         triggerAttackOrItemUse();
@@ -142,9 +128,6 @@ public class KeyboardPlayerInputComponent extends InputComponent {
       case Keys.COMMA:
         entity.getEvents().trigger("switchItem", -1);
         return true;
-      case Keys.ESCAPE:
-        triggerWalkEvent();
-        triggerSprintEvent();
       default:
         return false;
     }
@@ -165,23 +148,17 @@ public class KeyboardPlayerInputComponent extends InputComponent {
       case Keys.A:
       case Keys.LEFT:
         keysHeld[LEFT] = false;
-        if (!ServiceLocator.getEntityService().getPaused()) {
-          triggerWalkEvent();
-        }
+        triggerWalkEvent();
         return true;
       case Keys.D:
       case Keys.RIGHT:
         keysHeld[RIGHT] = false;
-        if (!ServiceLocator.getEntityService().getPaused()) {
-          triggerWalkEvent();
-        }
+        triggerWalkEvent();
         return true;
       case Keys.SHIFT_LEFT:
       case Keys.SHIFT_RIGHT:
         sprintHeld = false;
-        if (!ServiceLocator.getEntityService().getPaused()) {
-          triggerSprintEvent();
-        }
+        triggerSprintEvent();
         return true;
       case Keys.E:
         attackHeld = false;
@@ -192,32 +169,67 @@ public class KeyboardPlayerInputComponent extends InputComponent {
   }
 
   /**
-   * Fires the grapple toward the clicked world position.
+   * Left click swings the melee weapon, right click fires the selected arrow. Both aim toward the
+   * clicked world position.
    *
    * @return whether the input was processed
    * @see InputProcessor#touchDown(int, int, int, int)
    */
   @Override
   public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-    if (dead || button != Buttons.LEFT || ServiceLocator.getEntityService().getPaused()) {
+      if (dead) {
+          return false;
+      }
+      if (button == Buttons.LEFT) {
+      return triggerAimedEvent("melee", screenX, screenY);
+    }
+    if (button == Buttons.RIGHT) {
+      rightMouseHeld = true;
+      return triggerAimedEvent("shoot", screenX, screenY);
+    }
+    return false;
+  }
+
+  /**
+   * @return true while the right mouse button is being held down
+   */
+  public boolean isRightMouseHeld() {
+    return rightMouseHeld;
+  }
+
+  private boolean triggerAimedEvent(String eventName, int screenX, int screenY) {
+    Vector2 aim = getAimDirection(screenX, screenY);
+    if (aim == null || aim.isZero()) {
       return false;
     }
-    Vector2 aimDirection = getAimDirection(screenX, screenY);
-    if (aimDirection.isZero()) {
-      return false;
-    }
-    entity.getEvents().trigger("grappleFire", aimDirection);
+    entity.getEvents().trigger(eventName, aim);
     return true;
   }
 
+  /**
+   * Signals that the fire button was let go, so the selected weapon or arrow can react.
+   *
+   * @return whether the input was processed
+   * @see InputProcessor#touchUp(int, int, int, int)
+   */
   @Override
   public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-    if (dead || button != Buttons.LEFT) {
-      return false;
+    if (dead) {
+        return false;
     }
 
-    entity.getEvents().trigger("grappleRelease");
-    return true;
+    if (button == Buttons.LEFT) {
+      entity.getEvents().trigger("stopMelee");
+      return true;
+    }
+
+    if (button == Buttons.RIGHT) {
+      rightMouseHeld = false;
+      entity.getEvents().trigger("stopShoot");
+      return true;
+    }
+
+    return false;
   }
 
   private void triggerAttackOrItemUse() {

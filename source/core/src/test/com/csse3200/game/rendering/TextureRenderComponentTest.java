@@ -3,6 +3,7 @@ package com.csse3200.game.rendering;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
@@ -24,6 +25,7 @@ class TextureRenderComponentTest {
   void shouldDrawTexture() {
     when(entity.getPosition()).thenReturn(new Vector2(2f, 2f));
     when(entity.getScale()).thenReturn(new Vector2(1f, 1f));
+    when(spriteBatch.getColor()).thenReturn(Color.WHITE);
     TextureRenderComponent component = new TextureRenderComponent(texture);
     component.setEntity(entity);
     component.render(spriteBatch);
