@@ -58,7 +58,9 @@ public class TutorialGameScreen extends ScreenAdapter {
     "images/Buttons/quit_up_btn.png",
     "images/Buttons/quit_down_btn.png",
     "images/Buttons/exit_up_btn.png",
-    "images/Buttons/exit_down_btn.png"
+    "images/Buttons/exit_down_btn.png",
+      "images/Buttons/control_up_btn.png",
+      "images/Buttons/control_down_btn.png"
   };
 
   private final GdxGame game;
