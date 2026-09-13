@@ -83,4 +83,14 @@ class TimingBarLogicTests {
     TimingBarLogic logic = new TimingBarLogic(0f);
     assertFalse(logic.checkHit());
   }
+
+  @Test
+  void checkMarkerResetsToStartOnReset() {
+    TimingBarLogic logic = new TimingBarLogic(0f);
+    logic.startMarker();
+    logic.update(0.001f);
+    logic.stopMarker();
+    logic.resetMarker();
+    assertEquals(0f, logic.markerX);
+  }
 }

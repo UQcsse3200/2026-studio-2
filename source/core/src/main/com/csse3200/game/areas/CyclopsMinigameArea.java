@@ -41,7 +41,8 @@ public class CyclopsMinigameArea extends GameArea {
     "images/iso_grass_3.png",
     "images/transparent.png",
     "images/Greek Statues Pack I/Brute.png",
-    "images/CyclopsMinigameFloor.png"
+    "images/CyclopsMinigameFloor.png",
+    "images/PixelArt_HeartBack.png"
   };
 
   private static final String[] cyclopsMinigameTexturesAtlases = {"images/player.atlas"};
