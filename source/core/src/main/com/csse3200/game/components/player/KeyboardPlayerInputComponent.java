@@ -9,7 +9,6 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.input.InputComponent;
-import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.utils.math.Vector2Utils;
 
 /** Input handler for player keyboard and mouse controls. */
@@ -177,10 +176,10 @@ public class KeyboardPlayerInputComponent extends InputComponent {
    */
   @Override
   public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-      if (dead) {
-          return false;
-      }
-      if (button == Buttons.LEFT) {
+    if (dead) {
+      return false;
+    }
+    if (button == Buttons.LEFT) {
       return triggerAimedEvent("melee", screenX, screenY);
     }
     if (button == Buttons.RIGHT) {
@@ -215,7 +214,7 @@ public class KeyboardPlayerInputComponent extends InputComponent {
   @Override
   public boolean touchUp(int screenX, int screenY, int pointer, int button) {
     if (dead) {
-        return false;
+      return false;
     }
 
     if (button == Buttons.LEFT) {

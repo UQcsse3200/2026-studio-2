@@ -16,6 +16,7 @@ public class PlayerAnimationController extends Component {
   private boolean hurt = false;
   private boolean dead = false;
   private boolean deathAnimationFinishedFired = false;
+  private boolean sleep = false;
 
   @Override
   public void create() {
@@ -28,6 +29,7 @@ public class PlayerAnimationController extends Component {
     entity.getEvents().addListener("jumpStart", this::jumpStart);
     entity.getEvents().addListener("hurt", this::hurt);
     entity.getEvents().addListener("death", this::death);
+    entity.getEvents().addListener("sleep", this::sleep);
 
     animator.startAnimation("idle");
   }
@@ -113,6 +115,11 @@ public class PlayerAnimationController extends Component {
   void death() {
     dead = true;
     animator.startAnimation("death");
+  }
+
+  void sleep() {
+    sleep = true;
+    animator.startAnimation("sleep");
   }
 
   private void updateAnimation() {
