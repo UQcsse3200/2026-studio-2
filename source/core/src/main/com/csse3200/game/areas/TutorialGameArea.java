@@ -3,8 +3,7 @@ package com.csse3200.game.areas;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
-//import com.csse3200.game.areas.terrain.PlatformConfig;
-import com.csse3200.game.areas.terrain.TerrainComponent;
+// import com.csse3200.game.areas.terrain.PlatformConfig;
 import com.csse3200.game.areas.terrain.TerrainFactory;
 import com.csse3200.game.areas.terrain.TerrainFactory.TerrainType;
 import com.csse3200.game.areas.terrain.configs.levelconfigs.LevelTutorialConfig;
@@ -13,8 +12,8 @@ import com.csse3200.game.components.gamearea.GameAreaDisplay;
 import com.csse3200.game.components.player.KeyboardPlayerInputComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.EnemyFactory;
-//import com.csse3200.game.entities.factories.ItemFactory;
-//import com.csse3200.game.entities.factories.NPCFactory;
+// import com.csse3200.game.entities.factories.ItemFactory;
+// import com.csse3200.game.entities.factories.NPCFactory;
 import com.csse3200.game.entities.factories.ObstacleFactory;
 import com.csse3200.game.entities.factories.PlayerFactory;
 import com.csse3200.game.physics.components.PhysicsComponent;
@@ -23,7 +22,7 @@ import com.csse3200.game.rendering.TextureRenderComponent;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.utils.math.GridPoint2Utils;
-////import com.csse3200.game.utils.math.RandomUtils;
+//// import com.csse3200.game.utils.math.RandomUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -156,11 +155,12 @@ public class TutorialGameArea extends GameArea {
     spawnBackground();
     spawnConfigEntities();
     player = spawnPlayer();
-    ////spawnItems(); // test items
-    ////spawnWinCondition();
+    //// spawnItems(); // test items
+    //// spawnWinCondition();
     spawnSkeletonArcher();
     spawnSkeletonWarrior();
-    ////spawnTestEnemyNearPlayer(); // Temporary enemy near player spawn for quick HUD/flicker testing
+    //// spawnTestEnemyNearPlayer(); // Temporary enemy near player spawn for quick HUD/flicker
+    // testing
     // testing
     // spawnTestWinCondition(); // Temporary test win condition near player spawn for quick testing
 
@@ -190,7 +190,8 @@ public class TutorialGameArea extends GameArea {
    */
   private void spawnBackground() {
     final Vector2 backgroundPos = new Vector2(-10f, -10f);
-    BackgroundRenderComponent backgroundComponent = new BackgroundRenderComponent(camera, backgroundPos, worldBounds);
+    BackgroundRenderComponent backgroundComponent =
+        new BackgroundRenderComponent(camera, backgroundPos, worldBounds);
 
     // Complete original background image
     backgroundComponent.addLayer(
@@ -200,7 +201,7 @@ public class TutorialGameArea extends GameArea {
         15f,
         new Vector2(0f, 3.5f), // Positional offset
         BackgroundType.DEPENDENT,
-        new Vector2(0f, 0f),   // Independent velocity
+        new Vector2(0f, 0f), // Independent velocity
         false);
 
     // Complete clouds image
@@ -235,7 +236,7 @@ public class TutorialGameArea extends GameArea {
     float tileSize = terrain.getTileSize();
     GridPoint2 tileBounds = terrain.getMapBounds(0);
     worldBounds = new Vector2(tileBounds.x * tileSize, tileBounds.y * tileSize);
-    ////spawnMovingPlatforms();
+    //// spawnMovingPlatforms();
 
     // Left wall
     spawnEntityAt(
@@ -295,6 +296,7 @@ public class TutorialGameArea extends GameArea {
             10, new Vector2(72, 2), new Vector2(72, 12), new Vector2(0, 3));
     spawnEntityAt(movingPlatform5, new GridPoint2(75, 2), false, false);
   }
+
   /*
   private void spawnPlatforms() {
 

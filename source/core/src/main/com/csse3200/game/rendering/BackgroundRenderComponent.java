@@ -29,14 +29,14 @@ public class BackgroundRenderComponent extends RenderComponent {
     private final boolean repeat;
 
     ParallaxLayer(
-            Texture texture,
-            Vector2 parallaxFactor,
-            float width,
-            float height,
-            Vector2 offset,
-            BackgroundType backgroundType,
-            Vector2 velocity,
-            boolean repeat) {
+        Texture texture,
+        Vector2 parallaxFactor,
+        float width,
+        float height,
+        Vector2 offset,
+        BackgroundType backgroundType,
+        Vector2 velocity,
+        boolean repeat) {
 
       this.texture = texture;
       this.parallaxFactor = parallaxFactor;
@@ -59,7 +59,7 @@ public class BackgroundRenderComponent extends RenderComponent {
    * @param camera camera used to calculate parallax movement
    */
   public BackgroundRenderComponent(
-          CameraComponent camera, Vector2 backgroundPos, Vector2 worldBounds) {
+      CameraComponent camera, Vector2 backgroundPos, Vector2 worldBounds) {
     this.camera = camera;
     this.backgroundPos = backgroundPos;
     this.worldBounds = worldBounds;
@@ -75,20 +75,20 @@ public class BackgroundRenderComponent extends RenderComponent {
    * @param offset position relative to the background entity
    */
   public void addLayer(
-          String texturePath,
-          Vector2 parallaxFactor,
-          float width,
-          float height,
-          Vector2 offset,
-          BackgroundType backgroundType,
-          Vector2 velocity,
-          boolean repeat) {
+      String texturePath,
+      Vector2 parallaxFactor,
+      float width,
+      float height,
+      Vector2 offset,
+      BackgroundType backgroundType,
+      Vector2 velocity,
+      boolean repeat) {
 
     Texture texture = ServiceLocator.getResourceService().getAsset(texturePath, Texture.class);
 
     layers.add(
-            new ParallaxLayer(
-                    texture, parallaxFactor, width, height, offset, backgroundType, velocity, repeat));
+        new ParallaxLayer(
+            texture, parallaxFactor, width, height, offset, backgroundType, velocity, repeat));
   }
 
   /**
@@ -101,18 +101,18 @@ public class BackgroundRenderComponent extends RenderComponent {
    * @param offset position relative to the background entity
    */
   public void addLayer(
-          Texture texture,
-          Vector2 parallaxFactor,
-          float width,
-          float height,
-          Vector2 offset,
-          BackgroundType backgroundType,
-          Vector2 velocity,
-          boolean repeat) {
+      Texture texture,
+      Vector2 parallaxFactor,
+      float width,
+      float height,
+      Vector2 offset,
+      BackgroundType backgroundType,
+      Vector2 velocity,
+      boolean repeat) {
 
     layers.add(
-            new ParallaxLayer(
-                    texture, parallaxFactor, width, height, offset, backgroundType, velocity, repeat));
+        new ParallaxLayer(
+            texture, parallaxFactor, width, height, offset, backgroundType, velocity, repeat));
   }
 
   /** Scale is controlled individually for each layer. */
@@ -153,7 +153,7 @@ public class BackgroundRenderComponent extends RenderComponent {
     getPosUpdate(layer);
 
     float backgroundX =
-            position.x + layer.offset.x + cameraX * (1f - layer.parallaxFactor.x) + layer.position.x;
+        position.x + layer.offset.x + cameraX * (1f - layer.parallaxFactor.x) + layer.position.x;
     float backgroundY = position.y + layer.offset.y + cameraY + layer.position.y;
 
     return new Vector2(backgroundX, backgroundY);
