@@ -91,12 +91,7 @@ loadScripts(document, 'script');</script>
 <hr>
 <div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">ItemFactory</span>
 <span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></span></div>
-<div class="block">Factory to create item entities that sit in the world for the player to find.
-
- <p>Each entity carries the item it represents and a sensor hitbox, so interaction logic can
- detect it. Collecting the item is handled separately.
-
- <p>Each item type should have a creation method that returns a corresponding entity.</div>
+<div class="block">Factory to create item entities that sit in the world for the player to find or pick up.</div>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -119,9 +114,7 @@ loadScripts(document, 'script');</script>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createHealthPotion(int)" class="member-name-link">createHealthPotion</a><wbr>(int&nbsp;quantity)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
-<div class="block">Creates a stack of health potions lying in the world.</div>
-</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createItem(com.csse3200.game.components.item.Item)" class="member-name-link">createItem</a><wbr>(<a href="../../components/item/Item.html" title="class in com.csse3200.game.components.item">Item</a>&nbsp;item)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
@@ -129,19 +122,13 @@ loadScripts(document, 'script');</script>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createRopeArrow()" class="member-name-link">createRopeArrow</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
-<div class="block">Creates a single rope arrow lying in the world.</div>
-</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createRopeArrow(int)" class="member-name-link">createRopeArrow</a><wbr>(int&nbsp;quantity)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
-<div class="block">Creates a stack of rope arrows lying in the world.</div>
-</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createStandardArrow(int)" class="member-name-link">createStandardArrow</a><wbr>(int&nbsp;quantity)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
-<div class="block">Creates a stack of standard arrows lying in the world.</div>
-</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
 </div>
 </div>
 </div>
@@ -168,7 +155,7 @@ loadScripts(document, 'script');</script>
 <dt>Parameters:</dt>
 <dd><code>item</code> - item this entity represents</dd>
 <dt>Returns:</dt>
-<dd>entity</dd>
+<dd>item entity</dd>
 </dl>
 </section>
 </li>
@@ -176,50 +163,18 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="createRopeArrow()">
 <h3>createRopeArrow</h3>
 <div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createRopeArrow</span>()</div>
-<div class="block">Creates a single rope arrow lying in the world.</div>
-<dl class="notes">
-<dt>Returns:</dt>
-<dd>entity</dd>
-</dl>
 </section>
 </li>
 <li>
 <section class="detail" id="createRopeArrow(int)">
 <h3>createRopeArrow</h3>
 <div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createRopeArrow</span><wbr><span class="parameters">(int&nbsp;quantity)</span></div>
-<div class="block">Creates a stack of rope arrows lying in the world.</div>
-<dl class="notes">
-<dt>Parameters:</dt>
-<dd><code>quantity</code> - number of rope arrows in the stack</dd>
-<dt>Returns:</dt>
-<dd>entity</dd>
-</dl>
 </section>
 </li>
 <li>
 <section class="detail" id="createStandardArrow(int)">
 <h3>createStandardArrow</h3>
 <div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createStandardArrow</span><wbr><span class="parameters">(int&nbsp;quantity)</span></div>
-<div class="block">Creates a stack of standard arrows lying in the world.</div>
-<dl class="notes">
-<dt>Parameters:</dt>
-<dd><code>quantity</code> - number of arrows in the stack</dd>
-<dt>Returns:</dt>
-<dd>entity</dd>
-</dl>
-</section>
-</li>
-<li>
-<section class="detail" id="createHealthPotion(int)">
-<h3>createHealthPotion</h3>
-<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createHealthPotion</span><wbr><span class="parameters">(int&nbsp;quantity)</span></div>
-<div class="block">Creates a stack of health potions lying in the world.</div>
-<dl class="notes">
-<dt>Parameters:</dt>
-<dd><code>quantity</code> - number of potions in the stack</dd>
-<dt>Returns:</dt>
-<dd>entity</dd>
-</dl>
 </section>
 </li>
 <li>
@@ -232,6 +187,12 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="createColdArrow(int)">
 <h3>createColdArrow</h3>
 <div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createColdArrow</span><wbr><span class="parameters">(int&nbsp;quantity)</span></div>
+</section>
+</li>
+<li>
+<section class="detail" id="createHealthPotion(int)">
+<h3>createHealthPotion</h3>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createHealthPotion</span><wbr><span class="parameters">(int&nbsp;quantity)</span></div>
 </section>
 </li>
 </ul>

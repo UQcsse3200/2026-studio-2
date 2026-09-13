@@ -9,6 +9,10 @@ com.csse3200.game.components.inventory
 com.csse3200.game.components.item
 com.csse3200.game.components.item.consumables
 com.csse3200.game.components.item.weapons
+com.csse3200.game.components.item.weapons.bow
+com.csse3200.game.components.item.weapons.bow.arrow
+com.csse3200.game.components.item.weapons.bow.grapple
+com.csse3200.game.components.item.weapons.melee
 com.csse3200.game.components.level
 com.csse3200.game.components.maingame
 com.csse3200.game.components.mainmenu
@@ -33,6 +37,7 @@ com.csse3200.game.physics
 com.csse3200.game.physics.components
 com.csse3200.game.physics.raycast
 com.csse3200.game.rendering
+com.csse3200.game.rendering.item
 com.csse3200.game.screens
 com.csse3200.game.screens.minigames
 com.csse3200.game.screens.minigames.spinthewheel

@@ -93,13 +93,10 @@ loadScripts(document, 'script');</script>
 <hr>
 <div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">ItemUseComponent</span>
 <span class="extends-implements">extends <a href="../Component.html" title="class in com.csse3200.game.components">Component</a></span></div>
-<div class="block">Uses the currently selected inventory item when the player attacks.
+<div class="block">Bridges input events and inventory selection with active combat, health, and grapple logic.
 
- <p>An item must be owned and selected before it can be used. Standard arrows fire through <code>
- primaryAttack</code> before ammunition is removed. Rope arrows fire through <code>grappleFire</code> before
- the cooldown starts. Consumables heal the player and are removed from the inventory.
-
- <p>Requires InventoryComponent. CombatStatsComponent is required to use consumables.</div>
+ <p>Listens for player input events ("attack", "useItem", "shoot", "stopShoot") and routes
+ execution based on the currently selected item in the player's inventory.</div>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -141,12 +138,11 @@ loadScripts(document, 'script');</script>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Called when the entity is created and registered.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>float</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getRopeCooldownRemaining()" class="member-name-link">getRopeCooldownRemaining</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isRopeReady()" class="member-name-link">isRopeReady</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#useSelectedItem()" class="member-name-link">useSelectedItem</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Attempts to use the currently selected item stack in the inventory.</div>
+</div>
 </div>
 </div>
 </div>
@@ -195,22 +191,13 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li>
-<section class="detail" id="getRopeCooldownRemaining()">
-<h3>getRopeCooldownRemaining</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">float</span>&nbsp;<span class="element-name">getRopeCooldownRemaining</span>()</div>
+<section class="detail" id="useSelectedItem()">
+<h3>useSelectedItem</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">useSelectedItem</span>()</div>
+<div class="block">Attempts to use the currently selected item stack in the inventory.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>remaining rope-arrow cooldown in seconds, or 0 if it can be used now</dd>
-</dl>
-</section>
-</li>
-<li>
-<section class="detail" id="isRopeReady()">
-<h3>isRopeReady</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">isRopeReady</span>()</div>
-<dl class="notes">
-<dt>Returns:</dt>
-<dd>true if a rope arrow can be fired without waiting</dd>
+<dd>true if the item was successfully used or fired</dd>
 </dl>
 </section>
 </li>

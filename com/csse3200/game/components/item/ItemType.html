@@ -119,15 +119,15 @@ loadScripts(document, 'script');</script>
 <div class="summary-table two-column-summary">
 <div class="table-header col-first">Enum Constant</div>
 <div class="table-header col-last">Description</div>
-<div class="col-first even-row-color"><code><a href="#ARROW" class="member-name-link">ARROW</a></code></div>
+<div class="col-first even-row-color"><code><a href="#COLD_ARROW" class="member-name-link">COLD_ARROW</a></code></div>
 <div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><code><a href="#ColdArrow" class="member-name-link">ColdArrow</a></code></div>
+<div class="col-first odd-row-color"><code><a href="#FIRE_ARROW" class="member-name-link">FIRE_ARROW</a></code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
-<div class="col-first even-row-color"><code><a href="#CONSUMABLE" class="member-name-link">CONSUMABLE</a></code></div>
+<div class="col-first even-row-color"><code><a href="#HEALTH_POTION" class="member-name-link">HEALTH_POTION</a></code></div>
 <div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><code><a href="#FireArrow" class="member-name-link">FireArrow</a></code></div>
+<div class="col-first odd-row-color"><code><a href="#ROPE_ARROW" class="member-name-link">ROPE_ARROW</a></code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
-<div class="col-first even-row-color"><code><a href="#RopeArrow" class="member-name-link">RopeArrow</a></code></div>
+<div class="col-first even-row-color"><code><a href="#STANDARD_ARROW" class="member-name-link">STANDARD_ARROW</a></code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 </div>
 </section>
@@ -182,6 +182,16 @@ loadScripts(document, 'script');</script>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getTexturePath()" class="member-name-link">getTexturePath</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isArrow()" class="member-name-link">isArrow</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Checks if the item is arrow ammunition.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../projectile/ArrowType.html" title="enum class in com.csse3200.game.components.projectile">ArrowType</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#toArrowType()" class="member-name-link">toArrowType</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Converts this inventory item type into its corresponding combat arrow type.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="ItemType.html" title="enum class in com.csse3200.game.components.item">ItemType</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#valueOf(java.lang.String)" class="member-name-link">valueOf</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
@@ -214,33 +224,33 @@ the order they are declared.</div>
 <h2>Enum Constant Details</h2>
 <ul class="member-list">
 <li>
-<section class="detail" id="ARROW">
-<h3>ARROW</h3>
-<div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type"><a href="ItemType.html" title="enum class in com.csse3200.game.components.item">ItemType</a></span>&nbsp;<span class="element-name">ARROW</span></div>
+<section class="detail" id="STANDARD_ARROW">
+<h3>STANDARD_ARROW</h3>
+<div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type"><a href="ItemType.html" title="enum class in com.csse3200.game.components.item">ItemType</a></span>&nbsp;<span class="element-name">STANDARD_ARROW</span></div>
 </section>
 </li>
 <li>
-<section class="detail" id="RopeArrow">
-<h3>RopeArrow</h3>
-<div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type"><a href="ItemType.html" title="enum class in com.csse3200.game.components.item">ItemType</a></span>&nbsp;<span class="element-name">RopeArrow</span></div>
+<section class="detail" id="ROPE_ARROW">
+<h3>ROPE_ARROW</h3>
+<div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type"><a href="ItemType.html" title="enum class in com.csse3200.game.components.item">ItemType</a></span>&nbsp;<span class="element-name">ROPE_ARROW</span></div>
 </section>
 </li>
 <li>
-<section class="detail" id="CONSUMABLE">
-<h3>CONSUMABLE</h3>
-<div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type"><a href="ItemType.html" title="enum class in com.csse3200.game.components.item">ItemType</a></span>&nbsp;<span class="element-name">CONSUMABLE</span></div>
+<section class="detail" id="HEALTH_POTION">
+<h3>HEALTH_POTION</h3>
+<div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type"><a href="ItemType.html" title="enum class in com.csse3200.game.components.item">ItemType</a></span>&nbsp;<span class="element-name">HEALTH_POTION</span></div>
 </section>
 </li>
 <li>
-<section class="detail" id="FireArrow">
-<h3>FireArrow</h3>
-<div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type"><a href="ItemType.html" title="enum class in com.csse3200.game.components.item">ItemType</a></span>&nbsp;<span class="element-name">FireArrow</span></div>
+<section class="detail" id="FIRE_ARROW">
+<h3>FIRE_ARROW</h3>
+<div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type"><a href="ItemType.html" title="enum class in com.csse3200.game.components.item">ItemType</a></span>&nbsp;<span class="element-name">FIRE_ARROW</span></div>
 </section>
 </li>
 <li>
-<section class="detail" id="ColdArrow">
-<h3>ColdArrow</h3>
-<div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type"><a href="ItemType.html" title="enum class in com.csse3200.game.components.item">ItemType</a></span>&nbsp;<span class="element-name">ColdArrow</span></div>
+<section class="detail" id="COLD_ARROW">
+<h3>COLD_ARROW</h3>
+<div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type"><a href="ItemType.html" title="enum class in com.csse3200.game.components.item">ItemType</a></span>&nbsp;<span class="element-name">COLD_ARROW</span></div>
 </section>
 </li>
 </ul>
@@ -334,6 +344,20 @@ not permitted.)</div>
 <section class="detail" id="consumesAmmo()">
 <h3>consumesAmmo</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">consumesAmmo</span>()</div>
+</section>
+</li>
+<li>
+<section class="detail" id="isArrow()">
+<h3>isArrow</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">isArrow</span>()</div>
+<div class="block">Checks if the item is arrow ammunition.</div>
+</section>
+</li>
+<li>
+<section class="detail" id="toArrowType()">
+<h3>toArrowType</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../projectile/ArrowType.html" title="enum class in com.csse3200.game.components.projectile">ArrowType</a></span>&nbsp;<span class="element-name">toArrowType</span>()</div>
+<div class="block">Converts this inventory item type into its corresponding combat arrow type.</div>
 </section>
 </li>
 <li>
