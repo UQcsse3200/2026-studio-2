@@ -2,10 +2,7 @@ package com.csse3200.game.areas.terrain.configs.levelconfigs;
 
 import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
-import com.csse3200.game.areas.terrain.configs.LevelConfig;
-import com.csse3200.game.areas.terrain.configs.MovingPlatformConfig;
-import com.csse3200.game.areas.terrain.configs.PlatformConfig;
-import com.csse3200.game.areas.terrain.configs.SpikeClusterConfig;
+import com.csse3200.game.areas.terrain.configs.*;
 import com.csse3200.game.components.item.consumables.HealthPotion;
 import com.csse3200.game.components.item.weapons.*;
 import java.util.HashMap;
@@ -21,11 +18,11 @@ public class LevelTutorialConfig extends LevelConfig {
         new PlatformConfig[] {
           // first half
           new PlatformConfig(new GridPoint2(4, 2), 3, 1, 0),
-          new PlatformConfig(new GridPoint2(8, 3), 3, 1, 0),
+          new PlatformConfig(new GridPoint2(8, 4), 3, 1, 0),
           new PlatformConfig(new GridPoint2(14, 6), 3, 1, 0),
           new PlatformConfig(new GridPoint2(19, 6), 3, 1, 0),
           new PlatformConfig(new GridPoint2(27, 2), 3, 1, 0),
-          new PlatformConfig(new GridPoint2(32, 3), 2, 2, 2),
+          new PlatformConfig(new GridPoint2(32, 3), 3, 2, 2),
           new PlatformConfig(new GridPoint2(30, 6), 3, 1, 0),
           new PlatformConfig(new GridPoint2(27, 8), 3, 1, 10),
           new PlatformConfig(new GridPoint2(23, 10), 3, 1, 2),
@@ -86,7 +83,15 @@ public class LevelTutorialConfig extends LevelConfig {
         new SpikeClusterConfig[] {
           new SpikeClusterConfig(53, 55, 17, 17),
           new SpikeClusterConfig(59, 68, 19, 19),
-          new SpikeClusterConfig(60, 62, 1, 1)
+          new SpikeClusterConfig(60, 62, 1, 1),
+          new SpikeClusterConfig(53, 55, 17, 17),
+          new SpikeClusterConfig(59, 68, 19, 19),
+          new SpikeClusterConfig(60, 62, 1, 1),
+          new SpikeClusterConfig(13, 23, 5, 5),
+          new SpikeClusterConfig(27, 38, 1, 1),
+          new SpikeClusterConfig(2, 14, 20, 20), // 180
+          new SpikeClusterConfig(1, 1, 16, 20), // 270
+          new SpikeClusterConfig(39, 39, 1, 16), // 90
         };
 
     bounds =
@@ -135,7 +140,7 @@ public class LevelTutorialConfig extends LevelConfig {
                 new GridPoint2(2, 4), new RopeArr(1),
                 new GridPoint2(4, 4), new StandardArr(5),
                 new GridPoint2(6, 4), new FireArr(5),
-                new GridPoint2(8, 4), new ColdArr(5),
-                new GridPoint2(10, 4), new HealthPotion(3)));
+                new GridPoint2(8, 5), new ColdArr(5),
+                new GridPoint2(10, 5), new HealthPotion(3)));
   }
 }

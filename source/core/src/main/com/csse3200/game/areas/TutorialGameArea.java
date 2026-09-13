@@ -16,9 +16,7 @@ import com.csse3200.game.entities.factories.EnemyFactory;
 // import com.csse3200.game.entities.factories.NPCFactory;
 import com.csse3200.game.entities.factories.ObstacleFactory;
 import com.csse3200.game.entities.factories.PlayerFactory;
-import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.rendering.BackgroundRenderComponent;
-import com.csse3200.game.rendering.TextureRenderComponent;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.utils.math.GridPoint2Utils;
@@ -189,6 +187,7 @@ public class TutorialGameArea extends GameArea {
    * the subtle effect you originally wanted.
    */
   private void spawnBackground() {
+    // USE THIS ENTIRE spawnBackground
     final Vector2 backgroundPos = new Vector2(-10f, -10f);
     BackgroundRenderComponent backgroundComponent =
         new BackgroundRenderComponent(camera, backgroundPos, worldBounds);
@@ -267,121 +266,6 @@ public class TutorialGameArea extends GameArea {
         ObstacleFactory.createWall(worldBounds.x, WALL_WIDTH), GridPoint2Utils.ZERO, false, false);
   }
 
-  private void spawnMovingPlatforms() {
-
-    Entity movingPlatform =
-        ObstacleFactory.createMovingPlatform(
-            0, new Vector2(9, 15), new Vector2(14, 15), new Vector2(3, 0));
-    movingPlatform.setScale(2, 1);
-    spawnEntityAt(movingPlatform, new GridPoint2(9, 15), false, false);
-
-    Entity movingPlatform2 =
-        ObstacleFactory.createMovingPlatform(
-            0, new Vector2(25, 15), new Vector2(36, 15), new Vector2(3, 0));
-    movingPlatform2.setScale(2, 1);
-    spawnEntityAt(movingPlatform2, new GridPoint2(25, 15), false, false);
-
-    Entity movingPlatform3 =
-        ObstacleFactory.createMovingPlatform(
-            10, new Vector2(61, 2), new Vector2(61, 10), new Vector2(0, 3));
-    spawnEntityAt(movingPlatform3, new GridPoint2(61, 10), false, false);
-
-    Entity movingPlatform4 =
-        ObstacleFactory.createMovingPlatform(
-            0, new Vector2(60, 12), new Vector2(60, 15), new Vector2(0, 3));
-    spawnEntityAt(movingPlatform4, new GridPoint2(60, 12), false, false);
-
-    Entity movingPlatform5 =
-        ObstacleFactory.createMovingPlatform(
-            10, new Vector2(72, 2), new Vector2(72, 12), new Vector2(0, 3));
-    spawnEntityAt(movingPlatform5, new GridPoint2(75, 2), false, false);
-  }
-
-  /*
-  private void spawnPlatforms() {
-
-    for (PlatformConfig config : platforms) {
-      boolean tall = config.height >= config.width;
-      Entity platform = ObstacleFactory.createPlatform(config.grappleSides, tall);
-
-      platform.setScale(config.width, config.height);
-
-      spawnEntityAt(platform, config.position, false, false);
-    }
-  }
-
-  private void spawnFloors() {
-
-    for (PlatformConfig config : floors) {
-      Entity platform = ObstacleFactory.createFloor(config.grappleSides);
-
-      platform.setScale(config.width, config.height);
-
-      spawnEntityAt(platform, config.position, false, false);
-    }
-  }
-  */
-  private void spawnSpikes() {
-    for (int x = 53; x <= 55; x++) {
-      spawnRotatedSpike(0f, new GridPoint2(x, 17));
-    }
-
-    for (int x = 59; x <= 68; x++) {
-      spawnRotatedSpike(0f, new GridPoint2(x, 19));
-    }
-
-    for (int x = 60; x <= 62; x++) {
-      spawnRotatedSpike(0f, new GridPoint2(x, 1));
-    }
-
-    for (int x = 13; x <= 23; x++) {
-      spawnRotatedSpike(0f, new GridPoint2(x, 5));
-    }
-
-    for (int x = 27; x <= 37; x++) {
-      spawnRotatedSpike(0f, new GridPoint2(x, 1));
-    }
-
-    for (int x = 2; x <= 15; x++) {
-      spawnRotatedSpike(180f, new GridPoint2(x, 20));
-    }
-
-    for (int y = 16; y <= 20; y++) {
-      spawnRotatedSpike(270f, new GridPoint2(1, y));
-    }
-
-    for (int y = 1; y <= 14; y++) {
-      spawnRotatedSpike(90f, new GridPoint2(38, y));
-    }
-  }
-
-  private void spawnRotatedSpike(float rotationAngle, GridPoint2 position) {
-    Entity spike = ObstacleFactory.createSpike();
-
-    TextureRenderComponent textureComponent = spike.getComponent(TextureRenderComponent.class);
-    if (textureComponent != null) {
-      textureComponent.setRotation(rotationAngle);
-    }
-
-    spawnEntityAt(spike, position, true, true);
-
-    Vector2 currentPos = spike.getPosition();
-    if (rotationAngle == 180f) {
-      spike.setPosition(currentPos.x, currentPos.y - 0.15f);
-    } else if (rotationAngle == 270f) {
-      spike.setPosition(currentPos.x + 0.15f, currentPos.y);
-    } else if (rotationAngle == 90f) {
-      spike.setPosition(currentPos.x + 0.85f, currentPos.y);
-    }
-
-    PhysicsComponent physicsComponent = spike.getComponent(PhysicsComponent.class);
-    if (physicsComponent != null && physicsComponent.getBody() != null) {
-      physicsComponent
-          .getBody()
-          .setTransform(spike.getPosition(), (float) Math.toRadians(rotationAngle));
-    }
-  }
-
   private Entity spawnPlayer() {
 
     Entity newPlayer = PlayerFactory.createPlayer();
@@ -401,8 +285,6 @@ public class TutorialGameArea extends GameArea {
     Entity winCon = ObstacleFactory.createWinConEntity();
     spawnEntityAt(winCon, new GridPoint2(80, 18), true, true);
   }
-  */
-
   // Temporary test win condition near player spawn for quick testing
   private void spawnTestWinCondition() {
     // Temporary test win condition near player spawn for quick testing
@@ -415,6 +297,7 @@ public class TutorialGameArea extends GameArea {
     Entity testEnemy = EnemyFactory.createSkeletonWarrior(player);
     spawnEntityAt(testEnemy, new GridPoint2(12, 4), true, true);
   }
+  */
 
   private void spawnSkeletonWarrior() {
     for (GridPoint2 spawnLocation : skeletonWarriorSpawnLocations) {
