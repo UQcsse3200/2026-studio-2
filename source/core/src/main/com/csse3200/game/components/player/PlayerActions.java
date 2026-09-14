@@ -37,7 +37,7 @@ public class PlayerActions extends Component {
     entity.getEvents().addListener("jump", this::jump);
     entity.getEvents().addListener("sprint", this::sprint);
     entity.getEvents().addListener("sprintStop", this::stopSprinting);
-    entity.getEvents().addListener("togglePaused", this::togglePause);
+    ////// entity.getEvents().addListener("togglePaused", this::togglePause);
     entity.getEvents().addListener("updateLedgeDrop", this::setLedgeDropping);
   }
 

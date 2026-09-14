@@ -77,10 +77,15 @@ public class ObstacleFactory {
         .addComponent(new PhysicsComponent())
         .addComponent(new ColliderComponent().setLayer(PhysicsLayer.GROUND))
         .addComponent(new PlatformGrappleComponent(config.grappleSides));
-    
+
+    return platform;
+  }
+
+  /*
   public static Entity createPlatform(int grappleSides) {
     return createPlatform(grappleSides, false);
   }
+  */
 
   /**
    * Creates a platform entity.
@@ -90,7 +95,7 @@ public class ObstacleFactory {
    *     tall/square shape
    * @return platform entity
    */
-    /*
+  /*
   public static Entity createPlatform(int grappleSides, boolean tall) {
     String texturePath;
     if (tall) {
@@ -113,7 +118,7 @@ public class ObstacleFactory {
     return platform;
   }
   */
-    
+
   /**
    * Creates a normal moving platform.
    *

@@ -87,9 +87,9 @@ public class TutorialGameScreen extends ScreenAdapter {
     // renderer.getDebug().setActive(true);
     renderer.getDebug().renderPhysicsWorld(physicsEngine.getWorld());
 
-    loadAssets();
-    createUI();
-    playMusic();
+    // loadAssets();
+    // createUI();
+    // playMusic();
 
     logger.debug("Initialising tutorial game screen entities");
 
@@ -163,14 +163,15 @@ public class TutorialGameScreen extends ScreenAdapter {
     if (levelSwapQueued) {
       performLevelSwap();
       levelSwapQueued = false;
-    if (Gdx.input.isKeyJustPressed(Input.Keys.K)) {
-      wheelOverlay.request();
-    }
+      if (Gdx.input.isKeyJustPressed(Input.Keys.K)) {
+        wheelOverlay.request();
+      }
 
-    physicsEngine.update();
-    ServiceLocator.getEntityService().update();
-    renderer.render();
-    wheelOverlay.afterRender();
+      physicsEngine.update();
+      ServiceLocator.getEntityService().update();
+      renderer.render();
+      wheelOverlay.afterRender();
+    }
   }
 
   @Override

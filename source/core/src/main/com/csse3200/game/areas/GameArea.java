@@ -8,8 +8,8 @@ import com.csse3200.game.areas.terrain.configs.LevelConfig;
 import com.csse3200.game.areas.terrain.configs.SpawnData;
 import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.components.level.ActivatableComponent;
-import com.csse3200.game.components.level.LevelTriggerComponent;
 import com.csse3200.game.components.level.CheckpointComponent;
+import com.csse3200.game.components.level.LevelTriggerComponent;
 import com.csse3200.game.components.level.PlatformGrappleComponent;
 import com.csse3200.game.components.level.TriggerButtonComponent;
 import com.csse3200.game.entities.Entity;
@@ -214,11 +214,6 @@ public abstract class GameArea implements Disposable {
     player.getEvents().trigger("grappleResponse", result);
   }
 
-  public enum BackgroundType {
-    INDEPENDENT,
-    DEPENDENT
-  }
-
   /**
    * Triggers the activated component on all stored entities that require an update for a specific
    * activation id
@@ -233,6 +228,8 @@ public abstract class GameArea implements Disposable {
       boolean newActive = !activate.isActive();
       activate.setActive(newActive);
     }
+  }
+
   /** Public method to respawn the player at the last collected checkpoint upon an event trigger. */
   public void respawn() {
     ArrayList<CheckpointComponent> checkpoints = config.getCheckpoints();
