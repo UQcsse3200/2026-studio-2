@@ -74,6 +74,8 @@ public class TutorialGameArea extends GameArea {
     // Existing game textures
     "images/black_roof.png",
     "images/purple_heart.png",
+    "images/red_heart.png",
+    "images/PixelArt_HeartBack.png",
     "images/transparent.png",
     "images/DevGridTile.png",
     "images/Tile_2.png",
