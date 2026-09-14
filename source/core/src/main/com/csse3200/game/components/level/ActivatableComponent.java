@@ -9,17 +9,17 @@ public class ActivatableComponent extends Component {
 
   private final boolean activatable;
   private boolean active;
-  private final String id;
+  private final String[] ids;
 
   /**
    * Minimal constructor for an activatable constructor
    *
    * @param id the id to keep a reference of and react to activation events with the same id key
    */
-  public ActivatableComponent(String id) {
+  public ActivatableComponent(String[] id) {
     active = checkId(id);
     activatable = !active;
-    this.id = id;
+    this.ids = id;
   }
 
   /**
@@ -28,27 +28,27 @@ public class ActivatableComponent extends Component {
    * @param active the initial activation state of the entity this is attached to
    * @param id the id to keep a reference of and react to activation events with the same id key
    */
-  public ActivatableComponent(boolean active, String id) {
+  public ActivatableComponent(boolean active, String[] id) {
     boolean emptyId = checkId(id);
 
     this.active = active && emptyId;
     activatable = !emptyId;
-    this.id = id;
+    this.ids = id;
   }
 
   /**
    * A helper method for constructors to use to ensure the provided id is valid
    *
-   * @param id the id to keep a reference of and react to activation events with the same id key
+   * @param id the ids to keep a reference of and react to activation events with the same id key
    * @return true if the id is empty or "", false otherwise
    * @throws IllegalArgumentException if the id is null
    */
-  private boolean checkId(String id) {
-    if (id == null) {
+  private boolean checkId(String[] ids) {
+    if (ids == null) {
       throw new IllegalArgumentException("Invalid id - cannot be null");
     }
 
-    return id.isEmpty();
+    return ids.length == 0;
   }
 
   /**
@@ -69,7 +69,7 @@ public class ActivatableComponent extends Component {
    * @param active the new active state to set this component's flag to
    */
   public void setActive(boolean active) {
-    // if the component was set up to not have a activation id, it is not activatable, and so
+    // if the component was set up to not have an activation id, it is not activatable, and so
     // any attempts to activate the component should make a warning in the logger
     if (!activatable) {
       logger.warn("A component that cannot be activated received an attempt to activate");
@@ -83,9 +83,9 @@ public class ActivatableComponent extends Component {
   /**
    * Fetches the id of this component
    *
-   * @return a String representation of this component's stored activation id
+   * @return An array of strings representing all IDs this entity should respond to
    */
-  public String getId() {
-    return id;
+  public String[] getIds() {
+    return ids;
   }
 }

@@ -22,7 +22,11 @@ public class TriggerButtonComponent extends Component {
 
   private void onCollisionStart(Fixture me, Fixture other) {
     ActivatableComponent activeComponent = entity.getComponent(ActivatableComponent.class);
-    entity.getEvents().trigger("activateByKey", activeComponent.getId());
+    String[] ids = activeComponent.getIds();
+
+    for (String id : ids) {
+      entity.getEvents().trigger("activateByKey", id);
+    }
 
     animator = entity.getComponent(RotatableAnimationRenderComponent.class);
     animator.startAnimation("pressed");
