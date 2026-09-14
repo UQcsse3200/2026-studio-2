@@ -23,11 +23,11 @@ public class LevelTutorialConfig extends LevelConfig {
         new PlatformConfig[] {
           // first half
           new PlatformConfig(new GridPoint2(4, 2), 3, 1, 0, platformTFP),
-          new PlatformConfig(new GridPoint2(8, 3), 3, 1, 0, platformTFP),
+          new PlatformConfig(new GridPoint2(8, 4), 3, 1, 0, platformTFP),
           new PlatformConfig(new GridPoint2(14, 6), 3, 1, 0, platformTFP),
           new PlatformConfig(new GridPoint2(19, 6), 3, 1, 0, platformTFP),
           new PlatformConfig(new GridPoint2(27, 2), 3, 1, 0, platformTFP),
-          new PlatformConfig(new GridPoint2(32, 3), 2, 2, 2, platformTFP),
+          new PlatformConfig(new GridPoint2(32, 4), 3, 1, 2, platformTFP),
           new PlatformConfig(new GridPoint2(30, 6), 3, 1, 0, platformTFP),
           new PlatformConfig(new GridPoint2(27, 8), 3, 1, 10, platformTFP),
           new PlatformConfig(new GridPoint2(23, 10), 3, 1, 2, platformTFP),
@@ -100,9 +100,9 @@ public class LevelTutorialConfig extends LevelConfig {
           new SpikeClusterConfig(59, 68, 19, 19, 0f, false),
           new SpikeClusterConfig(60, 62, 1, 1, 0f, false),
           new SpikeClusterConfig(13, 23, 5, 5, 0f, false),
-          new SpikeClusterConfig(2, 14, 20, 20, 180f, false),
+          new SpikeClusterConfig(2, 13, 20, 20, 180f, false),
           new SpikeClusterConfig(1, 1, 16, 20, 270f, false),
-          new SpikeClusterConfig(39, 39, 0, 16, 90f, false),
+          new SpikeClusterConfig(39, 39, 0, 15, 90f, false),
         };
 
     bounds =

@@ -65,7 +65,7 @@ public class TutorialGameScreen extends ScreenAdapter {
   private Entity player;
   private static final String gameplayMusic = "sounds/gameplay_bg.ogg";
   private static final String[] gameplayMusicFiles = {gameplayMusic};
-  private boolean cheats = true;
+  private boolean cheats = false;
 
   public TutorialGameScreen(GdxGame game) {
     this.game = game;
@@ -87,7 +87,7 @@ public class TutorialGameScreen extends ScreenAdapter {
 
     renderer = RenderFactory.createRenderer();
 
-    // renderer.getDebug().setActive(true);
+    renderer.getDebug().setActive(true);
     renderer.getDebug().renderPhysicsWorld(physicsEngine.getWorld());
 
     loadAssets();
