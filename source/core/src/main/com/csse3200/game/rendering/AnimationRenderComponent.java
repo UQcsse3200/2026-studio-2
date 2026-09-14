@@ -195,7 +195,20 @@ public class AnimationRenderComponent extends RenderComponent {
    * @return true if animation was playing and has now finished, false otherwise.
    */
   public boolean isFinished() {
-    return currentAnimation != null && currentAnimation.isAnimationFinished(animationPlayTime);
+    if (currentAnimation == null) {
+      return false;
+    }
+    // Animation#isAnimationFinished() is purely elapsed-time-based and ignores play mode, so a
+    // looping animation reports "finished" once playtime exceeds one full cycle even though it
+    // keeps playing - check the play mode ourselves to honour this method's documented contract.
+    PlayMode mode = currentAnimation.getPlayMode();
+    if (mode == PlayMode.LOOP
+        || mode == PlayMode.LOOP_REVERSED
+        || mode == PlayMode.LOOP_PINGPONG
+        || mode == PlayMode.LOOP_RANDOM) {
+      return false;
+    }
+    return currentAnimation.isAnimationFinished(animationPlayTime);
   }
 
   /**

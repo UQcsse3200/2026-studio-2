@@ -16,6 +16,7 @@ public class PlayerAnimationController extends Component {
   private boolean deathAnimationFinishedFired = false;
   private boolean sleep = false;
   private boolean charging = false;
+  private boolean drawingIn = false;
 
   @Override
   public void create() {
@@ -54,6 +55,10 @@ public class PlayerAnimationController extends Component {
     } else if (dashing && animator.isFinished()) {
       dashing = false;
       updateAnimation();
+    } else if (drawingIn && animator.isFinished()) {
+      // The one-shot draw-back has finished pulling the string - settle into the looping hold.
+      drawingIn = false;
+      animator.startAnimation("bow_hold");
     } else if (attacking && animator.isFinished()) {
       attacking = false;
       updateAnimation();
@@ -165,6 +170,7 @@ public class PlayerAnimationController extends Component {
       return;
     }
     charging = true;
+    drawingIn = true;
     attacking = true;
     if (aim != null && aim.x != 0) {
       animator.setFlipX(aim.x < 0);
@@ -177,10 +183,11 @@ public class PlayerAnimationController extends Component {
       return;
     }
     charging = false;
+    drawingIn = false;
     if (dead) {
       return;
     }
-    animator.startAnimation("bow_release");
+    animator.startAnimation("bow_shoot");
   }
 
   private void updateAnimation() {

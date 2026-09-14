@@ -14,10 +14,10 @@ public class BowComponent extends Component implements PrimaryWeapon {
 
   private static final String ATTACK_SOUND = "sounds/Impact4.ogg";
   private static final float BOW_COOLDOWN = 0.4f;
-  private static final float MAX_CHARGE_SECONDS = 2f;
+  private static final float MAX_CHARGE_SECONDS = 1.5f;
   // Fraction of full speed a shot has at zero charge - keeps a tap-release shot weak/short-range
   // rather than firing at full power or not firing at all.
-  private static final float MIN_CHARGE_SPEED_FACTOR = 0.2f;
+  private static final float MIN_CHARGE_SPEED_FACTOR = 0.3f;
 
   @FunctionalInterface
   public interface ProjectileCreator {
@@ -127,7 +127,7 @@ public class BowComponent extends Component implements PrimaryWeapon {
     float elapsedSeconds = Math.min(MAX_CHARGE_SECONDS, (now - chargeStartTimeMs) / 1000f);
     float chargeFraction = elapsedSeconds / MAX_CHARGE_SECONDS;
     float speedMultiplier =
-        MIN_CHARGE_SPEED_FACTOR + (1f - MIN_CHARGE_SPEED_FACTOR) * chargeFraction;
+        MIN_CHARGE_SPEED_FACTOR + (1.5f - MIN_CHARGE_SPEED_FACTOR) * chargeFraction;
 
     if (fire(direction, speedMultiplier)) {
       cooldownTimer = BOW_COOLDOWN;
