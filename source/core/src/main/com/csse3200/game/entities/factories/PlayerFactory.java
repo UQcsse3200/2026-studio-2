@@ -50,7 +50,8 @@ public class PlayerFactory {
     animator.addAnimation("sprint", 0.1f, PlayMode.LOOP);
     animator.addAnimation("jump", 0.05f, PlayMode.NORMAL);
     animator.addAnimation("hurt", 0.04f, PlayMode.NORMAL);
-    animator.addAnimation("dash", 0.025f, PlayMode.NORMAL, 85f, 38f);
+    animator.addAnimation("melee", 0.03f, PlayMode.NORMAL, 79f, 38f);
+    animator.addAnimation("dash", 0.025f, PlayMode.NORMAL, 134.5f, 39f);
     animator.addAnimation("air_dash", 0.025f, PlayMode.NORMAL, 94f, 39f);
 
     Entity player =

@@ -11,6 +11,7 @@ public class PlayerAnimationController extends Component {
   private boolean jumping = false;
   private boolean dashing = false;
   private boolean hurt = false;
+  private boolean attacking = false;
 
   @Override
   public void create() {
@@ -24,6 +25,7 @@ public class PlayerAnimationController extends Component {
     entity.getEvents().addListener("dashStart", this::dashStart);
     entity.getEvents().addListener("airDashStart", this::airDashStart);
     entity.getEvents().addListener("hurt", this::hurt);
+    entity.getEvents().addListener("melee", this::meleeStart);
     entity.getEvents().addListener("sprintEnd", this::sprintStop);
 
     animator.startAnimation("idle");
@@ -37,6 +39,9 @@ public class PlayerAnimationController extends Component {
     } else if (dashing && animator.isFinished()) {
       dashing = false;
       updateAnimation();
+    } else if (attacking && animator.isFinished()) {
+      attacking = false;
+      updateAnimation();
     } else if (jumping && animator.isFinished()) {
       jumping = false;
       updateAnimation();
@@ -48,28 +53,28 @@ public class PlayerAnimationController extends Component {
     if (direction.x != 0) {
       animator.setFlipX(direction.x < 0);
     }
-    if (!jumping && !dashing) {
+    if (!jumping && !dashing && !attacking) {
       updateAnimation();
     }
   }
 
   void walkStop() {
     moving = false;
-    if (!jumping && !dashing) {
+    if (!jumping && !dashing && !attacking) {
       updateAnimation();
     }
   }
 
   void sprint() {
     sprinting = true;
-    if (!jumping && !dashing) {
+    if (!jumping && !dashing && !attacking) {
       updateAnimation();
     }
   }
 
   void sprintStop() {
     sprinting = false;
-    if (!jumping && !dashing) {
+    if (!jumping && !dashing && !attacking) {
       updateAnimation();
     }
   }
@@ -84,12 +89,14 @@ public class PlayerAnimationController extends Component {
 
   void dashStart() {
     jumping = false;
+    attacking = false;      // dash cancels the attack
     dashing = true;
-    animator.startAnimation("dash");
+    animator.startAnimation("air_dash");
   }
 
   void airDashStart() {
     jumping = false;
+    attacking = false;
     dashing = true;
     animator.startAnimation("air_dash");
   }
@@ -97,8 +104,17 @@ public class PlayerAnimationController extends Component {
   void hurt() {
     jumping = false;
     dashing = false;
+    attacking = false;
     hurt = true;
     animator.startAnimation("hurt");
+  }
+
+  void meleeStart(Vector2 aim) {
+    attacking = true;
+    if (aim.x != 0) {
+      animator.setFlipX(aim.x < 0);
+    }
+    animator.startAnimation("melee");
   }
 
   private void updateAnimation() {
