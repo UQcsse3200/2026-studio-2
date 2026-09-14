@@ -25,7 +25,7 @@ public class RotatableMapComponent extends Component {
       Body body = physicsComponent.getBody();
 
       if (body != null) {
-        body.setTransform(body.getPosition(), rotationAngle * MathUtils.degreesToRadians);
+        //body.setTransform(body.getPosition(), rotationAngle * MathUtils.degreesToRadians);
         initialised = true;
       }
     }
