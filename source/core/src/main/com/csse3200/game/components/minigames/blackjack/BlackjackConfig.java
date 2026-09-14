@@ -4,6 +4,12 @@ import com.csse3200.game.components.item.ItemType;
 
 public final class BlackjackConfig {
   public static final String[] TEXTURES = createTextures();
+
+  public static final String[] SOUNDS = {
+    "sounds/minigames/blackjack/card-deal.mp3",
+    "sounds/minigames/blackjack/win.mp3",
+    "sounds/minigames/blackjack/lose.mp3"
+  };
   public static final ItemType WIN_REWARD = ItemType.ARROW;
   public static final int WIN_REWARD_QUANTITY = 1;
 

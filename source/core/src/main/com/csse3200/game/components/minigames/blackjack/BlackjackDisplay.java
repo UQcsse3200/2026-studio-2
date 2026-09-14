@@ -1,5 +1,6 @@
 package com.csse3200.game.components.minigames.blackjack;
 
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -10,6 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.csse3200.game.components.ButtonSound;
 import com.csse3200.game.components.inventory.InventoryComponent;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.UIComponent;
@@ -24,10 +26,14 @@ public class BlackjackDisplay extends UIComponent {
   private static final String CARD_BACK_PATH = "images/minigames/blackjack/card_back.png";
   private static final String BACKGROUND_PATH =
       "images/minigames/blackjack/god_of_wind_background.png";
+  private static final String CARD_DEAL_SOUND = "sounds/minigames/blackjack/card-deal.mp3";
+  private static final String WIN_SOUND = "sounds/minigames/blackjack/win.mp3";
+  private static final String LOSE_SOUND = "sounds/minigames/blackjack/lose.mp3";
 
   private final Blackjack blackjack;
   private final InventoryComponent inventory;
   private boolean rewardGranted;
+  private boolean resultSoundPlayed;
 
   private Table table;
   private Table dealerCards;
@@ -100,9 +106,14 @@ public class BlackjackDisplay extends UIComponent {
               blackjack.placeBet(10);
             }
 
+            ButtonSound.playClick();
+
             if (!blackjack.isRoundInProgress()) {
               rewardGranted = false;
+              resultSoundPlayed = false;
               blackjack.startNewRound();
+              playSound(CARD_DEAL_SOUND);
+              playResultSoundIfNeeded();
               grantWinReward();
               refresh();
             }
@@ -113,8 +124,12 @@ public class BlackjackDisplay extends UIComponent {
         new ChangeListener() {
           @Override
           public void changed(ChangeEvent event, Actor actor) {
+            ButtonSound.playClick();
+
             if (blackjack.isRoundInProgress() && !blackjack.isRoundOver()) {
               blackjack.hit();
+              playSound(CARD_DEAL_SOUND);
+              playResultSoundIfNeeded();
               grantWinReward();
               refresh();
             }
@@ -125,8 +140,18 @@ public class BlackjackDisplay extends UIComponent {
         new ChangeListener() {
           @Override
           public void changed(ChangeEvent event, Actor actor) {
+            ButtonSound.playClick();
+
             if (blackjack.isRoundInProgress() && !blackjack.isRoundOver()) {
+              int dealerCardsBefore = blackjack.getDealerHand().size();
+
               blackjack.stand();
+
+              if (blackjack.getDealerHand().size() > dealerCardsBefore) {
+                playSound(CARD_DEAL_SOUND);
+              }
+
+              playResultSoundIfNeeded();
               grantWinReward();
               refresh();
             }
@@ -137,6 +162,7 @@ public class BlackjackDisplay extends UIComponent {
         new ChangeListener() {
           @Override
           public void changed(ChangeEvent event, Actor actor) {
+            ButtonSound.playClick();
             entity.getEvents().trigger("back");
           }
         });
@@ -216,6 +242,40 @@ public class BlackjackDisplay extends UIComponent {
     balanceLabel.setText("Balance: $" + blackjack.getBalance() + "    Bet: $" + blackjack.getBet());
 
     resultLabel.setText(blackjack.getResultMessage());
+  }
+
+  private void playSound(String path) {
+    try {
+      if (ServiceLocator.getResourceService() == null) {
+        return;
+      }
+
+      if (!ServiceLocator.getResourceService().containsAsset(path, Sound.class)) {
+        return;
+      }
+
+      Sound sound = ServiceLocator.getResourceService().getAsset(path, Sound.class);
+
+      sound.play(1.0f);
+    } catch (RuntimeException ignored) {
+      // Ignore unavailable audio during tests or teardown.
+    }
+  }
+
+  private void playResultSoundIfNeeded() {
+    if (!blackjack.isRoundOver() || resultSoundPlayed) {
+      return;
+    }
+
+    String result = blackjack.getResultMessage();
+
+    if (blackjack.isPlayerWinner()) {
+      playSound(WIN_SOUND);
+      resultSoundPlayed = true;
+    } else if (result != null && !result.isEmpty() && !result.startsWith("Push")) {
+      playSound(LOSE_SOUND);
+      resultSoundPlayed = true;
+    }
   }
 
   private void grantWinReward() {
