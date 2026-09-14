@@ -20,7 +20,7 @@ public class LevelConfig {
   protected PlatformConfig[] floors;
   protected Map<GridPoint2, EnemyConfig> enemies;
   protected Map<GridPoint2, Item> items;
-  public CheckpointConfig[] checkpoints;
+  protected CheckpointConfig[] checkpoints;
 
   protected GridPoint2 playerSpawn;
   protected GridPoint2 winConditionSpawn;
@@ -57,6 +57,19 @@ public class LevelConfig {
    */
   public GridPoint2 getPlayerSpawn() {
     return playerSpawn;
+  }
+
+  /**
+   * Public getter to access checkpoint components for levels
+   *
+   * @return an ArrayList of the CheckpointComponents of a level
+   */
+  public ArrayList<CheckpointComponent> getCheckpoints() {
+    ArrayList<CheckpointComponent> checkpointComponents = new ArrayList<>();
+    for (CheckpointConfig c : checkpoints) {
+      checkpointComponents.add(c.getEntity().getComponent(CheckpointComponent.class));
+    }
+    return checkpointComponents;
   }
 
   /**
@@ -146,10 +159,14 @@ public class LevelConfig {
     }
   }
 
+  /**
+   * Creates all checkpoints for the level and adds them to the entities map for the level to spawn.
+   */
   private void createCheckpoints() {
     for (CheckpointConfig c : checkpoints) {
       Entity checkpoint = new Entity();
       checkpoint.addComponent(new CheckpointComponent(false, c.getPosition()));
+      c.setEntity(checkpoint);
       entities.add(new SpawnData(c.getPosition(), checkpoint));
     }
   }

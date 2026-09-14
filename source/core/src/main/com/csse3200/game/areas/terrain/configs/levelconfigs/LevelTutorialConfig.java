@@ -144,7 +144,7 @@ public class LevelTutorialConfig extends LevelConfig {
 
     checkpoints =
         new CheckpointConfig[] {
-          new CheckpointConfig(new GridPoint2(1, 3)),
+          new CheckpointConfig(new GridPoint2(1, 3)), new CheckpointConfig(new GridPoint2(10, 5)),
         };
   }
 }

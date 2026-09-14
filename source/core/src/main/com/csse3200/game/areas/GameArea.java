@@ -4,10 +4,10 @@ import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Disposable;
 import com.csse3200.game.areas.terrain.TerrainComponent;
-import com.csse3200.game.areas.terrain.configs.CheckpointConfig;
 import com.csse3200.game.areas.terrain.configs.LevelConfig;
 import com.csse3200.game.areas.terrain.configs.SpawnData;
 import com.csse3200.game.components.CameraComponent;
+import com.csse3200.game.components.level.CheckpointComponent;
 import com.csse3200.game.components.level.PlatformGrappleComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.services.ServiceLocator;
@@ -156,14 +156,19 @@ public abstract class GameArea implements Disposable {
     player.getEvents().trigger("grappleResponse", result);
   }
 
+  /** Public method to respawn the player at the last collected checkpoint upon an event trigger. */
   public void respawn() {
-    // Set respawnPoint to starting point initially
-    GridPoint2 respawnPoint = config.checkpoints[0].getPosition();
+    ArrayList<CheckpointComponent> checkpoints = config.getCheckpoints();
+    // If no checkpoints collected use playerSpawn as respawnPoint
+    GridPoint2 respawnPoint = config.getPlayerSpawn();
 
     // Get last collected checkpoint
-    // Note: may need to manually get latest checkpoint instead of last collected
-    for (CheckpointConfig checkpoint : config.checkpoints) {
-      respawnPoint = checkpoint.getPosition();
+    // Note: will choose last active checkpoint in same order they are instantiated
+    // in {level}Config
+    for (CheckpointComponent checkpoint : checkpoints) {
+      if (checkpoint.isActive()) {
+        respawnPoint = checkpoint.getPosition();
+      }
     }
     float x = respawnPoint.x;
     float y = respawnPoint.y;

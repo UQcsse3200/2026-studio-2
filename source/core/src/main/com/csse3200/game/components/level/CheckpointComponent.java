@@ -2,15 +2,21 @@ package com.csse3200.game.components.level;
 
 import com.badlogic.gdx.math.GridPoint2;
 import com.csse3200.game.components.Component;
+import com.csse3200.game.components.player.PlayerActions;
 import com.csse3200.game.entities.Entity;
+import com.csse3200.game.services.ServiceLocator;
 
 public class CheckpointComponent extends Component {
 
   private boolean collected;
   private GridPoint2 position;
-  private Entity entity;
-  private GridPoint2 respawnPoint;
 
+  /**
+   * Constructor for a new CheckpointComponent
+   *
+   * @param collected if the checkpoint has been collected or not
+   * @param position the position of the checkpoint
+   */
   public CheckpointComponent(boolean collected, GridPoint2 position) {
     this.collected = collected;
     this.position = position;
@@ -18,30 +24,37 @@ public class CheckpointComponent extends Component {
 
   public void activate() {
     this.collected = true;
-    respawnPoint = position;
   }
 
   public void deactivate() {
     this.collected = false;
   }
 
-  public boolean getActive() {
+  public boolean isActive() {
     return this.collected;
   }
 
-  public GridPoint2 getRespawnPoint() {
-    return respawnPoint;
+  public GridPoint2 getPosition() {
+    return position;
   }
 
+  /** Check if player position comes in range of checkpoint position. */
   @Override
   public void update() {
-    entity = this.getEntity();
-    float posX = entity.getPosition().x;
-    float posY = entity.getPosition().y;
-
-    if (position.x - 1 < posX && position.x + 1 > posX) {
-      if (position.y - 1 < posY && position.y + 1 > posY) {
-        activate();
+    Entity player = null;
+    for (Entity entity : ServiceLocator.getEntityService().getEntities()) {
+      if (entity.getComponent(PlayerActions.class) != null) {
+        player = entity;
+        break;
+      }
+    }
+    if (player != null) {
+      float playerPosX = player.getPosition().x;
+      float playerPosY = player.getPosition().y;
+      if (position.x - 1 < playerPosX && position.x + 1 > playerPosX) {
+        if (position.y - 1 < playerPosY && position.y + 1 > playerPosY) {
+          activate();
+        }
       }
     }
   }
