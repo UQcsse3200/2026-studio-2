@@ -12,8 +12,15 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.Input.Buttons;
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
+import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.inventory.InventoryComponent;
 import com.csse3200.game.components.item.ItemType;
@@ -22,8 +29,10 @@ import com.csse3200.game.components.item.weapons.bow.BowComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.entities.factories.ProjectileFactory;
+import com.csse3200.game.events.listeners.EventListener0;
 import com.csse3200.game.events.listeners.EventListener1;
 import com.csse3200.game.extensions.GameExtension;
+import com.csse3200.game.input.InputService;
 import com.csse3200.game.services.GameTime;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
@@ -46,6 +55,8 @@ class PlayerCombatIntegrationTest {
   private EntityService entities;
   private Entity projectile;
   private Sound sound;
+  private Input previousInput;
+  private KeyboardPlayerInputComponent input;
   private MockedStatic<ProjectileFactory> factory;
   private EventListener1<ItemType> itemUsed;
   private EventListener1<ItemType> itemFailed;
@@ -66,8 +77,15 @@ class PlayerCombatIntegrationTest {
     when(resources.containsAsset("sounds/Impact4.ogg", Sound.class)).thenReturn(true);
     when(resources.getAsset("sounds/Impact4.ogg", Sound.class)).thenReturn(sound);
 
-    KeyboardPlayerInputComponent input = mock(KeyboardPlayerInputComponent.class);
-    when(input.getMouseAimDirection()).thenReturn(new Vector2(3f, 4f));
+    previousInput = Gdx.input;
+    Gdx.input = mock(Input.class);
+    when(Gdx.input.getX()).thenReturn(40);
+    when(Gdx.input.getY()).thenReturn(60);
+    ServiceLocator.registerInputService(mock(InputService.class));
+    Camera camera = mock(Camera.class);
+    when(camera.unproject(any(Vector3.class))).thenAnswer(ignored -> new Vector3(5f, 7f, 0f));
+    input = new KeyboardPlayerInputComponent();
+    input.setCameraComponent(new CameraComponent(camera));
     inventory = new InventoryComponent(0);
     itemUse = new ItemUseComponent();
     bow = new BowComponent();
@@ -110,6 +128,7 @@ class PlayerCombatIntegrationTest {
     if (factory != null) {
       factory.close();
     }
+    Gdx.input = previousInput;
     ServiceLocator.clear();
   }
 
@@ -272,5 +291,116 @@ class PlayerCombatIntegrationTest {
     factory.verifyNoInteractions();
     verifyNoInteractions(entities, sound, primaryAttack, itemUsed);
     verify(itemFailed).handle(ItemType.STANDARD_ARROW);
+  }
+
+  @Test
+  void shouldRequireEReleaseEvenAfterBowCooldownExpires() {
+    inventory.addItem(ItemType.STANDARD_ARROW, 3);
+    assertTrue(input.keyDown(Keys.E));
+    assertTrue(input.keyDown(Keys.E));
+    when(time.getDeltaTime()).thenReturn(0.4f);
+    bow.update();
+    assertTrue(input.keyDown(Keys.E));
+    verify(entities).register(projectile);
+    assertEquals(2, inventory.getItemCount(ItemType.STANDARD_ARROW));
+    verifyNoInteractions(itemFailed);
+
+    assertTrue(input.keyUp(Keys.E));
+    assertTrue(input.keyDown(Keys.E));
+
+    verify(entities, times(2)).register(projectile);
+    verify(itemUsed, times(2)).handle(ItemType.STANDARD_ARROW);
+    assertEquals(1, inventory.getItemCount(ItemType.STANDARD_ARROW));
+  }
+
+  @Test
+  void shouldShareECooldownWithRightClick() {
+    inventory.addItem(ItemType.STANDARD_ARROW, 3);
+    input.keyDown(Keys.E);
+
+    assertTrue(input.touchDown(40, 60, 0, Buttons.RIGHT));
+
+    verify(entities).register(projectile);
+    verify(primaryAttack).handle(any());
+    verify(itemFailed).handle(ItemType.STANDARD_ARROW);
+    assertEquals(2, inventory.getItemCount(ItemType.STANDARD_ARROW));
+    input.touchUp(40, 60, 0, Buttons.RIGHT);
+    when(time.getDeltaTime()).thenReturn(0.4f);
+    bow.update();
+    input.touchDown(40, 60, 0, Buttons.RIGHT);
+    verify(entities, times(2)).register(projectile);
+    verify(itemUsed, times(2)).handle(ItemType.STANDARD_ARROW);
+    assertEquals(1, inventory.getItemCount(ItemType.STANDARD_ARROW));
+  }
+
+  @Test
+  void shouldShareRightClickCooldownWithE() {
+    inventory.addItem(ItemType.STANDARD_ARROW, 3);
+    input.touchDown(40, 60, 0, Buttons.RIGHT);
+
+    input.keyDown(Keys.E);
+
+    verify(entities).register(projectile);
+    verify(itemFailed).handle(ItemType.STANDARD_ARROW);
+    assertEquals(2, inventory.getItemCount(ItemType.STANDARD_ARROW));
+    when(time.getDeltaTime()).thenReturn(0.4f);
+    bow.update();
+    input.keyDown(Keys.E);
+    verify(entities).register(projectile);
+    input.keyUp(Keys.E);
+    input.keyDown(Keys.E);
+    verify(entities, times(2)).register(projectile);
+    verify(itemUsed, times(2)).handle(ItemType.STANDARD_ARROW);
+    assertEquals(1, inventory.getItemCount(ItemType.STANDARD_ARROW));
+  }
+
+  @Test
+  @SuppressWarnings("unchecked")
+  void shouldRouteRopeArrowWithoutConsumingItAndReleaseOnMouseUp() {
+    EventListener1<Vector2> grappleFire = mock(EventListener1.class);
+    EventListener0 grappleRelease = mock(EventListener0.class);
+    player.getEvents().addListener("grappleFire", grappleFire);
+    player.getEvents().addListener("grappleRelease", grappleRelease);
+    inventory.addItem(ItemType.STANDARD_ARROW, 2);
+    inventory.addItem(ItemType.ROPE_ARROW, 1);
+    input.keyDown(Keys.E);
+    input.keyDown(Keys.NUM_2);
+
+    input.touchDown(40, 60, 0, Buttons.RIGHT);
+    assertTrue(input.isRightMouseHeld());
+    input.touchUp(40, 60, 0, Buttons.RIGHT);
+
+    verify(grappleFire).handle(new Vector2(3f, 4f));
+    verify(grappleRelease).handle();
+    assertFalse(input.isRightMouseHeld());
+    assertEquals(1, inventory.getItemCount(ItemType.ROPE_ARROW));
+    verify(itemUsed).handle(ItemType.ROPE_ARROW);
+    verifyNoInteractions(itemFailed);
+    factory.verify(() -> ProjectileFactory.createPlayerArrow(eq(player), any(), any()));
+    factory.verifyNoMoreInteractions();
+    verify(entities).register(projectile);
+  }
+
+  @Test
+  void shouldUsePotionWithEButNotRightClickAndPreserveItAtFullHealth() {
+    CombatStatsComponent stats = player.getComponent(CombatStatsComponent.class);
+    stats.setHealth(75);
+    inventory.addItem(ItemType.HEALTH_POTION, 2);
+    input.touchDown(40, 60, 0, Buttons.RIGHT);
+    assertEquals(75, stats.getHealth());
+    assertEquals(2, inventory.getItemCount(ItemType.HEALTH_POTION));
+
+    input.keyDown(Keys.E);
+    assertEquals(100, stats.getHealth());
+    assertEquals(1, inventory.getItemCount(ItemType.HEALTH_POTION));
+    input.keyUp(Keys.E);
+    input.keyDown(Keys.E);
+
+    assertEquals(100, stats.getHealth());
+    assertEquals(1, inventory.getItemCount(ItemType.HEALTH_POTION));
+    verify(itemUsed).handle(ItemType.HEALTH_POTION);
+    verify(itemFailed).handle(ItemType.HEALTH_POTION);
+    verifyNoInteractions(entities, primaryAttack, animation, sound);
+    factory.verifyNoInteractions();
   }
 }
