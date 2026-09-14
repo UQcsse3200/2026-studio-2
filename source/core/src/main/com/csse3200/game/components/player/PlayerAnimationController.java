@@ -12,6 +12,9 @@ public class PlayerAnimationController extends Component {
   private boolean dashing = false;
   private boolean hurt = false;
   private boolean attacking = false;
+  private boolean dead = false;
+  private boolean deathAnimationFinishedFired = false;
+  private boolean sleep = false;
 
   @Override
   public void create() {
@@ -27,12 +30,21 @@ public class PlayerAnimationController extends Component {
     entity.getEvents().addListener("hurt", this::hurt);
     entity.getEvents().addListener("melee", this::meleeStart);
     entity.getEvents().addListener("sprintEnd", this::sprintStop);
+    entity.getEvents().addListener("death", this::death);
+    entity.getEvents().addListener("sleep", this::sleep);
 
     animator.startAnimation("idle");
   }
 
   @Override
   public void update() {
+    if (dead) {
+      if (!deathAnimationFinishedFired && animator.isFinished()) {
+        deathAnimationFinishedFired = true;
+        entity.getEvents().trigger("deathAnimationFinished");
+      }
+      return;
+    }
     if (hurt && animator.isFinished()) {
       hurt = false;
       updateAnimation();
@@ -49,6 +61,9 @@ public class PlayerAnimationController extends Component {
   }
 
   void walk(Vector2 direction) {
+    if (dead) {
+      return;
+    }
     moving = true;
     if (direction.x != 0) {
       animator.setFlipX(direction.x < 0);
@@ -59,6 +74,9 @@ public class PlayerAnimationController extends Component {
   }
 
   void walkStop() {
+    if (dead) {
+      return;
+    }
     moving = false;
     if (!jumping && !dashing && !attacking) {
       updateAnimation();
@@ -66,6 +84,9 @@ public class PlayerAnimationController extends Component {
   }
 
   void sprint() {
+    if (dead) {
+      return;
+    }
     sprinting = true;
     if (!jumping && !dashing && !attacking) {
       updateAnimation();
@@ -73,6 +94,9 @@ public class PlayerAnimationController extends Component {
   }
 
   void sprintStop() {
+    if (dead) {
+      return;
+    }
     sprinting = false;
     if (!jumping && !dashing && !attacking) {
       updateAnimation();
@@ -80,6 +104,9 @@ public class PlayerAnimationController extends Component {
   }
 
   void jumpStart() {
+    if (dead) {
+      return;
+    }
     if (dashing) {
       return;
     }
@@ -102,11 +129,24 @@ public class PlayerAnimationController extends Component {
   }
 
   void hurt() {
+    if (dead) {
+      return;
+    }
     jumping = false;
     dashing = false;
     attacking = false;
     hurt = true;
     animator.startAnimation("hurt");
+  }
+
+  void death() {
+    dead = true;
+    animator.startAnimation("death");
+  }
+
+  void sleep() {
+    sleep = true;
+    animator.startAnimation("sleep");
   }
 
   void meleeStart(Vector2 aim) {

@@ -14,10 +14,10 @@ import org.junit.jupiter.api.Test;
 
 class WheelLogicTest {
   private static final List<WheelItem> THREE_ITEMS =
-          List.of(
-                  new WheelItem(ItemType.STANDARD_ARROW, 1),
-                  new WheelItem(ItemType.FIRE_ARROW, 2),
-                  new WheelItem(ItemType.COLD_ARROW, 3));
+      List.of(
+          new WheelItem(ItemType.STANDARD_ARROW, 1),
+          new WheelItem(ItemType.FIRE_ARROW, 2),
+          new WheelItem(ItemType.COLD_ARROW, 3));
 
   @Test
   void shouldRejectEmptyWheel() {

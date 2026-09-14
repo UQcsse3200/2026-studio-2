@@ -282,116 +282,81 @@ filter: Nearest,Nearest
 repeat: none
 jump
   rotate: false
-  xy: 0, 0
+  xy: 48, 0
   size: 48, 100
   orig: 48, 100
   offset: 0, 0
   index: 0
 jump
   rotate: false
-  xy: 48, 0
+  xy: 96, 0
   size: 48, 100
   orig: 48, 100
   offset: 0, 0
   index: 1
 jump
   rotate: false
-  xy: 96, 0
+  xy: 144, 0
   size: 48, 100
   orig: 48, 100
   offset: 0, 0
   index: 2
 jump
   rotate: false
-  xy: 144, 0
+  xy: 0, 100
   size: 48, 100
   orig: 48, 100
   offset: 0, 0
   index: 3
 jump
   rotate: false
-  xy: 0, 100
+  xy: 48, 100
   size: 48, 100
   orig: 48, 100
   offset: 0, 0
   index: 4
 jump
   rotate: false
-  xy: 48, 100
+  xy: 96, 100
   size: 48, 100
   orig: 48, 100
   offset: 0, 0
   index: 5
 jump
   rotate: false
-  xy: 96, 100
+  xy: 144, 100
   size: 48, 100
   orig: 48, 100
   offset: 0, 0
   index: 6
 jump
   rotate: false
-  xy: 144, 100
+  xy: 0, 200
   size: 48, 100
   orig: 48, 100
   offset: 0, 0
   index: 7
 jump
   rotate: false
-  xy: 0, 200
+  xy: 48, 200
   size: 48, 100
   orig: 48, 100
   offset: 0, 0
   index: 8
 jump
   rotate: false
-  xy: 48, 200
+  xy: 96, 200
   size: 48, 100
   orig: 48, 100
   offset: 0, 0
   index: 9
 jump
   rotate: false
-  xy: 96, 200
-  size: 48, 100
-  orig: 48, 100
-  offset: 0, 0
-  index: 10
-jump
-  rotate: false
   xy: 144, 200
   size: 48, 100
   orig: 48, 100
   offset: 0, 0
-  index: 11
-jump
-  rotate: false
-  xy: 0, 300
-  size: 48, 100
-  orig: 48, 100
-  offset: 0, 0
-  index: 12
-jump
-  rotate: false
-  xy: 48, 300
-  size: 48, 100
-  orig: 48, 100
-  offset: 0, 0
-  index: 13
-jump
-  rotate: false
-  xy: 96, 300
-  size: 48, 100
-  orig: 48, 100
-  offset: 0, 0
-  index: 14
-jump
-  rotate: false
-  xy: 144, 300
-  size: 48, 100
-  orig: 48, 100
-  offset: 0, 0
-  index: 15
+  index: 10
 
 player_hurt.png
 size: 220, 288
@@ -546,286 +511,238 @@ hurt
   offset: 69, 37
   index: 20
 
-player_dash.png
-size: 1050, 320
+player_death.png
+size: 408, 340
 format: RGBA8888
 filter: Nearest,Nearest
 repeat: none
-dash
+death
   rotate: false
   xy: 0, 0
-  size: 210, 160
-  orig: 210, 160
-  offset: 0, 0
+  size: 102, 85
+  orig: 128, 128
+  offset: 21, 22
   index: 0
-dash
+death
   rotate: false
-  xy: 210, 0
-  size: 210, 160
-  orig: 210, 160
-  offset: 0, 0
+  xy: 102, 0
+  size: 102, 85
+  orig: 128, 128
+  offset: 21, 22
   index: 1
-dash
+death
   rotate: false
-  xy: 420, 0
-  size: 210, 160
-  orig: 210, 160
-  offset: 0, 0
+  xy: 204, 0
+  size: 102, 85
+  orig: 128, 128
+  offset: 21, 22
   index: 2
-dash
+death
   rotate: false
-  xy: 630, 0
-  size: 210, 160
-  orig: 210, 160
-  offset: 0, 0
+  xy: 306, 0
+  size: 102, 85
+  orig: 128, 128
+  offset: 21, 22
   index: 3
-dash
+death
   rotate: false
-  xy: 840, 0
-  size: 210, 160
-  orig: 210, 160
-  offset: 0, 0
+  xy: 0, 85
+  size: 102, 85
+  orig: 128, 128
+  offset: 21, 22
   index: 4
-dash
+death
   rotate: false
-  xy: 0, 160
-  size: 210, 160
-  orig: 210, 160
-  offset: 0, 0
+  xy: 102, 85
+  size: 102, 85
+  orig: 128, 128
+  offset: 21, 22
   index: 5
-dash
+death
   rotate: false
-  xy: 210, 160
-  size: 210, 160
-  orig: 210, 160
-  offset: 0, 0
+  xy: 204, 85
+  size: 102, 85
+  orig: 128, 128
+  offset: 21, 22
   index: 6
-dash
+death
   rotate: false
-  xy: 420, 160
-  size: 210, 160
-  orig: 210, 160
-  offset: 0, 0
+  xy: 306, 85
+  size: 102, 85
+  orig: 128, 128
+  offset: 21, 22
   index: 7
-dash
+death
   rotate: false
-  xy: 630, 160
-  size: 210, 160
-  orig: 210, 160
-  offset: 0, 0
+  xy: 0, 170
+  size: 102, 85
+  orig: 128, 128
+  offset: 21, 22
   index: 8
-dash
+death
   rotate: false
-  xy: 840, 160
-  size: 210, 160
-  orig: 210, 160
-  offset: 0, 0
+  xy: 102, 170
+  size: 102, 85
+  orig: 128, 128
+  offset: 21, 22
   index: 9
-
-player_air_dash.png
-size: 704, 704
-format: RGBA8888
-filter: Nearest,Nearest
-repeat: none
-air_dash
+death
   rotate: false
-  xy: 0, 0
-  size: 176, 176
-  orig: 176, 176
-  offset: 0, 0
-  index: 0
-air_dash
-  rotate: false
-  xy: 176, 0
-  size: 176, 176
-  orig: 176, 176
-  offset: 0, 0
-  index: 1
-air_dash
-  rotate: false
-  xy: 352, 0
-  size: 176, 176
-  orig: 176, 176
-  offset: 0, 0
-  index: 2
-air_dash
-  rotate: false
-  xy: 528, 0
-  size: 176, 176
-  orig: 176, 176
-  offset: 0, 0
-  index: 3
-air_dash
-  rotate: false
-  xy: 0, 176
-  size: 176, 176
-  orig: 176, 176
-  offset: 0, 0
-  index: 4
-air_dash
-  rotate: false
-  xy: 176, 176
-  size: 176, 176
-  orig: 176, 176
-  offset: 0, 0
-  index: 5
-air_dash
-  rotate: false
-  xy: 352, 176
-  size: 176, 176
-  orig: 176, 176
-  offset: 0, 0
-  index: 6
-air_dash
-  rotate: false
-  xy: 528, 176
-  size: 176, 176
-  orig: 176, 176
-  offset: 0, 0
-  index: 7
-air_dash
-  rotate: false
-  xy: 0, 352
-  size: 176, 176
-  orig: 176, 176
-  offset: 0, 0
-  index: 8
-air_dash
-  rotate: false
-  xy: 176, 352
-  size: 176, 176
-  orig: 176, 176
-  offset: 0, 0
-  index: 9
-air_dash
-  rotate: false
-  xy: 352, 352
-  size: 176, 176
-  orig: 176, 176
-  offset: 0, 0
+  xy: 204, 170
+  size: 102, 85
+  orig: 128, 128
+  offset: 21, 22
   index: 10
-air_dash
+death
   rotate: false
-  xy: 528, 352
-  size: 176, 176
-  orig: 176, 176
-  offset: 0, 0
+  xy: 306, 170
+  size: 102, 85
+  orig: 128, 128
+  offset: 21, 22
   index: 11
-air_dash
+death
   rotate: false
-  xy: 0, 528
-  size: 176, 176
-  orig: 176, 176
-  offset: 0, 0
+  xy: 0, 255
+  size: 102, 85
+  orig: 128, 128
+  offset: 21, 22
   index: 12
-air_dash
+death
   rotate: false
-  xy: 176, 528
-  size: 176, 176
-  orig: 176, 176
-  offset: 0, 0
+  xy: 102, 255
+  size: 102, 85
+  orig: 128, 128
+  offset: 21, 22
   index: 13
-air_dash
+death
   rotate: false
-  xy: 352, 528
-  size: 176, 176
-  orig: 176, 176
-  offset: 0, 0
+  xy: 204, 255
+  size: 102, 85
+  orig: 128, 128
+  offset: 21, 22
   index: 14
-air_dash
+death
   rotate: false
-  xy: 528, 528
-  size: 176, 176
-  orig: 176, 176
-  offset: 0, 0
+  xy: 306, 255
+  size: 102, 85
+  orig: 128, 128
+  offset: 21, 22
   index: 15
 
-player_melee.png
-size: 960, 320
+player_sleep.png
+size: 316, 340
 format: RGBA8888
 filter: Nearest,Nearest
 repeat: none
-melee
+sleep
   rotate: false
   xy: 0, 0
-  size: 160, 160
-  orig: 160, 160
-  offset: 0, 0
+  size: 79, 85
+  orig: 128, 128
+  offset: 24, 22
   index: 0
-melee
+sleep
   rotate: false
-  xy: 160, 0
-  size: 160, 160
-  orig: 160, 160
-  offset: 0, 0
+  xy: 79, 0
+  size: 79, 85
+  orig: 128, 128
+  offset: 24, 22
   index: 1
-melee
+sleep
   rotate: false
-  xy: 320, 0
-  size: 160, 160
-  orig: 160, 160
-  offset: 0, 0
+  xy: 158, 0
+  size: 79, 85
+  orig: 128, 128
+  offset: 24, 22
   index: 2
-melee
+sleep
   rotate: false
-  xy: 480, 0
-  size: 160, 160
-  orig: 160, 160
-  offset: 0, 0
+  xy: 237, 0
+  size: 79, 85
+  orig: 128, 128
+  offset: 24, 22
   index: 3
-melee
+sleep
   rotate: false
-  xy: 640, 0
-  size: 160, 160
-  orig: 160, 160
-  offset: 0, 0
+  xy: 0, 85
+  size: 79, 85
+  orig: 128, 128
+  offset: 24, 22
   index: 4
-melee
+sleep
   rotate: false
-  xy: 800, 0
-  size: 160, 160
-  orig: 160, 160
-  offset: 0, 0
+  xy: 79, 85
+  size: 79, 85
+  orig: 128, 128
+  offset: 24, 22
   index: 5
-melee
+sleep
   rotate: false
-  xy: 0, 160
-  size: 160, 160
-  orig: 160, 160
-  offset: 0, 0
+  xy: 158, 85
+  size: 79, 85
+  orig: 128, 128
+  offset: 24, 22
   index: 6
-melee
+sleep
   rotate: false
-  xy: 160, 160
-  size: 160, 160
-  orig: 160, 160
-  offset: 0, 0
+  xy: 237, 85
+  size: 79, 85
+  orig: 128, 128
+  offset: 24, 22
   index: 7
-melee
+sleep
   rotate: false
-  xy: 320, 160
-  size: 160, 160
-  orig: 160, 160
-  offset: 0, 0
+  xy: 0, 170
+  size: 79, 85
+  orig: 128, 128
+  offset: 24, 22
   index: 8
-melee
+sleep
   rotate: false
-  xy: 480, 160
-  size: 160, 160
-  orig: 160, 160
-  offset: 0, 0
+  xy: 79, 170
+  size: 79, 85
+  orig: 128, 128
+  offset: 24, 22
   index: 9
-melee
+sleep
   rotate: false
-  xy: 640, 160
-  size: 160, 160
-  orig: 160, 160
-  offset: 0, 0
+  xy: 158, 170
+  size: 79, 85
+  orig: 128, 128
+  offset: 24, 22
   index: 10
-melee
+sleep
   rotate: false
-  xy: 800, 160
-  size: 160, 160
-  orig: 160, 160
-  offset: 0, 0
+  xy: 237, 170
+  size: 79, 85
+  orig: 128, 128
+  offset: 24, 22
   index: 11
+sleep
+  rotate: false
+  xy: 0, 255
+  size: 79, 85
+  orig: 128, 128
+  offset: 24, 22
+  index: 12
+sleep
+  rotate: false
+  xy: 79, 255
+  size: 79, 85
+  orig: 128, 128
+  offset: 24, 22
+  index: 13
+sleep
+  rotate: false
+  xy: 158, 255
+  size: 79, 85
+  orig: 128, 128
+  offset: 24, 22
+  index: 14
+sleep
+  rotate: false
+  xy: 237, 255
+  size: 79, 85
+  orig: 128, 128
+  offset: 24, 22
+  index: 15

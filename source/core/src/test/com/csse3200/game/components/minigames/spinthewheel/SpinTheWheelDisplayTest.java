@@ -15,7 +15,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 @ExtendWith(GameExtension.class)
 class SpinTheWheelDisplayTest {
   private static final List<WheelItem> TWO_ITEMS =
-          List.of(new WheelItem(ItemType.STANDARD_ARROW, 1), new WheelItem(ItemType.HEALTH_POTION, 2));
+      List.of(new WheelItem(ItemType.STANDARD_ARROW, 1), new WheelItem(ItemType.HEALTH_POTION, 2));
 
   @Test
   void shouldIncludeASpriteForEveryItem() {

@@ -45,11 +45,13 @@ public class PlayerFactory {
         new AnimationRenderComponent(
             ServiceLocator.getResourceService()
                 .getAsset("images/player.atlas", TextureAtlas.class));
-    animator.addAnimation("idle", 0.15f, PlayMode.LOOP);
+    animator.addAnimation("idle", 0.2f, PlayMode.LOOP);
     animator.addAnimation("walk", 0.1f, PlayMode.LOOP);
-    animator.addAnimation("sprint", 0.1f, PlayMode.LOOP);
-    animator.addAnimation("jump", 0.05f, PlayMode.NORMAL);
+    animator.addAnimation("sprint", 0.125f, PlayMode.LOOP);
+    animator.addAnimation("jump", 0.075f, PlayMode.NORMAL);
     animator.addAnimation("hurt", 0.04f, PlayMode.NORMAL);
+    animator.addAnimation("death", 0.1458f, PlayMode.NORMAL);
+    animator.addAnimation("sleep", 0.1458f, PlayMode.LOOP);
     animator.addAnimation("melee", 0.03f, PlayMode.NORMAL, 79f, 38f);
     animator.addAnimation("dash", 0.025f, PlayMode.NORMAL, 134.5f, 39f);
     animator.addAnimation("air_dash", 0.025f, PlayMode.NORMAL, 94f, 39f);
@@ -79,10 +81,10 @@ public class PlayerFactory {
             .addComponent(new PlayerAnimationController())
             .addComponent(new MeleeRenderComponent());
 
-    PhysicsUtils.setScaledCollider(player, 0.6f, 0.3f);
     player.getComponent(ColliderComponent.class).setDensity(1.5f);
     player.getComponent(AnimationRenderComponent.class).scaleEntity();
-    player.scaleWidth(0.75f);
+    player.scaleWidth(0.6f);
+    PhysicsUtils.setScaledCollider(player, 0.9f, 0.9f);
     return player;
   }
 
