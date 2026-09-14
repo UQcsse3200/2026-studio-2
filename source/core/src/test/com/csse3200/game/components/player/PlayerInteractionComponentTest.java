@@ -311,7 +311,8 @@ class PlayerInteractionComponentTest {
     assertTrue(interaction.interact());
     assertEquals(GoldPickupComponent.DEFAULT_AMOUNT, collected[0]);
     assertEquals(
-        GoldPickupComponent.DEFAULT_AMOUNT, player.getComponent(InventoryComponent.class).getGold());
+        GoldPickupComponent.DEFAULT_AMOUNT,
+        player.getComponent(InventoryComponent.class).getGold());
   }
 
   @Test
