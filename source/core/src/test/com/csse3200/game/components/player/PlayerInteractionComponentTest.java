@@ -15,8 +15,7 @@ import com.csse3200.game.components.inventory.InventoryComponent;
 import com.csse3200.game.components.item.Item;
 import com.csse3200.game.components.item.ItemComponent;
 import com.csse3200.game.components.item.ItemType;
-import com.csse3200.game.components.item.weapons.RopeArr;
-import com.csse3200.game.components.item.weapons.StandardArr;
+import com.csse3200.game.components.item.weapons.bow.arrow.Arrow;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.extensions.GameExtension;
@@ -51,7 +50,7 @@ class PlayerInteractionComponentTest {
   @Test
   void shouldFindItemInRange() {
     Entity player = createPlayer(new InventoryComponent(0));
-    Entity item = spawnWorldItem(new RopeArr(), new Vector2(0.5f, 0f));
+    Entity item = spawnWorldItem(new Arrow(ItemType.ROPE_ARROW, 1), new Vector2(0.5f, 0f));
 
     PlayerInteractionComponent interaction = player.getComponent(PlayerInteractionComponent.class);
 
@@ -61,7 +60,7 @@ class PlayerInteractionComponentTest {
   @Test
   void shouldNotFindItemOutOfRange() {
     Entity player = createPlayer(new InventoryComponent(0));
-    spawnWorldItem(new RopeArr(), new Vector2(10f, 10f));
+    spawnWorldItem(new Arrow(ItemType.ROPE_ARROW, 1), new Vector2(10f, 10f));
 
     PlayerInteractionComponent interaction = player.getComponent(PlayerInteractionComponent.class);
 
@@ -82,18 +81,19 @@ class PlayerInteractionComponentTest {
   @Test
   void shouldPickUpItemInRange() {
     Entity player = createPlayer(new InventoryComponent(0));
-    Entity item = spawnWorldItem(new StandardArr(3), new Vector2(0.5f, 0f));
+    Entity item = spawnWorldItem(new Arrow(ItemType.STANDARD_ARROW, 3), new Vector2(0.5f, 0f));
 
     PlayerInteractionComponent interaction = player.getComponent(PlayerInteractionComponent.class);
 
     assertTrue(interaction.pickup(item));
-    assertEquals(3, player.getComponent(InventoryComponent.class).getItemCount(ItemType.ARROW));
+    assertEquals(
+        3, player.getComponent(InventoryComponent.class).getItemCount(ItemType.STANDARD_ARROW));
   }
 
   @Test
   void shouldTriggerItemPickedUpEvent() {
     Entity player = createPlayer(new InventoryComponent(0));
-    Entity item = spawnWorldItem(new RopeArr(), new Vector2(0.5f, 0f));
+    Entity item = spawnWorldItem(new Arrow(ItemType.ROPE_ARROW, 1), new Vector2(0.5f, 0f));
 
     boolean[] triggered = {false};
     player.getEvents().addListener("itemPickedUp", (Item picked) -> triggered[0] = true);
@@ -106,7 +106,7 @@ class PlayerInteractionComponentTest {
   @Test
   void shouldRejectPickupWhenOutOfRange() {
     Entity player = createPlayer(new InventoryComponent(0));
-    Entity item = spawnWorldItem(new RopeArr(), new Vector2(10f, 10f));
+    Entity item = spawnWorldItem(new Arrow(ItemType.ROPE_ARROW, 1), new Vector2(10f, 10f));
 
     boolean[] failed = {false};
     player.getEvents().addListener("interactionFailed", () -> failed[0] = true);
@@ -118,9 +118,9 @@ class PlayerInteractionComponentTest {
   @Test
   void shouldRejectPickupWhenInventoryFull() {
     Entity player = createPlayer(new InventoryComponent(0, 1));
-    player.getComponent(InventoryComponent.class).addItem(ItemType.RopeArrow, 1);
+    player.getComponent(InventoryComponent.class).addItem(ItemType.ROPE_ARROW, 1);
 
-    Entity item = spawnWorldItem(new StandardArr(1), new Vector2(0.5f, 0f));
+    Entity item = spawnWorldItem(new Arrow(ItemType.STANDARD_ARROW, 1), new Vector2(0.5f, 0f));
 
     boolean[] blocked = {false};
     player.getEvents().addListener("itemPickupBlocked", (Item rejected) -> blocked[0] = true);
@@ -140,25 +140,25 @@ class PlayerInteractionComponentTest {
   void shouldDropSelectedItem() {
     Entity player = createPlayer(new InventoryComponent(0));
     InventoryComponent inventory = player.getComponent(InventoryComponent.class);
-    inventory.addItem(ItemType.ARROW, 4);
+    inventory.addItem(ItemType.STANDARD_ARROW, 4);
 
     assertTrue(player.getComponent(PlayerInteractionComponent.class).dropItem());
-    assertEquals(0, inventory.getItemCount(ItemType.ARROW));
+    assertEquals(0, inventory.getItemCount(ItemType.STANDARD_ARROW));
   }
 
   @Test
   void shouldDropRopeArrowStackWithFullQuantity() {
     Entity player = createPlayer(new InventoryComponent(0));
     InventoryComponent inventory = player.getComponent(InventoryComponent.class);
-    inventory.addItem(ItemType.RopeArrow, 3);
+    inventory.addItem(ItemType.ROPE_ARROW, 3);
 
     assertTrue(player.getComponent(PlayerInteractionComponent.class).dropItem());
-    assertEquals(0, inventory.getItemCount(ItemType.RopeArrow));
+    assertEquals(0, inventory.getItemCount(ItemType.ROPE_ARROW));
 
     int droppedQuantity = 0;
     for (Entity entity : ServiceLocator.getEntityService().getEntities()) {
       ItemComponent itemComponent = entity.getComponent(ItemComponent.class);
-      if (itemComponent != null && itemComponent.getItem().getItemType() == ItemType.RopeArrow) {
+      if (itemComponent != null && itemComponent.getItem().getItemType() == ItemType.ROPE_ARROW) {
         droppedQuantity = itemComponent.getItem().getQuantity();
         break;
       }
@@ -177,10 +177,10 @@ class PlayerInteractionComponentTest {
   void shouldDeleteSelectedItem() {
     Entity player = createPlayer(new InventoryComponent(0));
     InventoryComponent inventory = player.getComponent(InventoryComponent.class);
-    inventory.addItem(ItemType.RopeArrow, 1);
+    inventory.addItem(ItemType.ROPE_ARROW, 1);
 
     assertTrue(player.getComponent(PlayerInteractionComponent.class).deleteItem());
-    assertEquals(0, inventory.getItemCount(ItemType.RopeArrow));
+    assertEquals(0, inventory.getItemCount(ItemType.ROPE_ARROW));
   }
 
   @Test
@@ -194,12 +194,13 @@ class PlayerInteractionComponentTest {
   void shouldSwitchSelectedItem() {
     Entity player = createPlayer(new InventoryComponent(0));
     InventoryComponent inventory = player.getComponent(InventoryComponent.class);
-    inventory.addItem(ItemType.ARROW, 1);
-    inventory.addItem(ItemType.RopeArrow, 1);
+    inventory.addItem(ItemType.STANDARD_ARROW, 1);
+    inventory.addItem(ItemType.ROPE_ARROW, 1);
 
     PlayerInteractionComponent interaction = player.getComponent(PlayerInteractionComponent.class);
     ItemType initial = inventory.getSelectedItem();
-    ItemType other = initial == ItemType.ARROW ? ItemType.RopeArrow : ItemType.ARROW;
+    ItemType other =
+        initial == ItemType.STANDARD_ARROW ? ItemType.ROPE_ARROW : ItemType.STANDARD_ARROW;
 
     interaction.switchItem(1);
     assertEquals(other, inventory.getSelectedItem());

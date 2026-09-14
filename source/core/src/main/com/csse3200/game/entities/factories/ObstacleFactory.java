@@ -145,6 +145,7 @@ public class ObstacleFactory {
             .addComponent(new PlatformGrappleComponent(config.grappleSides))
             .addComponent(new ActivatableComponent(config.activateIds));
 
+    physicsComponent.getBody().setGravityScale(0f);
     physicsComponent.setBodyType(BodyType.KinematicBody);
     colliderComponent.setFriction(1.5f);
 
@@ -308,7 +309,7 @@ public class ObstacleFactory {
         new Entity()
             .addComponent(new PhysicsComponent().setBodyType(BodyType.StaticBody))
             .addComponent(new ColliderComponent().setLayer(PhysicsLayer.OBSTACLE));
-
+            ////.addComponent(new ColliderComponent().setLayer(PhysicsLayer.WALL));
     wall.setScale(width, height);
 
     return wall;
