@@ -11,6 +11,8 @@ import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.inventory.InventoryComponent;
 import com.csse3200.game.components.item.ItemType;
 import com.csse3200.game.components.item.consumables.HealthPotion;
+import com.csse3200.game.components.item.weapons.PrimaryWeapon;
+import com.csse3200.game.components.item.weapons.WeaponComponent;
 import com.csse3200.game.components.projectile.ArrowType;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.extensions.GameExtension;
@@ -344,6 +346,68 @@ class ItemUseComponentTest {
 
     player.getEvents().trigger("stopShoot");
     assertEquals(1, releases[0]);
+  }
+
+  @Test
+  void shouldStillReleaseChargeWhenLastArrowAdvancedSelectionToRopeArrow() {
+    Entity player = createPlayer();
+    InventoryComponent inventory = player.getComponent(InventoryComponent.class);
+    inventory.addItem(ItemType.STANDARD_ARROW, 1);
+    inventory.addItem(ItemType.ROPE_ARROW, 1);
+
+    int[] releases = {0};
+    int[] grappleReleases = {0};
+    player.getEvents().addListener("chargeRelease", (Vector2 ignored) -> releases[0]++);
+    player.getEvents().addListener("grappleRelease", () -> grappleReleases[0]++);
+
+    // Spending the last standard arrow empties its slot, which auto-advances the selection to the
+    // rope arrow. The charge must still be released, or the draw hangs forever.
+    player.getEvents().trigger("shoot", new Vector2(1f, 0f));
+    assertEquals(ItemType.ROPE_ARROW, inventory.getSelectedItem());
+
+    player.getEvents().trigger("stopShoot");
+
+    assertEquals(1, releases[0]);
+    assertEquals(1, grappleReleases[0]);
+  }
+
+  @Test
+  void shouldNotSpendAmmoOrStartChargeWhileWeaponOnCooldown() {
+    Entity player =
+        new Entity()
+            .addComponent(new InventoryComponent(0))
+            .addComponent(new CombatStatsComponent(100, 10))
+            .addComponent(new WeaponComponent(new NotReadyWeapon()))
+            .addComponent(new ItemUseComponent());
+    player.create();
+    InventoryComponent inventory = player.getComponent(InventoryComponent.class);
+    inventory.addItem(ItemType.STANDARD_ARROW, 2);
+
+    int[] chargeStarts = {0};
+    player.getEvents().addListener("chargeStart", (Vector2 ignored) -> chargeStarts[0]++);
+
+    player.getEvents().trigger("shoot", new Vector2(1f, 0f));
+
+    assertEquals(0, chargeStarts[0]);
+    assertEquals(2, inventory.getItemCount(ItemType.STANDARD_ARROW));
+  }
+
+  /** Stands in for a bow that is still on cooldown. */
+  private static class NotReadyWeapon implements PrimaryWeapon {
+    @Override
+    public void attack(Vector2 direction) {
+      // Never invoked - the component should bail out before attacking.
+    }
+
+    @Override
+    public boolean isReady() {
+      return false;
+    }
+
+    @Override
+    public float getCooldownRemaining() {
+      return 1f;
+    }
   }
 
   private Entity createPlayer() {

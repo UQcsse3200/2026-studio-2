@@ -24,8 +24,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 @ExtendWith(GameExtension.class)
 class BowComponentTest {
-  // Must match BowComponent's private MIN_CHARGE_SPEED_FACTOR.
-  private static final float MIN_CHARGE_SPEED_FACTOR = 0.2f;
+  // These mirror BowComponent's private charge tuning constants - they are gameplay-feel knobs, so
+  // update them here whenever they are retuned there. Expected values below are derived from them
+  // rather than hardcoded, so a retune only needs changing in one place.
+  private static final float MIN_CHARGE_SPEED_FACTOR = 0.3f;
+  private static final float MAX_CHARGE_SPEED_FACTOR = 1.5f;
+  private static final long MAX_CHARGE_MS = 1500L;
 
   private EntityService entityService;
   private Sound attackSound;
@@ -138,36 +142,37 @@ class BowComponentTest {
   void shouldFireAtFullSpeedAfterMaxCharge() {
     AtomicReference<Float> speedMultiplierRef = new AtomicReference<>();
     BowComponent component = createChargeComponent(speedMultiplierRef);
-    when(gameTime.getTime()).thenReturn(0L, 2000L);
+    when(gameTime.getTime()).thenReturn(0L, MAX_CHARGE_MS);
 
     component.startCharge(new Vector2(1f, 0f));
     component.releaseCharge(new Vector2(1f, 0f));
 
-    assertEquals(1f, speedMultiplierRef.get());
+    assertEquals(MAX_CHARGE_SPEED_FACTOR, speedMultiplierRef.get(), 1e-5f);
   }
 
   @Test
   void shouldClampSpeedMultiplierBeyondMaxCharge() {
     AtomicReference<Float> speedMultiplierRef = new AtomicReference<>();
     BowComponent component = createChargeComponent(speedMultiplierRef);
-    when(gameTime.getTime()).thenReturn(0L, 5000L);
+    when(gameTime.getTime()).thenReturn(0L, MAX_CHARGE_MS * 4);
 
     component.startCharge(new Vector2(1f, 0f));
     component.releaseCharge(new Vector2(1f, 0f));
 
-    assertEquals(1f, speedMultiplierRef.get());
+    assertEquals(MAX_CHARGE_SPEED_FACTOR, speedMultiplierRef.get(), 1e-5f);
   }
 
   @Test
   void shouldScaleLinearlyAtPartialCharge() {
     AtomicReference<Float> speedMultiplierRef = new AtomicReference<>();
     BowComponent component = createChargeComponent(speedMultiplierRef);
-    when(gameTime.getTime()).thenReturn(0L, 1000L); // 1s of the 2s max
+    when(gameTime.getTime()).thenReturn(0L, MAX_CHARGE_MS / 2); // Half of the maximum hold.
 
     component.startCharge(new Vector2(1f, 0f));
     component.releaseCharge(new Vector2(1f, 0f));
 
-    float expected = MIN_CHARGE_SPEED_FACTOR + (1f - MIN_CHARGE_SPEED_FACTOR) * 0.5f;
+    float expected =
+        MIN_CHARGE_SPEED_FACTOR + (MAX_CHARGE_SPEED_FACTOR - MIN_CHARGE_SPEED_FACTOR) * 0.5f;
     assertEquals(expected, speedMultiplierRef.get(), 1e-5f);
   }
 

@@ -17,6 +17,9 @@ public class PlayerAnimationController extends Component {
   private boolean sleep = false;
   private boolean charging = false;
   private boolean drawingIn = false;
+  // True for the whole bow sequence (draw -> hold -> shoot). While set, every other animation is
+  // suppressed so a shot can't be visually interrupted part way through. Death is the exception.
+  private boolean bowActive = false;
 
   @Override
   public void create() {
@@ -60,7 +63,9 @@ public class PlayerAnimationController extends Component {
       drawingIn = false;
       animator.startAnimation("bow_hold");
     } else if (attacking && animator.isFinished()) {
+      // Also where bow_shoot lands, which is the end of the bow sequence.
       attacking = false;
+      bowActive = false;
       updateAnimation();
     } else if (jumping && animator.isFinished()) {
       jumping = false;
@@ -112,7 +117,7 @@ public class PlayerAnimationController extends Component {
   }
 
   void jumpStart() {
-    if (dead) {
+    if (dead || bowActive) {
       return;
     }
     if (dashing) {
@@ -123,6 +128,9 @@ public class PlayerAnimationController extends Component {
   }
 
   void dashStart() {
+    if (dead || bowActive) {
+      return;
+    }
     jumping = false;
     attacking = false; // dash cancels the attack
     dashing = true;
@@ -130,6 +138,9 @@ public class PlayerAnimationController extends Component {
   }
 
   void airDashStart() {
+    if (dead || bowActive) {
+      return;
+    }
     jumping = false;
     attacking = false;
     dashing = true;
@@ -137,7 +148,7 @@ public class PlayerAnimationController extends Component {
   }
 
   void hurt() {
-    if (dead) {
+    if (dead || bowActive) {
       return;
     }
     jumping = false;
@@ -149,6 +160,10 @@ public class PlayerAnimationController extends Component {
 
   void death() {
     dead = true;
+    // Death outranks even the bow sequence.
+    charging = false;
+    drawingIn = false;
+    bowActive = false;
     animator.startAnimation("death");
   }
 
@@ -158,6 +173,9 @@ public class PlayerAnimationController extends Component {
   }
 
   void meleeStart(Vector2 aim) {
+    if (dead || bowActive) {
+      return;
+    }
     attacking = true;
     if (aim.x != 0) {
       animator.setFlipX(aim.x < 0);
@@ -172,6 +190,7 @@ public class PlayerAnimationController extends Component {
     charging = true;
     drawingIn = true;
     attacking = true;
+    bowActive = true;
     if (aim != null && aim.x != 0) {
       animator.setFlipX(aim.x < 0);
     }
@@ -185,6 +204,7 @@ public class PlayerAnimationController extends Component {
     charging = false;
     drawingIn = false;
     if (dead) {
+      bowActive = false;
       return;
     }
     animator.startAnimation("bow_shoot");

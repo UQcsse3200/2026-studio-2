@@ -61,6 +61,12 @@ class PlayerAnimationControllerTest {
     animator.addAnimation("bow_draw", 1f, PlayMode.NORMAL);
     animator.addAnimation("bow_hold", 1f, PlayMode.LOOP);
     animator.addAnimation("bow_shoot", 1f, PlayMode.NORMAL);
+    // Registered so priority tests fail loudly if a competing animation is allowed through, rather
+    // than silently no-opping because the animation was never added.
+    animator.addAnimation("jump", 1f, PlayMode.NORMAL);
+    animator.addAnimation("air_dash", 1f, PlayMode.NORMAL);
+    animator.addAnimation("hurt", 1f, PlayMode.NORMAL);
+    animator.addAnimation("melee", 1f, PlayMode.NORMAL);
     entity.addComponent(animator);
     PlayerAnimationController controller = new PlayerAnimationController();
     entity.addComponent(controller);
@@ -227,6 +233,83 @@ class PlayerAnimationControllerTest {
     entity.getEvents().trigger("chargeRelease", new Vector2(1f, 0f));
 
     assertEquals("bow_shoot", animator.getCurrentAnimation());
+  }
+
+  @Test
+  void shouldPrioritiseEveryBowStageOverOtherAnimations() {
+    AnimationRenderComponent animator =
+        new AnimationRenderComponent(
+            mockAtlasWithRegions(
+                "idle",
+                "death",
+                "bow_draw",
+                "bow_hold",
+                "bow_shoot",
+                "jump",
+                "air_dash",
+                "hurt",
+                "melee"));
+    Entity entity = new Entity();
+    PlayerAnimationController controller = createController(entity, animator);
+
+    // Stage 1: drawing.
+    entity.getEvents().trigger("chargeStart", new Vector2(1f, 0f));
+    triggerCompetingAnimations(entity);
+    assertEquals("bow_draw", animator.getCurrentAnimation());
+
+    // Stage 2: holding.
+    animator.render(mock(SpriteBatch.class));
+    controller.update();
+    assertEquals("bow_hold", animator.getCurrentAnimation());
+    triggerCompetingAnimations(entity);
+    assertEquals("bow_hold", animator.getCurrentAnimation());
+
+    // Stage 3: shooting.
+    entity.getEvents().trigger("chargeRelease", new Vector2(1f, 0f));
+    triggerCompetingAnimations(entity);
+    assertEquals("bow_shoot", animator.getCurrentAnimation());
+  }
+
+  @Test
+  void shouldAllowOtherAnimationsAgainOnceShootFinishes() {
+    AnimationRenderComponent animator =
+        new AnimationRenderComponent(
+            mockAtlasWithRegions("idle", "death", "bow_draw", "bow_hold", "bow_shoot", "jump"));
+    Entity entity = new Entity();
+    PlayerAnimationController controller = createController(entity, animator);
+
+    entity.getEvents().trigger("chargeStart", new Vector2(1f, 0f));
+    entity.getEvents().trigger("chargeRelease", new Vector2(1f, 0f));
+    animator.render(mock(SpriteBatch.class)); // Finishes bow_shoot.
+    controller.update();
+
+    entity.getEvents().trigger("jumpStart");
+
+    assertEquals("jump", animator.getCurrentAnimation());
+  }
+
+  @Test
+  void shouldStillLetDeathOverrideTheBowSequence() {
+    AnimationRenderComponent animator =
+        new AnimationRenderComponent(
+            mockAtlasWithRegions("idle", "death", "bow_draw", "bow_hold", "bow_shoot"));
+    Entity entity = new Entity();
+    createController(entity, animator);
+
+    entity.getEvents().trigger("chargeStart", new Vector2(1f, 0f));
+    entity.getEvents().trigger("death");
+
+    assertEquals("death", animator.getCurrentAnimation());
+  }
+
+  private static void triggerCompetingAnimations(Entity entity) {
+    entity.getEvents().trigger("walk", new Vector2(1f, 0f));
+    entity.getEvents().trigger("sprint");
+    entity.getEvents().trigger("jumpStart");
+    entity.getEvents().trigger("dashStart");
+    entity.getEvents().trigger("airDashStart");
+    entity.getEvents().trigger("hurt");
+    entity.getEvents().trigger("melee", new Vector2(1f, 0f));
   }
 
   @Test
