@@ -27,9 +27,10 @@ public class LevelTutorialConfig extends LevelConfig {
           new PlatformConfig(new GridPoint2(4, 2), 3, 1, 0, platformTFP),
           new PlatformConfig(new GridPoint2(8, 4), 3, 1, 0, platformTFP),
           new PlatformConfig(new GridPoint2(14, 6), 3, 1, 0, platformTFP),
-          new PlatformConfig(new GridPoint2(19, 6), 3, 1, 0, platformTFP),
-          new PlatformConfig(new GridPoint2(27, 2), 3, 1, 0, platformTFP),
-          new PlatformConfig(new GridPoint2(32, 4), 3, 1, 2, platformTFP),
+          new PlatformConfig(new GridPoint2(19, 7), 3, 1, 0, platformTFP), // Use 7 not 6
+          new PlatformConfig(new GridPoint2(27, 1), 3, 1, 0, platformTFP), // Use 1 not 2
+          new PlatformConfig(new GridPoint2(31, 2), 3, 1, 0, platformTFP),
+          new PlatformConfig(new GridPoint2(34, 4), 3, 1, 2, platformTFP), // Use 34 not 32
           new PlatformConfig(new GridPoint2(30, 6), 3, 1, 0, platformTFP),
           new PlatformConfig(new GridPoint2(27, 8), 3, 1, 10, platformTFP),
           new PlatformConfig(new GridPoint2(23, 10), 3, 1, 2, platformTFP),
@@ -37,21 +38,21 @@ public class LevelTutorialConfig extends LevelConfig {
           new PlatformConfig(new GridPoint2(9, 13), 3, 1, 0, platformTFP),
 
           // second half
-          new PlatformConfig(new GridPoint2(56, 22), 3, 1, 1, platformTFP),
-          new PlatformConfig(new GridPoint2(60, 23), 3, 1, 1, platformTFP),
-          new PlatformConfig(new GridPoint2(64, 22), 3, 1, 1, platformTFP),
+          new PlatformConfig(new GridPoint2(56, 25), 3, 1, 1, platformTFP), // Use 25 not 22
+          new PlatformConfig(new GridPoint2(61, 26), 3, 1, 1, platformTFP), // Use 61,26 not 60,23
+          new PlatformConfig(new GridPoint2(66, 25), 3, 1, 1, platformTFP), // Use 66,25 not 64,22
         };
 
     movingPlatforms =
         new MovingPlatformConfig[] {
           new MovingPlatformConfig(
-              new GridPoint2(9, 15),
+              new GridPoint2(9, 16), // Use 16 not 15
               2,
               1,
               0,
               platformTFP,
-              new Vector2(9, 15),
-              new Vector2(14, 15),
+              new Vector2(9, 16), // Use 16 not 15
+              new Vector2(14, 16), // Use 16 not 15
               new Vector2(3, 0),
               new String[] {}),
           new MovingPlatformConfig(
@@ -101,8 +102,8 @@ public class LevelTutorialConfig extends LevelConfig {
           new SpikeClusterConfig(53, 55, 17, 17, 0f, false),
           new SpikeClusterConfig(59, 68, 19, 19, 0f, false),
           new SpikeClusterConfig(60, 62, 1, 1, 0f, false),
-          new SpikeClusterConfig(13, 23, 5, 5, 0f, false),
-          new SpikeClusterConfig(2, 13, 20, 20, 180f, false),
+          new SpikeClusterConfig(13, 21, 5, 5, 0f, false), // Use 21 not 23
+          new SpikeClusterConfig(2, 13, 21, 21, 180f, false), // Use 21,21 not 20,20
           new SpikeClusterConfig(1, 1, 16, 20, 270f, false),
           new SpikeClusterConfig(39, 39, 0, 15, 90f, false),
         };
@@ -110,9 +111,9 @@ public class LevelTutorialConfig extends LevelConfig {
     bounds =
         new PlatformConfig[] {
           new PlatformConfig(new GridPoint2(40, 0), 50, 1, 0, groundTFP), // bottom
-          new PlatformConfig(new GridPoint2(0, 24), 90, 1, 0, groundTFP), // top
-          new PlatformConfig(new GridPoint2(0, 0), 1, 22, 0, groundTFP), // left
-          new PlatformConfig(new GridPoint2(90, 0), 1, 22, 0, groundTFP) // right
+          new PlatformConfig(new GridPoint2(0, 27), 90, 1, 0, groundTFP), // top  // Use 27 not 24
+          new PlatformConfig(new GridPoint2(0, 0), 1, 25, 0, groundTFP), // left  // Use 25 not 22
+          new PlatformConfig(new GridPoint2(90, 0), 1, 25, 0, groundTFP) // right // Use 25 not 22
         };
 
     floors =
@@ -125,7 +126,7 @@ public class LevelTutorialConfig extends LevelConfig {
           new PlatformConfig(new GridPoint2(18, 15), 6, 2, 9, groundTFP),
           new PlatformConfig(new GridPoint2(0, 13), 8, 3, 2, groundTFP),
           new PlatformConfig(new GridPoint2(0, 16), 1, 5, 0, groundTFP),
-          new PlatformConfig(new GridPoint2(0, 21), 17, 1, 0, groundTFP),
+          new PlatformConfig(new GridPoint2(0, 22), 17, 1, 0, groundTFP), // Use 22 not 21
           new PlatformConfig(new GridPoint2(28, 19), 4, 1, 0, groundTFP),
           new PlatformConfig(new GridPoint2(35, 21), 15, 1, 0, groundTFP),
 
@@ -172,7 +173,7 @@ public class LevelTutorialConfig extends LevelConfig {
     // Example checkpoint set to player spawn position
     checkpoints =
         new CheckpointConfig[] {
-          new CheckpointConfig(new GridPoint2(1, 3)),
+          new CheckpointConfig(new GridPoint2(1, 4)), // Use 4 not 3
         };
   }
 }

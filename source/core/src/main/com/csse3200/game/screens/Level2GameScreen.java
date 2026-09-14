@@ -61,7 +61,7 @@ public class Level2GameScreen extends ScreenAdapter {
   private Entity player;
   private static final String gameplayMusic = "sounds/gameplay_bg.ogg";
   private static final String[] gameplayMusicFiles = {gameplayMusic};
-  private boolean cheats = true;
+  private boolean cheats = false;
 
   public Level2GameScreen(GdxGame game) {
     this.game = game;
@@ -180,7 +180,8 @@ public class Level2GameScreen extends ScreenAdapter {
                 "images/Buttons/quit_up_btn.png",
                 "images/Buttons/quit_down_btn.png",
                 "images/Buttons/exit_up_btn.png",
-                "images/Buttons/exit_down_btn.png"));
+                "images/Buttons/exit_down_btn.png",
+                "images/rope_arrow.png"));
     paths.addAll(List.of(WheelConfig.TEXTURES));
     return paths.toArray(new String[0]);
   }

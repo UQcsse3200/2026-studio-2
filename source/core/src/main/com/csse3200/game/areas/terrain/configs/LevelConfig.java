@@ -260,12 +260,6 @@ public class LevelConfig {
     }
   }
 
-  private void createItems2() {
-    if (items == null) {
-      return;
-    }
-  }
-
   /**
    * Creates all checkpoints for the level and adds them to the entities map for the level to spawn.
    */

@@ -1,5 +1,7 @@
 package com.csse3200.game.areas.terrain.configs.levelconfigs;
 
+import static com.csse3200.game.areas.TutorialGameArea.*;
+
 import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.areas.terrain.configs.*;
@@ -8,6 +10,8 @@ import com.csse3200.game.areas.terrain.configs.*;
 import com.csse3200.game.components.item.*;
 import com.csse3200.game.components.item.weapons.bow.arrow.*;
 import com.csse3200.game.components.level.SpawnerComponent;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Level2Config extends LevelConfig {
 
@@ -157,13 +161,13 @@ public class Level2Config extends LevelConfig {
           new TriggerButtonConfig(new GridPoint2(49, 7), 90f, true, new String[] {"b5"}), // B5 (D)
         };
 
-    /*
     items =
         new HashMap<>(
             Map.of(
-                new GridPoint2(1, 42), new RopeArr(1),
-                new GridPoint2(40, 29), new StandardArr(99)));
-    */
+                new GridPoint2(1, 41),
+                new Arrow(ItemType.ROPE_ARROW, 1),
+                new GridPoint2(40, 29),
+                new Arrow(ItemType.STANDARD_ARROW, 99)));
 
     ledges =
         new PlatformConfig[] {
@@ -266,6 +270,11 @@ public class Level2Config extends LevelConfig {
               0.25f,
               false,
               SpawnerComponent.ACTIVATION_MODE.TOGGLE), // SBT12
+        };
+
+    checkpoints =
+        new CheckpointConfig[] {
+          new CheckpointConfig(new GridPoint2(0, 42)),
         };
   }
 }

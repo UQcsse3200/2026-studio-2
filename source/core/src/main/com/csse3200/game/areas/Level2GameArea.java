@@ -135,6 +135,7 @@ public class Level2GameArea extends GameArea {
   private Entity spawnPlayer() {
     Entity newPlayer = PlayerFactory.createPlayer();
     newPlayer.getEvents().addListener("grappleRequested", this::checkSuccessfulGrapple);
+    newPlayer.getEvents().addListener("respawnAtCheckpoint", this::respawn);
     KeyboardPlayerInputComponent input = newPlayer.getComponent(KeyboardPlayerInputComponent.class);
 
     if (input != null) {
