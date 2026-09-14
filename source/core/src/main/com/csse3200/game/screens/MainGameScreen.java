@@ -166,7 +166,13 @@ public class MainGameScreen extends ScreenAdapter {
                 "images/Buttons/quit_up_btn.png",
                 "images/Buttons/quit_down_btn.png",
                 "images/Buttons/exit_up_btn.png",
-                "images/Buttons/exit_down_btn.png"));
+                "images/Buttons/exit_down_btn.png",
+                "images/Buttons/restart_up_btn.png",
+                "images/Buttons/restart_down_btn.png",
+                "images/Buttons/main_menu_up_btn.png",
+                "images/Buttons/main_menu_down_btn.png",
+                "images/Buttons/exit_game_up_btn.png",
+                "images/Buttons/exit_game_down_btn.png"));
     paths.addAll(List.of(WheelConfig.TEXTURES));
     return paths.toArray(new String[0]);
   }

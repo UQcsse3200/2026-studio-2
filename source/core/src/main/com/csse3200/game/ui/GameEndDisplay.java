@@ -9,10 +9,11 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Value;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.csse3200.game.components.maingame.MainGameExitDisplay;
 import com.csse3200.game.events.EventHandler;
 import com.csse3200.game.services.ServiceLocator;
@@ -139,10 +140,29 @@ public class GameEndDisplay extends UIComponent {
     messageLabel.setAlignment(1);
     messageLabel.setColor(Color.WHITE);
 
-    TextButton restartBtn = new TextButton("Restart", skin);
-    TextButton mainMenuBtn = new TextButton("Exit to Main Menu", skin);
-    TextButton exitDesktopBtn = new TextButton("Exit to Desktop", skin);
+    Texture restartUpTexture =
+        ServiceLocator.getResourceService()
+            .getAsset("images/Buttons/restart_up_btn.png", Texture.class);
+    Texture restartDownTexture =
+        ServiceLocator.getResourceService()
+            .getAsset("images/Buttons/restart_down_btn.png", Texture.class);
+    Texture mainMenuUpTexture =
+        ServiceLocator.getResourceService()
+            .getAsset("images/Buttons/main_menu_up_btn.png", Texture.class);
+    Texture mainMenuDownTexture =
+        ServiceLocator.getResourceService()
+            .getAsset("images/Buttons/main_menu_down_btn.png", Texture.class);
+    Texture exitGameUpTexture =
+        ServiceLocator.getResourceService()
+            .getAsset("images/Buttons/exit_game_up_btn.png", Texture.class);
+    Texture exitGameDownTexture =
+        ServiceLocator.getResourceService()
+            .getAsset("images/Buttons/exit_game_down_btn.png", Texture.class);
 
+    ImageButton.ImageButtonStyle restartButtonStyle = new ImageButton.ImageButtonStyle();
+    restartButtonStyle.up = new TextureRegionDrawable(restartUpTexture);
+    restartButtonStyle.down = new TextureRegionDrawable(restartDownTexture);
+    ImageButton restartBtn = new ImageButton(restartButtonStyle);
     restartBtn.addListener(
         new ChangeListener() {
           @Override
@@ -151,6 +171,10 @@ public class GameEndDisplay extends UIComponent {
           }
         });
 
+    ImageButton.ImageButtonStyle mainMenuButtonStyle = new ImageButton.ImageButtonStyle();
+    mainMenuButtonStyle.up = new TextureRegionDrawable(mainMenuUpTexture);
+    mainMenuButtonStyle.down = new TextureRegionDrawable(mainMenuDownTexture);
+    ImageButton mainMenuBtn = new ImageButton(mainMenuButtonStyle);
     mainMenuBtn.addListener(
         new ChangeListener() {
           @Override
@@ -159,11 +183,15 @@ public class GameEndDisplay extends UIComponent {
           }
         });
 
-    exitDesktopBtn.addListener(
+    ImageButton.ImageButtonStyle exitGameButtonStyle = new ImageButton.ImageButtonStyle();
+    exitGameButtonStyle.up = new TextureRegionDrawable(exitGameUpTexture);
+    exitGameButtonStyle.down = new TextureRegionDrawable(exitGameDownTexture);
+    ImageButton exitGameBtn = new ImageButton(exitGameButtonStyle);
+    exitGameBtn.addListener(
         new ChangeListener() {
           @Override
           public void changed(ChangeEvent event, Actor actor) {
-            entity.getEvents().trigger("exitDesktop");
+            entity.getEvents().trigger("exitGame");
           }
         });
 
@@ -171,7 +199,7 @@ public class GameEndDisplay extends UIComponent {
     panel.add(messageLabel).fillX().expandX().pad(padding).row();
     panel.add(restartBtn).padBottom(padding).row();
     panel.add(mainMenuBtn).padBottom(padding).row();
-    panel.add(exitDesktopBtn).padBottom(padding).row();
+    panel.add(exitGameBtn).padBottom(padding).row();
     panel.pack();
 
     root.add(panel).width(Value.percentWidth(0.8f, root)).fillX().center();
