@@ -7,6 +7,7 @@ import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.utils.Timer;
 import com.csse3200.game.areas.terrain.TerrainComponent;
 import com.csse3200.game.components.Component;
+import com.csse3200.game.components.player.PlayerAnimationController;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.events.EventHandler;
 import com.csse3200.game.services.ServiceLocator;
@@ -270,5 +271,6 @@ public class CyclopsMinigameLogic extends Component {
           }
         },
         1f);
+    player.getComponent(PlayerAnimationController.class).playAnimation("hurt");
   }
 }

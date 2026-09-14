@@ -5,26 +5,27 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.csse3200.game.ui.UIComponent;
 
 public class BlankTransitionScreen extends UIComponent {
-  private static final float Z_INDEX = 4;
 
   private Texture texture;
-  private Image blackScreen;
-
-  public boolean isVisible() {
-    return blackScreen.isVisible();
-  }
+  private Table table;
 
   public void setVisible(boolean visible) {
-    blackScreen.setVisible(visible);
+    table.setVisible(visible);
+    if (visible) {
+      table.toFront();
+    }
   }
 
   @Override
   public void create() {
     super.create();
+    table = new Table();
+    table.setFillParent(true);
 
     Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
     pixmap.setColor(Color.BLACK);
@@ -34,12 +35,9 @@ public class BlankTransitionScreen extends UIComponent {
     TextureRegion textureRegion = new TextureRegion(texture);
     pixmap.dispose();
 
-    blackScreen = new Image(textureRegion);
-    blackScreen.setPosition(0, 0);
-    blackScreen.setSize(stage.getWidth(), stage.getHeight());
-
-    stage.addActor(blackScreen);
-    blackScreen.setVisible(false);
+    table.setBackground(new TextureRegionDrawable(textureRegion));
+    table.setVisible(false);
+    stage.addActor(table);
   }
 
   /**
@@ -56,10 +54,5 @@ public class BlankTransitionScreen extends UIComponent {
   public void dispose() {
     super.dispose();
     if (texture != null) texture.dispose();
-  }
-
-  @Override
-  public float getZIndex() {
-    return Z_INDEX;
   }
 }
