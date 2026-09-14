@@ -3,6 +3,7 @@ package com.csse3200.game.components.player;
 import com.badlogic.gdx.utils.Array;
 import com.csse3200.game.components.Component;
 import com.csse3200.game.components.inventory.InventoryComponent;
+import com.csse3200.game.components.item.GoldPickupComponent;
 import com.csse3200.game.components.item.Item;
 import com.csse3200.game.components.item.ItemComponent;
 import com.csse3200.game.components.item.ItemType;
@@ -39,8 +40,8 @@ public class PlayerInteractionComponent extends Component {
   }
 
   /**
-   * Interacts with the nearest shopkeeper, or the nearest item if no shop NPC is in range. Pressing
-   * interact again while the shop is open closes it.
+   * Interacts with the nearest shopkeeper, gold coin, or item. Pressing interact again while the
+   * shop is open closes it.
    *
    * @return true if a shop was opened or closed, or an item was picked up
    */
@@ -57,11 +58,16 @@ public class PlayerInteractionComponent extends Component {
       return true;
     }
 
-    Entity target = findNearestItem();
+    Entity gold = findNearestGold();
+    Entity item = findNearestItem();
+    Entity target = nearer(gold, item);
     if (target == null) {
       logger.debug("No interactable entity in range of {}", entity);
       entity.getEvents().trigger("interactionFailed");
       return false;
+    }
+    if (target.getComponent(GoldPickupComponent.class) != null) {
+      return pickupGold(target);
     }
     return pickup(target);
   }
@@ -107,6 +113,31 @@ public class PlayerInteractionComponent extends Component {
 
     itemEntity.dispose();
     entity.getEvents().trigger("itemPickedUp", item);
+    return true;
+  }
+
+  /**
+   * Collects a gold coin, adding its value to the player's gold and removing it from the world.
+   *
+   * @param goldEntity gold pickup entity
+   * @return true if gold was collected
+   */
+  boolean pickupGold(Entity goldEntity) {
+    if (goldEntity == null || !isInRange(goldEntity)) {
+      entity.getEvents().trigger("interactionFailed");
+      return false;
+    }
+
+    GoldPickupComponent goldPickup = goldEntity.getComponent(GoldPickupComponent.class);
+    if (goldPickup == null) {
+      entity.getEvents().trigger("interactionFailed");
+      return false;
+    }
+
+    int amount = goldPickup.getAmount();
+    inventory.addGold(amount);
+    goldEntity.dispose();
+    entity.getEvents().trigger("goldPickedUp", amount);
     return true;
   }
 
@@ -184,6 +215,27 @@ public class PlayerInteractionComponent extends Component {
    */
   Entity findNearestItem() {
     return findNearest(ItemComponent.class);
+  }
+
+  /**
+   * Finds the nearest gold coin within interaction range.
+   *
+   * @return nearest gold pickup, or null if none are in range
+   */
+  Entity findNearestGold() {
+    return findNearest(GoldPickupComponent.class);
+  }
+
+  private Entity nearer(Entity first, Entity second) {
+    if (first == null) {
+      return second;
+    }
+    if (second == null) {
+      return first;
+    }
+    float firstDistance = entity.getCenterPosition().dst(first.getCenterPosition());
+    float secondDistance = entity.getCenterPosition().dst(second.getCenterPosition());
+    return firstDistance <= secondDistance ? first : second;
   }
 
   /**

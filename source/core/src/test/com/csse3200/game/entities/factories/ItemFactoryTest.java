@@ -8,6 +8,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import com.badlogic.gdx.graphics.Texture;
+import com.csse3200.game.components.item.GoldPickupComponent;
 import com.csse3200.game.components.item.Item;
 import com.csse3200.game.components.item.ItemComponent;
 import com.csse3200.game.components.item.ItemType;
@@ -63,6 +64,14 @@ class ItemFactoryTest {
     assertItemMapping(ItemType.Spear, Spear.class);
     assertItemMapping(ItemType.SpeedPotion, SpeedPotion.class);
     assertItemMapping(ItemType.PoisonPotion, PoisonPotion.class);
+  }
+
+  @Test
+  void shouldCreateGoldPickupWorthTenGold() {
+    Entity entity = ItemFactory.createGold();
+    GoldPickupComponent gold = entity.getComponent(GoldPickupComponent.class);
+
+    assertEquals(GoldPickupComponent.DEFAULT_AMOUNT, gold.getAmount());
   }
 
   private static void assertItemMapping(ItemType type, Class<? extends Item> expectedClass) {

@@ -104,7 +104,7 @@ public class TutorialGameArea extends GameArea {
       };
 
   private static final GridPoint2 PLAYER_SPAWN = new GridPoint2(1, 4);
-  private static final GridPoint2 SHOPKEEPER_SPAWN = new GridPoint2(11, 1);
+  private static final GridPoint2 SHOPKEEPER_SPAWN = new GridPoint2(30, 1);
   private static final GridPoint2 ROPE_ARROW_SPAWN = new GridPoint2(2, 4);
   private static final GridPoint2 STANDARD_ARROW_SPAWN = new GridPoint2(4, 4);
   private static final GridPoint2 FIRE_ARROW_SPAWN = new GridPoint2(6, 4);
@@ -114,6 +114,9 @@ public class TutorialGameArea extends GameArea {
   private static final GridPoint2 HEALTH_POTION_SPAWN = new GridPoint2(10, 4);
   private static final GridPoint2 SPEED_POTION_SPAWN = new GridPoint2(5, 1);
   private static final GridPoint2 POISON_POTION_SPAWN = new GridPoint2(3, 1);
+  private static final GridPoint2[] GOLD_SPAWNS = {
+    new GridPoint2(28, 3), new GridPoint2(31, 7), new GridPoint2(33, 5)
+  };
 
   private static final int STANDARD_ARROW_QUANTITY = 5;
   private static final int FIRE_ARROW_QUANTITY = 5;
@@ -171,7 +174,8 @@ public class TutorialGameArea extends GameArea {
     "images/spear.png",
     "images/health_potion.png",
     "images/speed_potion.png",
-    "images/poison_potion.png"
+    "images/poison_potion.png",
+    ItemFactory.GOLD_TEXTURE
   };
 
   private static final String[] forestTextureAtlases = {
@@ -554,5 +558,9 @@ public class TutorialGameArea extends GameArea {
 
     spawnEntityAt(
         ItemFactory.createPoisonPotion(POISON_POTION_QUANTITY), POISON_POTION_SPAWN, true, false);
+
+    for (GridPoint2 goldSpawn : GOLD_SPAWNS) {
+      spawnEntityAt(ItemFactory.createGold(), goldSpawn, true, false);
+    }
   }
 }
