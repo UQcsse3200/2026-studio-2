@@ -25,7 +25,6 @@ import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.physics.components.PhysicsMovementComponent;
 import com.csse3200.game.rendering.AnimationRenderComponent;
 import com.csse3200.game.rendering.EnemyHealthRenderComponent;
-import com.csse3200.game.rendering.TextureRenderComponent;
 import com.csse3200.game.services.ServiceLocator;
 
 /**
@@ -103,16 +102,16 @@ public class EnemyFactory {
     Entity Vulture = createEnemy(target, config);
 
     AnimationRenderComponent animator =
-            new AnimationRenderComponent(
-                    ServiceLocator.getResourceService()
-                            .getAsset("images/vulture.atlas", TextureAtlas.class));
+        new AnimationRenderComponent(
+            ServiceLocator.getResourceService()
+                .getAsset("images/vulture.atlas", TextureAtlas.class));
     animator.addAnimation("walk", 0.15f, Animation.PlayMode.LOOP);
     animator.addAnimation("idle", 0.15f, Animation.PlayMode.LOOP);
 
     Vulture
-            // .addComponent(new CombatStatsComponent(config.health, config.baseAttack))
-            .addComponent(animator)
-            .addComponent(new SkeletonAnimationController(target));
+        // .addComponent(new CombatStatsComponent(config.health, config.baseAttack))
+        .addComponent(animator)
+        .addComponent(new SkeletonAnimationController(target));
 
     Vulture.getComponent(AnimationRenderComponent.class).scaleEntity();
 
@@ -130,16 +129,16 @@ public class EnemyFactory {
     Entity Necromancer = createEnemy(target, config);
 
     AnimationRenderComponent animator =
-            new AnimationRenderComponent(
-                    ServiceLocator.getResourceService()
-                            .getAsset("images/necromancer.atlas", TextureAtlas.class));
+        new AnimationRenderComponent(
+            ServiceLocator.getResourceService()
+                .getAsset("images/necromancer.atlas", TextureAtlas.class));
     animator.addAnimation("walk", 0.15f, Animation.PlayMode.LOOP);
     animator.addAnimation("idle", 0.15f, Animation.PlayMode.LOOP);
 
     Necromancer
-            // .addComponent(new CombatStatsComponent(config.health, config.baseAttack))
-            .addComponent(animator)
-            .addComponent(new SkeletonAnimationController(target));
+        // .addComponent(new CombatStatsComponent(config.health, config.baseAttack))
+        .addComponent(animator)
+        .addComponent(new SkeletonAnimationController(target));
 
     Necromancer.getComponent(AnimationRenderComponent.class).scaleEntity();
 
