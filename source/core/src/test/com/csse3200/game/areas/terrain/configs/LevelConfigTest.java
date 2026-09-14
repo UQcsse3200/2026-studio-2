@@ -9,7 +9,6 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
-// import com.csse3200.game.components.item.weapons.RopeArr;
 import com.csse3200.game.components.item.ItemComponent;
 import com.csse3200.game.components.item.weapons.bow.arrow.*;
 import com.csse3200.game.entities.EntityService;
