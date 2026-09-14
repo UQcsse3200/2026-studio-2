@@ -22,6 +22,8 @@ public class BlackjackDisplay extends UIComponent {
   private static final float CARD_HEIGHT = 145f;
   private static final String CARD_PATH = "images/minigames/blackjack/";
   private static final String CARD_BACK_PATH = "images/minigames/blackjack/card_back.png";
+  private static final String BACKGROUND_PATH =
+          "images/minigames/blackjack/god_of_wind_background.png";
 
   private final Blackjack blackjack;
   private final InventoryComponent inventory;
@@ -55,6 +57,15 @@ public class BlackjackDisplay extends UIComponent {
   private void buildUI() {
     table = new Table();
     table.setFillParent(true);
+
+    Texture backgroundTexture =
+            ServiceLocator.getResourceService().getAsset(BACKGROUND_PATH, Texture.class);
+
+    backgroundTexture.setFilter(
+            Texture.TextureFilter.Nearest,
+            Texture.TextureFilter.Nearest);
+
+    table.setBackground(new TextureRegionDrawable(backgroundTexture));
 
     Label dealerLabel = new Label("Dealer", skin);
     Label playerLabel = new Label("Player", skin);
