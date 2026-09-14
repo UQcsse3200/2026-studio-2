@@ -17,6 +17,7 @@ import com.csse3200.game.components.maingame.MainGameExitDisplay;
 import com.csse3200.game.components.maingame.PauseMenuDisplay;
 import com.csse3200.game.components.minigames.spinthewheel.SpinTheWheelOverlay;
 import com.csse3200.game.components.minigames.spinthewheel.WheelConfig;
+import com.csse3200.game.components.player.KeyboardPlayerInputComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.entities.factories.RenderFactory;
@@ -26,6 +27,7 @@ import com.csse3200.game.input.InputDecorator;
 import com.csse3200.game.input.InputService;
 import com.csse3200.game.physics.PhysicsEngine;
 import com.csse3200.game.physics.PhysicsService;
+import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.rendering.RenderService;
 import com.csse3200.game.rendering.Renderer;
 import com.csse3200.game.services.GameTime;
@@ -63,6 +65,7 @@ public class TutorialGameScreen extends ScreenAdapter {
   private Entity player;
   private static final String gameplayMusic = "sounds/gameplay_bg.ogg";
   private static final String[] gameplayMusicFiles = {gameplayMusic};
+  private boolean cheats = true;
 
   public TutorialGameScreen(GdxGame game) {
     this.game = game;
@@ -87,8 +90,8 @@ public class TutorialGameScreen extends ScreenAdapter {
     // renderer.getDebug().setActive(true);
     renderer.getDebug().renderPhysicsWorld(physicsEngine.getWorld());
 
-    // loadAssets();
-    // createUI();
+    loadAssets();
+    createUI();
     // playMusic();
 
     logger.debug("Initialising tutorial game screen entities");
@@ -112,6 +115,11 @@ public class TutorialGameScreen extends ScreenAdapter {
     renderer.getCamera().setTarget(player);
     player.getEvents().addListener("death", this::onPlayerDeath);
     wheelOverlay = new SpinTheWheelOverlay(WheelConfig.ITEMS, player);
+
+    if (cheats) {
+      tutorialGameArea.getPlayer().getComponent(PhysicsComponent.class).getBody().setGravityScale(0);
+      tutorialGameArea.getPlayer().getComponent(KeyboardPlayerInputComponent.class).toggleCheats();
+    }
   }
 
   private void onPlayerDeath() {
@@ -156,13 +164,14 @@ public class TutorialGameScreen extends ScreenAdapter {
 
     renderer.getCamera().setTarget(currentGameArea.getPlayer());
   }
-
+  /*
   @Override
   public void render(float delta) {
     // at the start of the render, if there's been a level swap queued, safely perform the swap
     if (levelSwapQueued) {
       performLevelSwap();
       levelSwapQueued = false;
+
       if (Gdx.input.isKeyJustPressed(Input.Keys.K)) {
         wheelOverlay.request();
       }
@@ -172,6 +181,13 @@ public class TutorialGameScreen extends ScreenAdapter {
       renderer.render();
       wheelOverlay.afterRender();
     }
+  }
+  */
+  @Override
+  public void render(float delta) {
+    physicsEngine.update();
+    ServiceLocator.getEntityService().update();
+    renderer.render();
   }
 
   @Override

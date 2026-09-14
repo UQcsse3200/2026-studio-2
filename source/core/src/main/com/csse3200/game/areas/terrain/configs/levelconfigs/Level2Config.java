@@ -22,7 +22,7 @@ public class Level2Config extends LevelConfig {
     groundTFP = "images/tile-level2.png";
 
     playerSpawn = new GridPoint2(0, 42);
-    winConditionSpawn = new GridPoint2(33, 8);
+    //winConditionSpawn = new GridPoint2(33, 8);
 
     platforms =
         new PlatformConfig[] {
