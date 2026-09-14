@@ -1,6 +1,5 @@
 package com.csse3200.game.components.level;
 
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.csse3200.game.components.Component;
 import com.csse3200.game.physics.components.PhysicsComponent;
@@ -25,7 +24,7 @@ public class RotatableMapComponent extends Component {
       Body body = physicsComponent.getBody();
 
       if (body != null) {
-        body.setTransform(body.getPosition(), rotationAngle * MathUtils.degreesToRadians);
+        // body.setTransform(body.getPosition(), rotationAngle * MathUtils.degreesToRadians);
         initialised = true;
       }
     }

@@ -1,7 +1,6 @@
 package com.csse3200.game.screens;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -117,7 +116,11 @@ public class TutorialGameScreen extends ScreenAdapter {
     wheelOverlay = new SpinTheWheelOverlay(WheelConfig.ITEMS, player);
 
     if (cheats) {
-      tutorialGameArea.getPlayer().getComponent(PhysicsComponent.class).getBody().setGravityScale(0);
+      tutorialGameArea
+          .getPlayer()
+          .getComponent(PhysicsComponent.class)
+          .getBody()
+          .setGravityScale(0);
       tutorialGameArea.getPlayer().getComponent(KeyboardPlayerInputComponent.class).toggleCheats();
     }
   }
@@ -164,6 +167,7 @@ public class TutorialGameScreen extends ScreenAdapter {
 
     renderer.getCamera().setTarget(currentGameArea.getPlayer());
   }
+
   /*
   @Override
   public void render(float delta) {
