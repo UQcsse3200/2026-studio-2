@@ -1,13 +1,19 @@
 package com.csse3200.game.entities.configs;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.utils.Align;
+import com.csse3200.game.components.TextBoxComponent;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** Defines the configs to be loaded by TextBoxFactory */
 public class TextConfig {
+  private static final Logger logger = LoggerFactory.getLogger(TextBoxComponent.class);
   // All values are default
 
   // Positions
@@ -57,7 +63,7 @@ public class TextConfig {
     return parseAlignment(textAlignment);
   }
 
-  /**
+    /**
    * Resolves a horizontal alignment name ("left", "center"/"centre", "right") to its {@link Align}
    * constant. Falls back to {@code fallback} if the value is missing or unrecognised.
    */
@@ -65,17 +71,14 @@ public class TextConfig {
     if (value == null || value.isBlank()) {
       return Align.center;
     }
-    switch (value.trim().toLowerCase()) {
-      case "left":
-        return Align.left;
-      case "right":
-        return Align.right;
-      case "center":
-      case "centre":
-        return Align.center;
-      default:
-        return Align.center;
-    }
+      return switch (value
+          .trim()
+          .toLowerCase()) {
+          case "left" -> Align.left;
+          case "right" -> Align.right;
+          case "center", "centre" -> Align.center;
+          default -> Align.center;
+      };
   }
 
   /**
@@ -101,5 +104,17 @@ public class TextConfig {
       // fall through to fallback
     }
     return fallback;
+  }
+
+  public BitmapFont loadFont() {
+    if (fontPath == null || fontPath.isBlank()) {
+      return new BitmapFont(Gdx.files.internal("flat-earth/skin/fonts/PixeloidSans.fnt"));
+    }
+    try {
+      return new BitmapFont(Gdx.files.internal(fontPath));
+    } catch (Exception e) {
+      logger.error("Failed to load font from {}: {}", fontPath, e.getMessage());
+      return null;
+    }
   }
 }
