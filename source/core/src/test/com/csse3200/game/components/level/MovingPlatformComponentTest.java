@@ -17,6 +17,7 @@ public class MovingPlatformComponentTest {
   PhysicsMovementComponent moveComp;
   PhysicsComponent comp;
   MovingPlatformComponent platform;
+  ActivatableComponent activatable;
   Body body;
 
   @BeforeEach
@@ -29,20 +30,28 @@ public class MovingPlatformComponentTest {
     moveComp = mock(PhysicsMovementComponent.class);
     comp = mock(PhysicsComponent.class);
     body = mock(Body.class);
+    activatable = mock(ActivatableComponent.class);
     Entity entity = spy(Entity.class);
 
     entity.addComponent(comp);
     entity.addComponent(moveComp);
     entity.addComponent(platform);
+    entity.addComponent(activatable);
   }
 
   @Test
   void shouldSetCorrectFirstTarget() {
-    when(moveComp.getMoving()).thenReturn(true);
+    when(moveComp.getMoving()).thenReturn(false).thenReturn(true);
     when(moveComp.getTarget()).thenReturn(firstTarget);
     when(comp.getBody()).thenReturn(body);
     when(body.getPosition()).thenReturn(new Vector2(-10f, 0f));
-    shouldSetCorrectTarget(platform, moveComp, secondTarget);
+
+    platform.create();
+    platform.update();
+    clearInvocations(moveComp);
+
+    platform.update();
+    verify(moveComp, atLeastOnce()).setTarget(secondTarget);
   }
 
   @Test
@@ -82,16 +91,19 @@ public class MovingPlatformComponentTest {
     moveComp = mock(PhysicsMovementComponent.class);
     comp = mock(PhysicsComponent.class);
     body = mock(Body.class);
+    activatable = mock(ActivatableComponent.class);
     Entity entity = spy(Entity.class);
 
     entity.addComponent(comp);
     entity.addComponent(moveComp);
     entity.addComponent(platform);
+    entity.addComponent(activatable);
 
     when(moveComp.getMoving()).thenReturn(true);
     when(moveComp.getTarget()).thenReturn(firstTarget).thenReturn(secondTarget);
     when(comp.getBody()).thenReturn(body);
     when(body.getPosition()).thenReturn(firstTarget);
+    when(activatable.isActive()).thenReturn(true);
     shouldSetCorrectSpeed(platform, new Vector2(0f, 5f));
   }
 
@@ -105,22 +117,27 @@ public class MovingPlatformComponentTest {
     moveComp = mock(PhysicsMovementComponent.class);
     comp = mock(PhysicsComponent.class);
     body = mock(Body.class);
+    activatable = mock(ActivatableComponent.class);
     Entity entity = spy(Entity.class);
 
     entity.addComponent(comp);
     entity.addComponent(moveComp);
     entity.addComponent(platform);
+    entity.addComponent(activatable);
 
     when(moveComp.getMoving()).thenReturn(true);
     when(moveComp.getTarget()).thenReturn(secondTarget).thenReturn(firstTarget);
     when(comp.getBody()).thenReturn(body);
     when(body.getPosition()).thenReturn(secondTarget);
+    when(activatable.isActive()).thenReturn(true);
     shouldSetCorrectSpeed(platform, new Vector2(0f, -5f));
   }
 
   void shouldSetCorrectTarget(
       MovingPlatformComponent platform, PhysicsMovementComponent moveComp, Vector2 target) {
     platform.create();
+    clearInvocations(moveComp);
+    platform.update();
     clearInvocations(moveComp);
     platform.update();
     verify(moveComp).setTarget(target);
