@@ -91,7 +91,7 @@ public class EnemyFactory {
     // If the enemy is a range type, add a range task.
     if (config.attackType.equals("range")) {
       aiComponent.addTask(
-          new RangedAttackTask(target, 20, config.attackRange, 2f, config.baseAttack, 5f, 5f));
+          new RangedAttackTask(target, 20, config.attackRange, 2f, config.baseAttack, 3f, 5f));
     }
 
     Entity enemy =
