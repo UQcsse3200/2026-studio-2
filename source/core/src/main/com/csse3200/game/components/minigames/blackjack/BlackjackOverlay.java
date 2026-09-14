@@ -1,5 +1,6 @@
 package com.csse3200.game.components.minigames.blackjack;
 
+import com.csse3200.game.components.inventory.InventoryComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.BlurredBackdropDisplay;
@@ -17,6 +18,15 @@ public class BlackjackOverlay {
 
     private boolean openRequested = false;
     private Entity overlay;
+    private final InventoryComponent inventory;
+
+    public BlackjackOverlay() {
+        this(null);
+    }
+
+    public BlackjackOverlay(Entity player) {
+        inventory = player == null ? null : player.getComponent(InventoryComponent.class);
+    }
 
     /** Asks for Blackjack to open at the end of the current frame. */
     public void request() {
@@ -41,7 +51,7 @@ public class BlackjackOverlay {
 
     private void open() {
         BlurredBackdropDisplay backdrop = new BlurredBackdropDisplay(ScreenBlur.capture());
-        BlackjackDisplay display = new BlackjackDisplay(new Blackjack(100));
+        BlackjackDisplay display = new BlackjackDisplay(new Blackjack(100), inventory);
 
         overlay = new Entity()
                 .addComponent(backdrop)

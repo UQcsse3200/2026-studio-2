@@ -1,7 +1,11 @@
 package com.csse3200.game.components.minigames.blackjack;
 
+import com.csse3200.game.components.item.ItemType;
+
 public final class BlackjackConfig {
   public static final String[] TEXTURES = createTextures();
+  public static final ItemType WIN_REWARD = ItemType.ARROW;
+  public static final int WIN_REWARD_QUANTITY = 1;
 
   private static String[] createTextures() {
     String[] textures = new String[55];

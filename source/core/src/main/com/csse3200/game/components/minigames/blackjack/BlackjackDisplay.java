@@ -10,6 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.csse3200.game.components.inventory.InventoryComponent;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.UIComponent;
 
@@ -23,6 +24,8 @@ public class BlackjackDisplay extends UIComponent {
   private static final String CARD_BACK_PATH = "images/minigames/blackjack/card_back.png";
 
   private final Blackjack blackjack;
+  private final InventoryComponent inventory;
+  private boolean rewardGranted;
 
   private Table table;
   private Table dealerCards;
@@ -34,7 +37,12 @@ public class BlackjackDisplay extends UIComponent {
   private Label resultLabel;
 
   public BlackjackDisplay(Blackjack blackjack) {
+    this(blackjack, null);
+  }
+
+  public BlackjackDisplay(Blackjack blackjack, InventoryComponent inventory) {
     this.blackjack = blackjack;
+    this.inventory = inventory;
   }
 
   @Override
@@ -84,7 +92,9 @@ public class BlackjackDisplay extends UIComponent {
             }
 
             if (!blackjack.isRoundInProgress()) {
+              rewardGranted = false;
               blackjack.startNewRound();
+              grantWinReward();
               refresh();
             }
           }
@@ -96,6 +106,7 @@ public class BlackjackDisplay extends UIComponent {
           public void changed(ChangeEvent event, Actor actor) {
             if (blackjack.isRoundInProgress() && !blackjack.isRoundOver()) {
               blackjack.hit();
+              grantWinReward();
               refresh();
             }
           }
@@ -107,6 +118,7 @@ public class BlackjackDisplay extends UIComponent {
           public void changed(ChangeEvent event, Actor actor) {
             if (blackjack.isRoundInProgress() && !blackjack.isRoundOver()) {
               blackjack.stand();
+              grantWinReward();
               refresh();
             }
           }
@@ -195,6 +207,14 @@ public class BlackjackDisplay extends UIComponent {
     balanceLabel.setText("Balance: $" + blackjack.getBalance() + "    Bet: $" + blackjack.getBet());
 
     resultLabel.setText(blackjack.getResultMessage());
+  }
+
+  private void grantWinReward() {
+    if (inventory == null || rewardGranted || !blackjack.isPlayerWinner()) {
+      return;
+    }
+
+    rewardGranted = inventory.addItem(BlackjackConfig.WIN_REWARD, BlackjackConfig.WIN_REWARD_QUANTITY);
   }
 
   private Image createCardBackImage() {

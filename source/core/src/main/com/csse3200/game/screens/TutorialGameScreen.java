@@ -105,7 +105,7 @@ public class TutorialGameScreen extends ScreenAdapter {
     renderer.getCamera().setTarget(player);
     player.getEvents().addListener("death", this::onPlayerDeath);
     wheelOverlay = new SpinTheWheelOverlay(WheelConfig.ITEMS, player);
-    blackjackOverlay = new BlackjackOverlay();
+    blackjackOverlay = new BlackjackOverlay(player);
   }
 
   private void onPlayerDeath() {
