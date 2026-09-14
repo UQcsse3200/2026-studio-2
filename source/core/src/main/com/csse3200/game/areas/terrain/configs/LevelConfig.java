@@ -264,6 +264,10 @@ public class LevelConfig {
    * Creates all checkpoints for the level and adds them to the entities map for the level to spawn.
    */
   private void createCheckpoints() {
+    if (checkpoints == null) {
+      return;
+    }
+
     for (CheckpointConfig c : checkpoints) {
       Entity checkpoint = new Entity();
       checkpoint.addComponent(new CheckpointComponent(false, c.getPosition()));
