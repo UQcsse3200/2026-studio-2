@@ -309,7 +309,7 @@ public class ObstacleFactory {
         new Entity()
             .addComponent(new PhysicsComponent().setBodyType(BodyType.StaticBody))
             .addComponent(new ColliderComponent().setLayer(PhysicsLayer.OBSTACLE));
-            ////.addComponent(new ColliderComponent().setLayer(PhysicsLayer.WALL));
+    //// .addComponent(new ColliderComponent().setLayer(PhysicsLayer.WALL));
     wall.setScale(width, height);
 
     return wall;
