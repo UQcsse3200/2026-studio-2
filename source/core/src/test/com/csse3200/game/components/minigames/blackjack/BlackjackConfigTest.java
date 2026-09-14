@@ -18,7 +18,8 @@ class BlackjackConfigTest {
   @Test
   void shouldContainEveryBlackjackTexture() {
     assertEquals(55, BlackjackConfig.TEXTURES.length);
-    assertTrue(Arrays.stream(BlackjackConfig.TEXTURES).allMatch(path -> path != null && !path.isBlank()));
+    assertTrue(
+        Arrays.stream(BlackjackConfig.TEXTURES).allMatch(path -> path != null && !path.isBlank()));
 
     for (String path : BlackjackConfig.TEXTURES) {
       assertTrue(Gdx.files.internal(path).exists(), path);
@@ -33,11 +34,7 @@ class BlackjackConfigTest {
       for (Blackjack.Rank rank : Blackjack.Rank.values()) {
         String rankName = rankFileName(rank);
         String path =
-            "images/minigames/blackjack/"
-                + rankName
-                + "_"
-                + suit.name().toLowerCase()
-                + ".png";
+            "images/minigames/blackjack/" + rankName + "_" + suit.name().toLowerCase() + ".png";
 
         assertTrue(paths.contains(path), path);
       }
@@ -59,13 +56,10 @@ class BlackjackConfigTest {
     InventoryComponent inventory = new InventoryComponent(0);
 
     assertTrue(BlackjackConfig.WIN_REWARD_QUANTITY > 0);
-    assertTrue(
-        inventory.addItem(
-            BlackjackConfig.WIN_REWARD, BlackjackConfig.WIN_REWARD_QUANTITY));
+    assertTrue(inventory.addItem(BlackjackConfig.WIN_REWARD, BlackjackConfig.WIN_REWARD_QUANTITY));
     assertTrue(inventory.hasItem(BlackjackConfig.WIN_REWARD));
     assertEquals(
-        BlackjackConfig.WIN_REWARD_QUANTITY,
-      inventory.getItemCount(BlackjackConfig.WIN_REWARD));
+        BlackjackConfig.WIN_REWARD_QUANTITY, inventory.getItemCount(BlackjackConfig.WIN_REWARD));
   }
 
   private static String rankFileName(Blackjack.Rank rank) {

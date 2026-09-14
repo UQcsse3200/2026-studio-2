@@ -23,7 +23,7 @@ public class BlackjackDisplay extends UIComponent {
   private static final String CARD_PATH = "images/minigames/blackjack/";
   private static final String CARD_BACK_PATH = "images/minigames/blackjack/card_back.png";
   private static final String BACKGROUND_PATH =
-          "images/minigames/blackjack/god_of_wind_background.png";
+      "images/minigames/blackjack/god_of_wind_background.png";
 
   private final Blackjack blackjack;
   private final InventoryComponent inventory;
@@ -59,11 +59,9 @@ public class BlackjackDisplay extends UIComponent {
     table.setFillParent(true);
 
     Texture backgroundTexture =
-            ServiceLocator.getResourceService().getAsset(BACKGROUND_PATH, Texture.class);
+        ServiceLocator.getResourceService().getAsset(BACKGROUND_PATH, Texture.class);
 
-    backgroundTexture.setFilter(
-            Texture.TextureFilter.Nearest,
-            Texture.TextureFilter.Nearest);
+    backgroundTexture.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
 
     table.setBackground(new TextureRegionDrawable(backgroundTexture));
 
@@ -225,7 +223,8 @@ public class BlackjackDisplay extends UIComponent {
       return;
     }
 
-    rewardGranted = inventory.addItem(BlackjackConfig.WIN_REWARD, BlackjackConfig.WIN_REWARD_QUANTITY);
+    rewardGranted =
+        inventory.addItem(BlackjackConfig.WIN_REWARD, BlackjackConfig.WIN_REWARD_QUANTITY);
   }
 
   private Image createCardBackImage() {
