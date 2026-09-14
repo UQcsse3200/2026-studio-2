@@ -221,16 +221,16 @@ public class ObstacleFactory {
   /**
    * Creates the normal floor used by the other levels.
    *
-   * @param grappleSides number of sides that can be grappled
+   * @param config configuration object for the floor
    * @return floor entity
    */
-  public static Entity createFloor(int grappleSides) {
+  public static Entity createFloor(PlatformConfig config) {
     Entity floor =
         new Entity()
-            .addComponent(new TiledRenderComponent("images/Tile_2.png", 0.75f))
+            .addComponent(new TiledRenderComponent(config.textureFilepath, 0.75f))
             .addComponent(new PhysicsComponent().setBodyType(BodyType.StaticBody))
             .addComponent(new ColliderComponent().setLayer(PhysicsLayer.OBSTACLE))
-            .addComponent(new PlatformGrappleComponent(grappleSides));
+            .addComponent(new PlatformGrappleComponent(config.grappleSides));
 
     floor.getComponent(PhysicsComponent.class).setBodyType(BodyType.StaticBody);
 

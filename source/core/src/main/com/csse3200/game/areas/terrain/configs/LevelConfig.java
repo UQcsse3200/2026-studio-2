@@ -151,7 +151,7 @@ public class LevelConfig {
   private void createFloors() {
     if (bounds != null) {
       for (PlatformConfig b : bounds) {
-        Entity bound = ObstacleFactory.createFloor(b.grappleSides);
+        Entity bound = ObstacleFactory.createFloor(b);
         bound.setScale(b.width, b.height);
         entities.add(new SpawnData(b.position, bound));
       }
@@ -159,7 +159,7 @@ public class LevelConfig {
 
     if (floors != null) {
       for (PlatformConfig f : floors) {
-        Entity bound = ObstacleFactory.createFloor(f.grappleSides);
+        Entity bound = ObstacleFactory.createFloor(f);
         bound.setScale(f.width, f.height);
         entities.add(new SpawnData(f.position, bound));
       }

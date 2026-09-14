@@ -10,7 +10,6 @@ import com.csse3200.game.components.player.KeyboardPlayerInputComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.PlayerFactory;
 import com.csse3200.game.rendering.BackgroundRenderComponent;
-import com.csse3200.game.rendering.TiledRenderComponent;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import org.slf4j.Logger;
@@ -93,61 +92,21 @@ public class Level2GameArea extends GameArea {
 
   @Override
   public void create() {
-
     loadAssets();
 
     // Spawn the Level 2 background before the terrain.
     spawnBackground();
-
     spawnTerrain();
-
-    /*
-     * Spawn all normal Level 2 configured entities.
-     *
-     * The floor from Level2Config is made transparent so that
-     * it provides the required collision/physics without drawing
-     * the old brown ground texture.
-     */
     spawnConfigEntities();
-
-    /*
-     * Draw the new green Level 2 tiled ground on top of the
-     * transparent physics floor.
-     */
-    // spawnLevel2Ground();
-
     player = spawnPlayer();
-  }
-
-  /**
-   * Creates the Level 2 green tiled ground.
-   *
-   * <p>The floor is 39 units wide and 13 units high, matching the floor configuration in
-   * Level2Config.
-   *
-   * <p>The TiledRenderComponent repeats tile-level2.png instead of stretching a single image across
-   * the entire ground.
-   */
-  private void spawnLevel2Ground() {
-
-    Entity ground =
-        new Entity().addComponent(new TiledRenderComponent("images/tile-level2.png", 0.75f));
-
-    // Same size as the Level 2 floor configuration.
-    ground.setScale(39f, 13f);
-
-    // Same world position as the configured Level 2 floor.
-    spawnEntityAt(ground, new GridPoint2(0, -12), false, false);
   }
 
   /** Creates the Level 2 background. */
   private void spawnBackground() {
-
     final Vector2 backgroundPos = new Vector2(-15f, -10f);
 
     BackgroundRenderComponent backgroundComponent =
         new BackgroundRenderComponent(camera, backgroundPos, worldBounds);
-
     backgroundComponent.addLayer(
         "images/Background-2.png",
         new Vector2(0.10f, 0f),
@@ -159,47 +118,34 @@ public class Level2GameArea extends GameArea {
         false);
 
     Entity background = new Entity().addComponent(backgroundComponent);
-
     background.setPosition(backgroundPos);
-
     spawnEntity(background);
   }
 
   /** Creates the Level 2 background terrain and walls. */
   private void spawnTerrain() {
-
     terrain = terrainFactory.createTerrain(TerrainFactory.TerrainType.BACKGROUND_DESERT);
-
     spawnEntity(new Entity().addComponent(terrain));
-
     float tileSize = terrain.getTileSize();
-
     GridPoint2 tileBounds = terrain.getMapBounds(0);
-
     worldBounds = new Vector2(tileBounds.x * tileSize, tileBounds.y * tileSize);
   }
 
   /** Creates the Level 2 player. */
   private Entity spawnPlayer() {
-
     Entity newPlayer = PlayerFactory.createPlayer();
-
     newPlayer.getEvents().addListener("grappleRequested", this::checkSuccessfulGrapple);
-
     KeyboardPlayerInputComponent input = newPlayer.getComponent(KeyboardPlayerInputComponent.class);
 
     if (input != null) {
       input.setCameraComponent(cameraComponent);
     }
-
     spawnEntityAt(newPlayer, config.getPlayerSpawn(), true, true);
-
     return newPlayer;
   }
 
   /** Plays the background music. */
   private void playMusic() {
-
     Music music = ServiceLocator.getResourceService().getAsset(backgroundMusic, Music.class);
 
     music.setLooping(true);
@@ -209,17 +155,12 @@ public class Level2GameArea extends GameArea {
 
   /** Loads all Level 2 assets. */
   private void loadAssets() {
-
     logger.debug("Loading assets");
 
     ResourceService resourceService = ServiceLocator.getResourceService();
-
     resourceService.loadTextures(level2Textures);
-
     resourceService.loadTextureAtlases(level2TexturesAtlas);
-
     resourceService.loadSounds(level2Sounds);
-
     resourceService.loadMusic(level2Music);
 
     while (!resourceService.loadForMillis(10)) {
@@ -229,28 +170,20 @@ public class Level2GameArea extends GameArea {
 
   /** Unloads all Level 2 assets. */
   private void unloadAssets() {
-
     logger.debug("Unloading assets");
 
     ResourceService resourceService = ServiceLocator.getResourceService();
-
     resourceService.unloadAssets(level2Textures);
-
     resourceService.unloadAssets(level2TexturesAtlas);
-
     resourceService.unloadAssets(level2Sounds);
-
     resourceService.unloadAssets(level2Music);
   }
 
   /** Dispose of the game area. */
   @Override
   public void dispose() {
-
     super.dispose();
-
     ServiceLocator.getResourceService().getAsset(backgroundMusic, Music.class).stop();
-
     this.unloadAssets();
   }
 }
