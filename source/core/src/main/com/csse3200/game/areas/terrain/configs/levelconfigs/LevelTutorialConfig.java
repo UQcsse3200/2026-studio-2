@@ -52,7 +52,7 @@ public class LevelTutorialConfig extends LevelConfig {
               new Vector2(9, 15),
               new Vector2(14, 15),
               new Vector2(3, 0),
-              ""),
+              new String[] {}),
           new MovingPlatformConfig(
               new GridPoint2(25, 15),
               2,
@@ -62,7 +62,7 @@ public class LevelTutorialConfig extends LevelConfig {
               new Vector2(25, 15),
               new Vector2(36, 15),
               new Vector2(3, 0),
-              ""),
+              new String[] {}),
           new MovingPlatformConfig(
               new GridPoint2(61, 10),
               1,
@@ -72,7 +72,7 @@ public class LevelTutorialConfig extends LevelConfig {
               new Vector2(61, 2),
               new Vector2(61, 10),
               new Vector2(0, 3),
-              ""),
+              new String[] {}),
           new MovingPlatformConfig(
               new GridPoint2(60, 12),
               1,
@@ -82,7 +82,7 @@ public class LevelTutorialConfig extends LevelConfig {
               new Vector2(60, 12),
               new Vector2(60, 15),
               new Vector2(0, 3),
-              ""),
+              new String[] {}),
           new MovingPlatformConfig(
               new GridPoint2(72, 2),
               1,
@@ -92,7 +92,7 @@ public class LevelTutorialConfig extends LevelConfig {
               new Vector2(72, 2),
               new Vector2(72, 12),
               new Vector2(0, 3),
-              ""),
+              new String[] {}),
         };
 
     spikes =
