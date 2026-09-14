@@ -188,7 +188,7 @@ public class MainMenuDisplay extends UIComponent {
     Table rightColumn = new Table();
     rightColumn.add(minigamesButton).width(buttonWidth).height(buttonHeight);
     rightColumn.row();
-    rightColumn.add(exitButton).width(buttonWidth).height(buttonHeight).padTop(pad);
+    rightColumn.add(settingsButton).width(buttonWidth).height(buttonHeight).padTop(pad);
 
     // Left and right columns sit together as one centered pair, with a fixed gap between them
     // instead of being pushed out to the screen edges.
@@ -203,7 +203,7 @@ public class MainMenuDisplay extends UIComponent {
     table.add(columnPair).center().padTop(screenHeight * 0.02f);
     table.row();
     table
-        .add(settingsButton)
+        .add(exitButton)
         .center()
         .width(buttonWidth)
         .height(buttonHeight)
