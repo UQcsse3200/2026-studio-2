@@ -3,7 +3,8 @@ package com.csse3200.game.areas.terrain.configs;
 import com.badlogic.gdx.math.GridPoint2;
 
 public class TriggerablePlatformConfig extends PlatformConfig {
-  String id;
+  String[] ids;
+  boolean initialState;
 
   public TriggerablePlatformConfig(
       GridPoint2 position,
@@ -11,12 +12,18 @@ public class TriggerablePlatformConfig extends PlatformConfig {
       int height,
       int grappleSides,
       String textureFilepath,
-      String id) {
+      String[] ids,
+      boolean initialState) {
     super(position, width, height, grappleSides, textureFilepath);
-    this.id = id;
+    this.ids = ids;
+    this.initialState = initialState;
   }
 
-  public String getId() {
-    return id;
+  public String[] getIds() {
+    return ids;
+  }
+
+  public boolean getInitialState() {
+    return initialState;
   }
 }
