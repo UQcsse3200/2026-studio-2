@@ -15,6 +15,7 @@ public class PlayerAnimationController extends Component {
   private boolean dead = false;
   private boolean deathAnimationFinishedFired = false;
   private boolean sleep = false;
+  private boolean charging = false;
 
   @Override
   public void create() {
@@ -29,6 +30,8 @@ public class PlayerAnimationController extends Component {
     entity.getEvents().addListener("airDashStart", this::airDashStart);
     entity.getEvents().addListener("hurt", this::hurt);
     entity.getEvents().addListener("melee", this::meleeStart);
+    entity.getEvents().addListener("chargeStart", this::drawStart);
+    entity.getEvents().addListener("chargeRelease", this::drawRelease);
     entity.getEvents().addListener("sprintEnd", this::sprintStop);
     entity.getEvents().addListener("death", this::death);
     entity.getEvents().addListener("sleep", this::sleep);
@@ -155,6 +158,29 @@ public class PlayerAnimationController extends Component {
       animator.setFlipX(aim.x < 0);
     }
     animator.startAnimation("melee");
+  }
+
+  void drawStart(Vector2 aim) {
+    if (dead) {
+      return;
+    }
+    charging = true;
+    attacking = true;
+    if (aim != null && aim.x != 0) {
+      animator.setFlipX(aim.x < 0);
+    }
+    animator.startAnimation("bow_draw");
+  }
+
+  void drawRelease(Vector2 aim) {
+    if (!charging) {
+      return;
+    }
+    charging = false;
+    if (dead) {
+      return;
+    }
+    animator.startAnimation("bow_release");
   }
 
   private void updateAnimation() {

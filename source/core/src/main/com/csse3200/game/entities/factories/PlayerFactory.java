@@ -55,6 +55,8 @@ public class PlayerFactory {
     animator.addAnimation("melee", 0.03f, PlayMode.NORMAL, 79f, 38f);
     animator.addAnimation("dash", 0.025f, PlayMode.NORMAL, 134.5f, 39f);
     animator.addAnimation("air_dash", 0.025f, PlayMode.NORMAL, 94f, 39f);
+    animator.addAnimation("bow_draw", 0.09f, PlayMode.LOOP, 71f, 23f);
+    animator.addAnimation("bow_release", 0.05f, PlayMode.NORMAL, 71f, 23f);
 
     Entity player =
         new Entity()

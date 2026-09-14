@@ -33,8 +33,13 @@ public class ItemUseComponent extends Component {
   }
 
   /**
-   * Fires the selected arrow item. Consumables are ignored here so holding or clicking the shoot
-   * button never accidentally drinks a potion.
+   * Starts using the selected arrow item on shoot-button-down. Consumables are ignored here so
+   * holding or clicking the shoot button never accidentally drinks a potion.
+   *
+   * <p>The rope arrow still fires instantly (unchanged). Other arrows lock in their type and spend
+   * their ammo immediately, same as before, but no longer fire right away - the shot is now held as
+   * a charge and only actually fires when {@link #stopShootSelectedArrow()} releases it, with power
+   * scaling based on how long the button was held.
    *
    * @param direction Input direction from mouse aim or controller
    */
@@ -43,16 +48,37 @@ public class ItemUseComponent extends Component {
       return;
     }
     ItemType selected = inventory.getSelectedItem();
-    if (selected != null && selected.isArrow()) {
-      useSelectedItem();
+    if (selected == null || !selected.isArrow() || !inventory.hasItem(selected)) {
+      return;
     }
+
+    if (selected == ItemType.ROPE_ARROW) {
+      useSelectedItem();
+      return;
+    }
+
+    entity.getEvents().trigger("setArrowType", selected.toArrowType());
+    if (selected.consumesAmmo()) {
+      inventory.removeItem(selected, 1);
+    }
+    entity.getEvents().trigger("itemUsed", selected);
+    entity.getEvents().trigger("chargeStart", direction);
   }
 
-  /** Releases the grapple when the shoot button is released while a rope arrow is equipped. */
+  /**
+   * Releases the grapple when the shoot button is released while a rope arrow is equipped, or
+   * releases a charging shot for any other arrow (BowComponent no-ops if nothing was charging, e.g.
+   * a consumable was selected when the button first went down).
+   */
   void stopShootSelectedArrow() {
-    if (inventory != null && inventory.getSelectedItem() == ItemType.ROPE_ARROW) {
-      entity.getEvents().trigger("grappleRelease");
+    if (inventory == null) {
+      return;
     }
+    if (inventory.getSelectedItem() == ItemType.ROPE_ARROW) {
+      entity.getEvents().trigger("grappleRelease");
+      return;
+    }
+    entity.getEvents().trigger("chargeRelease", getAimDirection());
   }
 
   /**

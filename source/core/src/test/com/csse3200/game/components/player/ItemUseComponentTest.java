@@ -171,18 +171,58 @@ class ItemUseComponentTest {
   }
 
   @Test
-  void shouldFireSelectedArrowOnShootEvent() {
+  void shouldStartChargeOnShootEventWithoutFiringYet() {
     Entity player = createPlayer();
     InventoryComponent inventory = player.getComponent(InventoryComponent.class);
     inventory.addItem(ItemType.STANDARD_ARROW, 2);
 
     int[] fired = {0};
+    int[] chargeStarts = {0};
     player.getEvents().addListener("primaryAttack", (Vector2 ignored) -> fired[0]++);
+    player.getEvents().addListener("chargeStart", (Vector2 ignored) -> chargeStarts[0]++);
 
     player.getEvents().trigger("shoot", new Vector2(1f, 0f));
 
-    assertEquals(1, fired[0]);
+    // Ammo is spent immediately (same timing as before), but the shot no longer fires until
+    // release - it's now a charge-up hold, not an instant fire.
+    assertEquals(1, chargeStarts[0]);
+    assertEquals(0, fired[0]);
     assertEquals(1, inventory.getItemCount(ItemType.STANDARD_ARROW));
+  }
+
+  @Test
+  void shouldFireOnStopShootAfterCharging() {
+    Entity player = createPlayer();
+    InventoryComponent inventory = player.getComponent(InventoryComponent.class);
+    inventory.addItem(ItemType.STANDARD_ARROW, 2);
+
+    int[] fired = {0};
+    player.getEvents().addListener("chargeRelease", (Vector2 ignored) -> fired[0]++);
+
+    player.getEvents().trigger("shoot", new Vector2(1f, 0f));
+    assertEquals(0, fired[0]);
+
+    player.getEvents().trigger("stopShoot");
+    assertEquals(1, fired[0]);
+  }
+
+  @Test
+  void shouldNotChargeReleaseWithoutArrowSelected() {
+    Entity player = createPlayer();
+    InventoryComponent inventory = player.getComponent(InventoryComponent.class);
+    CombatStatsComponent combat = player.getComponent(CombatStatsComponent.class);
+    combat.setHealth(40);
+    inventory.addItem(ItemType.HEALTH_POTION, 1);
+
+    int[] released = {0};
+    player.getEvents().addListener("chargeRelease", (Vector2 ignored) -> released[0]++);
+
+    // Releasing with a potion selected still triggers chargeRelease (BowComponent is expected to
+    // no-op since nothing was ever charging) - ItemUseComponent doesn't need to know that.
+    player.getEvents().trigger("stopShoot");
+
+    assertEquals(1, released[0]);
+    assertEquals(40, combat.getHealth());
   }
 
   @Test
@@ -264,6 +304,46 @@ class ItemUseComponentTest {
     assertEquals(ArrowType.COLD, bowType.get());
     assertEquals(1, shots[0]);
     assertEquals(1, inventory.getItemCount(ItemType.COLD_ARROW));
+  }
+
+  @Test
+  void shouldChargeAndReleaseFireArrowThroughShootHold() {
+    Entity player = createPlayer();
+    InventoryComponent inventory = player.getComponent(InventoryComponent.class);
+    inventory.addItem(ItemType.FIRE_ARROW, 2);
+
+    AtomicReference<ArrowType> bowType = new AtomicReference<>();
+    int[] releases = {0};
+    player.getEvents().addListener("setArrowType", (ArrowType t) -> bowType.set(t));
+    player.getEvents().addListener("chargeRelease", (Vector2 ignored) -> releases[0]++);
+
+    player.getEvents().trigger("shoot", new Vector2(1f, 0f));
+    assertEquals(ArrowType.FIRE, bowType.get());
+    assertEquals(1, inventory.getItemCount(ItemType.FIRE_ARROW));
+    assertEquals(0, releases[0]);
+
+    player.getEvents().trigger("stopShoot");
+    assertEquals(1, releases[0]);
+  }
+
+  @Test
+  void shouldChargeAndReleaseColdArrowThroughShootHold() {
+    Entity player = createPlayer();
+    InventoryComponent inventory = player.getComponent(InventoryComponent.class);
+    inventory.addItem(ItemType.COLD_ARROW, 2);
+
+    AtomicReference<ArrowType> bowType = new AtomicReference<>();
+    int[] releases = {0};
+    player.getEvents().addListener("setArrowType", (ArrowType t) -> bowType.set(t));
+    player.getEvents().addListener("chargeRelease", (Vector2 ignored) -> releases[0]++);
+
+    player.getEvents().trigger("shoot", new Vector2(1f, 0f));
+    assertEquals(ArrowType.COLD, bowType.get());
+    assertEquals(1, inventory.getItemCount(ItemType.COLD_ARROW));
+    assertEquals(0, releases[0]);
+
+    player.getEvents().trigger("stopShoot");
+    assertEquals(1, releases[0]);
   }
 
   private Entity createPlayer() {

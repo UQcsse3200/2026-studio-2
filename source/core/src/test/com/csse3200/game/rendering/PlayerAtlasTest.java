@@ -59,4 +59,14 @@ class PlayerAtlasTest {
   void shouldExposeSleepAnimation() {
     assertEquals(16, atlas.findRegions("sleep").size);
   }
+
+  @Test
+  void shouldExposeBowDrawAnimation() {
+    assertEquals(13, atlas.findRegions("bow_draw").size);
+  }
+
+  @Test
+  void shouldExposeBowReleaseAnimation() {
+    assertEquals(3, atlas.findRegions("bow_release").size);
+  }
 }

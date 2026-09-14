@@ -50,13 +50,15 @@ class PlayerAnimationControllerTest {
   }
 
   /**
-   * Builds a player-like entity with a single-frame "death" animation (so one draw() call completes
-   * it) and wires up the controller without needing a registered RenderService.
+   * Builds a player-like entity with single-frame "death"/"bow_release" animations (so one draw()
+   * call completes them) and wires up the controller without needing a registered RenderService.
    */
   private PlayerAnimationController createController(
       Entity entity, AnimationRenderComponent animator) {
     animator.addAnimation("idle", 1f, PlayMode.LOOP);
     animator.addAnimation("death", 1f, PlayMode.NORMAL);
+    animator.addAnimation("bow_draw", 1f, PlayMode.LOOP);
+    animator.addAnimation("bow_release", 1f, PlayMode.NORMAL);
     entity.addComponent(animator);
     PlayerAnimationController controller = new PlayerAnimationController();
     entity.addComponent(controller);
@@ -67,7 +69,8 @@ class PlayerAnimationControllerTest {
   @Test
   void shouldPlayDeathAnimationOnDeathEvent() {
     AnimationRenderComponent animator =
-        new AnimationRenderComponent(mockAtlasWithRegions("idle", "death"));
+        new AnimationRenderComponent(
+            mockAtlasWithRegions("idle", "death", "bow_draw", "bow_release"));
     Entity entity = new Entity();
     createController(entity, animator);
 
@@ -79,7 +82,8 @@ class PlayerAnimationControllerTest {
   @Test
   void shouldIgnoreMovementAndHurtEventsAfterDeath() {
     AnimationRenderComponent animator =
-        new AnimationRenderComponent(mockAtlasWithRegions("idle", "death"));
+        new AnimationRenderComponent(
+            mockAtlasWithRegions("idle", "death", "bow_draw", "bow_release"));
     Entity entity = new Entity();
     createController(entity, animator);
 
@@ -96,7 +100,8 @@ class PlayerAnimationControllerTest {
   @Test
   void shouldNotFireDeathAnimationFinishedBeforeAnimationCompletes() {
     AnimationRenderComponent animator =
-        new AnimationRenderComponent(mockAtlasWithRegions("idle", "death"));
+        new AnimationRenderComponent(
+            mockAtlasWithRegions("idle", "death", "bow_draw", "bow_release"));
     Entity entity = new Entity();
     PlayerAnimationController controller = createController(entity, animator);
     AtomicInteger finishedEvents = new AtomicInteger();
@@ -111,7 +116,8 @@ class PlayerAnimationControllerTest {
   @Test
   void shouldFireDeathAnimationFinishedExactlyOnceWhenAnimationCompletes() {
     AnimationRenderComponent animator =
-        new AnimationRenderComponent(mockAtlasWithRegions("idle", "death"));
+        new AnimationRenderComponent(
+            mockAtlasWithRegions("idle", "death", "bow_draw", "bow_release"));
     Entity entity = new Entity();
     PlayerAnimationController controller = createController(entity, animator);
     AtomicInteger finishedEvents = new AtomicInteger();
@@ -124,5 +130,68 @@ class PlayerAnimationControllerTest {
     controller.update(); // Should not fire a second time.
 
     assertEquals(1, finishedEvents.get());
+  }
+
+  @Test
+  void shouldPlayBowDrawOnChargeStartAndBlockWalkFromOverridingIt() {
+    AnimationRenderComponent animator =
+        new AnimationRenderComponent(
+            mockAtlasWithRegions("idle", "death", "bow_draw", "bow_release"));
+    Entity entity = new Entity();
+    createController(entity, animator);
+
+    entity.getEvents().trigger("chargeStart", new Vector2(1f, 0f));
+    assertEquals("bow_draw", animator.getCurrentAnimation());
+
+    // Walking shouldn't interrupt the draw hold, same as it can't interrupt melee/dash.
+    entity.getEvents().trigger("walk", new Vector2(1f, 0f));
+    assertEquals("bow_draw", animator.getCurrentAnimation());
+  }
+
+  @Test
+  void shouldPlayBowReleaseOnceAndClearAttackingWhenItFinishes() {
+    AnimationRenderComponent animator =
+        new AnimationRenderComponent(
+            mockAtlasWithRegions("idle", "death", "bow_draw", "bow_release"));
+    Entity entity = new Entity();
+    PlayerAnimationController controller = createController(entity, animator);
+
+    entity.getEvents().trigger("chargeStart", new Vector2(1f, 0f));
+    entity.getEvents().trigger("chargeRelease", new Vector2(1f, 0f));
+    assertEquals("bow_release", animator.getCurrentAnimation());
+
+    animator.render(mock(SpriteBatch.class)); // Advances past the single-frame release animation.
+    controller.update();
+
+    // attacking clears once bow_release finishes, same as melee, reverting to idle/walk.
+    assertEquals("idle", animator.getCurrentAnimation());
+  }
+
+  @Test
+  void shouldIgnoreChargeReleaseWithoutPriorChargeStart() {
+    AnimationRenderComponent animator =
+        new AnimationRenderComponent(
+            mockAtlasWithRegions("idle", "death", "bow_draw", "bow_release"));
+    Entity entity = new Entity();
+    createController(entity, animator);
+
+    entity.getEvents().trigger("chargeRelease", new Vector2(1f, 0f));
+
+    assertEquals("idle", animator.getCurrentAnimation());
+  }
+
+  @Test
+  void shouldIgnoreChargeStartAndReleaseWhileDead() {
+    AnimationRenderComponent animator =
+        new AnimationRenderComponent(
+            mockAtlasWithRegions("idle", "death", "bow_draw", "bow_release"));
+    Entity entity = new Entity();
+    createController(entity, animator);
+
+    entity.getEvents().trigger("death");
+    entity.getEvents().trigger("chargeStart", new Vector2(1f, 0f));
+    entity.getEvents().trigger("chargeRelease", new Vector2(1f, 0f));
+
+    assertEquals("death", animator.getCurrentAnimation());
   }
 }
