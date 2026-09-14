@@ -2,6 +2,7 @@ package com.csse3200.game.areas.terrain.configs;
 
 import com.badlogic.gdx.math.GridPoint2;
 import com.csse3200.game.components.item.Item;
+import com.csse3200.game.components.level.CheckpointComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.EnemyConfig;
 import com.csse3200.game.entities.factories.ItemFactory;
@@ -29,6 +30,7 @@ public class LevelConfig {
   protected PlatformConfig[] floors;
   protected Map<GridPoint2, EnemyConfig> enemies;
   protected Map<GridPoint2, Item> items;
+  protected CheckpointConfig[] checkpoints;
 
   protected GridPoint2 playerSpawn;
   protected GridPoint2 nextLevelTriggerSpawn;
@@ -59,6 +61,7 @@ public class LevelConfig {
     createWinCondition();
     createLevelTrigger();
     createItems();
+    createCheckpoints();
 
     return entities;
   }
@@ -70,6 +73,19 @@ public class LevelConfig {
    */
   public GridPoint2 getPlayerSpawn() {
     return playerSpawn;
+  }
+
+  /**
+   * Public getter to access checkpoint components for levels
+   *
+   * @return an ArrayList of the CheckpointComponents of a level
+   */
+  public ArrayList<CheckpointComponent> getCheckpoints() {
+    ArrayList<CheckpointComponent> checkpointComponents = new ArrayList<>();
+    for (CheckpointConfig c : checkpoints) {
+      checkpointComponents.add(c.getEntity().getComponent(CheckpointComponent.class));
+    }
+    return checkpointComponents;
   }
 
   /**
@@ -241,6 +257,18 @@ public class LevelConfig {
     for (Map.Entry<GridPoint2, Item> i : items.entrySet()) {
       Entity item = ItemFactory.createItem(i.getValue());
       entities.add(new SpawnData(i.getKey(), item));
+    }
+  }
+
+  /**
+   * Creates all checkpoints for the level and adds them to the entities map for the level to spawn.
+   */
+  private void createCheckpoints() {
+    for (CheckpointConfig c : checkpoints) {
+      Entity checkpoint = new Entity();
+      checkpoint.addComponent(new CheckpointComponent(false, c.getPosition()));
+      c.setEntity(checkpoint);
+      entities.add(new SpawnData(c.getPosition(), checkpoint));
     }
   }
 }

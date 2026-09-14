@@ -6,6 +6,7 @@ import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.inventory.BackpackDisplay;
 import com.csse3200.game.components.inventory.InventoryBarDisplay;
 import com.csse3200.game.components.inventory.InventoryComponent;
+import com.csse3200.game.components.level.RespawnComponent;
 import com.csse3200.game.components.player.*;
 import com.csse3200.game.components.player.BowComponent;
 import com.csse3200.game.components.player.GrappleComponent;
@@ -82,7 +83,8 @@ public class PlayerFactory {
             .addComponent(new PlayerStatsDisplay())
             .addComponent(new GrappleComponent())
             .addComponent(new GrappleRenderComponent())
-            .addComponent(new PlayerAnimationController());
+            .addComponent(new PlayerAnimationController())
+            .addComponent(new RespawnComponent());
 
     PhysicsUtils.setScaledCollider(player, 0.6f, 0.3f);
     player.getComponent(ColliderComponent.class).setDensity(1.5f);

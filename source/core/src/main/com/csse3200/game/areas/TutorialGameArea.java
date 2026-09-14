@@ -3,6 +3,7 @@ package com.csse3200.game.areas;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
+// import com.csse3200.game.areas.terrain.PlatformConfig;
 import com.csse3200.game.areas.terrain.TerrainFactory;
 import com.csse3200.game.areas.terrain.TerrainFactory.TerrainType;
 import com.csse3200.game.areas.terrain.configs.levelconfigs.LevelTutorialConfig;
@@ -11,18 +12,36 @@ import com.csse3200.game.components.gamearea.GameAreaDisplay;
 import com.csse3200.game.components.player.KeyboardPlayerInputComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.EnemyFactory;
+// import com.csse3200.game.entities.factories.ItemFactory;
+// import com.csse3200.game.entities.factories.NPCFactory;
 import com.csse3200.game.entities.factories.ObstacleFactory;
 import com.csse3200.game.entities.factories.PlayerFactory;
 import com.csse3200.game.rendering.BackgroundRenderComponent;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.utils.math.GridPoint2Utils;
+//// import com.csse3200.game.utils.math.RandomUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /** Tutorial area for the game with platforms, enemies, and a player. */
 public class TutorialGameArea extends GameArea {
   private static final Logger logger = LoggerFactory.getLogger(TutorialGameArea.class);
+
+  /*
+  private static final PlatformConfig[] floors = {
+    // borders
+    new PlatformConfig(new GridPoint2(0, 0), 100, 1, 0),
+    new PlatformConfig(new GridPoint2(0, 22), 50, 5, 0),
+    new PlatformConfig(new GridPoint2(50, 25), 40, 5, 1),
+    new PlatformConfig(new GridPoint2(0, 0), 1, 30, 1),
+    new PlatformConfig(new GridPoint2(90, 0), 1, 30, 1),
+  };
+  */
+
+  private static final GridPoint2[] spikes = {
+    new GridPoint2(10, 2), new GridPoint2(20, 2), new GridPoint2(35, 2)
+  };
 
   private static final GridPoint2[] skeletonWarriorSpawnLocations =
       new GridPoint2[] {
@@ -33,6 +52,18 @@ public class TutorialGameArea extends GameArea {
       new GridPoint2[] {
         new GridPoint2(60, 1), new GridPoint2(57, 10),
       };
+
+  private static final GridPoint2 PLAYER_SPAWN = new GridPoint2(1, 4);
+  private static final GridPoint2 ROPE_ARROW_SPAWN = new GridPoint2(2, 4);
+  private static final GridPoint2 STANDARD_ARROW_SPAWN = new GridPoint2(4, 4);
+  private static final GridPoint2 FIRE_ARROW_SPAWN = new GridPoint2(6, 4);
+  private static final GridPoint2 COLD_ARROW_SPAWN = new GridPoint2(8, 4);
+  private static final GridPoint2 HEALTH_POTION_SPAWN = new GridPoint2(10, 4);
+
+  private static final int STANDARD_ARROW_QUANTITY = 5;
+  private static final int FIRE_ARROW_QUANTITY = 5;
+  private static final int COLD_ARROW_QUANTITY = 5;
+  private static final int HEALTH_POTION_QUANTITY = 3;
 
   private static final float WALL_WIDTH = 0.1f;
   private Vector2 worldBounds;
@@ -47,6 +78,8 @@ public class TutorialGameArea extends GameArea {
     "images/DevGridTile.png",
     "images/Tile_2.png",
     "images/platform.png",
+    "images/hook_platform.png",
+    "images/tall_platform.png",
     "images/box_boy_leaf.png",
     "images/spike.png",
     "images/tree.png",
@@ -119,8 +152,13 @@ public class TutorialGameArea extends GameArea {
     spawnBackground();
     spawnConfigEntities();
     player = spawnPlayer();
+    //// spawnItems(); // test items
+    //// spawnWinCondition();
     spawnSkeletonArcher();
     spawnSkeletonWarrior();
+    //// spawnTestEnemyNearPlayer(); // Temporary enemy near player spawn for quick HUD/flicker
+    // testing
+    // testing
     // spawnTestWinCondition(); // Temporary test win condition near player spawn for quick testing
 
     // playMusic();
@@ -155,7 +193,7 @@ public class TutorialGameArea extends GameArea {
     // Complete original background image
     backgroundComponent.addLayer(
         "images/parallax/original_background.png",
-        new Vector2(0.10f, 0f), // Parallax factor
+        new Vector2(0.1f, 0f), // Parallax factor
         30f,
         15f,
         new Vector2(0f, 3.5f), // Positional offset
@@ -163,6 +201,7 @@ public class TutorialGameArea extends GameArea {
         new Vector2(0f, 0f), // Independent velocity
         false);
 
+    // Complete clouds image
     backgroundComponent.addLayer(
         "images/parallax/Clouds.png",
         new Vector2(0.1f, 0f), // Parallax factor
@@ -197,6 +236,19 @@ public class TutorialGameArea extends GameArea {
     spawnEntityAt(
         ObstacleFactory.createWall(WALL_WIDTH, worldBounds.y), GridPoint2Utils.ZERO, false, false);
 
+    // Right wall
+    /*
+    spawnEntityAt(
+        ObstacleFactory.createWall(
+            WALL_WIDTH,
+            worldBounds.y
+        ),
+        new GridPoint2(tileBounds.x, 0),
+        false,
+        false
+    );
+    */
+
     // Top wall
     spawnEntityAt(
         ObstacleFactory.createWall(worldBounds.x, WALL_WIDTH),
@@ -205,13 +257,15 @@ public class TutorialGameArea extends GameArea {
         false);
 
     // Bottom wall
-    spawnEntityAt(
-        ObstacleFactory.createWall(worldBounds.x, WALL_WIDTH), GridPoint2Utils.ZERO, false, false);
+    // spawnEntityAt(
+    //    ObstacleFactory.createWall(worldBounds.x, WALL_WIDTH), GridPoint2Utils.ZERO, false,
+    // false);
   }
 
   private Entity spawnPlayer() {
     Entity newPlayer = PlayerFactory.createPlayer();
     newPlayer.getEvents().addListener("grappleRequested", this::checkSuccessfulGrapple);
+    newPlayer.getEvents().addListener("respawnAtCheckpoint", this::respawn);
 
     KeyboardPlayerInputComponent input = newPlayer.getComponent(KeyboardPlayerInputComponent.class);
     if (input != null) {
@@ -222,12 +276,24 @@ public class TutorialGameArea extends GameArea {
     return newPlayer;
   }
 
+  /*
+  private void spawnWinCondition() {
+    Entity winCon = ObstacleFactory.createWinConEntity();
+    spawnEntityAt(winCon, new GridPoint2(80, 18), true, true);
+  }
   // Temporary test win condition near player spawn for quick testing
   private void spawnTestWinCondition() {
     // Temporary test win condition near player spawn for quick testing
     Entity testWinCon = ObstacleFactory.createWinConEntity();
     spawnEntityAt(testWinCon, new GridPoint2(3, 4), true, true);
   }
+
+  // Temporary enemy near player spawn for quick HUD/flicker testing
+  private void spawnTestEnemyNearPlayer() {
+    Entity testEnemy = EnemyFactory.createSkeletonWarrior(player);
+    spawnEntityAt(testEnemy, new GridPoint2(12, 4), true, true);
+  }
+  */
 
   private void spawnSkeletonWarrior() {
     for (GridPoint2 spawnLocation : skeletonWarriorSpawnLocations) {
@@ -286,4 +352,24 @@ public class TutorialGameArea extends GameArea {
     ServiceLocator.getResourceService().getAsset(backgroundMusic, Music.class).stop();
     this.unloadAssets();
   }
+
+  /** generate items */
+  /*
+  private void spawnItems() {
+    spawnEntityAt(ItemFactory.createRopeArrow(), ROPE_ARROW_SPAWN, true, false);
+
+    spawnEntityAt(
+        ItemFactory.createStandardArrow(STANDARD_ARROW_QUANTITY),
+        STANDARD_ARROW_SPAWN,
+        true,
+        false);
+
+    spawnEntityAt(
+        ItemFactory.createHealthPotion(HEALTH_POTION_QUANTITY), HEALTH_POTION_SPAWN, true, false);
+
+    spawnEntityAt(ItemFactory.createFireArrow(FIRE_ARROW_QUANTITY), FIRE_ARROW_SPAWN, true, false);
+
+    spawnEntityAt(ItemFactory.createColdArrow(COLD_ARROW_QUANTITY), COLD_ARROW_SPAWN, true, false);
+  }
+  */
 }

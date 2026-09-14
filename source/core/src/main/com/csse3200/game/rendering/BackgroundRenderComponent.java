@@ -57,6 +57,8 @@ public class BackgroundRenderComponent extends RenderComponent {
    * Creates a multi-layer parallax background.
    *
    * @param camera camera used to calculate parallax movement
+   * @param backgroundPos the position of the background
+   * @param worldBounds the maximum x and y values of the world bounds
    */
   public BackgroundRenderComponent(
       CameraComponent camera, Vector2 backgroundPos, Vector2 worldBounds) {
@@ -68,11 +70,14 @@ public class BackgroundRenderComponent extends RenderComponent {
   /**
    * Adds a parallax layer with a custom size and vertical position.
    *
-   * @param texturePath internal path of the texture
-   * @param parallaxFactor controls how much the layer moves
-   * @param width width of the layer in world units
-   * @param height height of the layer in world units
-   * @param offset position relative to the background entity
+   * @param texturePath path to the texture
+   * @param parallaxFactor controls how much the layer moves relative to player movement
+   * @param width width of the layer
+   * @param height height of the layer
+   * @param offset positional offset relative to backgroundPos
+   * @param backgroundType the type of background this layer is
+   * @param velocity the independent velocity of the layer
+   * @param repeat whether or not this layer should repeat horizontally
    */
   public void addLayer(
       String texturePath,
@@ -91,35 +96,61 @@ public class BackgroundRenderComponent extends RenderComponent {
             texture, parallaxFactor, width, height, offset, backgroundType, velocity, repeat));
   }
 
-  /**
-   * Adds a parallax layer using its texture dimensions.
-   *
-   * @param texture texture for the layer
-   * @param parallaxFactor controls how much the layer moves
-   * @param width width of the layer in world units
-   * @param height height of the layer in world units
-   * @param offset position relative to the background entity
-   */
-  public void addLayer(
-      Texture texture,
-      Vector2 parallaxFactor,
-      float width,
-      float height,
-      Vector2 offset,
-      BackgroundType backgroundType,
-      Vector2 velocity,
-      boolean repeat) {
-
-    // Texture texture = ServiceLocator.getResourceService().getAsset(texturePath, Texture.class);
-
-    layers.add(
-        new ParallaxLayer(
-            texture, parallaxFactor, width, height, offset, backgroundType, velocity, repeat));
-  }
-
   /** Scale is controlled individually for each layer. */
   public void scaleEntity() {
     // Layer sizes are defined when they are added.
+  }
+
+  /**
+   * Calculates incrementing position for layers with non-zero velocity
+   *
+   * @param layer the layer to get new position for
+   */
+  private void getPosUpdate(ParallaxLayer layer) {
+    // Since this is called every frame, changing frame rates will change speed
+    layer.position.x += layer.velocity.x / 100;
+    layer.position.y += layer.velocity.y / 100;
+  }
+
+  /**
+   * Get position for layers whose position does not depend on player movement e.g. sky, super
+   * distant objects
+   *
+   * @param layer the layer to calculate position for
+   * @param cameraPos the position of the camera
+   * @param position the current position of the layer
+   * @return updated position of the layer
+   */
+  private Vector2 getIndependentPosition(ParallaxLayer layer, Vector3 cameraPos, Vector2 position) {
+    float cameraX = cameraPos.x;
+    float cameraY = cameraPos.y;
+    getPosUpdate(layer);
+
+    float backgroundX = cameraX + layer.offset.x;
+    float backgroundY = cameraY + layer.offset.y + position.y + layer.position.y;
+
+    return new Vector2(backgroundX, backgroundY);
+  }
+
+  /**
+   * Get position for layers whose position depends on player movement e.g. mountains, ground,
+   * ocean, clouds
+   *
+   * @param layer the layer to calculate position for
+   * @param cameraPos the position of the camera
+   * @param position the current position of the layer
+   * @return updated position of the layer
+   */
+  private Vector2 getDependentPosition(ParallaxLayer layer, Vector3 cameraPos, Vector2 position) {
+    float cameraX = cameraPos.x;
+    float cameraY = cameraPos.y;
+    getPosUpdate(layer);
+
+    float backgroundX =
+        position.x + layer.offset.x + cameraX * (1f - layer.parallaxFactor.x) + layer.position.x;
+    float backgroundY = position.y + layer.offset.y + cameraY + layer.position.y;
+
+    return new Vector2(backgroundX, backgroundY);
   }
 
   private void getPosUpdate(ParallaxLayer layer) {
@@ -159,23 +190,16 @@ public class BackgroundRenderComponent extends RenderComponent {
 
     Vector2 position = entity.getPosition();
     Vector3 cameraPos = camera.getCamera().position;
-    Vector2 layerPos = null;
-    float layerX;
-    float layerY;
 
-    /*
-     * Draw layers from back to front.
-     *
-     * Lower parallax factors move more slowly.
-     * Higher parallax factors move more quickly.
-     */
     for (ParallaxLayer layer : layers) {
+      Vector2 layerPos = null;
+      float layerX;
+      float layerY;
 
       switch (layer.backgroundType) {
         case INDEPENDENT:
           layerPos = getIndependentPosition(layer, cameraPos, position);
           break;
-
         case DEPENDENT:
           layerPos = getDependentPosition(layer, cameraPos, position);
           break;
@@ -183,17 +207,23 @@ public class BackgroundRenderComponent extends RenderComponent {
 
       layerX = layerPos.x;
       layerY = layerPos.y;
-
       batch.draw(layer.texture, layerX, layerY, layer.width, layer.height);
 
+      // Draw copies of repeating layers to fill screen
       if (layer.repeat) {
         float newLeftDrawPosX = layerX - layer.width;
         float newRightDrawPosX = layerX + layer.width;
 
+        // if left most x coord of layer >= left most x coord of background pos
+        // backgroundPos is used over worldBound.x since backgroundPos extends beyond worldBound
         while (newLeftDrawPosX >= backgroundPos.x - layer.width) {
           batch.draw(layer.texture, newLeftDrawPosX, layerY, layer.width, layer.height);
           newLeftDrawPosX -= layer.width;
         }
+
+        // if right most x coord of layer <= right of worldBound + extra you can see
+        // NOTE: this relies on backgroudPos starting at a negative value, which will always be
+        // true if player starts at x = 0
         while (newRightDrawPosX <= worldBounds.x - backgroundPos.x) {
           batch.draw(layer.texture, newRightDrawPosX, layerY, layer.width, layer.height);
           newRightDrawPosX += layer.width;

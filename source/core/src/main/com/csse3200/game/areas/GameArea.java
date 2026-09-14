@@ -9,6 +9,7 @@ import com.csse3200.game.areas.terrain.configs.SpawnData;
 import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.components.level.ActivatableComponent;
 import com.csse3200.game.components.level.LevelTriggerComponent;
+import com.csse3200.game.components.level.CheckpointComponent;
 import com.csse3200.game.components.level.PlatformGrappleComponent;
 import com.csse3200.game.components.level.TriggerButtonComponent;
 import com.csse3200.game.entities.Entity;
@@ -185,6 +186,15 @@ public abstract class GameArea implements Disposable {
     return platform;
   }
 
+  public TerrainComponent getTerrain() {
+    return terrain;
+  }
+
+  public enum BackgroundType {
+    INDEPENDENT,
+    DEPENDENT
+  }
+
   /**
    * Public method for grapples to check the end of the raycast position hits a valid side of a
    * platform to confirm a successful grapple location was hit
@@ -223,5 +233,22 @@ public abstract class GameArea implements Disposable {
       boolean newActive = !activate.isActive();
       activate.setActive(newActive);
     }
+  /** Public method to respawn the player at the last collected checkpoint upon an event trigger. */
+  public void respawn() {
+    ArrayList<CheckpointComponent> checkpoints = config.getCheckpoints();
+    // If no checkpoints collected use playerSpawn as respawnPoint
+    GridPoint2 respawnPoint = config.getPlayerSpawn();
+
+    // Get last collected checkpoint
+    // Note: will choose last active checkpoint in same order they are instantiated
+    // in {level}Config
+    for (CheckpointComponent checkpoint : checkpoints) {
+      if (checkpoint.isActive()) {
+        respawnPoint = checkpoint.getPosition();
+      }
+    }
+    float x = respawnPoint.x;
+    float y = respawnPoint.y;
+    player.setPosition(x, y);
   }
 }

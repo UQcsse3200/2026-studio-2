@@ -77,12 +77,43 @@ public class ObstacleFactory {
         .addComponent(new PhysicsComponent())
         .addComponent(new ColliderComponent().setLayer(PhysicsLayer.GROUND))
         .addComponent(new PlatformGrappleComponent(config.grappleSides));
+    
+  public static Entity createPlatform(int grappleSides) {
+    return createPlatform(grappleSides, false);
+  }
+
+  /**
+   * Creates a platform entity.
+   *
+   * @param grappleSides sides the platform can be grappled from
+   * @param tall use the tall platform art instead of stretching the default wide plank onto a
+   *     tall/square shape
+   * @return platform entity
+   */
+    /*
+  public static Entity createPlatform(int grappleSides, boolean tall) {
+    String texturePath;
+    if (tall) {
+      texturePath = "images/tall_platform.png";
+    } else if (grappleSides != 0) {
+      texturePath = "images/hook_platform.png";
+    } else {
+      texturePath = "images/platform.png";
+    }
+
+    Entity platform =
+        new Entity()
+            .addComponent(new TextureRenderComponent(texturePath))
+            .addComponent(new PhysicsComponent())
+            .addComponent(new ColliderComponent().setLayer(PhysicsLayer.GROUND))
+            .addComponent(new PlatformGrappleComponent(grappleSides));
 
     platform.getComponent(PhysicsComponent.class).setBodyType(BodyType.StaticBody);
 
     return platform;
   }
-
+  */
+    
   /**
    * Creates a normal moving platform.
    *
@@ -308,7 +339,7 @@ public class ObstacleFactory {
   }
 
   /**
-   * Creates a spike hazard entity with custom rotation.
+   * Creates a default upward-facing spike hazard entity.
    *
    * @param config configuration object for the spike
    * @return spike entity
@@ -331,7 +362,7 @@ public class ObstacleFactory {
 
     spike.getComponent(PhysicsComponent.class).setBodyType(BodyType.KinematicBody);
 
-    // Scale slightly larger to close gaps.
+    // Scale slightly larger to close grid gaps
     spike.setScale(1.25f, 1.25f);
 
     PhysicsUtils.setScaledCollider(spike, 0.8f, 0.5f);

@@ -85,10 +85,6 @@ public class PlayerActions extends Component {
         .raycast(rayStart, rayEnd, PhysicsLayer.SOLID, hit);
   }
 
-  void togglePause() {
-    paused = !paused;
-  }
-
   /**
    * Moves the player towards a given direction.
    *

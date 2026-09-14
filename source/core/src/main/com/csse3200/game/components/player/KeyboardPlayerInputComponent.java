@@ -12,6 +12,8 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.input.InputComponent;
 import com.csse3200.game.physics.components.PhysicsComponent;
+import com.csse3200.game.services.ServiceLocator;
+import com.csse3200.game.utils.math.Vector2Utils;
 
 /** Input handler for player keyboard and mouse controls. */
 public class KeyboardPlayerInputComponent extends InputComponent {
@@ -31,6 +33,12 @@ public class KeyboardPlayerInputComponent extends InputComponent {
     super(5);
   }
 
+  @Override
+  public void create() {
+    super.create();
+    entity.getEvents().addListener("togglePause", this::triggerWalkEvent);
+  }
+
   /**
    * Sets the camera used to convert screen coordinates to world-space aim directions.
    *
@@ -48,6 +56,15 @@ public class KeyboardPlayerInputComponent extends InputComponent {
    */
   @Override
   public boolean keyDown(int keycode) {
+    if (ServiceLocator.getEntityService().getPaused()
+        && !(keycode == Keys.A
+            || keycode == Keys.D
+            || keycode == Keys.LEFT
+            || keycode == Keys.RIGHT
+            || keycode == Keys.SHIFT_LEFT
+            || keycode == Keys.SHIFT_RIGHT)) {
+      return false;
+    }
     switch (keycode) {
       // Hotbar number keys
       case Keys.NUM_1:
@@ -86,12 +103,16 @@ public class KeyboardPlayerInputComponent extends InputComponent {
       case Keys.A:
       case Keys.LEFT:
         keysHeld[LEFT] = true;
-        triggerWalkEvent();
+        if (!ServiceLocator.getEntityService().getPaused()) {
+          triggerWalkEvent();
+        }
         return true;
       case Keys.D:
       case Keys.RIGHT:
         keysHeld[RIGHT] = true;
-        triggerWalkEvent();
+        if (!ServiceLocator.getEntityService().getPaused()) {
+          triggerWalkEvent();
+        }
         return true;
       case Keys.SPACE:
         triggerJumpEvent();
@@ -99,7 +120,9 @@ public class KeyboardPlayerInputComponent extends InputComponent {
       case Keys.SHIFT_LEFT:
       case Keys.SHIFT_RIGHT:
         sprintHeld = true;
-        triggerSprintEvent();
+        if (!ServiceLocator.getEntityService().getPaused()) {
+          triggerSprintEvent();
+        }
         return true;
       case Keys.E:
         triggerAttackOrItemUse();
@@ -127,6 +150,9 @@ public class KeyboardPlayerInputComponent extends InputComponent {
         keysHeld[DOWN] = true;
         triggerWalkEvent();
         return true;
+      case Keys.ESCAPE:
+        triggerWalkEvent();
+        triggerSprintEvent();
       default:
         return false;
     }
@@ -144,12 +170,16 @@ public class KeyboardPlayerInputComponent extends InputComponent {
       case Keys.A:
       case Keys.LEFT:
         keysHeld[LEFT] = false;
-        triggerWalkEvent();
+        if (!ServiceLocator.getEntityService().getPaused()) {
+          triggerWalkEvent();
+        }
         return true;
       case Keys.D:
       case Keys.RIGHT:
         keysHeld[RIGHT] = false;
-        triggerWalkEvent();
+        if (!ServiceLocator.getEntityService().getPaused()) {
+          triggerWalkEvent();
+        }
         return true;
       case Keys.W:
       case Keys.UP:
@@ -164,7 +194,9 @@ public class KeyboardPlayerInputComponent extends InputComponent {
       case Keys.SHIFT_LEFT:
       case Keys.SHIFT_RIGHT:
         sprintHeld = false;
-        triggerSprintEvent();
+        if (!ServiceLocator.getEntityService().getPaused()) {
+          triggerSprintEvent();
+        }
         return true;
       case Keys.E:
         attackHeld = false;
@@ -186,7 +218,7 @@ public class KeyboardPlayerInputComponent extends InputComponent {
    */
   @Override
   public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-    if (button != Buttons.LEFT) {
+    if (button != Buttons.LEFT || ServiceLocator.getEntityService().getPaused()) {
       return false;
     }
     Vector2 aimDirection = getAimDirection(screenX, screenY);
