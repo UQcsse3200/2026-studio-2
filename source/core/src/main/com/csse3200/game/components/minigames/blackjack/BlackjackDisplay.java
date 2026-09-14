@@ -266,6 +266,11 @@ public class BlackjackDisplay extends UIComponent {
   @Override
   public void draw(SpriteBatch batch) {}
 
+  /** Brings the Blackjack UI above the blurred backdrop. */
+  public void toFront() {
+    table.toFront();
+  }
+
   @Override
   public float getZIndex() {
     return Z_INDEX;

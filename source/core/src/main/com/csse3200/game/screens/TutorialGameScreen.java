@@ -13,6 +13,8 @@ import com.csse3200.game.components.gamearea.PerformanceDisplay;
 import com.csse3200.game.components.maingame.MainGameActions;
 import com.csse3200.game.components.maingame.MainGameExitDisplay;
 import com.csse3200.game.components.maingame.PauseMenuDisplay;
+import com.csse3200.game.components.minigames.blackjack.BlackjackConfig;
+import com.csse3200.game.components.minigames.blackjack.BlackjackOverlay;
 import com.csse3200.game.components.minigames.spinthewheel.SpinTheWheelOverlay;
 import com.csse3200.game.components.minigames.spinthewheel.WheelConfig;
 import com.csse3200.game.entities.Entity;
@@ -54,6 +56,7 @@ public class TutorialGameScreen extends ScreenAdapter {
   private final Renderer renderer;
   private final PhysicsEngine physicsEngine;
   private final SpinTheWheelOverlay wheelOverlay;
+  private final BlackjackOverlay blackjackOverlay;
   private Entity player;
   private static final String gameplayMusic = "sounds/gameplay_bg.ogg";
   private static final String[] gameplayMusicFiles = {gameplayMusic};
@@ -102,6 +105,7 @@ public class TutorialGameScreen extends ScreenAdapter {
     renderer.getCamera().setTarget(player);
     player.getEvents().addListener("death", this::onPlayerDeath);
     wheelOverlay = new SpinTheWheelOverlay(WheelConfig.ITEMS, player);
+    blackjackOverlay = new BlackjackOverlay();
   }
 
   private void onPlayerDeath() {
@@ -116,10 +120,15 @@ public class TutorialGameScreen extends ScreenAdapter {
       wheelOverlay.request();
     }
 
+    if (Gdx.input.isKeyJustPressed(Input.Keys.L)) {
+      blackjackOverlay.request();
+    }
+
     physicsEngine.update();
     ServiceLocator.getEntityService().update();
     renderer.render();
     wheelOverlay.afterRender();
+    blackjackOverlay.afterRender();
   }
 
   @Override
@@ -177,6 +186,7 @@ public class TutorialGameScreen extends ScreenAdapter {
                 "images/Buttons/exit_up_btn.png",
                 "images/Buttons/exit_down_btn.png"));
     paths.addAll(List.of(WheelConfig.TEXTURES));
+    paths.addAll(List.of(BlackjackConfig.TEXTURES));
     return paths.toArray(new String[0]);
   }
 
