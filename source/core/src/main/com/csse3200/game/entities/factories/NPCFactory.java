@@ -8,6 +8,7 @@ import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.PoisonStatsComponent;
 import com.csse3200.game.components.TouchAttackComponent;
 import com.csse3200.game.components.npc.GhostAnimationController;
+import com.csse3200.game.components.npc.ShopNpcComponent;
 import com.csse3200.game.components.tasks.ChaseTask;
 import com.csse3200.game.components.tasks.WanderTask;
 import com.csse3200.game.entities.Entity;
@@ -22,6 +23,7 @@ import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.physics.components.PhysicsMovementComponent;
 import com.csse3200.game.rendering.AnimationRenderComponent;
+import com.csse3200.game.rendering.TextureRenderComponent;
 import com.csse3200.game.services.ServiceLocator;
 
 /**
@@ -35,6 +37,9 @@ import com.csse3200.game.services.ServiceLocator;
  * similar characteristics.
  */
 public class NPCFactory {
+  /** Placeholder shopkeeper sprite until dedicated merchant art is added. */
+  public static final String SHOPKEEPER_TEXTURE = "images/Greek Statues Pack I/Leonid.png";
+
   private static final NPCConfigs configs =
       FileLoader.readClass(NPCConfigs.class, "configs/NPCs.json");
 
@@ -114,6 +119,24 @@ public class NPCFactory {
 
     ghostKing.getComponent(AnimationRenderComponent.class).scaleEntity();
     return ghostKing;
+  }
+
+  /**
+   * Creates a stationary shopkeeper the player can interact with to open the shop page.
+   *
+   * <p>The shopkeeper has no physics collider, so the player can walk through it.
+   *
+   * @return shopkeeper entity
+   */
+  public static Entity createShopkeeper() {
+    Entity shopkeeper =
+        new Entity()
+            .addComponent(new TextureRenderComponent(SHOPKEEPER_TEXTURE))
+            .addComponent(new ShopNpcComponent());
+
+    shopkeeper.getComponent(TextureRenderComponent.class).scaleEntity();
+    shopkeeper.scaleHeight(1.5f);
+    return shopkeeper;
   }
 
   /**

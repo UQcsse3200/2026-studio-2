@@ -16,7 +16,7 @@ class ArrowTypeTest {
   void shouldResolveEachWedgeFromItsDirection() {
     assertEquals(ArrowType.NORMAL, ArrowType.forDirection(new Vector2(0f, FAR)));
     assertEquals(ArrowType.FIRE, ArrowType.forDirection(new Vector2(FAR, 0f)));
-    assertEquals(ArrowType.ICE, ArrowType.forDirection(new Vector2(0f, -FAR)));
+    assertEquals(ArrowType.COLD, ArrowType.forDirection(new Vector2(0f, -FAR)));
     assertEquals(ArrowType.POISON, ArrowType.forDirection(new Vector2(-FAR, 0f)));
   }
 

@@ -6,7 +6,7 @@ import com.badlogic.gdx.math.Vector2;
 public enum ArrowType {
   NORMAL("Normal"),
   FIRE("Fire"),
-  ICE("Ice"),
+  COLD("Cold"),
   POISON("Poison");
 
   /** Pointer distance from the wheel centre below which nothing is pointed at. */

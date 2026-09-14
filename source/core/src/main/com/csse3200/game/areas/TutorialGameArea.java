@@ -104,6 +104,7 @@ public class TutorialGameArea extends GameArea {
       };
 
   private static final GridPoint2 PLAYER_SPAWN = new GridPoint2(1, 4);
+  private static final GridPoint2 SHOPKEEPER_SPAWN = new GridPoint2(11, 1);
   private static final GridPoint2 ROPE_ARROW_SPAWN = new GridPoint2(2, 4);
   private static final GridPoint2 STANDARD_ARROW_SPAWN = new GridPoint2(4, 4);
   private static final GridPoint2 FIRE_ARROW_SPAWN = new GridPoint2(6, 4);
@@ -160,12 +161,14 @@ public class TutorialGameArea extends GameArea {
     // Enemy textures
     "images/skeleton_warrior.png",
     "images/skeleton_archer.png",
+    NPCFactory.SHOPKEEPER_TEXTURE,
     "images/arrow.png",
     "images/rope_arrow.png",
     "images/fire_arrow.png",
     "images/cold_arrow.png",
     "images/fireArr_animation.png",
     "images/coldArr_animation.png",
+    "images/heart.png",
     "images/sword.png",
     "images/spear.png",
     "images/health_potion.png",
@@ -221,6 +224,7 @@ public class TutorialGameArea extends GameArea {
     spawnSpikes();
 
     player = spawnPlayer();
+    spawnShopkeeper();
     spawnItems(); // test items
     spawnWinCondition();
     spawnSkeletonArcher();
@@ -402,6 +406,11 @@ public class TutorialGameArea extends GameArea {
     spawnEntityAt(newPlayer, PLAYER_SPAWN, true, true);
 
     return newPlayer;
+  }
+
+  private void spawnShopkeeper() {
+    Entity shopkeeper = NPCFactory.createShopkeeper();
+    spawnEntityAt(shopkeeper, SHOPKEEPER_SPAWN, true, false);
   }
 
   private void spawnWinCondition() {
