@@ -39,12 +39,13 @@ public class TerminalDisplay extends UIComponent {
       label.setVisible(false);
     }
   }
-    private void applyStyle() {
-        // Clone the style so we don't mutate a shared skin-wide style instance
-        Label.LabelStyle style = new Label.LabelStyle(label.getStyle());
-        style.fontColor = Color.WHITE;
-        label.setStyle(style);
-    }
+
+  private void applyStyle() {
+    // Clone the style so we don't mutate a shared skin-wide style instance
+    Label.LabelStyle style = new Label.LabelStyle(label.getStyle());
+    style.fontColor = Color.WHITE;
+    label.setStyle(style);
+  }
 
   @Override
   public float getZIndex() {
