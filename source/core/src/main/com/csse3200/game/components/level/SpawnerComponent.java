@@ -16,6 +16,7 @@ public class SpawnerComponent extends Component {
   private final int maxSpawns; // specify -1 for infinite spawning
   private int spawnCounter;
   private boolean active;
+  private ACTIVATION_MODE mode;
 
   /**
    * @param spawnableEntities all viable entities that can be spawned by this component. the
@@ -31,11 +32,19 @@ public class SpawnerComponent extends Component {
       ArrayList<Supplier<Entity>> spawnableEntities,
       float spawnInterval,
       int maxSpawns,
-      boolean active) {
+      boolean active,
+      ACTIVATION_MODE mode) {
     this.spawnableEntities = spawnableEntities;
     this.spawnInterval = spawnInterval;
     this.maxSpawns = maxSpawns;
     this.active = active;
+    this.mode = mode;
+  }
+
+  @Override
+  public void create() {
+    super.create();
+    entity.getEvents().addListener("activatedMapComponent", this::handleActivation);
   }
 
   @Override
@@ -53,18 +62,49 @@ public class SpawnerComponent extends Component {
     }
   }
 
-  /** Spawns a random potential child from the list of spawnableEntities and increments how many */
+  /** Details how the activation handler should behave when receiving an activation attempt */
+  public enum ACTIVATION_MODE {
+    NORMAL,
+    TOGGLE
+  }
+
+  /**
+   * Spawns a random potential child from the list of spawnableEntities and increments how many have
+   * been spawned total
+   */
   private void spawnChild() {
     // get a random child from the list of potential spawn entities
     int randIndex = (int) (Math.random() * spawnableEntities.size());
     Supplier<Entity> child = spawnableEntities.get(randIndex);
     Entity childEntity = child.get();
 
-    // set the position to the same position as this entity's position
-    Vector2 pos = entity.getPosition();
-    childEntity.setPosition(pos);
+    // set the spawned child's position to the same position as this entity's position
+    // to do this properly, we need to spawn it in the middle of the parent entity by figuring out
+    // the offset from the bottom left of the child to the center of the parent
+    Vector2 centerPosition = entity.getCenterPosition();
+    float childX = centerPosition.x - (childEntity.getScale().x / 2f);
+    float childY = centerPosition.y - (childEntity.getScale().y / 2f);
+    childEntity.setPosition(childX, childY);
 
     entity.getEvents().trigger("spawnEntity", childEntity);
     spawnCounter++;
+  }
+
+  /**
+   * Responds to being activated by this entity's ActivatableComponent
+   *
+   * @param activated the new activation state to apply according to the mode specified
+   */
+  private void handleActivation(boolean activated) {
+    switch (mode) {
+      case NORMAL:
+        active = activated;
+        break;
+      case TOGGLE:
+        active = !active;
+        break;
+      default:
+        break;
+    }
   }
 }
