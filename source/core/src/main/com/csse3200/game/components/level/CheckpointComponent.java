@@ -10,6 +10,7 @@ public class CheckpointComponent extends Component {
 
   private boolean collected;
   private GridPoint2 position;
+  private Entity player = null;
 
   /**
    * Constructor for a new CheckpointComponent
@@ -41,20 +42,19 @@ public class CheckpointComponent extends Component {
   /** Check if player position comes in range of checkpoint position. */
   @Override
   public void update() {
-    Entity player = null;
-    for (Entity entity : ServiceLocator.getEntityService().getEntities()) {
-      if (entity.getComponent(PlayerActions.class) != null) {
-        player = entity;
-        break;
+    if (player == null) {
+      for (Entity entity : ServiceLocator.getEntityService().getEntities()) {
+        if (entity.getComponent(PlayerActions.class) != null) {
+          player = entity;
+          break;
+        }
       }
     }
-    if (player != null) {
-      float playerPosX = player.getPosition().x;
-      float playerPosY = player.getPosition().y;
-      if (position.x - 1 < playerPosX && position.x + 1 > playerPosX) {
-        if (position.y - 1 < playerPosY && position.y + 1 > playerPosY) {
-          activate();
-        }
+    float playerPosX = player.getPosition().x;
+    float playerPosY = player.getPosition().y;
+    if (position.x - 1 < playerPosX && position.x + 1 > playerPosX) {
+      if (position.y - 1 < playerPosY && position.y + 1 > playerPosY) {
+        activate();
       }
     }
   }
