@@ -55,9 +55,9 @@ public class ProjectileFactory {
                     arrowType.getSlowTime(),
                     poisonDps,
                     poisonDuration))
-            .addComponent(new ArrowRenderComponent());
+            .addComponent(new ArrowRenderComponent(arrowType.getProjectileTexturePath()));
 
-    arrow.setScale(0.5f, 0.1f);
+    arrow.setScale(0.6f, 0.2f);
     arrow.setPosition(position.x - arrow.getScale().x / 2f, position.y - arrow.getScale().y / 2f);
     return arrow;
   }

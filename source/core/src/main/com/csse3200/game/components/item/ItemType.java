@@ -224,6 +224,14 @@ public enum ItemType {
     return texturePath;
   }
 
+  public String getProjectileTexturePath() {
+    return switch (this) {
+      case FireArrow -> "images/fireArr_animation.png";
+      case ColdArrow -> "images/coldArr_animation.png";
+      default -> "images/arrow.png";
+    };
+  }
+
   public int getDamage() {
     return damage;
   }

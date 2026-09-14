@@ -164,6 +164,8 @@ public class TutorialGameArea extends GameArea {
     "images/rope_arrow.png",
     "images/fire_arrow.png",
     "images/cold_arrow.png",
+    "images/fireArr_animation.png",
+    "images/coldArr_animation.png",
     "images/sword.png",
     "images/spear.png",
     "images/health_potion.png",
