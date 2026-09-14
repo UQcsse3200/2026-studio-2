@@ -107,7 +107,7 @@ public class ObstacleFactory {
                     config.getSecondTarget(),
                     config.getSpeed()))
             .addComponent(new PlatformGrappleComponent(config.grappleSides))
-            .addComponent(new ActivatableComponent(config.activateId));
+            .addComponent(new ActivatableComponent(config.activateIds));
 
     physicsComponent.setBodyType(BodyType.KinematicBody);
     colliderComponent.setFriction(1.5f);
@@ -152,7 +152,7 @@ public class ObstacleFactory {
             .addComponent(new PhysicsComponent())
             .addComponent(new ColliderComponent().setLayer(PhysicsLayer.OBSTACLE))
             .addComponent(new PlatformGrappleComponent(config.grappleSides))
-            .addComponent(new ActivatableComponent(config.getId()))
+            .addComponent(new ActivatableComponent(config.getInitialState(), config.getIds()))
             .addComponent(new TriggerablePlatformComponent());
 
     platform.getComponent(PhysicsComponent.class).setBodyType(BodyType.StaticBody);
@@ -182,7 +182,7 @@ public class ObstacleFactory {
             .addComponent(animator)
             .addComponent(new PhysicsComponent())
             .addComponent(new HitboxComponent().setLayer(PhysicsLayer.NPC))
-            .addComponent(new ActivatableComponent(config.getId()))
+            .addComponent(new ActivatableComponent(config.getIds()))
             .addComponent(new TriggerButtonComponent())
             .addComponent(new RotatableMapComponent(config.getRotation()));
 
@@ -317,32 +317,46 @@ public class ObstacleFactory {
   }
 
   public static Entity createSpikyBallTrap(SpikyBallTrapConfig config) {
+    // calculate which direction this trap's balls should move based on the rotation configured
+    float rotation = config.getRotation();
+    Vector2 direction =
+        switch ((int) rotation) {
+          case 0 -> new Vector2(0, 1);
+          case 90 -> new Vector2(-1, 0);
+          case 180 -> new Vector2(0, -1);
+          case 270 -> new Vector2(1, 0);
+          default -> new Vector2(0, 0);
+        };
+
     Entity trap =
         new Entity()
             .addComponent(new DynamicTextureRenderComponent("images/spiky_ball_trap.png"))
             .addComponent(new PhysicsComponent().setBodyType(BodyType.StaticBody))
-            .addComponent(new ActivatableComponent(config.getId()))
+            .addComponent(new ActivatableComponent(config.getIds()))
             .addComponent(
                 new SpawnerComponent(
-                    new ArrayList<>(List.of(ObstacleFactory::createSpikyBall)),
+                    new ArrayList<>(List.of(() -> ObstacleFactory.createSpikyBall(direction))),
                     config.getSpawnInterval(),
                     -1,
-                    true))
+                    config.getInitialState(),
+                    config.getMode()))
             .addComponent(new RotatableMapComponent(config.getRotation()));
 
     return trap;
   }
 
-  public static Entity createSpikyBall() {
+  public static Entity createSpikyBall(Vector2 moveDirection) {
     Entity spikyBall =
         new Entity()
             .addComponent(new TextureRenderComponent("images/spiky_ball.png"))
             .addComponent(new PhysicsComponent().setBodyType(BodyType.DynamicBody))
-            .addComponent(new ColliderComponent().setLayer(PhysicsLayer.ALL))
-            .addComponent(new HitboxComponent().setLayer(PhysicsLayer.ALL))
+            .addComponent(new ColliderComponent().setLayer(PhysicsLayer.OBSTACLE))
+            .addComponent(new HitboxComponent().setLayer(PhysicsLayer.OBSTACLE))
             .addComponent(new CombatStatsComponent(100, 4))
             .addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER))
-            .addComponent(new SpikyBallComponent(new Vector2(-1, 0)));
+            .addComponent(new SpikyBallComponent(moveDirection));
+
+    spikyBall.setScale(0.75f, 0.75f);
 
     spikyBall.getComponent(PhysicsComponent.class).getBody().setGravityScale(0f);
 
