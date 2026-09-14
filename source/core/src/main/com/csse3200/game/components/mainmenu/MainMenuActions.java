@@ -29,7 +29,7 @@ public class MainMenuActions extends Component {
   /** Fades into the Tutorial Game screen. */
   private void onPlay() {
     logger.info("Play");
-    game.transitionTo(GdxGame.ScreenType.LEVEL_2_GAME);
+    game.transitionTo(GdxGame.ScreenType.TUTORIAL_GAME);
   }
 
   private void onContinue() {

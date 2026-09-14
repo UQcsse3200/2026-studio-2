@@ -56,17 +56,17 @@ public class TutorialGameArea extends GameArea {
         new GridPoint2(60, 1), new GridPoint2(57, 10),
       };
 
-  private static final GridPoint2 PLAYER_SPAWN = new GridPoint2(1, 4);
-  private static final GridPoint2 ROPE_ARROW_SPAWN = new GridPoint2(2, 4);
-  private static final GridPoint2 STANDARD_ARROW_SPAWN = new GridPoint2(4, 4);
-  private static final GridPoint2 FIRE_ARROW_SPAWN = new GridPoint2(6, 4);
-  private static final GridPoint2 COLD_ARROW_SPAWN = new GridPoint2(8, 4);
-  private static final GridPoint2 HEALTH_POTION_SPAWN = new GridPoint2(10, 4);
+  public static final GridPoint2 PLAYER_SPAWN = new GridPoint2(1, 4);
+  public static final GridPoint2 ROPE_ARROW_SPAWN = new GridPoint2(2, 3);
+  public static final GridPoint2 STANDARD_ARROW_SPAWN = new GridPoint2(4, 3);
+  public static final GridPoint2 FIRE_ARROW_SPAWN = new GridPoint2(6, 3);
+  public static final GridPoint2 COLD_ARROW_SPAWN = new GridPoint2(8, 5);
+  public static final GridPoint2 HEALTH_POTION_SPAWN = new GridPoint2(10, 5);
 
-  private static final int STANDARD_ARROW_QUANTITY = 5;
-  private static final int FIRE_ARROW_QUANTITY = 5;
-  private static final int COLD_ARROW_QUANTITY = 5;
-  private static final int HEALTH_POTION_QUANTITY = 3;
+  public static final int STANDARD_ARROW_QUANTITY = 5;
+  public static final int FIRE_ARROW_QUANTITY = 5;
+  public static final int COLD_ARROW_QUANTITY = 5;
+  public static final int HEALTH_POTION_QUANTITY = 3;
 
   private static final float WALL_WIDTH = 0.1f;
   private Vector2 worldBounds;
@@ -370,5 +370,5 @@ public class TutorialGameArea extends GameArea {
             Map.entry(ItemFactory.createColdArrow(COLD_ARROW_QUANTITY), COLD_ARROW_SPAWN))
         .forEach(entry -> spawnEntityAt(entry.getKey(), entry.getValue(), true, false));
   }
-  */
+   */
 }

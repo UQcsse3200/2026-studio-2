@@ -311,10 +311,10 @@ public class KeyboardPlayerInputComponent extends InputComponent {
     if (cheats) {
       Body body = entity.getComponent(PhysicsComponent.class).getBody();
       if (keysHeld[UP]) {
-        body.applyLinearImpulse(new Vector2(0, 2.5f), body.getWorldCenter(), true);
+        body.applyLinearImpulse(new Vector2(0, 10f), body.getWorldCenter(), true);
       }
       if (keysHeld[DOWN]) {
-        body.applyLinearImpulse(new Vector2(0, -2.5f), body.getWorldCenter(), true);
+        body.applyLinearImpulse(new Vector2(0, -10f), body.getWorldCenter(), true);
       }
     }
 
