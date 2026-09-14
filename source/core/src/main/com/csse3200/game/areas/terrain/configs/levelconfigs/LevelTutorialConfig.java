@@ -3,12 +3,27 @@ package com.csse3200.game.areas.terrain.configs.levelconfigs;
 import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.areas.terrain.configs.*;
+import com.csse3200.game.components.item.ItemComponent;
 import com.csse3200.game.components.item.consumables.HealthPotion;
 import com.csse3200.game.components.item.weapons.*;
+import com.csse3200.game.entities.factories.ItemFactory;
+
 import java.util.HashMap;
 import java.util.Map;
 
 public class LevelTutorialConfig extends LevelConfig {
+
+  private static final GridPoint2 ROPE_ARROW_SPAWN = new GridPoint2(2, 4);
+  private static final GridPoint2 STANDARD_ARROW_SPAWN = new GridPoint2(4, 4);
+  private static final GridPoint2 FIRE_ARROW_SPAWN = new GridPoint2(6, 4);
+  private static final GridPoint2 COLD_ARROW_SPAWN = new GridPoint2(8, 4);
+  private static final GridPoint2 HEALTH_POTION_SPAWN = new GridPoint2(10, 4);
+
+  private static final int STANDARD_ARROW_QUANTITY = 5;
+  private static final int FIRE_ARROW_QUANTITY = 5;
+  private static final int COLD_ARROW_QUANTITY = 5;
+  private static final int HEALTH_POTION_QUANTITY = 3;
+
   /** Creates the tutorial level config */
   public LevelTutorialConfig() {
     playerSpawn = new GridPoint2(1, 4);
@@ -136,11 +151,13 @@ public class LevelTutorialConfig extends LevelConfig {
     items =
         new HashMap<>(
             Map.of(
-                new GridPoint2(2, 4), new RopeArr(1),
-                new GridPoint2(4, 4), new StandardArr(5),
-                new GridPoint2(6, 4), new FireArr(5),
-                new GridPoint2(8, 5), new ColdArr(5),
-                new GridPoint2(10, 5), new HealthPotion(3)));
+                ROPE_ARROW_SPAWN, ItemFactory.createRopeArrow().getComponent(ItemComponent.class).getItem(),
+                STANDARD_ARROW_SPAWN, ItemFactory.createStandardArrow(STANDARD_ARROW_QUANTITY).getComponent(ItemComponent.class).getItem(),
+                HEALTH_POTION_SPAWN, ItemFactory.createHealthPotion(HEALTH_POTION_QUANTITY).getComponent(ItemComponent.class).getItem(),
+                FIRE_ARROW_SPAWN, ItemFactory.createFireArrow(FIRE_ARROW_QUANTITY).getComponent(ItemComponent.class).getItem(),
+                COLD_ARROW_SPAWN,ItemFactory.createColdArrow(COLD_ARROW_QUANTITY).getComponent(ItemComponent.class).getItem()
+            )
+    );
 
     checkpoints =
         new CheckpointConfig[] {
