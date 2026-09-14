@@ -3,12 +3,11 @@ package com.csse3200.game.components.minigames.cyclopsMinigame;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.csse3200.game.ui.UIComponent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,18 +15,19 @@ import org.slf4j.LoggerFactory;
 public class TimingBarDisplay extends UIComponent {
   private static final Logger logger = LoggerFactory.getLogger(TimingBarDisplay.class);
 
-  private float screenX;
-  private float screenY;
+  private static final float MARKER_WIDTH = 10f;
   private static final float BAR_WIDTH = 400f;
-  private static final float BAR_HEIGHT = 25f;
+  private static final float BAR_HEIGHT = 30f;
 
-  private float location_x;
-  private float location_y;
+  private static final Color MARKER_COLOR = Color.valueOf("#FFFFFF");
+  private static final Color SCORING_COLOR = Color.valueOf("#009A66");
+  private static final Color BACKGROUND_COLOR = Color.TAN;
+  private static final Color BORDER_COLOR = Color.BROWN;
 
   private final TimingBarLogic logic;
   private Texture blankTexture;
 
-  private Group group;
+  private Table table;
   private Image marker;
 
   private boolean visible = false;
@@ -36,25 +36,10 @@ public class TimingBarDisplay extends UIComponent {
     this.logic = logic;
   }
 
-  public float getScreenWidth() {
-    return this.screenX;
-  }
-
-  private void setupComponentSizes() {
-    logger.info("Retrieving window size");
-    logger.info("Stage dimensions: ({}, {})", stage.getWidth(), stage.getHeight());
-    screenX = stage.getWidth();
-    screenY = stage.getHeight();
-
-    location_x = (screenX / 2) - (BAR_WIDTH / 2);
-    location_y = (screenY / 2) + (BAR_HEIGHT / 2);
-  }
-
   public void setVisible(boolean visible) {
-    logger.info("setting TimingBarDiplay visbility to {}.", visible);
     this.visible = visible;
-    if (group != null) {
-      group.setVisible(visible);
+    if (table != null) {
+      table.setVisible(visible);
     }
   }
 
@@ -65,7 +50,6 @@ public class TimingBarDisplay extends UIComponent {
   @Override
   public void create() {
     super.create();
-    setupComponentSizes();
 
     // For now create a 1x1 texture (until assets are used maybe)
     Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
@@ -76,46 +60,46 @@ public class TimingBarDisplay extends UIComponent {
     TextureRegion blankRegion = new TextureRegion(blankTexture);
     pixmap.dispose();
 
-    group = new Group();
+    Group group = new Group();
+    group.setSize(BAR_WIDTH + MARKER_WIDTH, BAR_HEIGHT);
 
-    logger.info("loading timing bar background");
-    Image barBackground = new Image(blankRegion);
-    barBackground.setColor(Color.DARK_GRAY);
-    barBackground.setPosition(location_x, location_y);
-    barBackground.setSize(BAR_WIDTH, BAR_HEIGHT);
-    group.addActor(barBackground);
-    logger.info("created timing bar background at (X: {}, Y: {})", location_x, location_y);
+    Image border = new Image(blankRegion);
+    border.setColor(BORDER_COLOR);
+    border.setSize(BAR_WIDTH + MARKER_WIDTH + 6f, BAR_HEIGHT + 6f);
+    border.setPosition(-3, -3);
+    group.addActor(border);
 
-    logger.info("loading timing bar scoring zone");
-    Image scoreZone = new Image(blankRegion);
-    scoreZone.setColor(Color.GREEN);
-    scoreZone.setPosition(
-        location_x + (BAR_WIDTH / 2) - ((BAR_WIDTH * logic.scoringAreaSize) / 2), location_y);
-    scoreZone.setSize((BAR_WIDTH * logic.scoringAreaSize), BAR_HEIGHT);
-    group.addActor(scoreZone);
+    Image background = new Image(blankRegion);
+    background.setColor(BACKGROUND_COLOR);
+    background.setSize(BAR_WIDTH + MARKER_WIDTH, BAR_HEIGHT);
+    background.setPosition(0, 0);
+    group.addActor(background);
 
-    logger.info("loading timing bar marker");
+    Image scoringZone = new Image(blankRegion);
+    scoringZone.setColor(SCORING_COLOR);
+    scoringZone.setSize(logic.scoringAreaSize * BAR_WIDTH, BAR_HEIGHT);
+    scoringZone.setPosition(BAR_WIDTH / 2 - scoringZone.getWidth() / 2, 0);
+    group.addActor(scoringZone);
+
     marker = new Image(blankRegion);
-    marker.setColor(Color.RED);
+    marker.setColor(MARKER_COLOR);
     marker.setSize(10f, BAR_HEIGHT);
-    marker.setPosition(
-        location_x + (logic.markerX * BAR_WIDTH) - marker.getWidth() / 2, location_y);
+    marker.setPosition(logic.markerX, 0);
     group.addActor(marker);
 
-    BitmapFont font = new BitmapFont();
-    Label instructions =
-        new Label("Press 'SPACE' to stop", new Label.LabelStyle(font, Color.BLACK));
-    instructions.setPosition(location_x, location_y + BAR_HEIGHT);
-    group.addActor(instructions);
+    table = new Table();
+    table.setSize(BAR_WIDTH, BAR_HEIGHT);
+    table.setFillParent(true);
+    table.add(group).expand().center();
 
-    group.setVisible(visible);
-    stage.addActor(group);
+    table.setVisible(visible);
+    stage.addActor(table);
   }
 
   @Override
   public void update() {
     if (marker != null) {
-      marker.setX(location_x + (logic.markerX * BAR_WIDTH) - marker.getWidth() / 2);
+      marker.setX(logic.markerX * BAR_WIDTH);
     }
   }
 
