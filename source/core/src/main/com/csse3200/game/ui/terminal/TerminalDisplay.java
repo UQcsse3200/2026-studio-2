@@ -1,5 +1,6 @@
 package com.csse3200.game.ui.terminal;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.csse3200.game.ui.UIComponent;
@@ -18,6 +19,7 @@ public class TerminalDisplay extends UIComponent {
     super.create();
     addActors();
     terminal = entity.getComponent(Terminal.class);
+    applyStyle();
   }
 
   private void addActors() {
@@ -37,6 +39,12 @@ public class TerminalDisplay extends UIComponent {
       label.setVisible(false);
     }
   }
+    private void applyStyle() {
+        // Clone the style so we don't mutate a shared skin-wide style instance
+        Label.LabelStyle style = new Label.LabelStyle(label.getStyle());
+        style.fontColor = Color.WHITE;
+        label.setStyle(style);
+    }
 
   @Override
   public float getZIndex() {

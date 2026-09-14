@@ -63,7 +63,7 @@ public class TextConfig {
     return parseAlignment(textAlignment);
   }
 
-    /**
+  /**
    * Resolves a horizontal alignment name ("left", "center"/"centre", "right") to its {@link Align}
    * constant. Falls back to {@code fallback} if the value is missing or unrecognised.
    */
@@ -71,14 +71,12 @@ public class TextConfig {
     if (value == null || value.isBlank()) {
       return Align.center;
     }
-      return switch (value
-          .trim()
-          .toLowerCase()) {
-          case "left" -> Align.left;
-          case "right" -> Align.right;
-          case "center", "centre" -> Align.center;
-          default -> Align.center;
-      };
+    return switch (value.trim().toLowerCase()) {
+      case "left" -> Align.left;
+      case "right" -> Align.right;
+      case "center", "centre" -> Align.center;
+      default -> Align.center;
+    };
   }
 
   /**
