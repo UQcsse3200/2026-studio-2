@@ -254,8 +254,7 @@ public class KeyboardPlayerInputComponent extends InputComponent {
   private void triggerJumpEvent() {
     entity.getEvents().trigger("jump");
   }
-  
-  
+
   /**
    * Aim direction from the current mouse position to the player, in world space.
    *

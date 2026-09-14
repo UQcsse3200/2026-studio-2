@@ -19,11 +19,13 @@ public class GrappleComponent extends Component {
   private static final float SWING_FORCE = 7f;
   private static final float MAX_SWING_SPEED = 7f;
   private static final float SWING_DAMPING = 0.5f;
-  private static final float RELEASE_DAMPING = 0f;
 
   private PhysicsComponent physicsComponent;
   private DistanceJoint ropeJoint;
   private float cooldownRemaining = 0f;
+  // Whatever linearDamping the body had right before swinging, restored on release so a grapple
+  // cycle never permanently changes the player's drag (and therefore jump height/speed).
+  private float preSwingLinearDamping;
 
   // Box2D locks the world during a step, so attachments are queued and built next frame
   private Body pendingAnchorBody;
@@ -65,7 +67,7 @@ public class GrappleComponent extends Component {
   /** Clears rope state after the joint has already gone, without touching the dead joint. */
   private void forgetJoint() {
     ropeJoint = null;
-    physicsComponent.getBody().setLinearDamping(RELEASE_DAMPING);
+    physicsComponent.getBody().setLinearDamping(preSwingLinearDamping);
   }
 
   /** Launches a grapple arrow, unless one is in flight, attached, or still on cooldown. */
@@ -123,8 +125,10 @@ public class GrappleComponent extends Component {
     ropeJoint =
         (DistanceJoint) ServiceLocator.getPhysicsService().getPhysics().getWorld().createJoint(def);
 
-    // Stop the player spinning, and bleed the swing off over time
+    // Stop the player spinning, and bleed the swing off over time. Remember whatever damping was
+    // active beforehand so release() can put it back exactly, rather than assuming a fixed value.
     playerBody.setFixedRotation(true);
+    preSwingLinearDamping = playerBody.getLinearDamping();
     playerBody.setLinearDamping(SWING_DAMPING);
   }
 

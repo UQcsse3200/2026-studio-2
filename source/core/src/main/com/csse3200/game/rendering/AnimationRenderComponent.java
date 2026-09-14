@@ -80,7 +80,7 @@ public class AnimationRenderComponent extends RenderComponent {
    * @param anchorYFromBottom pixels between the character's feet and the bottom of the frame
    */
   public boolean addAnimation(
-          String name, float frameDuration, PlayMode playMode, float anchorX, float anchorYFromBottom) {
+      String name, float frameDuration, PlayMode playMode, float anchorX, float anchorYFromBottom) {
     boolean added = addAnimation(name, frameDuration, playMode);
     if (added) {
       animationAnchors.put(name, new Vector2(anchorX, anchorYFromBottom));
@@ -272,5 +272,3 @@ public class AnimationRenderComponent extends RenderComponent {
     super.dispose();
   }
 }
-
-

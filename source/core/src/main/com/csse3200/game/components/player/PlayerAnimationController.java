@@ -116,7 +116,7 @@ public class PlayerAnimationController extends Component {
 
   void dashStart() {
     jumping = false;
-    attacking = false;      // dash cancels the attack
+    attacking = false; // dash cancels the attack
     dashing = true;
     animator.startAnimation("air_dash");
   }

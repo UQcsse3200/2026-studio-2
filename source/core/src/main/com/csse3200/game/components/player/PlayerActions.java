@@ -11,12 +11,13 @@ import com.csse3200.game.services.ServiceLocator;
 
 /** Action component for interacting with the player */
 public class PlayerActions extends Component {
-  private static final float JUMP_FORCE = 27f;
+  private static final float JUMP_FORCE = 22f;
   private static final Vector2 MAX_SPEED = new Vector2(5f, 5f); // Metres per second
   private static final float SPRINT_MULTIPLIER = 1.75f;
   private static final float ROPE_JUMP_MULTIPLIER = 0.7f;
   private static final float AIR_CONTROL = 0.1f; // How much steering you get mid-air
-  private static final long JUMP_WINDUP_MS = 90; // Anticipation delay before a ground jump lifts off
+  private static final long JUMP_WINDUP_MS =
+      90; // Anticipation delay before a ground jump lifts off
   private static final float DASH_SPEED = 14f;
   private static final float DASH_DURATION = 0.15f;
   private static final float DASH_COOLDOWN = 1f;
@@ -153,7 +154,7 @@ public class PlayerActions extends Component {
     // Reduced control while recovering from a dash; otherwise full control on the ground and
     // weak in the air so swing momentum isn't wiped on landing.
     float control =
-            dashRecoveryRemaining > 0f ? DASH_RECOVERY_CONTROL : (isGrounded ? 1f : AIR_CONTROL);
+        dashRecoveryRemaining > 0f ? DASH_RECOVERY_CONTROL : (isGrounded ? 1f : AIR_CONTROL);
 
     // impulse = (desiredVel - currentVel) * mass
     float impulseX = (desiredVelocityX - velocity.x) * body.getMass() * control;
@@ -259,9 +260,9 @@ public class PlayerActions extends Component {
   }
 
   void stopSprinting() {
-      if (dead) {
-          return;
-      }
+    if (dead) {
+      return;
+    }
     if (!isSprinting || sprintStopPending) {
       return;
     }
