@@ -2,6 +2,7 @@ package com.csse3200.game.entities.factories;
 
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.components.CombatStatsComponent;
+import com.csse3200.game.components.item.ItemType;
 import com.csse3200.game.components.projectile.ArrowProjectileComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.physics.PhysicsLayer;
@@ -23,26 +24,37 @@ public class ProjectileFactory {
    * @return unregistered arrow entity
    */
   public static Entity createPlayerArrow(Vector2 position, Vector2 direction) {
-    return createPlayerArrow(position, direction, 0f, 0f);
+    return createPlayerArrow(position, direction, ItemType.ARROW, 0f, 0f);
+  }
+
+  public static Entity createPlayerArrow(
+      Vector2 position, Vector2 direction, float poisonDps, float poisonDuration) {
+    return createPlayerArrow(position, direction, ItemType.ARROW, poisonDps, poisonDuration);
   }
 
   public static Entity createPlayerArrow(
       Vector2 position,
       Vector2 direction,
-      float poisonDamagePerSecond,
-      float poisonDurationSeconds) {
+      ItemType arrowType,
+      float poisonDps,
+      float poisonDuration) {
+
     Entity arrow =
         new Entity()
             .addComponent(new PhysicsComponent())
             .addComponent(new HitboxComponent().setLayer(PhysicsLayer.PLAYER_PROJECTILE))
-            .addComponent(new CombatStatsComponent(1, STANDARD_ARROW_DAMAGE))
+            .addComponent(new CombatStatsComponent(1, arrowType.getDamage()))
             .addComponent(
                 new ArrowProjectileComponent(
                     direction,
                     STANDARD_ARROW_SPEED,
-                    STANDARD_ARROW_RANGE,
-                    poisonDamagePerSecond,
-                    poisonDurationSeconds))
+                    arrowType.getRange(),
+                    arrowType.getBurnDamagePerSecond(),
+                    arrowType.getBurnTime(),
+                    arrowType.getSlowSpeed(),
+                    arrowType.getSlowTime(),
+                    poisonDps,
+                    poisonDuration))
             .addComponent(new ArrowRenderComponent());
 
     arrow.setScale(0.5f, 0.1f);

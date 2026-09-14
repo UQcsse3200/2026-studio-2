@@ -21,6 +21,10 @@ public class ArrowProjectileComponent extends Component {
   private final float maximumRange;
   private final float poisonDamagePerSecond;
   private final float poisonDuration;
+  private final float burnDamagePerSecond;
+  private final float burnDuration;
+  private final float slowMultiplier;
+  private final float slowDuration;
 
   private PhysicsComponent physicsComponent;
   private HitboxComponent hitboxComponent;
@@ -36,7 +40,17 @@ public class ArrowProjectileComponent extends Component {
    * @param maximumRange maximum travel distance in world units
    */
   public ArrowProjectileComponent(Vector2 direction, float speed, float maximumRange) {
-    this(direction, speed, maximumRange, 0f, 0f);
+    this(
+        direction,
+        speed,
+        maximumRange,
+        0f, // burnDamagePerSecond
+        0f, // burnDuration
+        0f, // slowMultiplier
+        0f, // slowDuration
+        0f, // poisonDamagePerSecond
+        0f // poisonDuration
+        );
   }
 
   public ArrowProjectileComponent(
@@ -45,9 +59,23 @@ public class ArrowProjectileComponent extends Component {
       float maximumRange,
       float poisonDamagePerSecond,
       float poisonDuration) {
+    this(direction, speed, maximumRange, 0f, 0f, 0f, 0f, poisonDamagePerSecond, poisonDuration);
+  }
+
+  public ArrowProjectileComponent(
+      Vector2 direction,
+      float speed,
+      float maximumRange,
+      float burnDamagePerSecond,
+      float burnDuration,
+      float slowMultiplier,
+      float slowDuration,
+      float poisonDamagePerSecond,
+      float poisonDuration) {
     if (direction == null || direction.isZero()) {
       throw new IllegalArgumentException("Arrow direction must not be zero");
     }
+
     if (speed <= 0f || maximumRange <= 0f) {
       throw new IllegalArgumentException("Arrow speed and range must be positive");
     }
@@ -55,6 +83,10 @@ public class ArrowProjectileComponent extends Component {
     this.direction = direction.cpy().nor();
     this.speed = speed;
     this.maximumRange = maximumRange;
+    this.burnDamagePerSecond = burnDamagePerSecond;
+    this.burnDuration = burnDuration;
+    this.slowMultiplier = slowMultiplier;
+    this.slowDuration = slowDuration;
     this.poisonDamagePerSecond = poisonDamagePerSecond;
     this.poisonDuration = poisonDuration;
   }
@@ -121,7 +153,19 @@ public class ArrowProjectileComponent extends Component {
 
     boolean damaged = targetStats.getHealth() < healthBefore;
 
-    if (damaged && poisonDamagePerSecond > 0f && poisonDuration > 0f) {
+    if (!damaged) {
+      return;
+    }
+
+    if (burnDamagePerSecond > 0f && burnDuration > 0f) {
+      target.getEvents().trigger("applyBurn", burnDamagePerSecond, burnDuration);
+    }
+
+    if (slowMultiplier > 0f && slowDuration > 0f) {
+      target.getEvents().trigger("applySlow", slowMultiplier, slowDuration);
+    }
+
+    if (poisonDamagePerSecond > 0f && poisonDuration > 0f) {
       target.getEvents().trigger("applyPoison", poisonDamagePerSecond, poisonDuration);
     }
   }

@@ -3,6 +3,7 @@ package com.csse3200.game.components.player;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.components.Component;
+import com.csse3200.game.components.item.ItemType;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.ProjectileFactory;
 import com.csse3200.game.services.ServiceLocator;
@@ -29,6 +30,38 @@ public class BowComponent extends Component implements AttackBehaviour {
   public void create() {
     poisonBuff = entity.getComponent(PoisonBuff.class);
     entity.getEvents().addListener("arrowSelected", this::setArrowType);
+    entity.getEvents().addListener("arrowAttack", this::fireArrow);
+  }
+
+  /**
+   * This function is used to fire an arrow of the given type in the specified direction
+   *
+   * @param arrowType the type of arrow to fire
+   * @param direction the direction in which the arrow travels
+   */
+  private void fireArrow(ItemType arrowType, Vector2 direction) {
+    if (direction == null || direction.isZero()) {
+      return;
+    }
+
+    Vector2 normalisedDirection = direction.cpy().nor();
+    Vector2 spawnPosition =
+        entity.getCenterPosition().mulAdd(normalisedDirection, entity.getScale().x * 0.6f);
+
+    float poisonDps = 0f;
+    float poisonDuration = 0f;
+
+    if (arrowType == ItemType.ARROW && poisonBuff != null && poisonBuff.isActive()) {
+      poisonDps = poisonBuff.getPoisonDamagePerSecond();
+      poisonDuration = poisonBuff.getPoisonDuration();
+    }
+
+    Entity projectile =
+        ProjectileFactory.createPlayerArrow(
+            spawnPosition, normalisedDirection, arrowType, poisonDps, poisonDuration);
+
+    ServiceLocator.getEntityService().register(projectile);
+    entity.getEvents().trigger("attackAnimation", normalisedDirection);
   }
 
   /** Returns the arrow type the bow fires. */

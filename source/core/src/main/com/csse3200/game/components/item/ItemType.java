@@ -45,7 +45,7 @@ public enum ItemType {
       0f,
       0,
       true,
-      3f,
+      10f,
       5f,
       0f,
       0f,
@@ -65,7 +65,7 @@ public enum ItemType {
       true,
       0f,
       0f,
-      0.75f,
+      0.5f,
       5f,
       0f,
       0f,
@@ -120,7 +120,7 @@ public enum ItemType {
       0f,
       0f,
       0f,
-      2f,
+      5f,
       5f);
 
   private final int id;
