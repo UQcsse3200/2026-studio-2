@@ -5,6 +5,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.areas.terrain.TerrainFactory;
 import com.csse3200.game.areas.terrain.TerrainFactory.TerrainType;
 import com.csse3200.game.components.CameraComponent;
+import com.csse3200.game.components.inventory.InventoryComponent;
 import com.csse3200.game.components.item.ItemLabelDisplay;
 import com.csse3200.game.components.item.ItemType;
 import com.csse3200.game.components.player.KeyboardPlayerInputComponent;
@@ -14,6 +15,7 @@ import com.csse3200.game.components.sandbox.SandboxEnemyType;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.EnemyFactory;
 import com.csse3200.game.entities.factories.ItemFactory;
+import com.csse3200.game.entities.factories.NPCFactory;
 import com.csse3200.game.entities.factories.ObstacleFactory;
 import com.csse3200.game.entities.factories.PlayerFactory;
 import com.csse3200.game.services.ResourceService;
@@ -28,6 +30,7 @@ import java.util.stream.Stream;
 public class SandboxGameArea extends GameArea {
   // Deterministic left-to-right developer layout, measured in terrain tiles.
   private static final GridPoint2 PLAYER_SPAWN = new GridPoint2(2, 2);
+  private static final GridPoint2 SHOPKEEPER_SPAWN = new GridPoint2(5, 2);
   private static final int GROUND_START_X = 0;
   private static final int GROUND_Y = 0;
   private static final int GROUND_LENGTH = 50;
@@ -44,6 +47,7 @@ public class SandboxGameArea extends GameArea {
   private static final int ITEM_Y = 2;
   private static final int ITEM_SPACING = 3;
   private static final int ITEM_QUANTITY = 99;
+  private static final int SANDBOX_GOLD = 999_999;
   private static final float ITEM_DISPLAY_HEIGHT = 1f;
   private static final GridPoint2 MONSTER_SPAWNER_NPC_POSITION = new GridPoint2(-4, 2);
   private static final GridPoint2 SPAWNED_MONSTER_POSITION = new GridPoint2(-8, 2);
@@ -82,6 +86,7 @@ public class SandboxGameArea extends GameArea {
     spawnGround();
     spawnGrapplePlatforms();
     player = spawnPlayer();
+    spawnShopkeeper();
     spawnMonsterSpawnerNpc();
     spawnItems();
   }
@@ -114,7 +119,8 @@ public class SandboxGameArea extends GameArea {
                 PLATFORM_TEXTURE,
                 PLAYER_HEALTH_TEXTURE,
                 SKELETON_WARRIOR_TEXTURE,
-                SKELETON_ARCHER_TEXTURE),
+                SKELETON_ARCHER_TEXTURE,
+                NPCFactory.SHOPKEEPER_TEXTURE),
             Arrays.stream(ItemType.values()).map(ItemType::getTexturePath))
         .distinct()
         .toArray(String[]::new);
@@ -190,6 +196,7 @@ public class SandboxGameArea extends GameArea {
 
   private Entity spawnPlayer() {
     Entity newPlayer = PlayerFactory.createPlayer();
+    giveUnlimitedGold(newPlayer);
     newPlayer.getComponent(PlayerStatsDisplay.class).setShowStatText(true);
     newPlayer.getEvents().addListener("grappleRequested", this::checkSuccessfulGrapple);
     KeyboardPlayerInputComponent input = newPlayer.getComponent(KeyboardPlayerInputComponent.class);
@@ -198,6 +205,22 @@ public class SandboxGameArea extends GameArea {
     }
     spawnEntityAt(newPlayer, getPlayerSpawn(), true, true);
     return newPlayer;
+  }
+
+  private void giveUnlimitedGold(Entity newPlayer) {
+    InventoryComponent inventory = newPlayer.getComponent(InventoryComponent.class);
+    inventory.setGold(SANDBOX_GOLD);
+    newPlayer.getEvents().addListener("goldChanged", () -> restoreSandboxGold(inventory));
+  }
+
+  private void restoreSandboxGold(InventoryComponent inventory) {
+    if (inventory.getGold() != SANDBOX_GOLD) {
+      inventory.setGold(SANDBOX_GOLD);
+    }
+  }
+
+  private void spawnShopkeeper() {
+    spawnEntityAt(NPCFactory.createShopkeeper(), SHOPKEEPER_SPAWN, true, false);
   }
 
   private void spawnMonsterSpawnerNpc() {
