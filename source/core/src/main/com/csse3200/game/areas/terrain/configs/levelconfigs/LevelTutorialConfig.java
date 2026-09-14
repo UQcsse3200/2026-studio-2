@@ -1,18 +1,15 @@
 package com.csse3200.game.areas.terrain.configs.levelconfigs;
 
+import static com.csse3200.game.areas.TutorialGameArea.*;
+
 import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.areas.terrain.configs.*;
 import com.csse3200.game.components.item.ItemComponent;
-import com.csse3200.game.components.item.consumables.HealthPotion;
 import com.csse3200.game.components.item.weapons.*;
 import com.csse3200.game.entities.factories.ItemFactory;
-
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-
-import static com.csse3200.game.areas.TutorialGameArea.*;
 
 public class LevelTutorialConfig extends LevelConfig {
   /** Creates the tutorial level config */
@@ -150,15 +147,27 @@ public class LevelTutorialConfig extends LevelConfig {
           new PlatformConfig(new GridPoint2(78, 0), 13, 17, 0, groundTFP),
         };
 
-    items = new HashMap<>(
+    items =
+        new HashMap<>(
             Map.of(
-                    ROPE_ARROW_SPAWN, ItemFactory.createRopeArrow().getComponent(ItemComponent.class).getItem(),
-                    STANDARD_ARROW_SPAWN, ItemFactory.createStandardArrow(STANDARD_ARROW_QUANTITY).getComponent(ItemComponent.class).getItem(),
-                    HEALTH_POTION_SPAWN, ItemFactory.createHealthPotion(HEALTH_POTION_QUANTITY).getComponent(ItemComponent.class).getItem(),
-                    FIRE_ARROW_SPAWN, ItemFactory.createFireArrow(FIRE_ARROW_QUANTITY).getComponent(ItemComponent.class).getItem(),
-                    COLD_ARROW_SPAWN,ItemFactory.createColdArrow(COLD_ARROW_QUANTITY).getComponent(ItemComponent.class).getItem()
-            )
-    );
+                ROPE_ARROW_SPAWN,
+                    ItemFactory.createRopeArrow().getComponent(ItemComponent.class).getItem(),
+                STANDARD_ARROW_SPAWN,
+                    ItemFactory.createStandardArrow(STANDARD_ARROW_QUANTITY)
+                        .getComponent(ItemComponent.class)
+                        .getItem(),
+                HEALTH_POTION_SPAWN,
+                    ItemFactory.createHealthPotion(HEALTH_POTION_QUANTITY)
+                        .getComponent(ItemComponent.class)
+                        .getItem(),
+                FIRE_ARROW_SPAWN,
+                    ItemFactory.createFireArrow(FIRE_ARROW_QUANTITY)
+                        .getComponent(ItemComponent.class)
+                        .getItem(),
+                COLD_ARROW_SPAWN,
+                    ItemFactory.createColdArrow(COLD_ARROW_QUANTITY)
+                        .getComponent(ItemComponent.class)
+                        .getItem()));
 
     // Example checkpoint set to player spawn position
     checkpoints =

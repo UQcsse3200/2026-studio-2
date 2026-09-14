@@ -11,9 +11,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.input.InputComponent;
-import com.csse3200.game.utils.math.Vector2Utils;
 import com.csse3200.game.physics.components.PhysicsComponent;
-import com.csse3200.game.services.ServiceLocator;
 
 /** Input handler for player keyboard and mouse controls. */
 public class KeyboardPlayerInputComponent extends InputComponent {
