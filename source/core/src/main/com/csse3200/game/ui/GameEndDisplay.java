@@ -26,6 +26,9 @@ public class GameEndDisplay extends UIComponent {
   private static final Logger logger = LoggerFactory.getLogger(GameEndDisplay.class);
   private static final float Z_INDEX = 20f;
   private static final int BORDER_THICKNESS = 3;
+  private static final float BUTTON_WIDTH = 200f;
+  private static final float BUTTON_HEIGHT = 70f;
+
   private static final float MESSAGE_SPEED = 21f;
 
   private static NinePatchDrawable cachedBackground;
@@ -197,9 +200,9 @@ public class GameEndDisplay extends UIComponent {
 
     panel.add(titleLabel).pad(padding).row();
     panel.add(messageLabel).fillX().expandX().pad(padding).row();
-    panel.add(restartBtn).padBottom(padding).row();
-    panel.add(mainMenuBtn).padBottom(padding).row();
-    panel.add(exitGameBtn).padBottom(padding).row();
+    panel.add(restartBtn).width(BUTTON_WIDTH).height(BUTTON_HEIGHT).padBottom(padding).row();
+    panel.add(mainMenuBtn).width(BUTTON_WIDTH).height(BUTTON_HEIGHT).padBottom(padding).row();
+    panel.add(exitGameBtn).width(BUTTON_WIDTH).height(BUTTON_HEIGHT).padBottom(padding).row();
     panel.pack();
 
     root.add(panel).width(Value.percentWidth(0.8f, root)).fillX().center();
