@@ -1,6 +1,7 @@
 package com.csse3200.game.screens;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -168,30 +169,20 @@ public class TutorialGameScreen extends ScreenAdapter {
     renderer.getCamera().setTarget(currentGameArea.getPlayer());
   }
 
-  /*
   @Override
   public void render(float delta) {
     // at the start of the render, if there's been a level swap queued, safely perform the swap
     if (levelSwapQueued) {
       performLevelSwap();
       levelSwapQueued = false;
-
-      if (Gdx.input.isKeyJustPressed(Input.Keys.K)) {
-        wheelOverlay.request();
-      }
-
-      physicsEngine.update();
-      ServiceLocator.getEntityService().update();
-      renderer.render();
-      wheelOverlay.afterRender();
     }
-  }
-  */
-  @Override
-  public void render(float delta) {
+    if (Gdx.input.isKeyJustPressed(Input.Keys.K)) {
+      wheelOverlay.request();
+    }
     physicsEngine.update();
     ServiceLocator.getEntityService().update();
     renderer.render();
+    wheelOverlay.afterRender();
   }
 
   @Override

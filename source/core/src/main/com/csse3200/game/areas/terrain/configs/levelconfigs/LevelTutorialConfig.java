@@ -15,9 +15,8 @@ public class LevelTutorialConfig extends LevelConfig {
     groundTFP = "images/Tile_2.png";
 
     playerSpawn = new GridPoint2(1, 4);
-    // nextLevelTriggerSpawn = new GridPoint2(80, 18); (crashes the game rn)
+    nextLevelTriggerSpawn = new GridPoint2(80, 18);
     nextLevelName = "level2";
-    // winConditionSpawn = new GridPoint2(80, 18);
 
     platforms =
         new PlatformConfig[] {
@@ -154,9 +153,10 @@ public class LevelTutorialConfig extends LevelConfig {
                 new GridPoint2(8, 5), new ColdArr(5),
                 new GridPoint2(10, 5), new HealthPotion(3)));
 
+    // Example checkpoint set to player spawn position
     checkpoints =
         new CheckpointConfig[] {
-          new CheckpointConfig(new GridPoint2(1, 3)), new CheckpointConfig(new GridPoint2(10, 5)),
+          new CheckpointConfig(new GridPoint2(1, 3)),
         };
   }
 }
