@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.badlogic.gdx.Gdx;
+import com.csse3200.game.components.inventory.InventoryComponent;
 import com.csse3200.game.extensions.GameExtension;
 import java.util.Arrays;
 import java.util.List;
@@ -51,6 +52,20 @@ class BlackjackConfigTest {
     assertTrue(paths.contains("images/minigames/blackjack/card_back.png"));
     assertTrue(paths.contains("images/Buttons/back_up_btn.png"));
     assertTrue(paths.contains("images/Buttons/back_down_btn.png"));
+  }
+
+  @Test
+  void shouldConfigureAnInventoryReward() {
+    InventoryComponent inventory = new InventoryComponent(0);
+
+    assertTrue(BlackjackConfig.WIN_REWARD_QUANTITY > 0);
+    assertTrue(
+        inventory.addItem(
+            BlackjackConfig.WIN_REWARD, BlackjackConfig.WIN_REWARD_QUANTITY));
+    assertTrue(inventory.hasItem(BlackjackConfig.WIN_REWARD));
+    assertEquals(
+        BlackjackConfig.WIN_REWARD_QUANTITY,
+      inventory.getItemCount(BlackjackConfig.WIN_REWARD));
   }
 
   private static String rankFileName(Blackjack.Rank rank) {
