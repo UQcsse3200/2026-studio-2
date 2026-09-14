@@ -61,7 +61,7 @@ public class CyclopsMinigameLogic extends Component {
    *
    * @param logic - TimingBar Logic component
    * @param display - TimingBar display component
-   * @param terrain
+   * @param terrain - The terrain the minigame game area uses
    * @param player - A display only player entity
    */
   public CyclopsMinigameLogic(
@@ -197,6 +197,8 @@ public class CyclopsMinigameLogic extends Component {
 
   public void restartMinigame() {
     logger.info("restarting minigame");
+    movePlayer(safeLocations.getFirst());
+    scheduleTimingMinigameShow();
   }
 
   public void startMinigame() {
