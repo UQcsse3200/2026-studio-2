@@ -14,10 +14,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class CheckpointComponentTest {
-  /**
-   * Note: this test relies on checkpoint collect range being +- 1 for both x and y
-   */
+  /** Note: this test relies on checkpoint collect range being +- 1 for both x and y */
   private boolean collected;
+
   private GridPoint2 position;
   private Entity player;
   private Entity checkpointEntity;

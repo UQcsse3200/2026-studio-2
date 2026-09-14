@@ -44,13 +44,14 @@ public class PlatformGrappleComponent extends Component {
   }
 
   /**
-   * Simple check of if a side is grappleable. 
+   * Simple check of if a side is grappleable.
+   *
    * @param side the side that you want to check if grappleble
    * @return true if grappleable
    */
   public boolean isSideGrappleable(int side) {
-  return (grappleSides & side) != 0;
-}
+    return (grappleSides & side) != 0;
+  }
 
   /**
    * Allows the grappleable sides to be updated during the game, for example if a button is pressed.

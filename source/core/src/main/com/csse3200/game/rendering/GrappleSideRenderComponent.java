@@ -42,20 +42,12 @@ public class GrappleSideRenderComponent extends RenderComponent {
     shapeRenderer.begin(ShapeType.Filled);
     shapeRenderer.setColor(Color.GOLD);
 
-    drawSide(
-        PlatformGrappleComponent.LEFT_SIDE,
-        new Vector2(left, bottom),
-        new Vector2(left, top));
+    drawSide(PlatformGrappleComponent.LEFT_SIDE, new Vector2(left, bottom), new Vector2(left, top));
+
+    drawSide(PlatformGrappleComponent.TOP_SIDE, new Vector2(left, top), new Vector2(right, top));
 
     drawSide(
-        PlatformGrappleComponent.TOP_SIDE,
-        new Vector2(left, top),
-        new Vector2(right, top));
-
-    drawSide(
-        PlatformGrappleComponent.RIGHT_SIDE,
-        new Vector2(right, bottom),
-        new Vector2(right, top));
+        PlatformGrappleComponent.RIGHT_SIDE, new Vector2(right, bottom), new Vector2(right, top));
 
     drawSide(
         PlatformGrappleComponent.BOTTOM_SIDE,
@@ -64,15 +56,14 @@ public class GrappleSideRenderComponent extends RenderComponent {
 
     shapeRenderer.end();
     batch.begin();
-
   }
 
   private void drawSide(int side, Vector2 start, Vector2 end) {
 
     if (grappleComponent.isSideGrappleable(side)) {
       shapeRenderer.rectLine(start, end, LINE_WIDTH);
+    }
   }
-}
 
   @Override
   public void dispose() {
