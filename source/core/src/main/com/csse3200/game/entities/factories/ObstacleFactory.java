@@ -14,6 +14,7 @@ import com.csse3200.game.physics.components.ColliderComponent;
 import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.physics.components.PhysicsMovementComponent;
+import com.csse3200.game.rendering.GrappleSideRenderComponent;
 import com.csse3200.game.rendering.TextureRenderComponent;
 import com.csse3200.game.rendering.TiledRenderComponent;
 
@@ -70,7 +71,8 @@ public class ObstacleFactory {
             .addComponent(new TextureRenderComponent(texturePath))
             .addComponent(new PhysicsComponent())
             .addComponent(new ColliderComponent().setLayer(PhysicsLayer.GROUND))
-            .addComponent(new PlatformGrappleComponent(grappleSides));
+            .addComponent(new PlatformGrappleComponent(grappleSides))
+            .addComponent(new GrappleSideRenderComponent());
 
     platform.getComponent(PhysicsComponent.class).setBodyType(BodyType.StaticBody);
 
@@ -89,7 +91,8 @@ public class ObstacleFactory {
             .addComponent(colliderComponent.setLayer(PhysicsLayer.OBSTACLE))
             .addComponent(
                 new MovingPlatformComponent(grappleSides, firstTarget, secondTarget, maxSpeed))
-            .addComponent(new PlatformGrappleComponent(grappleSides));
+            .addComponent(new PlatformGrappleComponent(grappleSides))
+            .addComponent(new GrappleSideRenderComponent());
 
     physicsComponent.getBody().setGravityScale(0f);
     physicsComponent.setBodyType(BodyType.KinematicBody);
@@ -121,7 +124,8 @@ public class ObstacleFactory {
             .addComponent(new TiledRenderComponent("images/Tile_2.png", 0.75f))
             .addComponent(new PhysicsComponent().setBodyType(BodyType.StaticBody))
             .addComponent(new ColliderComponent().setLayer(PhysicsLayer.OBSTACLE))
-            .addComponent(new PlatformGrappleComponent(grappleSides));
+            .addComponent(new PlatformGrappleComponent(grappleSides))
+            .addComponent(new GrappleSideRenderComponent());
 
     floor.getComponent(PhysicsComponent.class).setBodyType(BodyType.StaticBody);
 
