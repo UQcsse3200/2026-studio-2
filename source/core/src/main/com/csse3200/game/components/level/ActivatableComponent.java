@@ -26,20 +26,20 @@ public class ActivatableComponent extends Component {
    * Constructor overload that provides more control over the creation of this component
    *
    * @param active the initial activation state of the entity this is attached to
-   * @param id the id to keep a reference of and react to activation events with the same id key
+   * @param ids the id to keep a reference of and react to activation events with the same id key
    */
-  public ActivatableComponent(boolean active, String[] id) {
-    boolean emptyId = checkId(id);
+  public ActivatableComponent(boolean active, String[] ids) {
+    boolean emptyId = checkId(ids);
 
     this.active = active && emptyId;
     activatable = !emptyId;
-    this.ids = id;
+    this.ids = ids;
   }
 
   /**
    * A helper method for constructors to use to ensure the provided id is valid
    *
-   * @param id the ids to keep a reference of and react to activation events with the same id key
+   * @param ids the ids to keep a reference of and react to activation events with the same id key
    * @return true if the id is empty or "", false otherwise
    * @throws IllegalArgumentException if the id is null
    */
