@@ -18,7 +18,9 @@ public class LevelTutorialConfig extends LevelConfig {
     groundTFP = "images/Tile_2.png";
 
     playerSpawn = new GridPoint2(1, 4);
-    winConditionSpawn = new GridPoint2(80, 18);
+    // nextLevelTriggerSpawn = new GridPoint2(80, 18); (crashes the game rn)
+    nextLevelName = "level2";
+    // winConditionSpawn = new GridPoint2(80, 18);
 
     platforms =
         new PlatformConfig[] {

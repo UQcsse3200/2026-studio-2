@@ -31,6 +31,8 @@ public class LevelConfig {
   protected Map<GridPoint2, Item> items;
 
   protected GridPoint2 playerSpawn;
+  protected GridPoint2 nextLevelTriggerSpawn;
+  protected String nextLevelName;
   protected GridPoint2 winConditionSpawn;
 
   protected ArrayList<SpawnData> entities = new ArrayList<>();
@@ -55,6 +57,7 @@ public class LevelConfig {
     createTraps();
     createTriggerButtons();
     createWinCondition();
+    createLevelTrigger();
     createItems();
 
     return entities;
@@ -212,6 +215,19 @@ public class LevelConfig {
 
     Entity winCon = ObstacleFactory.createWinConEntity();
     entities.add(new SpawnData(winConditionSpawn, winCon));
+  }
+
+  /**
+   * Creates a new entity that triggers the next level game area to be loaded by the current game
+   * screen
+   */
+  private void createLevelTrigger() {
+    if (nextLevelTriggerSpawn == null) {
+      return;
+    }
+
+    Entity trigger = ObstacleFactory.createNextLevelTriggerEntity(nextLevelName);
+    entities.add(new SpawnData(nextLevelTriggerSpawn, trigger));
   }
 
   /**

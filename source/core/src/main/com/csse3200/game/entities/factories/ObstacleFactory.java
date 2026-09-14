@@ -219,6 +219,29 @@ public class ObstacleFactory {
   }
 
   /**
+   * Creates a new sensor entity that detects a collision from the player and triggers a level swap
+   *
+   * @param nextLevelName a String representing the name of the level this component should force
+   *     the game screen to swap to
+   * @return a level trigger entity
+   */
+  public static Entity createNextLevelTriggerEntity(String nextLevelName) {
+    ColliderComponent collider = new ColliderComponent();
+    collider.setLayer(PhysicsLayer.NPC);
+    collider.setSensor(true);
+
+    Entity trigger =
+        new Entity()
+            .addComponent(new PhysicsComponent().setBodyType(BodyType.StaticBody))
+            .addComponent(collider)
+            .addComponent(new LevelTriggerComponent(nextLevelName));
+
+    trigger.getComponent(ColliderComponent.class).setAsBox(new Vector2(2f, 2f));
+
+    return trigger;
+  }
+
+  /**
    * Creates the normal floor used by the other levels.
    *
    * @param config configuration object for the floor

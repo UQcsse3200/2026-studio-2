@@ -8,6 +8,7 @@ import com.csse3200.game.areas.terrain.configs.LevelConfig;
 import com.csse3200.game.areas.terrain.configs.SpawnData;
 import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.components.level.ActivatableComponent;
+import com.csse3200.game.components.level.LevelTriggerComponent;
 import com.csse3200.game.components.level.PlatformGrappleComponent;
 import com.csse3200.game.components.level.TriggerButtonComponent;
 import com.csse3200.game.entities.Entity;
@@ -31,6 +32,7 @@ public abstract class GameArea implements Disposable {
   protected List<Entity> platforms = new ArrayList<>();
   protected HashMap<String, ArrayList<Entity>> triggerableEntities = new HashMap<>();
   protected Entity player;
+  protected Entity levelChanger;
   protected LevelConfig config;
 
   /**
@@ -51,10 +53,24 @@ public abstract class GameArea implements Disposable {
     for (Entity entity : areaEntities) {
       entity.dispose();
     }
+
+    // clear all references
+    areaEntities.clear();
+    platforms.clear();
+    triggerableEntities.clear();
   }
 
   public Entity getPlayer() {
     return player;
+  }
+
+  /**
+   * Gets the level changer from this level specified by the level config
+   *
+   * @return the level changer entity or null if this level shouldn't change
+   */
+  public Entity getLevelChanger() {
+    return levelChanger;
   }
 
   /**
@@ -95,6 +111,12 @@ public abstract class GameArea implements Disposable {
         entity.getEvents().addListener("activateByKey", this::onButtonActivated);
       }
     }
+
+    LevelTriggerComponent trigger = entity.getComponent(LevelTriggerComponent.class);
+    if (trigger != null) {
+      levelChanger = entity;
+    }
+
     ServiceLocator.getEntityService().register(entity);
   }
 

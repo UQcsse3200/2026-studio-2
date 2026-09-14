@@ -3,6 +3,8 @@ package com.csse3200.game.screens;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.csse3200.game.GdxGame;
+import com.csse3200.game.areas.GameArea;
+import com.csse3200.game.areas.Level2GameArea;
 import com.csse3200.game.areas.TutorialGameArea;
 import com.csse3200.game.areas.terrain.TerrainFactory;
 import com.csse3200.game.components.gamearea.PerformanceDisplay;
@@ -44,6 +46,10 @@ public class TutorialGameScreen extends ScreenAdapter {
     "images/heart.png", "images/title_odysseus_logo.png"
   };
 
+  private boolean levelSwapQueued = false;
+  private GameArea currentGameArea;
+  private GameArea nextGameArea;
+
   private final GdxGame game;
   private final Renderer renderer;
   private final PhysicsEngine physicsEngine;
@@ -82,15 +88,63 @@ public class TutorialGameScreen extends ScreenAdapter {
     // Pass the same camera to the TutorialGameArea so that
     // the parallax background can follow camera movement.
     TutorialGameArea tutorialGameArea = new TutorialGameArea(terrainFactory, renderer.getCamera());
-
     tutorialGameArea.create();
+
+    currentGameArea = tutorialGameArea;
+    Entity levelChanger = currentGameArea.getLevelChanger();
+    if (levelChanger != null) {
+      levelChanger.getEvents().addListener("triggerNextLevel", this::queueAreaSwap);
+    }
 
     // Follow the player with the camera.
     renderer.getCamera().setTarget(tutorialGameArea.getPlayer());
   }
 
+  /**
+   * When the level changer triggers a level change event, this method receives and creates the
+   * requested game area object and queues it to be rendered at the next available frame
+   *
+   * @param level the name of the level to load
+   */
+  private void queueAreaSwap(String level) {
+    TerrainFactory terrainFactory = new TerrainFactory(renderer.getCamera());
+
+    switch (level) {
+      case "tutorial":
+        nextGameArea = new TutorialGameArea(terrainFactory, renderer.getCamera());
+        break;
+      case "level2":
+        nextGameArea = new Level2GameArea(terrainFactory, renderer.getCamera());
+        break;
+      default:
+        return;
+    }
+    levelSwapQueued = true;
+  }
+
+  /**
+   * Performs the level swap by disposing of the existing level, creating the new area and updating
+   * internal references to keep track accurately of the current game area
+   */
+  private void performLevelSwap() {
+    logger.info("Swapping level to new game area");
+
+    currentGameArea.dispose();
+    nextGameArea.create();
+    currentGameArea = nextGameArea;
+    nextGameArea = null;
+
+    renderer.getCamera().setTarget(currentGameArea.getPlayer());
+  }
+
   @Override
   public void render(float delta) {
+    // at the start of the render, if there's been a level swap queued, safely perform the swap
+    if (levelSwapQueued) {
+      performLevelSwap();
+      levelSwapQueued = false;
+    }
+
     physicsEngine.update();
     ServiceLocator.getEntityService().update();
     renderer.render();
