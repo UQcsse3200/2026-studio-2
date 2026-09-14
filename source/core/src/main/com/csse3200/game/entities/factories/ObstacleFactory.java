@@ -74,7 +74,7 @@ public class ObstacleFactory {
     }
 
     platform
-        .addComponent(new PhysicsComponent())
+        .addComponent(new PhysicsComponent().setBodyType(BodyType.KinematicBody))
         .addComponent(new ColliderComponent().setLayer(PhysicsLayer.GROUND))
         .addComponent(new PlatformGrappleComponent(config.grappleSides));
 
