@@ -15,7 +15,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 @ExtendWith(GameExtension.class)
 class SpinTheWheelDisplayTest {
   private static final List<WheelItem> TWO_ITEMS =
-      List.of(new WheelItem(ItemType.ARROW, 1), new WheelItem(ItemType.CONSUMABLE, 2));
+          List.of(new WheelItem(ItemType.STANDARD_ARROW, 1), new WheelItem(ItemType.HEALTH_POTION, 2));
 
   @Test
   void shouldIncludeASpriteForEveryItem() {
@@ -38,15 +38,15 @@ class SpinTheWheelDisplayTest {
     InventoryComponent inventory = new InventoryComponent(0, 3);
     SpinTheWheelDisplay display = new SpinTheWheelDisplay(TWO_ITEMS, inventory);
 
-    display.award(new WheelItem(ItemType.ARROW, 10));
+    display.award(new WheelItem(ItemType.STANDARD_ARROW, 10));
 
-    assertEquals(10, inventory.getItemCount(ItemType.ARROW));
+    assertEquals(10, inventory.getItemCount(ItemType.STANDARD_ARROW));
   }
 
   @Test
   void shouldKeepNothingWithoutAnInventory() {
     SpinTheWheelDisplay display = new SpinTheWheelDisplay(TWO_ITEMS);
 
-    assertDoesNotThrow(() -> display.award(new WheelItem(ItemType.ARROW, 10)));
+    assertDoesNotThrow(() -> display.award(new WheelItem(ItemType.STANDARD_ARROW, 10)));
   }
 }

@@ -14,10 +14,10 @@ import org.junit.jupiter.api.Test;
 
 class WheelLogicTest {
   private static final List<WheelItem> THREE_ITEMS =
-      List.of(
-          new WheelItem(ItemType.ARROW, 1),
-          new WheelItem(ItemType.FireArrow, 2),
-          new WheelItem(ItemType.ColdArrow, 3));
+          List.of(
+                  new WheelItem(ItemType.STANDARD_ARROW, 1),
+                  new WheelItem(ItemType.FIRE_ARROW, 2),
+                  new WheelItem(ItemType.COLD_ARROW, 3));
 
   @Test
   void shouldRejectEmptyWheel() {
@@ -32,13 +32,13 @@ class WheelLogicTest {
     WheelLogic wheel = new WheelLogic(THREE_ITEMS, random);
     WheelItem result = wheel.spin();
 
-    assertEquals(ItemType.FireArrow, result.type());
+    assertEquals(ItemType.FIRE_ARROW, result.type());
     assertEquals(2, result.value());
   }
 
   @Test
   void shouldRejectAngleBeforeSpin() {
-    WheelLogic wheel = new WheelLogic(List.of(new WheelItem(ItemType.ARROW, 1)));
+    WheelLogic wheel = new WheelLogic(List.of(new WheelItem(ItemType.STANDARD_ARROW, 1)));
     assertThrows(IllegalStateException.class, wheel::getWinningAngle);
   }
 
