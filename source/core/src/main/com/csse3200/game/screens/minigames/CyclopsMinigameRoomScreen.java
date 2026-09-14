@@ -28,7 +28,7 @@ import com.csse3200.game.ui.GameEndDisplay;
 import com.csse3200.game.ui.GameEndState;
 import com.csse3200.game.ui.terminal.Terminal;
 import com.csse3200.game.ui.terminal.TerminalDisplay;
-import com.csse3200.game.ui.terminal.commands.CyclopsMinigameCommand;
+import com.csse3200.game.ui.terminal.commands.cyclopsMinigameCommands.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -134,7 +134,13 @@ public class CyclopsMinigameRoomScreen extends ScreenAdapter {
         ServiceLocator.getInputService().getInputFactory().createForTerminal();
 
     Terminal terminal = new Terminal();
-    terminal.addCommand("cyclops", new CyclopsMinigameCommand());
+    terminal.addCommand("cyclopsStart", new CyclopsStartCommand());
+    terminal.addCommand("cyclopsStop", new CyclopsStopCommand());
+    terminal.addCommand("cyclopsRestart", new CyclopsRestartCommand());
+    terminal.addCommand("cyclopsSuccess", new CyclopsSuccessCommand());
+    terminal.addCommand("cyclopsFailure", new CyclopsFailureCommand());
+    terminal.addCommand("cyclopsShowBar", new CyclopsShowBarCommand());
+    terminal.addCommand("cyclopsHideBar", new CyclopsHideBarCommand());
 
     Entity ui = new Entity();
     ui.addComponent(new InputDecorator(stage, 10))

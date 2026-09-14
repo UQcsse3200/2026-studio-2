@@ -27,24 +27,20 @@ public class CyclopsMinigameLogic extends Component {
   }
 
   private GameEndState outcome = GameEndState.LOSE;
-
   private State state;
+
+  private static final Timer timer = new Timer();
 
   /* Minigame Components */
   private final TimingBarLogic timingBarLogic;
   private final TimingBarDisplay timingBarDisplay;
 
   /* Screen Components */
-  private BlankTransitionScreen transitionScreen;
+  private final BlankTransitionScreen transitionScreen;
 
   /* Music / Sound effect components*/
   private Sound sound;
   private long soundId;
-
-  /* Timing Components */
-  private static final float TIMING_BAR_DELAY = 0.3f; // 0.3 of a second
-  private static final float TRANSITION_CHANGE_DELAY = 0.3f; // 0.3 of a second
-  private static final float TRANSITION_DELAY = 0.5f; // 0.3 of a second
 
   /* Player */
   private final Entity player;
@@ -80,12 +76,23 @@ public class CyclopsMinigameLogic extends Component {
   @Override
   public void create() {
     EventHandler eventHandler = ServiceLocator.getCyclopsMinigameEventHandler();
-    eventHandler.addListener("startMinigame", this::startMinigame);
-    eventHandler.addListener("restartMinigame", this::restartMinigame);
-    eventHandler.addListener("timingSuccess", this::onTimingSuccess);
-    eventHandler.addListener("timingFailure", this::onTimingFailure);
-    eventHandler.addListener("showTimingBar", this::showTimingBar);
-    eventHandler.addListener("hideTimingBar", this::hideTimingBar);
+    eventHandler.addListener("start", this::startMinigame);
+    eventHandler.addListener("restart", this::restartMinigame);
+    eventHandler.addListener("stop", this::stopMinigame);
+    eventHandler.addListener("success", this::onTimingSuccess);
+    eventHandler.addListener("failure", this::onTimingFailure);
+    eventHandler.addListener(
+        "showBar",
+        () -> {
+          showTimingBar();
+          timingBarLogic.startMarker();
+        });
+    eventHandler.addListener(
+        "hideBar",
+        () -> {
+          hideTimingBar();
+          timingBarLogic.stopMarker();
+        });
 
     sound =
         ServiceLocator.getResourceService()
@@ -144,6 +151,7 @@ public class CyclopsMinigameLogic extends Component {
 
   private void updatePlaying() {
     timingBarLogic.update(Gdx.graphics.getDeltaTime());
+
     if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
       timingBarLogic.stopMarker();
       scheduleTimingMinigameHide();
@@ -206,13 +214,24 @@ public class CyclopsMinigameLogic extends Component {
     scheduleTimingMinigameShow();
   }
 
+  public void stopMinigame() {
+    timer.clear();
+    state = State.STOPPED;
+    timingBarLogic.stopMarker();
+    hideTimingBar();
+    transitionScreen.setVisible(false);
+    if (sound != null) {
+      sound.stop();
+    }
+  }
+
   public void gameOver() {
     ServiceLocator.getGameEndEventHandler().trigger("gameEnd", outcome);
     state = State.STOPPED;
   }
 
   private void scheduleTimingMinigameShow() {
-    Timer.schedule(
+    timer.scheduleTask(
         new Timer.Task() {
           @Override
           public void run() {
@@ -226,7 +245,7 @@ public class CyclopsMinigameLogic extends Component {
   }
 
   private void scheduleTimingMinigameHide() {
-    Timer.schedule(
+    timer.scheduleTask(
         new Timer.Task() {
           @Override
           public void run() {
@@ -238,7 +257,7 @@ public class CyclopsMinigameLogic extends Component {
   }
 
   private void scheduleTransitionStart() {
-    Timer.schedule(
+    timer.scheduleTask(
         new Timer.Task() {
           @Override
           public void run() {
@@ -250,7 +269,7 @@ public class CyclopsMinigameLogic extends Component {
   }
 
   private void scheduleTransitionEnd() {
-    Timer.schedule(
+    timer.scheduleTask(
         new Timer.Task() {
           @Override
           public void run() {
@@ -265,7 +284,7 @@ public class CyclopsMinigameLogic extends Component {
   }
 
   private void scheduleGameOver() {
-    Timer.schedule(
+    timer.scheduleTask(
         new Timer.Task() {
           @Override
           public void run() {
