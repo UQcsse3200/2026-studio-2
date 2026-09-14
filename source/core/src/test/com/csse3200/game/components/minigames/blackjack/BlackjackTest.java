@@ -91,7 +91,7 @@ class BlackjackTest {
         game.stand();
       }
 
-      boolean resultIsWin = game.getResultMessage().contains("win");
+      boolean resultIsWin = game.getResultMessage().contains("You win");
       assertEquals(resultIsWin, game.isPlayerWinner());
       foundWinner |= game.isPlayerWinner();
       foundNonWinner |= !game.isPlayerWinner();
