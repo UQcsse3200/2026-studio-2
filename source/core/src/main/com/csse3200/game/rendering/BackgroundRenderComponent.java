@@ -10,8 +10,6 @@ import com.csse3200.game.services.ServiceLocator;
 import java.util.ArrayList;
 import java.util.List;
 
-// USE THIS ENTIRE CLASS CALLUM LMAO
-
 /** Render multiple layers of a parallax background. */
 public class BackgroundRenderComponent extends RenderComponent {
 
@@ -143,6 +141,35 @@ public class BackgroundRenderComponent extends RenderComponent {
    * @param position the current position of the layer
    * @return updated position of the layer
    */
+  private Vector2 getDependentPosition(ParallaxLayer layer, Vector3 cameraPos, Vector2 position) {
+    float cameraX = cameraPos.x;
+    float cameraY = cameraPos.y;
+    getPosUpdate(layer);
+
+    float backgroundX =
+        position.x + layer.offset.x + cameraX * (1f - layer.parallaxFactor.x) + layer.position.x;
+    float backgroundY = position.y + layer.offset.y + cameraY + layer.position.y;
+
+    return new Vector2(backgroundX, backgroundY);
+  }
+
+  private void getPosUpdate(ParallaxLayer layer) {
+    // Since this is called every frame, changing frame rates will change speed
+    layer.position.x += layer.velocity.x / 100;
+    layer.position.y += layer.velocity.y / 100;
+  }
+
+  private Vector2 getIndependentPosition(ParallaxLayer layer, Vector3 cameraPos, Vector2 position) {
+    float cameraX = cameraPos.x;
+    float cameraY = cameraPos.y;
+    getPosUpdate(layer);
+
+    float backgroundX = cameraX + layer.offset.x;
+    float backgroundY = cameraY + layer.offset.y + position.y + layer.position.y;
+
+    return new Vector2(backgroundX, backgroundY);
+  }
+
   private Vector2 getDependentPosition(ParallaxLayer layer, Vector3 cameraPos, Vector2 position) {
     float cameraX = cameraPos.x;
     float cameraY = cameraPos.y;

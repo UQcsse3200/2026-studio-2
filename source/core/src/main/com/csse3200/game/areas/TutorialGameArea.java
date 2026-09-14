@@ -26,7 +26,6 @@ import org.slf4j.LoggerFactory;
 
 /** Tutorial area for the game with platforms, enemies, and a player. */
 public class TutorialGameArea extends GameArea {
-
   private static final Logger logger = LoggerFactory.getLogger(TutorialGameArea.class);
 
   /*
@@ -187,7 +186,6 @@ public class TutorialGameArea extends GameArea {
    * the subtle effect you originally wanted.
    */
   private void spawnBackground() {
-    // USE THIS ENTIRE spawnBackground
     final Vector2 backgroundPos = new Vector2(-10f, -10f);
     BackgroundRenderComponent backgroundComponent =
         new BackgroundRenderComponent(camera, backgroundPos, worldBounds);
@@ -217,9 +215,7 @@ public class TutorialGameArea extends GameArea {
     // Create the background entity.
     Entity background = new Entity().addComponent(backgroundComponent);
 
-    /*
-     * Position the background in the game world.
-     */
+    // Position the background in the game world.
     background.setPosition(backgroundPos);
 
     spawnEntity(background);
@@ -235,7 +231,6 @@ public class TutorialGameArea extends GameArea {
     float tileSize = terrain.getTileSize();
     GridPoint2 tileBounds = terrain.getMapBounds(0);
     worldBounds = new Vector2(tileBounds.x * tileSize, tileBounds.y * tileSize);
-    //// spawnMovingPlatforms();
 
     // Left wall
     spawnEntityAt(
@@ -268,7 +263,6 @@ public class TutorialGameArea extends GameArea {
   }
 
   private Entity spawnPlayer() {
-
     Entity newPlayer = PlayerFactory.createPlayer();
     newPlayer.getEvents().addListener("grappleRequested", this::checkSuccessfulGrapple);
     newPlayer.getEvents().addListener("respawnAtCheckpoint", this::respawn);
@@ -349,10 +343,6 @@ public class TutorialGameArea extends GameArea {
     resourceService.unloadAssets(forestTextureAtlases);
     resourceService.unloadAssets(forestSounds);
     resourceService.unloadAssets(forestMusic);
-  }
-
-  public Entity getPlayer() {
-    return player;
   }
 
   /** Dispose of the game area. */

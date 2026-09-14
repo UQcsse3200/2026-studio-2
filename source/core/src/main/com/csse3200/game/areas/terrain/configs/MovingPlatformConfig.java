@@ -7,18 +7,38 @@ public class MovingPlatformConfig extends PlatformConfig {
   public Vector2 firstTarget;
   public Vector2 secondTarget;
   public Vector2 speed;
+  public String[] activateIds;
 
   public MovingPlatformConfig(
       GridPoint2 position,
       int width,
       int height,
       int grappleSides,
+      String textureFilepath,
       Vector2 firstTarget,
       Vector2 secondTarget,
-      Vector2 speed) {
-    super(position, width, height, grappleSides);
+      Vector2 speed,
+      String[] activateIds) {
+    super(position, width, height, grappleSides, textureFilepath);
     this.firstTarget = firstTarget;
     this.secondTarget = secondTarget;
     this.speed = speed;
+    this.activateIds = activateIds;
+  }
+
+  public Vector2 getFirstTarget() {
+    return firstTarget;
+  }
+
+  public Vector2 getSecondTarget() {
+    return secondTarget;
+  }
+
+  public Vector2 getSpeed() {
+    return speed;
+  }
+
+  public String[] getActivateIds() {
+    return activateIds;
   }
 }
