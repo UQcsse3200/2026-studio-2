@@ -11,6 +11,10 @@ import java.util.Map;
 
 public class LevelConfig {
   protected String platformTFP;
+  protected String movingPlatformTFP;
+  protected String crumblingPlatformTFP;
+  protected String triggerablePlatformTFP;
+  protected String ledgesTFP;
   protected String groundTFP;
 
   protected PlatformConfig[] platforms;
