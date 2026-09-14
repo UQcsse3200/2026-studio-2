@@ -6,14 +6,11 @@ import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.inventory.BackpackDisplay;
 import com.csse3200.game.components.inventory.InventoryBarDisplay;
 import com.csse3200.game.components.inventory.InventoryComponent;
+import com.csse3200.game.components.item.weapons.WeaponComponent;
+import com.csse3200.game.components.item.weapons.bow.BowComponent;
+import com.csse3200.game.components.item.weapons.bow.grapple.GrappleComponent;
+import com.csse3200.game.components.item.weapons.melee.MeleeComponent;
 import com.csse3200.game.components.player.*;
-import com.csse3200.game.components.player.BowComponent;
-import com.csse3200.game.components.player.GrappleComponent;
-import com.csse3200.game.components.player.ItemUseComponent;
-import com.csse3200.game.components.player.PlayerActions;
-import com.csse3200.game.components.player.PlayerAttackComponent;
-import com.csse3200.game.components.player.PlayerInteractionComponent;
-import com.csse3200.game.components.player.PlayerStatsDisplay;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.PlayerConfig;
 import com.csse3200.game.files.FileLoader;
@@ -24,15 +21,11 @@ import com.csse3200.game.physics.components.ColliderComponent;
 import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.rendering.AnimationRenderComponent;
-import com.csse3200.game.rendering.GrappleRenderComponent;
+import com.csse3200.game.rendering.item.GrappleRenderComponent;
+import com.csse3200.game.rendering.item.MeleeRenderComponent;
 import com.csse3200.game.services.ServiceLocator;
 
-/**
- * Factory to create a player entity.
- *
- * <p>Predefined player properties are loaded from a config stored as a json file and should have
- * the properties stores in 'PlayerConfig'.
- */
+/** Factory to create a player entity. */
 public class PlayerFactory {
   private static final PlayerConfig stats =
       FileLoader.readClass(PlayerConfig.class, "configs/player.json");
@@ -51,11 +44,13 @@ public class PlayerFactory {
         new AnimationRenderComponent(
             ServiceLocator.getResourceService()
                 .getAsset("images/player.atlas", TextureAtlas.class));
-    animator.addAnimation("idle", 0.15f, PlayMode.LOOP);
+    animator.addAnimation("idle", 0.2f, PlayMode.LOOP);
     animator.addAnimation("walk", 0.1f, PlayMode.LOOP);
-    animator.addAnimation("sprint", 0.1f, PlayMode.LOOP);
-    animator.addAnimation("jump", 0.05f, PlayMode.NORMAL);
+    animator.addAnimation("sprint", 0.125f, PlayMode.LOOP);
+    animator.addAnimation("jump", 0.075f, PlayMode.NORMAL);
     animator.addAnimation("hurt", 0.04f, PlayMode.NORMAL);
+    animator.addAnimation("death", 0.1458f, PlayMode.NORMAL);
+    animator.addAnimation("sleep", 0.1458f, PlayMode.LOOP);
 
     Entity player =
         new Entity()
@@ -68,10 +63,8 @@ public class PlayerFactory {
                 new CombatStatsComponent(
                     stats.health, stats.baseAttack, stats.invulnerabilityDuration))
             .addComponent(bowComponent)
-            .addComponent(new PlayerAttackComponent(bowComponent))
-            .addComponent(
-                new CombatStatsComponent(
-                    stats.health, CombatStatsComponent.MAX_HEALTH, stats.baseAttack))
+            .addComponent(new MeleeComponent())
+            .addComponent(new WeaponComponent(bowComponent))
             .addComponent(new InventoryComponent(stats.gold))
             .addComponent(new InventoryBarDisplay())
             .addComponent(new BackpackDisplay())
@@ -81,12 +74,13 @@ public class PlayerFactory {
             .addComponent(new PlayerStatsDisplay())
             .addComponent(new GrappleComponent())
             .addComponent(new GrappleRenderComponent())
-            .addComponent(new PlayerAnimationController());
+            .addComponent(new PlayerAnimationController())
+            .addComponent(new MeleeRenderComponent());
 
-    PhysicsUtils.setScaledCollider(player, 0.6f, 0.3f);
     player.getComponent(ColliderComponent.class).setDensity(1.5f);
     player.getComponent(AnimationRenderComponent.class).scaleEntity();
-    player.scaleWidth(0.75f);
+    player.scaleWidth(0.6f);
+    PhysicsUtils.setScaledCollider(player, 0.9f, 0.9f);
     return player;
   }
 

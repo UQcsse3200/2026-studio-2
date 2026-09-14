@@ -1,11 +1,13 @@
 package com.csse3200.game.components.item;
 
+import com.csse3200.game.components.projectile.ArrowType;
+
 /**
  * Catalog of item kinds. Static attributes (id, name, combat stats, texture) live here so inventory
  * UI and item use do not keep a second copy.
  */
 public enum ItemType {
-  ARROW(
+  STANDARD_ARROW(
       1,
       "Standard Arrow",
       "A basic arrow used as ammunition.",
@@ -15,7 +17,7 @@ public enum ItemType {
       0f,
       0,
       true),
-  RopeArrow(
+  ROPE_ARROW(
       2,
       "Rope Arrow",
       "An arrow used for grappling.",
@@ -25,7 +27,7 @@ public enum ItemType {
       5f,
       0,
       false),
-  CONSUMABLE(
+  HEALTH_POTION(
       3,
       "Health Potion",
       "Restores a small amount of health.",
@@ -34,8 +36,8 @@ public enum ItemType {
       0f,
       0f,
       25,
-      true),
-  FireArrow(
+      false),
+  FIRE_ARROW(
       4,
       "Fire Arrow",
       "An arrow that burns enemies over time.",
@@ -49,7 +51,7 @@ public enum ItemType {
       5f,
       0f,
       0f),
-  ColdArrow(
+  COLD_ARROW(
       5,
       "Cold Arrow",
       "An arrow that slows enemies.",
@@ -167,6 +169,25 @@ public enum ItemType {
 
   public boolean consumesAmmo() {
     return consumeAmmo;
+  }
+
+  /** Checks if the item is arrow ammunition. */
+  public boolean isArrow() {
+    return switch (this) {
+      case STANDARD_ARROW, ROPE_ARROW, FIRE_ARROW, COLD_ARROW -> true;
+      case HEALTH_POTION -> false;
+    };
+  }
+
+  /** Converts this inventory item type into its corresponding combat arrow type. */
+  public ArrowType toArrowType() {
+    return switch (this) {
+      case FIRE_ARROW -> ArrowType.FIRE;
+      case COLD_ARROW -> ArrowType.COLD;
+      case ROPE_ARROW -> ArrowType.GRAPPLE;
+      case STANDARD_ARROW -> ArrowType.STANDARD;
+      default -> null;
+    };
   }
 
   public float getBurnDamagePerSecond() {
