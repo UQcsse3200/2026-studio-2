@@ -9,8 +9,11 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
-import com.csse3200.game.components.item.weapons.RopeArr;
+// import com.csse3200.game.components.item.weapons.RopeArr;
+import com.csse3200.game.components.item.ItemComponent;
+import com.csse3200.game.components.item.weapons.bow.arrow.*;
 import com.csse3200.game.entities.EntityService;
+import com.csse3200.game.entities.factories.ItemFactory;
 import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.physics.PhysicsService;
 import com.csse3200.game.services.ResourceService;
@@ -191,7 +194,10 @@ class LevelConfigTest {
     GridPoint2 pos = new GridPoint2(0, 0);
 
     LevelConfig levelConfig = new LevelConfig();
-    levelConfig.items = new HashMap<>(Map.of(pos, new RopeArr(1)));
+    levelConfig.items =
+        new HashMap<>(
+            Map.of(
+                pos, ItemFactory.createRopeArrow(1).getComponent(ItemComponent.class).getItem()));
     levelConfig.createEntities();
 
     assertEquals(1, levelConfig.entities.size());
