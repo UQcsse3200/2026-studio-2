@@ -17,6 +17,8 @@ import com.badlogic.gdx.math.Vector3;
 import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.components.inventory.InventoryComponent;
 import com.csse3200.game.components.item.ItemType;
+import com.csse3200.game.components.item.weapons.PrimaryWeapon;
+import com.csse3200.game.components.item.weapons.WeaponComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.extensions.GameExtension;
@@ -136,12 +138,15 @@ class KeyboardPlayerInputComponentTest {
 
   @Test
   void shouldUseSelectedItemOncePerEPress() {
+    PrimaryWeapon primary = mock(PrimaryWeapon.class);
+    when(primary.isReady()).thenReturn(true);
     KeyboardPlayerInputComponent component = new KeyboardPlayerInputComponent();
     InventoryComponent inventory = new InventoryComponent(0);
     Entity player =
         new Entity()
             .addComponent(component)
             .addComponent(inventory)
+            .addComponent(new WeaponComponent(primary))
             .addComponent(new ItemUseComponent());
     player.setPosition(0f, 0f);
     Entity cameraEntity = new Entity().addComponent(new CameraComponent(camera));

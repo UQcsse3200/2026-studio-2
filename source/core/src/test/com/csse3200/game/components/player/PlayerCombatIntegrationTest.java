@@ -7,6 +7,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -171,5 +172,105 @@ class PlayerCombatIntegrationTest {
     factory.verifyNoInteractions();
     verifyNoInteractions(entities, sound, primaryAttack, itemUsed, animation);
     assertEquals(0, inventory.getItemCount(ItemType.STANDARD_ARROW));
+  }
+
+  @Test
+  void shouldPreserveAmmoAndRejectSecondShotDuringCooldown() {
+    inventory.addItem(ItemType.STANDARD_ARROW, 3);
+    assertTrue(itemUse.useSelectedItem());
+
+    boolean accepted = itemUse.useSelectedItem();
+
+    assertEquals(2, inventory.getItemCount(ItemType.STANDARD_ARROW));
+    assertFalse(accepted);
+    factory.verify(() -> ProjectileFactory.createPlayerArrow(eq(player), any(), any()));
+    factory.verifyNoMoreInteractions();
+    verify(entities).register(projectile);
+    verify(primaryAttack).handle(any());
+    verify(itemUsed).handle(ItemType.STANDARD_ARROW);
+    verify(itemFailed).handle(ItemType.STANDARD_ARROW);
+    verify(animation).handle(any());
+    verify(sound).play();
+  }
+
+  @Test
+  void shouldFireAgainOnlyAfterCooldownExpires() {
+    inventory.addItem(ItemType.STANDARD_ARROW, 3);
+    assertTrue(itemUse.useSelectedItem());
+    when(time.getDeltaTime()).thenReturn(0.39f);
+    bow.update();
+    assertFalse(itemUse.useSelectedItem());
+    assertEquals(2, inventory.getItemCount(ItemType.STANDARD_ARROW));
+
+    when(time.getDeltaTime()).thenReturn(0.02f);
+    bow.update();
+    assertTrue(itemUse.useSelectedItem());
+
+    factory.verify(() -> ProjectileFactory.createPlayerArrow(eq(player), any(), any()), times(2));
+    factory.verifyNoMoreInteractions();
+    verify(entities, times(2)).register(projectile);
+    verify(itemUsed, times(2)).handle(ItemType.STANDARD_ARROW);
+    verify(itemFailed).handle(ItemType.STANDARD_ARROW);
+    assertEquals(1, inventory.getItemCount(ItemType.STANDARD_ARROW));
+  }
+
+  @Test
+  void shouldNotBypassCooldownByChangingArrowType() {
+    inventory.addItem(ItemType.STANDARD_ARROW, 2);
+    inventory.addItem(ItemType.FIRE_ARROW, 2);
+    assertTrue(itemUse.useSelectedItem());
+    player.getEvents().trigger("selectQuickSlot", 1);
+
+    assertFalse(itemUse.useSelectedItem());
+
+    assertEquals(2, inventory.getItemCount(ItemType.FIRE_ARROW));
+    assertEquals(1, inventory.getItemCount(ItemType.STANDARD_ARROW));
+    factory.verify(() -> ProjectileFactory.createPlayerArrow(eq(player), any(), any()));
+    factory.verifyNoMoreInteractions();
+    verify(entities).register(projectile);
+    verify(primaryAttack).handle(any());
+    verify(itemUsed).handle(ItemType.STANDARD_ARROW);
+    verify(itemFailed).handle(ItemType.FIRE_ARROW);
+
+    when(time.getDeltaTime()).thenReturn(0.4f);
+    bow.update();
+    assertTrue(itemUse.useSelectedItem());
+    factory.verify(() -> ProjectileFactory.createFireArrow(eq(player), any(), any()));
+    verify(entities, times(2)).register(projectile);
+    verify(itemUsed).handle(ItemType.FIRE_ARROW);
+    assertEquals(1, inventory.getItemCount(ItemType.FIRE_ARROW));
+  }
+
+  @Test
+  void shouldPreserveAmmoWithoutEquippedWeapon() {
+    inventory.addItem(ItemType.STANDARD_ARROW, 2);
+    weapon.setPrimaryWeapon(null);
+
+    assertFalse(itemUse.useSelectedItem());
+
+    assertEquals(2, inventory.getItemCount(ItemType.STANDARD_ARROW));
+    factory.verifyNoInteractions();
+    verifyNoInteractions(entities, sound, primaryAttack, itemUsed, animation);
+    verify(itemFailed).handle(ItemType.STANDARD_ARROW);
+  }
+
+  @Test
+  void shouldPreserveAmmoWithoutWeaponCoordinator() {
+    InventoryComponent isolatedInventory = new InventoryComponent(0);
+    ItemUseComponent isolatedItemUse = new ItemUseComponent();
+    Entity incompletePlayer =
+        new Entity().addComponent(isolatedInventory).addComponent(isolatedItemUse);
+    incompletePlayer.create();
+    incompletePlayer.getEvents().addListener("primaryAttack", primaryAttack);
+    incompletePlayer.getEvents().addListener("itemUsed", itemUsed);
+    incompletePlayer.getEvents().addListener("itemUseFailed", itemFailed);
+    isolatedInventory.addItem(ItemType.STANDARD_ARROW, 2);
+
+    assertFalse(isolatedItemUse.useSelectedItem());
+
+    assertEquals(2, isolatedInventory.getItemCount(ItemType.STANDARD_ARROW));
+    factory.verifyNoInteractions();
+    verifyNoInteractions(entities, sound, primaryAttack, itemUsed);
+    verify(itemFailed).handle(ItemType.STANDARD_ARROW);
   }
 }

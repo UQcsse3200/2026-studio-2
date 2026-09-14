@@ -11,6 +11,8 @@ import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.inventory.InventoryComponent;
 import com.csse3200.game.components.item.ItemType;
 import com.csse3200.game.components.item.consumables.HealthPotion;
+import com.csse3200.game.components.item.weapons.PrimaryWeapon;
+import com.csse3200.game.components.item.weapons.WeaponComponent;
 import com.csse3200.game.components.projectile.ArrowType;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.extensions.GameExtension;
@@ -267,10 +269,13 @@ class ItemUseComponentTest {
   }
 
   private Entity createPlayer() {
+    PrimaryWeapon primary = mock(PrimaryWeapon.class);
+    when(primary.isReady()).thenReturn(true);
     Entity player =
         new Entity()
             .addComponent(new InventoryComponent(0))
             .addComponent(new CombatStatsComponent(100, 10))
+            .addComponent(new WeaponComponent(primary))
             .addComponent(new ItemUseComponent());
     player.create();
     return player;
