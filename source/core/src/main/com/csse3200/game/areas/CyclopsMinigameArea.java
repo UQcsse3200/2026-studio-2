@@ -47,7 +47,11 @@ public class CyclopsMinigameArea extends GameArea {
 
   private static final String[] cyclopsMinigameTexturesAtlases = {"images/player.atlas"};
 
-  private static final String[] cyclopsMinigameSounds = {"sounds/walkingSounds/walkingSound.mp3"};
+  private static final String[] cyclopsMinigameSounds = {
+    "sounds/walkingSounds/walkingSound.mp3",
+    "sounds/minigames/cyclops/marker-hit.ogg",
+    "sounds/minigames/cyclops/marker-miss.ogg"
+  };
 
   private final TerrainFactory terrainFactory;
 

@@ -39,8 +39,17 @@ public class CyclopsMinigameLogic extends Component {
   private final BlankTransitionScreen transitionScreen;
 
   /* Music / Sound effect components*/
-  private Sound sound;
-  private long soundId;
+  private Sound walkingSound;
+  private long walkingSoundID;
+  private static final float walkingSoundVolume = 0.3f;
+
+  private Sound hitSound;
+  private long hitSoundID;
+  private static final float hitSoundVolume = 0.1f;
+
+  private Sound missSound;
+  private long missSoundID;
+  private static final float missSoundVolume = 0.2f;
 
   /* Player */
   private final Entity player;
@@ -94,9 +103,15 @@ public class CyclopsMinigameLogic extends Component {
           timingBarLogic.stopMarker();
         });
 
-    sound =
+    walkingSound =
         ServiceLocator.getResourceService()
             .getAsset("sounds/walkingSounds/walkingSound.mp3", Sound.class);
+    hitSound =
+        ServiceLocator.getResourceService()
+            .getAsset("sounds/minigames/cyclops/marker-hit.ogg", Sound.class);
+    missSound =
+        ServiceLocator.getResourceService()
+            .getAsset("sounds/minigames/cyclops/marker-miss.ogg", Sound.class);
   }
 
   @Override
@@ -158,6 +173,15 @@ public class CyclopsMinigameLogic extends Component {
     if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
       timingBarLogic.stopMarker();
       logger.info("sliding marker was stopped at {} (0.0 - 1.0)", timingBarLogic.markerX);
+
+      if (timingBarLogic.checkHit()) {
+        hitSoundID = hitSound.play();
+        hitSound.setVolume(hitSoundID, hitSoundVolume);
+      } else {
+        missSoundID = missSound.play();
+        missSound.setVolume(missSoundID, missSoundVolume);
+      }
+
       scheduleTimingMinigameHide();
     }
   }
@@ -179,9 +203,9 @@ public class CyclopsMinigameLogic extends Component {
   }
 
   private void playWalkingSound() {
-    soundId = sound.play();
-    sound.setLooping(soundId, true);
-    sound.setVolume(soundId, 0.1f);
+    walkingSoundID = walkingSound.play();
+    walkingSound.setLooping(walkingSoundID, true);
+    walkingSound.setVolume(walkingSoundID, walkingSoundVolume);
   }
 
   private void transition() {
@@ -193,7 +217,7 @@ public class CyclopsMinigameLogic extends Component {
   }
 
   private void stopWalkingSound() {
-    sound.stop(soundId);
+    walkingSound.stop(walkingSoundID);
   }
 
   private void onTransitionStart() {
@@ -224,9 +248,7 @@ public class CyclopsMinigameLogic extends Component {
     timingBarLogic.stopMarker();
     hideTimingBar();
     transitionScreen.setVisible(false);
-    if (sound != null) {
-      sound.stop();
-    }
+    walkingSound.stop();
   }
 
   public void gameOver() {
