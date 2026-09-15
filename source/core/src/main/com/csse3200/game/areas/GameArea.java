@@ -4,19 +4,12 @@ import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Disposable;
 import com.csse3200.game.areas.terrain.TerrainComponent;
-import com.csse3200.game.areas.terrain.configs.LevelConfig;
-import com.csse3200.game.areas.terrain.configs.SpawnData;
 import com.csse3200.game.components.CameraComponent;
-import com.csse3200.game.components.level.ActivatableComponent;
-import com.csse3200.game.components.level.CheckpointComponent;
-import com.csse3200.game.components.level.LevelTriggerComponent;
 import com.csse3200.game.components.level.PlatformGrappleComponent;
-import com.csse3200.game.components.level.TriggerButtonComponent;
 import com.csse3200.game.components.player.KeyboardPlayerInputComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -32,11 +25,8 @@ public abstract class GameArea implements Disposable {
   protected TerrainComponent terrain;
   protected List<Entity> areaEntities;
   protected List<Entity> platforms = new ArrayList<>();
-  protected HashMap<String, ArrayList<Entity>> triggerableEntities = new HashMap<>();
   protected Entity player;
   protected KeyboardPlayerInputComponent input;
-  protected Entity levelChanger;
-  protected LevelConfig config;
 
   /**
    * Creates a game area using the provided camera component.
@@ -53,29 +43,9 @@ public abstract class GameArea implements Disposable {
 
   /** Dispose of all internal entities in the area */
   public void dispose() {
-    areaEntities.remove(player);
-
     for (Entity entity : areaEntities) {
       entity.dispose();
     }
-
-    // clear all references
-    areaEntities.clear();
-    platforms.clear();
-    triggerableEntities.clear();
-  }
-
-  public Entity getPlayer() {
-    return player;
-  }
-
-  /**
-   * Gets the level changer from this level specified by the level config
-   *
-   * @return the level changer entity or null if this level shouldn't change
-   */
-  public Entity getLevelChanger() {
-    return levelChanger;
   }
 
   /**
@@ -86,40 +56,10 @@ public abstract class GameArea implements Disposable {
   protected void spawnEntity(Entity entity) {
     areaEntities.add(entity);
 
-    // listen for child entities that may wish to spawn their own entities, like traps and
-    // enemy spawners
-    entity.getEvents().addListener("spawnEntity", this::spawnEntity);
-
     // keep track of all grappleable platforms
     PlatformGrappleComponent platform = entity.getComponent(PlatformGrappleComponent.class);
     if (platform != null && platform.getGrappleSides() != 0) {
       platforms.add(entity);
-    }
-
-    // keep track of all triggerable objects
-    ActivatableComponent activate = entity.getComponent(ActivatableComponent.class);
-    if (activate != null) {
-      String[] ids = activate.getIds();
-
-      for (String id : ids) {
-        // add new list to the map if the id is not present
-        if (!triggerableEntities.containsKey(id)) {
-          triggerableEntities.put(id, new ArrayList<>());
-        }
-        // add entity to the respective id's list
-        triggerableEntities.get(id).add(entity);
-      }
-
-      // listen for trigger buttons' activation event call
-      TriggerButtonComponent trigger = entity.getComponent(TriggerButtonComponent.class);
-      if (trigger != null) {
-        entity.getEvents().addListener("activateByKey", this::onButtonActivated);
-      }
-    }
-
-    LevelTriggerComponent trigger = entity.getComponent(LevelTriggerComponent.class);
-    if (trigger != null) {
-      levelChanger = entity;
     }
 
     ServiceLocator.getEntityService().register(entity);
@@ -147,18 +87,6 @@ public abstract class GameArea implements Disposable {
 
     entity.setPosition(worldPos);
     spawnEntity(entity);
-  }
-
-  /**
-   * Requests the game area's config file to create all level entities and then spawns them at their
-   * specified position
-   */
-  protected void spawnConfigEntities() {
-    ArrayList<SpawnData> entities = config.createEntities();
-
-    for (SpawnData data : entities) {
-      spawnEntityAt(data.entity, data.pos, false, false);
-    }
   }
 
   /**
@@ -190,15 +118,6 @@ public abstract class GameArea implements Disposable {
     return platform;
   }
 
-  public TerrainComponent getTerrain() {
-    return terrain;
-  }
-
-  public enum BackgroundType {
-    INDEPENDENT,
-    DEPENDENT
-  }
-
   /**
    * Public method for grapples to check the end of the raycast position hits a valid side of a
    * platform to confirm a successful grapple location was hit
@@ -208,10 +127,6 @@ public abstract class GameArea implements Disposable {
    */
   public void checkSuccessfulGrapple(Vector2 raycastEnd) {
     Entity p = findTargetedPlatform(raycastEnd);
-    if (p == null) {
-      return;
-    }
-
     PlatformGrappleComponent grappleComponent = p.getComponent(PlatformGrappleComponent.class);
     int hit = grappleComponent.checkSideHit(p, raycastEnd);
     boolean result = grappleComponent.successfulGrapple(hit);
@@ -220,40 +135,5 @@ public abstract class GameArea implements Disposable {
 
   public KeyboardPlayerInputComponent getInput() {
     return input;
-  }
-
-  /**
-   * Triggers the activated component on all stored entities that require an update for a specific
-   * activation id
-   *
-   * @param id a String of an activation id to search the HashMap for a list of entities that are
-   *     activated by this id
-   */
-  private void onButtonActivated(String id) {
-    ArrayList<Entity> entities = triggerableEntities.get(id);
-    for (Entity entity : entities) {
-      ActivatableComponent activate = entity.getComponent(ActivatableComponent.class);
-      boolean newActive = !activate.isActive();
-      activate.setActive(newActive);
-    }
-  }
-
-  /** Public method to respawn the player at the last collected checkpoint upon an event trigger. */
-  public void respawn() {
-    ArrayList<CheckpointComponent> checkpoints = config.getCheckpoints();
-    // If no checkpoints collected use playerSpawn as respawnPoint
-    GridPoint2 respawnPoint = config.getPlayerSpawn();
-
-    // Get last collected checkpoint
-    // Note: will choose last active checkpoint in same order they are instantiated
-    // in {level}Config
-    for (CheckpointComponent checkpoint : checkpoints) {
-      if (checkpoint.isActive()) {
-        respawnPoint = checkpoint.getPosition();
-      }
-    }
-    float x = respawnPoint.x;
-    float y = respawnPoint.y;
-    player.setPosition(x, y);
   }
 }
