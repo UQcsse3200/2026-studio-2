@@ -115,6 +115,9 @@ public class EnemyFactory {
 
     Vulture.getComponent(AnimationRenderComponent.class).scaleEntity();
 
+    Vulture.getComponent(AITaskComponent.class)
+        .addTask(new DelayedAttackTask(target, 20, 0.8f, 0.5f));
+
     return Vulture;
   }
 

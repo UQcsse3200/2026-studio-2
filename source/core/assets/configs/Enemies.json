@@ -73,7 +73,7 @@
     "wanderRangeY": 0.0,
     "wanderWaitTime": 2.0,
     "chasePriority": 10,
-    "viewDistance": 10.0,
+    "viewDistance": 6.0,
     "maxChaseDistance": 12.5,
     "maxSpeed": 4.5,
     "gravity": false,
