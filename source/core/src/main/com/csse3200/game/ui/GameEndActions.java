@@ -30,7 +30,7 @@ public class GameEndActions extends Component {
   /** Hook for a future reset/restart system. */
   private void onRestart() {
     logger.info("Restart requested. No reset system is currently implemented.");
-    // TODO: connect this to the eventual game-reset flow.
+    game.transitionTo(GdxGame.ScreenType.TUTORIAL_GAME);
   }
 
   /** Exits the application. */
