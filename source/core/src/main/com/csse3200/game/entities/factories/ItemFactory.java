@@ -35,7 +35,6 @@ public class ItemFactory {
     return itemEntity;
   }
 
-
   /**
    * Creates a world entity for an item based on encoded string representations of items.
    *
@@ -57,7 +56,6 @@ public class ItemFactory {
             itemName + " has no string based creation: createItem(String itemName, int quantity)");
     }
   }
-
 
   public static Entity createRopeArrow() {
     return createRopeArrow(1);

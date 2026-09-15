@@ -61,15 +61,9 @@ public class TutorialGameArea extends GameArea {
         new GridPoint2(6, 10),
       };
 
-  private static final GridPoint2[] VultureSpawnLocations =
-      new GridPoint2[] {
+  private static final GridPoint2[] VultureSpawnLocations = new GridPoint2[] {};
 
-      };
-
-  private static final GridPoint2[] NecromancerSpawnLocations =
-      new GridPoint2[] {
-
-      };
+  private static final GridPoint2[] NecromancerSpawnLocations = new GridPoint2[] {};
 
   private static final GridPoint2[] skeletonArcherSpawnLocations =
       new GridPoint2[] {
@@ -188,16 +182,15 @@ public class TutorialGameArea extends GameArea {
     spawnSkeletonWarrior();
 
     // Test enemy functionalitys
-     spawnTestSkeletonWarrior();
-     spawnTestSkeletonArcher();
-     //spawnTestVulture();
-     //spawnTestNecromancer();
+    spawnTestSkeletonWarrior();
+    spawnTestSkeletonArcher();
+    // spawnTestVulture();
+    // spawnTestNecromancer();
 
     spawnVulture();
     spawnNecromancer();
 
     // spawnTestWinCondition(); // Temporary test win condition near player spawn for quick testing
-
 
     //// spawnTestEnemyNearPlayer(); // Temporary enemy near player spawn for quick HUD/flicker
     // testing
@@ -320,23 +313,23 @@ public class TutorialGameArea extends GameArea {
     return newPlayer;
   }
 
-  
   private void spawnWinCondition() {
     Entity winCon = ObstacleFactory.createWinConEntity();
     spawnEntityAt(winCon, new GridPoint2(80, 18), true, true);
   }
+
   // Temporary test win condition near player spawn for quick testing
   private void spawnTestWinCondition() {
     // Temporary test win condition near player spawn for quick testing
     Entity testWinCon = ObstacleFactory.createWinConEntity();
     spawnEntityAt(testWinCon, new GridPoint2(3, 4), true, true);
   }
+
   // Temporary enemy near player spawn for quick HUD/flicker testing
   private void spawnTestEnemyNearPlayer() {
     Entity testEnemy = EnemyFactory.createSkeletonWarrior(player);
     spawnEntityAt(testEnemy, new GridPoint2(12, 4), true, true);
   }
-  
 
   private void spawnSkeletonWarrior() {
     for (GridPoint2 spawnLocation : skeletonWarriorSpawnLocations) {
@@ -366,7 +359,6 @@ public class TutorialGameArea extends GameArea {
     }
   }
 
-
   // ======== TEST ENEMY SPAWN FUNCTIONS. ============
   private void spawnTestSkeletonWarrior() {
     for (GridPoint2 spawnLocation : testSpawnLocations) {
@@ -395,8 +387,8 @@ public class TutorialGameArea extends GameArea {
       spawnEntityAt(enemy, spawnLocation, true, true);
     }
   }
-  // ======== ^^^^^ ============
 
+  // ======== ^^^^^ ============
 
   /** Plays the background music. */
   private void playMusic() {

@@ -18,7 +18,6 @@ public class TextureRenderComponent extends RenderComponent {
 
   private Color tint = Color.WHITE;
 
-
   /**
    * @param texturePath Internal path of static texture to render. Will be scaled to the entity's
    *     scale.
