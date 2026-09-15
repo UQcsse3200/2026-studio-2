@@ -171,7 +171,7 @@ public class BowComponent extends Component implements PrimaryWeapon {
 
   @Override
   public boolean isReady() {
-    return cooldownTimer <= 0f;
+    return !isCharging && cooldownTimer <= 0f;
   }
 
   @Override

@@ -5,6 +5,7 @@ import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.Component;
 import com.csse3200.game.components.inventory.InventoryComponent;
 import com.csse3200.game.components.item.ItemType;
+import com.csse3200.game.components.item.weapons.PrimaryWeapon;
 import com.csse3200.game.components.item.weapons.WeaponComponent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,9 +59,10 @@ public class ItemUseComponent extends Component {
       return;
     }
 
-    // The bow refuses to start a charge while it's still on cooldown, so bail out before spending
-    // ammo on a draw that could never fire.
-    if (!isPrimaryWeaponReady()) {
+    // Reject before reserving ammo. Readiness also covers a bow that already has a paid arrow
+    // charging, so repeat clicks and the alternate attack input cannot consume another arrow.
+    if (direction == null || direction.isZero() || !isPrimaryWeaponReady()) {
+      entity.getEvents().trigger("itemUseFailed", selected);
       return;
     }
 
@@ -126,6 +128,14 @@ public class ItemUseComponent extends Component {
       // GrappleComponent handles its own cooldown timer internally upon receiving "grappleFire"
       entity.getEvents().trigger("grappleFire", direction);
     } else {
+      // Dispatch is synchronous, so check readiness before publishing the attack or using ammo.
+      WeaponComponent weapons = entity.getComponent(WeaponComponent.class);
+      PrimaryWeapon primary = weapons == null ? null : weapons.getPrimaryWeapon();
+      if (primary == null || !primary.isReady()) {
+        entity.getEvents().trigger("itemUseFailed", arrowItem);
+        return false;
+      }
+
       // Configure bow variant and trigger primary weapon execution via WeaponComponent
       entity.getEvents().trigger("setArrowType", arrowItem.toArrowType());
       entity.getEvents().trigger("primaryAttack", direction);
@@ -157,14 +167,13 @@ public class ItemUseComponent extends Component {
   }
 
   /**
-   * @return true when there is no equipped primary weapon to consult, or it is off cooldown
+   * @return true when an equipped primary weapon is ready to attack
    */
   private boolean isPrimaryWeaponReady() {
     WeaponComponent weapon = entity.getComponent(WeaponComponent.class);
-    if (weapon == null || weapon.getPrimaryWeapon() == null) {
-      return true;
-    }
-    return weapon.getPrimaryWeapon().isReady();
+    return weapon != null
+        && weapon.getPrimaryWeapon() != null
+        && weapon.getPrimaryWeapon().isReady();
   }
 
   private Vector2 getAimDirection() {

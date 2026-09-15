@@ -203,13 +203,14 @@ class BowComponentTest {
   }
 
   @Test
-  void shouldApplyCooldownOnReleaseNotOnStart() {
+  void shouldBeBusyWhileChargingAndApplyCooldownOnRelease() {
     AtomicReference<Float> speedMultiplierRef = new AtomicReference<>();
     BowComponent component = createChargeComponent(speedMultiplierRef);
     when(gameTime.getTime()).thenReturn(0L, 0L);
 
     component.startCharge(new Vector2(1f, 0f));
-    assertTrue(component.isReady());
+    assertFalse(component.isReady());
+    assertEquals(0f, component.getCooldownRemaining());
 
     component.releaseCharge(new Vector2(1f, 0f));
     assertFalse(component.isReady());

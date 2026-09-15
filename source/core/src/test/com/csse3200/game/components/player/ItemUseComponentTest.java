@@ -373,11 +373,13 @@ class ItemUseComponentTest {
 
   @Test
   void shouldNotSpendAmmoOrStartChargeWhileWeaponOnCooldown() {
+    PrimaryWeapon primary = mock(PrimaryWeapon.class);
+    when(primary.isReady()).thenReturn(false);
     Entity player =
         new Entity()
             .addComponent(new InventoryComponent(0))
             .addComponent(new CombatStatsComponent(100, 10))
-            .addComponent(new WeaponComponent(new NotReadyWeapon()))
+            .addComponent(new WeaponComponent(primary))
             .addComponent(new ItemUseComponent());
     player.create();
     InventoryComponent inventory = player.getComponent(InventoryComponent.class);
@@ -392,29 +394,14 @@ class ItemUseComponentTest {
     assertEquals(2, inventory.getItemCount(ItemType.STANDARD_ARROW));
   }
 
-  /** Stands in for a bow that is still on cooldown. */
-  private static class NotReadyWeapon implements PrimaryWeapon {
-    @Override
-    public void attack(Vector2 direction) {
-      // Never invoked - the component should bail out before attacking.
-    }
-
-    @Override
-    public boolean isReady() {
-      return false;
-    }
-
-    @Override
-    public float getCooldownRemaining() {
-      return 1f;
-    }
-  }
-
   private Entity createPlayer() {
+    PrimaryWeapon primary = mock(PrimaryWeapon.class);
+    when(primary.isReady()).thenReturn(true);
     Entity player =
         new Entity()
             .addComponent(new InventoryComponent(0))
             .addComponent(new CombatStatsComponent(100, 10))
+            .addComponent(new WeaponComponent(primary))
             .addComponent(new ItemUseComponent());
     player.create();
     return player;
