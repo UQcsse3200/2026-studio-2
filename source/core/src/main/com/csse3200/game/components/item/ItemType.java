@@ -40,7 +40,7 @@ public enum ItemType {
   FIRE_ARROW(
       4,
       "Fire Arrow",
-      "An arrow that burns enemies over time.",
+      "Deals 12 direct damage and burns enemies for 5 damage per second for 3 seconds.",
       "images/fire_arrow.png",
       5,
       16f,
@@ -58,7 +58,7 @@ public enum ItemType {
   ICE_ARROW(
       5,
       "Ice Arrow",
-      "An arrow that slows enemies.",
+      "Slows enemies for 3 seconds.",
       "images/cold_arrow.png",
       8,
       16f,
@@ -90,7 +90,7 @@ public enum ItemType {
   SpeedPotion(
       8,
       "Speed Potion",
-      "Increases movement speed by 10% for 3 seconds.",
+      "Increases movement speed by 70% for 3 seconds.",
       "images/speed_potion.png",
       0,
       0f,
