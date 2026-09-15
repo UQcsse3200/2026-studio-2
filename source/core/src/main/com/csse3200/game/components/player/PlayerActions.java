@@ -26,6 +26,7 @@ public class PlayerActions extends Component {
   private boolean isGrounded = false;
   private boolean isSprinting = false;
   private boolean paused = false;
+  public boolean droppingFromLedge = false;
   private boolean dead = false;
   private long jumpImpulseAt = -1; // Timestamp to apply the queued jump impulse, -1 if none queued
 
@@ -38,6 +39,7 @@ public class PlayerActions extends Component {
     entity.getEvents().addListener("jump", this::jump);
     entity.getEvents().addListener("sprint", this::sprint);
     entity.getEvents().addListener("sprintStop", this::stopSprinting);
+    entity.getEvents().addListener("updateLedgeDrop", this::setLedgeDropping);
     entity.getEvents().addListener("togglePaused", this::togglePause);
     entity.getEvents().addListener("death", this::die);
   }
@@ -191,6 +193,27 @@ public class PlayerActions extends Component {
     this.isSprinting = false;
     if (!isGrappling()) {
       updateSpeed();
+    }
+  }
+
+  /**
+   * Updates the dropping from ledge flag to allow the physics engine to determine whether a player/
+   * ledge collision should be disabled
+   *
+   * @param value the value to set
+   */
+  private void setLedgeDropping(boolean value) {
+    droppingFromLedge = value;
+
+    // we need to force the player to conduct a contact physics event to trigger the preSolve method
+    // as S doesn't seem to automatically trigger a contact collision
+    if (droppingFromLedge) {
+      PhysicsComponent physics = entity.getComponent(PhysicsComponent.class);
+      Body body = physics.getBody();
+
+      if (body != null) {
+        body.setAwake(true); // force awaken the body to respond to the current contact
+      }
     }
   }
 }
