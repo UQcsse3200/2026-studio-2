@@ -12,14 +12,12 @@ import com.csse3200.game.components.player.KeyboardPlayerInputComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.EnemyFactory;
 import com.csse3200.game.entities.factories.ItemFactory;
-import com.csse3200.game.entities.factories.NPCFactory;
 import com.csse3200.game.entities.factories.ObstacleFactory;
 import com.csse3200.game.entities.factories.PlayerFactory;
 import com.csse3200.game.rendering.BackgroundRenderComponent;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.utils.math.GridPoint2Utils;
-import com.csse3200.game.utils.math.RandomUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -101,6 +99,16 @@ public class TutorialGameArea extends GameArea {
         new GridPoint2(30, 5),
       };
 
+  private static final GridPoint2[] testSpawnLocations =
+      new GridPoint2[] {
+        new GridPoint2(6, 4),
+      };
+
+  private static final GridPoint2[] VultureTestSpawnLocations =
+      new GridPoint2[] {
+        new GridPoint2(6, 10),
+      };
+
   private static final GridPoint2[] VultureSpawnLocations =
       new GridPoint2[] {
         new GridPoint2(6, 10),
@@ -113,7 +121,7 @@ public class TutorialGameArea extends GameArea {
 
   private static final GridPoint2[] skeletonArcherSpawnLocations =
       new GridPoint2[] {
-        new GridPoint2(60, 1), new GridPoint2(57, 10), new GridPoint2(4, 4),
+        new GridPoint2(60, 1), new GridPoint2(57, 10),
       };
 
   private static final GridPoint2 PLAYER_SPAWN = new GridPoint2(1, 4);
@@ -228,8 +236,16 @@ public class TutorialGameArea extends GameArea {
     spawnWinCondition();
     spawnSkeletonArcher();
     spawnSkeletonWarrior();
-    spawnVulture();
-    spawnNecromancer();
+
+    // Test enemy functionalitys
+    // spawnTestSkeletonWarrior();
+    // spawnTestSkeletonArcher();
+    // spawnTestVulture();
+    // spawnTestNecromancer();
+
+    // spawnVulture();
+    // spawnNecromancer();
+
     // spawnTestWinCondition(); // Temporary test win condition near player spawn for quick testing
 
   }
@@ -417,22 +433,6 @@ public class TutorialGameArea extends GameArea {
     spawnEntityAt(testWinCon, new GridPoint2(3, 4), true, true);
   }
 
-  private void spawnGhosts() {
-
-    GridPoint2 minPos = new GridPoint2(0, 0);
-
-    GridPoint2 maxPos = terrain.getMapBounds(0).sub(2, 2);
-
-    for (int i = 0; i < NUM_GHOSTS; i++) {
-
-      GridPoint2 randomPos = RandomUtils.random(minPos, maxPos);
-
-      Entity ghost = NPCFactory.createGhost(player);
-
-      spawnEntityAt(ghost, randomPos, true, true);
-    }
-  }
-
   private void spawnSkeletonWarrior() {
     for (GridPoint2 spawnLocation : skeletonWarriorSpawnLocations) {
       Entity enemy = EnemyFactory.createSkeletonWarrior(player);
@@ -455,23 +455,38 @@ public class TutorialGameArea extends GameArea {
   }
 
   private void spawnVulture() {
-    for (GridPoint2 spawnLocation : NecromancerSpawnLocations) {
+    for (GridPoint2 spawnLocation : VultureSpawnLocations) {
       Entity enemy = EnemyFactory.createVulture(player);
       spawnEntityAt(enemy, spawnLocation, true, true);
     }
   }
 
-  private void spawnGhostKing() {
+  private void spawnTestSkeletonWarrior() {
+    for (GridPoint2 spawnLocation : testSpawnLocations) {
+      Entity enemy = EnemyFactory.createSkeletonWarrior(player);
+      spawnEntityAt(enemy, spawnLocation, true, true);
+    }
+  }
 
-    GridPoint2 minPos = new GridPoint2(0, 0);
+  private void spawnTestNecromancer() {
+    for (GridPoint2 spawnLocation : testSpawnLocations) {
+      Entity enemy = EnemyFactory.createNecromancer(player);
+      spawnEntityAt(enemy, spawnLocation, true, true);
+    }
+  }
 
-    GridPoint2 maxPos = terrain.getMapBounds(0).sub(2, 2);
+  private void spawnTestSkeletonArcher() {
+    for (GridPoint2 spawnLocation : testSpawnLocations) {
+      Entity enemy = EnemyFactory.createSkeletonArcher(player);
+      spawnEntityAt(enemy, spawnLocation, true, true);
+    }
+  }
 
-    GridPoint2 randomPos = RandomUtils.random(minPos, maxPos);
-
-    Entity ghostKing = NPCFactory.createGhostKing(player);
-
-    spawnEntityAt(ghostKing, randomPos, true, true);
+  private void spawnTestVulture() {
+    for (GridPoint2 spawnLocation : VultureSpawnLocations) {
+      Entity enemy = EnemyFactory.createVulture(player);
+      spawnEntityAt(enemy, spawnLocation, true, true);
+    }
   }
 
   /** Plays the background music. */

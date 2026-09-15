@@ -29,22 +29,6 @@ class TextureRenderComponentTest {
     component.render(spriteBatch);
 
     verify(spriteBatch)
-        .draw(
-            texture,
-            2f,
-            2f,
-            0.5f,
-            0.5f,
-            1f,
-            1f,
-            1f,
-            1f,
-            0f,
-            0,
-            0,
-            0,
-            0,
-            false,
-            false);
+        .draw(texture, 2f, 2f, 0.5f, 0.5f, 1f, 1f, 1f, 1f, 0f, 0, 0, 0, 0, false, false);
   }
 }

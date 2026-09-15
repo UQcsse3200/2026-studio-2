@@ -40,21 +40,21 @@ public class TextureRenderComponent extends RenderComponent {
     Vector2 position = entity.getPosition();
     Vector2 scale = entity.getScale();
     batch.draw(
-      texture,
-      position.x,
-      position.y,
-      scale.x / 2f,
-      scale.y / 2f,
-      scale.x,
-      scale.y,
-      1f,
-      1f,
-      rotation,
-      0,
-      0,
-      texture.getWidth(),
-      texture.getHeight(),
-      false,
-      false);
+        texture,
+        position.x,
+        position.y,
+        scale.x / 2f,
+        scale.y / 2f,
+        scale.x,
+        scale.y,
+        1f,
+        1f,
+        rotation,
+        0,
+        0,
+        texture.getWidth(),
+        texture.getHeight(),
+        false,
+        false);
   }
 }

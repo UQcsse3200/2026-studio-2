@@ -1,12 +1,13 @@
 package com.csse3200.game.components.tasks;
 
+import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.ai.tasks.DefaultTask;
 import com.csse3200.game.ai.tasks.PriorityTask;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.ProjectileFact;
-import com.csse3200.game.services.ServiceLocator;
-import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.rendering.TextureRenderComponent;
+import com.csse3200.game.services.ServiceLocator;
+
 /**
  * AI task that allows an enemy to fire projectiles at a target while the target is within range.
  */
@@ -85,8 +86,7 @@ public class RangedAttackTask extends DefaultTask implements PriorityTask {
     // Spawn slightly towards the player and slightly below the enemy centre.
     float facingDirection = targetCenter.x >= enemyCenter.x ? 1f : -1f;
 
-    Vector2 spawnCenter =
-        enemyCenter.cpy().add(0.4f * facingDirection, -0.15f);
+    Vector2 spawnCenter = enemyCenter.cpy().add(0.4f * facingDirection, -0.15f);
 
     Entity projectile =
         ProjectileFact.createEnemyProjectile(
@@ -94,8 +94,7 @@ public class RangedAttackTask extends DefaultTask implements PriorityTask {
 
     // setPosition() uses the bottom-left corner, so offset by half the
     // projectile size to place its centre at spawnCenter.
-    Vector2 projectilePosition =
-        spawnCenter.cpy().sub(projectile.getScale().cpy().scl(0.5f));
+    Vector2 projectilePosition = spawnCenter.cpy().sub(projectile.getScale().cpy().scl(0.5f));
 
     projectile.setPosition(projectilePosition);
 
