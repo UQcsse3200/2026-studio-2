@@ -46,6 +46,7 @@ public class TextureRenderComponent extends RenderComponent {
   protected void draw(SpriteBatch batch) {
     Vector2 position = entity.getPosition();
     Vector2 scale = entity.getScale();
+
     Color previous = batch.getColor().cpy();
     batch.setColor(tint);
     batch.draw(texture, position.x, position.y, scale.x, scale.y);
