@@ -309,6 +309,9 @@ public class ItemDictionaryDisplay extends UIComponent {
 
   /** Hides the item dictionary. */
   public void hideDictionary() {
+    if (!visible) {
+      return;
+    }
     visible = false;
 
     table.setVisible(false);

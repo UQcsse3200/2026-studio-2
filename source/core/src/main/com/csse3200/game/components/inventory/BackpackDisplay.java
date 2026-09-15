@@ -387,6 +387,9 @@ public class BackpackDisplay extends UIComponent {
 
   /** Hides the backpack and restores the quick bar. */
   public void hideBackpack() {
+    if (!visible) {
+      return;
+    }
     visible = false;
     table.setVisible(false);
 

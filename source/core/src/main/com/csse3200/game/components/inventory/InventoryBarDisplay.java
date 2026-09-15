@@ -20,6 +20,8 @@ public class InventoryBarDisplay extends UIComponent {
 
   private Table root;
   private Table table;
+  private boolean backpackOpen = false;
+  private boolean dictionaryOpen = false;
 
   @Override
   public void create() {
@@ -27,12 +29,11 @@ public class InventoryBarDisplay extends UIComponent {
 
     entity.getEvents().addListener("inventoryChanged", this::refresh);
     entity.getEvents().addListener("inventorySelectionChanged", this::refresh);
-    entity.getEvents().addListener("backpackOpened", this::hideBar);
-    entity.getEvents().addListener("backpackClosed", this::showBar);
+    entity.getEvents().addListener("backpackOpened", this::onBackpackOpened);
+    entity.getEvents().addListener("backpackClosed", this::onBackpackClosed);
 
-    entity.getEvents().addListener("dictionaryOpened", this::hideBar);
-
-    entity.getEvents().addListener("dictionaryClosed", this::showBar);
+    entity.getEvents().addListener("dictionaryOpened", this::onDictionaryOpened);
+    entity.getEvents().addListener("dictionaryClosed", this::onDictionaryClosed);
 
     addActors();
   }
@@ -45,6 +46,32 @@ public class InventoryBarDisplay extends UIComponent {
   private void refresh() {
     if (table != null) {
       populateSlots();
+    }
+  }
+
+  private void onBackpackOpened() {
+    backpackOpen = true;
+    hideBar();
+  }
+
+  private void onBackpackClosed() {
+    backpackOpen = false;
+    showBarIfPanelsClosed();
+  }
+
+  private void onDictionaryOpened() {
+    dictionaryOpen = true;
+    hideBar();
+  }
+
+  private void onDictionaryClosed() {
+    dictionaryOpen = false;
+    showBarIfPanelsClosed();
+  }
+
+  private void showBarIfPanelsClosed() {
+    if (!backpackOpen && !dictionaryOpen) {
+      showBar();
     }
   }
 
