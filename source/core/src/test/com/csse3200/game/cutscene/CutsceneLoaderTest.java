@@ -12,10 +12,19 @@ import org.junit.jupiter.api.extension.ExtendWith;
 class CutsceneLoaderTest {
   @Test
   void shouldLoadJpegFolderWithoutManifest() {
+    CutsceneLoader.Result result = new CutsceneLoader().load("test-no-manifest");
+
+    assertTrue(result.isSuccess());
+    assertEquals(2, result.getCutscene().getImagePaths().length);
+    assertTrue(result.getCutscene().getImagePaths()[0].endsWith("a.jpeg"));
+  }
+
+  @Test
+  void shouldLoadManifest() {
     CutsceneLoader.Result result = new CutsceneLoader().load("cutscene1");
 
     assertTrue(result.isSuccess());
-    assertEquals(3, result.getCutscene().getImagePaths().length);
+    assertEquals(5, result.getCutscene().getImagePaths().length);
     assertTrue(result.getCutscene().getImagePaths()[0].endsWith("scene1.jpeg"));
   }
 

@@ -7,8 +7,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.csse3200.game.cutscene.CutsceneLoader;
 import com.csse3200.game.files.UserSettings;
-import com.csse3200.game.screens.CutsceneScreen;
 import com.csse3200.game.screens.*;
+import com.csse3200.game.screens.CutsceneScreen;
 import com.csse3200.game.screens.MainGameScreen;
 import com.csse3200.game.screens.MainMenuScreen;
 import com.csse3200.game.screens.SettingsFromPauseScreen;
@@ -32,7 +32,8 @@ public class GdxGame extends Game {
 
   private boolean transitioning = false;
 
-  //a check for if the intro cutscene has been triggered, once per game session, to prevent the cutscene from being triggered multiple times.
+  // a check for if the intro cutscene has been triggered, once per game session, to prevent the
+  // cutscene from being triggered multiple times.
   private boolean introStarted = false;
 
   @Override
@@ -99,7 +100,7 @@ public class GdxGame extends Game {
       return;
     }
 
-    //logging for if the cutscene is not available, and fallback to tutorial level
+    // logging for if the cutscene is not available, and fallback to tutorial level
     CutsceneLoader.Result result = new CutsceneLoader().load("cutscene1");
     if (!result.isSuccess()) {
       logger.debug("Initial cutscene unavailable: {}", result.getError());
@@ -107,7 +108,8 @@ public class GdxGame extends Game {
       return;
     }
 
-    //For now, the intro cutscene will be recorded as a bool until a proper save state is implemented
+    // For now, the intro cutscene will be recorded as a bool until a proper save state is
+    // implemented
     introStarted = true;
     startCutscene(result.getCutscene(), ScreenType.TUTORIAL_GAME);
   }

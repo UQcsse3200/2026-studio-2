@@ -6,9 +6,11 @@ import java.util.ArrayList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/** Starts a named cutscene from the debug terminal. 
- * format: cutscene <cutscene_name>
-*/
+/**
+ * Starts a named cutscene from the debug terminal.
+ *
+ * <p>Format: {@code cutscene <name>}
+ */
 public class CutsceneCommand implements Command {
   private static final Logger logger = LoggerFactory.getLogger(CutsceneCommand.class);
 
