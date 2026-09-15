@@ -198,7 +198,13 @@ public class LevelTutorialConfig extends LevelConfig {
     // Example checkpoint set to player spawn position
     checkpoints =
         new CheckpointConfig[] {
-          new CheckpointConfig(new GridPoint2(1, 4)), // Use 4 not 3
+                new CheckpointConfig(new GridPoint2(1, 3)),
+                new CheckpointConfig(new GridPoint2(22, 5)),
+                new CheckpointConfig(new GridPoint2(5, 16)),
+                new CheckpointConfig(new GridPoint2(15, 12)),
+                new CheckpointConfig(new GridPoint2(47, 17)),
+                new CheckpointConfig(new GridPoint2(54, 1)),
+                new CheckpointConfig(new GridPoint2(73, 1)),
         };
   }
 }

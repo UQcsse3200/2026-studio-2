@@ -92,6 +92,8 @@ public class TutorialGameArea extends GameArea {
     "images/iso_grass_1.png",
     "images/iso_grass_2.png",
     "images/iso_grass_3.png",
+    "images/checkpoint_unlit.png",
+    "images/checkpoint_lit.png",  
 
     // Parallax background layers
     "images/parallax/original_background.png",
