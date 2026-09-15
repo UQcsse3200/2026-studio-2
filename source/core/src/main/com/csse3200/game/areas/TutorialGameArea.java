@@ -51,16 +51,6 @@ public class TutorialGameArea extends GameArea {
         new GridPoint2(30, 5),
       };
 
-  private static final GridPoint2[] testSpawnLocations =
-      new GridPoint2[] {
-        new GridPoint2(6, 4),
-      };
-
-  private static final GridPoint2[] VultureTestSpawnLocations =
-      new GridPoint2[] {
-        new GridPoint2(6, 10),
-      };
-
   private static final GridPoint2[] VultureSpawnLocations = new GridPoint2[] {};
 
   private static final GridPoint2[] NecromancerSpawnLocations = new GridPoint2[] {};
@@ -70,10 +60,24 @@ public class TutorialGameArea extends GameArea {
         new GridPoint2(60, 1), new GridPoint2(57, 10),
       };
 
+  // ============ TESTING SPAWN LOCATIONS ================
+
   private static final GridPoint2[] skeletonArcherTestSpawnLocations =
       new GridPoint2[] {
         new GridPoint2(60, 1), new GridPoint2(4, 4),
       };
+
+  private static final GridPoint2[] VultureTestSpawnLocations =
+      new GridPoint2[] {
+        new GridPoint2(6, 10),
+      };
+
+  private static final GridPoint2[] testSpawnLocations =
+      new GridPoint2[] {
+        new GridPoint2(6, 4),
+      };
+
+  // ======== ^^^^^^^^^^ ============================
 
   public static final GridPoint2 PLAYER_SPAWN = new GridPoint2(1, 4);
   public static final GridPoint2 ROPE_ARROW_SPAWN = new GridPoint2(2, 3);
