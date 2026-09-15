@@ -1,0 +1,53 @@
+{
+  "fadeDuration": 0.4,
+  "scenes": [
+    {
+      "image": "scene1.jpeg",
+      "text": {
+        "xPos": 100,
+        "yPos": 100,
+        "charsPerSecond": 20,
+        "maxWidth": 600,
+        "padding": 16,
+        "borderThickness": 3,
+        "textAlignment": "center",
+        "pages": [
+          "The ancient ruins stretch before you, overgrown with vines and mystery.",
+          "Somewhere within lies the artifact that could change everything."
+        ]
+      }
+    },
+    {
+      "image": "scene2.jpeg",
+      "text": {
+        "xPos": 100,
+        "yPos": 100,
+        "charsPerSecond": 20,
+        "maxWidth": 600,
+        "padding": 16,
+        "borderThickness": 3,
+        "textAlignment": "center",
+        "pages": [
+          "But the path is guarded by creatures that have waited centuries for an intruder.",
+          "Prepare yourself - there is no turning back."
+        ]
+      }
+    },
+    {
+      "image": "scene3.jpeg",
+      "text": {
+        "xPos": 100,
+        "yPos": 100,
+        "charsPerSecond": 20,
+        "maxWidth": 600,
+        "padding": 16,
+        "borderThickness": 3,
+        "textAlignment": "center",
+        "pages": [
+          "Your adventure begins now. Use the terminal and your wits to survive.",
+          "Type 'help' in the terminal for available commands."
+        ]
+      }
+    }
+  ]
+}
