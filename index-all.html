@@ -98,6 +98,11 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Register an animation from the texture atlas.</div>
 </dd>
+<dt><a href="com/csse3200/game/rendering/AnimationRenderComponent.html#addAnimation(java.lang.String,float,com.badlogic.gdx.graphics.g2d.Animation.PlayMode,float,float)" class="member-name-link">addAnimation(String, float, Animation.PlayMode, float, float)</a> - Method in class com.csse3200.game.rendering.<a href="com/csse3200/game/rendering/AnimationRenderComponent.html" title="class in com.csse3200.game.rendering">AnimationRenderComponent</a></dt>
+<dd>
+<div class="block">Register an animation whose frames are drawn on a larger canvas than the default region,
+ specifying where the character sits within that canvas so it lines up with other animations.</div>
+</dd>
 <dt><a href="com/csse3200/game/components/inventory/InventoryComponent.html#addColumn()" class="member-name-link">addColumn()</a> - Method in class com.csse3200.game.components.inventory.<a href="com/csse3200/game/components/inventory/InventoryComponent.html" title="class in com.csse3200.game.components.inventory">InventoryComponent</a></dt>
 <dd>
 <div class="block">Appends one empty column while preserving every existing item's row and column coordinates.</div>
@@ -823,7 +828,7 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Create the task and attach it to the task runner.</div>
 </dd>
-<dt><a href="com/csse3200/game/components/item/weapons/bow/BowComponent.ProjectileCreator.html#create(com.csse3200.game.entities.Entity,com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2)" class="member-name-link">create(Entity, Vector2, Vector2)</a> - Method in interface com.csse3200.game.components.item.weapons.bow.<a href="com/csse3200/game/components/item/weapons/bow/BowComponent.ProjectileCreator.html" title="interface in com.csse3200.game.components.item.weapons.bow">BowComponent.ProjectileCreator</a></dt>
+<dt><a href="com/csse3200/game/components/item/weapons/bow/BowComponent.ProjectileCreator.html#create(com.csse3200.game.entities.Entity,com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2,float)" class="member-name-link">create(Entity, Vector2, Vector2, float)</a> - Method in interface com.csse3200.game.components.item.weapons.bow.<a href="com/csse3200/game/components/item/weapons/bow/BowComponent.ProjectileCreator.html" title="interface in com.csse3200.game.components.item.weapons.bow">BowComponent.ProjectileCreator</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/physics/PhysicsEngine.html#createBody(com.badlogic.gdx.physics.box2d.BodyDef)" class="member-name-link">createBody(BodyDef)</a> - Method in class com.csse3200.game.physics.<a href="com/csse3200/game/physics/PhysicsEngine.html" title="class in com.csse3200.game.physics">PhysicsEngine</a></dt>
 <dd>&nbsp;</dd>
@@ -838,6 +843,8 @@ loadScripts(document, 'script');</script>
 <dt><a href="com/csse3200/game/entities/factories/ProjectileFactory.html#createColdArrow(com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2)" class="member-name-link">createColdArrow(Vector2, Vector2)</a> - Static method in class com.csse3200.game.entities.factories.<a href="com/csse3200/game/entities/factories/ProjectileFactory.html" title="class in com.csse3200.game.entities.factories">ProjectileFactory</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/entities/factories/ProjectileFactory.html#createColdArrow(com.csse3200.game.entities.Entity,com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2)" class="member-name-link">createColdArrow(Entity, Vector2, Vector2)</a> - Static method in class com.csse3200.game.entities.factories.<a href="com/csse3200/game/entities/factories/ProjectileFactory.html" title="class in com.csse3200.game.entities.factories">ProjectileFactory</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/entities/factories/ProjectileFactory.html#createColdArrow(com.csse3200.game.entities.Entity,com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2,float)" class="member-name-link">createColdArrow(Entity, Vector2, Vector2, float)</a> - Static method in class com.csse3200.game.entities.factories.<a href="com/csse3200/game/entities/factories/ProjectileFactory.html" title="class in com.csse3200.game.entities.factories">ProjectileFactory</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/entities/factories/ObstacleFactory.html#createCrumblingPlatform(com.csse3200.game.areas.terrain.configs.CrumblingPlatformConfig)" class="member-name-link">createCrumblingPlatform(CrumblingPlatformConfig)</a> - Static method in class com.csse3200.game.entities.factories.<a href="com/csse3200/game/entities/factories/ObstacleFactory.html" title="class in com.csse3200.game.entities.factories">ObstacleFactory</a></dt>
 <dd>
@@ -861,6 +868,8 @@ loadScripts(document, 'script');</script>
 <dt><a href="com/csse3200/game/entities/factories/ProjectileFactory.html#createFireArrow(com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2)" class="member-name-link">createFireArrow(Vector2, Vector2)</a> - Static method in class com.csse3200.game.entities.factories.<a href="com/csse3200/game/entities/factories/ProjectileFactory.html" title="class in com.csse3200.game.entities.factories">ProjectileFactory</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/entities/factories/ProjectileFactory.html#createFireArrow(com.csse3200.game.entities.Entity,com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2)" class="member-name-link">createFireArrow(Entity, Vector2, Vector2)</a> - Static method in class com.csse3200.game.entities.factories.<a href="com/csse3200/game/entities/factories/ProjectileFactory.html" title="class in com.csse3200.game.entities.factories">ProjectileFactory</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/entities/factories/ProjectileFactory.html#createFireArrow(com.csse3200.game.entities.Entity,com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2,float)" class="member-name-link">createFireArrow(Entity, Vector2, Vector2, float)</a> - Static method in class com.csse3200.game.entities.factories.<a href="com/csse3200/game/entities/factories/ProjectileFactory.html" title="class in com.csse3200.game.entities.factories">ProjectileFactory</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/entities/factories/ObstacleFactory.html#createFloor(com.csse3200.game.areas.terrain.configs.PlatformConfig)" class="member-name-link">createFloor(PlatformConfig)</a> - Static method in class com.csse3200.game.entities.factories.<a href="com/csse3200/game/entities/factories/ObstacleFactory.html" title="class in com.csse3200.game.entities.factories">ObstacleFactory</a></dt>
 <dd>
@@ -904,6 +913,8 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/entities/factories/ProjectileFactory.html#createGrappleArrow(com.csse3200.game.entities.Entity,com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2)" class="member-name-link">createGrappleArrow(Entity, Vector2, Vector2)</a> - Static method in class com.csse3200.game.entities.factories.<a href="com/csse3200/game/entities/factories/ProjectileFactory.html" title="class in com.csse3200.game.entities.factories">ProjectileFactory</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/entities/factories/ProjectileFactory.html#createGrappleArrow(com.csse3200.game.entities.Entity,com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2,float)" class="member-name-link">createGrappleArrow(Entity, Vector2, Vector2, float)</a> - Static method in class com.csse3200.game.entities.factories.<a href="com/csse3200/game/entities/factories/ProjectileFactory.html" title="class in com.csse3200.game.entities.factories">ProjectileFactory</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/entities/factories/ItemFactory.html#createHealthPotion(int)" class="member-name-link">createHealthPotion(int)</a> - Static method in class com.csse3200.game.entities.factories.<a href="com/csse3200/game/entities/factories/ItemFactory.html" title="class in com.csse3200.game.entities.factories">ItemFactory</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/entities/factories/ItemFactory.html#createItem(com.csse3200.game.components.item.Item)" class="member-name-link">createItem(Item)</a> - Static method in class com.csse3200.game.entities.factories.<a href="com/csse3200/game/entities/factories/ItemFactory.html" title="class in com.csse3200.game.entities.factories">ItemFactory</a></dt>
@@ -935,6 +946,8 @@ loadScripts(document, 'script');</script>
 <dt><a href="com/csse3200/game/entities/factories/ProjectileFactory.html#createPlayerArrow(com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2)" class="member-name-link">createPlayerArrow(Vector2, Vector2)</a> - Static method in class com.csse3200.game.entities.factories.<a href="com/csse3200/game/entities/factories/ProjectileFactory.html" title="class in com.csse3200.game.entities.factories">ProjectileFactory</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/entities/factories/ProjectileFactory.html#createPlayerArrow(com.csse3200.game.entities.Entity,com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2)" class="member-name-link">createPlayerArrow(Entity, Vector2, Vector2)</a> - Static method in class com.csse3200.game.entities.factories.<a href="com/csse3200/game/entities/factories/ProjectileFactory.html" title="class in com.csse3200.game.entities.factories">ProjectileFactory</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/entities/factories/ProjectileFactory.html#createPlayerArrow(com.csse3200.game.entities.Entity,com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2,float)" class="member-name-link">createPlayerArrow(Entity, Vector2, Vector2, float)</a> - Static method in class com.csse3200.game.entities.factories.<a href="com/csse3200/game/entities/factories/ProjectileFactory.html" title="class in com.csse3200.game.entities.factories">ProjectileFactory</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/entities/factories/PlayerFactory.html#createPlayerDisplay()" class="member-name-link">createPlayerDisplay()</a> - Static method in class com.csse3200.game.entities.factories.<a href="com/csse3200/game/entities/factories/PlayerFactory.html" title="class in com.csse3200.game.entities.factories">PlayerFactory</a></dt>
 <dd>
@@ -1827,6 +1840,8 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="com/csse3200/game/cutscene/CutsceneLoader.LoadedCutscene.html#getImagePaths()" class="member-name-link">getImagePaths()</a> - Method in class com.csse3200.game.cutscene.<a href="com/csse3200/game/cutscene/CutsceneLoader.LoadedCutscene.html" title="class in com.csse3200.game.cutscene">CutsceneLoader.LoadedCutscene</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/item/weapons/bow/grapple/GrappleComponent.html#getInitialRopeLength()" class="member-name-link">getInitialRopeLength()</a> - Method in class com.csse3200.game.components.item.weapons.bow.grapple.<a href="com/csse3200/game/components/item/weapons/bow/grapple/GrappleComponent.html" title="class in com.csse3200.game.components.item.weapons.bow.grapple">GrappleComponent</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/areas/terrain/configs/SpikyBallTrapConfig.html#getInitialState()" class="member-name-link">getInitialState()</a> - Method in class com.csse3200.game.areas.terrain.configs.<a href="com/csse3200/game/areas/terrain/configs/SpikyBallTrapConfig.html" title="class in com.csse3200.game.areas.terrain.configs">SpikyBallTrapConfig</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/areas/terrain/configs/TriggerablePlatformConfig.html#getInitialState()" class="member-name-link">getInitialState()</a> - Method in class com.csse3200.game.areas.terrain.configs.<a href="com/csse3200/game/areas/terrain/configs/TriggerablePlatformConfig.html" title="class in com.csse3200.game.areas.terrain.configs">TriggerablePlatformConfig</a></dt>
@@ -1988,6 +2003,10 @@ loadScripts(document, 'script');</script>
 <dt><a href="com/csse3200/game/ui/GameEndDisplay.html#getResultText()" class="member-name-link">getResultText()</a> - Method in class com.csse3200.game.ui.<a href="com/csse3200/game/ui/GameEndDisplay.html" title="class in com.csse3200.game.ui">GameEndDisplay</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/ui/dialogue/TypewriterEffect.html#getRevealedText()" class="member-name-link">getRevealedText()</a> - Method in class com.csse3200.game.ui.dialogue.<a href="com/csse3200/game/ui/dialogue/TypewriterEffect.html" title="class in com.csse3200.game.ui.dialogue">TypewriterEffect</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/item/weapons/bow/grapple/GrappleComponent.html#getRopeLength()" class="member-name-link">getRopeLength()</a> - Method in class com.csse3200.game.components.item.weapons.bow.grapple.<a href="com/csse3200/game/components/item/weapons/bow/grapple/GrappleComponent.html" title="class in com.csse3200.game.components.item.weapons.bow.grapple">GrappleComponent</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/item/weapons/bow/grapple/GrappleComponent.html#getRopePath()" class="member-name-link">getRopePath()</a> - Method in class com.csse3200.game.components.item.weapons.bow.grapple.<a href="com/csse3200/game/components/item/weapons/bow/grapple/GrappleComponent.html" title="class in com.csse3200.game.components.item.weapons.bow.grapple">GrappleComponent</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/areas/terrain/configs/SpikeClusterConfig.html#getRotation()" class="member-name-link">getRotation()</a> - Method in class com.csse3200.game.areas.terrain.configs.<a href="com/csse3200/game/areas/terrain/configs/SpikeClusterConfig.html" title="class in com.csse3200.game.areas.terrain.configs">SpikeClusterConfig</a></dt>
 <dd>&nbsp;</dd>
@@ -3056,10 +3075,7 @@ loadScripts(document, 'script');</script>
 <dt><a href="com/csse3200/game/components/player/PlayerActions.html#%3Cinit%3E()" class="member-name-link">PlayerActions()</a> - Constructor for class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/PlayerActions.html" title="class in com.csse3200.game.components.player">PlayerActions</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/player/PlayerAnimationController.html" class="type-name-link" title="class in com.csse3200.game.components.player">PlayerAnimationController</a> - Class in <a href="com/csse3200/game/components/player/package-summary.html">com.csse3200.game.components.player</a></dt>
-<dd>
-<div class="block">This class listens to events relevant to the player's movement state and plays the corresponding
- animation when one of the events is triggered.</div>
-</dd>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/player/PlayerAnimationController.html#%3Cinit%3E()" class="member-name-link">PlayerAnimationController()</a> - Constructor for class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/PlayerAnimationController.html" title="class in com.csse3200.game.components.player">PlayerAnimationController</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/entities/configs/PlayerConfig.html" class="type-name-link" title="class in com.csse3200.game.entities.configs">PlayerConfig</a> - Class in <a href="com/csse3200/game/entities/configs/package-summary.html">com.csse3200.game.entities.configs</a></dt>
@@ -3216,6 +3232,11 @@ loadScripts(document, 'script');</script>
 <dt><a href="com/csse3200/game/components/item/weapons/bow/grapple/GrappleComponent.html#release()" class="member-name-link">release()</a> - Method in class com.csse3200.game.components.item.weapons.bow.grapple.<a href="com/csse3200/game/components/item/weapons/bow/grapple/GrappleComponent.html" title="class in com.csse3200.game.components.item.weapons.bow.grapple">GrappleComponent</a></dt>
 <dd>
 <div class="block">Detaches the rope, restoring free movement.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/item/weapons/bow/BowComponent.html#releaseCharge(com.badlogic.gdx.math.Vector2)" class="member-name-link">releaseCharge(Vector2)</a> - Method in class com.csse3200.game.components.item.weapons.bow.<a href="com/csse3200/game/components/item/weapons/bow/BowComponent.html" title="class in com.csse3200.game.components.item.weapons.bow">BowComponent</a></dt>
+<dd>
+<div class="block">Fires the currently charging shot, if any, with speed scaled linearly by how long it was held
+ (from <code>BowComponent.MIN_CHARGE_SPEED_FACTOR</code> at 0s up to full speed at <code>BowComponent.MAX_CHARGE_SECONDS</code>).</div>
 </dd>
 <dt><a href="com/csse3200/game/rendering/AnimationRenderComponent.html#removeAnimation(java.lang.String)" class="member-name-link">removeAnimation(String)</a> - Method in class com.csse3200.game.rendering.<a href="com/csse3200/game/rendering/AnimationRenderComponent.html" title="class in com.csse3200.game.rendering">AnimationRenderComponent</a></dt>
 <dd>
@@ -3893,9 +3914,21 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Start playback of an animation.</div>
 </dd>
+<dt><a href="com/csse3200/game/components/item/weapons/bow/BowComponent.html#startCharge(com.badlogic.gdx.math.Vector2)" class="member-name-link">startCharge(Vector2)</a> - Method in class com.csse3200.game.components.item.weapons.bow.<a href="com/csse3200/game/components/item/weapons/bow/BowComponent.html" title="class in com.csse3200.game.components.item.weapons.bow">BowComponent</a></dt>
+<dd>
+<div class="block">Begins charging a shot, e.g.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/item/weapons/bow/grapple/GrappleComponent.html#startClimbing()" class="member-name-link">startClimbing()</a> - Method in class com.csse3200.game.components.item.weapons.bow.grapple.<a href="com/csse3200/game/components/item/weapons/bow/grapple/GrappleComponent.html" title="class in com.csse3200.game.components.item.weapons.bow.grapple">GrappleComponent</a></dt>
+<dd>
+<div class="block">Starts retracting the rope while the climb control is held.</div>
+</dd>
 <dt><a href="com/csse3200/game/GdxGame.html#startCutscene(com.csse3200.game.cutscene.CutsceneLoader.LoadedCutscene,com.csse3200.game.GdxGame.ScreenType)" class="member-name-link">startCutscene(CutsceneLoader.LoadedCutscene, GdxGame.ScreenType)</a> - Method in class com.csse3200.game.<a href="com/csse3200/game/GdxGame.html" title="class in com.csse3200.game">GdxGame</a></dt>
 <dd>
 <div class="block">Starts a validated cutscene and creates the destination level after it completes.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/item/weapons/bow/grapple/GrappleComponent.html#startDescending()" class="member-name-link">startDescending()</a> - Method in class com.csse3200.game.components.item.weapons.bow.grapple.<a href="com/csse3200/game/components/item/weapons/bow/grapple/GrappleComponent.html" title="class in com.csse3200.game.components.item.weapons.bow.grapple">GrappleComponent</a></dt>
+<dd>
+<div class="block">Starts extending the rope while the descend control is held.</div>
 </dd>
 <dt><a href="com/csse3200/game/GdxGame.html#startInitialCutscene()" class="member-name-link">startInitialCutscene()</a> - Method in class com.csse3200.game.<a href="com/csse3200/game/GdxGame.html" title="class in com.csse3200.game">GdxGame</a></dt>
 <dd>
@@ -3926,6 +3959,14 @@ loadScripts(document, 'script');</script>
 <dt><a href="com/csse3200/game/rendering/AnimationRenderComponent.html#stopAnimation()" class="member-name-link">stopAnimation()</a> - Method in class com.csse3200.game.rendering.<a href="com/csse3200/game/rendering/AnimationRenderComponent.html" title="class in com.csse3200.game.rendering">AnimationRenderComponent</a></dt>
 <dd>
 <div class="block">Stop the currently running animation.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/item/weapons/bow/grapple/GrappleComponent.html#stopClimbing()" class="member-name-link">stopClimbing()</a> - Method in class com.csse3200.game.components.item.weapons.bow.grapple.<a href="com/csse3200/game/components/item/weapons/bow/grapple/GrappleComponent.html" title="class in com.csse3200.game.components.item.weapons.bow.grapple">GrappleComponent</a></dt>
+<dd>
+<div class="block">Stops retracting the rope and clears any unapplied constraint adjustment.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/item/weapons/bow/grapple/GrappleComponent.html#stopDescending()" class="member-name-link">stopDescending()</a> - Method in class com.csse3200.game.components.item.weapons.bow.grapple.<a href="com/csse3200/game/components/item/weapons/bow/grapple/GrappleComponent.html" title="class in com.csse3200.game.components.item.weapons.bow.grapple">GrappleComponent</a></dt>
+<dd>
+<div class="block">Stops extending the rope and clears any unapplied constraint adjustment.</div>
 </dd>
 <dt><a href="com/csse3200/game/components/minigames/CyclopsTimingBar/TimingBarLogic.html#stopMarker()" class="member-name-link">stopMarker()</a> - Method in class com.csse3200.game.components.minigames.CyclopsTimingBar.<a href="com/csse3200/game/components/minigames/CyclopsTimingBar/TimingBarLogic.html" title="class in com.csse3200.game.components.minigames.CyclopsTimingBar">TimingBarLogic</a></dt>
 <dd>

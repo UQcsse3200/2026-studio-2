@@ -178,9 +178,20 @@ implements <a href="../PrimaryWeapon.html" title="interface in com.csse3200.game
 <div class="block">Checks whether the weapon is ready to strike or off cooldown.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setArrowType(com.csse3200.game.components.projectile.ArrowType)" class="member-name-link">setArrowType</a><wbr>(<a href="../../../projectile/ArrowType.html" title="enum class in com.csse3200.game.components.projectile">ArrowType</a>&nbsp;arrowType)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#releaseCharge(com.badlogic.gdx.math.Vector2)" class="member-name-link">releaseCharge</a><wbr>(com.badlogic.gdx.math.Vector2&nbsp;direction)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Fires the currently charging shot, if any, with speed scaled linearly by how long it was held
+ (from <code>MIN_CHARGE_SPEED_FACTOR</code> at 0s up to full speed at <code>MAX_CHARGE_SECONDS</code>).</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setArrowType(com.csse3200.game.components.projectile.ArrowType)" class="member-name-link">setArrowType</a><wbr>(<a href="../../../projectile/ArrowType.html" title="enum class in com.csse3200.game.components.projectile">ArrowType</a>&nbsp;arrowType)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Swaps the active arrow type fired by the bow.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#startCharge(com.badlogic.gdx.math.Vector2)" class="member-name-link">startCharge</a><wbr>(com.badlogic.gdx.math.Vector2&nbsp;direction)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Begins charging a shot, e.g.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#update()" class="member-name-link">update</a>()</code></div>
@@ -285,6 +296,32 @@ implements <a href="../PrimaryWeapon.html" title="interface in com.csse3200.game
 <dd><code><a href="../PrimaryWeapon.html#attack(com.badlogic.gdx.math.Vector2)">attack</a></code>&nbsp;in interface&nbsp;<code><a href="../PrimaryWeapon.html" title="interface in com.csse3200.game.components.item.weapons">PrimaryWeapon</a></code></dd>
 <dt>Parameters:</dt>
 <dd><code>direction</code> - Aim trajectory vector.</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="startCharge(com.badlogic.gdx.math.Vector2)">
+<h3>startCharge</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">startCharge</span><wbr><span class="parameters">(com.badlogic.gdx.math.Vector2&nbsp;direction)</span></div>
+<div class="block">Begins charging a shot, e.g. while the player holds the shoot button down. No-ops if the bow is
+ on cooldown. Does not start the cooldown itself - that happens once the shot actually fires, so
+ a long charge doesn't eat into the post-shot cooldown window.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>direction</code> - Aim direction at the moment charging started (used only for facing/animation).</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="releaseCharge(com.badlogic.gdx.math.Vector2)">
+<h3>releaseCharge</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">releaseCharge</span><wbr><span class="parameters">(com.badlogic.gdx.math.Vector2&nbsp;direction)</span></div>
+<div class="block">Fires the currently charging shot, if any, with speed scaled linearly by how long it was held
+ (from <code>MIN_CHARGE_SPEED_FACTOR</code> at 0s up to full speed at <code>MAX_CHARGE_SECONDS</code>).
+ No-ops if nothing was charging.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>direction</code> - Aim direction at release time.</dd>
 </dl>
 </section>
 </li>
