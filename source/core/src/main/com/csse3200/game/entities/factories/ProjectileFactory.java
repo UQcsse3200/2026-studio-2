@@ -3,6 +3,7 @@ package com.csse3200.game.entities.factories;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.csse3200.game.components.CombatStatsComponent;
+import com.csse3200.game.components.item.ItemType;
 import com.csse3200.game.components.player.PoisonBuff;
 import com.csse3200.game.components.projectile.ArrowProjectileComponent;
 import com.csse3200.game.components.projectile.ArrowType;
@@ -14,22 +15,19 @@ import com.csse3200.game.rendering.item.ArrowRenderComponent;
 
 /** Factory for player and enemy projectile entities. */
 public class ProjectileFactory {
-  public static final int STANDARD_ARROW_DAMAGE = 10;
   public static final float STANDARD_ARROW_SPEED = 18f;
   public static final float STANDARD_ARROW_RANGE = 50f;
 
-  public static final int ICE_ARROW_DAMAGE = 8;
   public static final float ICE_ARROW_SPEED = 16f;
   public static final float ICE_ARROW_RANGE = 50f;
 
-  public static final int FIRE_ARROW_DAMAGE = 12;
   public static final float FIRE_ARROW_SPEED = 18f;
   public static final float FIRE_ARROW_RANGE = 50f;
 
   public static final float GRAPPLE_ARROW_SPEED = 22f;
   public static final float GRAPPLE_ARROW_RANGE = 50f;
-  public static final float PLAYER_ARROW_WIDTH = 0.3f;
-  public static final float PLAYER_ARROW_HEIGHT = 0.1f;
+  public static final float PLAYER_ARROW_WIDTH = 0.6f;
+  public static final float PLAYER_ARROW_HEIGHT = 0.3f;
 
   public static Entity createPlayerArrow(Vector2 position, Vector2 direction) {
     return createPlayerArrow(null, position, direction);
@@ -56,7 +54,7 @@ public class ProjectileFactory {
         shooter,
         position,
         direction,
-        STANDARD_ARROW_DAMAGE,
+        ItemType.STANDARD_ARROW.getDamage(),
         STANDARD_ARROW_SPEED,
         STANDARD_ARROW_RANGE,
         ArrowType.STANDARD);
@@ -67,7 +65,7 @@ public class ProjectileFactory {
         shooter,
         position,
         direction,
-        ICE_ARROW_DAMAGE,
+        ItemType.ICE_ARROW.getDamage(),
         ICE_ARROW_SPEED,
         ICE_ARROW_RANGE,
         ArrowType.ICE);
@@ -78,7 +76,7 @@ public class ProjectileFactory {
         shooter,
         position,
         direction,
-        FIRE_ARROW_DAMAGE,
+        ItemType.FIRE_ARROW.getDamage(),
         FIRE_ARROW_SPEED,
         FIRE_ARROW_RANGE,
         ArrowType.FIRE);
@@ -89,7 +87,7 @@ public class ProjectileFactory {
         shooter,
         position,
         direction,
-        0,
+        ItemType.ROPE_ARROW.getDamage(),
         GRAPPLE_ARROW_SPEED,
         GRAPPLE_ARROW_RANGE,
         ArrowType.GRAPPLE);
@@ -100,7 +98,7 @@ public class ProjectileFactory {
         shooter,
         position,
         direction,
-        STANDARD_ARROW_DAMAGE,
+        ItemType.STANDARD_ARROW.getDamage(),
         STANDARD_ARROW_SPEED,
         STANDARD_ARROW_RANGE,
         ArrowType.POISON);

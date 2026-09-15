@@ -22,7 +22,7 @@ class ProjectileFactoryTest {
   void shouldCreatePlayerArrowsAtSmallVisualScale() {
     Entity arrow = ProjectileFactory.createPlayerArrow(Vector2.Zero, Vector2.X);
 
-    assertEquals(0.3f, arrow.getScale().x);
-    assertEquals(0.1f, arrow.getScale().y);
+    assertEquals(0.6f, arrow.getScale().x);
+    assertEquals(0.3f, arrow.getScale().y);
   }
 }

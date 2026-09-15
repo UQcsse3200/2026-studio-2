@@ -7,6 +7,7 @@ import com.badlogic.gdx.physics.box2d.Filter;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.Component;
+import com.csse3200.game.components.item.ItemType;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.physics.BodyUserData;
 import com.csse3200.game.physics.PhysicsLayer;
@@ -200,10 +201,18 @@ public class ArrowProjectileComponent extends Component {
 
     switch (arrowType) {
       case FIRE:
-        target.getEvents().trigger("applyBurn", 5f, 3f);
+        target
+            .getEvents()
+            .trigger(
+                "applyBurn",
+                ItemType.FIRE_ARROW.getBurnDamagePerSecond(),
+                ItemType.FIRE_ARROW.getBurnTime());
         break;
       case ICE:
-        target.getEvents().trigger("applySlow", 0.5f, 3f);
+        target
+            .getEvents()
+            .trigger(
+                "applySlow", ItemType.ICE_ARROW.getSlowSpeed(), ItemType.ICE_ARROW.getSlowTime());
         break;
       case POISON:
         target.getEvents().trigger("applyPoison", 5f, 3f);
