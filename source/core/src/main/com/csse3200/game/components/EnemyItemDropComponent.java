@@ -4,7 +4,6 @@ import com.badlogic.gdx.Gdx;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.ItemDrop;
 import com.csse3200.game.entities.factories.ItemFactory;
-import com.csse3200.game.services.ServiceLocator;
 import java.util.List;
 
 /**
@@ -43,7 +42,7 @@ public class EnemyItemDropComponent extends Component {
             () -> {
               Entity item = ItemFactory.createItem(drop.item, drop.quantity);
               item.setPosition(entity.getPosition());
-              ServiceLocator.getEntityService().register(item);
+              entity.getEvents().trigger("spawnEntity", item);
             });
       }
     }
