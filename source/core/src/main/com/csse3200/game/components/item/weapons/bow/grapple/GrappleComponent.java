@@ -27,7 +27,6 @@ public class GrappleComponent extends Component {
   private static final float SWING_FORCE = 7f;
   private static final float MAX_SWING_SPEED = 7f;
   private static final float SWING_DAMPING = 0.5f;
-  private static final float RELEASE_DAMPING = 0f;
 
   /** Keeps the rendered rope just outside the collider instead of clipping through its corner. */
   private static final float ROPE_RADIUS = 0.025f;
@@ -47,6 +46,9 @@ public class GrappleComponent extends Component {
   private final List<RopeContact> ropeContacts = new ArrayList<>();
 
   private float cooldownRemaining = 0f;
+  // Whatever linearDamping the body had right before swinging, restored on release so a grapple
+  // cycle never permanently changes the player's drag (and therefore jump height/speed).
+  private float preSwingLinearDamping;
 
   // Box2D locks the world during a step, so attachments are queued and built next frame
   private Body pendingAnchorBody;
@@ -94,7 +96,7 @@ public class GrappleComponent extends Component {
     originalAnchorBody = null;
     originalAnchorLocal = null;
     ropeContacts.clear();
-    physicsComponent.getBody().setLinearDamping(RELEASE_DAMPING);
+    physicsComponent.getBody().setLinearDamping(preSwingLinearDamping);
   }
 
   /** Launches a grapple arrow, unless one is in flight, attached, or still on cooldown. */
@@ -131,6 +133,9 @@ public class GrappleComponent extends Component {
   }
 
   private void createJoint(Body anchorBody, Vector2 point) {
+    // Capture the player's normal drag once for the whole grapple cycle. Bend changes rebuild the
+    // joint and must not overwrite this with SWING_DAMPING.
+    preSwingLinearDamping = physicsComponent.getBody().getLinearDamping();
     originalAnchorBody = anchorBody;
     originalAnchorLocal = anchorBody.getLocalPoint(point).cpy();
     totalRopeLength = physicsComponent.getBody().getWorldCenter().dst(point);
@@ -159,7 +164,7 @@ public class GrappleComponent extends Component {
     ropeJoint =
         (DistanceJoint) ServiceLocator.getPhysicsService().getPhysics().getWorld().createJoint(def);
 
-    // Stop the player spinning, and bleed the swing off over time
+    // Stop the player spinning and bleed the swing off over time.
     playerBody.setFixedRotation(true);
     playerBody.setLinearDamping(SWING_DAMPING);
   }

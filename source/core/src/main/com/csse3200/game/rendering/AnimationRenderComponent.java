@@ -58,6 +58,8 @@ public class AnimationRenderComponent extends RenderComponent {
     timeSource = ServiceLocator.getTimeSource();
   }
 
+  private final Map<String, Vector2> animationAnchors = new HashMap<>(4);
+
   /**
    * Register an animation from the texture atlas. Will play once when called with startAnimation()
    *
@@ -68,6 +70,22 @@ public class AnimationRenderComponent extends RenderComponent {
    */
   public boolean addAnimation(String name, float frameDuration) {
     return addAnimation(name, frameDuration, PlayMode.NORMAL);
+  }
+
+  /**
+   * Register an animation whose frames are drawn on a larger canvas than the default region,
+   * specifying where the character sits within that canvas so it lines up with other animations.
+   *
+   * @param anchorX horizontal pixel position of the character's centre within the frame
+   * @param anchorYFromBottom pixels between the character's feet and the bottom of the frame
+   */
+  public boolean addAnimation(
+      String name, float frameDuration, PlayMode playMode, float anchorX, float anchorYFromBottom) {
+    boolean added = addAnimation(name, frameDuration, playMode);
+    if (added) {
+      animationAnchors.put(name, new Vector2(anchorX, anchorYFromBottom));
+    }
+    return added;
   }
 
   /**
@@ -177,7 +195,20 @@ public class AnimationRenderComponent extends RenderComponent {
    * @return true if animation was playing and has now finished, false otherwise.
    */
   public boolean isFinished() {
-    return currentAnimation != null && currentAnimation.isAnimationFinished(animationPlayTime);
+    if (currentAnimation == null) {
+      return false;
+    }
+    // Animation#isAnimationFinished() is purely elapsed-time-based and ignores play mode, so a
+    // looping animation reports "finished" once playtime exceeds one full cycle even though it
+    // keeps playing - check the play mode ourselves to honour this method's documented contract.
+    PlayMode mode = currentAnimation.getPlayMode();
+    if (mode == PlayMode.LOOP
+        || mode == PlayMode.LOOP_REVERSED
+        || mode == PlayMode.LOOP_PINGPONG
+        || mode == PlayMode.LOOP_RANDOM) {
+      return false;
+    }
+    return currentAnimation.isAnimationFinished(animationPlayTime);
   }
 
   /**
@@ -217,7 +248,16 @@ public class AnimationRenderComponent extends RenderComponent {
       width = scale.x;
       height = scale.y;
     }
-
+    float drawX = pos.x;
+    float drawY = pos.y;
+    Vector2 anchor = animationAnchors.get(currentAnimationName);
+    if (anchor != null && defaultRegionWidthPx > 0f) {
+      float unitsPerPixel = scale.x / defaultRegionWidthPx;
+      // Mirroring flips the character's position within the frame too, so mirror the anchor.
+      float anchorX = flipX ? region.getRegionWidth() - anchor.x : anchor.x;
+      drawX = pos.x - (anchorX - defaultRegionWidthPx / 2f) * unitsPerPixel;
+      drawY = pos.y - anchor.y * unitsPerPixel;
+    }
     // Draw via raw UV coordinates (rather than the TextureRegion overload) so flipping just
     // means swapping u/u2, without mutating the shared keyframe region. SpriteBatch's raw
     // Texture overload maps world-y to v directly, whereas TextureRegion's v/v2 are stored
@@ -233,7 +273,7 @@ public class AnimationRenderComponent extends RenderComponent {
       u = u2;
       u2 = tmp;
     }
-    batch.draw(region.getTexture(), pos.x, pos.y, width, height, u, v, u2, v2);
+    batch.draw(region.getTexture(), drawX, drawY, width, height, u, v, u2, v2);
     if (!ServiceLocator.getEntityService().getPaused()) {
       animationPlayTime += timeSource.getDeltaTime();
     }

@@ -1,6 +1,7 @@
 package com.csse3200.game.components.item.weapons.bow;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -13,6 +14,7 @@ import com.csse3200.game.components.projectile.ArrowType;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.extensions.GameExtension;
+import com.csse3200.game.services.GameTime;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.concurrent.atomic.AtomicReference;
@@ -22,20 +24,30 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 @ExtendWith(GameExtension.class)
 class BowComponentTest {
+  // These mirror BowComponent's private charge tuning constants - they are gameplay-feel knobs, so
+  // update them here whenever they are retuned there. Expected values below are derived from them
+  // rather than hardcoded, so a retune only needs changing in one place.
+  private static final float MIN_CHARGE_SPEED_FACTOR = 0.3f;
+  private static final float MAX_CHARGE_SPEED_FACTOR = 1.5f;
+  private static final long MAX_CHARGE_MS = 1500L;
+
   private EntityService entityService;
   private Sound attackSound;
+  private GameTime gameTime;
 
   @BeforeEach
   void setUp() {
     entityService = mock(EntityService.class);
     ResourceService resourceService = mock(ResourceService.class);
     attackSound = mock(Sound.class);
+    gameTime = mock(GameTime.class);
 
     when(resourceService.containsAsset("sounds/Impact4.ogg", Sound.class)).thenReturn(true);
     when(resourceService.getAsset("sounds/Impact4.ogg", Sound.class)).thenReturn(attackSound);
 
     ServiceLocator.registerEntityService(entityService);
     ServiceLocator.registerResourceService(resourceService);
+    ServiceLocator.registerTimeSource(gameTime);
   }
 
   @Test
@@ -44,13 +56,15 @@ class BowComponentTest {
     AtomicReference<Entity> shooterRef = new AtomicReference<>();
     AtomicReference<Vector2> spawnPosition = new AtomicReference<>();
     AtomicReference<Vector2> projectileDirection = new AtomicReference<>();
+    AtomicReference<Float> speedMultiplierRef = new AtomicReference<>();
 
     BowComponent component =
         new BowComponent(
-            (shooter, position, direction) -> {
+            (shooter, position, direction, speedMultiplier) -> {
               shooterRef.set(shooter);
               spawnPosition.set(position);
               projectileDirection.set(direction);
+              speedMultiplierRef.set(speedMultiplier);
               return projectile;
             });
 
@@ -70,6 +84,7 @@ class BowComponentTest {
     assertTrue(projectileDirection.get().epsilonEquals(expectedDirection));
     assertTrue(spawnPosition.get().epsilonEquals(new Vector2(2.96f, 4.28f)));
     assertTrue(animationDirection.get().epsilonEquals(expectedDirection));
+    assertEquals(1f, speedMultiplierRef.get());
     verify(entityService).register(projectile);
     verify(attackSound).play();
   }
@@ -77,7 +92,8 @@ class BowComponentTest {
   @Test
   void shouldIgnoreZeroDirection() {
     Entity projectile = mock(Entity.class);
-    BowComponent component = new BowComponent((shooter, position, direction) -> projectile);
+    BowComponent component =
+        new BowComponent((shooter, position, direction, speedMultiplier) -> projectile);
     new Entity().addComponent(component);
 
     component.attack(Vector2.Zero.cpy());
@@ -96,5 +112,107 @@ class BowComponentTest {
 
     component.setArrowType(null);
     assertEquals(ArrowType.STANDARD, component.getArrowType());
+  }
+
+  private BowComponent createChargeComponent(AtomicReference<Float> speedMultiplierRef) {
+    Entity projectile = mock(Entity.class);
+    BowComponent component =
+        new BowComponent(
+            (shooter, position, direction, speedMultiplier) -> {
+              speedMultiplierRef.set(speedMultiplier);
+              return projectile;
+            });
+    new Entity().addComponent(component);
+    return component;
+  }
+
+  @Test
+  void shouldFireAtMinSpeedFactorOnImmediateRelease() {
+    AtomicReference<Float> speedMultiplierRef = new AtomicReference<>();
+    BowComponent component = createChargeComponent(speedMultiplierRef);
+    when(gameTime.getTime()).thenReturn(0L, 0L);
+
+    component.startCharge(new Vector2(1f, 0f));
+    component.releaseCharge(new Vector2(1f, 0f));
+
+    assertEquals(MIN_CHARGE_SPEED_FACTOR, speedMultiplierRef.get());
+  }
+
+  @Test
+  void shouldFireAtFullSpeedAfterMaxCharge() {
+    AtomicReference<Float> speedMultiplierRef = new AtomicReference<>();
+    BowComponent component = createChargeComponent(speedMultiplierRef);
+    when(gameTime.getTime()).thenReturn(0L, MAX_CHARGE_MS);
+
+    component.startCharge(new Vector2(1f, 0f));
+    component.releaseCharge(new Vector2(1f, 0f));
+
+    assertEquals(MAX_CHARGE_SPEED_FACTOR, speedMultiplierRef.get(), 1e-5f);
+  }
+
+  @Test
+  void shouldClampSpeedMultiplierBeyondMaxCharge() {
+    AtomicReference<Float> speedMultiplierRef = new AtomicReference<>();
+    BowComponent component = createChargeComponent(speedMultiplierRef);
+    when(gameTime.getTime()).thenReturn(0L, MAX_CHARGE_MS * 4);
+
+    component.startCharge(new Vector2(1f, 0f));
+    component.releaseCharge(new Vector2(1f, 0f));
+
+    assertEquals(MAX_CHARGE_SPEED_FACTOR, speedMultiplierRef.get(), 1e-5f);
+  }
+
+  @Test
+  void shouldScaleLinearlyAtPartialCharge() {
+    AtomicReference<Float> speedMultiplierRef = new AtomicReference<>();
+    BowComponent component = createChargeComponent(speedMultiplierRef);
+    when(gameTime.getTime()).thenReturn(0L, MAX_CHARGE_MS / 2); // Half of the maximum hold.
+
+    component.startCharge(new Vector2(1f, 0f));
+    component.releaseCharge(new Vector2(1f, 0f));
+
+    float expected =
+        MIN_CHARGE_SPEED_FACTOR + (MAX_CHARGE_SPEED_FACTOR - MIN_CHARGE_SPEED_FACTOR) * 0.5f;
+    assertEquals(expected, speedMultiplierRef.get(), 1e-5f);
+  }
+
+  @Test
+  void shouldNoOpReleaseWithoutCharge() {
+    Entity projectile = mock(Entity.class);
+    BowComponent component =
+        new BowComponent((shooter, position, direction, speedMultiplier) -> projectile);
+    new Entity().addComponent(component);
+
+    component.releaseCharge(new Vector2(1f, 0f));
+
+    verify(entityService, never()).register(projectile);
+  }
+
+  @Test
+  void shouldNotStartChargeWhileOnCooldown() {
+    AtomicReference<Float> speedMultiplierRef = new AtomicReference<>();
+    BowComponent component = createChargeComponent(speedMultiplierRef);
+    when(gameTime.getTime()).thenReturn(0L);
+
+    component.attack(new Vector2(1f, 0f)); // puts the bow on cooldown
+    component.startCharge(new Vector2(1f, 0f));
+    component.releaseCharge(new Vector2(1f, 0f));
+
+    // Only the initial attack() should have fired - startCharge was rejected by the cooldown.
+    assertEquals(1f, speedMultiplierRef.get());
+  }
+
+  @Test
+  void shouldApplyCooldownOnReleaseNotOnStart() {
+    AtomicReference<Float> speedMultiplierRef = new AtomicReference<>();
+    BowComponent component = createChargeComponent(speedMultiplierRef);
+    when(gameTime.getTime()).thenReturn(0L, 0L);
+
+    component.startCharge(new Vector2(1f, 0f));
+    assertTrue(component.isReady());
+
+    component.releaseCharge(new Vector2(1f, 0f));
+    assertFalse(component.isReady());
+    assertTrue(component.getCooldownRemaining() > 0f);
   }
 }
