@@ -1,20 +1,16 @@
 package com.csse3200.game.screens;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.ScreenAdapter;
-import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.csse3200.game.GdxGame;
 import com.csse3200.game.areas.GameArea;
 import com.csse3200.game.areas.Level2GameArea;
-import com.csse3200.game.areas.TutorialGameArea;
 import com.csse3200.game.areas.terrain.TerrainFactory;
-import com.csse3200.game.components.ButtonSound;
 import com.csse3200.game.components.gamearea.PerformanceDisplay;
 import com.csse3200.game.components.maingame.MainGameActions;
 import com.csse3200.game.components.maingame.MainGameExitDisplay;
-import com.csse3200.game.components.maingame.PauseMenuOverlay;
+import com.csse3200.game.components.maingame.PauseMenuDisplay;
 import com.csse3200.game.components.minigames.spinthewheel.SpinTheWheelOverlay;
 import com.csse3200.game.components.minigames.spinthewheel.WheelConfig;
 import com.csse3200.game.components.player.KeyboardPlayerInputComponent;
@@ -44,16 +40,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The game screen containing the tutorial.
+ * The game screen containing level 2.
  *
  * <p>Details on libGDX screens: https://happycoding.io/tutorials/libgdx/game-screens
  */
-public class TutorialGameScreen extends ScreenAdapter {
+public class Level2GameScreen extends ScreenAdapter {
 
-  private static final Logger logger = LoggerFactory.getLogger(TutorialGameScreen.class);
+  private static final Logger logger = LoggerFactory.getLogger(Level2GameScreen.class);
 
   private static final String[] mainGameTextures = createTextures();
-  private static final String[] mainGameAtlas = createAtlas();
 
   private boolean levelSwapQueued = false;
   private GameArea currentGameArea;
@@ -63,14 +58,12 @@ public class TutorialGameScreen extends ScreenAdapter {
   private final Renderer renderer;
   private final PhysicsEngine physicsEngine;
   private final SpinTheWheelOverlay wheelOverlay;
-  private final PauseMenuOverlay pauseOverlay;
   private Entity player;
   private static final String gameplayMusic = "sounds/gameplay_bg.ogg";
   private static final String[] gameplayMusicFiles = {gameplayMusic};
-  private final TutorialGameArea tutorialGameArea;
   private boolean cheats = false;
 
-  public TutorialGameScreen(GdxGame game) {
+  public Level2GameScreen(GdxGame game) {
     this.game = game;
 
     logger.debug("Initialising main game screen services");
@@ -95,39 +88,29 @@ public class TutorialGameScreen extends ScreenAdapter {
 
     loadAssets();
     createUI();
-    playMusic();
 
-    logger.debug("Initialising tutorial game screen entities");
+    logger.debug("Initialising level 2 game screen entities");
 
     // Pass the renderer's camera to the terrain factory.
     TerrainFactory terrainFactory = new TerrainFactory(renderer.getCamera());
 
-    // Pass the same camera to the TutorialGameArea so that
+    // Pass the same camera to the Level2GameArea so that
     // the parallax background can follow camera movement.
-    tutorialGameArea = new TutorialGameArea(terrainFactory, renderer.getCamera());
+    Level2GameArea level2 = new Level2GameArea(terrainFactory, renderer.getCamera(), player);
 
-    tutorialGameArea.create();
+    level2.create();
 
-    currentGameArea = tutorialGameArea;
-    Entity levelChanger = currentGameArea.getLevelChanger();
-    if (levelChanger != null) {
-      levelChanger.getEvents().addListener("triggerNextLevel", this::queueAreaSwap);
-    }
-    player = tutorialGameArea.getPlayer();
+    player = level2.getPlayer();
 
     // Follow the player with the camera.
     renderer.getCamera().setTarget(player);
-    player.getEvents().addListener("deathAnimationFinished", this::onPlayerDeath);
+
+    player.getEvents().addListener("death", this::onPlayerDeath);
     wheelOverlay = new SpinTheWheelOverlay(WheelConfig.ITEMS, player);
-    pauseOverlay = new PauseMenuOverlay(game, tutorialGameArea);
 
     if (cheats) {
-      tutorialGameArea
-          .getPlayer()
-          .getComponent(PhysicsComponent.class)
-          .getBody()
-          .setGravityScale(0);
-      tutorialGameArea.getPlayer().getComponent(KeyboardPlayerInputComponent.class).toggleCheats();
+      level2.getPlayer().getComponent(PhysicsComponent.class).getBody().setGravityScale(0);
+      level2.getPlayer().getComponent(KeyboardPlayerInputComponent.class).toggleCheats();
     }
   }
 
@@ -137,61 +120,11 @@ public class TutorialGameScreen extends ScreenAdapter {
         () -> ServiceLocator.getGameEndEventHandler().trigger("gameEnd", GameEndState.LOSE));
   }
 
-  /**
-   * When the level changer triggers a level change event, this method receives and creates the
-   * requested game area object and queues it to be rendered at the next available frame
-   *
-   * @param level the name of the level to load
-   */
-  private void queueAreaSwap(String level) {
-    TerrainFactory terrainFactory = new TerrainFactory(renderer.getCamera());
-
-    switch (level) {
-      case "tutorial":
-        nextGameArea = new TutorialGameArea(terrainFactory, renderer.getCamera());
-        break;
-      case "level2":
-        nextGameArea = new Level2GameArea(terrainFactory, renderer.getCamera(), player);
-        break;
-      default:
-        return;
-    }
-    levelSwapQueued = true;
-  }
-
-  /**
-   * Performs the level swap by disposing of the existing level, creating the new area and updating
-   * internal references to keep track accurately of the current game area
-   */
-  private void performLevelSwap() {
-    logger.info("Swapping level to new game area");
-
-    currentGameArea.dispose();
-    nextGameArea.create();
-    currentGameArea = nextGameArea;
-    nextGameArea = null;
-
-    renderer.getCamera().setTarget(currentGameArea.getPlayer());
-  }
-
   @Override
   public void render(float delta) {
-    // at the start of the render, if there's been a level swap queued, safely perform the swap
-    if (levelSwapQueued) {
-      performLevelSwap();
-      levelSwapQueued = false;
-    }
-    if (Gdx.input.isKeyJustPressed(Input.Keys.K)) {
-      wheelOverlay.request();
-    } else if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
-      pauseOverlay.request();
-      tutorialGameArea.getInput().unpause();
-    }
     physicsEngine.update();
     ServiceLocator.getEntityService().update();
     renderer.render();
-    wheelOverlay.afterRender();
-    pauseOverlay.afterRender();
   }
 
   @Override
@@ -205,7 +138,6 @@ public class TutorialGameScreen extends ScreenAdapter {
     logger.info("Game paused");
   }
 
-  /** Resumes the game. */
   @Override
   public void resume() {
     logger.info("Game resumed");
@@ -249,62 +181,26 @@ public class TutorialGameScreen extends ScreenAdapter {
                 "images/Buttons/quit_down_btn.png",
                 "images/Buttons/exit_up_btn.png",
                 "images/Buttons/exit_down_btn.png",
-                "images/rope_arrow.png",
-                "images/fire_arrow.png",
-                "images/cold_arrow.png",
-                "images/Buttons/exit_down_btn.png",
-                "images/Buttons/control_up_btn.png",
-                "images/Buttons/control_down_btn.png",
-                "images/controls_graphic.png",
-                "images/Buttons/restart_up_btn.png",
-                "images/Buttons/restart_down_btn.png",
-                "images/Buttons/main_menu_up_btn.png",
-                "images/Buttons/main_menu_down_btn.png",
-                "images/Buttons/exit_game_up_btn.png",
-                "images/Buttons/exit_game_down_btn.png",
-                "images/Buttons/back_up_btn.png",
-                "images/Buttons/back_down_btn.png",
-                "images/scroll_bg.png"));
+                "images/rope_arrow.png"));
     paths.addAll(List.of(WheelConfig.TEXTURES));
-    return paths.toArray(new String[0]);
-  }
-
-  /**
-   * The game's atlases that should not be unloaded by each game area
-   *
-   * @return every atlas the levels need
-   */
-  private static String[] createAtlas() {
-    List<String> paths = new ArrayList<>(List.of("images/player.atlas"));
     return paths.toArray(new String[0]);
   }
 
   private void loadAssets() {
     logger.debug("Loading assets");
+
     ResourceService resourceService = ServiceLocator.getResourceService();
+
     resourceService.loadTextures(mainGameTextures);
-    resourceService.loadTextureAtlases(mainGameAtlas);
-    resourceService.loadSounds(WheelConfig.SOUNDS);
-    resourceService.loadMusic(gameplayMusicFiles);
-    ButtonSound.load(resourceService);
     resourceService.loadAll();
   }
 
   private void unloadAssets() {
     logger.debug("Unloading assets");
-    ResourceService resourceService = ServiceLocator.getResourceService();
-    resourceService.unloadAssets(mainGameTextures);
-    resourceService.unloadAssets(mainGameAtlas);
-    resourceService.unloadAssets(WheelConfig.SOUNDS);
-    resourceService.unloadAssets(gameplayMusicFiles);
-    ButtonSound.unload(resourceService);
-  }
 
-  private void playMusic() {
-    Music music = ServiceLocator.getResourceService().getAsset(gameplayMusic, Music.class);
-    music.setLooping(true);
-    music.setVolume(0.05f);
-    music.play();
+    ResourceService resourceService = ServiceLocator.getResourceService();
+
+    resourceService.unloadAssets(mainGameTextures);
   }
 
   /**
@@ -330,7 +226,8 @@ public class TutorialGameScreen extends ScreenAdapter {
         .addComponent(new GameEndActions(this.game))
         .addComponent(new Terminal())
         .addComponent(inputComponent)
-        .addComponent(new TerminalDisplay());
+        .addComponent(new TerminalDisplay())
+        .addComponent(new PauseMenuDisplay(this.game, this.currentGameArea));
 
     ServiceLocator.getEntityService().register(ui);
   }

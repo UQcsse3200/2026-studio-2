@@ -1,15 +1,17 @@
 package com.csse3200.game.components.player;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Input.Buttons;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.physics.box2d.Body;
 import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.input.InputComponent;
-import com.csse3200.game.utils.math.Vector2Utils;
+import com.csse3200.game.physics.components.PhysicsComponent;
 
 /** Input handler for player keyboard and mouse controls. */
 public class KeyboardPlayerInputComponent extends InputComponent {
@@ -17,12 +19,15 @@ public class KeyboardPlayerInputComponent extends InputComponent {
   private static final int SPEED = 1;
   private static final int LEFT = 0;
   private static final int RIGHT = 1;
-  private final boolean[] keysHeld = new boolean[2];
+  private static final int UP = 2;
+  private static final int DOWN = 3;
+  private final boolean[] keysHeld = new boolean[4];
   private boolean sprintHeld;
   private CameraComponent cameraComponent;
   private boolean attackHeld;
   private boolean dead;
   private boolean rightMouseHeld;
+  private boolean cheats = false;
 
   public KeyboardPlayerInputComponent() {
     super(5);
@@ -85,7 +90,9 @@ public class KeyboardPlayerInputComponent extends InputComponent {
         entity.getEvents().trigger("selectQuickSlot", 8);
         return true;
       case Keys.W:
-        walkDirection.add(Vector2Utils.UP);
+        // walkDirection.add(Vector2Utils.UP);
+        // triggerWalkEvent();
+        keysHeld[UP] = true;
         triggerWalkEvent();
         return true;
       case Keys.A:
@@ -127,6 +134,11 @@ public class KeyboardPlayerInputComponent extends InputComponent {
       case Keys.COMMA:
         entity.getEvents().trigger("switchItem", -1);
         return true;
+      case Input.Keys.S:
+        entity.getEvents().trigger("updateLedgeDrop", true);
+        keysHeld[DOWN] = true;
+        triggerWalkEvent();
+        return true;
       case Keys.ESCAPE:
         entity.getEvents().trigger("togglePause");
       default:
@@ -156,6 +168,16 @@ public class KeyboardPlayerInputComponent extends InputComponent {
         keysHeld[RIGHT] = false;
         triggerWalkEvent();
         return true;
+      case Keys.W:
+      case Keys.UP:
+        keysHeld[UP] = false;
+        triggerWalkEvent();
+        return true;
+      case Keys.S:
+      case Keys.DOWN:
+        keysHeld[DOWN] = false;
+        triggerWalkEvent();
+        return true;
       case Keys.SHIFT_LEFT:
       case Keys.SHIFT_RIGHT:
         sprintHeld = false;
@@ -167,6 +189,10 @@ public class KeyboardPlayerInputComponent extends InputComponent {
       default:
         return false;
     }
+  }
+
+  public void toggleCheats() {
+    cheats = !cheats;
   }
 
   /**
@@ -277,10 +303,20 @@ public class KeyboardPlayerInputComponent extends InputComponent {
 
   private void triggerWalkEvent() {
     float x = 0;
+    float y = 0;
     if (keysHeld[LEFT]) x -= SPEED;
     if (keysHeld[RIGHT]) x += SPEED;
+    walkDirection.set(x, y);
 
-    walkDirection.set(x, 0);
+    if (cheats) {
+      Body body = entity.getComponent(PhysicsComponent.class).getBody();
+      if (keysHeld[UP]) {
+        body.applyLinearImpulse(new Vector2(0, 10f), body.getWorldCenter(), true);
+      }
+      if (keysHeld[DOWN]) {
+        body.applyLinearImpulse(new Vector2(0, -10f), body.getWorldCenter(), true);
+      }
+    }
 
     if (walkDirection.epsilonEquals(Vector2.Zero, 0.01f)) {
       entity.getEvents().trigger("walkStop");
