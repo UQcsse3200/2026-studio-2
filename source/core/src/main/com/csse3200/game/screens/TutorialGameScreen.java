@@ -68,7 +68,7 @@ public class TutorialGameScreen extends ScreenAdapter {
   private static final String gameplayMusic = "sounds/gameplay_bg.ogg";
   private static final String[] gameplayMusicFiles = {gameplayMusic};
   private final TutorialGameArea tutorialGameArea;
-  private boolean cheats = false;
+  private boolean cheats = true;
 
   public TutorialGameScreen(GdxGame game) {
     this.game = game;
@@ -119,7 +119,8 @@ public class TutorialGameScreen extends ScreenAdapter {
     renderer.getCamera().setTarget(player);
     player.getEvents().addListener("deathAnimationFinished", this::onPlayerDeath);
     wheelOverlay = new SpinTheWheelOverlay(WheelConfig.ITEMS, player);
-    pauseOverlay = new PauseMenuOverlay(game, tutorialGameArea);
+    pauseOverlay =
+        new PauseMenuOverlay(game, tutorialGameArea, GdxGame.ScreenType.TUTORIAL_SETTINGS);
 
     if (cheats) {
       tutorialGameArea

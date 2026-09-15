@@ -1,4 +1,4 @@
-package com.csse3200.game.screens.settings;
+package com.csse3200.game.screens;
 
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -19,8 +19,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /** The game screen containing the settings. */
-public class SettingsMainMenu extends ScreenAdapter {
-  private static final Logger logger = LoggerFactory.getLogger(SettingsMainMenu.class);
+public class Settings extends ScreenAdapter {
+  private static final Logger logger = LoggerFactory.getLogger(Settings.class);
   private static final String[] settingsTextures = {
     "images/Buttons/exit_up_btn.png",
     "images/Buttons/exit_down_btn.png",
@@ -32,9 +32,11 @@ public class SettingsMainMenu extends ScreenAdapter {
 
   private final GdxGame game;
   private final Renderer renderer;
+  private final GdxGame.ScreenType returnScreen;
 
-  public SettingsMainMenu(GdxGame game) {
+  public Settings(GdxGame game, GdxGame.ScreenType returnScreen) {
     this.game = game;
+    this.returnScreen = returnScreen;
 
     logger.debug("Initialising settings screen services");
     ServiceLocator.registerInputService(new InputService());
@@ -94,7 +96,7 @@ public class SettingsMainMenu extends ScreenAdapter {
     logger.debug("Creating ui");
     Stage stage = ServiceLocator.getRenderService().getStage();
     Entity ui = new Entity();
-    ui.addComponent(new SettingsMenuDisplay(game, GdxGame.ScreenType.MAIN_MENU))
+    ui.addComponent(new SettingsMenuDisplay(game, returnScreen))
         .addComponent(new InputDecorator(stage, 10));
     ServiceLocator.getEntityService().register(ui);
   }

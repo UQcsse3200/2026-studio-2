@@ -29,10 +29,12 @@ public class PauseMenuDisplay extends UIComponent {
   private GameArea area;
 
   private Entity overlay;
+  private GdxGame.ScreenType settingsScreen;
 
-  public PauseMenuDisplay(GdxGame game, GameArea area) {
+  public PauseMenuDisplay(GdxGame game, GameArea area, GdxGame.ScreenType settingsScreen) {
     this.game = game;
     this.area = area;
+    this.settingsScreen = settingsScreen;
   }
 
   @Override
@@ -131,7 +133,7 @@ public class PauseMenuDisplay extends UIComponent {
               ButtonSound.playClickThen(
                   () -> {
                     entity.getEvents().trigger("settingsFromPause");
-                    game.setScreen(GdxGame.ScreenType.SETTINGS_FROM_PAUSE);
+                    game.setScreen(settingsScreen);
                   });
             }
           }

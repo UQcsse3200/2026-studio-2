@@ -88,7 +88,7 @@ public class MainGameScreen extends ScreenAdapter {
     player = forestGameArea.getPlayer();
     player.getEvents().addListener("deathAnimationFinished", this::onPlayerDeath);
     wheelOverlay = new SpinTheWheelOverlay(WheelConfig.ITEMS, player);
-    pauseOverlay = new PauseMenuOverlay(game, forestGameArea);
+    pauseOverlay = new PauseMenuOverlay(game, forestGameArea, GdxGame.ScreenType.MAIN_GAME);
   }
 
   private void onPlayerDeath() {

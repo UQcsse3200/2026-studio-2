@@ -11,6 +11,7 @@ import com.csse3200.game.components.gamearea.PerformanceDisplay;
 import com.csse3200.game.components.maingame.MainGameActions;
 import com.csse3200.game.components.maingame.MainGameExitDisplay;
 import com.csse3200.game.components.maingame.PauseMenuDisplay;
+import com.csse3200.game.components.maingame.PauseMenuOverlay;
 import com.csse3200.game.components.minigames.spinthewheel.SpinTheWheelOverlay;
 import com.csse3200.game.components.minigames.spinthewheel.WheelConfig;
 import com.csse3200.game.components.player.KeyboardPlayerInputComponent;
@@ -58,10 +59,11 @@ public class Level2GameScreen extends ScreenAdapter {
   private final Renderer renderer;
   private final PhysicsEngine physicsEngine;
   private final SpinTheWheelOverlay wheelOverlay;
+  private final PauseMenuOverlay pauseOverlay;
   private Entity player;
   private static final String gameplayMusic = "sounds/gameplay_bg.ogg";
   private static final String[] gameplayMusicFiles = {gameplayMusic};
-  private boolean cheats = false;
+  private boolean cheats = true;
 
   public Level2GameScreen(GdxGame game) {
     this.game = game;
@@ -107,6 +109,8 @@ public class Level2GameScreen extends ScreenAdapter {
 
     player.getEvents().addListener("death", this::onPlayerDeath);
     wheelOverlay = new SpinTheWheelOverlay(WheelConfig.ITEMS, player);
+    pauseOverlay =
+        new PauseMenuOverlay(game, currentGameArea, GdxGame.ScreenType.TUTORIAL_SETTINGS);
 
     if (cheats) {
       level2.getPlayer().getComponent(PhysicsComponent.class).getBody().setGravityScale(0);
@@ -227,7 +231,9 @@ public class Level2GameScreen extends ScreenAdapter {
         .addComponent(new Terminal())
         .addComponent(inputComponent)
         .addComponent(new TerminalDisplay())
-        .addComponent(new PauseMenuDisplay(this.game, this.currentGameArea));
+        .addComponent(
+            new PauseMenuDisplay(
+                this.game, this.currentGameArea, GdxGame.ScreenType.LEVEL_2_SETTINGS));
 
     ServiceLocator.getEntityService().register(ui);
   }
