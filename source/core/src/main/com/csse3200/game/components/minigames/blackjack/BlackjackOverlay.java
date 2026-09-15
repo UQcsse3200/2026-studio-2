@@ -1,5 +1,6 @@
 package com.csse3200.game.components.minigames.blackjack;
 
+import com.badlogic.gdx.audio.Music;
 import com.csse3200.game.components.inventory.InventoryComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.services.ServiceLocator;
@@ -11,6 +12,7 @@ import org.slf4j.LoggerFactory;
 /** Shows the Blackjack minigame over the game, pausing it while the overlay is open. */
 public class BlackjackOverlay {
   private static final Logger logger = LoggerFactory.getLogger(BlackjackOverlay.class);
+  private static final String BLACKJACK_MUSIC = "sounds/minigames/blackjack/blackjack-bgm.mp3";
 
   private boolean openRequested = false;
   private Entity overlay;
@@ -29,7 +31,7 @@ public class BlackjackOverlay {
     if (overlay != null || openRequested) {
       return;
     }
-    logger.debug("Opening the wheel overlay");
+    logger.debug("Opening the blackjack overlay");
     openRequested = true;
     ServiceLocator.getEntityService().setPaused(true);
   }
@@ -39,13 +41,25 @@ public class BlackjackOverlay {
     if (!openRequested) {
       return;
     }
+
     openRequested = false;
     open();
   }
 
   private void open() {
     BlurredBackdropDisplay backdrop = new BlurredBackdropDisplay(ScreenBlur.capture());
-    BlackjackDisplay display = new BlackjackDisplay(new Blackjack(100), inventory);
+
+    ServiceLocator.getResourceService().loadMusic(new String[] {BLACKJACK_MUSIC});
+    ServiceLocator.getResourceService().loadSounds(BlackjackConfig.SOUNDS);
+    ServiceLocator.getResourceService().loadAll();
+
+    Music music = ServiceLocator.getResourceService().getAsset(BLACKJACK_MUSIC, Music.class);
+    music.setLooping(true);
+    music.setVolume(0.25f);
+    music.play();
+
+    BlackjackDisplay display =
+        new BlackjackDisplay(new Blackjack(100), inventory, this::setSoundEnabled, this::close);
 
     overlay =
         new Entity()
@@ -58,7 +72,23 @@ public class BlackjackOverlay {
     display.toFront();
   }
 
+  private void setSoundEnabled(boolean enabled) {
+    Music music = ServiceLocator.getResourceService().getAsset(BLACKJACK_MUSIC, Music.class);
+
+    if (enabled) {
+      music.play();
+    } else {
+      music.pause();
+    }
+  }
+
   private void close() {
+    if (ServiceLocator.getResourceService().containsAsset(BLACKJACK_MUSIC, Music.class)) {
+      Music music = ServiceLocator.getResourceService().getAsset(BLACKJACK_MUSIC, Music.class);
+      music.stop();
+      ServiceLocator.getResourceService().unloadAssets(new String[] {BLACKJACK_MUSIC});
+    }
+
     ServiceLocator.getEntityService().scheduleRemoval(overlay);
     overlay = null;
     ServiceLocator.getEntityService().setPaused(false);

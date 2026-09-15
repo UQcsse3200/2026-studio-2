@@ -41,6 +41,16 @@ public class BlackjackScreen extends MinigameScreen {
     return BlackjackConfig.SOUNDS;
   }
 
+  private void setSoundEnabled(boolean enabled) {
+    Music music = ServiceLocator.getResourceService().getAsset(BLACKJACK_MUSIC, Music.class);
+
+    if (enabled) {
+      music.play();
+    } else {
+      music.pause();
+    }
+  }
+
   @Override
   public void dispose() {
     Music music = ServiceLocator.getResourceService().getAsset(BLACKJACK_MUSIC, Music.class);
@@ -56,7 +66,7 @@ public class BlackjackScreen extends MinigameScreen {
     Blackjack blackjack = new Blackjack(100);
 
     return new Entity()
-        .addComponent(new BlackjackDisplay(blackjack))
+        .addComponent(new BlackjackDisplay(blackjack, null, this::setSoundEnabled))
         .addComponent(new BlackjackActions(game))
         .addComponent(new InputDecorator(stage, 10));
   }

@@ -11,6 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
@@ -37,6 +38,9 @@ public class BlackjackDisplay extends UIComponent {
   private final InventoryComponent inventory;
   private boolean rewardGranted;
   private boolean resultSoundPlayed;
+  private boolean soundEnabled = true;
+  private final java.util.function.Consumer<Boolean> soundToggleCallback;
+  private final Runnable backCallback;
 
   private Table table;
   private Table dealerCards;
@@ -51,12 +55,29 @@ public class BlackjackDisplay extends UIComponent {
   private Label resultLabel;
 
   public BlackjackDisplay(Blackjack blackjack) {
-    this(blackjack, null);
+    this(blackjack, null, null, null);
   }
 
   public BlackjackDisplay(Blackjack blackjack, InventoryComponent inventory) {
+    this(blackjack, inventory, null, null);
+  }
+
+  public BlackjackDisplay(
+      Blackjack blackjack,
+      InventoryComponent inventory,
+      java.util.function.Consumer<Boolean> soundToggleCallback) {
+    this(blackjack, inventory, soundToggleCallback, null);
+  }
+
+  public BlackjackDisplay(
+      Blackjack blackjack,
+      InventoryComponent inventory,
+      java.util.function.Consumer<Boolean> soundToggleCallback,
+      Runnable backCallback) {
     this.blackjack = blackjack;
     this.inventory = inventory;
+    this.soundToggleCallback = soundToggleCallback;
+    this.backCallback = backCallback;
   }
 
   @Override
@@ -107,6 +128,25 @@ public class BlackjackDisplay extends UIComponent {
     backButtonStyle.down = new TextureRegionDrawable(backDownTexture);
 
     ImageButton backButton = new ImageButton(backButtonStyle);
+
+    TextButton soundButton = new TextButton("SOUND: ON", skin);
+
+    soundButton.addListener(
+        new ChangeListener() {
+          @Override
+          public void changed(ChangeEvent event, Actor actor) {
+            soundEnabled = !soundEnabled;
+            soundButton.setText(soundEnabled ? "SOUND: ON" : "SOUND: OFF");
+
+            if (soundToggleCallback != null) {
+              soundToggleCallback.accept(soundEnabled);
+            }
+
+            if (soundEnabled) {
+              ButtonSound.playClick();
+            }
+          }
+        });
 
     newRoundButton.addListener(
         new ChangeListener() {
@@ -173,7 +213,12 @@ public class BlackjackDisplay extends UIComponent {
           @Override
           public void changed(ChangeEvent event, Actor actor) {
             ButtonSound.playClick();
-            entity.getEvents().trigger("back");
+
+            if (backCallback != null) {
+              backCallback.run();
+            } else {
+              entity.getEvents().trigger("back");
+            }
           }
         });
 
@@ -209,6 +254,7 @@ public class BlackjackDisplay extends UIComponent {
     buttons.add(hitButton).width(160f).height(56f).pad(5f);
     buttons.add(standButton).width(160f).height(56f).pad(5f);
     buttons.add(backButton).width(160f).height(56f).pad(5f);
+    buttons.add(soundButton).width(140f).height(56f).pad(5f);
 
     table.add(buttons).padTop(15f);
 
@@ -381,10 +427,13 @@ public class BlackjackDisplay extends UIComponent {
       playerCards.add(createCardImage(card)).size(CARD_WIDTH, CARD_HEIGHT).pad(5f);
     }
 
-    dealerTotalLabel.setText(
-        blackjack.getDealerHand().isEmpty()
-            ? "Dealer total: -"
-            : "Dealer total: " + blackjack.getDealerTotal());
+    if (blackjack.getDealerHand().isEmpty()) {
+      dealerTotalLabel.setText("Dealer total: -");
+    } else if (blackjack.isRoundInProgress() && !blackjack.isRoundOver()) {
+      dealerTotalLabel.setText("Dealer total: ?");
+    } else {
+      dealerTotalLabel.setText("Dealer total: " + blackjack.getDealerTotal());
+    }
 
     playerTotalLabel.setText(
         blackjack.getPlayerHand().isEmpty()
@@ -398,6 +447,10 @@ public class BlackjackDisplay extends UIComponent {
   }
 
   private void playSound(String path) {
+    if (!soundEnabled) {
+      return;
+    }
+
     try {
       if (ServiceLocator.getResourceService() == null) {
         return;
@@ -521,7 +574,14 @@ public class BlackjackDisplay extends UIComponent {
 
   @Override
   public void dispose() {
-    table.clear();
+    if (table != null) {
+      table.remove();
+    }
+
+    if (resultOverlay != null) {
+      resultOverlay.remove();
+    }
+
     super.dispose();
   }
 }
