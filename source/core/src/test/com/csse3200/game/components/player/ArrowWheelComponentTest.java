@@ -6,6 +6,8 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.badlogic.gdx.math.Vector2;
+import com.csse3200.game.components.inventory.InventoryComponent;
+import com.csse3200.game.components.item.ItemType;
 import com.csse3200.game.components.projectile.ArrowType;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.extensions.GameExtension;
@@ -106,6 +108,56 @@ class ArrowWheelComponentTest {
   }
 
   @Test
+  void shouldSelectTheInventorySlotHoldingTheChosenArrow() {
+    InventoryComponent inventory = givePlayerAnInventory();
+    inventory.addItem(ItemType.STANDARD_ARROW, 5);
+    inventory.addItem(ItemType.FIRE_ARROW, 5);
+    inventory.selectSlot(0);
+
+    wheel.open();
+    wheel.highlightFromPointer(TOWARDS_FIRE);
+    assertTrue(wheel.close());
+
+    assertEquals(ItemType.FIRE_ARROW, inventory.getSelectedItem());
+  }
+
+  @Test
+  void shouldNotOfferArrowsThePlayerDoesNotHave() {
+    InventoryComponent inventory = givePlayerAnInventory();
+    inventory.addItem(ItemType.STANDARD_ARROW, 5);
+
+    assertTrue(wheel.isAvailable(ArrowType.STANDARD));
+    assertFalse(wheel.isAvailable(ArrowType.FIRE));
+    assertFalse(wheel.isAvailable(ArrowType.POISON));
+  }
+
+  @Test
+  void shouldRejectAnArrowThePlayerHasRunOutOf() {
+    InventoryComponent inventory = givePlayerAnInventory();
+    inventory.addItem(ItemType.STANDARD_ARROW, 5);
+    inventory.selectSlot(0);
+    AtomicReference<ArrowType> rejected = new AtomicReference<>();
+    player
+        .getEvents()
+        .addListener("arrowSelectionRejected", (ArrowType type) -> rejected.set(type));
+
+    wheel.open();
+    wheel.highlightFromPointer(TOWARDS_FIRE);
+    assertFalse(wheel.close());
+
+    assertEquals(ArrowType.FIRE, rejected.get());
+    assertEquals(ItemType.STANDARD_ARROW, inventory.getSelectedItem());
+  }
+
+  @Test
+  void shouldMapEachWheelTypeToItsArrowItem() {
+    assertEquals(ItemType.STANDARD_ARROW, ArrowWheelComponent.arrowItemFor(ArrowType.STANDARD));
+    assertEquals(ItemType.FIRE_ARROW, ArrowWheelComponent.arrowItemFor(ArrowType.FIRE));
+    assertEquals(ItemType.ICE_ARROW, ArrowWheelComponent.arrowItemFor(ArrowType.ICE));
+    assertNull(ArrowWheelComponent.arrowItemFor(ArrowType.POISON));
+  }
+
+  @Test
   void shouldKeepThePreviousTypeWhenTheHighlightIsUnavailable() {
     AtomicReference<ArrowType> rejected = new AtomicReference<>();
     player
@@ -179,5 +231,14 @@ class ArrowWheelComponentTest {
 
     assertEquals(ArrowType.FIRE, wheel.getSelected());
     assertFalse(wheel.isOpen());
+  }
+
+  /** Rebuilds the player with an inventory, since the wheel looks it up in create(). */
+  private InventoryComponent givePlayerAnInventory() {
+    InventoryComponent inventory = new InventoryComponent(0, 1, 9);
+    wheel = new ArrowWheelComponent();
+    player = new Entity().addComponent(inventory).addComponent(wheel);
+    player.create();
+    return inventory;
   }
 }

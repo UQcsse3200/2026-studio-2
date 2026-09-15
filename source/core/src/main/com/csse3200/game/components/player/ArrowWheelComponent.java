@@ -2,14 +2,23 @@ package com.csse3200.game.components.player;
 
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.components.Component;
+import com.csse3200.game.components.inventory.InventoryComponent;
+import com.csse3200.game.components.item.ItemType;
 import com.csse3200.game.components.projectile.ArrowType;
 import java.util.EnumSet;
 import java.util.Set;
 
-/** Holds the arrow wheel's state and applies the arrow type chosen from it. */
+/**
+ * Holds the arrow wheel's state and applies the arrow type chosen from it.
+ *
+ * <p>Arrows are inventory items, so choosing a type on the wheel selects the inventory slot holding
+ * that arrow. Firing then goes through the normal item-use path, which picks the right projectile
+ * and consumes ammo. A type the player has no arrows for cannot be chosen.
+ */
 public class ArrowWheelComponent extends Component {
   private final Set<ArrowType> available = EnumSet.allOf(ArrowType.class);
 
+  private InventoryComponent inventory;
   private boolean bowEquipped = true;
   private boolean open = false;
   private ArrowType highlighted;
@@ -17,6 +26,7 @@ public class ArrowWheelComponent extends Component {
 
   @Override
   public void create() {
+    inventory = entity.getComponent(InventoryComponent.class);
     entity.getEvents().addListener("openArrowWheel", this::open);
     entity.getEvents().addListener("closeArrowWheel", this::close);
     entity.getEvents().addListener("arrowWheelPointerMoved", this::highlightFromPointer);
@@ -38,9 +48,19 @@ public class ArrowWheelComponent extends Component {
     return selected;
   }
 
-  /** Returns whether an arrow type can be chosen from the wheel. */
+  /**
+   * Returns whether an arrow type can be chosen from the wheel. A type is unavailable if it has
+   * been locked, or if the player has an inventory but no arrows of that type in it.
+   */
   public boolean isAvailable(ArrowType type) {
-    return type != null && available.contains(type);
+    if (type == null || !available.contains(type)) {
+      return false;
+    }
+    if (inventory == null) {
+      return true;
+    }
+    ItemType arrowItem = arrowItemFor(type);
+    return arrowItem != null && inventory.hasItem(arrowItem);
   }
 
   /** Locks or unlocks an arrow type. A locked type is drawn but cannot be selected. */
@@ -96,8 +116,33 @@ public class ArrowWheelComponent extends Component {
     }
 
     selected = candidate;
+    selectInventorySlotFor(selected);
     entity.getEvents().trigger("arrowSelected", selected);
     return true;
+  }
+
+  /** Moves the inventory selection onto the slot holding this arrow type, if there is one. */
+  private void selectInventorySlotFor(ArrowType type) {
+    if (inventory == null) {
+      return;
+    }
+    ItemType arrowItem = arrowItemFor(type);
+    for (int i = 0; i < inventory.getSlotCount(); i++) {
+      if (inventory.getSlot(i).getItemType() == arrowItem) {
+        inventory.selectSlot(i);
+        return;
+      }
+    }
+  }
+
+  /** Returns the inventory item that fires as this arrow type, or null if there isn't one. */
+  static ItemType arrowItemFor(ArrowType type) {
+    for (ItemType item : ItemType.values()) {
+      if (item.isArrow() && item.toArrowType() == type) {
+        return item;
+      }
+    }
+    return null;
   }
 
   /** Closes the wheel without selecting anything, for interruptions such as losing the bow. */
