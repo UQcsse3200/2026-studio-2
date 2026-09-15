@@ -122,7 +122,7 @@ class PlayerCombatIntegrationTest {
         .when(() -> ProjectileFactory.createFireArrow(eq(player), any(), any(), any(Float.class)))
         .thenReturn(projectile);
     factory
-        .when(() -> ProjectileFactory.createColdArrow(eq(player), any(), any(), any(Float.class)))
+        .when(() -> ProjectileFactory.createIceArrow(eq(player), any(), any(), any(Float.class)))
         .thenReturn(projectile);
   }
 
@@ -174,16 +174,16 @@ class PlayerCombatIntegrationTest {
   }
 
   @Test
-  void shouldSelectColdFactoryAndConsumeOneArrow() {
-    inventory.addItem(ItemType.COLD_ARROW, 2);
+  void shouldSelectIceFactoryAndConsumeOneArrow() {
+    inventory.addItem(ItemType.ICE_ARROW, 2);
 
     assertTrue(itemUse.useSelectedItem());
 
-    factory.verify(() -> ProjectileFactory.createColdArrow(eq(player), any(), any(), eq(1f)));
+    factory.verify(() -> ProjectileFactory.createIceArrow(eq(player), any(), any(), eq(1f)));
     factory.verifyNoMoreInteractions();
     verify(entities).register(projectile);
-    assertEquals(1, inventory.getItemCount(ItemType.COLD_ARROW));
-    verify(itemUsed).handle(ItemType.COLD_ARROW);
+    assertEquals(1, inventory.getItemCount(ItemType.ICE_ARROW));
+    verify(itemUsed).handle(ItemType.ICE_ARROW);
     verifyNoInteractions(itemFailed);
   }
 

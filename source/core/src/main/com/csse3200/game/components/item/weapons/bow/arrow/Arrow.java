@@ -13,6 +13,14 @@ public class Arrow extends Item {
     super(itemType, quantity);
   }
 
+  public boolean isConsumeAmmo() {
+    return getItemType().consumesAmmo();
+  }
+
+  public float getCooldown() {
+    return getItemType().getCooldown();
+  }
+
   public int getDamage() {
     return getItemType().getDamage();
   }
@@ -21,11 +29,19 @@ public class Arrow extends Item {
     return getItemType().getRange();
   }
 
-  public boolean isConsumeAmmo() {
-    return getItemType().consumesAmmo();
+  public float getBurnDamagePerSecond() {
+    return getItemType().getBurnDamagePerSecond();
   }
 
-  public float getCooldown() {
-    return getItemType().getCooldown();
+  public float getBurnTime() {
+    return getItemType().getBurnTime();
+  }
+
+  public float getSlowSpeed() {
+    return getItemType().getSlowSpeed();
+  }
+
+  public float getSlowTime() {
+    return getItemType().getSlowTime();
   }
 }

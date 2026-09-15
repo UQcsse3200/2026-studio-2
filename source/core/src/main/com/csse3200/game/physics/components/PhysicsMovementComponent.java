@@ -16,6 +16,7 @@ public class PhysicsMovementComponent extends Component implements MovementContr
   private PhysicsComponent physicsComponent;
   private Vector2 targetPosition;
   private boolean movementEnabled = true;
+  private float speedMultiplier = 1f;
 
   public PhysicsMovementComponent() {}
 
@@ -76,7 +77,7 @@ public class PhysicsMovementComponent extends Component implements MovementContr
   }
 
   private void updateDirection(Body body) {
-    Vector2 desiredVelocity = getDirection().scl(maxSpeed);
+    Vector2 desiredVelocity = getDirection().scl(maxSpeed).scl(speedMultiplier);
     setToVelocity(body, desiredVelocity);
   }
 
@@ -90,5 +91,9 @@ public class PhysicsMovementComponent extends Component implements MovementContr
   private Vector2 getDirection() {
     // Move towards targetPosition based on our current position
     return targetPosition.cpy().sub(entity.getPosition()).nor();
+  }
+
+  public void setSpeedMultiplier(float speedMultiplier) {
+    this.speedMultiplier = Math.max(0f, speedMultiplier);
   }
 }

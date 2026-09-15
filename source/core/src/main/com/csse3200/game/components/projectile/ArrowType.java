@@ -1,29 +1,54 @@
 package com.csse3200.game.components.projectile;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.math.Vector2;
 
-/**
- * Enum representing arrow variants using a single texture with custom color tints and gameplay
- * effects.
- */
+/** Enum representing arrow variants used by the bow, projectiles, and arrow wheel. */
 public enum ArrowType {
-  STANDARD(Color.WHITE),
-  COLD(Color.BLUE),
-  FIRE(Color.RED),
-  GRAPPLE(Color.BROWN);
+  STANDARD("Standard", Color.WHITE),
+  FIRE("Fire", Color.RED),
+  ICE("Ice", Color.BLUE),
+  GRAPPLE("Grapple", Color.BROWN),
+  POISON("Poison", Color.PURPLE);
 
-  private static final String TEXTURE_PATH = "images/arrow.png";
+  /** Pointer distance from the wheel centre below which nothing is pointed at. */
+  public static final float DEADZONE_RADIUS = 40f;
+
+  private static final float DEADZONE_RADIUS_SQ = DEADZONE_RADIUS * DEADZONE_RADIUS;
+  private static final ArrowType[] WHEEL_TYPES = {STANDARD, FIRE, ICE, POISON};
+
+  private final String label;
   private final Color tintColor;
 
-  ArrowType(Color tintColor) {
+  ArrowType(String label, Color tintColor) {
+    this.label = label;
     this.tintColor = tintColor;
   }
 
+  public String getLabel() {
+    return label;
+  }
+
   public String getTexturePath() {
-    return TEXTURE_PATH;
+    return switch (this) {
+      case FIRE -> "images/fireArr_animation.png";
+      case ICE -> "images/coldArr_animation.png";
+      default -> "images/arrow.png";
+    };
   }
 
   public Color getTintColor() {
     return tintColor;
+  }
+
+  /** Returns the arrow type the pointer is aimed at, or null inside the centre deadzone. */
+  public static ArrowType forDirection(Vector2 offsetFromCentre) {
+    if (offsetFromCentre == null || offsetFromCentre.len2() < DEADZONE_RADIUS_SQ) {
+      return null;
+    }
+
+    float wedgeDegrees = 360f / WHEEL_TYPES.length;
+    float clockwiseFromTop = (90f - offsetFromCentre.angleDeg() + 360f) % 360f;
+    return WHEEL_TYPES[Math.round(clockwiseFromTop / wedgeDegrees) % WHEEL_TYPES.length];
   }
 }

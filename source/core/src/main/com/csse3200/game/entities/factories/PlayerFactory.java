@@ -10,8 +10,12 @@ import com.csse3200.game.components.item.weapons.WeaponComponent;
 import com.csse3200.game.components.item.weapons.bow.BowComponent;
 import com.csse3200.game.components.item.weapons.bow.grapple.GrappleComponent;
 import com.csse3200.game.components.item.weapons.melee.MeleeComponent;
+import com.csse3200.game.components.itemdictionary.ItemDictionaryComponent;
+import com.csse3200.game.components.itemdictionary.ItemDictionaryDisplay;
 import com.csse3200.game.components.level.RespawnComponent;
 import com.csse3200.game.components.player.*;
+import com.csse3200.game.components.shop.ShopComponent;
+import com.csse3200.game.components.shop.ShopDisplay;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.PlayerConfig;
 import com.csse3200.game.files.FileLoader;
@@ -71,12 +75,19 @@ public class PlayerFactory {
                 new CombatStatsComponent(
                     stats.health, stats.baseAttack, stats.invulnerabilityDuration))
             .addComponent(bowComponent)
+            .addComponent(new PoisonBuff())
+            .addComponent(new MeleeAttackComponent())
+            .addComponent(new ArrowWheelComponent())
             .addComponent(new MeleeComponent())
             .addComponent(new WeaponComponent(bowComponent))
             .addComponent(new InventoryComponent(stats.gold))
             .addComponent(new InventoryBarDisplay())
             .addComponent(new BackpackDisplay())
+            .addComponent(new ItemDictionaryComponent())
+            .addComponent(new ItemDictionaryDisplay())
             .addComponent(new PlayerInteractionComponent())
+            .addComponent(new ShopComponent())
+            .addComponent(new ShopDisplay())
             .addComponent(new ItemUseComponent())
             .addComponent(inputComponent)
             .addComponent(new PlayerStatsDisplay())

@@ -110,6 +110,12 @@ class BowComponentTest {
     component.setArrowType(ArrowType.FIRE);
     assertEquals(ArrowType.FIRE, component.getArrowType());
 
+    component.setArrowType(ArrowType.ICE);
+    assertEquals(ArrowType.ICE, component.getArrowType());
+
+    component.setArrowType(ArrowType.POISON);
+    assertEquals(ArrowType.POISON, component.getArrowType());
+
     component.setArrowType(null);
     assertEquals(ArrowType.STANDARD, component.getArrowType());
   }

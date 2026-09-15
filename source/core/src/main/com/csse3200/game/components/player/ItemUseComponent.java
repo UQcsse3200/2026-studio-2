@@ -108,24 +108,24 @@ public class ItemUseComponent extends Component {
       return false;
     }
 
-    if (selected.isArrow()) {
-      return useArrow(selected);
-    } else if (selected == ItemType.HEALTH_POTION) {
-      return usePotion();
-    }
-
-    return false;
+    return switch (selected) {
+      case STANDARD_ARROW, FIRE_ARROW, ICE_ARROW, ROPE_ARROW ->
+          useArrow(selected, getAimDirection());
+      case HEALTH_POTION -> useHealthPotion();
+      case Sword -> useMeleeWeapon(ItemType.Sword);
+      case Spear -> useMeleeWeapon(ItemType.Spear);
+      case SpeedPotion -> useSpeedPotion();
+      case PoisonPotion -> usePoisonPotion();
+    };
   }
 
-  private boolean useArrow(ItemType arrowItem) {
-    Vector2 direction = getAimDirection();
-    if (direction.isZero()) {
+  private boolean useArrow(ItemType arrowItem, Vector2 direction) {
+    if (direction == null || direction.isZero() || !inventory.hasItem(arrowItem)) {
       entity.getEvents().trigger("itemUseFailed", arrowItem);
       return false;
     }
 
     if (arrowItem == ItemType.ROPE_ARROW) {
-      // GrappleComponent handles its own cooldown timer internally upon receiving "grappleFire"
       entity.getEvents().trigger("grappleFire", direction);
     } else {
       // Dispatch is synchronous, so check readiness before publishing the attack or using ammo.
@@ -149,7 +149,21 @@ public class ItemUseComponent extends Component {
     return true;
   }
 
-  private boolean usePotion() {
+  private boolean useMeleeWeapon(ItemType weaponType) {
+    if (!inventory.hasItem(weaponType)) {
+      logger.debug("No {} available to use", weaponType);
+      entity.getEvents().trigger("itemUseFailed", weaponType);
+      return false;
+    }
+
+    entity
+        .getEvents()
+        .trigger("meleeAttack", getAimDirection(), weaponType.getDamage(), weaponType.getRange());
+    entity.getEvents().trigger("itemUsed", weaponType);
+    return true;
+  }
+
+  private boolean useHealthPotion() {
     if (combatStats == null || combatStats.isHealthFull()) {
       logger.debug("Cannot use health potion: health is already full or stats missing.");
       entity.getEvents().trigger("itemUseFailed", ItemType.HEALTH_POTION);
@@ -163,6 +177,64 @@ public class ItemUseComponent extends Component {
 
     combatStats.addHealth(ItemType.HEALTH_POTION.getHealAmount());
     entity.getEvents().trigger("itemUsed", ItemType.HEALTH_POTION);
+    return true;
+  }
+
+  private boolean useSpeedPotion() {
+    if (!inventory.hasItem(ItemType.SpeedPotion)) {
+      logger.debug("No speed potion available to use");
+      entity.getEvents().trigger("itemUseFailed", ItemType.SpeedPotion);
+      return false;
+    }
+
+    PlayerActions playerActions = entity.getComponent(PlayerActions.class);
+    if (playerActions != null && playerActions.isSpeedPotionActive()) {
+      logger.debug("Speed potion buff is already active");
+      entity.getEvents().trigger("itemUseFailed", ItemType.SpeedPotion);
+      return false;
+    }
+
+    if (!inventory.removeItem(ItemType.SpeedPotion, 1)) {
+      entity.getEvents().trigger("itemUseFailed", ItemType.SpeedPotion);
+      return false;
+    }
+
+    entity
+        .getEvents()
+        .trigger(
+            "speedPotionUsed",
+            ItemType.SpeedPotion.getSpeedBoost(),
+            ItemType.SpeedPotion.getDuration());
+    entity.getEvents().trigger("itemUsed", ItemType.SpeedPotion);
+    return true;
+  }
+
+  private boolean usePoisonPotion() {
+    if (!inventory.hasItem(ItemType.PoisonPotion)) {
+      logger.debug("No poison potion available to use");
+      entity.getEvents().trigger("itemUseFailed", ItemType.PoisonPotion);
+      return false;
+    }
+
+    PoisonBuff poisonBuff = entity.getComponent(PoisonBuff.class);
+    if (poisonBuff != null && poisonBuff.isActive()) {
+      logger.debug("Poison potion buff is already active");
+      entity.getEvents().trigger("itemUseFailed", ItemType.PoisonPotion);
+      return false;
+    }
+
+    if (!inventory.removeItem(ItemType.PoisonPotion, 1)) {
+      entity.getEvents().trigger("itemUseFailed", ItemType.PoisonPotion);
+      return false;
+    }
+
+    entity
+        .getEvents()
+        .trigger(
+            "poisonPotionUsed",
+            ItemType.PoisonPotion.getPoisonDamagePerSecond(),
+            ItemType.PoisonPotion.getPoisonDuration());
+    entity.getEvents().trigger("itemUsed", ItemType.PoisonPotion);
     return true;
   }
 

@@ -17,7 +17,7 @@ class WheelLogicTest {
       List.of(
           new WheelItem(ItemType.STANDARD_ARROW, 1),
           new WheelItem(ItemType.FIRE_ARROW, 2),
-          new WheelItem(ItemType.COLD_ARROW, 3));
+          new WheelItem(ItemType.ICE_ARROW, 3));
 
   @Test
   void shouldRejectEmptyWheel() {
