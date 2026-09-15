@@ -13,6 +13,11 @@ class SandboxGameAreaTest {
   }
 
   @Test
+  void shouldPreloadTutorialFloorTextureForSandboxGround() {
+    assertPreloadsTexture("images/Tile_2.png");
+  }
+
+  @Test
   void shouldPreloadPlayerStatsDisplayTextures() {
     assertPreloadsTexture("images/red_heart.png");
     assertPreloadsTexture("images/PixelArt_HeartBack.png");

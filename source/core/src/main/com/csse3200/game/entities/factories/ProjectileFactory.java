@@ -28,6 +28,8 @@ public class ProjectileFactory {
 
   public static final float GRAPPLE_ARROW_SPEED = 22f;
   public static final float GRAPPLE_ARROW_RANGE = 50f;
+  public static final float PLAYER_ARROW_WIDTH = 0.6f;
+  public static final float PLAYER_ARROW_HEIGHT = 0.2f;
 
   public static Entity createPlayerArrow(Vector2 position, Vector2 direction) {
     return createPlayerArrow(null, position, direction);
@@ -127,7 +129,7 @@ public class ProjectileFactory {
                     shooter, normalizedDir, speed, range, arrowType, poisonDps, poisonDuration))
             .addComponent(new ArrowRenderComponent(arrowType));
 
-    arrow.setScale(0.6f, 0.2f);
+    arrow.setScale(PLAYER_ARROW_WIDTH, PLAYER_ARROW_HEIGHT);
     arrow.setPosition(position.x - arrow.getScale().x / 2f, position.y - arrow.getScale().y / 2f);
 
     return arrow;

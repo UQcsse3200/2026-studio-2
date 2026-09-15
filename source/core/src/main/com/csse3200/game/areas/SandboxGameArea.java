@@ -56,7 +56,7 @@ public class SandboxGameArea extends GameArea {
   private static final float MONSTER_SPAWNER_NPC_HEIGHT = 1.5f;
   private static final float SANDBOX_ACTIVE_CHASE_DISTANCE = 20f;
   private static final String TRANSPARENT_TEXTURE = "images/transparent.png";
-  private static final String PLATFORM_TEXTURE = "images/platform.png";
+  private static final String FLOOR_TEXTURE = "images/Tile_2.png";
   private static final String HOOK_PLATFORM_TEXTURE = "images/hook_platform.png";
   private static final String PLAYER_HEART_TEXTURE = "images/red_heart.png";
   private static final String PLAYER_HEALTH_BAR_BACKGROUND_TEXTURE =
@@ -124,7 +124,7 @@ public class SandboxGameArea extends GameArea {
     return Stream.concat(
             Stream.of(
                 TRANSPARENT_TEXTURE,
-                PLATFORM_TEXTURE,
+                FLOOR_TEXTURE,
                 HOOK_PLATFORM_TEXTURE,
                 PLAYER_HEART_TEXTURE,
                 PLAYER_HEALTH_BAR_BACKGROUND_TEXTURE,
@@ -191,11 +191,8 @@ public class SandboxGameArea extends GameArea {
 
   private void spawnGround() {
     for (int offset = -GROUND_LENGTH; offset < GROUND_LENGTH; offset += GROUND_PLATFORM_WIDTH) {
-      spawnPlatform(
-          0,
-          GROUND_PLATFORM_WIDTH,
-          GROUND_HEIGHT,
-          new GridPoint2(GROUND_START_X + offset, GROUND_Y));
+      spawnFloor(
+          GROUND_PLATFORM_WIDTH, GROUND_HEIGHT, new GridPoint2(GROUND_START_X + offset, GROUND_Y));
     }
   }
 
@@ -209,6 +206,12 @@ public class SandboxGameArea extends GameArea {
     Entity platform = ObstacleFactory.createPlatform(grappleSides);
     platform.setScale(width, height);
     spawnEntityAt(platform, position, false, false);
+  }
+
+  private void spawnFloor(float width, float height, GridPoint2 position) {
+    Entity floor = ObstacleFactory.createFloor(0);
+    floor.setScale(width, height);
+    spawnEntityAt(floor, position, false, false);
   }
 
   private Entity spawnPlayer() {
