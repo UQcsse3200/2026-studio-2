@@ -339,7 +339,7 @@ public class TutorialGameScreen extends ScreenAdapter {
         .addComponent(
             new GameEndDisplay(GameEndState.LOSE)) // Add GameEndDisplay component to the UI entity
         .addComponent(new GameEndActions(this.game))
-        .addComponent(new Terminal(game, GdxGame.ScreenType.TUTORIAL_GAME))
+        .addComponent(new Terminal())
         .addComponent(inputComponent)
         .addComponent(new TerminalDisplay());
 

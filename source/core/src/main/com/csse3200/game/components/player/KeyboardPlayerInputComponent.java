@@ -90,7 +90,8 @@ public class KeyboardPlayerInputComponent extends InputComponent {
         entity.getEvents().trigger("selectQuickSlot", 8);
         return true;
       case Keys.W:
-        entity.getEvents().trigger("grappleClimbStart");
+        // walkDirection.add(Vector2Utils.UP);
+        // triggerWalkEvent();
         keysHeld[UP] = true;
         triggerWalkEvent();
         return true;
@@ -134,7 +135,6 @@ public class KeyboardPlayerInputComponent extends InputComponent {
         entity.getEvents().trigger("switchItem", -1);
         return true;
       case Input.Keys.S:
-        entity.getEvents().trigger("grappleDescendStart");
         entity.getEvents().trigger("updateLedgeDrop", true);
         keysHeld[DOWN] = true;
         triggerWalkEvent();
@@ -169,19 +169,11 @@ public class KeyboardPlayerInputComponent extends InputComponent {
         triggerWalkEvent();
         return true;
       case Keys.W:
-        entity.getEvents().trigger("grappleClimbStop");
-        keysHeld[UP] = false;
-        triggerWalkEvent();
-        return true;
       case Keys.UP:
         keysHeld[UP] = false;
         triggerWalkEvent();
         return true;
       case Keys.S:
-        entity.getEvents().trigger("grappleDescendStop");
-        keysHeld[DOWN] = false;
-        triggerWalkEvent();
-        return true;
       case Keys.DOWN:
         keysHeld[DOWN] = false;
         triggerWalkEvent();

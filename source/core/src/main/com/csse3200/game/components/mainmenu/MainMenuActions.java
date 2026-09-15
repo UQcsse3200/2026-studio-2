@@ -26,13 +26,10 @@ public class MainMenuActions extends Component {
     entity.getEvents().addListener("Exit", this::onExit);
   }
 
-  /**
-   * Starts the intro cutscene, then enters the tutorial level. if cutscene is completed, proceeds
-   * to tutorial level
-   */
+  /** Fades into the Tutorial Game screen. */
   private void onPlay() {
     logger.info("Play");
-    game.startInitialCutscene();
+    game.transitionTo(GdxGame.ScreenType.TUTORIAL_GAME);
   }
 
   private void onContinue() {

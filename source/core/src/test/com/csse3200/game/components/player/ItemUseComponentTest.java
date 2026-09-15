@@ -11,8 +11,6 @@ import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.inventory.InventoryComponent;
 import com.csse3200.game.components.item.ItemType;
 import com.csse3200.game.components.item.consumables.HealthPotion;
-import com.csse3200.game.components.item.weapons.PrimaryWeapon;
-import com.csse3200.game.components.item.weapons.WeaponComponent;
 import com.csse3200.game.components.projectile.ArrowType;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.extensions.GameExtension;
@@ -173,58 +171,18 @@ class ItemUseComponentTest {
   }
 
   @Test
-  void shouldStartChargeOnShootEventWithoutFiringYet() {
+  void shouldFireSelectedArrowOnShootEvent() {
     Entity player = createPlayer();
     InventoryComponent inventory = player.getComponent(InventoryComponent.class);
     inventory.addItem(ItemType.STANDARD_ARROW, 2);
 
     int[] fired = {0};
-    int[] chargeStarts = {0};
     player.getEvents().addListener("primaryAttack", (Vector2 ignored) -> fired[0]++);
-    player.getEvents().addListener("chargeStart", (Vector2 ignored) -> chargeStarts[0]++);
 
     player.getEvents().trigger("shoot", new Vector2(1f, 0f));
 
-    // Ammo is spent immediately (same timing as before), but the shot no longer fires until
-    // release - it's now a charge-up hold, not an instant fire.
-    assertEquals(1, chargeStarts[0]);
-    assertEquals(0, fired[0]);
-    assertEquals(1, inventory.getItemCount(ItemType.STANDARD_ARROW));
-  }
-
-  @Test
-  void shouldFireOnStopShootAfterCharging() {
-    Entity player = createPlayer();
-    InventoryComponent inventory = player.getComponent(InventoryComponent.class);
-    inventory.addItem(ItemType.STANDARD_ARROW, 2);
-
-    int[] fired = {0};
-    player.getEvents().addListener("chargeRelease", (Vector2 ignored) -> fired[0]++);
-
-    player.getEvents().trigger("shoot", new Vector2(1f, 0f));
-    assertEquals(0, fired[0]);
-
-    player.getEvents().trigger("stopShoot");
     assertEquals(1, fired[0]);
-  }
-
-  @Test
-  void shouldNotChargeReleaseWithoutArrowSelected() {
-    Entity player = createPlayer();
-    InventoryComponent inventory = player.getComponent(InventoryComponent.class);
-    CombatStatsComponent combat = player.getComponent(CombatStatsComponent.class);
-    combat.setHealth(40);
-    inventory.addItem(ItemType.HEALTH_POTION, 1);
-
-    int[] released = {0};
-    player.getEvents().addListener("chargeRelease", (Vector2 ignored) -> released[0]++);
-
-    // Releasing with a potion selected still triggers chargeRelease (BowComponent is expected to
-    // no-op since nothing was ever charging) - ItemUseComponent doesn't need to know that.
-    player.getEvents().trigger("stopShoot");
-
-    assertEquals(1, released[0]);
-    assertEquals(40, combat.getHealth());
+    assertEquals(1, inventory.getItemCount(ItemType.STANDARD_ARROW));
   }
 
   @Test
@@ -308,100 +266,11 @@ class ItemUseComponentTest {
     assertEquals(1, inventory.getItemCount(ItemType.COLD_ARROW));
   }
 
-  @Test
-  void shouldChargeAndReleaseFireArrowThroughShootHold() {
-    Entity player = createPlayer();
-    InventoryComponent inventory = player.getComponent(InventoryComponent.class);
-    inventory.addItem(ItemType.FIRE_ARROW, 2);
-
-    AtomicReference<ArrowType> bowType = new AtomicReference<>();
-    int[] releases = {0};
-    player.getEvents().addListener("setArrowType", (ArrowType t) -> bowType.set(t));
-    player.getEvents().addListener("chargeRelease", (Vector2 ignored) -> releases[0]++);
-
-    player.getEvents().trigger("shoot", new Vector2(1f, 0f));
-    assertEquals(ArrowType.FIRE, bowType.get());
-    assertEquals(1, inventory.getItemCount(ItemType.FIRE_ARROW));
-    assertEquals(0, releases[0]);
-
-    player.getEvents().trigger("stopShoot");
-    assertEquals(1, releases[0]);
-  }
-
-  @Test
-  void shouldChargeAndReleaseColdArrowThroughShootHold() {
-    Entity player = createPlayer();
-    InventoryComponent inventory = player.getComponent(InventoryComponent.class);
-    inventory.addItem(ItemType.COLD_ARROW, 2);
-
-    AtomicReference<ArrowType> bowType = new AtomicReference<>();
-    int[] releases = {0};
-    player.getEvents().addListener("setArrowType", (ArrowType t) -> bowType.set(t));
-    player.getEvents().addListener("chargeRelease", (Vector2 ignored) -> releases[0]++);
-
-    player.getEvents().trigger("shoot", new Vector2(1f, 0f));
-    assertEquals(ArrowType.COLD, bowType.get());
-    assertEquals(1, inventory.getItemCount(ItemType.COLD_ARROW));
-    assertEquals(0, releases[0]);
-
-    player.getEvents().trigger("stopShoot");
-    assertEquals(1, releases[0]);
-  }
-
-  @Test
-  void shouldStillReleaseChargeWhenLastArrowAdvancedSelectionToRopeArrow() {
-    Entity player = createPlayer();
-    InventoryComponent inventory = player.getComponent(InventoryComponent.class);
-    inventory.addItem(ItemType.STANDARD_ARROW, 1);
-    inventory.addItem(ItemType.ROPE_ARROW, 1);
-
-    int[] releases = {0};
-    int[] grappleReleases = {0};
-    player.getEvents().addListener("chargeRelease", (Vector2 ignored) -> releases[0]++);
-    player.getEvents().addListener("grappleRelease", () -> grappleReleases[0]++);
-
-    // Spending the last standard arrow empties its slot, which auto-advances the selection to the
-    // rope arrow. The charge must still be released, or the draw hangs forever.
-    player.getEvents().trigger("shoot", new Vector2(1f, 0f));
-    assertEquals(ItemType.ROPE_ARROW, inventory.getSelectedItem());
-
-    player.getEvents().trigger("stopShoot");
-
-    assertEquals(1, releases[0]);
-    assertEquals(1, grappleReleases[0]);
-  }
-
-  @Test
-  void shouldNotSpendAmmoOrStartChargeWhileWeaponOnCooldown() {
-    PrimaryWeapon primary = mock(PrimaryWeapon.class);
-    when(primary.isReady()).thenReturn(false);
-    Entity player =
-        new Entity()
-            .addComponent(new InventoryComponent(0))
-            .addComponent(new CombatStatsComponent(100, 10))
-            .addComponent(new WeaponComponent(primary))
-            .addComponent(new ItemUseComponent());
-    player.create();
-    InventoryComponent inventory = player.getComponent(InventoryComponent.class);
-    inventory.addItem(ItemType.STANDARD_ARROW, 2);
-
-    int[] chargeStarts = {0};
-    player.getEvents().addListener("chargeStart", (Vector2 ignored) -> chargeStarts[0]++);
-
-    player.getEvents().trigger("shoot", new Vector2(1f, 0f));
-
-    assertEquals(0, chargeStarts[0]);
-    assertEquals(2, inventory.getItemCount(ItemType.STANDARD_ARROW));
-  }
-
   private Entity createPlayer() {
-    PrimaryWeapon primary = mock(PrimaryWeapon.class);
-    when(primary.isReady()).thenReturn(true);
     Entity player =
         new Entity()
             .addComponent(new InventoryComponent(0))
             .addComponent(new CombatStatsComponent(100, 10))
-            .addComponent(new WeaponComponent(primary))
             .addComponent(new ItemUseComponent());
     player.create();
     return player;

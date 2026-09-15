@@ -7,7 +7,6 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.components.item.weapons.bow.grapple.GrappleComponent;
 import com.csse3200.game.rendering.RenderComponent;
-import java.util.List;
 
 /** Draws the grapple rope between the player and its anchor point. */
 public class GrappleRenderComponent extends RenderComponent {
@@ -35,10 +34,11 @@ public class GrappleRenderComponent extends RenderComponent {
     if (grapple == null || !grapple.isAttached()) {
       return;
     }
-    List<Vector2> ropePath = grapple.getRopePath();
-    if (ropePath.size() < 2) {
+    Vector2 anchor = grapple.getAnchorPoint();
+    if (anchor == null) {
       return;
     }
+    Vector2 playerPos = entity.getCenterPosition();
 
     if (shapeRenderer == null) {
       shapeRenderer = new ShapeRenderer();
@@ -50,11 +50,7 @@ public class GrappleRenderComponent extends RenderComponent {
     shapeRenderer.setProjectionMatrix(batch.getProjectionMatrix());
     shapeRenderer.begin(ShapeType.Filled);
     shapeRenderer.setColor(Color.BROWN);
-    for (int i = 1; i < ropePath.size(); i++) {
-      Vector2 from = ropePath.get(i - 1);
-      Vector2 to = ropePath.get(i);
-      shapeRenderer.rectLine(from.x, from.y, to.x, to.y, LINE_WIDTH);
-    }
+    shapeRenderer.rectLine(playerPos.x, playerPos.y, anchor.x, anchor.y, LINE_WIDTH);
     shapeRenderer.end();
 
     batch.begin();
