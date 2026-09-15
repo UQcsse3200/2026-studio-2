@@ -42,7 +42,7 @@ public class ProjectileFact {
             .addComponent(new TextureRenderComponent("images/arrow.png"));
 
     projectile.getComponent(TextureRenderComponent.class).scaleEntity();
-    projectile.setScale(projectile.getScale().scl(2f));
+    projectile.setScale(projectile.getScale().scl(0.6f));
     PhysicsUtils.setScaledCollider(projectile, 0.3f, 0.3f);
 
     return projectile;
