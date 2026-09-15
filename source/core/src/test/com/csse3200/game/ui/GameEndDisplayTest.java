@@ -3,7 +3,6 @@ package com.csse3200.game.ui;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.csse3200.game.extensions.GameExtension;
-import com.csse3200.game.ui.dialogue.TypewriterEffect;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -28,18 +27,27 @@ class GameEndDisplayTest {
   }
 
   @Test
-  void shouldUseTypewriterEffectForResultMessage() {
+  void shouldHaveZeroRevealedCharsInitially() {
     GameEndDisplay display = new GameEndDisplay(GameEndState.LOSE);
-    TypewriterEffect typewriterEffect = display.getTypewriterEffect();
 
-    assertNotNull(typewriterEffect);
-    assertFalse(typewriterEffect.isComplete());
+    assertEquals(0, display.getRevealedChars());
+  }
 
-    typewriterEffect.update(0.1f);
-    assertNotEquals("", typewriterEffect.getRevealedText());
+  @Test
+  void shouldUpdateResultTextOnStateChange() {
+    GameEndDisplay display = new GameEndDisplay(GameEndState.LOSE);
 
-    typewriterEffect.skipToEnd();
-    assertTrue(typewriterEffect.isComplete());
-    assertEquals(display.getResultText(), typewriterEffect.getRevealedText());
+    assertTrue(display.getResultText().contains("luck"));
+
+    display.setState(GameEndState.WIN);
+    assertTrue(display.getResultText().contains("victory"));
+  }
+
+  @Test
+  void shouldResetRevealedCharsOnStateChange() {
+    GameEndDisplay display = new GameEndDisplay(GameEndState.LOSE);
+    display.setState(GameEndState.WIN);
+
+    assertEquals(0, display.getRevealedChars());
   }
 }
