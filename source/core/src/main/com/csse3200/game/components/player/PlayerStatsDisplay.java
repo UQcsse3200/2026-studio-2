@@ -26,7 +26,7 @@ public class PlayerStatsDisplay extends UIComponent {
   private static final float HEART_SIDE_LENGTH = 35f;
   private static final float HEART_SIDE_HEIGHT = 35f;
   private static final float HEART_SPACING = 43.4f;
-  private static final int HP_PER_HEART = 20;
+  private static final int HP_PER_HEART = 2;
   private static final int FLICKER_COUNT = 3;
   private static final float FLICKER_DURATION = 0.1f;
   private static final String HEALTH_LABEL_NAME = "player-health-label";
