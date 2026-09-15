@@ -19,6 +19,7 @@ public class RangedAttackTask extends DefaultTask implements PriorityTask {
   private final int damage;
   private final float projectileSpeed;
   private final float projectileLifetime;
+  private final boolean useNecromancerProjectile;
 
   private long lastAttackTime;
 
@@ -32,6 +33,7 @@ public class RangedAttackTask extends DefaultTask implements PriorityTask {
    * @param damage projectile damage
    * @param projectileSpeed projectile movement speed
    * @param projectileLifetime maximum projectile lifetime in seconds
+   * @param useNecromancerProjectile if the enemy is a necromancer, use specific projectile
    */
   public RangedAttackTask(
       Entity target,
@@ -40,7 +42,8 @@ public class RangedAttackTask extends DefaultTask implements PriorityTask {
       float cooldown,
       int damage,
       float projectileSpeed,
-      float projectileLifetime) {
+      float projectileLifetime,
+      boolean useNecromancerProjectile) {
     this.target = target;
     this.priority = priority;
     this.attackRange = attackRange;
@@ -48,6 +51,7 @@ public class RangedAttackTask extends DefaultTask implements PriorityTask {
     this.damage = damage;
     this.projectileSpeed = projectileSpeed;
     this.projectileLifetime = projectileLifetime;
+    this.useNecromancerProjectile = useNecromancerProjectile;
   }
 
   @Override
@@ -89,8 +93,11 @@ public class RangedAttackTask extends DefaultTask implements PriorityTask {
     Vector2 spawnCenter = enemyCenter.cpy().add(0.8f * facingDirection, -0.15f);
 
     Entity projectile =
-        ProjectileFact.createEnemyProjectile(
-            targetCenter, damage, projectileSpeed, projectileLifetime);
+            useNecromancerProjectile
+                    ? ProjectileFact.createNecromancerProjectile(
+                    targetCenter, damage, projectileSpeed, projectileLifetime)
+                    : ProjectileFact.createEnemyProjectile(
+                    targetCenter, damage, projectileSpeed, projectileLifetime);
 
     // setPosition() uses the bottom-left corner, so offset by half the
     // projectile size to place its centre at spawnCenter.

@@ -12,6 +12,7 @@ public class ProjectileComponent extends Component {
   // private HitboxComponent hitboxComponent;
   private PhysicsMovementComponent movementComponent;
   private float previousDistanceToTarget = Float.MAX_VALUE;
+  private static final float ARM_TIME = 0.15f;
 
   /**
    * Creates a projectile component.
@@ -31,7 +32,10 @@ public class ProjectileComponent extends Component {
 
   @Override
   public void update() {
-    remainingLifetime -= ServiceLocator.getTimeSource().getDeltaTime();
+    float timeAlive = 0f;
+    float deltaTime = ServiceLocator.getTimeSource().getDeltaTime();
+    remainingLifetime -= deltaTime;
+    timeAlive += deltaTime;
 
     if (remainingLifetime <= 0f) {
       ServiceLocator.getEntityService().scheduleForDisposal(entity);
@@ -42,7 +46,8 @@ public class ProjectileComponent extends Component {
       float distanceToTarget = entity.getCenterPosition().dst(movementComponent.getTarget());
 
       // Remove the projectile once it reaches or passes its target.
-      if (distanceToTarget < 0.25f || distanceToTarget > previousDistanceToTarget) {
+      if (timeAlive >= ARM_TIME
+          && (distanceToTarget < 0.25f || distanceToTarget > previousDistanceToTarget)) {
         ServiceLocator.getEntityService().scheduleForDisposal(entity);
         return;
       }

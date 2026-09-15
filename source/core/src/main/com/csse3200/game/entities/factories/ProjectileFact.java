@@ -49,6 +49,30 @@ public class ProjectileFact {
     return projectile;
   }
 
+  public static Entity createNecromancerProjectile(
+          Vector2 targetPosition, int damage, float speed, float lifetime) {
+
+    PhysicsMovementComponent movement = new PhysicsMovementComponent(new Vector2(speed, speed));
+    movement.setTarget(targetPosition);
+
+    Entity projectile =
+            new Entity()
+                    .addComponent(new PhysicsComponent())
+                    .addComponent(movement)
+                    .addComponent(new HitboxComponent().setLayer(PhysicsLayer.NPC))
+                    .addComponent(new CombatStatsComponent(1, damage))
+                    .addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER))
+                    .addComponent(new ProjectileComponent(lifetime))
+                    .addComponent(new ColliderComponent())
+                    .addComponent(new TextureRenderComponent("images/necromancer_projectile.png"));
+
+    projectile.getComponent(TextureRenderComponent.class).scaleEntity();
+    projectile.setScale(projectile.getScale().scl(0.8f));
+    PhysicsUtils.setScaledCollider(projectile, 0.3f, 0.3f);
+
+    return projectile;
+  }
+
   private ProjectileFact() {
     throw new IllegalStateException("Instantiating static util class");
   }

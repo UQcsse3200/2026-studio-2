@@ -177,7 +177,8 @@ public class TutorialGameArea extends GameArea {
     "images/arrow.png",
     "images/rope_arrow.png",
     "images/fire_arrow.png",
-    "images/cold_arrow.png"
+    "images/cold_arrow.png",
+    "images/necromancer_projectile.png",
   };
 
   private static final String[] forestTextureAtlases = {
@@ -244,7 +245,7 @@ public class TutorialGameArea extends GameArea {
     // spawnTestNecromancer();
 
     // spawnVulture();
-    // spawnNecromancer();
+    spawnNecromancer();
 
     // spawnTestWinCondition(); // Temporary test win condition near player spawn for quick testing
 
