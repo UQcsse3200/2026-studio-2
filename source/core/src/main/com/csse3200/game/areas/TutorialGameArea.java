@@ -201,6 +201,7 @@ public class TutorialGameArea extends GameArea {
         BackgroundType.DEPENDENT,
         new Vector2(0f, 0f), // Independent velocity
         false,
+        1f,
         1f);
 
     // Complete clouds image
@@ -213,6 +214,7 @@ public class TutorialGameArea extends GameArea {
         BackgroundType.DEPENDENT,
         new Vector2(0.1f, 0f), // Independent velocity
         true,
+        1f,
         1f);
 
     // Complete mountains image
@@ -225,6 +227,7 @@ public class TutorialGameArea extends GameArea {
         BackgroundType.DEPENDENT,
         new Vector2(0.2f, 0f), // Independent velocity
         true,
+        1f,
         1f);
 
     // Complete furthest mountains image
@@ -237,7 +240,8 @@ public class TutorialGameArea extends GameArea {
         BackgroundType.DEPENDENT,
         new Vector2(0f, 0f), // Independent velocity
         true,
-        1f);
+        1f,
+        0.5f);
 
     // Complete second-furthest mountains image
     backgroundComponent.addLayer(
@@ -249,6 +253,7 @@ public class TutorialGameArea extends GameArea {
         BackgroundType.DEPENDENT,
         new Vector2(0f, 0f), // Independent velocity
         true,
+        1f,
         1f);
 
     // Create the background entity.
