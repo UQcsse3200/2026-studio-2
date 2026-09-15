@@ -39,6 +39,7 @@ public class TextBoxComponent extends UIComponent {
   private float typeTimer = 0f;
   private int revealedChars = 0;
   private boolean dismissed = false;
+  private boolean externallyControlled = false;
   private String fullContent = "";
   private String lastSourceContent = null;
   private Table table;
@@ -80,6 +81,102 @@ public class TextBoxComponent extends UIComponent {
     this.textAlignment = textAlignment;
     this.pages = (pages == null || pages.isEmpty()) ? Collections.singletonList("") : pages;
     this.customFont = loadFont(fontPath);
+  }
+
+  /** Enables cutscene-style input control instead of polling TAB while rendering. */
+  public void setExternallyControlled(boolean externallyControlled) {
+    this.externallyControlled = externallyControlled;
+  }
+
+  /**
+   * @return whether the current page has finished revealing.
+   */
+  public boolean isCurrentPageComplete() {
+    return revealedChars >= fullContent.length();
+  }
+
+  /**
+   * @return whether the current page is the final page.
+   */
+  public boolean isOnLastPage() {
+    return currentPageIndex >= pages.size() - 1;
+  }
+
+  /**
+   * @return whether this textbox has been dismissed.
+   */
+  public boolean isDismissed() {
+    return dismissed;
+  }
+
+  /**
+   * Handles one externally supplied advance request.
+   *
+   * <p>The first request completes the current page, the next requests move through pages, and a
+   * request on the final page dismisses the textbox.
+   *
+   * @return the action consumed by this request
+   */
+  public AdvanceResult advance() {
+    if (dismissed) {
+      return AdvanceResult.DISMISSED;
+    }
+    if (!isCurrentPageComplete()) {
+      revealCurrentPage();
+      return AdvanceResult.REVEALED_PAGE;
+    }
+    if (!isOnLastPage()) {
+      currentPageIndex++;
+      lastSourceContent = null;
+      return AdvanceResult.NEXT_PAGE;
+    }
+    if (externallyControlled) {
+      return AdvanceResult.DISMISSED;
+    }
+    dismiss();
+    return AdvanceResult.DISMISSED;
+  }
+
+  /** Immediately reveals the current page without changing pages. */
+  public void revealCurrentPage() {
+    revealedChars = fullContent.length();
+    if (label != null) {
+      label.setText(fullContent);
+      table.pack();
+    }
+  }
+
+  /** Dismisses the textbox and removes its scene2d actors. */
+  public void dismiss() {
+    if (dismissed) {
+      return;
+    }
+    dismissed = true;
+    if (table != null) {
+      table.setVisible(false);
+    }
+    dispose();
+  }
+
+  /** Sets the opacity of the textbox while it remains mounted. */
+  public void setOpacity(float opacity) {
+    float clampedOpacity = Math.max(0f, Math.min(1f, opacity));
+    if (table != null) {
+      table.getColor().a = clampedOpacity;
+    }
+    if (label != null) {
+      Color fontColor = label.getStyle().fontColor.cpy();
+      fontColor.a = clampedOpacity;
+      Label.LabelStyle style = new Label.LabelStyle(label.getStyle());
+      style.fontColor = fontColor;
+      label.setStyle(style);
+    }
+  }
+
+  public enum AdvanceResult {
+    REVEALED_PAGE,
+    NEXT_PAGE,
+    DISMISSED
   }
 
   /** Loads a bitmap font from assets, or returns null (meaning "use the skin's default font"). */
@@ -224,18 +321,15 @@ public class TextBoxComponent extends UIComponent {
 
     // On TAB: skip to the full page if it's still typing; otherwise move to the next page,
     // or dismiss the box entirely if this was the last page
-    if (Gdx.input.isKeyJustPressed(Keys.TAB)) {
+    if (!externallyControlled && Gdx.input.isKeyJustPressed(Keys.TAB)) {
       if (!fullyRevealed) {
-        this.revealedChars = fullContent.length();
-        this.label.setText(fullContent);
-        this.table.pack();
+        revealCurrentPage();
       } else if (this.currentPageIndex < this.pages.size() - 1) {
         this.currentPageIndex++;
+        this.lastSourceContent = null;
         // next frame's content-changed check (above) will reset typing state automatically
       } else {
-        this.dismissed = true;
-        this.table.setVisible(false);
-        this.dispose();
+        dismiss();
         return;
       }
     }
@@ -250,8 +344,7 @@ public class TextBoxComponent extends UIComponent {
       y = (worldPos.y / 20f) * screenHeight + 18f;
     }
 
-    // alignment = 2 for top to bottom effect
-    table.setPosition(x, y, 2);
+    table.setPosition(x, y, Align.topLeft);
     table.setVisible(true);
     label.setVisible(true);
   }

@@ -19,6 +19,7 @@ class BlackjackTest {
     assertEquals(0, game.getPlayerHand().size());
     assertEquals(0, game.getDealerHand().size());
     assertFalse(game.isRoundInProgress());
+    assertFalse(game.isPlayerWinner());
   }
 
   @Test
@@ -74,5 +75,44 @@ class BlackjackTest {
             new Blackjack.Card(Blackjack.Suit.DIAMONDS, Blackjack.Rank.ACE));
 
     assertEquals(21, game.calculateHandValue(hand));
+  }
+
+  @Test
+  void testWinnerStateMatchesResolvedResult() {
+    boolean foundWinner = false;
+    boolean foundNonWinner = false;
+
+    for (int seed = 0; seed < 100; seed++) {
+      Blackjack game = new Blackjack(100, new Random(seed));
+      game.placeBet(10);
+      game.startNewRound();
+
+      if (!game.isRoundOver()) {
+        game.stand();
+      }
+
+      boolean resultIsWin = game.getResultMessage().contains("You win");
+      assertEquals(resultIsWin, game.isPlayerWinner());
+      foundWinner |= game.isPlayerWinner();
+      foundNonWinner |= !game.isPlayerWinner();
+    }
+
+    assertTrue(foundWinner);
+    assertTrue(foundNonWinner);
+  }
+
+  @Test
+  void testWinnerStateResetsWhenStartingAnotherRound() {
+    Blackjack game = new Blackjack(100, new Random(1));
+    game.placeBet(10);
+    game.startNewRound();
+
+    if (!game.isRoundOver()) {
+      game.stand();
+    }
+
+    game.startNewRound();
+
+    assertFalse(game.isPlayerWinner());
   }
 }
