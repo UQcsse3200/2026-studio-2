@@ -1,4 +1,4 @@
-package com.csse3200.game.components.player;
+package com.csse3200.game.components.item.weapons;
 
 import com.badlogic.gdx.math.Vector2;
 

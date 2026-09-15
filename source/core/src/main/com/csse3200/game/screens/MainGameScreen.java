@@ -86,7 +86,7 @@ public class MainGameScreen extends ScreenAdapter {
     ForestGameArea forestGameArea = new ForestGameArea(renderer.getCamera(), terrainFactory);
     forestGameArea.create();
     player = forestGameArea.getPlayer();
-    player.getEvents().addListener("death", this::onPlayerDeath);
+    player.getEvents().addListener("deathAnimationFinished", this::onPlayerDeath);
     wheelOverlay = new SpinTheWheelOverlay(WheelConfig.ITEMS, player);
     pauseOverlay = new PauseMenuOverlay(game, forestGameArea);
   }
@@ -159,6 +159,7 @@ public class MainGameScreen extends ScreenAdapter {
                 "images/PixelArt_HeartBack.png",
                 "images/Damaged_heart.png",
                 "images/Last_Health.png",
+                "images/scroll_bg.png",
                 "images/Buttons/continue_up_btn.png",
                 "images/Buttons/continue_down_btn.png",
                 "images/Buttons/settings_up_btn.png",
@@ -166,7 +167,13 @@ public class MainGameScreen extends ScreenAdapter {
                 "images/Buttons/quit_up_btn.png",
                 "images/Buttons/quit_down_btn.png",
                 "images/Buttons/exit_up_btn.png",
-                "images/Buttons/exit_down_btn.png"));
+                "images/Buttons/exit_down_btn.png",
+                "images/Buttons/restart_up_btn.png",
+                "images/Buttons/restart_down_btn.png",
+                "images/Buttons/main_menu_up_btn.png",
+                "images/Buttons/main_menu_down_btn.png",
+                "images/Buttons/exit_game_up_btn.png",
+                "images/Buttons/exit_game_down_btn.png"));
     paths.addAll(List.of(WheelConfig.TEXTURES));
     return paths.toArray(new String[0]);
   }

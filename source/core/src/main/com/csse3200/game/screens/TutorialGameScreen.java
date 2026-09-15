@@ -102,7 +102,7 @@ public class TutorialGameScreen extends ScreenAdapter {
 
     // Follow the player with the camera.
     renderer.getCamera().setTarget(player);
-    player.getEvents().addListener("death", this::onPlayerDeath);
+    player.getEvents().addListener("deathAnimationFinished", this::onPlayerDeath);
     wheelOverlay = new SpinTheWheelOverlay(WheelConfig.ITEMS, player);
     pauseOverlay = new PauseMenuOverlay(game, tutorialGameArea);
   }
@@ -185,7 +185,14 @@ public class TutorialGameScreen extends ScreenAdapter {
                 "images/Buttons/exit_down_btn.png",
                 "images/Buttons/control_up_btn.png",
                 "images/Buttons/control_down_btn.png",
-                "images/controls_graphic.png"));
+                "images/controls_graphic.png",
+                "images/Buttons/restart_up_btn.png",
+                "images/Buttons/restart_down_btn.png",
+                "images/Buttons/main_menu_up_btn.png",
+                "images/Buttons/main_menu_down_btn.png",
+                "images/Buttons/exit_game_up_btn.png",
+                "images/Buttons/exit_game_down_btn.png",
+                "images/scroll_bg.png"));
     paths.addAll(List.of(WheelConfig.TEXTURES));
     return paths.toArray(new String[0]);
   }

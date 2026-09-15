@@ -1,4 +1,4 @@
-package com.csse3200.game.components.Item;
+package com.csse3200.game.components.item;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -15,7 +15,7 @@ class HealthPotionTest {
   void shouldUseAndConsumePotion() {
     HealthPotion potion = new HealthPotion(2);
 
-    assertEquals(ItemType.CONSUMABLE, potion.getItemType());
+    assertEquals(ItemType.HEALTH_POTION, potion.getItemType());
     assertEquals(HealthPotion.HEAL_AMOUNT, potion.getTreatment());
     assertTrue(potion.useConsumable());
     assertEquals(1, potion.getQuantity());

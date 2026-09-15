@@ -7,10 +7,10 @@ public final class WheelConfig {
   /** The items on the wheel */
   public static final List<WheelItem> ITEMS =
       List.of(
-          new WheelItem(ItemType.ARROW, 10),
-          new WheelItem(ItemType.FireArrow, 5),
-          new WheelItem(ItemType.ColdArrow, 5),
-          new WheelItem(ItemType.CONSUMABLE, 1));
+          new WheelItem(ItemType.STANDARD_ARROW, 10),
+          new WheelItem(ItemType.FIRE_ARROW, 5),
+          new WheelItem(ItemType.COLD_ARROW, 5),
+          new WheelItem(ItemType.HEALTH_POTION, 1));
 
   public static final String[] TEXTURES = SpinTheWheelDisplay.texturesFor(ITEMS);
 

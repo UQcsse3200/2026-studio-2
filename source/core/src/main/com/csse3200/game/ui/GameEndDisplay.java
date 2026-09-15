@@ -2,18 +2,20 @@ package com.csse3200.game.ui;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.NinePatch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Value;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.csse3200.game.components.maingame.MainGameExitDisplay;
+import com.csse3200.game.entities.Entity;
 import com.csse3200.game.events.EventHandler;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.dialogue.TypewriterEffect;
@@ -24,10 +26,13 @@ import org.slf4j.LoggerFactory;
 public class GameEndDisplay extends UIComponent {
   private static final Logger logger = LoggerFactory.getLogger(GameEndDisplay.class);
   private static final float Z_INDEX = 20f;
-  private static final int BORDER_THICKNESS = 3;
+  //private static final int BORDER_THICKNESS = 3;
+  private static final float BUTTON_WIDTH = 200f;
+  private static final float BUTTON_HEIGHT = 70f;
+
   private static final float MESSAGE_SPEED = 21f;
 
-  private static NinePatchDrawable cachedBackground;
+  //private static NinePatchDrawable cachedBackground;
 
   private GameEndState state;
   private final TypewriterEffect typewriterEffect;
@@ -35,9 +40,14 @@ public class GameEndDisplay extends UIComponent {
   private final String titleText;
   private boolean visible = false;
 
+  private Table root;
+  private Stack stack;
+  private Table backgroundTable;
+  private Image background;
   private Table panel;
   private Label titleLabel;
   private Label messageLabel;
+  private Entity backdropEntity;
 
   public GameEndDisplay(GameEndState state) {
     logger.info(">>> GameEndDisplay CONSTRUCTOR START with state: {}", state);
@@ -76,6 +86,8 @@ public class GameEndDisplay extends UIComponent {
           panel.getWidth(),
           panel.getHeight());
       panel.setVisible(true);
+      root.setVisible(true);
+      showBackdrop();
     } else {
       logger.warn("Panel is NULL in setState()! buildActors() may not have been called.");
     }
@@ -85,6 +97,25 @@ public class GameEndDisplay extends UIComponent {
         exitDisplay.setVisible(false);
       }
     }
+  }
+
+  /**
+   * Captures the gameplay frame right now (the moment the game actually ended) and shows it
+   * blurred behind the panel. Must run here, not in buildActors()/create() — those fire once when
+   * the screen loads, long before there's a real gameplay frame to capture. Only ever creates one
+   * backdrop per screen; setState() can fire more than once (e.g. WIN then a later LOSE).
+   */
+  private void showBackdrop() {
+    if (backdropEntity != null) {
+      return;
+    }
+    BlurredBackdropDisplay backdrop = new BlurredBackdropDisplay(ScreenBlur.capture());
+    backdropEntity = new Entity().addComponent(backdrop);
+    ServiceLocator.getEntityService().register(backdropEntity);
+    // Entity.create() runs components in hash order, not the order added, so the panel's own
+    // root table (already on stage) needs to be explicitly brought back above the backdrop image.
+    backdrop.toFront();
+    root.toFront();
   }
 
   public String getTitleText() {
@@ -122,12 +153,21 @@ public class GameEndDisplay extends UIComponent {
   }
 
   private void buildActors() {
-    Table root = new Table();
+    root = new Table();
     root.setFillParent(true);
 
+    stack = new Stack();
+    Texture backgroundTexture =
+        ServiceLocator.getResourceService()
+            .getAsset("images/scroll_bg.png", Texture.class);
+
+    backgroundTable = new Table();
+    background = new Image(backgroundTexture);
+    backgroundTable.add(background);
+    //root.add(stack).fill().expand();
     panel = new Table();
     panel.setVisible(visible);
-    panel.setBackground(getBackgroundDrawable());
+    // panel.setBackground(getBackgroundDrawable());
     Value padding = Value.percentWidth(0.02f, root);
 
     titleLabel = new Label(titleText, skin);
@@ -139,10 +179,29 @@ public class GameEndDisplay extends UIComponent {
     messageLabel.setAlignment(1);
     messageLabel.setColor(Color.WHITE);
 
-    TextButton restartBtn = new TextButton("Restart", skin);
-    TextButton mainMenuBtn = new TextButton("Exit to Main Menu", skin);
-    TextButton exitDesktopBtn = new TextButton("Exit to Desktop", skin);
+    Texture restartUpTexture =
+        ServiceLocator.getResourceService()
+            .getAsset("images/Buttons/restart_up_btn.png", Texture.class);
+    Texture restartDownTexture =
+        ServiceLocator.getResourceService()
+            .getAsset("images/Buttons/restart_down_btn.png", Texture.class);
+    Texture mainMenuUpTexture =
+        ServiceLocator.getResourceService()
+            .getAsset("images/Buttons/main_menu_up_btn.png", Texture.class);
+    Texture mainMenuDownTexture =
+        ServiceLocator.getResourceService()
+            .getAsset("images/Buttons/main_menu_down_btn.png", Texture.class);
+    Texture exitGameUpTexture =
+        ServiceLocator.getResourceService()
+            .getAsset("images/Buttons/exit_game_up_btn.png", Texture.class);
+    Texture exitGameDownTexture =
+        ServiceLocator.getResourceService()
+            .getAsset("images/Buttons/exit_game_down_btn.png", Texture.class);
 
+    ImageButton.ImageButtonStyle restartButtonStyle = new ImageButton.ImageButtonStyle();
+    restartButtonStyle.up = new TextureRegionDrawable(restartUpTexture);
+    restartButtonStyle.down = new TextureRegionDrawable(restartDownTexture);
+    ImageButton restartBtn = new ImageButton(restartButtonStyle);
     restartBtn.addListener(
         new ChangeListener() {
           @Override
@@ -151,6 +210,10 @@ public class GameEndDisplay extends UIComponent {
           }
         });
 
+    ImageButton.ImageButtonStyle mainMenuButtonStyle = new ImageButton.ImageButtonStyle();
+    mainMenuButtonStyle.up = new TextureRegionDrawable(mainMenuUpTexture);
+    mainMenuButtonStyle.down = new TextureRegionDrawable(mainMenuDownTexture);
+    ImageButton mainMenuBtn = new ImageButton(mainMenuButtonStyle);
     mainMenuBtn.addListener(
         new ChangeListener() {
           @Override
@@ -159,49 +222,36 @@ public class GameEndDisplay extends UIComponent {
           }
         });
 
-    exitDesktopBtn.addListener(
+    ImageButton.ImageButtonStyle exitGameButtonStyle = new ImageButton.ImageButtonStyle();
+    exitGameButtonStyle.up = new TextureRegionDrawable(exitGameUpTexture);
+    exitGameButtonStyle.down = new TextureRegionDrawable(exitGameDownTexture);
+    ImageButton exitGameBtn = new ImageButton(exitGameButtonStyle);
+    exitGameBtn.addListener(
         new ChangeListener() {
           @Override
           public void changed(ChangeEvent event, Actor actor) {
-            entity.getEvents().trigger("exitDesktop");
+            entity.getEvents().trigger("exitGame");
           }
         });
 
     panel.add(titleLabel).pad(padding).row();
     panel.add(messageLabel).fillX().expandX().pad(padding).row();
-    panel.add(restartBtn).padBottom(padding).row();
-    panel.add(mainMenuBtn).padBottom(padding).row();
-    panel.add(exitDesktopBtn).padBottom(padding).row();
+    panel.add(restartBtn).width(BUTTON_WIDTH).height(BUTTON_HEIGHT).padBottom(padding).row();
+    panel.add(mainMenuBtn).width(BUTTON_WIDTH).height(BUTTON_HEIGHT).padBottom(padding).row();
+    panel.add(exitGameBtn).width(BUTTON_WIDTH).height(BUTTON_HEIGHT).padBottom(padding).row();
     panel.pack();
 
-    root.add(panel).width(Value.percentWidth(0.8f, root)).fillX().center();
+    stack.add(backgroundTable);
+    stack.add(panel);
+    root.add(stack).width(Value.percentWidth(0.8f, root)).fillX().center();
+    // Gate visibility on root, not just panel: everything in the stack (including the scroll
+    // background) sits directly on the stage via root, so hiding only panel left the background
+    // showing on its own before the game had actually ended.
+    root.setVisible(visible);
     stage.addActor(root);
     root.invalidateHierarchy();
     root.layout();
     updateMessageLabel();
-  }
-
-  private static NinePatchDrawable getBackgroundDrawable() {
-    if (cachedBackground != null) {
-      return cachedBackground;
-    }
-
-    int size = 16;
-    int border = BORDER_THICKNESS + 2;
-
-    Pixmap pixmap = new Pixmap(size, size, Pixmap.Format.RGBA8888);
-    pixmap.setColor(new Color(0.35f, 0.35f, 0.38f, 0.88f));
-    pixmap.fill();
-    pixmap.setColor(new Color(0.85f, 0.8f, 0.4f, 1f));
-    for (int i = 0; i < border; i++) {
-      pixmap.drawRectangle(i, i, size - i * 2, size - i * 2);
-    }
-    Texture texture = new Texture(pixmap);
-    pixmap.dispose();
-
-    NinePatch patch = new NinePatch(texture, border, border, border, border);
-    cachedBackground = new NinePatchDrawable(patch);
-    return cachedBackground;
   }
 
   private void updateMessageLabel() {

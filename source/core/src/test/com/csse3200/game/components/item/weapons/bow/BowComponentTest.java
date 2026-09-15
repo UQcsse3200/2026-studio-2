@@ -1,5 +1,6 @@
-package com.csse3200.game.components.player;
+package com.csse3200.game.components.item.weapons.bow;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -8,6 +9,7 @@ import static org.mockito.Mockito.when;
 
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.math.Vector2;
+import com.csse3200.game.components.projectile.ArrowType;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.extensions.GameExtension;
@@ -28,7 +30,10 @@ class BowComponentTest {
     entityService = mock(EntityService.class);
     ResourceService resourceService = mock(ResourceService.class);
     attackSound = mock(Sound.class);
+
+    when(resourceService.containsAsset("sounds/Impact4.ogg", Sound.class)).thenReturn(true);
     when(resourceService.getAsset("sounds/Impact4.ogg", Sound.class)).thenReturn(attackSound);
+
     ServiceLocator.registerEntityService(entityService);
     ServiceLocator.registerResourceService(resourceService);
   }
@@ -36,18 +41,23 @@ class BowComponentTest {
   @Test
   void shouldSpawnArrowAndPublishAnimationDirection() {
     Entity projectile = mock(Entity.class);
+    AtomicReference<Entity> shooterRef = new AtomicReference<>();
     AtomicReference<Vector2> spawnPosition = new AtomicReference<>();
     AtomicReference<Vector2> projectileDirection = new AtomicReference<>();
+
     BowComponent component =
         new BowComponent(
-            (position, direction) -> {
+            (shooter, position, direction) -> {
+              shooterRef.set(shooter);
               spawnPosition.set(position);
               projectileDirection.set(direction);
               return projectile;
             });
+
     Entity player = new Entity().addComponent(component);
     player.setPosition(1f, 2f);
     player.setScale(2f, 2f);
+
     AtomicReference<Vector2> animationDirection = new AtomicReference<>();
     player
         .getEvents()
@@ -56,8 +66,9 @@ class BowComponentTest {
     component.attack(new Vector2(3f, 4f));
 
     Vector2 expectedDirection = new Vector2(0.6f, 0.8f);
+    assertEquals(player, shooterRef.get());
     assertTrue(projectileDirection.get().epsilonEquals(expectedDirection));
-    assertTrue(spawnPosition.get().epsilonEquals(new Vector2(2.72f, 3.96f)));
+    assertTrue(spawnPosition.get().epsilonEquals(new Vector2(2.96f, 4.28f)));
     assertTrue(animationDirection.get().epsilonEquals(expectedDirection));
     verify(entityService).register(projectile);
     verify(attackSound).play();
@@ -66,12 +77,24 @@ class BowComponentTest {
   @Test
   void shouldIgnoreZeroDirection() {
     Entity projectile = mock(Entity.class);
-    BowComponent component = new BowComponent((position, direction) -> projectile);
+    BowComponent component = new BowComponent((shooter, position, direction) -> projectile);
     new Entity().addComponent(component);
 
     component.attack(Vector2.Zero.cpy());
 
     verify(entityService, never()).register(projectile);
     verify(attackSound, never()).play();
+  }
+
+  @Test
+  void shouldSwapArrowTypesCorrectly() {
+    BowComponent component = new BowComponent();
+    assertEquals(ArrowType.STANDARD, component.getArrowType());
+
+    component.setArrowType(ArrowType.FIRE);
+    assertEquals(ArrowType.FIRE, component.getArrowType());
+
+    component.setArrowType(null);
+    assertEquals(ArrowType.STANDARD, component.getArrowType());
   }
 }

@@ -16,11 +16,8 @@ import com.badlogic.gdx.utils.Align;
 import com.csse3200.game.ui.UIComponent;
 import java.util.Collections;
 import java.util.List;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class TextBoxComponent extends UIComponent {
-  private static final Logger logger = LoggerFactory.getLogger(TextBoxComponent.class);
 
   private final float xPos;
   private final float yPos;
@@ -49,7 +46,7 @@ public class TextBoxComponent extends UIComponent {
   // only once the last page has been fully shown does TAB dismiss the box entirely.
 
   /**
-   * @param fontPath path to a bitmap font (.fnt) file, relative to assets, e.g. "fonts/scroll.fnt".
+   * @param font path to a bitmap font (.fnt) file, relative to assets, e.g. "fonts/scroll.fnt".
    *     Pass {@code null} to use the skin's default font.
    * @param textAlignment horizontal alignment of the text within the box, e.g. {@link Align#left},
    *     {@link Align#center}, {@link Align#right}.
@@ -64,7 +61,7 @@ public class TextBoxComponent extends UIComponent {
       int maxWidth,
       int padding,
       int borderThickness,
-      String fontPath,
+      BitmapFont font,
       int textAlignment,
       List<String> pages) {
 
@@ -79,20 +76,7 @@ public class TextBoxComponent extends UIComponent {
     this.borderThickness = borderThickness;
     this.textAlignment = textAlignment;
     this.pages = (pages == null || pages.isEmpty()) ? Collections.singletonList("") : pages;
-    this.customFont = loadFont(fontPath);
-  }
-
-  /** Loads a bitmap font from assets, or returns null (meaning "use the skin's default font"). */
-  private static BitmapFont loadFont(String fontPath) {
-    if (fontPath == null || fontPath.isBlank()) {
-      return null;
-    }
-    try {
-      return new BitmapFont(Gdx.files.internal(fontPath));
-    } catch (Exception e) {
-      logger.error("Failed to load font from {}: {}", fontPath, e.getMessage());
-      return null;
-    }
+    this.customFont = font;
   }
 
   /**
@@ -213,9 +197,10 @@ public class TextBoxComponent extends UIComponent {
     // Reveal characters over time
     if (!fullyRevealed) {
       this.typeTimer += Gdx.graphics.getDeltaTime();
-      int charsToShow = (int) (this.typeTimer * this.charsPerSecond);
+      int charsToShow = (int) (this.typeTimer * this.charsPerSecond) + 1;
       if (charsToShow > this.revealedChars) {
         this.revealedChars = Math.min(charsToShow, this.fullContent.length());
+        // System.out.println(revealedChars);
         this.label.setText(this.fullContent.substring(0, this.revealedChars));
         this.table.pack(); // resize box to fit the new (wrapped) text height
         fullyRevealed = this.revealedChars >= this.fullContent.length();

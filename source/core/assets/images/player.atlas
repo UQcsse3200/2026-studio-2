@@ -282,116 +282,81 @@ filter: Nearest,Nearest
 repeat: none
 jump
   rotate: false
-  xy: 0, 0
+  xy: 48, 0
   size: 48, 100
   orig: 48, 100
   offset: 0, 0
   index: 0
 jump
   rotate: false
-  xy: 48, 0
+  xy: 96, 0
   size: 48, 100
   orig: 48, 100
   offset: 0, 0
   index: 1
 jump
   rotate: false
-  xy: 96, 0
+  xy: 144, 0
   size: 48, 100
   orig: 48, 100
   offset: 0, 0
   index: 2
 jump
   rotate: false
-  xy: 144, 0
+  xy: 0, 100
   size: 48, 100
   orig: 48, 100
   offset: 0, 0
   index: 3
 jump
   rotate: false
-  xy: 0, 100
+  xy: 48, 100
   size: 48, 100
   orig: 48, 100
   offset: 0, 0
   index: 4
 jump
   rotate: false
-  xy: 48, 100
+  xy: 96, 100
   size: 48, 100
   orig: 48, 100
   offset: 0, 0
   index: 5
 jump
   rotate: false
-  xy: 96, 100
+  xy: 144, 100
   size: 48, 100
   orig: 48, 100
   offset: 0, 0
   index: 6
 jump
   rotate: false
-  xy: 144, 100
+  xy: 0, 200
   size: 48, 100
   orig: 48, 100
   offset: 0, 0
   index: 7
 jump
   rotate: false
-  xy: 0, 200
+  xy: 48, 200
   size: 48, 100
   orig: 48, 100
   offset: 0, 0
   index: 8
 jump
   rotate: false
-  xy: 48, 200
+  xy: 96, 200
   size: 48, 100
   orig: 48, 100
   offset: 0, 0
   index: 9
 jump
   rotate: false
-  xy: 96, 200
-  size: 48, 100
-  orig: 48, 100
-  offset: 0, 0
-  index: 10
-jump
-  rotate: false
   xy: 144, 200
   size: 48, 100
   orig: 48, 100
   offset: 0, 0
-  index: 11
-jump
-  rotate: false
-  xy: 0, 300
-  size: 48, 100
-  orig: 48, 100
-  offset: 0, 0
-  index: 12
-jump
-  rotate: false
-  xy: 48, 300
-  size: 48, 100
-  orig: 48, 100
-  offset: 0, 0
-  index: 13
-jump
-  rotate: false
-  xy: 96, 300
-  size: 48, 100
-  orig: 48, 100
-  offset: 0, 0
-  index: 14
-jump
-  rotate: false
-  xy: 144, 300
-  size: 48, 100
-  orig: 48, 100
-  offset: 0, 0
-  index: 15
+  index: 10
 
 player_hurt.png
 size: 220, 288
@@ -545,3 +510,239 @@ hurt
   orig: 158, 158
   offset: 69, 37
   index: 20
+
+player_death.png
+size: 408, 340
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+death
+  rotate: false
+  xy: 0, 0
+  size: 102, 85
+  orig: 128, 128
+  offset: 21, 22
+  index: 0
+death
+  rotate: false
+  xy: 102, 0
+  size: 102, 85
+  orig: 128, 128
+  offset: 21, 22
+  index: 1
+death
+  rotate: false
+  xy: 204, 0
+  size: 102, 85
+  orig: 128, 128
+  offset: 21, 22
+  index: 2
+death
+  rotate: false
+  xy: 306, 0
+  size: 102, 85
+  orig: 128, 128
+  offset: 21, 22
+  index: 3
+death
+  rotate: false
+  xy: 0, 85
+  size: 102, 85
+  orig: 128, 128
+  offset: 21, 22
+  index: 4
+death
+  rotate: false
+  xy: 102, 85
+  size: 102, 85
+  orig: 128, 128
+  offset: 21, 22
+  index: 5
+death
+  rotate: false
+  xy: 204, 85
+  size: 102, 85
+  orig: 128, 128
+  offset: 21, 22
+  index: 6
+death
+  rotate: false
+  xy: 306, 85
+  size: 102, 85
+  orig: 128, 128
+  offset: 21, 22
+  index: 7
+death
+  rotate: false
+  xy: 0, 170
+  size: 102, 85
+  orig: 128, 128
+  offset: 21, 22
+  index: 8
+death
+  rotate: false
+  xy: 102, 170
+  size: 102, 85
+  orig: 128, 128
+  offset: 21, 22
+  index: 9
+death
+  rotate: false
+  xy: 204, 170
+  size: 102, 85
+  orig: 128, 128
+  offset: 21, 22
+  index: 10
+death
+  rotate: false
+  xy: 306, 170
+  size: 102, 85
+  orig: 128, 128
+  offset: 21, 22
+  index: 11
+death
+  rotate: false
+  xy: 0, 255
+  size: 102, 85
+  orig: 128, 128
+  offset: 21, 22
+  index: 12
+death
+  rotate: false
+  xy: 102, 255
+  size: 102, 85
+  orig: 128, 128
+  offset: 21, 22
+  index: 13
+death
+  rotate: false
+  xy: 204, 255
+  size: 102, 85
+  orig: 128, 128
+  offset: 21, 22
+  index: 14
+death
+  rotate: false
+  xy: 306, 255
+  size: 102, 85
+  orig: 128, 128
+  offset: 21, 22
+  index: 15
+
+player_sleep.png
+size: 316, 340
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+sleep
+  rotate: false
+  xy: 0, 0
+  size: 79, 85
+  orig: 128, 128
+  offset: 24, 22
+  index: 0
+sleep
+  rotate: false
+  xy: 79, 0
+  size: 79, 85
+  orig: 128, 128
+  offset: 24, 22
+  index: 1
+sleep
+  rotate: false
+  xy: 158, 0
+  size: 79, 85
+  orig: 128, 128
+  offset: 24, 22
+  index: 2
+sleep
+  rotate: false
+  xy: 237, 0
+  size: 79, 85
+  orig: 128, 128
+  offset: 24, 22
+  index: 3
+sleep
+  rotate: false
+  xy: 0, 85
+  size: 79, 85
+  orig: 128, 128
+  offset: 24, 22
+  index: 4
+sleep
+  rotate: false
+  xy: 79, 85
+  size: 79, 85
+  orig: 128, 128
+  offset: 24, 22
+  index: 5
+sleep
+  rotate: false
+  xy: 158, 85
+  size: 79, 85
+  orig: 128, 128
+  offset: 24, 22
+  index: 6
+sleep
+  rotate: false
+  xy: 237, 85
+  size: 79, 85
+  orig: 128, 128
+  offset: 24, 22
+  index: 7
+sleep
+  rotate: false
+  xy: 0, 170
+  size: 79, 85
+  orig: 128, 128
+  offset: 24, 22
+  index: 8
+sleep
+  rotate: false
+  xy: 79, 170
+  size: 79, 85
+  orig: 128, 128
+  offset: 24, 22
+  index: 9
+sleep
+  rotate: false
+  xy: 158, 170
+  size: 79, 85
+  orig: 128, 128
+  offset: 24, 22
+  index: 10
+sleep
+  rotate: false
+  xy: 237, 170
+  size: 79, 85
+  orig: 128, 128
+  offset: 24, 22
+  index: 11
+sleep
+  rotate: false
+  xy: 0, 255
+  size: 79, 85
+  orig: 128, 128
+  offset: 24, 22
+  index: 12
+sleep
+  rotate: false
+  xy: 79, 255
+  size: 79, 85
+  orig: 128, 128
+  offset: 24, 22
+  index: 13
+sleep
+  rotate: false
+  xy: 158, 255
+  size: 79, 85
+  orig: 128, 128
+  offset: 24, 22
+  index: 14
+sleep
+  rotate: false
+  xy: 237, 255
+  size: 79, 85
+  orig: 128, 128
+  offset: 24, 22
+  index: 15
