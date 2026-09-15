@@ -8,7 +8,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.csse3200.game.components.ButtonSound;
@@ -82,9 +81,13 @@ public class BlackjackDisplay extends UIComponent {
     dealerCards = new Table();
     playerCards = new Table();
 
-    TextButton newRoundButton = new TextButton("New Round", skin);
-    TextButton hitButton = new TextButton("Hit", skin);
-    TextButton standButton = new TextButton("Stand", skin);
+    ImageButton newRoundButton =
+        createImageButton(
+            "images/Buttons/newRound_up_btn.png", "images/Buttons/newRound_down_btn.png");
+    ImageButton hitButton =
+        createImageButton("images/Buttons/hit_up_btn.png", "images/Buttons/hit_down_btn.png");
+    ImageButton standButton =
+        createImageButton("images/Buttons/stand_up_btn.png", "images/Buttons/stand_down_btn.png");
     Texture backUpTexture =
         ServiceLocator.getResourceService()
             .getAsset("images/Buttons/back_up_btn.png", Texture.class);
@@ -195,14 +198,28 @@ public class BlackjackDisplay extends UIComponent {
 
     Table buttons = new Table();
 
-    buttons.add(newRoundButton).pad(5f);
-    buttons.add(hitButton).pad(5f);
-    buttons.add(standButton).pad(5f);
+    buttons.add(newRoundButton).width(160f).height(56f).pad(5f);
+    buttons.add(hitButton).width(160f).height(56f).pad(5f);
+    buttons.add(standButton).width(160f).height(56f).pad(5f);
     buttons.add(backButton).width(160f).height(56f).pad(5f);
 
     table.add(buttons).padTop(15f);
 
     stage.addActor(table);
+  }
+
+  private ImageButton createImageButton(String upPath, String downPath) {
+    Texture upTexture = ServiceLocator.getResourceService().getAsset(upPath, Texture.class);
+    Texture downTexture = ServiceLocator.getResourceService().getAsset(downPath, Texture.class);
+
+    upTexture.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
+    downTexture.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
+
+    ImageButton.ImageButtonStyle style = new ImageButton.ImageButtonStyle();
+    style.up = new TextureRegionDrawable(upTexture);
+    style.down = new TextureRegionDrawable(downTexture);
+
+    return new ImageButton(style);
   }
 
   private void refresh() {
