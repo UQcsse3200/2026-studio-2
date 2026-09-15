@@ -12,8 +12,10 @@
         "borderThickness": 3,
         "textAlignment": "center",
         "pages": [
-          "The ancient ruins stretch before you, overgrown with vines and mystery.",
-          "Somewhere within lies the artifact that could change everything."
+          "This story starts at the end of a war and at the foreshawdowing of a massacare...",
+          "After ten long year of battle, the Greeks' seemingly defeated sent a great wooden statue to the Trojans as a gift of surrender.",
+          "The Trojans, believing the war was over, brought the horse into their city unbeknownst to them Odesseus' deception..."
+
         ]
       }
     },
@@ -28,8 +30,9 @@
         "borderThickness": 3,
         "textAlignment": "center",
         "pages": [
-          "But the path is guarded by creatures that have waited centuries for an intruder.",
-          "Prepare yourself - there is no turning back."
+          "Under the cover of darkness, the Greeks emerged from the horse and opened the gates to their waiting army.",
+          "The city that had resisted them for a decade was overwhelmed in a single night",
+          "And what followed is described by poets a most brutal massacre"
         ]
       }
     },
@@ -44,8 +47,43 @@
         "borderThickness": 3,
         "textAlignment": "center",
         "pages": [
-          "Your adventure begins now. Use the terminal and your wits to survive.",
-          "Type 'help' in the terminal for available commands."
+          "Odysseus and Agamemnon departed from the ruins of the city and set sail for home, having their ships laden with the spoils of war.",
+          "Behind them Troy lay shattered and burning and before them the sea...",
+          "For Odysseus, the war was finally over but this troubles were only beginning..."
+        ]
+      }
+    },
+    {
+      "image": "scene4.jpeg",
+      "text": {
+        "xPos": 100,
+        "yPos": 100,
+        "charsPerSecond": 20,
+        "maxWidth": 600,
+        "padding": 16,
+        "borderThickness": 3,
+        "textAlignment": "center",
+        "pages": [
+          "Departing seperately from Agamemnon, the voyage soon became a struggle for survival",
+          "Storms drove the Greek ships across a merciless sea, tearing at their sails and scattering their men.",
+          "Only they knew what horrors they witnessed in their journey..."
+        ]
+      }
+    },
+    {
+      "image": "scene5.jpeg",
+      "text": {
+        "xPos": 100,
+        "yPos": 100,
+        "charsPerSecond": 20,
+        "maxWidth": 600,
+        "padding": 16,
+        "borderThickness": 3,
+        "textAlignment": "center",
+        "pages": [
+          "At last, the sea cast Odysseus upon an unfamiliar shore",
+          "Exhausted and broken, he could do nothing but resign himself to the fate the gods had in store for him.",
+          "And so Calypso, the nymph of the island, found his lifeless body and took him in to her care..."
         ]
       }
     }
