@@ -93,11 +93,11 @@ public class RangedAttackTask extends DefaultTask implements PriorityTask {
     Vector2 spawnCenter = enemyCenter.cpy().add(0.8f * facingDirection, -0.15f);
 
     Entity projectile =
-            useNecromancerProjectile
-                    ? ProjectileFact.createNecromancerProjectile(
-                    targetCenter, damage, projectileSpeed, projectileLifetime)
-                    : ProjectileFact.createEnemyProjectile(
-                    targetCenter, damage, projectileSpeed, projectileLifetime);
+        useNecromancerProjectile
+            ? ProjectileFact.createNecromancerProjectile(
+                targetCenter, damage, projectileSpeed, projectileLifetime)
+            : ProjectileFact.createEnemyProjectile(
+                targetCenter, damage, projectileSpeed, projectileLifetime);
 
     // setPosition() uses the bottom-left corner, so offset by half the
     // projectile size to place its centre at spawnCenter.
