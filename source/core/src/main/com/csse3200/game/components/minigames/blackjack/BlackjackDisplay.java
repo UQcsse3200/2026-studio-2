@@ -1,6 +1,10 @@
 package com.csse3200.game.components.minigames.blackjack;
 
+import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.NinePatch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
@@ -9,7 +13,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.csse3200.game.components.ButtonSound;
 import com.csse3200.game.components.inventory.InventoryComponent;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.UIComponent;
@@ -22,14 +28,26 @@ public class BlackjackDisplay extends UIComponent {
   private static final float CARD_HEIGHT = 145f;
   private static final String CARD_PATH = "images/minigames/blackjack/";
   private static final String CARD_BACK_PATH = "images/minigames/blackjack/card_back.png";
+  private static final String BACKGROUND_PATH =
+      "images/minigames/blackjack/god_of_wind_background.png";
+  private static final String CARD_DEAL_SOUND = "sounds/minigames/blackjack/card-deal.mp3";
+  private static final String WIN_SOUND = "sounds/minigames/blackjack/win.mp3";
+  private static final String LOSE_SOUND = "sounds/minigames/blackjack/lose.mp3";
 
   private final Blackjack blackjack;
   private final InventoryComponent inventory;
   private boolean rewardGranted;
+  private boolean resultSoundPlayed;
+  private boolean soundEnabled = true;
+  private final java.util.function.Consumer<Boolean> soundToggleCallback;
+  private final Runnable backCallback;
 
   private Table table;
   private Table dealerCards;
   private Table playerCards;
+  private Table resultOverlay;
+  private ImageButton hitButton;
+  private ImageButton standButton;
 
   private Label dealerTotalLabel;
   private Label playerTotalLabel;
@@ -37,12 +55,29 @@ public class BlackjackDisplay extends UIComponent {
   private Label resultLabel;
 
   public BlackjackDisplay(Blackjack blackjack) {
-    this(blackjack, null);
+    this(blackjack, null, null, null);
   }
 
   public BlackjackDisplay(Blackjack blackjack, InventoryComponent inventory) {
+    this(blackjack, inventory, null, null);
+  }
+
+  public BlackjackDisplay(
+      Blackjack blackjack,
+      InventoryComponent inventory,
+      java.util.function.Consumer<Boolean> soundToggleCallback) {
+    this(blackjack, inventory, soundToggleCallback, null);
+  }
+
+  public BlackjackDisplay(
+      Blackjack blackjack,
+      InventoryComponent inventory,
+      java.util.function.Consumer<Boolean> soundToggleCallback,
+      Runnable backCallback) {
     this.blackjack = blackjack;
     this.inventory = inventory;
+    this.soundToggleCallback = soundToggleCallback;
+    this.backCallback = backCallback;
   }
 
   @Override
@@ -56,6 +91,13 @@ public class BlackjackDisplay extends UIComponent {
     table = new Table();
     table.setFillParent(true);
 
+    Texture backgroundTexture =
+        ServiceLocator.getResourceService().getAsset(BACKGROUND_PATH, Texture.class);
+
+    backgroundTexture.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
+
+    table.setBackground(new TextureRegionDrawable(backgroundTexture));
+
     Label dealerLabel = new Label("Dealer", skin);
     Label playerLabel = new Label("Player", skin);
 
@@ -67,9 +109,13 @@ public class BlackjackDisplay extends UIComponent {
     dealerCards = new Table();
     playerCards = new Table();
 
-    TextButton newRoundButton = new TextButton("New Round", skin);
-    TextButton hitButton = new TextButton("Hit", skin);
-    TextButton standButton = new TextButton("Stand", skin);
+    ImageButton newRoundButton =
+        createImageButton(
+            "images/Buttons/newRound_up_btn.png", "images/Buttons/newRound_down_btn.png");
+    hitButton =
+        createImageButton("images/Buttons/hit_up_btn.png", "images/Buttons/hit_down_btn.png");
+    standButton =
+        createImageButton("images/Buttons/stand_up_btn.png", "images/Buttons/stand_down_btn.png");
     Texture backUpTexture =
         ServiceLocator.getResourceService()
             .getAsset("images/Buttons/back_up_btn.png", Texture.class);
@@ -83,6 +129,25 @@ public class BlackjackDisplay extends UIComponent {
 
     ImageButton backButton = new ImageButton(backButtonStyle);
 
+    TextButton soundButton = new TextButton("SOUND: ON", skin);
+
+    soundButton.addListener(
+        new ChangeListener() {
+          @Override
+          public void changed(ChangeEvent event, Actor actor) {
+            soundEnabled = !soundEnabled;
+            soundButton.setText(soundEnabled ? "SOUND: ON" : "SOUND: OFF");
+
+            if (soundToggleCallback != null) {
+              soundToggleCallback.accept(soundEnabled);
+            }
+
+            if (soundEnabled) {
+              ButtonSound.playClick();
+            }
+          }
+        });
+
     newRoundButton.addListener(
         new ChangeListener() {
           @Override
@@ -91,9 +156,14 @@ public class BlackjackDisplay extends UIComponent {
               blackjack.placeBet(10);
             }
 
+            ButtonSound.playClick();
+
             if (!blackjack.isRoundInProgress()) {
               rewardGranted = false;
+              resultSoundPlayed = false;
               blackjack.startNewRound();
+              playSound(CARD_DEAL_SOUND);
+              playResultSoundIfNeeded();
               grantWinReward();
               refresh();
             }
@@ -104,8 +174,12 @@ public class BlackjackDisplay extends UIComponent {
         new ChangeListener() {
           @Override
           public void changed(ChangeEvent event, Actor actor) {
+            ButtonSound.playClick();
+
             if (blackjack.isRoundInProgress() && !blackjack.isRoundOver()) {
               blackjack.hit();
+              playSound(CARD_DEAL_SOUND);
+              playResultSoundIfNeeded();
               grantWinReward();
               refresh();
             }
@@ -116,8 +190,18 @@ public class BlackjackDisplay extends UIComponent {
         new ChangeListener() {
           @Override
           public void changed(ChangeEvent event, Actor actor) {
+            ButtonSound.playClick();
+
             if (blackjack.isRoundInProgress() && !blackjack.isRoundOver()) {
+              int dealerCardsBefore = blackjack.getDealerHand().size();
+
               blackjack.stand();
+
+              if (blackjack.getDealerHand().size() > dealerCardsBefore) {
+                playSound(CARD_DEAL_SOUND);
+              }
+
+              playResultSoundIfNeeded();
               grantWinReward();
               refresh();
             }
@@ -128,7 +212,13 @@ public class BlackjackDisplay extends UIComponent {
         new ChangeListener() {
           @Override
           public void changed(ChangeEvent event, Actor actor) {
-            entity.getEvents().trigger("back");
+            ButtonSound.playClick();
+
+            if (backCallback != null) {
+              backCallback.run();
+            } else {
+              entity.getEvents().trigger("back");
+            }
           }
         });
 
@@ -160,14 +250,157 @@ public class BlackjackDisplay extends UIComponent {
 
     Table buttons = new Table();
 
-    buttons.add(newRoundButton).pad(5f);
-    buttons.add(hitButton).pad(5f);
-    buttons.add(standButton).pad(5f);
+    buttons.add(newRoundButton).width(160f).height(56f).pad(5f);
+    buttons.add(hitButton).width(160f).height(56f).pad(5f);
+    buttons.add(standButton).width(160f).height(56f).pad(5f);
     buttons.add(backButton).width(160f).height(56f).pad(5f);
+    buttons.add(soundButton).width(140f).height(56f).pad(5f);
 
     table.add(buttons).padTop(15f);
 
     stage.addActor(table);
+    buildResultOverlay();
+  }
+
+  private void buildResultOverlay() {
+    resultOverlay = new Table();
+    resultOverlay.setFillParent(true);
+    resultOverlay.setVisible(false);
+
+    Table popup = new Table();
+    popup.setBackground(createResultBackground());
+
+    Label title = new Label("", skin);
+    title.setName("resultTitle");
+
+    Label message = new Label("", skin);
+    message.setName("resultMessage");
+    message.setWrap(true);
+
+    ImageButton nextRoundButton =
+        createImageButton(
+            "images/Buttons/newRound_up_btn.png", "images/Buttons/newRound_down_btn.png");
+
+    nextRoundButton.addListener(
+        new ChangeListener() {
+          @Override
+          public void changed(ChangeEvent event, Actor actor) {
+            ButtonSound.playClick();
+
+            if (!blackjack.isRoundInProgress()) {
+              rewardGranted = false;
+              resultSoundPlayed = false;
+              blackjack.startNewRound();
+              playSound(CARD_DEAL_SOUND);
+              playResultSoundIfNeeded();
+              grantWinReward();
+              refresh();
+            }
+          }
+        });
+
+    popup.add(title).padTop(35f).padLeft(40f).padRight(40f);
+    popup.row();
+    popup.add(message).width(360f).padTop(15f).padLeft(40f).padRight(40f);
+    popup.row();
+    popup.add(nextRoundButton).width(180f).height(60f).padTop(25f).padBottom(35f);
+
+    resultOverlay.add(popup).width(480f);
+    stage.addActor(resultOverlay);
+  }
+
+  private NinePatchDrawable createResultBackground() {
+    int rodHeight = 24;
+    int paperEdge = 16;
+    int width = 80;
+    int height = 72;
+
+    Pixmap pixmap = new Pixmap(width, height, Pixmap.Format.RGBA8888);
+
+    Color parchment = new Color(0.82f, 0.68f, 0.43f, 1f);
+    Color wood = new Color(0.35f, 0.18f, 0.08f, 1f);
+    Color edge = new Color(0.55f, 0.38f, 0.20f, 1f);
+
+    pixmap.setColor(parchment);
+    pixmap.fillRectangle(paperEdge, 0, width - paperEdge * 2, height);
+
+    pixmap.setColor(edge);
+    pixmap.fillRectangle(paperEdge, 0, 4, height);
+    pixmap.fillRectangle(width - paperEdge - 4, 0, 4, height);
+
+    pixmap.setColor(wood);
+    pixmap.fillRectangle(0, 0, width, rodHeight);
+    pixmap.fillRectangle(0, height - rodHeight, width, rodHeight);
+
+    int knobRadius = 8;
+    pixmap.fillCircle(knobRadius, knobRadius, knobRadius);
+    pixmap.fillCircle(width - knobRadius, knobRadius, knobRadius);
+    pixmap.fillCircle(knobRadius, height - knobRadius, knobRadius);
+    pixmap.fillCircle(width - knobRadius, height - knobRadius, knobRadius);
+
+    Texture texture = new Texture(pixmap);
+    pixmap.dispose();
+
+    NinePatch patch = new NinePatch(texture, paperEdge, paperEdge, rodHeight, rodHeight);
+    return new NinePatchDrawable(patch);
+  }
+
+  private void updateResultOverlay() {
+    if (resultOverlay == null) {
+      return;
+    }
+
+    boolean showResult = blackjack.isRoundOver();
+    resultOverlay.setVisible(showResult);
+
+    if (hitButton != null) {
+      hitButton.setDisabled(showResult);
+      hitButton.setTouchable(
+          showResult
+              ? com.badlogic.gdx.scenes.scene2d.Touchable.disabled
+              : com.badlogic.gdx.scenes.scene2d.Touchable.enabled);
+    }
+
+    if (standButton != null) {
+      standButton.setDisabled(showResult);
+      standButton.setTouchable(
+          showResult
+              ? com.badlogic.gdx.scenes.scene2d.Touchable.disabled
+              : com.badlogic.gdx.scenes.scene2d.Touchable.enabled);
+    }
+
+    if (!showResult) {
+      return;
+    }
+
+    Label title = resultOverlay.findActor("resultTitle");
+    Label message = resultOverlay.findActor("resultMessage");
+
+    if (blackjack.isPlayerWinner()) {
+      title.setText("YOU WIN!");
+    } else if (blackjack.getResultMessage() != null
+        && blackjack.getResultMessage().startsWith("Push")) {
+      title.setText("PUSH!");
+    } else {
+      title.setText("YOU LOSE!");
+    }
+
+    message.setText(blackjack.getResultMessage());
+    resultOverlay.toFront();
+  }
+
+  private ImageButton createImageButton(String upPath, String downPath) {
+    Texture upTexture = ServiceLocator.getResourceService().getAsset(upPath, Texture.class);
+    Texture downTexture = ServiceLocator.getResourceService().getAsset(downPath, Texture.class);
+
+    upTexture.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
+    downTexture.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
+
+    ImageButton.ImageButtonStyle style = new ImageButton.ImageButtonStyle();
+    style.up = new TextureRegionDrawable(upTexture);
+    style.down = new TextureRegionDrawable(downTexture);
+
+    return new ImageButton(style);
   }
 
   private void refresh() {
@@ -194,10 +427,13 @@ public class BlackjackDisplay extends UIComponent {
       playerCards.add(createCardImage(card)).size(CARD_WIDTH, CARD_HEIGHT).pad(5f);
     }
 
-    dealerTotalLabel.setText(
-        blackjack.getDealerHand().isEmpty()
-            ? "Dealer total: -"
-            : "Dealer total: " + blackjack.getDealerTotal());
+    if (blackjack.getDealerHand().isEmpty()) {
+      dealerTotalLabel.setText("Dealer total: -");
+    } else if (blackjack.isRoundInProgress() && !blackjack.isRoundOver()) {
+      dealerTotalLabel.setText("Dealer total: ?");
+    } else {
+      dealerTotalLabel.setText("Dealer total: " + blackjack.getDealerTotal());
+    }
 
     playerTotalLabel.setText(
         blackjack.getPlayerHand().isEmpty()
@@ -207,6 +443,45 @@ public class BlackjackDisplay extends UIComponent {
     balanceLabel.setText("Balance: $" + blackjack.getBalance() + "    Bet: $" + blackjack.getBet());
 
     resultLabel.setText(blackjack.getResultMessage());
+    updateResultOverlay();
+  }
+
+  private void playSound(String path) {
+    if (!soundEnabled) {
+      return;
+    }
+
+    try {
+      if (ServiceLocator.getResourceService() == null) {
+        return;
+      }
+
+      if (!ServiceLocator.getResourceService().containsAsset(path, Sound.class)) {
+        return;
+      }
+
+      Sound sound = ServiceLocator.getResourceService().getAsset(path, Sound.class);
+
+      sound.play(1.0f);
+    } catch (RuntimeException ignored) {
+      // Ignore unavailable audio during tests or teardown.
+    }
+  }
+
+  private void playResultSoundIfNeeded() {
+    if (!blackjack.isRoundOver() || resultSoundPlayed) {
+      return;
+    }
+
+    String result = blackjack.getResultMessage();
+
+    if (blackjack.isPlayerWinner()) {
+      playSound(WIN_SOUND);
+      resultSoundPlayed = true;
+    } else if (result != null && !result.isEmpty() && !result.startsWith("Push")) {
+      playSound(LOSE_SOUND);
+      resultSoundPlayed = true;
+    }
   }
 
   private void grantWinReward() {
@@ -214,7 +489,8 @@ public class BlackjackDisplay extends UIComponent {
       return;
     }
 
-    rewardGranted = inventory.addItem(BlackjackConfig.WIN_REWARD, BlackjackConfig.WIN_REWARD_QUANTITY);
+    rewardGranted =
+        inventory.addItem(BlackjackConfig.WIN_REWARD, BlackjackConfig.WIN_REWARD_QUANTITY);
   }
 
   private Image createCardBackImage() {
@@ -298,7 +574,14 @@ public class BlackjackDisplay extends UIComponent {
 
   @Override
   public void dispose() {
-    table.clear();
+    if (table != null) {
+      table.remove();
+    }
+
+    if (resultOverlay != null) {
+      resultOverlay.remove();
+    }
+
     super.dispose();
   }
 }
