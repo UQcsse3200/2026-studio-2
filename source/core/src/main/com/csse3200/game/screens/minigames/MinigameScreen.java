@@ -2,6 +2,7 @@ package com.csse3200.game.screens.minigames;
 
 import com.badlogic.gdx.ScreenAdapter;
 import com.csse3200.game.GdxGame;
+import com.csse3200.game.components.ButtonSound;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.entities.factories.RenderFactory;
@@ -43,6 +44,15 @@ public abstract class MinigameScreen extends ScreenAdapter {
 
   protected abstract String[] getTextures();
 
+  /**
+   * The sounds this minigame needs loaded. Silent minigames keep the default.
+   *
+   * @return the sounds to load
+   */
+  protected String[] getSounds() {
+    return new String[0];
+  }
+
   protected abstract Entity createUI();
 
   @Override
@@ -73,12 +83,16 @@ public abstract class MinigameScreen extends ScreenAdapter {
     logger.debug("Loading assets");
     ResourceService resourceService = ServiceLocator.getResourceService();
     resourceService.loadTextures(getTextures());
+    resourceService.loadSounds(getSounds());
+    ButtonSound.load(resourceService);
     resourceService.loadAll();
   }
 
   private void unloadAssets() {
     logger.debug("Unloading assets");
     ResourceService resourceService = ServiceLocator.getResourceService();
+    ButtonSound.unload(resourceService);
     resourceService.unloadAssets(getTextures());
+    resourceService.unloadAssets(getSounds());
   }
 }

@@ -4,12 +4,12 @@ import com.csse3200.game.components.item.ItemType;
 
 /** A health potion that restores health when used. */
 public class HealthPotion extends Consumable {
-  public static final int HEAL_AMOUNT = ItemType.CONSUMABLE.getHealAmount();
+  public static final int HEAL_AMOUNT = ItemType.HEALTH_POTION.getHealAmount();
 
   /**
    * @param quantity number of potions in the stack
    */
   public HealthPotion(int quantity) {
-    super(ItemType.CONSUMABLE, quantity);
+    super(ItemType.HEALTH_POTION, quantity);
   }
 }

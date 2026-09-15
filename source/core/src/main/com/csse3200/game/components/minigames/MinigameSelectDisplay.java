@@ -1,12 +1,16 @@
 package com.csse3200.game.components.minigames;
 
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.csse3200.game.components.ButtonSound;
 import com.csse3200.game.screens.minigames.MinigameType;
+import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.UIComponent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,7 +36,19 @@ public class MinigameSelectDisplay extends UIComponent {
     table.add(new Label("Minigames", skin, "title"));
 
     for (MinigameType minigame : MinigameType.values()) {
-      TextButton minigameBtn = new TextButton(minigame.getDisplayName(), skin);
+      Texture upTexture =
+          ServiceLocator.getResourceService()
+              .getAsset("images/Buttons/" + minigame.getAssetKey() + "_up_btn.png", Texture.class);
+      Texture downTexture =
+          ServiceLocator.getResourceService()
+              .getAsset(
+                  "images/Buttons/" + minigame.getAssetKey() + "_down_btn.png", Texture.class);
+
+      ImageButton.ImageButtonStyle minigameBtnStyle = new ImageButton.ImageButtonStyle();
+      minigameBtnStyle.up = new TextureRegionDrawable(upTexture);
+      minigameBtnStyle.down = new TextureRegionDrawable(downTexture);
+
+      ImageButton minigameBtn = new ImageButton(minigameBtnStyle);
 
       // Triggers an event when the button is pressed
       minigameBtn.addListener(
@@ -40,26 +56,38 @@ public class MinigameSelectDisplay extends UIComponent {
             @Override
             public void changed(ChangeEvent changeEvent, Actor actor) {
               logger.debug("{} button clicked", minigame);
-              entity.getEvents().trigger("selectMinigame", minigame);
+              ButtonSound.playClickThen(
+                  () -> entity.getEvents().trigger("selectMinigame", minigame));
             }
           });
 
       table.row();
-      table.add(minigameBtn).padTop(15f);
+      table.add(minigameBtn).width(220f).height(70f).padTop(15f);
     }
 
-    TextButton backBtn = new TextButton("Back", skin);
+    Texture backUpTexture =
+        ServiceLocator.getResourceService()
+            .getAsset("images/Buttons/back_up_btn.png", Texture.class);
+    Texture backDownTexture =
+        ServiceLocator.getResourceService()
+            .getAsset("images/Buttons/back_down_btn.png", Texture.class);
+
+    ImageButton.ImageButtonStyle backButtonStyle = new ImageButton.ImageButtonStyle();
+    backButtonStyle.up = new TextureRegionDrawable(backUpTexture);
+    backButtonStyle.down = new TextureRegionDrawable(backDownTexture);
+
+    ImageButton backBtn = new ImageButton(backButtonStyle);
     backBtn.addListener(
         new ChangeListener() {
           @Override
           public void changed(ChangeEvent changeEvent, Actor actor) {
             logger.debug("Back button clicked");
-            entity.getEvents().trigger("back");
+            ButtonSound.playClickThen(() -> entity.getEvents().trigger("back"));
           }
         });
 
     table.row();
-    table.add(backBtn).padTop(30f);
+    table.add(backBtn).width(220f).height(70f).padTop(30f);
 
     stage.addActor(table);
   }

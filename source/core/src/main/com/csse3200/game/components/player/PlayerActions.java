@@ -3,21 +3,21 @@ package com.csse3200.game.components.player;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.csse3200.game.components.Component;
+import com.csse3200.game.components.item.weapons.bow.grapple.GrappleComponent;
 import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.physics.raycast.RaycastHit;
 import com.csse3200.game.services.ServiceLocator;
 
-/**
- * Action component for interacting with the player. Player events should be initialised in create()
- * and when triggered should call methods within this class.
- */
+/** Action component for interacting with the player */
 public class PlayerActions extends Component {
-  private static final float JUMP_FORCE = 5.5f;
+  private static final float JUMP_FORCE = 27f;
   private static final Vector2 MAX_SPEED = new Vector2(5f, 5f); // Metres per second
   private static final float SPRINT_MULTIPLIER = 1.75f;
   private static final float ROPE_JUMP_MULTIPLIER = 0.7f;
   private static final float AIR_CONTROL = 0.1f; // How much steering you get mid-air
+  private static final long JUMP_WINDUP_MS =
+      90; // Anticipation delay before a ground jump lifts off
 
   private PhysicsComponent physicsComponent;
   private GrappleComponent grapple;
@@ -26,6 +26,9 @@ public class PlayerActions extends Component {
   private boolean isGrounded = false;
   private boolean isSprinting = false;
   private boolean paused = false;
+  public boolean droppingFromLedge = false;
+  private boolean dead = false;
+  private long jumpImpulseAt = -1; // Timestamp to apply the queued jump impulse, -1 if none queued
 
   @Override
   public void create() {
@@ -36,12 +39,21 @@ public class PlayerActions extends Component {
     entity.getEvents().addListener("jump", this::jump);
     entity.getEvents().addListener("sprint", this::sprint);
     entity.getEvents().addListener("sprintStop", this::stopSprinting);
+    entity.getEvents().addListener("updateLedgeDrop", this::setLedgeDropping);
     entity.getEvents().addListener("togglePaused", this::togglePause);
+    entity.getEvents().addListener("death", this::die);
   }
 
   @Override
   public void update() {
     isGrounded = checkGrounded();
+    checkJumpWindup();
+
+    // The grapple is a hold action: let go of right click and the rope drops
+    if (isGrappling() && !isRightMouseHeld()) {
+      grapple.release();
+    }
+
     if (!moving) {
       return;
     }
@@ -55,6 +67,27 @@ public class PlayerActions extends Component {
 
   private boolean isGrappling() {
     return grapple != null && grapple.isAttached();
+  }
+
+  /** Applies the queued ground-jump impulse once its short wind-up has elapsed. */
+  private void checkJumpWindup() {
+    if (jumpImpulseAt < 0) {
+      return;
+    }
+    if (dead) {
+      jumpImpulseAt = -1;
+      return;
+    }
+    if (ServiceLocator.getTimeSource().getTime() >= jumpImpulseAt) {
+      jumpImpulseAt = -1;
+      Body body = physicsComponent.getBody();
+      body.applyLinearImpulse(new Vector2(0, JUMP_FORCE), body.getWorldCenter(), true);
+    }
+  }
+
+  private boolean isRightMouseHeld() {
+    KeyboardPlayerInputComponent input = entity.getComponent(KeyboardPlayerInputComponent.class);
+    return input != null && input.isRightMouseHeld();
   }
 
   private void updateSpeed() {
@@ -87,12 +120,24 @@ public class PlayerActions extends Component {
     paused = !paused;
   }
 
+  /** Stops the player permanently reacting to input once they've died. */
+  void die() {
+    dead = true;
+    Body body = physicsComponent.getBody();
+    Vector2 velocity = body.getLinearVelocity();
+    body.setLinearVelocity(0f, velocity.y);
+    stopWalking();
+  }
+
   /**
    * Moves the player towards a given direction.
    *
    * @param direction direction to move in
    */
   void walk(Vector2 direction) {
+    if (dead) {
+      return;
+    }
     if (paused) {
       stopWalking();
     } else {
@@ -112,6 +157,9 @@ public class PlayerActions extends Component {
 
   /** Jump off the ground, or let go of the rope with a kick upward. */
   void jump() {
+    if (dead || jumpImpulseAt >= 0) {
+      return;
+    }
     Body body = physicsComponent.getBody();
 
     if (isGrappling()) {
@@ -122,13 +170,16 @@ public class PlayerActions extends Component {
     }
 
     if (isGrounded) {
-      body.applyLinearImpulse(new Vector2(0, JUMP_FORCE), body.getWorldCenter(), true);
       isGrounded = false;
+      jumpImpulseAt = ServiceLocator.getTimeSource().getTime() + JUMP_WINDUP_MS;
       entity.getEvents().trigger("jumpStart");
     }
   }
 
   void sprint() {
+    if (dead) {
+      return;
+    }
     this.isSprinting = true;
     if (!isGrappling()) {
       updateSpeed();
@@ -136,9 +187,33 @@ public class PlayerActions extends Component {
   }
 
   void stopSprinting() {
+    if (dead) {
+      return;
+    }
     this.isSprinting = false;
     if (!isGrappling()) {
       updateSpeed();
+    }
+  }
+
+  /**
+   * Updates the dropping from ledge flag to allow the physics engine to determine whether a player/
+   * ledge collision should be disabled
+   *
+   * @param value the value to set
+   */
+  private void setLedgeDropping(boolean value) {
+    droppingFromLedge = value;
+
+    // we need to force the player to conduct a contact physics event to trigger the preSolve method
+    // as S doesn't seem to automatically trigger a contact collision
+    if (droppingFromLedge) {
+      PhysicsComponent physics = entity.getComponent(PhysicsComponent.class);
+      Body body = physics.getBody();
+
+      if (body != null) {
+        body.setAwake(true); // force awaken the body to respond to the current contact
+      }
     }
   }
 }
