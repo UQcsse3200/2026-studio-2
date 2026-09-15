@@ -38,6 +38,7 @@ public class KeyboardPlayerInputComponent extends InputComponent {
     entity.getEvents().addListener("togglePause", this::triggerWalkEvent);
     entity.getEvents().addListener("death", () -> dead = true);
     entity.getEvents().addListener("openShop", this::releaseHeldGameplayInput);
+    entity.getEvents().addListener("releaseHeldGameplayInput", this::releaseHeldGameplayInput);
   }
 
   /**

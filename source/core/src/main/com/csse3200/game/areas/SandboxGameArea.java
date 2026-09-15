@@ -259,7 +259,8 @@ public class SandboxGameArea extends GameArea {
   private void spawnMonsterSpawnerNpc() {
     Entity spawnerNpc =
         new Entity()
-            .addComponent(new MonsterSpawnerDisplay(cameraComponent, this::replaceSpawnedMonster));
+            .addComponent(
+                new MonsterSpawnerDisplay(cameraComponent, this::replaceSpawnedMonster, player));
     spawnerNpc.setScale(MONSTER_SPAWNER_NPC_WIDTH, MONSTER_SPAWNER_NPC_HEIGHT);
     spawnEntityAt(spawnerNpc, MONSTER_SPAWNER_NPC_POSITION, true, true);
   }

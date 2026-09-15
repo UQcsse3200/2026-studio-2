@@ -16,6 +16,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.csse3200.game.components.CameraComponent;
+import com.csse3200.game.entities.Entity;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.UIComponent;
 import java.util.function.BiConsumer;
@@ -32,6 +33,7 @@ public class MonsterSpawnerDisplay extends UIComponent {
 
   private final CameraComponent cameraComponent;
   private final BiConsumer<SandboxEnemyType, Boolean> spawnHandler;
+  private final Entity player;
 
   private Image npcImage;
   private Label npcPromptLabel;
@@ -43,9 +45,12 @@ public class MonsterSpawnerDisplay extends UIComponent {
   private boolean wasPausedBeforeOpening;
 
   public MonsterSpawnerDisplay(
-      CameraComponent cameraComponent, BiConsumer<SandboxEnemyType, Boolean> spawnHandler) {
+      CameraComponent cameraComponent,
+      BiConsumer<SandboxEnemyType, Boolean> spawnHandler,
+      Entity player) {
     this.cameraComponent = cameraComponent;
     this.spawnHandler = spawnHandler;
+    this.player = player;
   }
 
   @Override
@@ -217,6 +222,7 @@ public class MonsterSpawnerDisplay extends UIComponent {
     if (modalOverlay.isVisible()) {
       return;
     }
+    player.getEvents().trigger("releaseHeldGameplayInput");
     wasPausedBeforeOpening = ServiceLocator.getEntityService().getPaused();
     ServiceLocator.getEntityService().setPaused(true);
     modalOverlay.setVisible(true);
