@@ -55,6 +55,8 @@ public class Level2GameArea extends GameArea {
     "images/iso_grass_3.png",
     "images/spiky_ball.png",
     "images/spiky_ball_trap.png",
+    "images/checkpoint_lit.png",
+    "images/checkpoint_unlit.png",
 
     // Enemy textures
     "images/skeleton_warrior.png",
