@@ -2,6 +2,7 @@ package com.csse3200.game.screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ScreenAdapter;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
@@ -50,6 +51,7 @@ public class CutsceneScreen extends ScreenAdapter {
   private final Texture blackTexture;
   private final CutsceneInputComponent input;
 
+  private Music music;
   private TextBoxComponent textBox;
   private State state = State.FADE_IN;
   private int sceneIndex;
@@ -58,6 +60,7 @@ public class CutsceneScreen extends ScreenAdapter {
   public CutsceneScreen(
       GdxGame game, CutsceneLoader.LoadedCutscene cutscene, GdxGame.ScreenType destination) {
     this(game, cutscene, destination, new SpriteBatch());
+    playMusic();
   }
 
   /** Package-private constructor that accepts a SpriteBatch for testability. */
@@ -91,6 +94,10 @@ public class CutsceneScreen extends ScreenAdapter {
     renderService.setStage(stage);
 
     resourceService.loadTextures(cutscene.getImagePaths());
+    String musicPath = cutscene.getDefinition().music;
+    if (musicPath != null && !musicPath.isBlank()) {
+      resourceService.loadMusic(new String[] {musicPath});
+    }
     resourceService.loadAll();
 
     sceneImage = new Image();
@@ -116,6 +123,22 @@ public class CutsceneScreen extends ScreenAdapter {
     Texture texture = new Texture(pixmap);
     pixmap.dispose();
     return texture;
+  }
+
+  /** Starts the cutscene's background music, if one is configured and available. */
+  private void playMusic() {
+    String musicPath = cutscene.getDefinition().music;
+    if (musicPath == null || musicPath.isBlank()) {
+      return;
+    }
+    if (!resourceService.containsAsset(musicPath, Music.class)) {
+      logger.debug("Cutscene music unavailable: {}", musicPath);
+      return;
+    }
+    music = resourceService.getAsset(musicPath, Music.class);
+    music.setLooping(true);
+    music.setVolume(0.1f);
+    music.play();
   }
 
   private void showScene(int index) {
@@ -239,6 +262,9 @@ public class CutsceneScreen extends ScreenAdapter {
     input.dispose();
     if (textBox != null && !textBox.isDismissed()) {
       textBox.dismiss();
+    }
+    if (music != null) {
+      music.stop();
     }
     stage.dispose();
     batch.dispose();

@@ -1,5 +1,6 @@
 {
   "fadeDuration": 0.4,
+  "music": "sounds/Main_menu_sound.mp3",
   "scenes": [
     {
       "image": "scene1.jpeg",

@@ -29,6 +29,22 @@ class CutsceneLoaderTest {
   }
 
   @Test
+  void shouldLoadConfiguredMusicFromManifest() {
+    CutsceneLoader.Result result = new CutsceneLoader().load("cutscene1");
+
+    assertTrue(result.isSuccess());
+    assertEquals("sounds/Main_menu_sound.mp3", result.getCutscene().getDefinition().music);
+  }
+
+  @Test
+  void shouldDefaultMusicWhenNotConfigured() {
+    CutsceneLoader.Result result = new CutsceneLoader().load("test-no-manifest");
+
+    assertTrue(result.isSuccess());
+    assertEquals("sounds/Main_menu_sound.mp3", result.getCutscene().getDefinition().music);
+  }
+
+  @Test
   void shouldRejectUnsafeNames() {
     assertFalse(new CutsceneLoader().load("../cutscene1").isSuccess());
     assertFalse(new CutsceneLoader().load("/cutscene1").isSuccess());
