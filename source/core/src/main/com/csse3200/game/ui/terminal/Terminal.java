@@ -1,9 +1,11 @@
 package com.csse3200.game.ui.terminal;
 
+import com.csse3200.game.GdxGame;
 import com.csse3200.game.components.Component;
 import com.csse3200.game.events.EventHandler;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.terminal.commands.Command;
+import com.csse3200.game.ui.terminal.commands.CutsceneCommand;
 import com.csse3200.game.ui.terminal.commands.DebugCommand;
 import com.csse3200.game.ui.terminal.commands.GameEndLoseCommand;
 import com.csse3200.game.ui.terminal.commands.GameEndWinCommand;
@@ -41,6 +43,11 @@ public class Terminal extends Component {
       ServiceLocator.registerGameEndEventHandler(new EventHandler());
     }
     addCommand("textbox", new TextBoxCommand("configs/textBoxes.json"));
+  }
+
+  public Terminal(GdxGame game, GdxGame.ScreenType destination) {
+    this();
+    addCommand("cutscene", new CutsceneCommand(game, destination));
   }
 
   /**

@@ -88,7 +88,7 @@ public class MainGameScreen extends ScreenAdapter {
     ForestGameArea forestGameArea = new ForestGameArea(renderer.getCamera(), terrainFactory);
     forestGameArea.create();
     player = forestGameArea.getPlayer();
-    player.getEvents().addListener("death", this::onPlayerDeath);
+    player.getEvents().addListener("deathAnimationFinished", this::onPlayerDeath);
     wheelOverlay = new SpinTheWheelOverlay(WheelConfig.ITEMS, player);
     blackjackOverlay = new BlackjackOverlay(player);
   }
@@ -209,7 +209,7 @@ public class MainGameScreen extends ScreenAdapter {
         .addComponent(new MainGameExitDisplay())
         .addComponent(new GameEndDisplay(GameEndState.LOSE))
         .addComponent(new GameEndActions(this.game))
-        .addComponent(new Terminal())
+        .addComponent(new Terminal(game, GdxGame.ScreenType.MAIN_GAME))
         .addComponent(inputComponent)
         .addComponent(new TerminalDisplay())
         .addComponent(new PauseMenuDisplay(this.game));
