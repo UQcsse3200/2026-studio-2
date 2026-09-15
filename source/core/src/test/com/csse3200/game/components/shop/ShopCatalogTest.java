@@ -22,17 +22,19 @@ class ShopCatalogTest {
 
   @Test
   void shouldUsePlaceholderPrices() {
-    assertEquals(10, ShopCatalog.getListing(ItemType.ARROW).getPrice());
-    assertEquals(20, ShopCatalog.getListing(ItemType.RopeArrow).getPrice());
-    assertEquals(15, ShopCatalog.getListing(ItemType.FireArrow).getPrice());
-    assertEquals(15, ShopCatalog.getListing(ItemType.ColdArrow).getPrice());
-    assertEquals(8, ShopCatalog.getListing(ItemType.CONSUMABLE).getPrice());
+    assertEquals(10, ShopCatalog.getListing(ItemType.STANDARD_ARROW).getPrice());
+    assertEquals(20, ShopCatalog.getListing(ItemType.ROPE_ARROW).getPrice());
+    assertEquals(15, ShopCatalog.getListing(ItemType.FIRE_ARROW).getPrice());
+    assertEquals(15, ShopCatalog.getListing(ItemType.ICE_ARROW).getPrice());
+    assertEquals(8, ShopCatalog.getListing(ItemType.HEALTH_POTION).getPrice());
   }
 
   @Test
   void shouldRejectInvalidListings() {
     assertThrows(IllegalArgumentException.class, () -> new ShopListing(null, 1, 1));
-    assertThrows(IllegalArgumentException.class, () -> new ShopListing(ItemType.ARROW, -1, 1));
-    assertThrows(IllegalArgumentException.class, () -> new ShopListing(ItemType.ARROW, 1, 0));
+    assertThrows(
+        IllegalArgumentException.class, () -> new ShopListing(ItemType.STANDARD_ARROW, -1, 1));
+    assertThrows(
+        IllegalArgumentException.class, () -> new ShopListing(ItemType.STANDARD_ARROW, 1, 0));
   }
 }

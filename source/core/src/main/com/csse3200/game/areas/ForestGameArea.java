@@ -14,8 +14,6 @@ import com.csse3200.game.entities.factories.ItemFactory;
 import com.csse3200.game.entities.factories.NPCFactory;
 import com.csse3200.game.entities.factories.ObstacleFactory;
 import com.csse3200.game.entities.factories.PlayerFactory;
-import com.csse3200.game.entities.factories.TestCeilingFactory;
-import com.csse3200.game.entities.factories.TestFloorFactory;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.utils.math.GridPoint2Utils;
@@ -32,11 +30,11 @@ public class ForestGameArea extends GameArea {
   private static final GridPoint2 ROPE_ARROW_SPAWN = new GridPoint2(12, 10);
   private static final GridPoint2 STANDARD_ARROW_SPAWN = new GridPoint2(8, 10);
   private static final GridPoint2 FIRE_ARROW_SPAWN = new GridPoint2(6, 6);
-  private static final GridPoint2 COLD_ARROW_SPAWN = new GridPoint2(8, 8);
+  private static final GridPoint2 ICE_ARROW_SPAWN = new GridPoint2(8, 8);
   private static final GridPoint2 HEALTH_POTION_SPAWN = new GridPoint2(10, 8);
   private static final int STANDARD_ARROW_QUANTITY = 5;
   private static final int FIRE_ARROW_QUANTITY = 5;
-  private static final int COLD_ARROW_QUANTITY = 5;
+  private static final int ICE_ARROW_QUANTITY = 5;
   private static final int HEALTH_POTION_QUANTITY = 3;
   private static final float WALL_WIDTH = 0.1f;
   private static final String[] forestTextures = {
@@ -108,13 +106,11 @@ public class ForestGameArea extends GameArea {
     spawnSkeletonWarrior();
     spawnSkeletonArcher();
     spawnItems();
-    spawnTestFloor();
-    spawnTestCeiling();
     // spawnGhosts();
 
     // spawnGhostKing();
 
-    // playMusic();
+    playMusic();
   }
 
   private void displayUI() {
@@ -191,20 +187,10 @@ public class ForestGameArea extends GameArea {
 
     spawnEntityAt(ItemFactory.createFireArrow(FIRE_ARROW_QUANTITY), FIRE_ARROW_SPAWN, true, false);
 
-    spawnEntityAt(ItemFactory.createColdArrow(COLD_ARROW_QUANTITY), COLD_ARROW_SPAWN, true, false);
+    spawnEntityAt(ItemFactory.createIceArrow(ICE_ARROW_QUANTITY), ICE_ARROW_SPAWN, true, false);
 
     spawnEntityAt(
         ItemFactory.createHealthPotion(HEALTH_POTION_QUANTITY), HEALTH_POTION_SPAWN, true, false);
-  }
-
-  private void spawnTestFloor() {
-    Entity floor = TestFloorFactory.createTestFloor();
-    spawnEntityAt(floor, new GridPoint2(5, 5), true, false);
-  }
-
-  private void spawnTestCeiling() {
-    Entity ceiling = TestCeilingFactory.createTestCeiling();
-    spawnEntityAt(ceiling, new GridPoint2(10, 16), true, false);
   }
 
   private void spawnGhosts() {

@@ -16,32 +16,32 @@ class ItemDictionaryComponentTest {
 
   @Test
   void shouldUnlockNewItem() {
-    assertTrue(dictionary.unlockItem(ItemType.FireArrow));
-    assertTrue(dictionary.isDiscovered(ItemType.FireArrow));
+    assertTrue(dictionary.unlockItem(ItemType.FIRE_ARROW));
+    assertTrue(dictionary.isDiscovered(ItemType.FIRE_ARROW));
     assertEquals(1, dictionary.getDiscoveredCount());
   }
 
   @Test
   void shouldNotUnlockSameItemTwice() {
-    assertTrue(dictionary.unlockItem(ItemType.FireArrow));
-    assertFalse(dictionary.unlockItem(ItemType.FireArrow));
+    assertTrue(dictionary.unlockItem(ItemType.FIRE_ARROW));
+    assertFalse(dictionary.unlockItem(ItemType.FIRE_ARROW));
 
     assertEquals(1, dictionary.getDiscoveredCount());
   }
 
   @Test
   void shouldTrackMultipleItems() {
-    dictionary.unlockItem(ItemType.FireArrow);
-    dictionary.unlockItem(ItemType.ColdArrow);
+    dictionary.unlockItem(ItemType.FIRE_ARROW);
+    dictionary.unlockItem(ItemType.ICE_ARROW);
 
-    assertTrue(dictionary.isDiscovered(ItemType.FireArrow));
-    assertTrue(dictionary.isDiscovered(ItemType.ColdArrow));
+    assertTrue(dictionary.isDiscovered(ItemType.FIRE_ARROW));
+    assertTrue(dictionary.isDiscovered(ItemType.ICE_ARROW));
     assertEquals(2, dictionary.getDiscoveredCount());
   }
 
   @Test
   void shouldReturnFalseForUndiscoveredItem() {
-    assertFalse(dictionary.isDiscovered(ItemType.FireArrow));
+    assertFalse(dictionary.isDiscovered(ItemType.FIRE_ARROW));
   }
 
   @Test
@@ -53,13 +53,13 @@ class ItemDictionaryComponentTest {
 
   @Test
   void shouldTrackDifferentItemTypes() {
-    dictionary.unlockItem(ItemType.ARROW);
-    dictionary.unlockItem(ItemType.RopeArrow);
-    dictionary.unlockItem(ItemType.CONSUMABLE);
+    dictionary.unlockItem(ItemType.STANDARD_ARROW);
+    dictionary.unlockItem(ItemType.ROPE_ARROW);
+    dictionary.unlockItem(ItemType.HEALTH_POTION);
 
-    assertTrue(dictionary.isDiscovered(ItemType.ARROW));
-    assertTrue(dictionary.isDiscovered(ItemType.RopeArrow));
-    assertTrue(dictionary.isDiscovered(ItemType.CONSUMABLE));
+    assertTrue(dictionary.isDiscovered(ItemType.STANDARD_ARROW));
+    assertTrue(dictionary.isDiscovered(ItemType.ROPE_ARROW));
+    assertTrue(dictionary.isDiscovered(ItemType.HEALTH_POTION));
     assertEquals(3, dictionary.getDiscoveredCount());
   }
 }

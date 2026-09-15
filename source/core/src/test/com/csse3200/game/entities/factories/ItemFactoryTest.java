@@ -14,12 +14,9 @@ import com.csse3200.game.components.item.ItemType;
 import com.csse3200.game.components.item.consumables.HealthPotion;
 import com.csse3200.game.components.item.consumables.PoisonPotion;
 import com.csse3200.game.components.item.consumables.SpeedPotion;
-import com.csse3200.game.components.item.weapons.ColdArr;
-import com.csse3200.game.components.item.weapons.FireArr;
-import com.csse3200.game.components.item.weapons.RopeArr;
 import com.csse3200.game.components.item.weapons.Spear;
-import com.csse3200.game.components.item.weapons.StandardArr;
 import com.csse3200.game.components.item.weapons.Sword;
+import com.csse3200.game.components.item.weapons.bow.arrow.Arrow;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.physics.PhysicsService;
@@ -54,11 +51,11 @@ class ItemFactoryTest {
 
   @Test
   void shouldCreateConcreteItemForEveryItemType() {
-    assertItemMapping(ItemType.ARROW, StandardArr.class);
-    assertItemMapping(ItemType.RopeArrow, RopeArr.class);
-    assertItemMapping(ItemType.CONSUMABLE, HealthPotion.class);
-    assertItemMapping(ItemType.FireArrow, FireArr.class);
-    assertItemMapping(ItemType.ColdArrow, ColdArr.class);
+    assertItemMapping(ItemType.STANDARD_ARROW, Arrow.class);
+    assertItemMapping(ItemType.ROPE_ARROW, Arrow.class);
+    assertItemMapping(ItemType.HEALTH_POTION, HealthPotion.class);
+    assertItemMapping(ItemType.FIRE_ARROW, Arrow.class);
+    assertItemMapping(ItemType.ICE_ARROW, Arrow.class);
     assertItemMapping(ItemType.Sword, Sword.class);
     assertItemMapping(ItemType.Spear, Spear.class);
     assertItemMapping(ItemType.SpeedPotion, SpeedPotion.class);

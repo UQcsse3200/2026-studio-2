@@ -21,9 +21,18 @@ public class KeyboardPlayerInputComponent extends InputComponent {
   private boolean sprintHeld;
   private CameraComponent cameraComponent;
   private boolean attackHeld;
+  private boolean dead;
+  private boolean rightMouseHeld;
 
   public KeyboardPlayerInputComponent() {
     super(5);
+  }
+
+  @Override
+  public void create() {
+    super.create();
+    entity.getEvents().addListener("togglePause", this::triggerWalkEvent);
+    entity.getEvents().addListener("death", () -> dead = true);
   }
 
   /**
@@ -43,6 +52,9 @@ public class KeyboardPlayerInputComponent extends InputComponent {
    */
   @Override
   public boolean keyDown(int keycode) {
+    if (dead) {
+      return false;
+    }
     switch (keycode) {
       // Hotbar number keys
       case Keys.NUM_1:
@@ -131,6 +143,9 @@ public class KeyboardPlayerInputComponent extends InputComponent {
    */
   @Override
   public boolean keyUp(int keycode) {
+    if (dead) {
+      return false;
+    }
     switch (keycode) {
       case Keys.A:
       case Keys.LEFT:
@@ -159,32 +174,67 @@ public class KeyboardPlayerInputComponent extends InputComponent {
   }
 
   /**
-   * Fires the grapple toward the clicked world position.
+   * Left click swings the melee weapon, right click fires the selected arrow. Both aim toward the
+   * clicked world position.
    *
    * @return whether the input was processed
    * @see InputProcessor#touchDown(int, int, int, int)
    */
   @Override
   public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-    if (button != Buttons.LEFT || isArrowWheelOpen()) {
+    if (dead || isArrowWheelOpen()) {
       return false;
     }
-    Vector2 aimDirection = getAimDirection(screenX, screenY);
-    if (aimDirection.isZero()) {
+    if (button == Buttons.LEFT) {
+      return triggerAimedEvent("melee", screenX, screenY);
+    }
+    if (button == Buttons.RIGHT) {
+      rightMouseHeld = true;
+      return triggerAimedEvent("shoot", screenX, screenY);
+    }
+    return false;
+  }
+
+  /**
+   * @return true while the right mouse button is being held down
+   */
+  public boolean isRightMouseHeld() {
+    return rightMouseHeld;
+  }
+
+  private boolean triggerAimedEvent(String eventName, int screenX, int screenY) {
+    Vector2 aim = getAimDirection(screenX, screenY);
+    if (aim == null || aim.isZero()) {
       return false;
     }
-    entity.getEvents().trigger("attack");
+    entity.getEvents().trigger(eventName, aim);
     return true;
   }
 
+  /**
+   * Signals that the fire button was let go, so the selected weapon or arrow can react.
+   *
+   * @return whether the input was processed
+   * @see InputProcessor#touchUp(int, int, int, int)
+   */
   @Override
   public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-    if (button != Buttons.LEFT) {
+    if (dead) {
       return false;
     }
 
-    entity.getEvents().trigger("grappleRelease");
-    return true;
+    if (button == Buttons.LEFT) {
+      entity.getEvents().trigger("stopMelee");
+      return true;
+    }
+
+    if (button == Buttons.RIGHT) {
+      rightMouseHeld = false;
+      entity.getEvents().trigger("stopShoot");
+      return true;
+    }
+
+    return false;
   }
 
   /** Reports the pointer's offset from the centre of the screen, where the wheel is drawn. */

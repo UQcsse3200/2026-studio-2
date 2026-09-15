@@ -52,7 +52,14 @@ public class SandboxGameArea extends GameArea {
   private static final float SANDBOX_ACTIVE_CHASE_DISTANCE = 20f;
   private static final String TRANSPARENT_TEXTURE = "images/transparent.png";
   private static final String PLATFORM_TEXTURE = "images/platform.png";
-  private static final String PLAYER_HEALTH_TEXTURE = "images/purple_heart.png";
+  private static final String HOOK_PLATFORM_TEXTURE = "images/hook_platform.png";
+  private static final String PLAYER_HEART_TEXTURE = "images/red_heart.png";
+  private static final String PLAYER_HEALTH_BAR_BACKGROUND_TEXTURE =
+      "images/PixelArt_HeartBack.png";
+  private static final String PLAYER_DAMAGED_HEART_TEXTURE = "images/Damaged_heart.png";
+  private static final String PLAYER_LAST_HEALTH_TEXTURE = "images/Last_Health.png";
+  private static final String EXIT_BUTTON_TEXTURE = "images/Buttons/exit_up_btn.png";
+  private static final String EXIT_BUTTON_DOWN_TEXTURE = "images/Buttons/exit_down_btn.png";
   private static final String SKELETON_WARRIOR_TEXTURE = "images/skeleton_warrior.png";
   private static final String SKELETON_ARCHER_TEXTURE = "images/skeleton_archer.png";
   private static final String[] SANDBOX_ATLASES = {"images/player.atlas", "images/ghost.atlas"};
@@ -107,12 +114,18 @@ public class SandboxGameArea extends GameArea {
     return new GridPoint2(ITEM_START_X + index * ITEM_SPACING, ITEM_Y);
   }
 
-  private static String[] getSandboxTextures() {
+  static String[] getSandboxTextures() {
     return Stream.concat(
             Stream.of(
                 TRANSPARENT_TEXTURE,
                 PLATFORM_TEXTURE,
-                PLAYER_HEALTH_TEXTURE,
+                HOOK_PLATFORM_TEXTURE,
+                PLAYER_HEART_TEXTURE,
+                PLAYER_HEALTH_BAR_BACKGROUND_TEXTURE,
+                PLAYER_DAMAGED_HEART_TEXTURE,
+                PLAYER_LAST_HEALTH_TEXTURE,
+                EXIT_BUTTON_TEXTURE,
+                EXIT_BUTTON_DOWN_TEXTURE,
                 SKELETON_WARRIOR_TEXTURE,
                 SKELETON_ARCHER_TEXTURE),
             Arrays.stream(ItemType.values())

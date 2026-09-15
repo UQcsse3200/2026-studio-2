@@ -57,7 +57,7 @@ public class ShopComponent extends Component {
       return PurchaseResult.INSUFFICIENT_GOLD;
     }
 
-    if (offered.getItemType() == ItemType.RopeArrow && inventory.hasItem(ItemType.RopeArrow)) {
+    if (offered.getItemType() == ItemType.ROPE_ARROW && inventory.hasItem(ItemType.ROPE_ARROW)) {
       notifyFailed("You already own this item.");
       return PurchaseResult.ALREADY_OWNED;
     }
@@ -107,7 +107,7 @@ public class ShopComponent extends Component {
     }
 
     ItemType itemType = offered.getItemType();
-    if (itemType == ItemType.RopeArrow && inventory.hasItem(ItemType.RopeArrow)) {
+    if (itemType == ItemType.ROPE_ARROW && inventory.hasItem(ItemType.ROPE_ARROW)) {
       return false;
     }
 

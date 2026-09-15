@@ -1,7 +1,7 @@
 {
   "skeletonWarrior": {
     "health": 30,
-    "baseAttack": 25,
+    "baseAttack": 2,
     "speed": 3.0,
     "behaviour": "chase",
     "attackType": "melee",
@@ -17,7 +17,7 @@
 
   "skeletonArcher": {
     "health": 20,
-    "baseAttack": 25,
+    "baseAttack": 2,
     "speed": 2.5,
     "behaviour": "chase",
     "attackType": "range",

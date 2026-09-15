@@ -2,6 +2,7 @@ package com.csse3200.game.components.player;
 
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.components.Component;
+import com.csse3200.game.components.projectile.ArrowType;
 import java.util.EnumSet;
 import java.util.Set;
 
@@ -12,7 +13,7 @@ public class ArrowWheelComponent extends Component {
   private boolean bowEquipped = true;
   private boolean open = false;
   private ArrowType highlighted;
-  private ArrowType selected = ArrowType.NORMAL;
+  private ArrowType selected = ArrowType.STANDARD;
 
   @Override
   public void create() {

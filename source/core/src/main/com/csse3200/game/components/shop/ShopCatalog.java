@@ -12,22 +12,22 @@ public final class ShopCatalog {
   public static final int STANDARD_ARROW_PRICE = 10;
   public static final int ROPE_ARROW_PRICE = 20;
   public static final int FIRE_ARROW_PRICE = 15;
-  public static final int COLD_ARROW_PRICE = 15;
+  public static final int ICE_ARROW_PRICE = 15;
   public static final int HEALTH_POTION_PRICE = 8;
 
   public static final int STANDARD_ARROW_QUANTITY = 5;
   public static final int ROPE_ARROW_QUANTITY = 1;
   public static final int FIRE_ARROW_QUANTITY = 5;
-  public static final int COLD_ARROW_QUANTITY = 5;
+  public static final int ICE_ARROW_QUANTITY = 5;
   public static final int HEALTH_POTION_QUANTITY = 1;
 
   private static final List<ShopListing> LISTINGS =
       List.of(
-          new ShopListing(ItemType.ARROW, STANDARD_ARROW_PRICE, STANDARD_ARROW_QUANTITY),
-          new ShopListing(ItemType.RopeArrow, ROPE_ARROW_PRICE, ROPE_ARROW_QUANTITY),
-          new ShopListing(ItemType.FireArrow, FIRE_ARROW_PRICE, FIRE_ARROW_QUANTITY),
-          new ShopListing(ItemType.ColdArrow, COLD_ARROW_PRICE, COLD_ARROW_QUANTITY),
-          new ShopListing(ItemType.CONSUMABLE, HEALTH_POTION_PRICE, HEALTH_POTION_QUANTITY));
+          new ShopListing(ItemType.STANDARD_ARROW, STANDARD_ARROW_PRICE, STANDARD_ARROW_QUANTITY),
+          new ShopListing(ItemType.ROPE_ARROW, ROPE_ARROW_PRICE, ROPE_ARROW_QUANTITY),
+          new ShopListing(ItemType.FIRE_ARROW, FIRE_ARROW_PRICE, FIRE_ARROW_QUANTITY),
+          new ShopListing(ItemType.ICE_ARROW, ICE_ARROW_PRICE, ICE_ARROW_QUANTITY),
+          new ShopListing(ItemType.HEALTH_POTION, HEALTH_POTION_PRICE, HEALTH_POTION_QUANTITY));
 
   /**
    * @return unmodifiable list of items the shop currently sells

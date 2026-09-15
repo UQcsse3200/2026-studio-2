@@ -43,7 +43,13 @@ class PlayerStatsDisplayTest {
     ServiceLocator.registerRenderService(renderService);
 
     ResourceService resourceService = mock(ResourceService.class);
-    when(resourceService.getAsset("images/purple_heart.png", Texture.class))
+    when(resourceService.getAsset("images/red_heart.png", Texture.class))
+        .thenReturn(mock(Texture.class));
+    when(resourceService.getAsset("images/PixelArt_HeartBack.png", Texture.class))
+        .thenReturn(mock(Texture.class));
+    when(resourceService.getAsset("images/Damaged_heart.png", Texture.class))
+        .thenReturn(mock(Texture.class));
+    when(resourceService.getAsset("images/Last_Health.png", Texture.class))
         .thenReturn(mock(Texture.class));
     ServiceLocator.registerResourceService(resourceService);
 

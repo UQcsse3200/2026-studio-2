@@ -7,34 +7,24 @@ import com.csse3200.game.components.item.ItemType;
 import com.csse3200.game.components.item.consumables.HealthPotion;
 import com.csse3200.game.components.item.consumables.PoisonPotion;
 import com.csse3200.game.components.item.consumables.SpeedPotion;
-import com.csse3200.game.components.item.weapons.ColdArr;
-import com.csse3200.game.components.item.weapons.FireArr;
-import com.csse3200.game.components.item.weapons.RopeArr;
 import com.csse3200.game.components.item.weapons.Spear;
-import com.csse3200.game.components.item.weapons.StandardArr;
 import com.csse3200.game.components.item.weapons.Sword;
+import com.csse3200.game.components.item.weapons.bow.arrow.Arrow;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.rendering.TextureRenderComponent;
 
-/**
- * Factory to create item entities that sit in the world for the player to find.
- *
- * <p>Each entity carries the item it represents and a sensor hitbox, so interaction logic can
- * detect it. Collecting the item is handled separately.
- *
- * <p>Each item type should have a creation method that returns a corresponding entity.
- */
+/** Factory to create item entities that sit in the world for the player to find or pick up. */
 public class ItemFactory {
-  private static final float ITEM_HEIGHT = 0.5f;
+  private static final float ITEM_HEIGHT = 0.85f;
 
   /**
    * Creates a world entity for an item using the texture from its {@code ItemType}.
    *
    * @param item item this entity represents
-   * @return entity
+   * @return item entity
    */
   public static Entity createItem(Item item) {
     Entity itemEntity =
@@ -49,10 +39,6 @@ public class ItemFactory {
     return itemEntity;
   }
 
-  public static Entity createStandardArrow(int quantity) {
-    return createItem(new StandardArr(quantity));
-  }
-
   /**
    * Creates a world entity containing the concrete item represented by the supplied type.
    *
@@ -62,11 +48,11 @@ public class ItemFactory {
    */
   public static Entity createItem(ItemType type, int quantity) {
     return switch (type) {
-      case ARROW -> createStandardArrow(quantity);
-      case RopeArrow -> createRopeArrow(quantity);
-      case CONSUMABLE -> createHealthPotion(quantity);
-      case FireArrow -> createFireArrow(quantity);
-      case ColdArrow -> createColdArrow(quantity);
+      case STANDARD_ARROW -> createStandardArrow(quantity);
+      case ROPE_ARROW -> createRopeArrow(quantity);
+      case HEALTH_POTION -> createHealthPotion(quantity);
+      case FIRE_ARROW -> createFireArrow(quantity);
+      case ICE_ARROW -> createIceArrow(quantity);
       case Sword -> createSword(quantity);
       case Spear -> createSpear(quantity);
       case SpeedPotion -> createSpeedPotion(quantity);
@@ -74,31 +60,28 @@ public class ItemFactory {
     };
   }
 
-  /**
-   * Creates a single rope arrow lying in the world.
-   *
-   * @return entity
-   */
+  public static Entity createStandardArrow(int quantity) {
+    return createItem(new Arrow(ItemType.STANDARD_ARROW, quantity));
+  }
+
   public static Entity createRopeArrow() {
     return createRopeArrow(1);
   }
 
-  /**
-   * Creates a stack of rope arrows lying in the world.
-   *
-   * @param quantity number of rope arrows in the stack
-   * @return entity
-   */
   public static Entity createRopeArrow(int quantity) {
-    return createItem(new RopeArr(quantity));
+    return createItem(new Arrow(ItemType.ROPE_ARROW, quantity));
   }
 
   public static Entity createFireArrow(int quantity) {
-    return createItem(new FireArr(quantity));
+    return createItem(new Arrow(ItemType.FIRE_ARROW, quantity));
   }
 
-  public static Entity createColdArrow(int quantity) {
-    return createItem(new ColdArr(quantity));
+  public static Entity createIceArrow(int quantity) {
+    return createItem(new Arrow(ItemType.ICE_ARROW, quantity));
+  }
+
+  public static Entity createHealthPotion(int quantity) {
+    return createItem(new HealthPotion(quantity));
   }
 
   public static Entity createSword(int quantity) {
@@ -107,10 +90,6 @@ public class ItemFactory {
 
   public static Entity createSpear(int quantity) {
     return createItem(new Spear(quantity));
-  }
-
-  public static Entity createHealthPotion(int quantity) {
-    return createItem(new HealthPotion(quantity));
   }
 
   public static Entity createSpeedPotion(int quantity) {

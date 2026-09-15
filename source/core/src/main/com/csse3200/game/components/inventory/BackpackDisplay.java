@@ -44,7 +44,7 @@ public class BackpackDisplay extends UIComponent {
     inventoryTable = new Table();
     detailsTable = new Table();
 
-    detailsTable.setBackground(skin.getDrawable("button-c"));
+    detailsTable.setBackground(InventorySlotStyle.getNormalBox());
 
     detailsTable.pad(20f);
 
@@ -115,9 +115,9 @@ public class BackpackDisplay extends UIComponent {
     InventoryComponent inventory = entity.getComponent(InventoryComponent.class);
 
     if (slotIndex == inventory.getSelectedSlotIndex()) {
-      slot.setBackground(skin.getDrawable("selection"));
+      slot.setBackground(InventorySlotStyle.getSelectedBox());
     } else {
-      slot.setBackground(skin.getDrawable("button-c"));
+      slot.setBackground(InventorySlotStyle.getNormalBox());
     }
 
     Texture texture =
@@ -197,13 +197,13 @@ public class BackpackDisplay extends UIComponent {
 
             if (highlightedSlot != newHighlightedSlot) {
               if (highlightedSlot != null) {
-                highlightedSlot.setBackground(skin.getDrawable("button-c"));
+                highlightedSlot.setBackground(InventorySlotStyle.getNormalBox());
               }
 
               highlightedSlot = newHighlightedSlot;
 
               if (highlightedSlot != null) {
-                highlightedSlot.setBackground(skin.getDrawable("selection"));
+                highlightedSlot.setBackground(InventorySlotStyle.getSelectedBox());
               }
             }
           }
@@ -214,7 +214,7 @@ public class BackpackDisplay extends UIComponent {
             slot.getColor().a = originalAlpha;
 
             if (highlightedSlot != null) {
-              highlightedSlot.setBackground(skin.getDrawable("button-c"));
+              highlightedSlot.setBackground(InventorySlotStyle.getNormalBox());
               highlightedSlot = null;
             }
 
@@ -257,7 +257,7 @@ public class BackpackDisplay extends UIComponent {
     Table slot = new Table();
     slot.setUserObject(slotIndex);
     slot.pad(8f);
-    slot.setBackground(skin.getDrawable("button-c"));
+    slot.setBackground(InventorySlotStyle.getNormalBox());
 
     InventoryComponent inventory = entity.getComponent(InventoryComponent.class);
     Label slotLabel =

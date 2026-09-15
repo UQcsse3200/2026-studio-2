@@ -28,7 +28,7 @@ public class TutorialGameArea extends GameArea {
 
   private static final Logger logger = LoggerFactory.getLogger(TutorialGameArea.class);
 
-  private static final int NUM_TREES = 7;
+  // private static final int NUM_TREES = 7;
   private static final int NUM_GHOSTS = 2;
 
   private static final PlatformConfig[] platforms = {
@@ -38,7 +38,7 @@ public class TutorialGameArea extends GameArea {
     new PlatformConfig(new GridPoint2(14, 6), 3, 1, 0),
     new PlatformConfig(new GridPoint2(19, 6), 3, 1, 0),
     new PlatformConfig(new GridPoint2(27, 2), 3, 1, 0),
-    new PlatformConfig(new GridPoint2(32, 3), 2, 2, 2),
+    new PlatformConfig(new GridPoint2(32, 3), 2, 2, 0),
     new PlatformConfig(new GridPoint2(30, 6), 3, 1, 0),
     new PlatformConfig(new GridPoint2(27, 8), 3, 1, 10),
     new PlatformConfig(new GridPoint2(23, 10), 3, 1, 2),
@@ -107,21 +107,8 @@ public class TutorialGameArea extends GameArea {
   private static final GridPoint2 SHOPKEEPER_SPAWN = new GridPoint2(11, 1);
   private static final GridPoint2 ROPE_ARROW_SPAWN = new GridPoint2(2, 4);
   private static final GridPoint2 STANDARD_ARROW_SPAWN = new GridPoint2(4, 4);
-  private static final GridPoint2 FIRE_ARROW_SPAWN = new GridPoint2(6, 4);
-  private static final GridPoint2 COLD_ARROW_SPAWN = new GridPoint2(8, 4);
-  private static final GridPoint2 SWORD_SPAWN = new GridPoint2(7, 1);
-  private static final GridPoint2 SPEAR_SPAWN = new GridPoint2(9, 1);
-  private static final GridPoint2 HEALTH_POTION_SPAWN = new GridPoint2(10, 4);
-  private static final GridPoint2 SPEED_POTION_SPAWN = new GridPoint2(5, 1);
-  private static final GridPoint2 POISON_POTION_SPAWN = new GridPoint2(3, 1);
 
   private static final int STANDARD_ARROW_QUANTITY = 5;
-  private static final int FIRE_ARROW_QUANTITY = 5;
-  private static final int COLD_ARROW_QUANTITY = 5;
-
-  private static final int HEALTH_POTION_QUANTITY = 3;
-  private static final int SPEED_POTION_QUANTITY = 3;
-  private static final int POISON_POTION_QUANTITY = 3;
 
   private static final float WALL_WIDTH = 0.1f;
 
@@ -135,6 +122,8 @@ public class TutorialGameArea extends GameArea {
     "images/DevGridTile.png",
     "images/Tile_2.png",
     "images/platform.png",
+    "images/hook_platform.png",
+    "images/tall_platform.png",
     "images/box_boy_leaf.png",
     "images/spike.png",
     "images/tree.png",
@@ -229,6 +218,7 @@ public class TutorialGameArea extends GameArea {
     spawnWinCondition();
     spawnSkeletonArcher();
     spawnSkeletonWarrior();
+    spawnTestEnemyNearPlayer(); // Temporary enemy near player spawn for quick HUD/flicker testing
     // spawnTestWinCondition(); // Temporary test win condition near player spawn for quick testing
 
     // spawnGhosts();
@@ -358,7 +348,8 @@ public class TutorialGameArea extends GameArea {
   private void spawnPlatforms() {
 
     for (PlatformConfig config : platforms) {
-      Entity platform = ObstacleFactory.createPlatform(config.grappleSides);
+      boolean tall = config.height >= config.width;
+      Entity platform = ObstacleFactory.createPlatform(config.grappleSides, tall);
 
       platform.setScale(config.width, config.height);
 
@@ -423,6 +414,12 @@ public class TutorialGameArea extends GameArea {
     // Temporary test win condition near player spawn for quick testing
     Entity testWinCon = ObstacleFactory.createWinConEntity();
     spawnEntityAt(testWinCon, new GridPoint2(3, 4), true, true);
+  }
+
+  // Temporary enemy near player spawn for quick HUD/flicker testing
+  private void spawnTestEnemyNearPlayer() {
+    Entity testEnemy = EnemyFactory.createSkeletonWarrior(player);
+    spawnEntityAt(testEnemy, new GridPoint2(12, 4), true, true);
   }
 
   private void spawnGhosts() {
@@ -539,22 +536,5 @@ public class TutorialGameArea extends GameArea {
         STANDARD_ARROW_SPAWN,
         true,
         false);
-
-    spawnEntityAt(
-        ItemFactory.createHealthPotion(HEALTH_POTION_QUANTITY), HEALTH_POTION_SPAWN, true, false);
-
-    spawnEntityAt(ItemFactory.createFireArrow(FIRE_ARROW_QUANTITY), FIRE_ARROW_SPAWN, true, false);
-
-    spawnEntityAt(ItemFactory.createColdArrow(COLD_ARROW_QUANTITY), COLD_ARROW_SPAWN, true, false);
-
-    spawnEntityAt(ItemFactory.createSword(1), SWORD_SPAWN, true, false);
-
-    spawnEntityAt(ItemFactory.createSpear(1), SPEAR_SPAWN, true, false);
-
-    spawnEntityAt(
-        ItemFactory.createSpeedPotion(SPEED_POTION_QUANTITY), SPEED_POTION_SPAWN, true, false);
-
-    spawnEntityAt(
-        ItemFactory.createPoisonPotion(POISON_POTION_QUANTITY), POISON_POTION_SPAWN, true, false);
   }
 }

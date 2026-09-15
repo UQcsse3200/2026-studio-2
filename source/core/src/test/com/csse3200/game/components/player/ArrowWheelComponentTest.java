@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.badlogic.gdx.math.Vector2;
+import com.csse3200.game.components.projectile.ArrowType;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.extensions.GameExtension;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -35,7 +36,7 @@ class ArrowWheelComponentTest {
   void shouldStartClosedWithNormalArrowsSelected() {
     assertFalse(wheel.isOpen());
     assertNull(wheel.getHighlighted());
-    assertEquals(ArrowType.NORMAL, wheel.getSelected());
+    assertEquals(ArrowType.STANDARD, wheel.getSelected());
   }
 
   @Test
@@ -70,8 +71,8 @@ class ArrowWheelComponentTest {
     wheel.open();
     assertTrue(wheel.highlightFromPointer(TOWARDS_COLD));
 
-    assertEquals(ArrowType.COLD, wheel.getHighlighted());
-    assertEquals(ArrowType.COLD, announced.get());
+    assertEquals(ArrowType.ICE, wheel.getHighlighted());
+    assertEquals(ArrowType.ICE, announced.get());
   }
 
   @Test
@@ -80,7 +81,7 @@ class ArrowWheelComponentTest {
     wheel.highlightFromPointer(TOWARDS_COLD);
 
     assertFalse(wheel.highlightFromPointer(new Vector2(FAR * 0.2f, -FAR)));
-    assertEquals(ArrowType.COLD, wheel.getHighlighted());
+    assertEquals(ArrowType.ICE, wheel.getHighlighted());
   }
 
   @Test
@@ -110,14 +111,14 @@ class ArrowWheelComponentTest {
     player
         .getEvents()
         .addListener("arrowSelectionRejected", (ArrowType type) -> rejected.set(type));
-    wheel.setAvailable(ArrowType.COLD, false);
+    wheel.setAvailable(ArrowType.ICE, false);
 
     wheel.open();
     wheel.highlightFromPointer(TOWARDS_COLD);
     assertFalse(wheel.close());
 
-    assertEquals(ArrowType.NORMAL, wheel.getSelected());
-    assertEquals(ArrowType.COLD, rejected.get());
+    assertEquals(ArrowType.STANDARD, wheel.getSelected());
+    assertEquals(ArrowType.ICE, rejected.get());
   }
 
   @Test
@@ -132,7 +133,7 @@ class ArrowWheelComponentTest {
     wheel.highlightFromPointer(CENTRE);
     assertFalse(wheel.close());
 
-    assertEquals(ArrowType.NORMAL, wheel.getSelected());
+    assertEquals(ArrowType.STANDARD, wheel.getSelected());
     assertEquals(0, rejections.get());
   }
 
@@ -146,7 +147,7 @@ class ArrowWheelComponentTest {
     wheel.setBowEquipped(false);
 
     assertFalse(wheel.isOpen());
-    assertEquals(ArrowType.NORMAL, wheel.getSelected());
+    assertEquals(ArrowType.STANDARD, wheel.getSelected());
     assertEquals(1, closes.get());
   }
 

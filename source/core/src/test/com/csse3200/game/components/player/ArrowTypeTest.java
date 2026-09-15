@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 import com.badlogic.gdx.math.Vector2;
+import com.csse3200.game.components.projectile.ArrowType;
 import com.csse3200.game.extensions.GameExtension;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,15 +15,15 @@ class ArrowTypeTest {
 
   @Test
   void shouldResolveEachWedgeFromItsDirection() {
-    assertEquals(ArrowType.NORMAL, ArrowType.forDirection(new Vector2(0f, FAR)));
+    assertEquals(ArrowType.STANDARD, ArrowType.forDirection(new Vector2(0f, FAR)));
     assertEquals(ArrowType.FIRE, ArrowType.forDirection(new Vector2(FAR, 0f)));
-    assertEquals(ArrowType.COLD, ArrowType.forDirection(new Vector2(0f, -FAR)));
+    assertEquals(ArrowType.ICE, ArrowType.forDirection(new Vector2(0f, -FAR)));
     assertEquals(ArrowType.POISON, ArrowType.forDirection(new Vector2(-FAR, 0f)));
   }
 
   @Test
   void shouldResolveDirectionsBetweenWedgeCentres() {
-    assertEquals(ArrowType.NORMAL, ArrowType.forDirection(new Vector2(FAR * 0.3f, FAR)));
+    assertEquals(ArrowType.STANDARD, ArrowType.forDirection(new Vector2(FAR * 0.3f, FAR)));
     assertEquals(ArrowType.FIRE, ArrowType.forDirection(new Vector2(FAR, FAR * 0.3f)));
     assertEquals(ArrowType.POISON, ArrowType.forDirection(new Vector2(-FAR, -FAR * 0.3f)));
   }
@@ -48,5 +49,11 @@ class ArrowTypeTest {
     for (ArrowType type : ArrowType.values()) {
       assertEquals(type.getLabel(), type.getLabel().trim());
     }
+  }
+
+  @Test
+  void shouldUseSpecialProjectileTexturesForElementalArrows() {
+    assertEquals("images/fireArr_animation.png", ArrowType.FIRE.getTexturePath());
+    assertEquals("images/coldArr_animation.png", ArrowType.ICE.getTexturePath());
   }
 }
