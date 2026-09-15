@@ -133,7 +133,7 @@ public class CyclopsMinigameRoomScreen extends ScreenAdapter {
     InputComponent inputComponent =
         ServiceLocator.getInputService().getInputFactory().createForTerminal();
 
-    Terminal terminal = new Terminal();
+    Terminal terminal = new Terminal(game, GdxGame.ScreenType.CYCLOPS_MINIGAME);
     terminal.addCommand("cyclopsStart", new CyclopsStartCommand());
     terminal.addCommand("cyclopsStop", new CyclopsStopCommand());
     terminal.addCommand("cyclopsRestart", new CyclopsRestartCommand());
@@ -147,7 +147,7 @@ public class CyclopsMinigameRoomScreen extends ScreenAdapter {
         .addComponent(new PerformanceDisplay())
         .addComponent(new CyclopsMinigameActions(this.game))
         .addComponent(new CyclopsMinigameDisplay())
-        .addComponent(terminal)
+        .addComponent(new Terminal())
         .addComponent(inputComponent)
         .addComponent(new GameEndDisplay(GameEndState.LOSE))
         .addComponent(new GameEndActions(this.game))

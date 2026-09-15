@@ -1,6 +1,8 @@
 package com.csse3200.game.components.minigames.spinthewheel;
 
 import com.csse3200.game.components.inventory.InventoryComponent;
+import com.csse3200.game.components.minigames.MinigameOverlayInputComponent;
+import com.csse3200.game.components.minigames.MinigameOverlayManager;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.BlurredBackdropDisplay;
@@ -20,21 +22,34 @@ public class SpinTheWheelOverlay {
   private boolean openRequested = false;
   private Entity overlay;
   private final InventoryComponent inventory;
+  private final MinigameOverlayManager overlayManager;
 
   /**
    * @param items the items to show on the wheel
    * @param player the entity that keeps what the wheel awards
    */
   public SpinTheWheelOverlay(List<WheelItem> items, Entity player) {
+    this(items, player, new MinigameOverlayManager());
+  }
+
+  /**
+   * @param items the items to show on the wheel
+   * @param player the entity that keeps what the wheel awards
+   * @param overlayManager shared manager that prevents overlapping minigames
+   */
+  public SpinTheWheelOverlay(
+      List<WheelItem> items, Entity player, MinigameOverlayManager overlayManager) {
     this.items = items;
     this.inventory = player.getComponent(InventoryComponent.class);
+    this.overlayManager = overlayManager;
   }
 
   /** Asks for the wheel to open. It appears at the end of the current frame. */
   public void request() {
-    if (overlay != null || openRequested) {
+    if (overlay != null || openRequested || !overlayManager.tryOpen()) {
       return;
     }
+
     logger.debug("Opening the wheel overlay");
     openRequested = true;
     ServiceLocator.getEntityService().setPaused(true);
@@ -48,6 +63,7 @@ public class SpinTheWheelOverlay {
     if (!openRequested) {
       return;
     }
+
     openRequested = false;
     open();
   }
@@ -60,7 +76,8 @@ public class SpinTheWheelOverlay {
         new Entity()
             .addComponent(backdrop)
             .addComponent(display)
-            .addComponent(new SpinTheWheelOverlayActions(this::close));
+            .addComponent(new SpinTheWheelOverlayActions(this::close))
+            .addComponent(new MinigameOverlayInputComponent(this::close));
     ServiceLocator.getEntityService().register(overlay);
 
     // Explicit, because Entity.create() runs components in hash order, not the order added.
@@ -69,8 +86,13 @@ public class SpinTheWheelOverlay {
   }
 
   private void close() {
+    if (overlay == null) {
+      return;
+    }
+
     ServiceLocator.getEntityService().scheduleRemoval(overlay);
     overlay = null;
+    overlayManager.close();
     ServiceLocator.getEntityService().setPaused(false);
   }
 }

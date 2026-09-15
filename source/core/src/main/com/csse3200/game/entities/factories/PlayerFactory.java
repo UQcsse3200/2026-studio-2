@@ -52,6 +52,12 @@ public class PlayerFactory {
     animator.addAnimation("hurt", 0.04f, PlayMode.NORMAL);
     animator.addAnimation("death", 0.1458f, PlayMode.NORMAL);
     animator.addAnimation("sleep", 0.1458f, PlayMode.LOOP);
+    animator.addAnimation("melee", 0.03f, PlayMode.NORMAL, 79f, 38f);
+    animator.addAnimation("dash", 0.025f, PlayMode.NORMAL, 134.5f, 39f);
+    animator.addAnimation("air_dash", 0.025f, PlayMode.NORMAL, 94f, 39f);
+    animator.addAnimation("bow_draw", 0.08f, PlayMode.NORMAL, 72f, 23f);
+    animator.addAnimation("bow_hold", 0.1f, PlayMode.LOOP, 72f, 24f);
+    animator.addAnimation("bow_shoot", 0.05f, PlayMode.NORMAL, 71f, 23f);
 
     Entity player =
         new Entity()
@@ -77,13 +83,12 @@ public class PlayerFactory {
             .addComponent(new GrappleRenderComponent())
             .addComponent(new PlayerAnimationController())
             .addComponent(new MeleeRenderComponent())
-            .addComponent(new PlayerAnimationController())
             .addComponent(new RespawnComponent());
 
     player.getComponent(ColliderComponent.class).setDensity(1.5f);
     player.getComponent(AnimationRenderComponent.class).scaleEntity();
     player.scaleWidth(0.6f);
-    PhysicsUtils.setScaledCollider(player, 0.9f, 0.9f);
+    PhysicsUtils.setScaledCollider(player, 1f, 1f);
     return player;
   }
 

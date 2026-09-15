@@ -47,39 +47,62 @@ public class ProjectileFactory {
 
   // Factory methods with shooter
   public static Entity createPlayerArrow(Entity shooter, Vector2 position, Vector2 direction) {
+    return createPlayerArrow(shooter, position, direction, 1f);
+  }
+
+  public static Entity createPlayerArrow(
+      Entity shooter, Vector2 position, Vector2 direction, float speedMultiplier) {
     return createArrow(
         shooter,
         position,
         direction,
         STANDARD_ARROW_DAMAGE,
-        STANDARD_ARROW_SPEED,
+        STANDARD_ARROW_SPEED * speedMultiplier,
         STANDARD_ARROW_RANGE,
         ArrowType.STANDARD);
   }
 
   public static Entity createColdArrow(Entity shooter, Vector2 position, Vector2 direction) {
+    return createColdArrow(shooter, position, direction, 1f);
+  }
+
+  public static Entity createColdArrow(
+      Entity shooter, Vector2 position, Vector2 direction, float speedMultiplier) {
     return createArrow(
         shooter,
         position,
         direction,
         COLD_ARROW_DAMAGE,
-        COLD_ARROW_SPEED,
+        COLD_ARROW_SPEED * speedMultiplier,
         COLD_ARROW_RANGE,
         ArrowType.COLD);
   }
 
   public static Entity createFireArrow(Entity shooter, Vector2 position, Vector2 direction) {
+    return createFireArrow(shooter, position, direction, 1f);
+  }
+
+  public static Entity createFireArrow(
+      Entity shooter, Vector2 position, Vector2 direction, float speedMultiplier) {
     return createArrow(
         shooter,
         position,
         direction,
         FIRE_ARROW_DAMAGE,
-        FIRE_ARROW_SPEED,
+        FIRE_ARROW_SPEED * speedMultiplier,
         FIRE_ARROW_RANGE,
         ArrowType.FIRE);
   }
 
   public static Entity createGrappleArrow(Entity shooter, Vector2 position, Vector2 direction) {
+    return createGrappleArrow(shooter, position, direction, 1f);
+  }
+
+  // The grapple arrow never goes through the player's charge-release path (ItemUseComponent
+  // fires it instantly), so speedMultiplier is unused here - this overload exists only so
+  // BowComponent's ArrowType.GRAPPLE switch case still type-checks against ProjectileCreator.
+  public static Entity createGrappleArrow(
+      Entity shooter, Vector2 position, Vector2 direction, float speedMultiplier) {
     Vector2 normalizedDir = direction.cpy().nor();
 
     Entity arrow =

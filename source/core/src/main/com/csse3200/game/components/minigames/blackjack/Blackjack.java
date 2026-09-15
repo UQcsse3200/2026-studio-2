@@ -75,6 +75,7 @@ public class Blackjack {
   private int bet;
   private boolean roundInProgress;
   private boolean roundOver;
+  private boolean playerWon;
   private String resultMessage;
 
   public Blackjack(int startingBalance) {
@@ -89,6 +90,7 @@ public class Blackjack {
     this.balance = startingBalance;
     this.bet = 0;
     this.resultMessage = "";
+    this.playerWon = false;
     resetDeck();
   }
 
@@ -127,6 +129,11 @@ public class Blackjack {
     return resultMessage;
   }
 
+  /** Returns true when the most recently resolved round was won by the player. */
+  public boolean isPlayerWinner() {
+    return roundOver && playerWon;
+  }
+
   /** Places a bet before the round begins. */
   public void placeBet(int amount) {
     if (roundInProgress) {
@@ -153,6 +160,7 @@ public class Blackjack {
     playerHand.clear();
     dealerHand.clear();
     roundOver = false;
+    playerWon = false;
     resultMessage = "";
 
     resetDeck();
@@ -183,6 +191,7 @@ public class Blackjack {
 
     if (calculateHandValue(playerHand) > 21) {
       balance -= bet;
+      playerWon = false;
       resultMessage = "Bust! Dealer wins.";
       roundInProgress = false;
       roundOver = true;
@@ -259,12 +268,15 @@ public class Blackjack {
     int dealerTotal = calculateHandValue(dealerHand);
 
     if (playerTotal == 21 && dealerTotal == 21) {
+      playerWon = false;
       resultMessage = "Push: both players have blackjack.";
     } else if (playerTotal == 21) {
       balance += bet;
+      playerWon = true;
       resultMessage = "Blackjack! You win.";
     } else {
       balance -= bet;
+      playerWon = false;
       resultMessage = "Dealer has blackjack. You lose.";
     }
 
@@ -278,14 +290,18 @@ public class Blackjack {
 
     if (dealerTotal > 21) {
       balance += bet;
+      playerWon = true;
       resultMessage = "Dealer busts. You win.";
     } else if (playerTotal > dealerTotal) {
       balance += bet;
+      playerWon = true;
       resultMessage = "You win.";
     } else if (playerTotal < dealerTotal) {
       balance -= bet;
+      playerWon = false;
       resultMessage = "Dealer wins.";
     } else {
+      playerWon = false;
       resultMessage = "Push.";
     }
   }
