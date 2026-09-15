@@ -29,14 +29,14 @@ public class CyclopsMinigameLogic extends Component {
   private GameEndState outcome = GameEndState.LOSE;
   private State state;
 
-  private static final Timer timer = new Timer();
+  Timer timer = new Timer();
 
   /* Minigame Components */
   private final TimingBarLogic timingBarLogic;
   private final TimingBarDisplay timingBarDisplay;
 
   /* Screen Components */
-  private final BlankTransitionScreen transitionScreen;
+  private BlankTransitionScreen transitionScreen;
 
   /* Music / Sound effect components*/
   private Sound walkingSound;
@@ -77,9 +77,6 @@ public class CyclopsMinigameLogic extends Component {
     this.player = player;
 
     this.state = State.STOPPED;
-
-    this.transitionScreen = new BlankTransitionScreen();
-    ServiceLocator.getEntityService().register(new Entity().addComponent(this.transitionScreen));
   }
 
   @Override
@@ -112,6 +109,9 @@ public class CyclopsMinigameLogic extends Component {
     missSound =
         ServiceLocator.getResourceService()
             .getAsset("sounds/minigames/cyclops/marker-miss.ogg", Sound.class);
+
+    transitionScreen = new BlankTransitionScreen();
+    ServiceLocator.getEntityService().register(new Entity().addComponent(this.transitionScreen));
   }
 
   @Override
@@ -157,7 +157,7 @@ public class CyclopsMinigameLogic extends Component {
    * @param success - boolean on whether to move player to next win or loss location
    * @return True if player moved location, otherwise false if moved to win location
    */
-  private void moveToNextLocation(boolean success) {
+  public void moveToNextLocation(boolean success) {
     if (success) {
       currentSafeLoc += 1;
       if (currentSafeLoc >= safeLocations.size()) {
@@ -252,12 +252,13 @@ public class CyclopsMinigameLogic extends Component {
   }
 
   public void stopMinigame() {
-    timer.clear();
     state = State.STOPPED;
     timingBarLogic.stopMarker();
     hideTimingBar();
     transitionScreen.setVisible(false);
-    walkingSound.stop();
+
+    if (timer != null) timer.clear();
+    if (walkingSound != null) walkingSound.stop();
   }
 
   public void gameOver() {
@@ -265,7 +266,7 @@ public class CyclopsMinigameLogic extends Component {
     state = State.STOPPED;
   }
 
-  private void scheduleTimingMinigameShow() {
+  void scheduleTimingMinigameShow() {
     timer.scheduleTask(
         new Timer.Task() {
           @Override
@@ -279,7 +280,7 @@ public class CyclopsMinigameLogic extends Component {
         0.3f);
   }
 
-  private void scheduleTimingMinigameHide() {
+  void scheduleTimingMinigameHide() {
     timer.scheduleTask(
         new Timer.Task() {
           @Override
@@ -291,7 +292,7 @@ public class CyclopsMinigameLogic extends Component {
         0.3f);
   }
 
-  private void scheduleTransitionStart() {
+  void scheduleTransitionStart() {
     timer.scheduleTask(
         new Timer.Task() {
           @Override
@@ -303,7 +304,7 @@ public class CyclopsMinigameLogic extends Component {
         0.2f);
   }
 
-  private void scheduleTransitionEnd() {
+  void scheduleTransitionEnd() {
     timer.scheduleTask(
         new Timer.Task() {
           @Override
@@ -318,7 +319,7 @@ public class CyclopsMinigameLogic extends Component {
         0.8f);
   }
 
-  private void scheduleGameOver() {
+  void scheduleGameOver() {
     timer.scheduleTask(
         new Timer.Task() {
           @Override
