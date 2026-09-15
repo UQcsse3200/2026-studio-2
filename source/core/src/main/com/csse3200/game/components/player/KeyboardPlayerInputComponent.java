@@ -9,7 +9,6 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.input.InputComponent;
-import com.csse3200.game.utils.math.Vector2Utils;
 
 /** Input handler for player keyboard and mouse controls. */
 public class KeyboardPlayerInputComponent extends InputComponent {
@@ -85,8 +84,10 @@ public class KeyboardPlayerInputComponent extends InputComponent {
         entity.getEvents().trigger("selectQuickSlot", 8);
         return true;
       case Keys.W:
-        walkDirection.add(Vector2Utils.UP);
-        triggerWalkEvent();
+        entity.getEvents().trigger("grappleClimbStart");
+        return true;
+      case Keys.S:
+        entity.getEvents().trigger("grappleDescendStart");
         return true;
       case Keys.A:
       case Keys.LEFT:
@@ -144,6 +145,12 @@ public class KeyboardPlayerInputComponent extends InputComponent {
       return false;
     }
     switch (keycode) {
+      case Keys.W:
+        entity.getEvents().trigger("grappleClimbStop");
+        return true;
+      case Keys.S:
+        entity.getEvents().trigger("grappleDescendStop");
+        return true;
       case Keys.A:
       case Keys.LEFT:
         keysHeld[LEFT] = false;

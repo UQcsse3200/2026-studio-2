@@ -27,6 +27,8 @@ public class GrappleComponent extends Component {
   private static final float SWING_FORCE = 7f;
   private static final float MAX_SWING_SPEED = 7f;
   private static final float SWING_DAMPING = 0.5f;
+  private static final float CLIMB_SPEED = 3f;
+  private static final float MIN_PLAYER_SEGMENT_LENGTH = 1f;
 
   /** Keeps the rendered rope just outside the collider instead of clipping through its corner. */
   private static final float ROPE_RADIUS = 0.025f;
@@ -41,11 +43,14 @@ public class GrappleComponent extends Component {
   private Body originalAnchorBody;
   private Vector2 originalAnchorLocal;
   private float totalRopeLength;
+  private float initialRopeLength;
 
   /** Bend points ordered from the original arrow anchor down towards the player. */
   private final List<RopeContact> ropeContacts = new ArrayList<>();
 
   private float cooldownRemaining = 0f;
+  private boolean climbing;
+  private boolean descending;
   // Whatever linearDamping the body had right before swinging, restored on release so a grapple
   // cycle never permanently changes the player's drag (and therefore jump height/speed).
   private float preSwingLinearDamping;
@@ -63,6 +68,10 @@ public class GrappleComponent extends Component {
     entity.getEvents().addListener("grappleFire", this::fire);
     entity.getEvents().addListener("grappleRelease", this::release);
     entity.getEvents().addListener("grappleSwing", this::swing);
+    entity.getEvents().addListener("grappleClimbStart", this::startClimbing);
+    entity.getEvents().addListener("grappleClimbStop", this::stopClimbing);
+    entity.getEvents().addListener("grappleDescendStart", this::startDescending);
+    entity.getEvents().addListener("grappleDescendStop", this::stopDescending);
   }
 
   @Override
@@ -82,6 +91,7 @@ public class GrappleComponent extends Component {
       pendingAnchorBody = null;
       pendingAnchorPoint = null;
     }
+    updateRopeLength();
   }
 
   private boolean jointIsAlive() {
@@ -95,6 +105,8 @@ public class GrappleComponent extends Component {
     ropeJoint = null;
     originalAnchorBody = null;
     originalAnchorLocal = null;
+    totalRopeLength = 0f;
+    initialRopeLength = 0f;
     ropeContacts.clear();
     physicsComponent.getBody().setLinearDamping(preSwingLinearDamping);
   }
@@ -133,9 +145,13 @@ public class GrappleComponent extends Component {
   }
 
   private void createJoint(Body anchorBody, Vector2 point) {
+    // Capture the player's normal drag once for the whole grapple cycle. Bend changes rebuild the
+    // joint and must not overwrite this with SWING_DAMPING.
+    preSwingLinearDamping = physicsComponent.getBody().getLinearDamping();
     originalAnchorBody = anchorBody;
     originalAnchorLocal = anchorBody.getLocalPoint(point).cpy();
     totalRopeLength = physicsComponent.getBody().getWorldCenter().dst(point);
+    initialRopeLength = totalRopeLength;
     createJointAt(anchorBody, point, totalRopeLength);
   }
 
@@ -161,10 +177,8 @@ public class GrappleComponent extends Component {
     ropeJoint =
         (DistanceJoint) ServiceLocator.getPhysicsService().getPhysics().getWorld().createJoint(def);
 
-    // Stop the player spinning, and bleed the swing off over time. Remember whatever damping was
-    // active beforehand so release() can put it back exactly, rather than assuming a fixed value.
+    // Stop the player spinning and bleed the swing off over time.
     playerBody.setFixedRotation(true);
-    preSwingLinearDamping = playerBody.getLinearDamping();
     playerBody.setLinearDamping(SWING_DAMPING);
   }
 
@@ -442,8 +456,81 @@ public class GrappleComponent extends Component {
     body.applyForceToCenter(tangent.scl(SWING_FORCE * body.getMass()), true);
   }
 
+  /** Starts retracting the rope while the climb control is held. */
+  public void startClimbing() {
+    climbing = true;
+  }
+
+  /** Stops retracting the rope and clears any unapplied constraint adjustment. */
+  public void stopClimbing() {
+    climbing = false;
+    syncRopeLengthToActualPath();
+  }
+
+  /** Starts extending the rope while the descend control is held. */
+  public void startDescending() {
+    descending = true;
+  }
+
+  /** Stops extending the rope and clears any unapplied constraint adjustment. */
+  public void stopDescending() {
+    descending = false;
+    syncRopeLengthToActualPath();
+  }
+
+  private void updateRopeLength() {
+    if (!isAttached() || climbing == descending) {
+      return;
+    }
+
+    Vector2 anchor = getOriginalAnchorPoint();
+    if (anchor == null) {
+      return;
+    }
+
+    float fixedLength = fixedPathLength(anchor, ropeContacts);
+    float actualTotalLength = fixedLength + ropeJoint.getAnchorA().dst(ropeJoint.getAnchorB());
+    float adjustment = CLIMB_SPEED * ServiceLocator.getTimeSource().getDeltaTime();
+    setTotalRopeLength(actualTotalLength + (descending ? adjustment : -adjustment), fixedLength);
+  }
+
+  private void syncRopeLengthToActualPath() {
+    if (!isAttached()) {
+      return;
+    }
+
+    Vector2 anchor = getOriginalAnchorPoint();
+    if (anchor == null) {
+      return;
+    }
+
+    float fixedLength = fixedPathLength(anchor, ropeContacts);
+    float actualTotalLength = fixedLength + ropeJoint.getAnchorA().dst(ropeJoint.getAnchorB());
+    setTotalRopeLength(actualTotalLength, fixedLength);
+  }
+
+  private void setTotalRopeLength(float requestedLength, float fixedLength) {
+    float minimumLength = Math.min(initialRopeLength, fixedLength + MIN_PLAYER_SEGMENT_LENGTH);
+    totalRopeLength = Math.max(minimumLength, Math.min(initialRopeLength, requestedLength));
+    ropeJoint.setLength(Math.max(totalRopeLength - fixedLength, MIN_JOINT_LENGTH));
+  }
+
   public boolean isAttached() {
     return ropeJoint != null;
+  }
+
+  /**
+   * @return the current total rope length, including bends, or 0 when detached
+   */
+  public float getRopeLength() {
+    return ropeJoint == null ? 0f : totalRopeLength;
+  }
+
+  /**
+   * @return the rope length when it first attached, or 0 when detached
+   */
+  public float getInitialRopeLength() {
+    return initialRopeLength;
   }
 
   /**

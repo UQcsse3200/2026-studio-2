@@ -225,6 +225,38 @@ class KeyboardPlayerInputComponentTest {
   }
 
   @Test
+  void shouldStartAndStopGrappleClimbWithW() {
+    KeyboardPlayerInputComponent component = new KeyboardPlayerInputComponent();
+    Entity player = new Entity().addComponent(component);
+    AtomicInteger climbStarts = new AtomicInteger();
+    AtomicInteger climbStops = new AtomicInteger();
+
+    player.getEvents().addListener("grappleClimbStart", climbStarts::incrementAndGet);
+    player.getEvents().addListener("grappleClimbStop", climbStops::incrementAndGet);
+
+    assertTrue(component.keyDown(Keys.W));
+    assertEquals(1, climbStarts.get());
+    assertTrue(component.keyUp(Keys.W));
+    assertEquals(1, climbStops.get());
+  }
+
+  @Test
+  void shouldStartAndStopGrappleDescentWithS() {
+    KeyboardPlayerInputComponent component = new KeyboardPlayerInputComponent();
+    Entity player = new Entity().addComponent(component);
+    AtomicInteger descentStarts = new AtomicInteger();
+    AtomicInteger descentStops = new AtomicInteger();
+
+    player.getEvents().addListener("grappleDescendStart", descentStarts::incrementAndGet);
+    player.getEvents().addListener("grappleDescendStop", descentStops::incrementAndGet);
+
+    assertTrue(component.keyDown(Keys.S));
+    assertEquals(1, descentStarts.get());
+    assertTrue(component.keyUp(Keys.S));
+    assertEquals(1, descentStops.get());
+  }
+
+  @Test
   void shouldDropItemWithR() {
     KeyboardPlayerInputComponent component = new KeyboardPlayerInputComponent();
     Entity player = new Entity().addComponent(component);
