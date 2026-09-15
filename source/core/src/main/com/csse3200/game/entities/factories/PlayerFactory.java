@@ -10,6 +10,7 @@ import com.csse3200.game.components.item.weapons.WeaponComponent;
 import com.csse3200.game.components.item.weapons.bow.BowComponent;
 import com.csse3200.game.components.item.weapons.bow.grapple.GrappleComponent;
 import com.csse3200.game.components.item.weapons.melee.MeleeComponent;
+import com.csse3200.game.components.level.RespawnComponent;
 import com.csse3200.game.components.player.*;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.PlayerConfig;
@@ -75,7 +76,9 @@ public class PlayerFactory {
             .addComponent(new GrappleComponent())
             .addComponent(new GrappleRenderComponent())
             .addComponent(new PlayerAnimationController())
-            .addComponent(new MeleeRenderComponent());
+            .addComponent(new MeleeRenderComponent())
+            .addComponent(new PlayerAnimationController())
+            .addComponent(new RespawnComponent());
 
     player.getComponent(ColliderComponent.class).setDensity(1.5f);
     player.getComponent(AnimationRenderComponent.class).scaleEntity();

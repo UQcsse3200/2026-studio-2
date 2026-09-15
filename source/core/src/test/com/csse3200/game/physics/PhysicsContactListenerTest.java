@@ -1,14 +1,12 @@
 package com.csse3200.game.physics;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
-import com.badlogic.gdx.physics.box2d.Body;
-import com.badlogic.gdx.physics.box2d.BodyDef;
-import com.badlogic.gdx.physics.box2d.Fixture;
-import com.badlogic.gdx.physics.box2d.FixtureDef;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.*;
+import com.csse3200.game.components.level.LedgeComponent;
+import com.csse3200.game.components.level.PlatformGrappleComponent;
+import com.csse3200.game.components.player.PlayerActions;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.events.listeners.EventListener2;
 import com.csse3200.game.extensions.GameExtension;
@@ -80,6 +78,114 @@ class PhysicsContactListenerTest {
     ServiceLocator.getPhysicsService().getPhysics().update();
     verify(endCallback1).handle(fixture1, fixture2);
     verify(endCallback2).handle(fixture2, fixture1);
+  }
+
+  @Test
+  void shouldDisableCollisionBetweenPlayerAndLedge() {
+    Entity entity1 =
+        new Entity()
+            .addComponent(new PhysicsComponent())
+            .addComponent(new ColliderComponent())
+            .addComponent(new PlayerActions());
+
+    Entity entity2 =
+        new Entity()
+            .addComponent(new PhysicsComponent())
+            .addComponent(new ColliderComponent())
+            .addComponent(new LedgeComponent());
+
+    entity1.create();
+    entity2.create();
+
+    entity1.setPosition(0f, 0f);
+    entity2.setPosition(0f, 0f);
+
+    Fixture fixture1 = entity1.getComponent(ColliderComponent.class).getFixture();
+    Fixture fixture2 = entity2.getComponent(ColliderComponent.class).getFixture();
+
+    fixture1.getBody().setLinearVelocity(new Vector2(0f, 1f));
+
+    Contact mockContact = mock(Contact.class);
+    Manifold mockManifold = mock(Manifold.class);
+
+    when(mockContact.getFixtureA()).thenReturn(fixture1);
+    when(mockContact.getFixtureB()).thenReturn(fixture2);
+
+    PhysicsContactListener listener = new PhysicsContactListener();
+    listener.preSolve(mockContact, mockManifold);
+    verify(mockContact).setEnabled(false);
+  }
+
+  @Test
+  void shouldNotDisableCollisionBetweenPlayerAndLedge() {
+    Entity entity1 =
+        new Entity()
+            .addComponent(new PhysicsComponent())
+            .addComponent(new ColliderComponent())
+            .addComponent(new PlayerActions());
+
+    Entity entity2 =
+        new Entity()
+            .addComponent(new PhysicsComponent())
+            .addComponent(new ColliderComponent())
+            .addComponent(new LedgeComponent());
+
+    entity1.create();
+    entity2.create();
+
+    entity1.setPosition(0f, 0f);
+    entity2.setPosition(0f, 0f);
+
+    Fixture fixture1 = entity1.getComponent(ColliderComponent.class).getFixture();
+    Fixture fixture2 = entity2.getComponent(ColliderComponent.class).getFixture();
+
+    fixture1.getBody().setLinearVelocity(new Vector2(0f, -1f));
+
+    Contact mockContact = mock(Contact.class);
+    Manifold mockManifold = mock(Manifold.class);
+
+    when(mockContact.getFixtureA()).thenReturn(fixture1);
+    when(mockContact.getFixtureB()).thenReturn(fixture2);
+
+    PhysicsContactListener listener = new PhysicsContactListener();
+    listener.preSolve(mockContact, mockManifold);
+    verify(mockContact, never()).setEnabled(false);
+  }
+
+  @Test
+  void shouldEnableCollisionBetweenPlayerAndEntity() {
+    Entity entity1 =
+        new Entity()
+            .addComponent(new PhysicsComponent())
+            .addComponent(new ColliderComponent())
+            .addComponent(new PlayerActions());
+
+    Entity entity2 =
+        new Entity()
+            .addComponent(new PhysicsComponent())
+            .addComponent(new ColliderComponent())
+            .addComponent(new PlatformGrappleComponent(0));
+
+    entity1.create();
+    entity2.create();
+
+    entity1.setPosition(0f, 0f);
+    entity2.setPosition(0f, 0f);
+
+    Fixture fixture1 = entity1.getComponent(ColliderComponent.class).getFixture();
+    Fixture fixture2 = entity2.getComponent(ColliderComponent.class).getFixture();
+
+    fixture1.getBody().setLinearVelocity(new Vector2(0f, 1f));
+
+    Contact mockContact = mock(Contact.class);
+    Manifold mockManifold = mock(Manifold.class);
+
+    when(mockContact.getFixtureA()).thenReturn(fixture1);
+    when(mockContact.getFixtureB()).thenReturn(fixture2);
+
+    PhysicsContactListener listener = new PhysicsContactListener();
+    listener.preSolve(mockContact, mockManifold);
+    verify(mockContact, never()).setEnabled(false);
   }
 
   Entity createPhysicsEntity() {
