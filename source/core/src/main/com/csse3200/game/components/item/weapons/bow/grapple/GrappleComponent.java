@@ -7,6 +7,7 @@ import com.badlogic.gdx.physics.box2d.Joint;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.RayCastCallback;
 import com.badlogic.gdx.physics.box2d.Shape;
+import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.physics.box2d.joints.DistanceJoint;
 import com.badlogic.gdx.physics.box2d.joints.DistanceJointDef;
 import com.badlogic.gdx.utils.Array;
@@ -33,13 +34,17 @@ public class GrappleComponent extends Component {
 
   private static final float RAY_END_TOLERANCE = 0.05f;
   private static final float MIN_JOINT_LENGTH = 0.05f;
+  private static final int MAX_ROPE_CONTACTS = 16;
 
   private PhysicsComponent physicsComponent;
   private DistanceJoint ropeJoint;
   private Body originalAnchorBody;
   private Vector2 originalAnchorLocal;
   private float totalRopeLength;
-  private RopeContact ropeContact;
+
+  /** Bend points ordered from the original arrow anchor down towards the player. */
+  private final List<RopeContact> ropeContacts = new ArrayList<>();
+
   private float cooldownRemaining = 0f;
 
   // Box2D locks the world during a step, so attachments are queued and built next frame
@@ -87,7 +92,7 @@ public class GrappleComponent extends Component {
     ropeJoint = null;
     originalAnchorBody = null;
     originalAnchorLocal = null;
-    ropeContact = null;
+    ropeContacts.clear();
     physicsComponent.getBody().setLinearDamping(RELEASE_DAMPING);
   }
 
@@ -158,7 +163,7 @@ public class GrappleComponent extends Component {
     playerBody.setLinearDamping(SWING_DAMPING);
   }
 
-  /** Adds or removes the wall-top pivot as the player moves behind terrain. */
+  /** Rebuilds the ordered bend path by walking from the arrow anchor down towards the player. */
   private void updateRopeContact() {
     Vector2 player = physicsComponent.getBody().getWorldCenter();
     Vector2 anchor = getOriginalAnchorPoint();
@@ -166,19 +171,30 @@ public class GrappleComponent extends Component {
       return;
     }
 
-    RopeRayHit obstruction = findObstruction(player, anchor);
-    if (ropeContact == null) {
-      if (obstruction != null) {
-        Vector2 corner = findTopContact(obstruction.fixture, player, anchor);
-        if (corner != null) {
-          ropeContact = new RopeContact(obstruction.fixture.getBody(), corner);
-          rebuildJointForPath();
-        }
-      }
-    } else if (obstruction == null || obstruction.fixture.getBody() != ropeContact.body) {
-      ropeContact = null;
+    World world = ServiceLocator.getPhysicsService().getPhysics().getWorld();
+    List<RopeContact> nextContacts = traceContacts(world, anchor, player);
+    if (!sameContacts(nextContacts)) {
+      ropeContacts.clear();
+      ropeContacts.addAll(nextContacts);
       rebuildJointForPath();
+    } else if (!ropeContacts.isEmpty()) {
+      // Moving bodies change the length consumed above the active pivot without changing vertices.
+      ropeJoint.setLength(Math.max(remainingRopeLength(anchor), MIN_JOINT_LENGTH));
     }
+  }
+
+  private boolean sameContacts(List<RopeContact> other) {
+    if (ropeContacts.size() != other.size()) {
+      return false;
+    }
+    for (int i = 0; i < ropeContacts.size(); i++) {
+      RopeContact current = ropeContacts.get(i);
+      RopeContact next = other.get(i);
+      if (current.fixture != next.fixture || !current.localPoint.epsilonEquals(next.localPoint)) {
+        return false;
+      }
+    }
+    return true;
   }
 
   private void rebuildJointForPath() {
@@ -188,18 +204,27 @@ public class GrappleComponent extends Component {
     }
 
     Vector2 anchor = getOriginalAnchorPoint();
-    if (ropeContact == null) {
+    if (ropeContacts.isEmpty()) {
       createJointAt(originalAnchorBody, anchor, totalRopeLength);
       return;
     }
 
-    Vector2 contact = ropeContact.getWorldPoint();
-    float fixedLength = contact.dst(anchor);
-    createJointAt(ropeContact.body, contact, totalRopeLength - fixedLength);
+    RopeContact activeContact = ropeContacts.get(ropeContacts.size() - 1);
+    createJointAt(activeContact.body, activeContact.getWorldPoint(), remainingRopeLength(anchor));
   }
 
-  /** Finds the closest solid strictly between the player and grapple anchor. */
-  private RopeRayHit findObstruction(Vector2 from, Vector2 to) {
+  private float remainingRopeLength(Vector2 anchor) {
+    float length = 0f;
+    Vector2 previous = anchor;
+    for (RopeContact contact : ropeContacts) {
+      Vector2 point = contact.getWorldPoint();
+      length += previous.dst(point);
+      previous = point;
+    }
+    return totalRopeLength - length;
+  }
+
+  private static RopeRayHit findObstruction(World world, Vector2 from, Vector2 to) {
     RopeRayHit closest = new RopeRayHit();
     RayCastCallback callback =
         (fixture, point, normal, fraction) -> {
@@ -213,38 +238,93 @@ public class GrappleComponent extends Component {
           closest.fixture = fixture;
           return fraction;
         };
-    ServiceLocator.getPhysicsService().getPhysics().getWorld().rayCast(callback, from, to);
+    world.rayCast(callback, from, to);
     return closest.fixture == null ? null : closest;
   }
 
   /**
-   * Chooses the shortest route via the upper silhouette of a polygon collider. World-space fixture
-   * vertices make this account for the wall's real width, height, offset and rotation.
+   * Repeatedly finds the first obstruction below the current rope point. The next bend is the
+   * shortest visible vertex of that obstruction; the search then resumes from that bend.
    */
-  static Vector2 findTopContact(Fixture fixture, Vector2 player, Vector2 anchor) {
-    Shape shape = fixture.getShape();
+  static List<RopeContact> traceContacts(World world, Vector2 anchor, Vector2 player) {
+    List<RopeContact> contacts = new ArrayList<>();
+    Vector2 cursor = anchor.cpy();
+    for (int i = 0; i < MAX_ROPE_CONTACTS; i++) {
+      RopeRayHit obstruction = findObstruction(world, cursor, player);
+      if (obstruction == null) {
+        break;
+      }
+      Vector2 next = findNextContact(world, obstruction, cursor, player, contacts);
+      if (next == null) {
+        break;
+      }
+      RopeContact contact = new RopeContact(obstruction.fixture, next);
+      contacts.add(contact);
+      cursor = next;
+    }
+    return contacts;
+  }
+
+  /**
+   * Chooses the shortest visible vertex from the current rope point. Visibility, rather than an
+   * arbitrary vertex rank, makes the front edge appear first and lets the same search discover each
+   * following edge as it moves down the rope.
+   */
+  private static Vector2 findNextContact(
+      World world,
+      RopeRayHit hit,
+      Vector2 from,
+      Vector2 player,
+      List<RopeContact> existingContacts) {
+    Shape shape = hit.fixture.getShape();
     if (!(shape instanceof PolygonShape polygon)) {
       return null;
     }
 
-    Body body = fixture.getBody();
+    Body body = hit.fixture.getBody();
     Vector2 local = new Vector2();
-    Vector2 best = null;
-    float highest = -Float.MAX_VALUE;
-    float shortestRoute = Float.MAX_VALUE;
+    Vector2 centre = new Vector2();
     for (int i = 0; i < polygon.getVertexCount(); i++) {
       polygon.getVertex(i, local);
-      Vector2 vertex = body.getWorldPoint(local);
-      float route = player.dst(vertex) + vertex.dst(anchor);
-      if (vertex.y > highest + ROPE_RADIUS
-          || (Math.abs(vertex.y - highest) <= ROPE_RADIUS && route < shortestRoute)) {
-        highest = vertex.y;
-        shortestRoute = route;
-        // Body reuses a temporary vector for coordinate transforms, so retain our own value.
-        best = vertex.cpy();
+      centre.add(body.getWorldPoint(local));
+    }
+    centre.scl(1f / polygon.getVertexCount());
+
+    Vector2 best = null;
+    float bestRoute = Float.MAX_VALUE;
+    for (int i = 0; i < polygon.getVertexCount(); i++) {
+      polygon.getVertex(i, local);
+      Vector2 vertex = offsetFromCollider(body.getWorldPoint(local).cpy(), centre);
+      if (alreadyUsed(hit.fixture, vertex, existingContacts)
+          || findObstruction(world, from, vertex) != null) {
+        continue;
+      }
+      float route = from.dst(vertex) + vertex.dst(player);
+      if (route < bestRoute) {
+        bestRoute = route;
+        best = vertex;
       }
     }
-    return best == null ? null : best.add(0f, ROPE_RADIUS);
+    return best;
+  }
+
+  private static boolean alreadyUsed(
+      Fixture fixture, Vector2 point, List<RopeContact> existingContacts) {
+    for (RopeContact contact : existingContacts) {
+      if (contact.fixture == fixture
+          && contact.getWorldPoint().epsilonEquals(point, RAY_END_TOLERANCE)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  private static Vector2 offsetFromCollider(Vector2 vertex, Vector2 centre) {
+    Vector2 outward = vertex.cpy().sub(centre);
+    if (!outward.isZero()) {
+      vertex.mulAdd(outward.nor(), ROPE_RADIUS);
+    }
+    return vertex;
   }
 
   /** Detaches the rope, restoring free movement. Momentum carries over. */
@@ -318,8 +398,8 @@ public class GrappleComponent extends Component {
       return points;
     }
     points.add(physicsComponent.getBody().getWorldCenter().cpy());
-    if (ropeContact != null) {
-      points.add(ropeContact.getWorldPoint());
+    for (int i = ropeContacts.size() - 1; i >= 0; i--) {
+      points.add(ropeContacts.get(i).getWorldPoint());
     }
     Vector2 anchor = getOriginalAnchorPoint();
     if (anchor != null) {
@@ -328,17 +408,23 @@ public class GrappleComponent extends Component {
     return points;
   }
 
-  private static class RopeContact {
+  static class RopeContact {
+    private final Fixture fixture;
     private final Body body;
     private final Vector2 localPoint;
 
-    RopeContact(Body body, Vector2 worldPoint) {
-      this.body = body;
+    RopeContact(Fixture fixture, Vector2 worldPoint) {
+      this.fixture = fixture;
+      this.body = fixture.getBody();
       this.localPoint = body.getLocalPoint(worldPoint).cpy();
     }
 
     Vector2 getWorldPoint() {
       return body.getWorldPoint(localPoint).cpy();
+    }
+
+    Fixture getFixture() {
+      return fixture;
     }
   }
 
