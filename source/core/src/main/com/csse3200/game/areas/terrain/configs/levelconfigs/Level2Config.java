@@ -161,13 +161,7 @@ public class Level2Config extends LevelConfig {
           new TriggerButtonConfig(new GridPoint2(49, 7), 90f, true, new String[] {"b5"}), // B5 (D)
         };
 
-    items =
-        new HashMap<>(
-            Map.of(
-                new GridPoint2(1, 41),
-                new Arrow(ItemType.ROPE_ARROW, 1),
-                new GridPoint2(40, 29),
-                new Arrow(ItemType.STANDARD_ARROW, 99)));
+    items = new HashMap<>(Map.of(new GridPoint2(40, 29), new Arrow(ItemType.STANDARD_ARROW, 99)));
 
     ledges =
         new PlatformConfig[] {
