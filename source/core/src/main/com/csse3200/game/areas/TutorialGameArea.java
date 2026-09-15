@@ -190,7 +190,7 @@ public class TutorialGameArea extends GameArea {
     // spawnTestSkeletonWarrior();
     // spawnTestSkeletonArcher();
     // spawnTestVulture();
-    spawnTestNecromancer();
+    // spawnTestNecromancer();
 
     // spawnVulture();
     // spawnNecromancer();

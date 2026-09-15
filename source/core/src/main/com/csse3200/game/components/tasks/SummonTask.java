@@ -53,7 +53,7 @@ public class SummonTask extends DefaultTask implements PriorityTask {
 
     boolean canSummon = currentTime - lastSummonTime >= cooldown * 1000;
 
-    if (canSummon) {
+    if (canSummon && distance <= attackRange) {
       return priority;
     }
 
@@ -67,6 +67,6 @@ public class SummonTask extends DefaultTask implements PriorityTask {
 
     skeletonWarrior.setPosition(necromancer.getPosition().x + 1f, necromancer.getPosition().y);
 
-    ServiceLocator.getEntityService().register(skeletonWarrior);
+    necromancer.getEvents().trigger("spawnEntity", skeletonWarrior);
   }
 }
