@@ -110,6 +110,8 @@ public class PlayerFactory {
     animator.addAnimation("sprint", 0.1f, PlayMode.LOOP);
     animator.addAnimation("jump", 0.05f, PlayMode.NORMAL);
     animator.addAnimation("hurt", 0.04f, PlayMode.NORMAL);
+    animator.addAnimation("death", 0.1458f, PlayMode.NORMAL);
+    animator.addAnimation("sleep", 0.1458f, PlayMode.LOOP);
 
     Entity player =
         new Entity()
@@ -120,11 +122,9 @@ public class PlayerFactory {
             .addComponent(
                 new CombatStatsComponent(
                     stats.health, stats.baseAttack, stats.invulnerabilityDuration))
-            .addComponent(
-                new CombatStatsComponent(
-                    stats.health, CombatStatsComponent.MAX_HEALTH, stats.baseAttack))
             .addComponent(new PlayerStatsDisplay())
-            .addComponent(new PlayerAnimationController());
+            .addComponent(new PlayerAnimationController())
+            .addComponent(new RespawnComponent());
 
     PhysicsUtils.setScaledCollider(player, 0.6f, 0.3f);
     player.getComponent(ColliderComponent.class).setDensity(1.5f);

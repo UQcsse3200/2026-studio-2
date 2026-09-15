@@ -296,6 +296,6 @@ public class CyclopsMinigameLogic extends Component {
           }
         },
         1f);
-    player.getComponent(PlayerAnimationController.class).playAnimation("hurt");
+    player.getComponent(PlayerAnimationController.class).playAnimation("death");
   }
 }
