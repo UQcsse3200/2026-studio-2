@@ -33,6 +33,7 @@ public class GrappleComponent extends Component {
   private static final float ROPE_RADIUS = 0.025f;
 
   private static final float RAY_END_TOLERANCE = 0.05f;
+  private static final float SIDE_EPSILON = 0.0001f;
   private static final float MIN_JOINT_LENGTH = 0.05f;
   private static final int MAX_ROPE_CONTACTS = 16;
 
@@ -163,7 +164,7 @@ public class GrappleComponent extends Component {
     playerBody.setLinearDamping(SWING_DAMPING);
   }
 
-  /** Rebuilds the ordered bend path by walking from the arrow anchor down towards the player. */
+  /** Maintains persistent bends while walking from the arrow anchor down towards the player. */
   private void updateRopeContact() {
     Vector2 player = physicsComponent.getBody().getWorldCenter();
     Vector2 anchor = getOriginalAnchorPoint();
@@ -172,29 +173,81 @@ public class GrappleComponent extends Component {
     }
 
     World world = ServiceLocator.getPhysicsService().getPhysics().getWorld();
-    List<RopeContact> nextContacts = traceContacts(world, anchor, player);
-    if (!sameContacts(nextContacts)) {
-      ropeContacts.clear();
-      ropeContacts.addAll(nextContacts);
+    RopeContact previousActive = activeContact();
+    removeUnwrappedContacts(world, anchor, player);
+    insertMissingContacts(world, anchor, player);
+
+    if (!sameContact(previousActive, activeContact())) {
       rebuildJointForPath();
     } else if (!ropeContacts.isEmpty()) {
-      // Moving bodies change the length consumed above the active pivot without changing vertices.
+      // Moving contacts change the length consumed above the active pivot every frame.
       ropeJoint.setLength(Math.max(remainingRopeLength(anchor), MIN_JOINT_LENGTH));
     }
   }
 
-  private boolean sameContacts(List<RopeContact> other) {
-    if (ropeContacts.size() != other.size()) {
-      return false;
+  private RopeContact activeContact() {
+    return ropeContacts.isEmpty() ? null : ropeContacts.get(ropeContacts.size() - 1);
+  }
+
+  private boolean sameContact(RopeContact first, RopeContact second) {
+    if (first == null || second == null) {
+      return first == second;
     }
-    for (int i = 0; i < ropeContacts.size(); i++) {
-      RopeContact current = ropeContacts.get(i);
-      RopeContact next = other.get(i);
-      if (current.fixture != next.fixture || !current.localPoint.epsilonEquals(next.localPoint)) {
-        return false;
+    return first.fixture == second.fixture && first.localPoint.epsilonEquals(second.localPoint);
+  }
+
+  private void removeUnwrappedContacts(World world, Vector2 anchor, Vector2 player) {
+    boolean removed;
+    do {
+      removed = false;
+      for (int i = ropeContacts.size() - 1; i >= 0; i--) {
+        RopeContact contact = ropeContacts.get(i);
+        Vector2 before = i == 0 ? anchor : ropeContacts.get(i - 1).getWorldPoint();
+        Vector2 after =
+            i == ropeContacts.size() - 1 ? player : ropeContacts.get(i + 1).getWorldPoint();
+        if (contact.hasCrossedSide(before, after)
+            && findObstruction(world, before, after) == null) {
+          ropeContacts.remove(i);
+          removed = true;
+          break;
+        }
       }
+    } while (removed);
+  }
+
+  /** Inserts newly required contacts in anchor-to-player order without replacing existing bends. */
+  private void insertMissingContacts(World world, Vector2 anchor, Vector2 player) {
+    Vector2 before = anchor;
+    int nextIndex = 0;
+    int attempts = 0;
+    while (nextIndex <= ropeContacts.size() && attempts++ < MAX_ROPE_CONTACTS) {
+      if (ropeContacts.size() >= MAX_ROPE_CONTACTS) {
+        break;
+      }
+      Vector2 after =
+          nextIndex == ropeContacts.size() ? player : ropeContacts.get(nextIndex).getWorldPoint();
+      RopeRayHit obstruction = findObstruction(world, before, after);
+      if (obstruction == null) {
+        before = after;
+        nextIndex++;
+        continue;
+      }
+
+      Vector2 point = findNextContact(world, obstruction, before, after, ropeContacts);
+      if (point == null) {
+        break;
+      }
+      RopeContact contact =
+          new RopeContact(obstruction.fixture, point, sideOf(before, after, point));
+      ropeContacts.add(nextIndex, contact);
+      if (fixedPathLength(anchor, ropeContacts) > totalRopeLength - MIN_JOINT_LENGTH) {
+        // This bend would consume more rope than exists and leave no valid player constraint.
+        ropeContacts.remove(nextIndex);
+        break;
+      }
+      before = point;
+      nextIndex++;
     }
-    return true;
   }
 
   private void rebuildJointForPath() {
@@ -209,19 +262,24 @@ public class GrappleComponent extends Component {
       return;
     }
 
-    RopeContact activeContact = ropeContacts.get(ropeContacts.size() - 1);
+    RopeContact activeContact = activeContact();
     createJointAt(activeContact.body, activeContact.getWorldPoint(), remainingRopeLength(anchor));
   }
 
   private float remainingRopeLength(Vector2 anchor) {
+    return totalRopeLength - fixedPathLength(anchor, ropeContacts);
+  }
+
+  /** Length consumed from the original anchor through every bend to the active player pivot. */
+  static float fixedPathLength(Vector2 anchor, List<RopeContact> contacts) {
     float length = 0f;
     Vector2 previous = anchor;
-    for (RopeContact contact : ropeContacts) {
+    for (RopeContact contact : contacts) {
       Vector2 point = contact.getWorldPoint();
       length += previous.dst(point);
       previous = point;
     }
-    return totalRopeLength - length;
+    return length;
   }
 
   private static RopeRayHit findObstruction(World world, Vector2 from, Vector2 to) {
@@ -258,7 +316,8 @@ public class GrappleComponent extends Component {
       if (next == null) {
         break;
       }
-      RopeContact contact = new RopeContact(obstruction.fixture, next);
+      RopeContact contact =
+          new RopeContact(obstruction.fixture, next, sideOf(cursor, player, next));
       contacts.add(contact);
       cursor = next;
     }
@@ -274,7 +333,7 @@ public class GrappleComponent extends Component {
       World world,
       RopeRayHit hit,
       Vector2 from,
-      Vector2 player,
+      Vector2 target,
       List<RopeContact> existingContacts) {
     Shape shape = hit.fixture.getShape();
     if (!(shape instanceof PolygonShape polygon)) {
@@ -299,7 +358,7 @@ public class GrappleComponent extends Component {
           || findObstruction(world, from, vertex) != null) {
         continue;
       }
-      float route = from.dst(vertex) + vertex.dst(player);
+      float route = from.dst(vertex) + vertex.dst(target);
       if (route < bestRoute) {
         bestRoute = route;
         best = vertex;
@@ -317,6 +376,14 @@ public class GrappleComponent extends Component {
       }
     }
     return false;
+  }
+
+  static int sideOf(Vector2 from, Vector2 to, Vector2 point) {
+    float cross = to.cpy().sub(from).crs(point.cpy().sub(from));
+    if (Math.abs(cross) <= SIDE_EPSILON) {
+      return 0;
+    }
+    return cross > 0f ? 1 : -1;
   }
 
   private static Vector2 offsetFromCollider(Vector2 vertex, Vector2 centre) {
@@ -412,11 +479,13 @@ public class GrappleComponent extends Component {
     private final Fixture fixture;
     private final Body body;
     private final Vector2 localPoint;
+    private final int initialSide;
 
-    RopeContact(Fixture fixture, Vector2 worldPoint) {
+    RopeContact(Fixture fixture, Vector2 worldPoint, int initialSide) {
       this.fixture = fixture;
       this.body = fixture.getBody();
       this.localPoint = body.getLocalPoint(worldPoint).cpy();
+      this.initialSide = initialSide;
     }
 
     Vector2 getWorldPoint() {
@@ -425,6 +494,15 @@ public class GrappleComponent extends Component {
 
     Fixture getFixture() {
       return fixture;
+    }
+
+    int getInitialSide() {
+      return initialSide;
+    }
+
+    boolean hasCrossedSide(Vector2 before, Vector2 after) {
+      int currentSide = sideOf(before, after, getWorldPoint());
+      return currentSide != 0 && initialSide != 0 && currentSide != initialSide;
     }
   }
 

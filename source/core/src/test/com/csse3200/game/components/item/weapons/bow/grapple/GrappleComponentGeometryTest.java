@@ -1,6 +1,7 @@
 package com.csse3200.game.components.item.weapons.bow.grapple;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.badlogic.gdx.math.MathUtils;
@@ -20,7 +21,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 class GrappleComponentGeometryTest {
 
   @Test
-  void shouldUseWallDimensionsWhenChoosingTopContact() {
+  void shouldDiscoverPlatformEdgesFromAnchorTowardPlayer() {
     World world = new World(Vector2.Zero, true);
     try {
       Fixture wall = rectangle(world, new Vector2(5f, 0f), 2f, 4f, 0f);
@@ -76,6 +77,53 @@ class GrappleComponentGeometryTest {
       movingPlatform.getBody().setTransform(7f, 4f, 0f);
       contacts = GrappleComponent.traceContacts(world, anchor, player);
       assertTrue(contacts.stream().noneMatch(contact -> contact.getFixture() == movingPlatform));
+    } finally {
+      world.dispose();
+    }
+  }
+
+  @Test
+  void shouldRetainInitialWindingSidePerContact() {
+    World world = new World(Vector2.Zero, true);
+    try {
+      Fixture fixture = rectangle(world, new Vector2(5f, 5f), 1f, 1f, 0f);
+      Vector2 before = new Vector2(0f, 0f);
+      Vector2 after = new Vector2(10f, 0f);
+      Vector2 bend = new Vector2(5f, 5f);
+      GrappleComponent.RopeContact contact =
+          new GrappleComponent.RopeContact(
+              fixture, bend, GrappleComponent.sideOf(before, after, bend));
+
+      assertEquals(1, contact.getInitialSide());
+      assertFalse(contact.hasCrossedSide(before, after));
+
+      fixture.getBody().setTransform(5f, -5f, 0f);
+      assertTrue(contact.hasCrossedSide(before, after));
+    } finally {
+      world.dispose();
+    }
+  }
+
+  @Test
+  void shouldReallocateLengthWhenAnchorToBendPathMoves() {
+    World world = new World(Vector2.Zero, true);
+    try {
+      Fixture firstBody = rectangle(world, new Vector2(3f, 2f), 1f, 1f, 0f);
+      Fixture lastBody = rectangle(world, new Vector2(6f, 2f), 1f, 1f, 0f);
+      GrappleComponent.RopeContact first =
+          new GrappleComponent.RopeContact(firstBody, new Vector2(3f, 2f), 1);
+      GrappleComponent.RopeContact last =
+          new GrappleComponent.RopeContact(lastBody, new Vector2(6f, 2f), 1);
+      List<GrappleComponent.RopeContact> contacts = List.of(first, last);
+      Vector2 anchor = new Vector2(0f, 2f);
+
+      assertEquals(6f, GrappleComponent.fixedPathLength(anchor, contacts), 0.001f);
+
+      firstBody.getBody().setTransform(4f, 2f, 0f);
+      assertEquals(6f, GrappleComponent.fixedPathLength(anchor, contacts), 0.001f);
+
+      lastBody.getBody().setTransform(8f, 2f, 0f);
+      assertEquals(8f, GrappleComponent.fixedPathLength(anchor, contacts), 0.001f);
     } finally {
       world.dispose();
     }
