@@ -40,7 +40,7 @@ public enum ItemType {
   FIRE_ARROW(
       4,
       "Fire Arrow",
-      "Deals 12 direct damage and burns enemies for 5 damage per second for 3 seconds.",
+      "Deals 5 direct damage and burns enemies for 10 damage per second for 5 seconds.",
       "images/fire_arrow.png",
       5,
       16f,
@@ -58,7 +58,7 @@ public enum ItemType {
   ICE_ARROW(
       5,
       "Ice Arrow",
-      "Slows enemies for 3 seconds.",
+      "Slows enemies for 5 seconds.",
       "images/cold_arrow.png",
       8,
       16f,

@@ -183,9 +183,9 @@ public class EnemyFactory {
         .addComponent(new HitboxComponent().setLayer(PhysicsLayer.NPC))
         .addComponent(new CombatStatsComponent(config.health, config.baseAttack))
         .addComponent(new EnemyDeathComponent())
-            .addComponent(new PoisonStatsComponent())
-            .addComponent(new BurnStatsComponent())
-            .addComponent(new SlowStatsComponent());
+        .addComponent(new PoisonStatsComponent())
+        .addComponent(new BurnStatsComponent())
+        .addComponent(new SlowStatsComponent());
   }
 
   private EnemyFactory() {
