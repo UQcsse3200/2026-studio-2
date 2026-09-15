@@ -35,17 +35,17 @@ import org.slf4j.LoggerFactory;
  */
 public class AnimationRenderComponent extends RenderComponent {
   private static final Logger logger = LoggerFactory.getLogger(AnimationRenderComponent.class);
-  private final GameTime timeSource;
-  private final TextureAtlas atlas;
-  private final Map<String, Animation<TextureRegion>> animations;
-  private Animation<TextureRegion> currentAnimation;
-  private String currentAnimationName;
-  private float animationPlayTime;
-  private boolean flipX;
+  protected final GameTime timeSource;
+  protected final TextureAtlas atlas;
+  protected final Map<String, Animation<TextureRegion>> animations;
+  protected Animation<TextureRegion> currentAnimation;
+  protected String currentAnimationName;
+  protected float animationPlayTime;
+  protected boolean flipX;
 
   // Texels per world-unit at entity.scale.x == 1, established by scaleEntity(). 0 means
   // scaleEntity() was never called, so draw() falls back to entity.scale directly.
-  private float defaultRegionWidthPx;
+  protected float defaultRegionWidthPx;
 
   /**
    * Create the component for a given texture atlas.

@@ -3,7 +3,6 @@ package com.csse3200.game.areas;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
-// import com.csse3200.game.areas.terrain.PlatformConfig;
 import com.csse3200.game.areas.terrain.TerrainFactory;
 import com.csse3200.game.areas.terrain.TerrainFactory.TerrainType;
 import com.csse3200.game.areas.terrain.configs.levelconfigs.LevelTutorialConfig;
@@ -12,26 +11,17 @@ import com.csse3200.game.components.gamearea.GameAreaDisplay;
 import com.csse3200.game.components.player.KeyboardPlayerInputComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.EnemyFactory;
-import com.csse3200.game.entities.factories.ItemFactory;
-// import com.csse3200.game.entities.factories.NPCFactory;
 import com.csse3200.game.entities.factories.ObstacleFactory;
 import com.csse3200.game.entities.factories.PlayerFactory;
 import com.csse3200.game.rendering.BackgroundRenderComponent;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.utils.math.GridPoint2Utils;
-import com.csse3200.game.entities.factories.ItemFactory;
-
-//// import com.csse3200.game.utils.math.RandomUtils;
-import com.csse3200.game.utils.math.RandomUtils;
-import java.util.List;
-import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /** Tutorial area for the game with platforms, enemies, and a player. */
 public class TutorialGameArea extends GameArea {
-
   private static final Logger logger = LoggerFactory.getLogger(TutorialGameArea.class);
 
   /*
@@ -59,17 +49,17 @@ public class TutorialGameArea extends GameArea {
         new GridPoint2(60, 1), new GridPoint2(57, 10),
       };
 
-  private static final GridPoint2 PLAYER_SPAWN = new GridPoint2(1, 4);
-  private static final GridPoint2 ROPE_ARROW_SPAWN = new GridPoint2(2, 4);
-  private static final GridPoint2 STANDARD_ARROW_SPAWN = new GridPoint2(4, 4);
-  private static final GridPoint2 FIRE_ARROW_SPAWN = new GridPoint2(6, 4);
-  private static final GridPoint2 COLD_ARROW_SPAWN = new GridPoint2(8, 4);
-  private static final GridPoint2 HEALTH_POTION_SPAWN = new GridPoint2(10, 4);
+  public static final GridPoint2 PLAYER_SPAWN = new GridPoint2(1, 4);
+  public static final GridPoint2 ROPE_ARROW_SPAWN = new GridPoint2(2, 3);
+  public static final GridPoint2 STANDARD_ARROW_SPAWN = new GridPoint2(4, 3);
+  public static final GridPoint2 FIRE_ARROW_SPAWN = new GridPoint2(6, 3);
+  public static final GridPoint2 COLD_ARROW_SPAWN = new GridPoint2(8, 5);
+  public static final GridPoint2 HEALTH_POTION_SPAWN = new GridPoint2(10, 5);
 
-  private static final int STANDARD_ARROW_QUANTITY = 5;
-  private static final int FIRE_ARROW_QUANTITY = 5;
-  private static final int COLD_ARROW_QUANTITY = 5;
-  private static final int HEALTH_POTION_QUANTITY = 3;
+  public static final int STANDARD_ARROW_QUANTITY = 5;
+  public static final int FIRE_ARROW_QUANTITY = 5;
+  public static final int COLD_ARROW_QUANTITY = 5;
+  public static final int HEALTH_POTION_QUANTITY = 3;
 
   private static final float WALL_WIDTH = 0.1f;
   private Vector2 worldBounds;
@@ -80,6 +70,8 @@ public class TutorialGameArea extends GameArea {
     // Existing game textures
     "images/black_roof.png",
     "images/purple_heart.png",
+    "images/red_heart.png",
+    "images/PixelArt_HeartBack.png",
     "images/transparent.png",
     "images/DevGridTile.png",
     "images/Tile_2.png",
@@ -192,7 +184,6 @@ public class TutorialGameArea extends GameArea {
    * the subtle effect you originally wanted.
    */
   private void spawnBackground() {
-    // USE THIS ENTIRE spawnBackground
     final Vector2 backgroundPos = new Vector2(-10f, -10f);
     BackgroundRenderComponent backgroundComponent =
         new BackgroundRenderComponent(camera, backgroundPos, worldBounds);
@@ -222,9 +213,7 @@ public class TutorialGameArea extends GameArea {
     // Create the background entity.
     Entity background = new Entity().addComponent(backgroundComponent);
 
-    /*
-     * Position the background in the game world.
-     */
+    // Position the background in the game world.
     background.setPosition(backgroundPos);
 
     spawnEntity(background);
@@ -240,7 +229,6 @@ public class TutorialGameArea extends GameArea {
     float tileSize = terrain.getTileSize();
     GridPoint2 tileBounds = terrain.getMapBounds(0);
     worldBounds = new Vector2(tileBounds.x * tileSize, tileBounds.y * tileSize);
-    //// spawnMovingPlatforms();
 
     // Left wall
     spawnEntityAt(
@@ -273,7 +261,6 @@ public class TutorialGameArea extends GameArea {
   }
 
   private Entity spawnPlayer() {
-
     Entity newPlayer = PlayerFactory.createPlayer();
     newPlayer.getEvents().addListener("grappleRequested", this::checkSuccessfulGrapple);
     newPlayer.getEvents().addListener("respawnAtCheckpoint", this::respawn);
@@ -356,10 +343,6 @@ public class TutorialGameArea extends GameArea {
     resourceService.unloadAssets(forestMusic);
   }
 
-  public Entity getPlayer() {
-    return player;
-  }
-
   /** Dispose of the game area. */
   @Override
   public void dispose() {
@@ -369,16 +352,16 @@ public class TutorialGameArea extends GameArea {
   }
 
   /** generate items */
-
-  //private void spawnItems() {
-  //  List.of(
-   //         Map.entry(ItemFactory.createRopeArrow(), ROPE_ARROW_SPAWN),
-   //         Map.entry(
-  //              ItemFactory.createStandardArrow(STANDARD_ARROW_QUANTITY), STANDARD_ARROW_SPAWN),
-   //         Map.entry(ItemFactory.createHealthPotion(HEALTH_POTION_QUANTITY), HEALTH_POTION_SPAWN),
-   //         Map.entry(ItemFactory.createFireArrow(FIRE_ARROW_QUANTITY), FIRE_ARROW_SPAWN),
-    //        Map.entry(ItemFactory.createColdArrow(COLD_ARROW_QUANTITY), COLD_ARROW_SPAWN))
-   //     .forEach(entry -> spawnEntityAt(entry.getKey(), entry.getValue(), true, false));
- // }
-  
+  /*
+  private void spawnItems() {
+    List.of(
+            Map.entry(ItemFactory.createRopeArrow(), ROPE_ARROW_SPAWN),
+            Map.entry(
+                ItemFactory.createStandardArrow(STANDARD_ARROW_QUANTITY), STANDARD_ARROW_SPAWN),
+            Map.entry(ItemFactory.createHealthPotion(HEALTH_POTION_QUANTITY), HEALTH_POTION_SPAWN),
+            Map.entry(ItemFactory.createFireArrow(FIRE_ARROW_QUANTITY), FIRE_ARROW_SPAWN),
+            Map.entry(ItemFactory.createColdArrow(COLD_ARROW_QUANTITY), COLD_ARROW_SPAWN))
+        .forEach(entry -> spawnEntityAt(entry.getKey(), entry.getValue(), true, false));
+  }
+   */
 }

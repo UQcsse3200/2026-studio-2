@@ -10,8 +10,6 @@ import com.csse3200.game.services.ServiceLocator;
 import java.util.ArrayList;
 import java.util.List;
 
-// USE THIS ENTIRE CLASS CALLUM LMAO
-
 /** Render multiple layers of a parallax background. */
 public class BackgroundRenderComponent extends RenderComponent {
 
