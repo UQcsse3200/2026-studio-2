@@ -93,7 +93,7 @@ public class TutorialGameArea extends GameArea {
     "images/iso_grass_2.png",
     "images/iso_grass_3.png",
     "images/checkpoint_unlit.png",
-    "images/checkpoint_lit.png",  
+    "images/checkpoint_lit.png",
 
     // Parallax background layers
     "images/parallax/original_background.png",
@@ -248,7 +248,7 @@ public class TutorialGameArea extends GameArea {
     // Complete second-furthest mountains image
     backgroundComponent.addLayer(
         "images/parallax/level_1_furthest.png",
-        new Vector2(0.12f, 0f), // Parallax factor 0.12
+        new Vector2(0.11f, 0f), // Parallax factor 0.12
         30f,
         10f,
         new Vector2(0f, 5f), // Positional offset

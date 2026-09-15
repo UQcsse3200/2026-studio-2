@@ -32,11 +32,9 @@ public class CheckpointComponent extends Component {
     this.collected = true;
 
     Entity litTorch =
-        new Entity()
-            .addComponent(
-                new TextureRenderComponent("images/checkpoint_lit.png"));
+        new Entity().addComponent(new TextureRenderComponent("images/checkpoint_lit.png"));
 
-    litTorch.setScale(1f, 1.5f);         
+    litTorch.setScale(1f, 1.5f);
     litTorch.setPosition(position.x, position.y);
 
     ServiceLocator.getEntityService().register(litTorch);

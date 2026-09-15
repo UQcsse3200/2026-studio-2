@@ -8,7 +8,6 @@ import com.csse3200.game.entities.configs.EnemyConfig;
 import com.csse3200.game.entities.factories.ItemFactory;
 import com.csse3200.game.entities.factories.ObstacleFactory;
 import com.csse3200.game.rendering.TextureRenderComponent;
-
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -278,14 +277,12 @@ public class LevelConfig {
       entities.add(new SpawnData(c.getPosition(), checkpoint));
 
       Entity torch =
-          new Entity()
-              .addComponent(
-                  new TextureRenderComponent("images/checkpoint_unlit.png"));
+          new Entity().addComponent(new TextureRenderComponent("images/checkpoint_unlit.png"));
 
       torch.setScale(1f, 1.5f);
 
       GridPoint2 pos = c.getPosition();
-      torch.setPosition(pos.x, pos.y - 1.3f); 
+      torch.setPosition(pos.x, pos.y - 1.3f);
 
       entities.add(new SpawnData(c.getPosition(), torch));
     }
