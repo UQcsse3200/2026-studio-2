@@ -259,14 +259,19 @@ public class IntroTutorialGameArea extends GameArea {
 
   private void spawnBackground() {
     BackgroundRenderComponent backgroundComponent = new BackgroundRenderComponent(camera);
-    // 1677x938 source image -> keep the same aspect ratio at a world-scale width wide enough to
-    // cover the whole level (parallax means it needs less than the level's full width).
-    float worldWidth = 80f;
+    // The camera's viewport is only ~20 world units wide (Renderer.GAME_SCREEN_WIDTH), so an
+    // 80-wide background (the old value) was drawn 4x larger than what's ever on screen at once —
+    // the player only ever saw a tiny, heavily zoomed-in crop of it. 45 is the smallest width that
+    // still fully covers the camera's horizontal pan across the level (0-62) at parallaxFactor 0.3
+    // without leaving a gap at either edge, worked out from: bg must start at/left of the camera's
+    // leftmost view (x=-10 satisfies this exactly) and its right edge must stay at/right of the
+    // camera's rightmost view. Keep the same aspect ratio so the art isn't stretched.
+    float worldWidth = 45f;
     float worldHeight = worldWidth * (938f / 1677f);
-    backgroundComponent.addLayer(BACKGROUND_TEXTURE, 0.3f, worldWidth, worldHeight, -1.5f);
+    backgroundComponent.addLayer(BACKGROUND_TEXTURE, 0.3f, worldWidth, worldHeight, -0.5f);
 
     Entity background = new Entity().addComponent(backgroundComponent);
-    background.setPosition(-10f, -8f);
+    background.setPosition(-10f, -2f);
     spawnEntity(background);
   }
 
