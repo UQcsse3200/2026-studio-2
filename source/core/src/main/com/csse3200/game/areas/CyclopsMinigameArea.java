@@ -1,5 +1,6 @@
 package com.csse3200.game.areas;
 
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.areas.terrain.TerrainFactory;
@@ -47,6 +48,10 @@ public class CyclopsMinigameArea extends GameArea {
 
   private static final String[] cyclopsMinigameTexturesAtlases = {"images/player.atlas"};
 
+  private static final String[] cyclopsMinigameMusic = {
+    "sounds/minigames/cyclops/cave_background_noise.mp3"
+  };
+
   private static final String[] cyclopsMinigameSounds = {
     "sounds/walkingSounds/walkingSound.mp3",
     "sounds/minigames/cyclops/marker-hit.ogg",
@@ -81,6 +86,8 @@ public class CyclopsMinigameArea extends GameArea {
     spawnStatues();
 
     player = spawnPlayer();
+
+    playMusic();
 
     setupTimingMinigame();
     startTimingMinigame();
@@ -171,12 +178,22 @@ public class CyclopsMinigameArea extends GameArea {
     return newPlayer;
   }
 
+  private void playMusic() {
+    Music music =
+        ServiceLocator.getResourceService()
+            .getAsset("sounds/minigames/cyclops/cave_background_noise.mp3", Music.class);
+    music.setLooping(true);
+    music.setVolume(0.35f);
+    music.play();
+  }
+
   private void loadAssets() {
     logger.debug("Loading assets");
     ResourceService resourceService = ServiceLocator.getResourceService();
     resourceService.loadTextures(cyclopsMinigameTextures);
     resourceService.loadTextureAtlases(cyclopsMinigameTexturesAtlases);
     resourceService.loadSounds(cyclopsMinigameSounds);
+    resourceService.loadMusic(cyclopsMinigameMusic);
 
     while (!resourceService.loadForMillis(10)) {
       logger.info("Loading... {}%", resourceService.getProgress());
@@ -189,11 +206,15 @@ public class CyclopsMinigameArea extends GameArea {
     resourceService.unloadAssets(cyclopsMinigameTextures);
     resourceService.unloadAssets(cyclopsMinigameTexturesAtlases);
     resourceService.unloadAssets(cyclopsMinigameSounds);
+    resourceService.unloadAssets(cyclopsMinigameMusic);
   }
 
   @Override
   public void dispose() {
     super.dispose();
+    ServiceLocator.getResourceService()
+        .getAsset("sounds/minigames/cyclops/cave_background_noise.mp3", Music.class)
+        .stop();
     this.unloadAssets();
   }
 }

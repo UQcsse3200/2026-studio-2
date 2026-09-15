@@ -122,6 +122,15 @@ public class CyclopsMinigameLogic extends Component {
     }
   }
 
+  @Override
+  public void dispose() {
+    hitSound.stop();
+    missSound.stop();
+    walkingSound.stop();
+
+    super.dispose();
+  }
+
   public void setWinLocation(GridPoint2 winLocation) {
     this.winLocation = winLocation;
   }
