@@ -3,7 +3,8 @@ package com.csse3200.game.screens;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.csse3200.game.GdxGame;
-import com.csse3200.game.components.settingsmenu.SettingsMenuDisplayFromPause;
+import com.csse3200.game.components.ButtonSound;
+import com.csse3200.game.components.settingsmenu.SettingsMenuDisplay;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.entities.factories.RenderFactory;
@@ -18,19 +19,21 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /** The game screen containing the settings. */
-public class SettingsFromPauseScreen extends ScreenAdapter {
-  private static final Logger logger = LoggerFactory.getLogger(SettingsFromPauseScreen.class);
+public class SettingsScreen extends ScreenAdapter {
+  private static final Logger logger = LoggerFactory.getLogger(SettingsScreen.class);
   private static final String[] settingsTextures = {
     "images/Buttons/exit_up_btn.png",
     "images/Buttons/exit_down_btn.png",
     "images/Buttons/apply_up_btn.png",
-    "images/Buttons/apply_down_btn.png"
+    "images/Buttons/apply_down_btn.png",
+      "images/main_menu_bg_2.png",
+      "images/menu_box.png"
   };
 
   private final GdxGame game;
   private final Renderer renderer;
 
-  public SettingsFromPauseScreen(GdxGame game) {
+  public SettingsScreen(GdxGame game) {
     this.game = game;
 
     logger.debug("Initialising settings screen services");
@@ -72,6 +75,7 @@ public class SettingsFromPauseScreen extends ScreenAdapter {
     logger.debug("Loading assets");
     ResourceService resourceService = ServiceLocator.getResourceService();
     resourceService.loadTextures(settingsTextures);
+    ButtonSound.load(resourceService);
     resourceService.loadAll();
   }
 
@@ -79,6 +83,7 @@ public class SettingsFromPauseScreen extends ScreenAdapter {
     logger.debug("Unloading assets");
     ResourceService resourceService = ServiceLocator.getResourceService();
     resourceService.unloadAssets(settingsTextures);
+    ButtonSound.unload(resourceService);
   }
 
   /**
@@ -89,8 +94,7 @@ public class SettingsFromPauseScreen extends ScreenAdapter {
     logger.debug("Creating ui");
     Stage stage = ServiceLocator.getRenderService().getStage();
     Entity ui = new Entity();
-    ui.addComponent(new SettingsMenuDisplayFromPause(game))
-        .addComponent(new InputDecorator(stage, 10));
+    ui.addComponent(new SettingsMenuDisplay(game)).addComponent(new InputDecorator(stage, 10));
     ServiceLocator.getEntityService().register(ui);
   }
 }
