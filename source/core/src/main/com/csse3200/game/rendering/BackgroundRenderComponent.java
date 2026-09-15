@@ -27,6 +27,7 @@ public class BackgroundRenderComponent extends RenderComponent {
     private final Vector2 velocity;
     private Vector2 position;
     private final boolean repeat;
+    private final float distance;
 
     ParallaxLayer(
         Texture texture,
@@ -36,7 +37,8 @@ public class BackgroundRenderComponent extends RenderComponent {
         Vector2 offset,
         BackgroundType backgroundType,
         Vector2 velocity,
-        boolean repeat) {
+        boolean repeat,
+        float distance) {
 
       this.texture = texture;
       this.parallaxFactor = parallaxFactor;
@@ -47,6 +49,7 @@ public class BackgroundRenderComponent extends RenderComponent {
       this.velocity = velocity;
       this.position = new Vector2(velocity);
       this.repeat = repeat;
+      this.distance = distance;
     }
   }
 
@@ -68,7 +71,9 @@ public class BackgroundRenderComponent extends RenderComponent {
   }
 
   /**
-   * Adds a parallax layer with a custom size and vertical position.
+   * Adds a parallax layer with a custom size and vertical position. Distance is a float between 0
+   * and 1. 1 causes the background to have no vertical movement, while 0 causes it to follow player
+   * directly.
    *
    * @param texturePath path to the texture
    * @param parallaxFactor controls how much the layer moves relative to player movement
@@ -78,6 +83,7 @@ public class BackgroundRenderComponent extends RenderComponent {
    * @param backgroundType the type of background this layer is
    * @param velocity the independent velocity of the layer
    * @param repeat whether or not this layer should repeat horizontally
+   * @param distance the distance from POV affecting vertical parallax movement
    */
   public void addLayer(
       String texturePath,
@@ -87,13 +93,22 @@ public class BackgroundRenderComponent extends RenderComponent {
       Vector2 offset,
       BackgroundType backgroundType,
       Vector2 velocity,
-      boolean repeat) {
+      boolean repeat,
+      float distance) {
 
     Texture texture = ServiceLocator.getResourceService().getAsset(texturePath, Texture.class);
 
     layers.add(
         new ParallaxLayer(
-            texture, parallaxFactor, width, height, offset, backgroundType, velocity, repeat));
+            texture,
+            parallaxFactor,
+            width,
+            height,
+            offset,
+            backgroundType,
+            velocity,
+            repeat,
+            distance));
   }
 
   /** Scale is controlled individually for each layer. */
@@ -148,7 +163,7 @@ public class BackgroundRenderComponent extends RenderComponent {
 
     float backgroundX =
         position.x + layer.offset.x + cameraX * (1f - layer.parallaxFactor.x) + layer.position.x;
-    float backgroundY = position.y + layer.offset.y + cameraY + layer.position.y;
+    float backgroundY = position.y + layer.offset.y + cameraY * layer.distance + layer.position.y;
 
     return new Vector2(backgroundX, backgroundY);
   }
