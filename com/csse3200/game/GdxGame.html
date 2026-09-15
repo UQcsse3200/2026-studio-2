@@ -179,6 +179,17 @@ loadScripts(document, 'script');</script>
 <div class="block">Sets the game's screen to a new screen of the provided type.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#startCutscene(com.csse3200.game.cutscene.CutsceneLoader.LoadedCutscene,com.csse3200.game.GdxGame.ScreenType)" class="member-name-link">startCutscene</a><wbr>(<a href="cutscene/CutsceneLoader.LoadedCutscene.html" title="class in com.csse3200.game.cutscene">CutsceneLoader.LoadedCutscene</a>&nbsp;cutscene,
+ <a href="GdxGame.ScreenType.html" title="enum class in com.csse3200.game">GdxGame.ScreenType</a>&nbsp;destination)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Starts a validated cutscene and creates the destination level after it completes.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#startInitialCutscene()" class="member-name-link">startInitialCutscene</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Starts the initial cutscene once per game session, then falls back to the tutorial level.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#transitionTo(com.csse3200.game.GdxGame.ScreenType)" class="member-name-link">transitionTo</a><wbr>(<a href="GdxGame.ScreenType.html" title="enum class in com.csse3200.game">GdxGame.ScreenType</a>&nbsp;screenType)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Fades the current screen to black, swaps to the target screen, then fades back in.</div>
@@ -244,6 +255,21 @@ loadScripts(document, 'script');</script>
 <dt>Parameters:</dt>
 <dd><code>screenType</code> - screen type to transition to</dd>
 </dl>
+</section>
+</li>
+<li>
+<section class="detail" id="startCutscene(com.csse3200.game.cutscene.CutsceneLoader.LoadedCutscene,com.csse3200.game.GdxGame.ScreenType)">
+<h3>startCutscene</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">startCutscene</span><wbr><span class="parameters">(<a href="cutscene/CutsceneLoader.LoadedCutscene.html" title="class in com.csse3200.game.cutscene">CutsceneLoader.LoadedCutscene</a>&nbsp;cutscene,
+ <a href="GdxGame.ScreenType.html" title="enum class in com.csse3200.game">GdxGame.ScreenType</a>&nbsp;destination)</span></div>
+<div class="block">Starts a validated cutscene and creates the destination level after it completes.</div>
+</section>
+</li>
+<li>
+<section class="detail" id="startInitialCutscene()">
+<h3>startInitialCutscene</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">startInitialCutscene</span>()</div>
+<div class="block">Starts the initial cutscene once per game session, then falls back to the tutorial level.</div>
 </section>
 </li>
 <li>
