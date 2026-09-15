@@ -344,8 +344,7 @@ public class TextBoxComponent extends UIComponent {
       y = (worldPos.y / 20f) * screenHeight + 18f;
     }
 
-    // alignment = 2 for top to bottom effect
-    table.setPosition(x, y, 2);
+    table.setPosition(x, y, Align.topLeft);
     table.setVisible(true);
     label.setVisible(true);
   }
