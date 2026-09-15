@@ -12,7 +12,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.Value;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.csse3200.game.components.maingame.MainGameExitDisplay;
 import com.csse3200.game.entities.Entity;
@@ -26,13 +25,13 @@ import org.slf4j.LoggerFactory;
 public class GameEndDisplay extends UIComponent {
   private static final Logger logger = LoggerFactory.getLogger(GameEndDisplay.class);
   private static final float Z_INDEX = 20f;
-  //private static final int BORDER_THICKNESS = 3;
+  // private static final int BORDER_THICKNESS = 3;
   private static final float BUTTON_WIDTH = 200f;
   private static final float BUTTON_HEIGHT = 70f;
 
   private static final float MESSAGE_SPEED = 21f;
 
-  //private static NinePatchDrawable cachedBackground;
+  // private static NinePatchDrawable cachedBackground;
 
   private GameEndState state;
   private final TypewriterEffect typewriterEffect;
@@ -100,9 +99,9 @@ public class GameEndDisplay extends UIComponent {
   }
 
   /**
-   * Captures the gameplay frame right now (the moment the game actually ended) and shows it
-   * blurred behind the panel. Must run here, not in buildActors()/create() — those fire once when
-   * the screen loads, long before there's a real gameplay frame to capture. Only ever creates one
+   * Captures the gameplay frame right now (the moment the game actually ended) and shows it blurred
+   * behind the panel. Must run here, not in buildActors()/create() — those fire once when the
+   * screen loads, long before there's a real gameplay frame to capture. Only ever creates one
    * backdrop per screen; setState() can fire more than once (e.g. WIN then a later LOSE).
    */
   private void showBackdrop() {
@@ -158,13 +157,12 @@ public class GameEndDisplay extends UIComponent {
 
     stack = new Stack();
     Texture backgroundTexture =
-        ServiceLocator.getResourceService()
-            .getAsset("images/scroll_bg.png", Texture.class);
+        ServiceLocator.getResourceService().getAsset("images/scroll_bg.png", Texture.class);
 
     backgroundTable = new Table();
     background = new Image(backgroundTexture);
     backgroundTable.add(background);
-    //root.add(stack).fill().expand();
+    // root.add(stack).fill().expand();
     panel = new Table();
     panel.setVisible(visible);
     // panel.setBackground(getBackgroundDrawable());
