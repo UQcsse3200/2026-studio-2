@@ -255,6 +255,31 @@ class AnimationRenderComponentTest {
   }
 
   @Test
+  void shouldNeverReportFinishedForLoopingAnimationPastOneCycle() {
+    TextureAtlas atlas = createMockAtlas("test_name", 1);
+    SpriteBatch batch = mock(SpriteBatch.class);
+
+    GameTime gameTime = mock(GameTime.class);
+    ServiceLocator.registerTimeSource(gameTime);
+    when(gameTime.getDeltaTime()).thenReturn(1f);
+
+    AnimationRenderComponent animator = new AnimationRenderComponent(atlas);
+    Entity entity = new Entity();
+    animator.setEntity(entity);
+    animator.addAnimation("test_name", 1f, com.badlogic.gdx.graphics.g2d.Animation.PlayMode.LOOP);
+    animator.startAnimation("test_name");
+
+    // A single 1-frame, 1s-duration LOOP animation: draw() advances playtime by 1s per call, so
+    // this pushes well past one full cycle - Animation#isAnimationFinished() itself would report
+    // true here (it ignores play mode), but AnimationRenderComponent must not.
+    for (int i = 0; i < 5; i++) {
+      animator.draw(batch);
+    }
+
+    assertFalse(animator.isFinished());
+  }
+
+  @Test
   void shouldStopAnimation() {
     TextureAtlas atlas = createMockAtlas("test_name", 1);
     AnimationRenderComponent animator = new AnimationRenderComponent(atlas);

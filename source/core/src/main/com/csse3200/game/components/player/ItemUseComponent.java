@@ -5,6 +5,8 @@ import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.Component;
 import com.csse3200.game.components.inventory.InventoryComponent;
 import com.csse3200.game.components.item.ItemType;
+import com.csse3200.game.components.item.weapons.PrimaryWeapon;
+import com.csse3200.game.components.item.weapons.WeaponComponent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,8 +35,13 @@ public class ItemUseComponent extends Component {
   }
 
   /**
-   * Fires the selected arrow item. Consumables are ignored here so holding or clicking the shoot
-   * button never accidentally drinks a potion.
+   * Starts using the selected arrow item on shoot-button-down. Consumables are ignored here so
+   * holding or clicking the shoot button never accidentally drinks a potion.
+   *
+   * <p>The rope arrow still fires instantly (unchanged). Other arrows lock in their type and spend
+   * their ammo immediately, same as before, but no longer fire right away - the shot is now held as
+   * a charge and only actually fires when {@link #stopShootSelectedArrow()} releases it, with power
+   * scaling based on how long the button was held.
    *
    * @param direction Input direction from mouse aim or controller
    */
@@ -43,16 +50,47 @@ public class ItemUseComponent extends Component {
       return;
     }
     ItemType selected = inventory.getSelectedItem();
-    if (selected != null && selected.isArrow()) {
-      useSelectedItem();
+    if (selected == null || !selected.isArrow() || !inventory.hasItem(selected)) {
+      return;
     }
+
+    if (selected == ItemType.ROPE_ARROW) {
+      useSelectedItem();
+      return;
+    }
+
+    // Reject before reserving ammo. Readiness also covers a bow that already has a paid arrow
+    // charging, so repeat clicks and the alternate attack input cannot consume another arrow.
+    if (direction == null || direction.isZero() || !isPrimaryWeaponReady()) {
+      entity.getEvents().trigger("itemUseFailed", selected);
+      return;
+    }
+
+    entity.getEvents().trigger("setArrowType", selected.toArrowType());
+    if (selected.consumesAmmo()) {
+      inventory.removeItem(selected, 1);
+    }
+    entity.getEvents().trigger("itemUsed", selected);
+    entity.getEvents().trigger("chargeStart", direction);
   }
 
-  /** Releases the grapple when the shoot button is released while a rope arrow is equipped. */
+  /**
+   * Releases the grapple and any charging shot when the shoot button comes back up.
+   *
+   * <p>Both are signalled unconditionally rather than picking one based on the current selection:
+   * spending the last arrow in a slot auto-advances the inventory to the next occupied slot, so the
+   * item selected on release is not necessarily the one that started the draw. GrappleComponent
+   * ignores a release when no rope is attached, and BowComponent ignores one when nothing is
+   * charging, so signalling both is safe and guarantees a charge can never be left hanging.
+   */
   void stopShootSelectedArrow() {
-    if (inventory != null && inventory.getSelectedItem() == ItemType.ROPE_ARROW) {
+    if (inventory == null) {
+      return;
+    }
+    if (inventory.getSelectedItem() == ItemType.ROPE_ARROW) {
       entity.getEvents().trigger("grappleRelease");
     }
+    entity.getEvents().trigger("chargeRelease", getAimDirection());
   }
 
   /**
@@ -90,6 +128,14 @@ public class ItemUseComponent extends Component {
       // GrappleComponent handles its own cooldown timer internally upon receiving "grappleFire"
       entity.getEvents().trigger("grappleFire", direction);
     } else {
+      // Dispatch is synchronous, so check readiness before publishing the attack or using ammo.
+      WeaponComponent weapons = entity.getComponent(WeaponComponent.class);
+      PrimaryWeapon primary = weapons == null ? null : weapons.getPrimaryWeapon();
+      if (primary == null || !primary.isReady()) {
+        entity.getEvents().trigger("itemUseFailed", arrowItem);
+        return false;
+      }
+
       // Configure bow variant and trigger primary weapon execution via WeaponComponent
       entity.getEvents().trigger("setArrowType", arrowItem.toArrowType());
       entity.getEvents().trigger("primaryAttack", direction);
@@ -118,6 +164,16 @@ public class ItemUseComponent extends Component {
     combatStats.addHealth(ItemType.HEALTH_POTION.getHealAmount());
     entity.getEvents().trigger("itemUsed", ItemType.HEALTH_POTION);
     return true;
+  }
+
+  /**
+   * @return true when an equipped primary weapon is ready to attack
+   */
+  private boolean isPrimaryWeaponReady() {
+    WeaponComponent weapon = entity.getComponent(WeaponComponent.class);
+    return weapon != null
+        && weapon.getPrimaryWeapon() != null
+        && weapon.getPrimaryWeapon().isReady();
   }
 
   private Vector2 getAimDirection() {
