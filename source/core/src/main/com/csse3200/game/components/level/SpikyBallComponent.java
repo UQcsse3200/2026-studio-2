@@ -6,8 +6,8 @@ import com.csse3200.game.components.Component;
 import com.csse3200.game.services.ServiceLocator;
 
 public class SpikyBallComponent extends Component {
-
   public Vector2 direction;
+  private final float speed = 5f;
 
   /**
    * Instantiate a spiky ball component
@@ -27,8 +27,12 @@ public class SpikyBallComponent extends Component {
   @Override
   public void update() {
     super.update();
+
+    float delta = ServiceLocator.getTimeSource().getDeltaTime();
+
     Vector2 position = entity.getPosition();
-    entity.setPosition(position.x + (direction.x / 10), position.y + (direction.y) / 10);
+    entity.setPosition(
+        position.x + (direction.x * speed * delta), position.y + (direction.y * speed * delta));
   }
 
   public void handleDispose(Fixture fixtureA, Fixture fixtureB) {
