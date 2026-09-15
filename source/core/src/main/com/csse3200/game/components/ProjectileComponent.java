@@ -12,6 +12,7 @@ public class ProjectileComponent extends Component {
   // private HitboxComponent hitboxComponent;
   private PhysicsMovementComponent movementComponent;
   private float previousDistanceToTarget = Float.MAX_VALUE;
+  private float timeAlive = 0f;
   private static final float ARM_TIME = 0.15f;
 
   /**
@@ -32,7 +33,6 @@ public class ProjectileComponent extends Component {
 
   @Override
   public void update() {
-    float timeAlive = 0f;
     float deltaTime = ServiceLocator.getTimeSource().getDeltaTime();
     remainingLifetime -= deltaTime;
     timeAlive += deltaTime;
@@ -63,6 +63,11 @@ public class ProjectileComponent extends Component {
    * @param other fixture belonging to the collided entity
    */
   private void onCollisionStart(Fixture me, Fixture other) {
+
+    if (timeAlive < ARM_TIME) {
+      return;
+    }
+
     short otherLayer = other.getFilterData().categoryBits;
 
     boolean hitPlayer = PhysicsLayer.contains(PhysicsLayer.PLAYER, otherLayer);

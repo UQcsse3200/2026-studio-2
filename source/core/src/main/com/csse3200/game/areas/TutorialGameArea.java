@@ -245,7 +245,7 @@ public class TutorialGameArea extends GameArea {
     // spawnTestNecromancer();
 
     // spawnVulture();
-    spawnNecromancer();
+    // spawnNecromancer();
 
     // spawnTestWinCondition(); // Temporary test win condition near player spawn for quick testing
 
