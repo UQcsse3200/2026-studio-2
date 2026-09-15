@@ -142,7 +142,10 @@ public class GameEndDisplay extends UIComponent {
     panel.setVisible(visible);
     panel.setBackground(getBackgroundDrawable());
 
-    Value padding = Value.percentWidth(0.02f, root);
+    // Fixed padding: percent-based padding evaluates to 0 during panel.pack()
+    // (root has no width yet), which packs the panel too small and pushes the
+    // last button outside the panel's clickable bounds.
+    Value padding = new Value.Fixed(20f);
 
     // Title — Pixeloid Sans Bold, uppercase, warm gold accent
     titleLabel = new Label(titleText, skin, "title");
