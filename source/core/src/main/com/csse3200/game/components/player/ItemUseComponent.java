@@ -7,6 +7,8 @@ import com.csse3200.game.components.inventory.InventoryComponent;
 import com.csse3200.game.components.item.ItemType;
 import com.csse3200.game.components.item.weapons.PrimaryWeapon;
 import com.csse3200.game.components.item.weapons.WeaponComponent;
+import com.badlogic.gdx.audio.Sound;
+import com.csse3200.game.services.ServiceLocator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,6 +58,12 @@ public class ItemUseComponent extends Component {
 
     if (selected == ItemType.ROPE_ARROW) {
       useSelectedItem();
+      logger.debug("Arrow sound should play now");
+      try {
+        Sound arrowSound = ServiceLocator.getResourceService().getAsset("sounds/Arrow_release.wav", Sound.class);
+        arrowSound.play(0.4f);
+      } catch (Exception e) {
+      }
       return;
     }
 
