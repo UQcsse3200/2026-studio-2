@@ -5,6 +5,7 @@ import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.areas.terrain.TerrainFactory;
 import com.csse3200.game.areas.terrain.TerrainFactory.TerrainType;
+import com.csse3200.game.areas.terrain.configs.PlatformConfig;
 import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.components.inventory.InventoryComponent;
 import com.csse3200.game.components.item.ItemLabelDisplay;
@@ -203,13 +204,18 @@ public class SandboxGameArea extends GameArea {
   }
 
   private void spawnPlatform(int grappleSides, float width, float height, GridPoint2 position) {
-    Entity platform = ObstacleFactory.createPlatform(grappleSides);
+    PlatformConfig config =
+        new PlatformConfig(
+            position, Math.round(width), Math.round(height), grappleSides, HOOK_PLATFORM_TEXTURE);
+    Entity platform = ObstacleFactory.createPlatform(config);
     platform.setScale(width, height);
     spawnEntityAt(platform, position, false, false);
   }
 
   private void spawnFloor(float width, float height, GridPoint2 position) {
-    Entity floor = ObstacleFactory.createFloor(0);
+    PlatformConfig config =
+        new PlatformConfig(position, Math.round(width), Math.round(height), 0, FLOOR_TEXTURE);
+    Entity floor = ObstacleFactory.createFloor(config);
     floor.setScale(width, height);
     spawnEntityAt(floor, position, false, false);
   }
