@@ -191,10 +191,10 @@ public class SandboxGameArea extends GameArea {
   }
 
   private void spawnGround() {
-    for (int offset = -GROUND_LENGTH; offset < GROUND_LENGTH; offset += GROUND_PLATFORM_WIDTH) {
-      spawnFloor(
-          GROUND_PLATFORM_WIDTH, GROUND_HEIGHT, new GridPoint2(GROUND_START_X + offset, GROUND_Y));
-    }
+    float groundWidth = GROUND_LENGTH * 2f;
+
+    spawnFloor(
+        groundWidth, GROUND_HEIGHT, new GridPoint2(GROUND_START_X - GROUND_LENGTH, GROUND_Y));
   }
 
   private void spawnGrapplePlatforms() {
