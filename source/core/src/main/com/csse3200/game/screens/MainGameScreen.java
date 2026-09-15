@@ -13,6 +13,7 @@ import com.csse3200.game.components.gamearea.PerformanceDisplay;
 import com.csse3200.game.components.maingame.MainGameActions;
 import com.csse3200.game.components.maingame.MainGameExitDisplay;
 import com.csse3200.game.components.maingame.PauseMenuDisplay;
+import com.csse3200.game.components.minigames.MinigameOverlayManager;
 import com.csse3200.game.components.minigames.blackjack.BlackjackConfig;
 import com.csse3200.game.components.minigames.blackjack.BlackjackOverlay;
 import com.csse3200.game.components.minigames.spinthewheel.SpinTheWheelOverlay;
@@ -58,6 +59,7 @@ public class MainGameScreen extends ScreenAdapter {
   private Entity player;
   private final SpinTheWheelOverlay wheelOverlay;
   private final BlackjackOverlay blackjackOverlay;
+  private final MinigameOverlayManager minigameOverlayManager;
 
   public MainGameScreen(GdxGame game) {
     this.game = game;
@@ -89,8 +91,9 @@ public class MainGameScreen extends ScreenAdapter {
     forestGameArea.create();
     player = forestGameArea.getPlayer();
     player.getEvents().addListener("deathAnimationFinished", this::onPlayerDeath);
-    wheelOverlay = new SpinTheWheelOverlay(WheelConfig.ITEMS, player);
-    blackjackOverlay = new BlackjackOverlay(player);
+    minigameOverlayManager = new MinigameOverlayManager();
+    wheelOverlay = new SpinTheWheelOverlay(WheelConfig.ITEMS, player, minigameOverlayManager);
+    blackjackOverlay = new BlackjackOverlay(player, minigameOverlayManager);
   }
 
   private void onPlayerDeath() {

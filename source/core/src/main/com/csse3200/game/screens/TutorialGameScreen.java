@@ -15,6 +15,7 @@ import com.csse3200.game.components.gamearea.PerformanceDisplay;
 import com.csse3200.game.components.maingame.MainGameActions;
 import com.csse3200.game.components.maingame.MainGameExitDisplay;
 import com.csse3200.game.components.maingame.PauseMenuDisplay;
+import com.csse3200.game.components.minigames.MinigameOverlayManager;
 import com.csse3200.game.components.minigames.blackjack.BlackjackConfig;
 import com.csse3200.game.components.minigames.blackjack.BlackjackOverlay;
 import com.csse3200.game.components.minigames.spinthewheel.SpinTheWheelOverlay;
@@ -66,6 +67,7 @@ public class TutorialGameScreen extends ScreenAdapter {
   private final PhysicsEngine physicsEngine;
   private final SpinTheWheelOverlay wheelOverlay;
   private final BlackjackOverlay blackjackOverlay;
+  private final MinigameOverlayManager minigameOverlayManager;
   private Entity player;
   private static final String gameplayMusic = "sounds/gameplay_bg.ogg";
   private static final String[] gameplayMusicFiles = {gameplayMusic};
@@ -120,8 +122,9 @@ public class TutorialGameScreen extends ScreenAdapter {
     renderer.getCamera().setTarget(player);
     player.getEvents().addListener("deathAnimationFinished", this::onPlayerDeath);
 
-    wheelOverlay = new SpinTheWheelOverlay(WheelConfig.ITEMS, player);
-    blackjackOverlay = new BlackjackOverlay(player);
+    minigameOverlayManager = new MinigameOverlayManager();
+    wheelOverlay = new SpinTheWheelOverlay(WheelConfig.ITEMS, player, minigameOverlayManager);
+    blackjackOverlay = new BlackjackOverlay(player, minigameOverlayManager);
 
     if (cheats) {
       tutorialGameArea
