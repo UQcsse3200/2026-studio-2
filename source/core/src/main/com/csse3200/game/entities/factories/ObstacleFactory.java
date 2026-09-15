@@ -281,7 +281,7 @@ public class ObstacleFactory {
             .addComponent(collider)
             .addComponent(new LevelTriggerComponent(nextLevelName));
 
-    trigger.getComponent(ColliderComponent.class).setAsBox(new Vector2(2f, 2f));
+    trigger.getComponent(ColliderComponent.class).setAsBox(new Vector2(2f, 16f));
 
     return trigger;
   }
