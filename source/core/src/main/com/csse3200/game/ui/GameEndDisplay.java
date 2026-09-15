@@ -82,6 +82,11 @@ public class GameEndDisplay extends UIComponent {
     typeTimer = 0f;
     revealedChars = 0;
     visible = true;
+    // Freeze the game world (entities + physics) so the player can't act while
+    // the game-end panel is up. Same mechanism as PauseMenuDisplay.pause().
+    if (ServiceLocator.getEntityService() != null) {
+      ServiceLocator.getEntityService().setPaused(true);
+    }
     if (panel != null) {
       panel.setVisible(true);
       panel.getColor().a = 0f;
@@ -304,6 +309,10 @@ public class GameEndDisplay extends UIComponent {
 
   @Override
   public void dispose() {
+    // Release the freeze applied in setState() so the next screen isn't paused.
+    if (ServiceLocator.getEntityService() != null) {
+      ServiceLocator.getEntityService().setPaused(false);
+    }
     if (panel != null) {
       panel.remove();
     }

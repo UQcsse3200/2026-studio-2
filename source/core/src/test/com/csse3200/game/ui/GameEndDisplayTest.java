@@ -13,8 +13,8 @@ class GameEndDisplayTest {
     GameEndDisplay display = new GameEndDisplay(GameEndState.WIN);
 
     assertEquals(GameEndState.WIN, display.getState());
-    assertEquals("YOU WIN!", display.getTitleText());
-    assertTrue(display.getResultText().contains("victory"));
+    assertEquals("VICTORY!", display.getTitleText());
+    assertTrue(display.getResultText().contains("closer to getting home"));
   }
 
   @Test
@@ -22,8 +22,8 @@ class GameEndDisplayTest {
     GameEndDisplay display = new GameEndDisplay(GameEndState.LOSE);
 
     assertEquals(GameEndState.LOSE, display.getState());
-    assertEquals("GAME OVER!", display.getTitleText());
-    assertTrue(display.getResultText().contains("luck"));
+    assertEquals("DEFEAT!", display.getTitleText());
+    assertTrue(display.getResultText().contains("Penelope"));
   }
 
   @Test
@@ -37,10 +37,10 @@ class GameEndDisplayTest {
   void shouldUpdateResultTextOnStateChange() {
     GameEndDisplay display = new GameEndDisplay(GameEndState.LOSE);
 
-    assertTrue(display.getResultText().contains("luck"));
+    assertTrue(display.getResultText().contains("Penelope"));
 
     display.setState(GameEndState.WIN);
-    assertTrue(display.getResultText().contains("victory"));
+    assertTrue(display.getResultText().contains("closer to getting home"));
   }
 
   @Test
