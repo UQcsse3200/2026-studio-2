@@ -201,7 +201,6 @@ public class ObstacleFactory {
             .addComponent(new TriggerablePlatformComponent());
 
     platform.getComponent(PhysicsComponent.class).setBodyType(BodyType.StaticBody);
-    platform.setEnabled(false);
 
     return platform;
   }
@@ -226,7 +225,7 @@ public class ObstacleFactory {
         new Entity()
             .addComponent(animator)
             .addComponent(new PhysicsComponent())
-            .addComponent(new HitboxComponent().setLayer(PhysicsLayer.NPC))
+            .addComponent(new HitboxComponent().setLayer(PhysicsLayer.DEFAULT))
             .addComponent(new ActivatableComponent(config.getIds()))
             .addComponent(new TriggerButtonComponent())
             .addComponent(new RotatableMapComponent(config.getRotation()));
