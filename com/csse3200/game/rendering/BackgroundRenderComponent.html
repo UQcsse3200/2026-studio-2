@@ -120,7 +120,9 @@ loadScripts(document, 'script');</script>
 <div class="summary-table two-column-summary">
 <div class="table-header col-first">Constructor</div>
 <div class="table-header col-last">Description</div>
-<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(com.csse3200.game.components.CameraComponent)" class="member-name-link">BackgroundRenderComponent</a><wbr>(<a href="../components/CameraComponent.html" title="class in com.csse3200.game.components">CameraComponent</a>&nbsp;camera)</code></div>
+<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(com.csse3200.game.components.CameraComponent,com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2)" class="member-name-link">BackgroundRenderComponent</a><wbr>(<a href="../components/CameraComponent.html" title="class in com.csse3200.game.components">CameraComponent</a>&nbsp;camera,
+ com.badlogic.gdx.math.Vector2&nbsp;backgroundPos,
+ com.badlogic.gdx.math.Vector2&nbsp;worldBounds)</code></div>
 <div class="col-last even-row-color">
 <div class="block">Creates a multi-layer parallax background.</div>
 </div>
@@ -139,41 +141,35 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#addLayer(com.badlogic.gdx.graphics.Texture,float,float,float,float)" class="member-name-link">addLayer</a><wbr>(com.badlogic.gdx.graphics.Texture&nbsp;texture,
- float&nbsp;parallaxFactor,
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#addLayer(java.lang.String,com.badlogic.gdx.math.Vector2,float,float,com.badlogic.gdx.math.Vector2,com.csse3200.game.areas.GameArea.BackgroundType,com.badlogic.gdx.math.Vector2,boolean)" class="member-name-link">addLayer</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;texturePath,
+ com.badlogic.gdx.math.Vector2&nbsp;parallaxFactor,
  float&nbsp;width,
  float&nbsp;height,
- float&nbsp;yOffset)</code></div>
+ com.badlogic.gdx.math.Vector2&nbsp;offset,
+ <a href="../areas/GameArea.BackgroundType.html" title="enum class in com.csse3200.game.areas">GameArea.BackgroundType</a>&nbsp;backgroundType,
+ com.badlogic.gdx.math.Vector2&nbsp;velocity,
+ boolean&nbsp;repeat)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Adds a parallax layer using its texture dimensions.</div>
-</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#addLayer(java.lang.String,float,float,float,float)" class="member-name-link">addLayer</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;texturePath,
- float&nbsp;parallaxFactor,
- float&nbsp;width,
- float&nbsp;height,
- float&nbsp;yOffset)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Adds a parallax layer with a custom size and vertical position.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#draw(com.badlogic.gdx.graphics.g2d.SpriteBatch)" class="member-name-link">draw</a><wbr>(com.badlogic.gdx.graphics.g2d.SpriteBatch&nbsp;batch)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#draw(com.badlogic.gdx.graphics.g2d.SpriteBatch)" class="member-name-link">draw</a><wbr>(com.badlogic.gdx.graphics.g2d.SpriteBatch&nbsp;batch)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Draw the renderable.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getLayer()" class="member-name-link">getLayer</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getLayer()" class="member-name-link">getLayer</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Layer to be rendered in.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>float</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getZIndex()" class="member-name-link">getZIndex</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>float</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getZIndex()" class="member-name-link">getZIndex</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Z index controls rendering order within a layer.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#scaleEntity()" class="member-name-link">scaleEntity</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#scaleEntity()" class="member-name-link">scaleEntity</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Scale is controlled individually for each layer.</div>
 </div>
 </div>
@@ -200,13 +196,17 @@ loadScripts(document, 'script');</script>
 <h2>Constructor Details</h2>
 <ul class="member-list">
 <li>
-<section class="detail" id="&lt;init&gt;(com.csse3200.game.components.CameraComponent)">
+<section class="detail" id="&lt;init&gt;(com.csse3200.game.components.CameraComponent,com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2)">
 <h3>BackgroundRenderComponent</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">BackgroundRenderComponent</span><wbr><span class="parameters">(<a href="../components/CameraComponent.html" title="class in com.csse3200.game.components">CameraComponent</a>&nbsp;camera)</span></div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">BackgroundRenderComponent</span><wbr><span class="parameters">(<a href="../components/CameraComponent.html" title="class in com.csse3200.game.components">CameraComponent</a>&nbsp;camera,
+ com.badlogic.gdx.math.Vector2&nbsp;backgroundPos,
+ com.badlogic.gdx.math.Vector2&nbsp;worldBounds)</span></div>
 <div class="block">Creates a multi-layer parallax background.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>camera</code> - camera used to calculate parallax movement</dd>
+<dd><code>backgroundPos</code> - the position of the background</dd>
+<dd><code>worldBounds</code> - the maximum x and y values of the world bounds</dd>
 </dl>
 </section>
 </li>
@@ -219,40 +219,27 @@ loadScripts(document, 'script');</script>
 <h2>Method Details</h2>
 <ul class="member-list">
 <li>
-<section class="detail" id="addLayer(java.lang.String,float,float,float,float)">
+<section class="detail" id="addLayer(java.lang.String,com.badlogic.gdx.math.Vector2,float,float,com.badlogic.gdx.math.Vector2,com.csse3200.game.areas.GameArea.BackgroundType,com.badlogic.gdx.math.Vector2,boolean)">
 <h3>addLayer</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">addLayer</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;texturePath,
- float&nbsp;parallaxFactor,
+ com.badlogic.gdx.math.Vector2&nbsp;parallaxFactor,
  float&nbsp;width,
  float&nbsp;height,
- float&nbsp;yOffset)</span></div>
+ com.badlogic.gdx.math.Vector2&nbsp;offset,
+ <a href="../areas/GameArea.BackgroundType.html" title="enum class in com.csse3200.game.areas">GameArea.BackgroundType</a>&nbsp;backgroundType,
+ com.badlogic.gdx.math.Vector2&nbsp;velocity,
+ boolean&nbsp;repeat)</span></div>
 <div class="block">Adds a parallax layer with a custom size and vertical position.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
-<dd><code>texturePath</code> - internal path of the texture</dd>
-<dd><code>parallaxFactor</code> - controls how much the layer moves</dd>
-<dd><code>width</code> - width of the layer in world units</dd>
-<dd><code>height</code> - height of the layer in world units</dd>
-<dd><code>yOffset</code> - vertical position relative to the background entity</dd>
-</dl>
-</section>
-</li>
-<li>
-<section class="detail" id="addLayer(com.badlogic.gdx.graphics.Texture,float,float,float,float)">
-<h3>addLayer</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">addLayer</span><wbr><span class="parameters">(com.badlogic.gdx.graphics.Texture&nbsp;texture,
- float&nbsp;parallaxFactor,
- float&nbsp;width,
- float&nbsp;height,
- float&nbsp;yOffset)</span></div>
-<div class="block">Adds a parallax layer using its texture dimensions.</div>
-<dl class="notes">
-<dt>Parameters:</dt>
-<dd><code>texture</code> - texture for the layer</dd>
-<dd><code>parallaxFactor</code> - controls how much the layer moves</dd>
-<dd><code>width</code> - width of the layer in world units</dd>
-<dd><code>height</code> - height of the layer in world units</dd>
-<dd><code>yOffset</code> - vertical position relative to the background entity</dd>
+<dd><code>texturePath</code> - path to the texture</dd>
+<dd><code>parallaxFactor</code> - controls how much the layer moves relative to player movement</dd>
+<dd><code>width</code> - width of the layer</dd>
+<dd><code>height</code> - height of the layer</dd>
+<dd><code>offset</code> - positional offset relative to backgroundPos</dd>
+<dd><code>backgroundType</code> - the type of background this layer is</dd>
+<dd><code>velocity</code> - the independent velocity of the layer</dd>
+<dd><code>repeat</code> - whether or not this layer should repeat horizontally</dd>
 </dl>
 </section>
 </li>

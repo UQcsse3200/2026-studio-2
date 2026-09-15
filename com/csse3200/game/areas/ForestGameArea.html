@@ -37,7 +37,7 @@ loadScripts(document, 'script');</script>
 <li>
 <p>Summary:</p>
 <ul>
-<li>Nested</li>
+<li><a href="#nested-class-summary">Nested</a></li>
 <li><a href="#field-summary">Field</a></li>
 <li><a href="#constructor-summary">Constr</a></li>
 <li><a href="#method-summary">Method</a></li>
@@ -57,7 +57,7 @@ loadScripts(document, 'script');</script>
 <div id="navbar-sub-list">
 <ul class="sub-nav-list">
 <li>Summary:&nbsp;</li>
-<li>Nested&nbsp;|&nbsp;</li>
+<li><a href="#nested-class-summary">Nested</a>&nbsp;|&nbsp;</li>
 <li><a href="#field-summary">Field</a>&nbsp;|&nbsp;</li>
 <li><a href="#constructor-summary">Constr</a>&nbsp;|&nbsp;</li>
 <li><a href="#method-summary">Method</a></li>
@@ -101,13 +101,22 @@ loadScripts(document, 'script');</script>
 </section>
 <section class="summary">
 <ul class="summary-list">
+<!-- ======== NESTED CLASS SUMMARY ======== -->
+<li>
+<section class="nested-class-summary" id="nested-class-summary">
+<h2>Nested Class Summary</h2>
+<div class="inherited-list">
+<h2 id="nested-classes-inherited-from-class-com.csse3200.game.areas.GameArea">Nested classes/interfaces inherited from class&nbsp;com.csse3200.game.areas.<a href="GameArea.html" title="class in com.csse3200.game.areas">GameArea</a></h2>
+<code><a href="GameArea.BackgroundType.html" title="enum class in com.csse3200.game.areas">GameArea.BackgroundType</a></code></div>
+</section>
+</li>
 <!-- =========== FIELD SUMMARY =========== -->
 <li>
 <section class="field-summary" id="field-summary">
 <h2>Field Summary</h2>
 <div class="inherited-list">
 <h3 id="fields-inherited-from-class-com.csse3200.game.areas.GameArea">Fields inherited from class&nbsp;com.csse3200.game.areas.<a href="GameArea.html" title="class in com.csse3200.game.areas">GameArea</a></h3>
-<code><a href="GameArea.html#areaEntities">areaEntities</a>, <a href="GameArea.html#cameraComponent">cameraComponent</a>, <a href="GameArea.html#platforms">platforms</a>, <a href="GameArea.html#terrain">terrain</a></code></div>
+<code><a href="GameArea.html#areaEntities">areaEntities</a>, <a href="GameArea.html#cameraComponent">cameraComponent</a>, <a href="GameArea.html#config">config</a>, <a href="GameArea.html#levelChanger">levelChanger</a>, <a href="GameArea.html#platforms">platforms</a>, <a href="GameArea.html#terrain">terrain</a>, <a href="GameArea.html#triggerableEntities">triggerableEntities</a></code></div>
 </section>
 </li>
 <!-- ======== CONSTRUCTOR SUMMARY ======== -->
@@ -155,7 +164,7 @@ loadScripts(document, 'script');</script>
 </div>
 <div class="inherited-list">
 <h3 id="methods-inherited-from-class-com.csse3200.game.areas.GameArea">Methods inherited from class&nbsp;com.csse3200.game.areas.<a href="GameArea.html" title="class in com.csse3200.game.areas">GameArea</a></h3>
-<code><a href="GameArea.html#checkSuccessfulGrapple(com.badlogic.gdx.math.Vector2)">checkSuccessfulGrapple</a>, <a href="GameArea.html#findTargetedPlatform(com.badlogic.gdx.math.Vector2)">findTargetedPlatform</a>, <a href="GameArea.html#spawnEntity(com.csse3200.game.entities.Entity)">spawnEntity</a>, <a href="GameArea.html#spawnEntityAt(com.csse3200.game.entities.Entity,com.badlogic.gdx.math.GridPoint2,boolean,boolean)">spawnEntityAt</a></code></div>
+<code><a href="GameArea.html#checkSuccessfulGrapple(com.badlogic.gdx.math.Vector2)">checkSuccessfulGrapple</a>, <a href="GameArea.html#findTargetedPlatform(com.badlogic.gdx.math.Vector2)">findTargetedPlatform</a>, <a href="GameArea.html#getLevelChanger()">getLevelChanger</a>, <a href="GameArea.html#getTerrain()">getTerrain</a>, <a href="GameArea.html#respawn()">respawn</a>, <a href="GameArea.html#spawnConfigEntities()">spawnConfigEntities</a>, <a href="GameArea.html#spawnEntity(com.csse3200.game.entities.Entity)">spawnEntity</a>, <a href="GameArea.html#spawnEntityAt(com.csse3200.game.entities.Entity,com.badlogic.gdx.math.GridPoint2,boolean,boolean)">spawnEntityAt</a></code></div>
 <div class="inherited-list">
 <h3 id="methods-inherited-from-class-java.lang.Object">Methods inherited from class&nbsp;java.lang.<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></h3>
 <code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#clone()" title="class or interface in java.lang" class="external-link">clone</a>, <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#equals(java.lang.Object)" title="class or interface in java.lang" class="external-link">equals</a>, <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#finalize()" title="class or interface in java.lang" class="external-link">finalize</a>, <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#getClass()" title="class or interface in java.lang" class="external-link">getClass</a>, <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#hashCode()" title="class or interface in java.lang" class="external-link">hashCode</a>, <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#notify()" title="class or interface in java.lang" class="external-link">notify</a>, <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#notifyAll()" title="class or interface in java.lang" class="external-link">notifyAll</a>, <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#toString()" title="class or interface in java.lang" class="external-link">toString</a>, <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#wait()" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#wait(long)" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#wait(long,int)" title="class or interface in java.lang" class="external-link">wait</a></code></div>
@@ -198,6 +207,8 @@ loadScripts(document, 'script');</script>
 <h3>getPlayer</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">getPlayer</span>()</div>
 <dl class="notes">
+<dt>Overrides:</dt>
+<dd><code><a href="GameArea.html#getPlayer()">getPlayer</a></code>&nbsp;in class&nbsp;<code><a href="GameArea.html" title="class in com.csse3200.game.areas">GameArea</a></code></dd>
 <dt>Returns:</dt>
 <dd>the player entity after this area has been created</dd>
 </dl>

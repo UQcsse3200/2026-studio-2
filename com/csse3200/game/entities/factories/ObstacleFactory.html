@@ -109,37 +109,55 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createFloor(int)" class="member-name-link">createFloor</a><wbr>(int&nbsp;grappleSides)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createButton(com.csse3200.game.areas.terrain.configs.TriggerButtonConfig)" class="member-name-link">createButton</a><wbr>(<a href="../../areas/terrain/configs/TriggerButtonConfig.html" title="class in com.csse3200.game.areas.terrain.configs">TriggerButtonConfig</a>&nbsp;config)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Creates a new trigger button entity.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createMovingPlatform(int,com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2)" class="member-name-link">createMovingPlatform</a><wbr>(int&nbsp;grappleSides,
- com.badlogic.gdx.math.Vector2&nbsp;firstTarget,
- com.badlogic.gdx.math.Vector2&nbsp;secondTarget,
- com.badlogic.gdx.math.Vector2&nbsp;maxSpeed)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createPlatform(int)" class="member-name-link">createPlatform</a><wbr>(int&nbsp;grappleSides)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createPlatform(int,boolean)" class="member-name-link">createPlatform</a><wbr>(int&nbsp;grappleSides,
- boolean&nbsp;tall)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createCrumblingPlatform(com.csse3200.game.areas.terrain.configs.CrumblingPlatformConfig)" class="member-name-link">createCrumblingPlatform</a><wbr>(<a href="../../areas/terrain/configs/CrumblingPlatformConfig.html" title="class in com.csse3200.game.areas.terrain.configs">CrumblingPlatformConfig</a>&nbsp;config)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
-<div class="block">Creates a platform entity.</div>
+<div class="block">Creates a normal crumbling platform.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createSpike()" class="member-name-link">createSpike</a>()</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createFloor(com.csse3200.game.areas.terrain.configs.PlatformConfig)" class="member-name-link">createFloor</a><wbr>(<a href="../../areas/terrain/configs/PlatformConfig.html" title="class in com.csse3200.game.areas.terrain.configs">PlatformConfig</a>&nbsp;config)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Creates the normal floor used by the other levels.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createLedge(com.csse3200.game.areas.terrain.configs.PlatformConfig)" class="member-name-link">createLedge</a><wbr>(<a href="../../areas/terrain/configs/PlatformConfig.html" title="class in com.csse3200.game.areas.terrain.configs">PlatformConfig</a>&nbsp;config)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Creates a ledge entity.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createMovingPlatform(com.csse3200.game.areas.terrain.configs.MovingPlatformConfig)" class="member-name-link">createMovingPlatform</a><wbr>(<a href="../../areas/terrain/configs/MovingPlatformConfig.html" title="class in com.csse3200.game.areas.terrain.configs">MovingPlatformConfig</a>&nbsp;config)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Creates a normal moving platform.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createNextLevelTriggerEntity(java.lang.String)" class="member-name-link">createNextLevelTriggerEntity</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;nextLevelName)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Creates a new sensor entity that detects a collision from the player and triggers a level swap</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createPlatform(com.csse3200.game.areas.terrain.configs.PlatformConfig)" class="member-name-link">createPlatform</a><wbr>(<a href="../../areas/terrain/configs/PlatformConfig.html" title="class in com.csse3200.game.areas.terrain.configs">PlatformConfig</a>&nbsp;config)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Creates the normal platform used by the other levels.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createSpike(com.csse3200.game.areas.terrain.configs.SpikeClusterConfig)" class="member-name-link">createSpike</a><wbr>(<a href="../../areas/terrain/configs/SpikeClusterConfig.html" title="class in com.csse3200.game.areas.terrain.configs">SpikeClusterConfig</a>&nbsp;config)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Creates a default upward-facing spike hazard entity.</div>
 </div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createSpikyBall(com.badlogic.gdx.math.Vector2)" class="member-name-link">createSpikyBall</a><wbr>(com.badlogic.gdx.math.Vector2&nbsp;moveDirection)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createSpike(float)" class="member-name-link">createSpike</a><wbr>(float&nbsp;rotationAngle)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
-<div class="block">Creates a spike hazard entity with custom rotation.</div>
-</div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createSpikyBallTrap(com.csse3200.game.areas.terrain.configs.SpikyBallTrapConfig)" class="member-name-link">createSpikyBallTrap</a><wbr>(<a href="../../areas/terrain/configs/SpikyBallTrapConfig.html" title="class in com.csse3200.game.areas.terrain.configs">SpikyBallTrapConfig</a>&nbsp;config)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createStatue()" class="member-name-link">createStatue</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
-<div class="block">Creates a statue that is able to be stood infront of</div>
+<div class="block">Creates a statue that is able to be stood in front of.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createTree()" class="member-name-link">createTree</a>()</code></div>
@@ -147,14 +165,21 @@ loadScripts(document, 'script');</script>
 <div class="block">Creates a tree entity.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createWall(float,float)" class="member-name-link">createWall</a><wbr>(float&nbsp;width,
- float&nbsp;height)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createTriggerablePlatform(com.csse3200.game.areas.terrain.configs.TriggerablePlatformConfig)" class="member-name-link">createTriggerablePlatform</a><wbr>(<a href="../../areas/terrain/configs/TriggerablePlatformConfig.html" title="class in com.csse3200.game.areas.terrain.configs">TriggerablePlatformConfig</a>&nbsp;config)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
-<div class="block">Creates an invisible physics wall.</div>
+<div class="block">Creates a normal triggerable platform.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createWinConEntity()" class="member-name-link">createWinConEntity</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createWall(float,float)" class="member-name-link">createWall</a><wbr>(float&nbsp;width,
+ float&nbsp;height)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Creates an invisible physics wall.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createWinConEntity()" class="member-name-link">createWinConEntity</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Creates a win condition entity.</div>
+</div>
 </div>
 </div>
 </div>
@@ -179,51 +204,114 @@ loadScripts(document, 'script');</script>
 <div class="block">Creates a tree entity.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>entity</dd>
+<dd>tree entity</dd>
 </dl>
 </section>
 </li>
 <li>
-<section class="detail" id="createPlatform(int)">
+<section class="detail" id="createPlatform(com.csse3200.game.areas.terrain.configs.PlatformConfig)">
 <h3>createPlatform</h3>
-<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createPlatform</span><wbr><span class="parameters">(int&nbsp;grappleSides)</span></div>
-</section>
-</li>
-<li>
-<section class="detail" id="createPlatform(int,boolean)">
-<h3>createPlatform</h3>
-<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createPlatform</span><wbr><span class="parameters">(int&nbsp;grappleSides,
- boolean&nbsp;tall)</span></div>
-<div class="block">Creates a platform entity.</div>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createPlatform</span><wbr><span class="parameters">(<a href="../../areas/terrain/configs/PlatformConfig.html" title="class in com.csse3200.game.areas.terrain.configs">PlatformConfig</a>&nbsp;config)</span></div>
+<div class="block">Creates the normal platform used by the other levels.
+
+ <p>Level 2's tiled ground uses TiledRenderComponent so the tile texture repeats instead of
+ stretching across the entire floor.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
-<dd><code>grappleSides</code> - sides the platform can be grappled from</dd>
-<dd><code>tall</code> - use the tall platform art instead of stretching the default wide plank onto a
-     tall/square shape</dd>
+<dd><code>config</code> - configuration object for this platform</dd>
 <dt>Returns:</dt>
 <dd>platform entity</dd>
 </dl>
 </section>
 </li>
 <li>
-<section class="detail" id="createMovingPlatform(int,com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2)">
+<section class="detail" id="createMovingPlatform(com.csse3200.game.areas.terrain.configs.MovingPlatformConfig)">
 <h3>createMovingPlatform</h3>
-<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createMovingPlatform</span><wbr><span class="parameters">(int&nbsp;grappleSides,
- com.badlogic.gdx.math.Vector2&nbsp;firstTarget,
- com.badlogic.gdx.math.Vector2&nbsp;secondTarget,
- com.badlogic.gdx.math.Vector2&nbsp;maxSpeed)</span></div>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createMovingPlatform</span><wbr><span class="parameters">(<a href="../../areas/terrain/configs/MovingPlatformConfig.html" title="class in com.csse3200.game.areas.terrain.configs">MovingPlatformConfig</a>&nbsp;config)</span></div>
+<div class="block">Creates a normal moving platform.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>config</code> - configuration object for this platform</dd>
+<dt>Returns:</dt>
+<dd>moving platform entity</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="createCrumblingPlatform(com.csse3200.game.areas.terrain.configs.CrumblingPlatformConfig)">
+<h3>createCrumblingPlatform</h3>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createCrumblingPlatform</span><wbr><span class="parameters">(<a href="../../areas/terrain/configs/CrumblingPlatformConfig.html" title="class in com.csse3200.game.areas.terrain.configs">CrumblingPlatformConfig</a>&nbsp;config)</span></div>
+<div class="block">Creates a normal crumbling platform.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>config</code> - configuration object for this platform</dd>
+<dt>Returns:</dt>
+<dd>crumbling platform entity</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="createTriggerablePlatform(com.csse3200.game.areas.terrain.configs.TriggerablePlatformConfig)">
+<h3>createTriggerablePlatform</h3>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createTriggerablePlatform</span><wbr><span class="parameters">(<a href="../../areas/terrain/configs/TriggerablePlatformConfig.html" title="class in com.csse3200.game.areas.terrain.configs">TriggerablePlatformConfig</a>&nbsp;config)</span></div>
+<div class="block">Creates a normal triggerable platform.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>config</code> - configuration object for this platform</dd>
+<dt>Returns:</dt>
+<dd>triggerable platform entity</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="createButton(com.csse3200.game.areas.terrain.configs.TriggerButtonConfig)">
+<h3>createButton</h3>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createButton</span><wbr><span class="parameters">(<a href="../../areas/terrain/configs/TriggerButtonConfig.html" title="class in com.csse3200.game.areas.terrain.configs">TriggerButtonConfig</a>&nbsp;config)</span></div>
+<div class="block">Creates a new trigger button entity.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>config</code> - configuration to use for the creation of this button</dd>
+<dt>Returns:</dt>
+<dd>button entity</dd>
+</dl>
 </section>
 </li>
 <li>
 <section class="detail" id="createWinConEntity()">
 <h3>createWinConEntity</h3>
 <div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createWinConEntity</span>()</div>
+<div class="block">Creates a win condition entity.</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>win condition entity</dd>
+</dl>
 </section>
 </li>
 <li>
-<section class="detail" id="createFloor(int)">
+<section class="detail" id="createNextLevelTriggerEntity(java.lang.String)">
+<h3>createNextLevelTriggerEntity</h3>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createNextLevelTriggerEntity</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;nextLevelName)</span></div>
+<div class="block">Creates a new sensor entity that detects a collision from the player and triggers a level swap</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>nextLevelName</code> - a String representing the name of the level this component should force
+     the game screen to swap to</dd>
+<dt>Returns:</dt>
+<dd>a level trigger entity</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="createFloor(com.csse3200.game.areas.terrain.configs.PlatformConfig)">
 <h3>createFloor</h3>
-<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createFloor</span><wbr><span class="parameters">(int&nbsp;grappleSides)</span></div>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createFloor</span><wbr><span class="parameters">(<a href="../../areas/terrain/configs/PlatformConfig.html" title="class in com.csse3200.game.areas.terrain.configs">PlatformConfig</a>&nbsp;config)</span></div>
+<div class="block">Creates the normal floor used by the other levels.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>config</code> - configuration object for the floor</dd>
+<dt>Returns:</dt>
+<dd>floor entity</dd>
+</dl>
 </section>
 </li>
 <li>
@@ -234,10 +322,23 @@ loadScripts(document, 'script');</script>
 <div class="block">Creates an invisible physics wall.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
-<dd><code>width</code> - Wall width in world units</dd>
-<dd><code>height</code> - Wall height in world units</dd>
+<dd><code>width</code> - wall width in world units</dd>
+<dd><code>height</code> - wall height in world units</dd>
 <dt>Returns:</dt>
-<dd>Wall entity of given width and height</dd>
+<dd>wall entity</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="createLedge(com.csse3200.game.areas.terrain.configs.PlatformConfig)">
+<h3>createLedge</h3>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createLedge</span><wbr><span class="parameters">(<a href="../../areas/terrain/configs/PlatformConfig.html" title="class in com.csse3200.game.areas.terrain.configs">PlatformConfig</a>&nbsp;config)</span></div>
+<div class="block">Creates a ledge entity.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>config</code> - configuration object for this ledge</dd>
+<dt>Returns:</dt>
+<dd>ledge entity</dd>
 </dl>
 </section>
 </li>
@@ -245,36 +346,36 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="createStatue()">
 <h3>createStatue</h3>
 <div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createStatue</span>()</div>
-<div class="block">Creates a statue that is able to be stood infront of</div>
+<div class="block">Creates a statue that is able to be stood in front of.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>Statue entity</dd>
+<dd>statue entity</dd>
 </dl>
 </section>
 </li>
 <li>
-<section class="detail" id="createSpike(float)">
+<section class="detail" id="createSpike(com.csse3200.game.areas.terrain.configs.SpikeClusterConfig)">
 <h3>createSpike</h3>
-<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createSpike</span><wbr><span class="parameters">(float&nbsp;rotationAngle)</span></div>
-<div class="block">Creates a spike hazard entity with custom rotation.</div>
-<dl class="notes">
-<dt>Parameters:</dt>
-<dd><code>rotationAngle</code> - Angle in degrees to rotate the spike (0 = UP, 180 = DOWN, 270 = LEFT, 90 =
-     RIGHT)</dd>
-<dt>Returns:</dt>
-<dd>spike entity</dd>
-</dl>
-</section>
-</li>
-<li>
-<section class="detail" id="createSpike()">
-<h3>createSpike</h3>
-<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createSpike</span>()</div>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createSpike</span><wbr><span class="parameters">(<a href="../../areas/terrain/configs/SpikeClusterConfig.html" title="class in com.csse3200.game.areas.terrain.configs">SpikeClusterConfig</a>&nbsp;config)</span></div>
 <div class="block">Creates a default upward-facing spike hazard entity.</div>
 <dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>config</code> - configuration object for the spike</dd>
 <dt>Returns:</dt>
 <dd>spike entity</dd>
 </dl>
+</section>
+</li>
+<li>
+<section class="detail" id="createSpikyBallTrap(com.csse3200.game.areas.terrain.configs.SpikyBallTrapConfig)">
+<h3>createSpikyBallTrap</h3>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createSpikyBallTrap</span><wbr><span class="parameters">(<a href="../../areas/terrain/configs/SpikyBallTrapConfig.html" title="class in com.csse3200.game.areas.terrain.configs">SpikyBallTrapConfig</a>&nbsp;config)</span></div>
+</section>
+</li>
+<li>
+<section class="detail" id="createSpikyBall(com.badlogic.gdx.math.Vector2)">
+<h3>createSpikyBall</h3>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createSpikyBall</span><wbr><span class="parameters">(com.badlogic.gdx.math.Vector2&nbsp;moveDirection)</span></div>
 </section>
 </li>
 </ul>
