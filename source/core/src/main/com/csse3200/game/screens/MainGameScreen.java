@@ -212,7 +212,7 @@ public class MainGameScreen extends ScreenAdapter {
         .addComponent(new MainGameExitDisplay())
         .addComponent(new GameEndDisplay(GameEndState.LOSE))
         .addComponent(new GameEndActions(this.game))
-        .addComponent(new Terminal())
+        .addComponent(new Terminal(game, GdxGame.ScreenType.MAIN_GAME))
         .addComponent(inputComponent)
         .addComponent(new TerminalDisplay());
 
