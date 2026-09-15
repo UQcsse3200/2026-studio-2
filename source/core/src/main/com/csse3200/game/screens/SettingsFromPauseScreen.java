@@ -19,21 +19,21 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /** The game screen containing the settings. */
-public class SettingsScreen extends ScreenAdapter {
-  private static final Logger logger = LoggerFactory.getLogger(SettingsScreen.class);
+public class SettingsFromPauseScreen extends ScreenAdapter {
+  private static final Logger logger = LoggerFactory.getLogger(SettingsFromPauseScreen.class);
   private static final String[] settingsTextures = {
     "images/Buttons/exit_up_btn.png",
     "images/Buttons/exit_down_btn.png",
     "images/Buttons/apply_up_btn.png",
     "images/Buttons/apply_down_btn.png",
-      "images/main_menu_bg_2.png",
-      "images/menu_box.png"
+    "images/main_menu_bg_2.png",
+    "images/settings_box.png"
   };
 
   private final GdxGame game;
   private final Renderer renderer;
 
-  public SettingsScreen(GdxGame game) {
+  public SettingsFromPauseScreen(GdxGame game) {
     this.game = game;
 
     logger.debug("Initialising settings screen services");
@@ -94,7 +94,8 @@ public class SettingsScreen extends ScreenAdapter {
     logger.debug("Creating ui");
     Stage stage = ServiceLocator.getRenderService().getStage();
     Entity ui = new Entity();
-    ui.addComponent(new SettingsMenuDisplay(game)).addComponent(new InputDecorator(stage, 10));
+    ui.addComponent(new SettingsMenuDisplay(game, GdxGame.ScreenType.TUTORIAL_GAME))
+        .addComponent(new InputDecorator(stage, 10));
     ServiceLocator.getEntityService().register(ui);
   }
 }

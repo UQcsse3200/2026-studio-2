@@ -78,11 +78,22 @@ public class PauseMenuDisplay extends UIComponent {
         ServiceLocator.getResourceService()
             .getAsset("images/Buttons/quit_down_btn.png", Texture.class);
 
-    ImageButton.ImageButtonStyle exitButtonStyle = new ImageButton.ImageButtonStyle();
-    exitButtonStyle.up = new TextureRegionDrawable(quitUpTexture);
-    exitButtonStyle.down = new TextureRegionDrawable(quitDownTexture);
+    ImageButton.ImageButtonStyle quitButtonStyle = new ImageButton.ImageButtonStyle();
+    quitButtonStyle.up = new TextureRegionDrawable(quitUpTexture);
+    quitButtonStyle.down = new TextureRegionDrawable(quitDownTexture);
 
-    ImageButton exitBtn = new ImageButton(exitButtonStyle);
+    ImageButton quitBtn = new ImageButton(quitButtonStyle);
+
+    Texture exitUpTexture =
+        ServiceLocator.getResourceService()
+            .getAsset("images/Buttons/exit_up_btn.png", Texture.class);
+    Texture exitDownTexture =
+        ServiceLocator.getResourceService()
+            .getAsset("images/Buttons/exit_down_btn.png", Texture.class);
+
+    ImageButton.ImageButtonStyle exitButtonStyle = new ImageButton.ImageButtonStyle();
+    exitButtonStyle.up = new TextureRegionDrawable(exitUpTexture);
+    exitButtonStyle.down = new TextureRegionDrawable(exitDownTexture);
 
     Texture controlsUpTexture =
         ServiceLocator.getResourceService()
@@ -126,7 +137,7 @@ public class PauseMenuDisplay extends UIComponent {
           }
         });
 
-    exitBtn.addListener(
+    quitBtn.addListener(
         new ChangeListener() {
           @Override
           public void changed(ChangeEvent changeEvent, Actor actor) {
@@ -171,7 +182,7 @@ public class PauseMenuDisplay extends UIComponent {
     table.row();
     table.add(controlsBtn).width(200f).height(70f).padTop(15f);
     table.row();
-    table.add(exitBtn).width(200f).height(70f).padTop(15f);
+    table.add(quitBtn).width(200f).height(70f).padTop(15f);
     table.row();
 
     stage.addActor(table);
