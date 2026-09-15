@@ -10,7 +10,7 @@ public final class BlackjackConfig {
     "sounds/minigames/blackjack/win.mp3",
     "sounds/minigames/blackjack/lose.mp3"
   };
-  public static final ItemType WIN_REWARD = ItemType.ARROW;
+  public static final ItemType WIN_REWARD = ItemType.STANDARD_ARROW;
   public static final int WIN_REWARD_QUANTITY = 1;
 
   private static String[] createTextures() {

@@ -105,8 +105,7 @@ public class TutorialGameScreen extends ScreenAdapter {
 
     // Pass the same camera to the TutorialGameArea so that
     // the parallax background can follow camera movement.
-    TutorialGameArea tutorialGameArea =
-        new TutorialGameArea(terrainFactory, renderer.getCamera());
+    TutorialGameArea tutorialGameArea = new TutorialGameArea(terrainFactory, renderer.getCamera());
     tutorialGameArea.create();
 
     currentGameArea = tutorialGameArea;
@@ -130,10 +129,7 @@ public class TutorialGameScreen extends ScreenAdapter {
           .getComponent(PhysicsComponent.class)
           .getBody()
           .setGravityScale(0);
-      tutorialGameArea
-          .getPlayer()
-          .getComponent(KeyboardPlayerInputComponent.class)
-          .toggleCheats();
+      tutorialGameArea.getPlayer().getComponent(KeyboardPlayerInputComponent.class).toggleCheats();
     }
   }
 
@@ -297,8 +293,7 @@ public class TutorialGameScreen extends ScreenAdapter {
   }
 
   private void playMusic() {
-    Music music =
-        ServiceLocator.getResourceService().getAsset(gameplayMusic, Music.class);
+    Music music = ServiceLocator.getResourceService().getAsset(gameplayMusic, Music.class);
     music.setLooping(true);
     music.setVolume(0.05f);
     music.play();
