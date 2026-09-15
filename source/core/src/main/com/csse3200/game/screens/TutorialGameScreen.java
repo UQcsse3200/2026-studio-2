@@ -14,6 +14,10 @@ import com.csse3200.game.components.ButtonSound;
 import com.csse3200.game.components.gamearea.PerformanceDisplay;
 import com.csse3200.game.components.maingame.MainGameActions;
 import com.csse3200.game.components.maingame.MainGameExitDisplay;
+import com.csse3200.game.components.maingame.PauseMenuDisplay;
+import com.csse3200.game.components.minigames.MinigameOverlayManager;
+import com.csse3200.game.components.minigames.blackjack.BlackjackConfig;
+import com.csse3200.game.components.minigames.blackjack.BlackjackOverlay;
 import com.csse3200.game.components.maingame.PauseMenuOverlay;
 import com.csse3200.game.components.minigames.spinthewheel.SpinTheWheelOverlay;
 import com.csse3200.game.components.minigames.spinthewheel.WheelConfig;
@@ -64,6 +68,8 @@ public class TutorialGameScreen extends ScreenAdapter {
   private final PhysicsEngine physicsEngine;
   private final SpinTheWheelOverlay wheelOverlay;
   private PauseMenuOverlay pauseOverlay;
+  private final BlackjackOverlay blackjackOverlay;
+  private final MinigameOverlayManager minigameOverlayManager;
   private Entity player;
   private static final String gameplayMusic = "sounds/gameplay_bg.ogg";
   private static final String[] gameplayMusicFiles = {gameplayMusic};
@@ -105,7 +111,6 @@ public class TutorialGameScreen extends ScreenAdapter {
     // Pass the same camera to the TutorialGameArea so that
     // the parallax background can follow camera movement.
     tutorialGameArea = new TutorialGameArea(terrainFactory, renderer.getCamera());
-
     tutorialGameArea.create();
 
     currentGameArea = tutorialGameArea;
@@ -118,7 +123,10 @@ public class TutorialGameScreen extends ScreenAdapter {
     // Follow the player with the camera.
     renderer.getCamera().setTarget(player);
     player.getEvents().addListener("deathAnimationFinished", this::onPlayerDeath);
-    wheelOverlay = new SpinTheWheelOverlay(WheelConfig.ITEMS, player);
+
+    minigameOverlayManager = new MinigameOverlayManager();
+    wheelOverlay = new SpinTheWheelOverlay(WheelConfig.ITEMS, player, minigameOverlayManager);
+    blackjackOverlay = new BlackjackOverlay(player, minigameOverlayManager);
     pauseOverlay =
         new PauseMenuOverlay(game, currentGameArea, GdxGame.ScreenType.TUTORIAL_SETTINGS);
 
@@ -164,7 +172,7 @@ public class TutorialGameScreen extends ScreenAdapter {
    * Performs the level swap by disposing of the existing level, creating the new area and updating
    * internal references to keep track accurately of the current game area
    */
-  public void performLevelSwap() {
+  private void performLevelSwap() {
     logger.info("Swapping level to new game area");
 
     currentGameArea.dispose();
@@ -194,14 +202,18 @@ public class TutorialGameScreen extends ScreenAdapter {
     }
     if (Gdx.input.isKeyJustPressed(Input.Keys.K)) {
       wheelOverlay.request();
+    } else if (Gdx.input.isKeyJustPressed(Input.Keys.L)) {
+      blackjackOverlay.request();
     } else if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
-      pauseOverlay.request();
-      tutorialGameArea.getInput().unpause();
+        pauseOverlay.request();
+        tutorialGameArea.getInput().unpause();
     }
+
     physicsEngine.update();
     ServiceLocator.getEntityService().update();
     renderer.render();
     wheelOverlay.afterRender();
+    blackjackOverlay.afterRender();
     pauseOverlay.afterRender();
   }
 
@@ -277,6 +289,7 @@ public class TutorialGameScreen extends ScreenAdapter {
                 "images/Buttons/back_down_btn.png",
                 "images/scroll_bg.png"));
     paths.addAll(List.of(WheelConfig.TEXTURES));
+    paths.addAll(List.of(BlackjackConfig.TEXTURES));
     return paths.toArray(new String[0]);
   }
 
