@@ -70,6 +70,7 @@ public class TutorialGameScreen extends ScreenAdapter {
   private static final String winMusic = "sounds/Win_music.mp3";
   private static final String loseMusic = "sounds/Death_music.ogg";
   private static final String[] gameEndMusic = {winMusic, loseMusic, "sounds/Main_menu_sound.mp3"};
+  private static final String[] gameSounds = {"sounds/hit.ogg", "sounds/Arrow_release.wav", "sounds/jump.ogg","sounds/itempick.wav"};
   private final TutorialGameArea tutorialGameArea;
   private boolean cheats = false;
 
@@ -118,6 +119,30 @@ public class TutorialGameScreen extends ScreenAdapter {
     }
     player = tutorialGameArea.getPlayer();
 
+    player.getEvents().addListener("jump", () -> {
+      try {
+        com.badlogic.gdx.audio.Sound jumpSound = ServiceLocator.getResourceService().getAsset("sounds/jump.ogg", com.badlogic.gdx.audio.Sound.class);
+        jumpSound.play(0.5f);
+      } catch (Exception e) {
+        // skip
+      }
+    });
+    player.getEvents().addListener("hurt", () -> {
+      try {
+        com.badlogic.gdx.audio.Sound hurtSound = ServiceLocator.getResourceService().getAsset("sounds/hit.ogg", com.badlogic.gdx.audio.Sound.class);
+        hurtSound.play(0.2f);
+      } catch (Exception e) {
+        // skip
+      }
+    });
+    player.getEvents().addListener("itemPickedUp", (Object item) -> {
+      try {
+        com.badlogic.gdx.audio.Sound pickupSound = ServiceLocator.getResourceService().getAsset("sounds/itempick.wav", com.badlogic.gdx.audio.Sound.class);
+        pickupSound.play(0.2f);
+      } catch (Exception e) {
+        // skip
+      }
+    });
     // Follow the player with the camera.
     renderer.getCamera().setTarget(player);
     player.getEvents().addListener("deathAnimationFinished", this::onPlayerDeath);
@@ -289,6 +314,7 @@ public class TutorialGameScreen extends ScreenAdapter {
     resourceService.loadTextureAtlases(mainGameAtlas);
     resourceService.loadSounds(WheelConfig.SOUNDS);
     resourceService.loadMusic(gameEndMusic);
+    resourceService.loadSounds(gameSounds);
     resourceService.loadMusic(gameplayMusicFiles);
     ButtonSound.load(resourceService);
     resourceService.loadAll();
@@ -300,6 +326,7 @@ public class TutorialGameScreen extends ScreenAdapter {
     resourceService.unloadAssets(mainGameTextures);
     resourceService.unloadAssets(mainGameAtlas);
     resourceService.unloadAssets(WheelConfig.SOUNDS);
+    resourceService.unloadAssets(gameSounds);
     resourceService.unloadAssets(gameEndMusic);
     resourceService.unloadAssets(gameplayMusicFiles);
     ButtonSound.unload(resourceService);
