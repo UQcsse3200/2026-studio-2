@@ -10,7 +10,6 @@ import com.csse3200.game.areas.terrain.TerrainFactory;
 import com.csse3200.game.components.gamearea.PerformanceDisplay;
 import com.csse3200.game.components.maingame.MainGameActions;
 import com.csse3200.game.components.maingame.MainGameExitDisplay;
-import com.csse3200.game.components.maingame.PauseMenuDisplay;
 import com.csse3200.game.components.maingame.PauseMenuOverlay;
 import com.csse3200.game.components.minigames.spinthewheel.SpinTheWheelOverlay;
 import com.csse3200.game.components.minigames.spinthewheel.WheelConfig;
@@ -63,7 +62,7 @@ public class Level2GameScreen extends ScreenAdapter {
   private Entity player;
   private static final String gameplayMusic = "sounds/gameplay_bg.ogg";
   private static final String[] gameplayMusicFiles = {gameplayMusic};
-  private boolean cheats = true;
+  private boolean cheats = false;
 
   public Level2GameScreen(GdxGame game) {
     this.game = game;
@@ -109,8 +108,7 @@ public class Level2GameScreen extends ScreenAdapter {
 
     player.getEvents().addListener("death", this::onPlayerDeath);
     wheelOverlay = new SpinTheWheelOverlay(WheelConfig.ITEMS, player);
-    pauseOverlay =
-        new PauseMenuOverlay(game, currentGameArea, GdxGame.ScreenType.TUTORIAL_SETTINGS);
+    pauseOverlay = new PauseMenuOverlay(game, currentGameArea, GdxGame.ScreenType.LEVEL_2_SETTINGS);
 
     if (cheats) {
       level2.getPlayer().getComponent(PhysicsComponent.class).getBody().setGravityScale(0);
@@ -185,7 +183,22 @@ public class Level2GameScreen extends ScreenAdapter {
                 "images/Buttons/quit_down_btn.png",
                 "images/Buttons/exit_up_btn.png",
                 "images/Buttons/exit_down_btn.png",
-                "images/rope_arrow.png"));
+                "images/rope_arrow.png",
+                "images/fire_arrow.png",
+                "images/cold_arrow.png",
+                "images/Buttons/exit_down_btn.png",
+                "images/Buttons/control_up_btn.png",
+                "images/Buttons/control_down_btn.png",
+                "images/controls_graphic.png",
+                "images/Buttons/restart_up_btn.png",
+                "images/Buttons/restart_down_btn.png",
+                "images/Buttons/main_menu_up_btn.png",
+                "images/Buttons/main_menu_down_btn.png",
+                "images/Buttons/exit_game_up_btn.png",
+                "images/Buttons/exit_game_down_btn.png",
+                "images/Buttons/back_up_btn.png",
+                "images/Buttons/back_down_btn.png",
+                "images/scroll_bg.png"));
     paths.addAll(List.of(WheelConfig.TEXTURES));
     return paths.toArray(new String[0]);
   }
@@ -230,10 +243,7 @@ public class Level2GameScreen extends ScreenAdapter {
         .addComponent(new GameEndActions(this.game))
         .addComponent(new Terminal())
         .addComponent(inputComponent)
-        .addComponent(new TerminalDisplay())
-        .addComponent(
-            new PauseMenuDisplay(
-                this.game, this.currentGameArea, GdxGame.ScreenType.LEVEL_2_SETTINGS));
+        .addComponent(new TerminalDisplay());
 
     ServiceLocator.getEntityService().register(ui);
   }

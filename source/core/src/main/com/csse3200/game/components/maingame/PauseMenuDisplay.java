@@ -132,7 +132,6 @@ public class PauseMenuDisplay extends UIComponent {
             if (ServiceLocator.getEntityService().getPaused()) {
               ButtonSound.playClickThen(
                   () -> {
-                    entity.getEvents().trigger("settingsFromPause");
                     game.setScreen(settingsScreen);
                   });
             }

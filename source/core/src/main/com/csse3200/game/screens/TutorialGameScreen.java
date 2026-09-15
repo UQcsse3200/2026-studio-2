@@ -63,12 +63,12 @@ public class TutorialGameScreen extends ScreenAdapter {
   private final Renderer renderer;
   private final PhysicsEngine physicsEngine;
   private final SpinTheWheelOverlay wheelOverlay;
-  private final PauseMenuOverlay pauseOverlay;
+  private PauseMenuOverlay pauseOverlay;
   private Entity player;
   private static final String gameplayMusic = "sounds/gameplay_bg.ogg";
   private static final String[] gameplayMusicFiles = {gameplayMusic};
   private final TutorialGameArea tutorialGameArea;
-  private boolean cheats = true;
+  private boolean cheats = false;
 
   public TutorialGameScreen(GdxGame game) {
     this.game = game;
@@ -120,7 +120,7 @@ public class TutorialGameScreen extends ScreenAdapter {
     player.getEvents().addListener("deathAnimationFinished", this::onPlayerDeath);
     wheelOverlay = new SpinTheWheelOverlay(WheelConfig.ITEMS, player);
     pauseOverlay =
-        new PauseMenuOverlay(game, tutorialGameArea, GdxGame.ScreenType.TUTORIAL_SETTINGS);
+        new PauseMenuOverlay(game, currentGameArea, GdxGame.ScreenType.TUTORIAL_SETTINGS);
 
     if (cheats) {
       tutorialGameArea
@@ -144,7 +144,7 @@ public class TutorialGameScreen extends ScreenAdapter {
    *
    * @param level the name of the level to load
    */
-  private void queueAreaSwap(String level) {
+  public void queueAreaSwap(String level) {
     TerrainFactory terrainFactory = new TerrainFactory(renderer.getCamera());
 
     switch (level) {
@@ -164,13 +164,23 @@ public class TutorialGameScreen extends ScreenAdapter {
    * Performs the level swap by disposing of the existing level, creating the new area and updating
    * internal references to keep track accurately of the current game area
    */
-  private void performLevelSwap() {
+  public void performLevelSwap() {
     logger.info("Swapping level to new game area");
 
     currentGameArea.dispose();
     nextGameArea.create();
     currentGameArea = nextGameArea;
     nextGameArea = null;
+
+    GdxGame.ScreenType settingsMenu = null;
+    if (currentGameArea.getClass() == TutorialGameArea.class) {
+      settingsMenu = GdxGame.ScreenType.TUTORIAL_SETTINGS;
+    } else if (currentGameArea.getClass() == Level2GameArea.class) {
+      settingsMenu = GdxGame.ScreenType.LEVEL_2_SETTINGS;
+    }
+    if (settingsMenu != null) {
+      pauseOverlay = new PauseMenuOverlay(game, currentGameArea, settingsMenu);
+    }
 
     renderer.getCamera().setTarget(currentGameArea.getPlayer());
   }
@@ -206,6 +216,7 @@ public class TutorialGameScreen extends ScreenAdapter {
     logger.info("Game paused");
   }
 
+  /** Resumes the game. */
   @Override
   public void resume() {
     logger.info("Game resumed");
