@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -95,6 +96,27 @@ public class GameEndDisplay extends UIComponent {
       if (exitDisplay != null) {
         exitDisplay.setVisible(false);
       }
+    }
+    try {
+      Music gameplay = ServiceLocator.getResourceService().getAsset("sounds/gameplay_bg.ogg", Music.class);
+      gameplay.stop();
+    } catch (Exception e) {
+      logger.warn("Could not stop gameplay music: {}", e.getMessage());
+    }
+    try {
+      if (state == GameEndState.WIN) {
+        Music music = ServiceLocator.getResourceService().getAsset("sounds/Win_music.mp3", Music.class);
+        music.setLooping(true);
+        music.setVolume(0.2f);
+        music.play();
+      } else {
+        Music music = ServiceLocator.getResourceService().getAsset("sounds/Death_music.ogg", Music.class);
+        music.setLooping(false);
+        music.setVolume(0.3f);
+        music.play();
+      }
+    } catch (Exception e) {
+      logger.warn("Could not play game end music: {}", e.getMessage());
     }
   }
 
