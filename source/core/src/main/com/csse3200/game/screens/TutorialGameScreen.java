@@ -111,6 +111,7 @@ public class TutorialGameScreen extends ScreenAdapter {
       levelChanger.getEvents().addListener("triggerNextLevel", this::queueAreaSwap);
     }
     player = tutorialGameArea.getPlayer();
+    player.getEvents().addListener("respawnAtCheckpoint", () -> currentGameArea.respawn());
 
     // Follow the player with the camera.
     renderer.getCamera().setTarget(player);

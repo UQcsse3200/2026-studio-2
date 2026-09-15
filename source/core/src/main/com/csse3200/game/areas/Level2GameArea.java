@@ -6,9 +6,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.areas.terrain.TerrainFactory;
 import com.csse3200.game.areas.terrain.configs.levelconfigs.Level2Config;
 import com.csse3200.game.components.CameraComponent;
-import com.csse3200.game.components.player.KeyboardPlayerInputComponent;
 import com.csse3200.game.entities.Entity;
-import com.csse3200.game.entities.factories.PlayerFactory;
 import com.csse3200.game.rendering.BackgroundRenderComponent;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
@@ -101,7 +99,6 @@ public class Level2GameArea extends GameArea {
     // player = spawnPlayer();
     // spawnEntityAt(player, config.getPlayerSpawn(), true, true);
     player.setPosition(new Vector2(config.getPlayerSpawn().x, config.getPlayerSpawn().y));
-    player.getEvents().addListener("respawnAtCheckpoint", this::respawn);
   }
 
   /** Creates the Level 2 background. */
@@ -132,20 +129,6 @@ public class Level2GameArea extends GameArea {
     float tileSize = terrain.getTileSize();
     GridPoint2 tileBounds = terrain.getMapBounds(0);
     worldBounds = new Vector2(tileBounds.x * tileSize, tileBounds.y * tileSize);
-  }
-
-  /** Creates the Level 2 player. */
-  private Entity spawnPlayer() {
-    Entity newPlayer = PlayerFactory.createPlayer();
-    newPlayer.getEvents().addListener("grappleRequested", this::checkSuccessfulGrapple);
-    newPlayer.getEvents().addListener("respawnAtCheckpoint", this::respawn);
-    KeyboardPlayerInputComponent input = newPlayer.getComponent(KeyboardPlayerInputComponent.class);
-
-    if (input != null) {
-      input.setCameraComponent(cameraComponent);
-    }
-    spawnEntityAt(newPlayer, config.getPlayerSpawn(), true, true);
-    return newPlayer;
   }
 
   /** Plays the background music. */
