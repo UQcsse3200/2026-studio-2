@@ -85,11 +85,8 @@ public class PhysicsMovementComponent extends Component implements MovementContr
   }
 
   private void updateDirection(Body body) {
-    float desiredX =
-        Math.clamp((targetPosition.cpy().x - entity.getPosition().x) * 10, -maxSpeed.x, maxSpeed.x);
-    float desiredY =
-        Math.clamp((targetPosition.cpy().y - entity.getPosition().y) * 10, -maxSpeed.y, maxSpeed.y);
-    Vector2 desiredVelocity = new Vector2(desiredX, desiredY);
+    Vector2 desiredVelocity =
+            targetPosition.cpy().sub(entity.getPosition()).nor().scl(maxSpeed);
     setToVelocity(body, desiredVelocity);
   }
 
