@@ -86,7 +86,7 @@ public class RangedAttackTask extends DefaultTask implements PriorityTask {
     // Spawn slightly towards the player and slightly below the enemy centre.
     float facingDirection = targetCenter.x >= enemyCenter.x ? 1f : -1f;
 
-    Vector2 spawnCenter = enemyCenter.cpy().add(0.4f * facingDirection, -0.15f);
+    Vector2 spawnCenter = enemyCenter.cpy().add(0.8f * facingDirection, -0.15f);
 
     Entity projectile =
         ProjectileFact.createEnemyProjectile(

@@ -239,7 +239,7 @@ public class TutorialGameArea extends GameArea {
 
     // Test enemy functionalitys
     // spawnTestSkeletonWarrior();
-    // spawnTestSkeletonArcher();
+    spawnTestSkeletonArcher();
     // spawnTestVulture();
     // spawnTestNecromancer();
 
