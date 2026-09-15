@@ -108,7 +108,7 @@ public class TutorialGameArea extends GameArea {
   private static final GridPoint2 ROPE_ARROW_SPAWN = new GridPoint2(2, 4);
   private static final GridPoint2 STANDARD_ARROW_SPAWN = new GridPoint2(4, 4);
   private static final GridPoint2[] GOLD_SPAWNS = {
-    new GridPoint2(5, 1), new GridPoint2(9, 4), new GridPoint2(7, 1)
+    new GridPoint2(10, 1), new GridPoint2(9, 4), new GridPoint2(7, 1)
   };
 
   private static final int STANDARD_ARROW_QUANTITY = 5;
