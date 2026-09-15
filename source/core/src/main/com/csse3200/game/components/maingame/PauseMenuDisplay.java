@@ -1,5 +1,6 @@
 package com.csse3200.game.components.maingame;
 
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -10,7 +11,6 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.csse3200.game.GdxGame;
 import com.csse3200.game.areas.GameArea;
-import com.badlogic.gdx.audio.Music;
 import com.csse3200.game.components.ButtonSound;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.services.ServiceLocator;
@@ -46,9 +46,11 @@ public class PauseMenuDisplay extends UIComponent {
 
   private void addActors() {
     try {
-      Music gameplay = ServiceLocator.getResourceService().getAsset("sounds/gameplay_bg.ogg", Music.class);
+      Music gameplay =
+          ServiceLocator.getResourceService().getAsset("sounds/gameplay_bg.ogg", Music.class);
       gameplay.pause();
-      Music mainMenu = ServiceLocator.getResourceService().getAsset("sounds/Main_menu_sound.mp3", Music.class);
+      Music mainMenu =
+          ServiceLocator.getResourceService().getAsset("sounds/Main_menu_sound.mp3", Music.class);
       mainMenu.setLooping(true);
       mainMenu.setVolume(0.1f);
       mainMenu.play();
@@ -130,12 +132,16 @@ public class PauseMenuDisplay extends UIComponent {
             if (ServiceLocator.getEntityService().getPaused()) {
               ButtonSound.playClick();
               try {
-                Music mainMenu = ServiceLocator.getResourceService().getAsset("sounds/Main_menu_sound.mp3", Music.class);
+                Music mainMenu =
+                    ServiceLocator.getResourceService()
+                        .getAsset("sounds/Main_menu_sound.mp3", Music.class);
                 mainMenu.stop();
-                Music gameplay = ServiceLocator.getResourceService().getAsset("sounds/gameplay_bg.ogg", Music.class);
+                Music gameplay =
+                    ServiceLocator.getResourceService()
+                        .getAsset("sounds/gameplay_bg.ogg", Music.class);
                 gameplay.play();
               } catch (Exception e) {
-                      }
+              }
               entity.getEvents().trigger("togglePause");
               area.getInput().unpause();
             }
