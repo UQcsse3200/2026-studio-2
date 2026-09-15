@@ -1,5 +1,6 @@
 package com.csse3200.game.areas;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.areas.terrain.TerrainFactory;
@@ -214,9 +215,16 @@ public class SandboxGameArea extends GameArea {
   }
 
   private void restoreSandboxGold(InventoryComponent inventory) {
-    if (inventory.getGold() != SANDBOX_GOLD) {
-      inventory.setGold(SANDBOX_GOLD);
+    if (inventory.getGold() == SANDBOX_GOLD || Gdx.app == null) {
+      return;
     }
+    // Defer so we do not trigger goldChanged while its listeners are still iterating.
+    Gdx.app.postRunnable(
+        () -> {
+          if (inventory.getGold() != SANDBOX_GOLD) {
+            inventory.setGold(SANDBOX_GOLD);
+          }
+        });
   }
 
   private void spawnShopkeeper() {

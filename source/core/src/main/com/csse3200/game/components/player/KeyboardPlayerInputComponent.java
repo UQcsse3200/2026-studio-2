@@ -26,6 +26,12 @@ public class KeyboardPlayerInputComponent extends InputComponent {
     super(5);
   }
 
+  @Override
+  public void create() {
+    super.create();
+    entity.getEvents().addListener("openShop", this::releaseHeldGameplayInput);
+  }
+
   /**
    * Sets the camera used to convert screen coordinates to world-space aim directions.
    *
@@ -43,6 +49,9 @@ public class KeyboardPlayerInputComponent extends InputComponent {
    */
   @Override
   public boolean keyDown(int keycode) {
+    if (isShopOpen() && keycode != Keys.F) {
+      return true;
+    }
     switch (keycode) {
       // Hotbar number keys
       case Keys.NUM_1:
@@ -166,6 +175,9 @@ public class KeyboardPlayerInputComponent extends InputComponent {
    */
   @Override
   public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+    if (isShopOpen()) {
+      return true;
+    }
     if (button != Buttons.LEFT || isArrowWheelOpen()) {
       return false;
     }
@@ -179,6 +191,9 @@ public class KeyboardPlayerInputComponent extends InputComponent {
 
   @Override
   public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+    if (isShopOpen()) {
+      return true;
+    }
     if (button != Buttons.LEFT) {
       return false;
     }
@@ -202,6 +217,20 @@ public class KeyboardPlayerInputComponent extends InputComponent {
 
     // Reported, not consumed, so other handlers still see the movement.
     return false;
+  }
+
+  private boolean isShopOpen() {
+    PlayerInteractionComponent interaction = entity.getComponent(PlayerInteractionComponent.class);
+    return interaction != null && interaction.isShopOpen();
+  }
+
+  private void releaseHeldGameplayInput() {
+    keysHeld[LEFT] = false;
+    keysHeld[RIGHT] = false;
+    sprintHeld = false;
+    attackHeld = false;
+    triggerWalkEvent();
+    entity.getEvents().trigger("sprintStop");
   }
 
   private boolean isArrowWheelOpen() {

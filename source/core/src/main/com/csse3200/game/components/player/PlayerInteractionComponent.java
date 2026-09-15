@@ -75,7 +75,7 @@ public class PlayerInteractionComponent extends Component {
   /**
    * @return true if the shop page is currently open
    */
-  boolean isShopOpen() {
+  public boolean isShopOpen() {
     return shopOpen;
   }
 
