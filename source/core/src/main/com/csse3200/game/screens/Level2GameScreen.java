@@ -96,7 +96,7 @@ public class Level2GameScreen extends ScreenAdapter {
 
     // Pass the same camera to the Level2GameArea so that
     // the parallax background can follow camera movement.
-    Level2GameArea level2 = new Level2GameArea(terrainFactory, renderer.getCamera());
+    Level2GameArea level2 = new Level2GameArea(terrainFactory, renderer.getCamera(), player);
 
     level2.create();
 

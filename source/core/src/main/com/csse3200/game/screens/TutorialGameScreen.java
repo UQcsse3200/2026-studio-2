@@ -53,6 +53,7 @@ public class TutorialGameScreen extends ScreenAdapter {
   private static final Logger logger = LoggerFactory.getLogger(TutorialGameScreen.class);
 
   private static final String[] mainGameTextures = createTextures();
+  private static final String[] mainGameAtlas = createAtlas();
 
   private boolean levelSwapQueued = false;
   private GameArea currentGameArea;
@@ -65,7 +66,7 @@ public class TutorialGameScreen extends ScreenAdapter {
   private Entity player;
   private static final String gameplayMusic = "sounds/gameplay_bg.ogg";
   private static final String[] gameplayMusicFiles = {gameplayMusic};
-  private boolean cheats = false;
+  private boolean cheats = true;
 
   public TutorialGameScreen(GdxGame game) {
     this.game = game;
@@ -146,7 +147,7 @@ public class TutorialGameScreen extends ScreenAdapter {
         nextGameArea = new TutorialGameArea(terrainFactory, renderer.getCamera());
         break;
       case "level2":
-        nextGameArea = new Level2GameArea(terrainFactory, renderer.getCamera());
+        nextGameArea = new Level2GameArea(terrainFactory, renderer.getCamera(), player);
         break;
       default:
         return;
@@ -246,10 +247,21 @@ public class TutorialGameScreen extends ScreenAdapter {
     return paths.toArray(new String[0]);
   }
 
+  /**
+   * The game's atlases that should not be unloaded by each game area
+   *
+   * @return every atlas the levels need
+   */
+  private static String[] createAtlas() {
+    List<String> paths = new ArrayList<>(List.of("images/player.atlas"));
+    return paths.toArray(new String[0]);
+  }
+
   private void loadAssets() {
     logger.debug("Loading assets");
     ResourceService resourceService = ServiceLocator.getResourceService();
     resourceService.loadTextures(mainGameTextures);
+    resourceService.loadTextureAtlases(mainGameAtlas);
     resourceService.loadSounds(WheelConfig.SOUNDS);
     resourceService.loadMusic(gameplayMusicFiles);
     ButtonSound.load(resourceService);
@@ -260,6 +272,7 @@ public class TutorialGameScreen extends ScreenAdapter {
     logger.debug("Unloading assets");
     ResourceService resourceService = ServiceLocator.getResourceService();
     resourceService.unloadAssets(mainGameTextures);
+    resourceService.unloadAssets(mainGameAtlas);
     resourceService.unloadAssets(WheelConfig.SOUNDS);
     resourceService.unloadAssets(gameplayMusicFiles);
     ButtonSound.unload(resourceService);

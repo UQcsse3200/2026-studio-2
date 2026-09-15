@@ -68,7 +68,7 @@ public class Level2GameArea extends GameArea {
   };
 
   private static final String[] level2TexturesAtlas = {
-    "images/terrain_iso_grass.atlas", "images/player.atlas", "images/in_level_button.atlas"
+    "images/terrain_iso_grass.atlas", "images/in_level_button.atlas"
   };
 
   private static final String[] level2Sounds = {"sounds/Impact4.ogg"};
@@ -80,14 +80,14 @@ public class Level2GameArea extends GameArea {
   private final TerrainFactory terrainFactory;
   private final CameraComponent camera;
 
-  public Level2GameArea(TerrainFactory terrainFactory, CameraComponent camera) {
-
+  public Level2GameArea(TerrainFactory terrainFactory, CameraComponent camera, Entity player) {
     super(camera);
 
     config = new Level2Config();
 
     this.terrainFactory = terrainFactory;
     this.camera = camera;
+    this.player = player;
   }
 
   @Override
@@ -98,7 +98,9 @@ public class Level2GameArea extends GameArea {
     spawnBackground();
     spawnTerrain();
     spawnConfigEntities();
-    player = spawnPlayer();
+    // player = spawnPlayer();
+    // spawnEntityAt(player, config.getPlayerSpawn(), true, true);
+    player.setPosition(new Vector2(config.getPlayerSpawn().x, config.getPlayerSpawn().y));
   }
 
   /** Creates the Level 2 background. */
