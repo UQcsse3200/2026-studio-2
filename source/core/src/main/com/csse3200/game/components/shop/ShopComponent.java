@@ -57,7 +57,7 @@ public class ShopComponent extends Component {
       return PurchaseResult.INSUFFICIENT_GOLD;
     }
 
-    if (offered.getItemType() == ItemType.ROPE_ARROW && inventory.hasItem(ItemType.ROPE_ARROW)) {
+    if (alreadyOwnsUniqueItem(inventory, offered.getItemType())) {
       notifyFailed("You already own this item.");
       return PurchaseResult.ALREADY_OWNED;
     }
@@ -107,7 +107,7 @@ public class ShopComponent extends Component {
     }
 
     ItemType itemType = offered.getItemType();
-    if (itemType == ItemType.ROPE_ARROW && inventory.hasItem(ItemType.ROPE_ARROW)) {
+    if (alreadyOwnsUniqueItem(inventory, itemType)) {
       return false;
     }
 
@@ -116,6 +116,14 @@ public class ShopComponent extends Component {
       return (long) currentQuantity + offered.getQuantity() <= Integer.MAX_VALUE;
     }
     return !inventory.isFull();
+  }
+
+  private boolean alreadyOwnsUniqueItem(InventoryComponent inventory, ItemType itemType) {
+    return isUniqueShopItem(itemType) && inventory.hasItem(itemType);
+  }
+
+  private static boolean isUniqueShopItem(ItemType itemType) {
+    return itemType == ItemType.Sword || itemType == ItemType.Spear;
   }
 
   private ShopListing offeredListing(ShopListing listing) {
