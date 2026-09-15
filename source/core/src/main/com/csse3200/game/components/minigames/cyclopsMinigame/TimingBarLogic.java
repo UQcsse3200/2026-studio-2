@@ -24,7 +24,8 @@ public class TimingBarLogic {
   public boolean isStopped = true;
 
   /**
-   * @param scoringAreaWidth Scoring area width is designed to be a float as a percentage (e.g 0 - 100%)
+   * @param scoringAreaWidth Scoring area width is designed to be a float as a percentage (e.g 0 -
+   *     100%)
    */
   public TimingBarLogic(float scoringAreaWidth) {
     this.changeScoringAreaWidth(scoringAreaWidth);
