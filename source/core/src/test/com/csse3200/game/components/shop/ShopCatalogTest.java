@@ -3,6 +3,7 @@ package com.csse3200.game.components.shop;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -23,10 +24,24 @@ class ShopCatalogTest {
   @Test
   void shouldUsePlaceholderPrices() {
     assertEquals(10, ShopCatalog.getListing(ItemType.STANDARD_ARROW).getPrice());
-    assertEquals(20, ShopCatalog.getListing(ItemType.ROPE_ARROW).getPrice());
     assertEquals(15, ShopCatalog.getListing(ItemType.FIRE_ARROW).getPrice());
     assertEquals(15, ShopCatalog.getListing(ItemType.ICE_ARROW).getPrice());
     assertEquals(8, ShopCatalog.getListing(ItemType.HEALTH_POTION).getPrice());
+    assertEquals(12, ShopCatalog.getListing(ItemType.SpeedPotion).getPrice());
+    assertEquals(12, ShopCatalog.getListing(ItemType.PoisonPotion).getPrice());
+    assertEquals(25, ShopCatalog.getListing(ItemType.Sword).getPrice());
+    assertEquals(20, ShopCatalog.getListing(ItemType.Spear).getPrice());
+  }
+
+  @Test
+  void shouldSellEveryItemExceptRopeArrow() {
+    for (ItemType type : ItemType.values()) {
+      if (type == ItemType.ROPE_ARROW) {
+        assertNull(ShopCatalog.getListing(type));
+      } else {
+        assertNotNull(ShopCatalog.getListing(type));
+      }
+    }
   }
 
   @Test

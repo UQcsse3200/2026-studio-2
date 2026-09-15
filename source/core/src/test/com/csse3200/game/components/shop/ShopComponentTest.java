@@ -60,15 +60,23 @@ class ShopComponentTest {
   }
 
   @Test
-  void shouldRejectDuplicateRopeArrow() {
+  void shouldRejectDuplicateSword() {
     Entity player = createPlayer(50);
     InventoryComponent inventory = player.getComponent(InventoryComponent.class);
-    inventory.addItem(ItemType.ROPE_ARROW, 1);
+    inventory.addItem(ItemType.Sword, 1);
 
     ShopComponent shop = player.getComponent(ShopComponent.class);
-    assertEquals(PurchaseResult.ALREADY_OWNED, shop.buy(ItemType.ROPE_ARROW));
+    assertEquals(PurchaseResult.ALREADY_OWNED, shop.buy(ItemType.Sword));
     assertEquals(50, inventory.getGold());
-    assertEquals(1, inventory.getItemCount(ItemType.ROPE_ARROW));
+    assertEquals(1, inventory.getItemCount(ItemType.Sword));
+  }
+
+  @Test
+  void shouldRejectRopeArrow() {
+    Entity player = createPlayer(50);
+    ShopComponent shop = player.getComponent(ShopComponent.class);
+
+    assertEquals(PurchaseResult.INVALID, shop.buy(ItemType.ROPE_ARROW));
   }
 
   @Test
@@ -85,11 +93,11 @@ class ShopComponentTest {
     Entity player = createPlayer(ShopCatalog.STANDARD_ARROW_PRICE);
     ShopComponent shop = player.getComponent(ShopComponent.class);
     ShopListing arrows = ShopCatalog.getListing(ItemType.STANDARD_ARROW);
-    ShopListing ropeArrow = ShopCatalog.getListing(ItemType.ROPE_ARROW);
+    ShopListing sword = ShopCatalog.getListing(ItemType.Sword);
 
     assertTrue(shop.canBuy(arrows));
-    assertFalse(shop.canAfford(ropeArrow));
-    assertFalse(shop.canBuy(ropeArrow));
+    assertFalse(shop.canAfford(sword));
+    assertFalse(shop.canBuy(sword));
   }
 
   Entity createPlayer(int gold) {
