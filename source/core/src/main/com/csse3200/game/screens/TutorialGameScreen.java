@@ -106,7 +106,7 @@ public class TutorialGameScreen extends ScreenAdapter {
 
     loadAssets();
     createUI();
-    playMusic();
+    // playMusic();
 
     logger.debug("Initialising tutorial game screen entities");
 
@@ -200,7 +200,7 @@ public class TutorialGameScreen extends ScreenAdapter {
    *
    * @param level the name of the level to load
    */
-  public void queueAreaSwap(String level) {
+  private void queueAreaSwap(String level) {
     TerrainFactory terrainFactory = new TerrainFactory(renderer.getCamera());
 
     switch (level) {
@@ -322,20 +322,7 @@ public class TutorialGameScreen extends ScreenAdapter {
                 "images/Buttons/exit_down_btn.png",
                 "images/rope_arrow.png",
                 "images/fire_arrow.png",
-                "images/cold_arrow.png",
-                "images/Buttons/exit_down_btn.png",
-                "images/Buttons/control_up_btn.png",
-                "images/Buttons/control_down_btn.png",
-                "images/controls_graphic.png",
-                "images/Buttons/restart_up_btn.png",
-                "images/Buttons/restart_down_btn.png",
-                "images/Buttons/main_menu_up_btn.png",
-                "images/Buttons/main_menu_down_btn.png",
-                "images/Buttons/exit_game_up_btn.png",
-                "images/Buttons/exit_game_down_btn.png",
-                "images/Buttons/back_up_btn.png",
-                "images/Buttons/back_down_btn.png",
-                "images/scroll_bg.png"));
+                "images/cold_arrow.png"));
     paths.addAll(List.of(WheelConfig.TEXTURES));
     paths.addAll(List.of(BlackjackConfig.TEXTURES));
     return paths.toArray(new String[0]);
@@ -370,8 +357,6 @@ public class TutorialGameScreen extends ScreenAdapter {
     resourceService.unloadAssets(mainGameTextures);
     resourceService.unloadAssets(mainGameAtlas);
     resourceService.unloadAssets(WheelConfig.SOUNDS);
-    resourceService.unloadAssets(gameSounds);
-    resourceService.unloadAssets(gameEndMusic);
     resourceService.unloadAssets(gameplayMusicFiles);
     ButtonSound.unload(resourceService);
   }
