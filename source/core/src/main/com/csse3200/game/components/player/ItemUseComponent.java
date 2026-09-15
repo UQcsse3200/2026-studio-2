@@ -77,16 +77,30 @@ public class ItemUseComponent extends Component {
     }
 
     return switch (selected) {
-      case ARROW -> useStandardArrow();
+      case ARROW -> useArrow(ItemType.ARROW);
+      case FireArrow -> useArrow(ItemType.FireArrow);
+      case ColdArrow -> useArrow(ItemType.ColdArrow);
       case RopeArrow -> useRopeArrow();
       case CONSUMABLE -> useConsumable();
-      case FireArrow -> useFireArrow();
-      case ColdArrow -> useColdArrow();
       case Sword -> useSword();
       case Spear -> useSpear();
       case SpeedPotion -> useSpeedPotion();
       case PoisonPotion -> usePoisonPotion();
     };
+  }
+
+  private boolean useArrow(ItemType arrowType) {
+    Vector2 direction = getAimDirection();
+
+    if (direction.isZero() || !inventory.hasItem(arrowType)) {
+      entity.getEvents().trigger("itemUseFailed", arrowType);
+      return false;
+    }
+
+    entity.getEvents().trigger("arrowAttack", arrowType, direction);
+    inventory.removeItem(arrowType, 1);
+    entity.getEvents().trigger("itemUsed", arrowType);
+    return true;
   }
 
   private boolean useStandardArrow() {
@@ -184,7 +198,11 @@ public class ItemUseComponent extends Component {
     }
     entity
         .getEvents()
-        .trigger("meleeAttack", ItemType.Sword.getDamage(), ItemType.Sword.getRange());
+        .trigger(
+            "meleeAttack",
+            getAimDirection(),
+            ItemType.Sword.getDamage(),
+            ItemType.Sword.getRange());
 
     entity.getEvents().trigger("itemUsed", ItemType.Sword);
 
@@ -199,7 +217,11 @@ public class ItemUseComponent extends Component {
     }
     entity
         .getEvents()
-        .trigger("meleeAttack", ItemType.Spear.getDamage(), ItemType.Spear.getRange());
+        .trigger(
+            "meleeAttack",
+            getAimDirection(),
+            ItemType.Spear.getDamage(),
+            ItemType.Spear.getRange());
 
     entity.getEvents().trigger("itemUsed", ItemType.Spear);
 

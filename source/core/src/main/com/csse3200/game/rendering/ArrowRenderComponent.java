@@ -1,19 +1,19 @@
 package com.csse3200.game.rendering;
 
-import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.components.projectile.ArrowProjectileComponent;
+import com.csse3200.game.services.ServiceLocator;
 
 /** Renders a standard arrow as a small shaft aligned with its travel direction. */
 public class ArrowRenderComponent extends RenderComponent {
-  private static final float SHAFT_LENGTH = 0.5f;
-  private static final float SHAFT_WIDTH = 0.05f;
-
-  private final ShapeRenderer shapeRenderer = new ShapeRenderer();
+  private final Texture texture;
   private ArrowProjectileComponent projectile;
+
+  public ArrowRenderComponent(String texturePath) {
+    this.texture = ServiceLocator.getResourceService().getAsset(texturePath, Texture.class);
+  }
 
   @Override
   public void create() {
@@ -23,23 +23,32 @@ public class ArrowRenderComponent extends RenderComponent {
 
   @Override
   protected void draw(SpriteBatch batch) {
-    Vector2 center = entity.getCenterPosition();
-    Vector2 halfShaft = projectile.getDirection().scl(SHAFT_LENGTH / 2f);
-    Vector2 start = center.cpy().sub(halfShaft);
-    Vector2 end = center.cpy().add(halfShaft);
+    Vector2 position = entity.getPosition();
+    Vector2 scale = entity.getScale();
 
-    batch.end();
-    shapeRenderer.setProjectionMatrix(batch.getProjectionMatrix());
-    shapeRenderer.begin(ShapeType.Filled);
-    shapeRenderer.setColor(Color.BROWN);
-    shapeRenderer.rectLine(start, end, SHAFT_WIDTH);
-    shapeRenderer.end();
-    batch.begin();
+    float rotationDegrees = projectile.getDirection().angleDeg();
+
+    batch.draw(
+        texture,
+        position.x,
+        position.y,
+        scale.x / 2f,
+        scale.y / 2f,
+        scale.x,
+        scale.y,
+        1f,
+        1f,
+        rotationDegrees,
+        0,
+        0,
+        texture.getWidth(),
+        texture.getHeight(),
+        false,
+        false);
   }
 
   @Override
   public void dispose() {
-    shapeRenderer.dispose();
     super.dispose();
   }
 }

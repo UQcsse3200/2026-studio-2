@@ -64,8 +64,9 @@ class KeyboardPlayerInputComponentTest {
     player
         .getEvents()
         .addListener(
-            "primaryAttack",
-            (Vector2 aimDirection) -> {
+            "arrowAttack",
+            (ItemType itemType, Vector2 aimDirection) -> {
+              assertEquals(ItemType.ARROW, itemType);
               shots.incrementAndGet();
               direction.set(aimDirection);
             });

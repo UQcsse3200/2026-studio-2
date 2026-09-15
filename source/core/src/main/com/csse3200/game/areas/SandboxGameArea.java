@@ -115,7 +115,10 @@ public class SandboxGameArea extends GameArea {
                 PLAYER_HEALTH_TEXTURE,
                 SKELETON_WARRIOR_TEXTURE,
                 SKELETON_ARCHER_TEXTURE),
-            Arrays.stream(ItemType.values()).map(ItemType::getTexturePath))
+            Arrays.stream(ItemType.values())
+                .flatMap(
+                    itemType ->
+                        Stream.of(itemType.getTexturePath(), itemType.getProjectileTexturePath())))
         .distinct()
         .toArray(String[]::new);
   }

@@ -41,10 +41,11 @@ class ItemUseComponentTest {
     player
         .getEvents()
         .addListener(
-            "primaryAttack",
-            (Vector2 direction) -> {
-              fired[0] = true;
+            "arrowAttack",
+            (ItemType itemType, Vector2 direction) -> {
+              assertEquals(ItemType.ARROW, itemType);
               assertFalse(direction.isZero());
+              fired[0] = true;
             });
 
     assertTrue(player.getComponent(ItemUseComponent.class).useSelectedItem());
@@ -61,8 +62,11 @@ class ItemUseComponentTest {
     player
         .getEvents()
         .addListener(
-            "primaryAttack",
-            (Vector2 ignored) -> assertEquals(3, inventory.getItemCount(ItemType.ARROW)));
+            "arrowAttack",
+            (ItemType itemType, Vector2 ignored) -> {
+              assertEquals(ItemType.ARROW, itemType);
+              assertEquals(3, inventory.getItemCount(ItemType.ARROW));
+            });
 
     assertTrue(player.getComponent(ItemUseComponent.class).useSelectedItem());
     assertEquals(2, inventory.getItemCount(ItemType.ARROW));
@@ -75,7 +79,14 @@ class ItemUseComponentTest {
     inventory.addItem(ItemType.ARROW, 1);
 
     int[] fired = {0};
-    player.getEvents().addListener("primaryAttack", (Vector2 ignored) -> fired[0]++);
+    player
+        .getEvents()
+        .addListener(
+            "arrowAttack",
+            (ItemType itemType, Vector2 ignored) -> {
+              assertEquals(ItemType.ARROW, itemType);
+              fired[0]++;
+            });
 
     player.getEvents().trigger("attack");
     assertEquals(1, fired[0]);
