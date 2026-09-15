@@ -18,7 +18,7 @@ public class GameEndActions extends Component {
   public void create() {
     entity.getEvents().addListener("mainMenu", this::onMainMenu);
     entity.getEvents().addListener("restart", this::onRestart);
-    entity.getEvents().addListener("exitDesktop", this::onExitDesktop);
+    entity.getEvents().addListener("exitGame", this::onExitGame);
   }
 
   /** Returns the player to the main menu. */
@@ -30,11 +30,11 @@ public class GameEndActions extends Component {
   /** Hook for a future reset/restart system. */
   private void onRestart() {
     logger.info("Restart requested. No reset system is currently implemented.");
-    // TODO: connect this to the eventual game-reset flow.
+    game.transitionTo(GdxGame.ScreenType.TUTORIAL_GAME);
   }
 
   /** Exits the application. */
-  private void onExitDesktop() {
+  private void onExitGame() {
     logger.info("Exiting game from game end screen");
     game.exit();
   }

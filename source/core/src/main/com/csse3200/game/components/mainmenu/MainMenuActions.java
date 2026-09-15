@@ -46,7 +46,7 @@ public class MainMenuActions extends Component {
 
   private void onSettings() {
     logger.info("Settings");
-    game.setScreen(GdxGame.ScreenType.SETTINGS);
+    game.setScreen(GdxGame.ScreenType.MAIN_MENU_SETTINGS);
   }
 
   private void onExit() {

@@ -37,11 +37,12 @@ public class SettingsMenuDisplay extends UIComponent {
   private Slider uiScaleSlider;
   private SelectBox<StringDecorator<DisplayMode>> displayModeSelect;
 
-  private ScreenType sourceScreen = ScreenType.MAIN_MENU;
+  private ScreenType returnScreen;
 
-  public SettingsMenuDisplay(GdxGame game) {
+  public SettingsMenuDisplay(GdxGame game, ScreenType returnScreen) {
     super();
     this.game = game;
+    this.returnScreen = returnScreen;
   }
 
   @Override
@@ -51,21 +52,41 @@ public class SettingsMenuDisplay extends UIComponent {
   }
 
   private void addActors() {
-    Label title = new Label("Settings", skin, "title");
+    float screenWidth = Gdx.graphics.getWidth();
+    float screenHeight = Gdx.graphics.getHeight();
+    float pad = screenHeight * 0.02f;
+    Image background =
+        new Image(
+            ServiceLocator.getResourceService()
+                .getAsset("images/main_menu_bg_2.png", Texture.class));
+    Image menuBox =
+        new Image(
+            ServiceLocator.getResourceService().getAsset("images/settings_box.png", Texture.class));
+
+    // Oversized slightly so the shake below never reveals an edge/gap.
+    float overscan = 1.03f;
+    float bgWidth = screenWidth * overscan;
+    float bgHeight = screenHeight * overscan;
+    background.setSize(bgWidth, bgHeight);
+    background.setPosition(-(bgWidth - screenWidth) / 2f, -(bgHeight - screenHeight) / 2f);
+    stage.addActor(background);
+    Table menuBoxTable = new Table();
     Table settingsTable = makeSettingsTable();
     Table menuBtns = makeMenuBtns();
+
+    menuBoxTable.setFillParent(true);
+    menuBoxTable.add(menuBox).width(1000f).height(630f);
 
     rootTable = new Table();
     rootTable.setFillParent(true);
 
-    rootTable.add(title).expandX().top().padTop(20f);
-
-    rootTable.row().padTop(30f);
+    rootTable.row().padTop(120f);
     rootTable.add(settingsTable).expandX().expandY();
 
     rootTable.row();
     rootTable.add(menuBtns).fillX();
 
+    stage.addActor(menuBoxTable);
     stage.addActor(rootTable);
   }
 
@@ -231,7 +252,7 @@ public class SettingsMenuDisplay extends UIComponent {
   }
 
   private void exitMenu() {
-    game.setScreen(ScreenType.MAIN_MENU);
+    game.setScreen(returnScreen);
   }
 
   private Integer parseOrNull(String num) {
