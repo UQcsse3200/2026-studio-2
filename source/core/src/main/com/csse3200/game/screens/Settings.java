@@ -1,4 +1,4 @@
-package com.csse3200.game.screens;
+package com.csse3200.game.screens.settings;
 
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -19,8 +19,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /** The game screen containing the settings. */
-public class SettingsScreen extends ScreenAdapter {
-  private static final Logger logger = LoggerFactory.getLogger(SettingsScreen.class);
+public class SettingsMainMenu extends ScreenAdapter {
+  private static final Logger logger = LoggerFactory.getLogger(SettingsMainMenu.class);
   private static final String[] settingsTextures = {
     "images/Buttons/exit_up_btn.png",
     "images/Buttons/exit_down_btn.png",
@@ -33,7 +33,7 @@ public class SettingsScreen extends ScreenAdapter {
   private final GdxGame game;
   private final Renderer renderer;
 
-  public SettingsScreen(GdxGame game) {
+  public SettingsMainMenu(GdxGame game) {
     this.game = game;
 
     logger.debug("Initialising settings screen services");
