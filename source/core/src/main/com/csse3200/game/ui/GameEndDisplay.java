@@ -5,8 +5,10 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.Value;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
@@ -39,6 +41,9 @@ public class GameEndDisplay extends UIComponent {
   private boolean visible = false;
 
   private Table root;
+  private Stack stack;
+  private Table backgroundTable;
+  private Image background;
   private Table panel;
   private Label titleLabel;
   private Label messageLabel;
@@ -81,6 +86,7 @@ public class GameEndDisplay extends UIComponent {
           panel.getWidth(),
           panel.getHeight());
       panel.setVisible(true);
+      root.setVisible(true);
       showBackdrop();
     } else {
       logger.warn("Panel is NULL in setState()! buildActors() may not have been called.");
@@ -150,6 +156,15 @@ public class GameEndDisplay extends UIComponent {
     root = new Table();
     root.setFillParent(true);
 
+    stack = new Stack();
+    Texture backgroundTexture =
+        ServiceLocator.getResourceService()
+            .getAsset("images/scroll_bg.png", Texture.class);
+
+    backgroundTable = new Table();
+    background = new Image(backgroundTexture);
+    backgroundTable.add(background);
+    //root.add(stack).fill().expand();
     panel = new Table();
     panel.setVisible(visible);
     // panel.setBackground(getBackgroundDrawable());
@@ -226,35 +241,18 @@ public class GameEndDisplay extends UIComponent {
     panel.add(exitGameBtn).width(BUTTON_WIDTH).height(BUTTON_HEIGHT).padBottom(padding).row();
     panel.pack();
 
-    root.add(panel).width(Value.percentWidth(0.8f, root)).fillX().center();
+    stack.add(backgroundTable);
+    stack.add(panel);
+    root.add(stack).width(Value.percentWidth(0.8f, root)).fillX().center();
+    // Gate visibility on root, not just panel: everything in the stack (including the scroll
+    // background) sits directly on the stage via root, so hiding only panel left the background
+    // showing on its own before the game had actually ended.
+    root.setVisible(visible);
     stage.addActor(root);
     root.invalidateHierarchy();
     root.layout();
     updateMessageLabel();
   }
-
-  // private static NinePatchDrawable getBackgroundDrawable() {
-  //   if (cachedBackground != null) {
-  //     return cachedBackground;
-  //   }
-
-  //   int size = 16;
-  //   int border = BORDER_THICKNESS + 2;
-
-  //   Pixmap pixmap = new Pixmap(size, size, Pixmap.Format.RGBA8888);
-  //   pixmap.setColor(new Color(0.35f, 0.35f, 0.38f, 0.88f));
-  //   pixmap.fill();
-  //   pixmap.setColor(new Color(0.85f, 0.8f, 0.4f, 1f));
-  //   for (int i = 0; i < border; i++) {
-  //     pixmap.drawRectangle(i, i, size - i * 2, size - i * 2);
-  //   }
-  //   Texture texture = new Texture(pixmap);
-  //   pixmap.dispose();
-
-  //   NinePatch patch = new NinePatch(texture, border, border, border, border);
-  //   cachedBackground = new NinePatchDrawable(patch);
-  //   return cachedBackground;
-  // }
 
   private void updateMessageLabel() {
     if (messageLabel == null) {
