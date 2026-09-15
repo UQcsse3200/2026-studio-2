@@ -70,6 +70,11 @@ public class TutorialGameArea extends GameArea {
         new GridPoint2(60, 1), new GridPoint2(57, 10),
       };
 
+  private static final GridPoint2[] skeletonArcherTestSpawnLocations =
+      new GridPoint2[] {
+        new GridPoint2(60, 1), new GridPoint2(4, 4),
+      };
+
   public static final GridPoint2 PLAYER_SPAWN = new GridPoint2(1, 4);
   public static final GridPoint2 ROPE_ARROW_SPAWN = new GridPoint2(2, 3);
   public static final GridPoint2 STANDARD_ARROW_SPAWN = new GridPoint2(4, 3);
@@ -185,7 +190,7 @@ public class TutorialGameArea extends GameArea {
     // spawnTestSkeletonWarrior();
     // spawnTestSkeletonArcher();
     // spawnTestVulture();
-    // spawnTestNecromancer();
+    spawnTestNecromancer();
 
     // spawnVulture();
     // spawnNecromancer();
@@ -375,7 +380,7 @@ public class TutorialGameArea extends GameArea {
   }
 
   private void spawnTestSkeletonArcher() {
-    for (GridPoint2 spawnLocation : testSpawnLocations) {
+    for (GridPoint2 spawnLocation : skeletonArcherTestSpawnLocations) {
       Entity enemy = EnemyFactory.createSkeletonArcher(player);
       spawnEntityAt(enemy, spawnLocation, true, true);
     }

@@ -96,7 +96,7 @@ public class RangedAttackTask extends DefaultTask implements PriorityTask {
         useNecromancerProjectile
             ? ProjectileFact.createNecromancerProjectile(
                 targetCenter, damage, projectileSpeed, projectileLifetime)
-            : ProjectileFact.createEnemyProjectile(
+            : ProjectileFact.createSkeletonArcherProjectile(
                 targetCenter, damage, projectileSpeed, projectileLifetime);
 
     // setPosition() uses the bottom-left corner, so offset by half the

@@ -25,7 +25,7 @@ public class ProjectileFact {
    * @param lifetime maximum projectile lifetime in seconds
    * @return projectile entity
    */
-  public static Entity createEnemyProjectile(
+  public static Entity createSkeletonArcherProjectile(
       Vector2 targetPosition, int damage, float speed, float lifetime) {
 
     PhysicsMovementComponent movement = new PhysicsMovementComponent(new Vector2(speed, speed));
@@ -38,6 +38,7 @@ public class ProjectileFact {
             .addComponent(new HitboxComponent().setLayer(PhysicsLayer.NPC))
             .addComponent(new CombatStatsComponent(1, damage))
             .addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER))
+            .addComponent(new ProjectileComponent(lifetime))
             .addComponent(new ColliderComponent())
             .addComponent(new TextureRenderComponent("images/arrow.png"));
 

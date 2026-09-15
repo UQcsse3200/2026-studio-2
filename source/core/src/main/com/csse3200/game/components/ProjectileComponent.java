@@ -74,7 +74,9 @@ public class ProjectileComponent extends Component {
 
     boolean hitSolid = PhysicsLayer.contains(PhysicsLayer.SOLID, otherLayer);
 
-    if (hitPlayer || hitSolid) {
+    boolean hitNpc = PhysicsLayer.contains(PhysicsLayer.NPC, otherLayer);
+
+    if (hitPlayer || hitSolid || hitNpc) {
       ServiceLocator.getEntityService().scheduleForDisposal(entity);
     }
   }
