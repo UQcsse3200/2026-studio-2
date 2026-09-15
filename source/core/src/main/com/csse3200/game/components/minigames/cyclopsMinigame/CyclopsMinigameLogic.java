@@ -140,11 +140,14 @@ public class CyclopsMinigameLogic extends Component {
         player.setPosition(terrain.tileToWorldPosition(winLocation));
         state = State.GAME_OVER;
         outcome = GameEndState.WIN;
+        logger.info("Player moved to win location: {}", winLocation);
         return;
       }
       movePlayer(safeLocations.get(currentSafeLoc));
+      logger.info("Player moved to next safe location: {}", safeLocations.get(currentSafeLoc));
     } else {
       movePlayer(lossLocations.get(currentSafeLoc));
+      logger.info("Player moved to next loss location: {}", lossLocations.get(currentSafeLoc));
       state = State.GAME_OVER;
     }
   }
@@ -154,6 +157,7 @@ public class CyclopsMinigameLogic extends Component {
 
     if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
       timingBarLogic.stopMarker();
+      logger.info("sliding marker was stopped at {} (0.0 - 1.0)", timingBarLogic.markerX);
       scheduleTimingMinigameHide();
     }
   }
@@ -210,7 +214,7 @@ public class CyclopsMinigameLogic extends Component {
   }
 
   public void startMinigame() {
-    logger.info("starting minigame");
+    logger.info("starting cyclops minigame");
     scheduleTimingMinigameShow();
   }
 
