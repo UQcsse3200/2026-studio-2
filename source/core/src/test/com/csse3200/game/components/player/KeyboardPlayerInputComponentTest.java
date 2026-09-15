@@ -4,7 +4,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import com.badlogic.gdx.Gdx;
@@ -14,6 +17,7 @@ import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.physics.box2d.Body;
 import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.components.inventory.InventoryComponent;
 import com.csse3200.game.components.item.ItemType;
@@ -21,7 +25,10 @@ import com.csse3200.game.components.item.weapons.PrimaryWeapon;
 import com.csse3200.game.components.item.weapons.WeaponComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
+import com.csse3200.game.events.listeners.EventListener0;
+import com.csse3200.game.events.listeners.EventListener1;
 import com.csse3200.game.extensions.GameExtension;
+import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
@@ -254,6 +261,50 @@ class KeyboardPlayerInputComponentTest {
     assertEquals(1, descentStarts.get());
     assertTrue(component.keyUp(Keys.S));
     assertEquals(1, descentStops.get());
+  }
+
+  @Test
+  @SuppressWarnings("unchecked")
+  void shouldPreserveLedgeDropAlongsideGrappleDescent() {
+    KeyboardPlayerInputComponent component = new KeyboardPlayerInputComponent();
+    Entity player = new Entity().addComponent(component);
+    EventListener0 descend = mock(EventListener0.class);
+    EventListener0 stop = mock(EventListener0.class);
+    EventListener1<Boolean> drop = mock(EventListener1.class);
+    player.getEvents().addListener("grappleDescendStart", descend);
+    player.getEvents().addListener("grappleDescendStop", stop);
+    player.getEvents().addListener("updateLedgeDrop", drop);
+
+    assertTrue(component.keyDown(Keys.S));
+    verify(descend).handle();
+    verify(drop).handle(true);
+    assertTrue(component.keyUp(Keys.S));
+    verify(stop).handle();
+    // Physics clears the drop flag after passing through the ledge, not on key release.
+    verifyNoMoreInteractions(drop);
+  }
+
+  @Test
+  void shouldClearVerticalCheatInputAfterReleasingGrappleKeys() {
+    KeyboardPlayerInputComponent component = new KeyboardPlayerInputComponent();
+    PhysicsComponent physics = mock(PhysicsComponent.class);
+    Body body = mock(Body.class);
+    when(physics.getBody()).thenReturn(body);
+    when(body.getWorldCenter()).thenReturn(new Vector2());
+    new Entity().addComponent(component).addComponent(physics);
+    component.toggleCheats();
+
+    component.keyDown(Keys.W);
+    verify(body).applyLinearImpulse(new Vector2(0, 10f), new Vector2(), true);
+    component.keyUp(Keys.W);
+    component.keyDown(Keys.S);
+    verify(body).applyLinearImpulse(new Vector2(0, -10f), new Vector2(), true);
+    component.keyUp(Keys.S);
+    clearInvocations(body);
+
+    component.keyDown(Keys.D);
+    component.keyUp(Keys.D);
+    verifyNoMoreInteractions(body);
   }
 
   @Test
