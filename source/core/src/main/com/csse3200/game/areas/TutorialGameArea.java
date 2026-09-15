@@ -100,6 +100,9 @@ public class TutorialGameArea extends GameArea {
     "images/parallax/Mountains.png",
     "images/parallax/ground.png",
     "images/parallax/Rocks.png",
+    "images/parallax/level_1_background.png",
+    "images/parallax/level_1_clouds.png",
+    "images/parallax/level_1_furthest.png",
 
     // Enemy textures
     "images/skeleton_warrior.png",
@@ -190,25 +193,63 @@ public class TutorialGameArea extends GameArea {
 
     // Complete original background image
     backgroundComponent.addLayer(
-        "images/parallax/original_background.png",
+        "images/parallax/level_1_background.png",
         new Vector2(0.1f, 0f), // Parallax factor
         30f,
-        15f,
-        new Vector2(0f, 3.5f), // Positional offset
+        12f,
+        new Vector2(0f, 4.25f), // Positional offset
         BackgroundType.DEPENDENT,
         new Vector2(0f, 0f), // Independent velocity
-        false);
+        false,
+        1f);
 
     // Complete clouds image
     backgroundComponent.addLayer(
-        "images/parallax/Clouds.png",
+        "images/parallax/level_1_clouds.png",
+        new Vector2(0.1f, 0f), // Parallax factor
+        30f,
+        4f,
+        new Vector2(0f, 10f), // Positional offset
+        BackgroundType.DEPENDENT,
+        new Vector2(0.1f, 0f), // Independent velocity
+        true,
+        1f);
+
+    // Complete mountains image
+    backgroundComponent.addLayer(
+        "images/parallax/level_1_clouds.png",
         new Vector2(0.1f, 0f), // Parallax factor
         30f,
         15f,
-        new Vector2(0f, 3.5f), // Positional offset
+        new Vector2(25f, 7.5f), // Positional offset
         BackgroundType.DEPENDENT,
-        new Vector2(0.1f, 0f), // Independent velocity
-        true);
+        new Vector2(0.2f, 0f), // Independent velocity
+        true,
+        1f);
+
+    // Complete furthest mountains image
+    backgroundComponent.addLayer(
+        "images/parallax/level_1_furthest.png",
+        new Vector2(0.06f, 0f), // Parallax factor 0.12
+        30f,
+        7f,
+        new Vector2(5f, 6.5f), // Positional offset
+        BackgroundType.DEPENDENT,
+        new Vector2(0f, 0f), // Independent velocity
+        true,
+        1f);
+
+    // Complete second-furthest mountains image
+    backgroundComponent.addLayer(
+        "images/parallax/level_1_furthest.png",
+        new Vector2(0.12f, 0f), // Parallax factor 0.12
+        30f,
+        10f,
+        new Vector2(0f, 5f), // Positional offset
+        BackgroundType.DEPENDENT,
+        new Vector2(0f, 0f), // Independent velocity
+        true,
+        1f);
 
     // Create the background entity.
     Entity background = new Entity().addComponent(backgroundComponent);
