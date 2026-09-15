@@ -1,6 +1,7 @@
 package com.csse3200.game.entities.factories;
 
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
+import com.csse3200.game.components.item.GoldPickupComponent;
 import com.csse3200.game.components.item.Item;
 import com.csse3200.game.components.item.ItemComponent;
 import com.csse3200.game.components.item.ItemType;
@@ -19,6 +20,7 @@ import com.csse3200.game.rendering.TextureRenderComponent;
 /** Factory to create item entities that sit in the world for the player to find or pick up. */
 public class ItemFactory {
   private static final float ITEM_HEIGHT = 0.85f;
+  public static final String GOLD_TEXTURE = "images/gold_coin.png";
 
   /**
    * Creates a world entity for an item using the texture from its {@code ItemType}.
@@ -98,6 +100,34 @@ public class ItemFactory {
 
   public static Entity createPoisonPotion(int quantity) {
     return createItem(new PoisonPotion(quantity));
+  }
+
+  /**
+   * Creates a world gold coin worth {@link GoldPickupComponent#DEFAULT_AMOUNT} gold.
+   *
+   * @return gold pickup entity
+   */
+  public static Entity createGold() {
+    return createGold(GoldPickupComponent.DEFAULT_AMOUNT);
+  }
+
+  /**
+   * Creates a world gold coin worth the given amount.
+   *
+   * @param amount gold granted on pickup
+   * @return gold pickup entity
+   */
+  public static Entity createGold(int amount) {
+    Entity gold =
+        new Entity()
+            .addComponent(new TextureRenderComponent(GOLD_TEXTURE))
+            .addComponent(new PhysicsComponent().setBodyType(BodyType.StaticBody))
+            .addComponent(new HitboxComponent().setLayer(PhysicsLayer.DEFAULT))
+            .addComponent(new GoldPickupComponent(amount));
+
+    gold.getComponent(TextureRenderComponent.class).scaleEntity();
+    gold.scaleHeight(ITEM_HEIGHT);
+    return gold;
   }
 
   private ItemFactory() {

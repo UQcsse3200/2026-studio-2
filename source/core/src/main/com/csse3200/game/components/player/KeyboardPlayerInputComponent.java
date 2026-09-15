@@ -33,6 +33,7 @@ public class KeyboardPlayerInputComponent extends InputComponent {
     super.create();
     entity.getEvents().addListener("togglePause", this::triggerWalkEvent);
     entity.getEvents().addListener("death", () -> dead = true);
+    entity.getEvents().addListener("openShop", this::releaseHeldGameplayInput);
   }
 
   /**
@@ -54,6 +55,9 @@ public class KeyboardPlayerInputComponent extends InputComponent {
   public boolean keyDown(int keycode) {
     if (dead) {
       return false;
+    }
+    if (isShopOpen() && keycode != Keys.F) {
+      return true;
     }
     switch (keycode) {
       // Hotbar number keys
@@ -182,6 +186,9 @@ public class KeyboardPlayerInputComponent extends InputComponent {
    */
   @Override
   public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+    if (isShopOpen()) {
+      return true;
+    }
     if (dead || isArrowWheelOpen()) {
       return false;
     }
@@ -219,6 +226,9 @@ public class KeyboardPlayerInputComponent extends InputComponent {
    */
   @Override
   public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+    if (isShopOpen()) {
+      return true;
+    }
     if (dead) {
       return false;
     }
@@ -252,6 +262,20 @@ public class KeyboardPlayerInputComponent extends InputComponent {
 
     // Reported, not consumed, so other handlers still see the movement.
     return false;
+  }
+
+  private boolean isShopOpen() {
+    PlayerInteractionComponent interaction = entity.getComponent(PlayerInteractionComponent.class);
+    return interaction != null && interaction.isShopOpen();
+  }
+
+  private void releaseHeldGameplayInput() {
+    keysHeld[LEFT] = false;
+    keysHeld[RIGHT] = false;
+    sprintHeld = false;
+    attackHeld = false;
+    triggerWalkEvent();
+    entity.getEvents().trigger("sprintStop");
   }
 
   private boolean isArrowWheelOpen() {
