@@ -205,6 +205,7 @@ public class TutorialGameScreen extends ScreenAdapter {
     logger.info("Game paused");
   }
 
+  /** Resumes the game. */
   @Override
   public void resume() {
     logger.info("Game resumed");
