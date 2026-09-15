@@ -182,15 +182,13 @@ public class TutorialGameArea extends GameArea {
     spawnSkeletonWarrior();
 
     // Test enemy functionalitys
-    spawnTestSkeletonWarrior();
-    spawnTestSkeletonArcher();
+    // spawnTestSkeletonWarrior();
+    // spawnTestSkeletonArcher();
     // spawnTestVulture();
     // spawnTestNecromancer();
 
-
     // spawnVulture();
     // spawnNecromancer();
-
 
     // spawnTestWinCondition(); // Temporary test win condition near player spawn for quick testing
 
