@@ -11,6 +11,7 @@ import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.inventory.InventoryComponent;
 import com.csse3200.game.components.item.ItemType;
 import com.csse3200.game.components.item.consumables.HealthPotion;
+import com.csse3200.game.components.item.consumables.ShieldPotion;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.services.GameTime;
@@ -19,8 +20,6 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import com.csse3200.game.components.item.consumables.ShieldPotion;
-
 
 @ExtendWith(GameExtension.class)
 class ItemUseComponentTest {
@@ -235,7 +234,7 @@ class ItemUseComponentTest {
     assertEquals(0, inventory.getItemCount(ItemType.PoisonPotion));
   }
 
-    @Test
+  @Test
   void shouldConsumeShieldPotionAndMakePlayerInvulnerable() {
     Entity player = createPlayer();
     InventoryComponent inventory = player.getComponent(InventoryComponent.class);
@@ -283,6 +282,21 @@ class ItemUseComponentTest {
 
     combat.hit(new CombatStatsComponent(100, 10));
     assertEquals(90, combat.getHealth());
+  }
+
+  @Test
+  void shouldNotUseSecondShieldPotionWhileShieldIsActive() {
+    Entity player = createPlayer();
+    InventoryComponent inventory = player.getComponent(InventoryComponent.class);
+    ItemUseComponent itemUse = player.getComponent(ItemUseComponent.class);
+
+    inventory.addItem(ItemType.ShieldPotion, 2);
+
+    assertTrue(itemUse.useSelectedItem());
+    assertEquals(1, inventory.getItemCount(ItemType.ShieldPotion));
+
+    assertFalse(itemUse.useSelectedItem());
+    assertEquals(1, inventory.getItemCount(ItemType.ShieldPotion));
   }
 
   private Entity createPlayer() {

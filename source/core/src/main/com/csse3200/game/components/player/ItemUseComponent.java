@@ -50,6 +50,7 @@ public class ItemUseComponent extends Component {
     if (time == null) {
       return 0f;
     }
+
     long remainingMs = ropeReadyTimeMs - time.getTime();
     return remainingMs <= 0 ? 0f : remainingMs / 1000f;
   }
@@ -87,7 +88,6 @@ public class ItemUseComponent extends Component {
       case SpeedPotion -> useSpeedPotion();
       case PoisonPotion -> usePoisonPotion();
       case ShieldPotion -> useShieldPotion();
-
     };
   }
 
@@ -184,6 +184,7 @@ public class ItemUseComponent extends Component {
       entity.getEvents().trigger("itemUseFailed", ItemType.Sword);
       return false;
     }
+
     entity
         .getEvents()
         .trigger("meleeAttack", ItemType.Sword.getDamage(), ItemType.Sword.getRange());
@@ -199,6 +200,7 @@ public class ItemUseComponent extends Component {
       entity.getEvents().trigger("itemUseFailed", ItemType.Spear);
       return false;
     }
+
     entity
         .getEvents()
         .trigger("meleeAttack", ItemType.Spear.getDamage(), ItemType.Spear.getRange());
@@ -302,6 +304,12 @@ public class ItemUseComponent extends Component {
       return false;
     }
 
+    if (combatStats.isInvulnerable()) {
+      logger.debug("Shield potion effect is already active");
+      entity.getEvents().trigger("itemUseFailed", ItemType.ShieldPotion);
+      return false;
+    }
+
     if (!inventory.removeItem(ItemType.ShieldPotion, 1)) {
       entity.getEvents().trigger("itemUseFailed", ItemType.ShieldPotion);
       return false;
@@ -326,6 +334,7 @@ public class ItemUseComponent extends Component {
         logger.debug("Aim direction unavailable, using default");
       }
     }
+
     return DEFAULT_AIM.cpy();
   }
 
@@ -333,8 +342,10 @@ public class ItemUseComponent extends Component {
     if (ServiceLocator.getResourceService() == null) {
       return;
     }
+
     try {
-      Sound attackSound = ServiceLocator.getResourceService().getAsset(ATTACK_SOUND, Sound.class);
+      Sound attackSound =
+          ServiceLocator.getResourceService().getAsset(ATTACK_SOUND, Sound.class);
       if (attackSound != null) {
         attackSound.play();
       }

@@ -39,7 +39,7 @@ public class CombatStatsComponent extends Component {
   /**
    * Creates combat stats with an invulnerability window after each successful hit.
    *
-   * @param health initial health
+   * @param health initial current health
    * @param baseAttack base attack damage
    * @param invulnerabilityDuration invulnerability duration in milliseconds
    */
@@ -161,19 +161,30 @@ public class CombatStatsComponent extends Component {
     }
   }
 
+  /**
+   * Makes this entity invulnerable for the given duration.
+   *
+   * @param durationMs duration of invulnerability in milliseconds
+   */
+  public void makeInvulnerable(long durationMs) {
+    GameTime timeSource = ServiceLocator.getTimeSource();
+    long currentTime = timeSource == null ? 0 : timeSource.getTime();
+
+    invulnerableUntil =
+        Math.max(invulnerableUntil, currentTime + Math.max(0, durationMs));
+  }
 
   /**
- * Makes this entity invulnerable for the given duration.
- *
- * @param durationMs duration of invulnerability in milliseconds
- */
-public void makeInvulnerable(long durationMs) {
-  GameTime timeSource = ServiceLocator.getTimeSource();
-  long currentTime = timeSource == null ? 0 : timeSource.getTime();
+   * Returns whether this entity is currently invulnerable.
+   *
+   * @return true if the invulnerability period is still active
+   */
+  public boolean isInvulnerable() {
+    GameTime timeSource = ServiceLocator.getTimeSource();
+    long currentTime = timeSource == null ? 0 : timeSource.getTime();
+    return currentTime < invulnerableUntil;
+  }
 
-  invulnerableUntil =
-      Math.max(invulnerableUntil, currentTime + Math.max(0, durationMs));
-}
   public void hit(CombatStatsComponent attacker) {
     GameTime timeSource = ServiceLocator.getTimeSource();
     long currentTime = timeSource == null ? 0 : timeSource.getTime();
