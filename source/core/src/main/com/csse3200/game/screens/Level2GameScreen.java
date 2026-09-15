@@ -227,7 +227,7 @@ public class Level2GameScreen extends ScreenAdapter {
         .addComponent(new Terminal())
         .addComponent(inputComponent)
         .addComponent(new TerminalDisplay())
-        .addComponent(new PauseMenuDisplay(this.game));
+        .addComponent(new PauseMenuDisplay(this.game, this.currentGameArea));
 
     ServiceLocator.getEntityService().register(ui);
   }
