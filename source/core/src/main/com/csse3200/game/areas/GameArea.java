@@ -12,6 +12,7 @@ import com.csse3200.game.components.level.CheckpointComponent;
 import com.csse3200.game.components.level.LevelTriggerComponent;
 import com.csse3200.game.components.level.PlatformGrappleComponent;
 import com.csse3200.game.components.level.TriggerButtonComponent;
+import com.csse3200.game.components.player.KeyboardPlayerInputComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.ArrayList;
@@ -33,6 +34,7 @@ public abstract class GameArea implements Disposable {
   protected List<Entity> platforms = new ArrayList<>();
   protected HashMap<String, ArrayList<Entity>> triggerableEntities = new HashMap<>();
   protected Entity player;
+  protected KeyboardPlayerInputComponent input;
   protected Entity levelChanger;
   protected LevelConfig config;
 
@@ -214,6 +216,10 @@ public abstract class GameArea implements Disposable {
     int hit = grappleComponent.checkSideHit(p, raycastEnd);
     boolean result = grappleComponent.successfulGrapple(hit);
     player.getEvents().trigger("grappleResponse", result);
+  }
+
+  public KeyboardPlayerInputComponent getInput() {
+    return input;
   }
 
   /**

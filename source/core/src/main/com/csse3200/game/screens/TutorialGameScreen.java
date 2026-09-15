@@ -14,7 +14,7 @@ import com.csse3200.game.components.ButtonSound;
 import com.csse3200.game.components.gamearea.PerformanceDisplay;
 import com.csse3200.game.components.maingame.MainGameActions;
 import com.csse3200.game.components.maingame.MainGameExitDisplay;
-import com.csse3200.game.components.maingame.PauseMenuDisplay;
+import com.csse3200.game.components.maingame.PauseMenuOverlay;
 import com.csse3200.game.components.minigames.MinigameOverlayManager;
 import com.csse3200.game.components.minigames.blackjack.BlackjackConfig;
 import com.csse3200.game.components.minigames.blackjack.BlackjackOverlay;
@@ -68,9 +68,17 @@ public class TutorialGameScreen extends ScreenAdapter {
   private final SpinTheWheelOverlay wheelOverlay;
   private final BlackjackOverlay blackjackOverlay;
   private final MinigameOverlayManager minigameOverlayManager;
+  private PauseMenuOverlay pauseOverlay;
   private Entity player;
   private static final String gameplayMusic = "sounds/gameplay_bg.ogg";
   private static final String[] gameplayMusicFiles = {gameplayMusic};
+  private static final String winMusic = "sounds/Win_music.mp3";
+  private static final String loseMusic = "sounds/Death_music.ogg";
+  private static final String[] gameEndMusic = {winMusic, loseMusic, "sounds/Main_menu_sound.mp3"};
+  private static final String[] gameSounds = {
+    "sounds/hit.ogg", "sounds/Arrow_release.wav", "sounds/jump.ogg", "sounds/itempick.wav"
+  };
+  private final TutorialGameArea tutorialGameArea;
   private boolean cheats = false;
 
   public TutorialGameScreen(GdxGame game) {
@@ -98,7 +106,7 @@ public class TutorialGameScreen extends ScreenAdapter {
 
     loadAssets();
     createUI();
-    // playMusic();
+    playMusic();
 
     logger.debug("Initialising tutorial game screen entities");
 
@@ -107,7 +115,8 @@ public class TutorialGameScreen extends ScreenAdapter {
 
     // Pass the same camera to the TutorialGameArea so that
     // the parallax background can follow camera movement.
-    TutorialGameArea tutorialGameArea = new TutorialGameArea(terrainFactory, renderer.getCamera());
+    tutorialGameArea = new TutorialGameArea(terrainFactory, renderer.getCamera());
+
     tutorialGameArea.create();
 
     currentGameArea = tutorialGameArea;
@@ -115,9 +124,50 @@ public class TutorialGameScreen extends ScreenAdapter {
     if (levelChanger != null) {
       levelChanger.getEvents().addListener("triggerNextLevel", this::queueAreaSwap);
     }
-
     player = tutorialGameArea.getPlayer();
 
+    player
+        .getEvents()
+        .addListener(
+            "jump",
+            () -> {
+              try {
+                com.badlogic.gdx.audio.Sound jumpSound =
+                    ServiceLocator.getResourceService()
+                        .getAsset("sounds/jump.ogg", com.badlogic.gdx.audio.Sound.class);
+                jumpSound.play(0.5f);
+              } catch (Exception e) {
+                // skip
+              }
+            });
+    player
+        .getEvents()
+        .addListener(
+            "hurt",
+            () -> {
+              try {
+                com.badlogic.gdx.audio.Sound hurtSound =
+                    ServiceLocator.getResourceService()
+                        .getAsset("sounds/hit.ogg", com.badlogic.gdx.audio.Sound.class);
+                hurtSound.play(0.2f);
+              } catch (Exception e) {
+                // skip
+              }
+            });
+    player
+        .getEvents()
+        .addListener(
+            "itemPickedUp",
+            (Object item) -> {
+              try {
+                com.badlogic.gdx.audio.Sound pickupSound =
+                    ServiceLocator.getResourceService()
+                        .getAsset("sounds/itempick.wav", com.badlogic.gdx.audio.Sound.class);
+                pickupSound.play(0.2f);
+              } catch (Exception e) {
+                // skip
+              }
+            });
     // Follow the player with the camera.
     renderer.getCamera().setTarget(player);
     player.getEvents().addListener("deathAnimationFinished", this::onPlayerDeath);
@@ -125,6 +175,8 @@ public class TutorialGameScreen extends ScreenAdapter {
     minigameOverlayManager = new MinigameOverlayManager();
     wheelOverlay = new SpinTheWheelOverlay(WheelConfig.ITEMS, player, minigameOverlayManager);
     blackjackOverlay = new BlackjackOverlay(player, minigameOverlayManager);
+    pauseOverlay =
+        new PauseMenuOverlay(game, currentGameArea, GdxGame.ScreenType.TUTORIAL_SETTINGS);
 
     if (cheats) {
       tutorialGameArea
@@ -148,7 +200,7 @@ public class TutorialGameScreen extends ScreenAdapter {
    *
    * @param level the name of the level to load
    */
-  private void queueAreaSwap(String level) {
+  public void queueAreaSwap(String level) {
     TerrainFactory terrainFactory = new TerrainFactory(renderer.getCamera());
 
     switch (level) {
@@ -176,6 +228,16 @@ public class TutorialGameScreen extends ScreenAdapter {
     currentGameArea = nextGameArea;
     nextGameArea = null;
 
+    GdxGame.ScreenType settingsMenu = null;
+    if (currentGameArea.getClass() == TutorialGameArea.class) {
+      settingsMenu = GdxGame.ScreenType.TUTORIAL_SETTINGS;
+    } else if (currentGameArea.getClass() == Level2GameArea.class) {
+      settingsMenu = GdxGame.ScreenType.LEVEL_2_SETTINGS;
+    }
+    if (settingsMenu != null) {
+      pauseOverlay = new PauseMenuOverlay(game, currentGameArea, settingsMenu);
+    }
+
     renderer.getCamera().setTarget(currentGameArea.getPlayer());
   }
 
@@ -186,13 +248,13 @@ public class TutorialGameScreen extends ScreenAdapter {
       performLevelSwap();
       levelSwapQueued = false;
     }
-
     if (Gdx.input.isKeyJustPressed(Input.Keys.K)) {
       wheelOverlay.request();
-    }
-
-    if (Gdx.input.isKeyJustPressed(Input.Keys.L)) {
+    } else if (Gdx.input.isKeyJustPressed(Input.Keys.L)) {
       blackjackOverlay.request();
+    } else if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
+      pauseOverlay.request();
+      tutorialGameArea.getInput().unpause();
     }
 
     physicsEngine.update();
@@ -200,6 +262,7 @@ public class TutorialGameScreen extends ScreenAdapter {
     renderer.render();
     wheelOverlay.afterRender();
     blackjackOverlay.afterRender();
+    pauseOverlay.afterRender();
   }
 
   @Override
@@ -213,6 +276,7 @@ public class TutorialGameScreen extends ScreenAdapter {
     logger.info("Game paused");
   }
 
+  /** Resumes the game. */
   @Override
   public void resume() {
     logger.info("Game resumed");
@@ -258,7 +322,20 @@ public class TutorialGameScreen extends ScreenAdapter {
                 "images/Buttons/exit_down_btn.png",
                 "images/rope_arrow.png",
                 "images/fire_arrow.png",
-                "images/cold_arrow.png"));
+                "images/cold_arrow.png",
+                "images/Buttons/exit_down_btn.png",
+                "images/Buttons/control_up_btn.png",
+                "images/Buttons/control_down_btn.png",
+                "images/controls_graphic.png",
+                "images/Buttons/restart_up_btn.png",
+                "images/Buttons/restart_down_btn.png",
+                "images/Buttons/main_menu_up_btn.png",
+                "images/Buttons/main_menu_down_btn.png",
+                "images/Buttons/exit_game_up_btn.png",
+                "images/Buttons/exit_game_down_btn.png",
+                "images/Buttons/back_up_btn.png",
+                "images/Buttons/back_down_btn.png",
+                "images/scroll_bg.png"));
     paths.addAll(List.of(WheelConfig.TEXTURES));
     paths.addAll(List.of(BlackjackConfig.TEXTURES));
     return paths.toArray(new String[0]);
@@ -280,6 +357,8 @@ public class TutorialGameScreen extends ScreenAdapter {
     resourceService.loadTextures(mainGameTextures);
     resourceService.loadTextureAtlases(mainGameAtlas);
     resourceService.loadSounds(WheelConfig.SOUNDS);
+    resourceService.loadMusic(gameEndMusic);
+    resourceService.loadSounds(gameSounds);
     resourceService.loadMusic(gameplayMusicFiles);
     ButtonSound.load(resourceService);
     resourceService.loadAll();
@@ -291,6 +370,8 @@ public class TutorialGameScreen extends ScreenAdapter {
     resourceService.unloadAssets(mainGameTextures);
     resourceService.unloadAssets(mainGameAtlas);
     resourceService.unloadAssets(WheelConfig.SOUNDS);
+    resourceService.unloadAssets(gameSounds);
+    resourceService.unloadAssets(gameEndMusic);
     resourceService.unloadAssets(gameplayMusicFiles);
     ButtonSound.unload(resourceService);
   }
@@ -325,8 +406,7 @@ public class TutorialGameScreen extends ScreenAdapter {
         .addComponent(new GameEndActions(this.game))
         .addComponent(new Terminal(game, GdxGame.ScreenType.TUTORIAL_GAME))
         .addComponent(inputComponent)
-        .addComponent(new TerminalDisplay())
-        .addComponent(new PauseMenuDisplay(this.game));
+        .addComponent(new TerminalDisplay());
 
     ServiceLocator.getEntityService().register(ui);
   }

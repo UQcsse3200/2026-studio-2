@@ -11,8 +11,6 @@ import com.csse3200.game.screens.*;
 import com.csse3200.game.screens.CutsceneScreen;
 import com.csse3200.game.screens.MainGameScreen;
 import com.csse3200.game.screens.MainMenuScreen;
-import com.csse3200.game.screens.SettingsFromPauseScreen;
-import com.csse3200.game.screens.SettingsScreen;
 import com.csse3200.game.screens.TransitionScreen;
 import com.csse3200.game.screens.TutorialGameScreen;
 import com.csse3200.game.screens.minigames.BlackjackScreen;
@@ -150,11 +148,15 @@ public class GdxGame extends Game {
       case TUTORIAL_GAME:
         return new TutorialGameScreen(this);
       case LEVEL_2_GAME:
-        return new Level2GameScreen(this);
-      case SETTINGS:
-        return new SettingsScreen(this);
-      case SETTINGS_FROM_PAUSE:
-        return new SettingsFromPauseScreen(this);
+        TutorialGameScreen screen = new TutorialGameScreen(this);
+        screen.queueAreaSwap("level2");
+        return screen;
+      case MAIN_MENU_SETTINGS:
+        return new Settings(this, ScreenType.MAIN_MENU);
+      case TUTORIAL_SETTINGS:
+        return new Settings(this, ScreenType.TUTORIAL_GAME);
+      case LEVEL_2_SETTINGS:
+        return new Settings(this, ScreenType.LEVEL_2_GAME);
       case MINIGAME_SELECT:
         return new MinigameSelectScreen(this);
       case CYCLOPS_MINIGAME:
@@ -173,8 +175,9 @@ public class GdxGame extends Game {
     MAIN_GAME,
     TUTORIAL_GAME,
     LEVEL_2_GAME,
-    SETTINGS,
-    SETTINGS_FROM_PAUSE,
+    MAIN_MENU_SETTINGS,
+    TUTORIAL_SETTINGS,
+    LEVEL_2_SETTINGS,
     MINIGAME_SELECT,
     MINIGAME_BLACKJACK,
     CYCLOPS_MINIGAME,
