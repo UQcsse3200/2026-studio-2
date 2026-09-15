@@ -101,6 +101,7 @@ public class Level2GameArea extends GameArea {
     // player = spawnPlayer();
     // spawnEntityAt(player, config.getPlayerSpawn(), true, true);
     player.setPosition(new Vector2(config.getPlayerSpawn().x, config.getPlayerSpawn().y));
+    player.getEvents().addListener("respawnAtCheckpoint", this::respawn);
   }
 
   /** Creates the Level 2 background. */
