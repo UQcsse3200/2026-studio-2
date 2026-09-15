@@ -127,7 +127,7 @@ public class CyclopsMinigameRoomScreen extends ScreenAdapter {
         .addComponent(new PerformanceDisplay())
         .addComponent(new CyclopsMinigameActions(this.game))
         .addComponent(new CyclopsMinigameDisplay())
-        .addComponent(new Terminal())
+        .addComponent(new Terminal(game, GdxGame.ScreenType.CYCLOPS_MINIGAME))
         .addComponent(inputComponent)
         .addComponent(new GameEndDisplay(GameEndState.LOSE))
         .addComponent(new GameEndActions(this.game))
