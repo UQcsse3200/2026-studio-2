@@ -105,16 +105,16 @@ public class Level2Config extends LevelConfig {
               1,
               2,
               triggerablePlatformTFP,
-              new String[] {"enemyArenaComplete"},
-              false), // P7
+              new String[] {}, // should be enemyArenaComplete
+              true), // P7
           new TriggerablePlatformConfig(
               new GridPoint2(33, 25),
               3,
               1,
               8,
               triggerablePlatformTFP,
-              new String[] {"enemyArenaComplete"},
-              false), // P8
+              new String[] {}, // should be enemyArenaComplete
+              true), // P8
           new TriggerablePlatformConfig(
               new GridPoint2(28, 40),
               4,
