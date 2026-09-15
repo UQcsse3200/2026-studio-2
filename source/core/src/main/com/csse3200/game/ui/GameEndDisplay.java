@@ -32,10 +32,10 @@ public class GameEndDisplay extends UIComponent {
   private static final float Z_INDEX = 20f;
   private static final float CHARS_PER_SECOND = 21f;
 
-  private static final String WIN_TITLE = "YOU WIN!";
-  private static final String LOSE_TITLE = "GAME OVER!";
-  private static final String WIN_MESSAGE = "You achieved victory and completed the objective.";
-  private static final String LOSE_MESSAGE = "Better luck next time...";
+  private static final String WIN_TITLE = "VICTORY!";
+  private static final String LOSE_TITLE = "DEFEAT!";
+  private static final String WIN_MESSAGE = "You are one step closer to getting home...";
+  private static final String LOSE_MESSAGE = "What would Penelope think...";
 
   // Style-guide palette (Desert Shores / Sands & Stones)
   private static final Color PARCHMENT = new Color(0.93f, 0.86f, 0.68f, 1f);
