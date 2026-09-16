@@ -220,4 +220,8 @@ public class PlayerAnimationController extends Component {
   public void playAnimation(String animationName) {
     animator.startAnimation(animationName);
   }
+
+  public AnimationRenderComponent getAnimator() {
+    return this.animator;
+  }
 }

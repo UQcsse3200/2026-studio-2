@@ -11,6 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.csse3200.game.ui.UIComponent;
 
 public class BlankTransitionScreen extends UIComponent {
+  private static final float Z_INDEX = 10f;
 
   private Texture texture;
   private Table table;
@@ -18,7 +19,6 @@ public class BlankTransitionScreen extends UIComponent {
   public void fadeIn(float duration) {
     table.clearActions();
     table.setVisible(true);
-    table.toFront();
     table.addAction(Actions.fadeIn(duration));
   }
 
@@ -29,9 +29,6 @@ public class BlankTransitionScreen extends UIComponent {
 
   public void setVisible(boolean visible) {
     table.setVisible(visible);
-    if (visible) {
-      table.toFront();
-    }
   }
 
   @Override
@@ -68,5 +65,10 @@ public class BlankTransitionScreen extends UIComponent {
   public void dispose() {
     super.dispose();
     if (texture != null) texture.dispose();
+  }
+
+  @Override
+  public float getZIndex() {
+    return Z_INDEX;
   }
 }

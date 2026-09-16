@@ -324,7 +324,7 @@ public class CyclopsMinigameLogic extends Component {
           public void run() {
             onTransitionEnd();
 
-            if (state != State.GAME_OVER) {
+            if (state == State.PLAYING) {
               scheduleTimingMinigameShow();
             }
           }
@@ -333,14 +333,23 @@ public class CyclopsMinigameLogic extends Component {
   }
 
   void scheduleGameOver() {
+    state = State.STOPPED;
     timer.scheduleTask(
         new Timer.Task() {
           @Override
           public void run() {
-            gameOver();
+            player.getComponent(PlayerAnimationController.class).playAnimation("death");
+
+            timer.scheduleTask(
+                new Timer.Task() {
+                  @Override
+                  public void run() {
+                    gameOver();
+                  }
+                },
+                SHOW_GAME_OVER_DELAY);
           }
         },
-        SHOW_GAME_OVER_DELAY);
-    player.getComponent(PlayerAnimationController.class).playAnimation("death");
+        FADE + 0.2f);
   }
 }

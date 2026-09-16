@@ -53,7 +53,6 @@ public class TimingBarDisplay extends UIComponent {
   public void create() {
     super.create();
 
-    // For now create a 1x1 texture (until assets are used maybe)
     Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
     pixmap.setColor(Color.WHITE);
     pixmap.fill();
