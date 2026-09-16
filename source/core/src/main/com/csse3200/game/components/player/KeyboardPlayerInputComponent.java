@@ -35,7 +35,7 @@ public class KeyboardPlayerInputComponent extends InputComponent {
   @Override
   public void create() {
     super.create();
-    entity.getEvents().addListener("togglePause", this::triggerWalkEvent);
+    entity.getEvents().addListener("togglePause", this::unpause);
     entity.getEvents().addListener("death", () -> dead = true);
     entity.getEvents().addListener("openShop", this::releaseHeldGameplayInput);
     entity.getEvents().addListener("releaseHeldGameplayInput", this::releaseHeldGameplayInput);
@@ -145,6 +145,9 @@ public class KeyboardPlayerInputComponent extends InputComponent {
         return true;
       case Keys.TAB:
         entity.getEvents().trigger("openArrowWheel");
+        return true;
+      case Keys.ESCAPE:
+        entity.getEvents().trigger("togglePause");
         return true;
       default:
         return false;
@@ -381,5 +384,10 @@ public class KeyboardPlayerInputComponent extends InputComponent {
     } else {
       entity.getEvents().trigger("walk", walkDirection.cpy());
     }
+  }
+
+  public void unpause() {
+    triggerWalkEvent();
+    triggerSprintEvent();
   }
 }
