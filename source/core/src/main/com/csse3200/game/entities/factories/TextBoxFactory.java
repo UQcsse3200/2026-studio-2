@@ -25,21 +25,22 @@ public class TextBoxFactory {
 
     try {
       new TextBoxComponent(
-              textConfig.xPos,
-              textConfig.yPos,
-              textConfig.getTextColour(),
-              textConfig.getBackgroundColour(),
-              textConfig.getBorderColour(),
-              textConfig.charsPerSecond,
-              textConfig.maxWidth,
-              textConfig.padding,
-              textConfig.borderThickness,
-              textConfig.fontPath,
-              textConfig.getTextAlignment(),
-              textConfig.pages)
+          textConfig.xPos,
+          textConfig.yPos,
+          textConfig.getTextColour(),
+          textConfig.getBackgroundColour(),
+          textConfig.getBorderColour(),
+          textConfig.charsPerSecond,
+          textConfig.maxWidth,
+          textConfig.padding,
+          textConfig.borderThickness,
+          textConfig.fontPath,
+          textConfig.getTextAlignment(),
+          textConfig.pages)
           .create();
     } catch (Exception e) {
       logger.error("Failed to create text box: {}", e.getMessage());
     }
   }
 }
+

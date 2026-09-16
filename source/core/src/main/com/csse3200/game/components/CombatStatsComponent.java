@@ -3,6 +3,7 @@ package com.csse3200.game.components;
 import com.csse3200.game.services.GameTime;
 import com.csse3200.game.services.ServiceLocator;
 import org.slf4j.Logger;
+import com.badlogic.gdx.audio.Sound;
 import org.slf4j.LoggerFactory;
 
 /**

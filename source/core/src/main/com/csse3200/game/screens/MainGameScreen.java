@@ -12,10 +12,11 @@ import com.csse3200.game.components.ButtonSound;
 import com.csse3200.game.components.gamearea.PerformanceDisplay;
 import com.csse3200.game.components.maingame.MainGameActions;
 import com.csse3200.game.components.maingame.MainGameExitDisplay;
-import com.csse3200.game.components.maingame.PauseMenuOverlay;
+import com.csse3200.game.components.maingame.PauseMenuDisplay;
 import com.csse3200.game.components.minigames.MinigameOverlayManager;
 import com.csse3200.game.components.minigames.blackjack.BlackjackConfig;
 import com.csse3200.game.components.minigames.blackjack.BlackjackOverlay;
+import com.csse3200.game.components.maingame.PauseMenuOverlay;
 import com.csse3200.game.components.minigames.spinthewheel.SpinTheWheelOverlay;
 import com.csse3200.game.components.minigames.spinthewheel.WheelConfig;
 import com.csse3200.game.entities.Entity;
@@ -111,10 +112,10 @@ public class MainGameScreen extends ScreenAdapter {
     } else if (Gdx.input.isKeyJustPressed(Input.Keys.L)) {
       blackjackOverlay.request();
     } else if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
-      pauseOverlay.request();
+        pauseOverlay.request();
     }
 
-    physicsEngine.update();
+      physicsEngine.update();
     ServiceLocator.getEntityService().update();
     renderer.render();
     wheelOverlay.afterRender();
