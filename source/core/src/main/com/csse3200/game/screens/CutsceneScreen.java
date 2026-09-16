@@ -238,7 +238,8 @@ public class CutsceneScreen extends ScreenAdapter {
         if (fadeTimer >= duration) {
           state = State.COMPLETE;
           input.dispose();
-          game.setScreen(destination);
+          // Fade the destination screen in from black instead of swapping instantly.
+          game.transitionTo(destination);
         }
         break;
       case TEXT_ACTIVE:
