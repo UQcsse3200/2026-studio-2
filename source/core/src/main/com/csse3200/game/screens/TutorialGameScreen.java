@@ -200,7 +200,7 @@ public class TutorialGameScreen extends ScreenAdapter {
    *
    * @param level the name of the level to load
    */
-  private void queueAreaSwap(String level) {
+  public void queueAreaSwap(String level) {
     TerrainFactory terrainFactory = new TerrainFactory(renderer.getCamera());
 
     switch (level) {
