@@ -12,7 +12,7 @@ import com.csse3200.game.services.ServiceLocator;
 
 /** Draws a projectile's sprite rotated to face its flight direction. */
 public class ArrowRenderComponent extends RenderComponent {
-  private static final float RENDER_SIZE = 2f;
+  private static final float RENDER_SIZE = 0.6f;
 
   private static Texture pixelTexture;
 
