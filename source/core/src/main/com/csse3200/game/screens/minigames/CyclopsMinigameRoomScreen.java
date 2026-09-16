@@ -36,24 +36,24 @@ public class CyclopsMinigameRoomScreen extends ScreenAdapter {
 
   private static final Logger logger = LoggerFactory.getLogger(CyclopsMinigameRoomScreen.class);
   private static final String[] cyclopsMinigameTextures = {
-          "images/title_odysseus_logo.png",
-          "images/box_boy_title.png",
-          "images/Health_Bar_Background.png",
-          "images/Inventory_background.png",
-          "images/red_heart.png",
-          "images/heart.png",
-          "images/Buttons/exit_up_btn.png",
-          "images/Buttons/exit_down_btn.png",
-          "images/Buttons/restart_up_btn.png",
-          "images/Buttons/restart_down_btn.png",
-          "images/Buttons/main_menu_up_btn.png",
-          "images/Buttons/main_menu_down_btn.png",
-          "images/Buttons/exit_game_up_btn.png",
-          "images/Buttons/exit_game_down_btn.png",
-          "images/scroll_bg.png",
-          "images/minigames/cyclops/cyclops_bg.png",
-          "images/minigames/cyclops/cyclops_open.png",
-          "images/minigames/cyclops/cyclops_closed.png"
+    "images/title_odysseus_logo.png",
+    "images/box_boy_title.png",
+    "images/Health_Bar_Background.png",
+    "images/Inventory_background.png",
+    "images/red_heart.png",
+    "images/heart.png",
+    "images/Buttons/exit_up_btn.png",
+    "images/Buttons/exit_down_btn.png",
+    "images/Buttons/restart_up_btn.png",
+    "images/Buttons/restart_down_btn.png",
+    "images/Buttons/main_menu_up_btn.png",
+    "images/Buttons/main_menu_down_btn.png",
+    "images/Buttons/exit_game_up_btn.png",
+    "images/Buttons/exit_game_down_btn.png",
+    "images/scroll_bg.png",
+    "images/minigames/cyclops/cyclops_bg.png",
+    "images/minigames/cyclops/cyclops_open.png",
+    "images/minigames/cyclops/cyclops_closed.png"
   };
   private static final Vector2 CAMERA_POSITION = new Vector2(7.5f, 7.5f);
 

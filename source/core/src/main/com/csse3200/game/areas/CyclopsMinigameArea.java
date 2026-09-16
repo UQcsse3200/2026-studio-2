@@ -45,22 +45,22 @@ public class CyclopsMinigameArea extends GameArea {
     "images/transparent.png",
     "images/Greek Statues Pack I/Brute.png",
     "images/CyclopsMinigameFloor.png",
-          "images/PixelArt_HeartBack.png",
-          "images/minigames/cyclops/cyclops_bg.png",
-          "images/minigames/cyclops/cyclops_open.png",
-          "images/minigames/cyclops/cyclops_closed.png"
+    "images/PixelArt_HeartBack.png",
+    "images/minigames/cyclops/cyclops_bg.png",
+    "images/minigames/cyclops/cyclops_open.png",
+    "images/minigames/cyclops/cyclops_closed.png"
   };
 
   private static final String[] cyclopsMinigameTexturesAtlases = {"images/player.atlas"};
 
   private static final String[] cyclopsMinigameMusic = {
-          "sounds/minigames/cyclops/cave_background_noise.mp3"
+    "sounds/minigames/cyclops/cave_background_noise.mp3"
   };
 
   private static final String[] cyclopsMinigameSounds = {
-          "sounds/walkingSounds/walkingSound.mp3",
-          "sounds/minigames/cyclops/marker-hit.ogg",
-          "sounds/minigames/cyclops/marker-miss.ogg"
+    "sounds/walkingSounds/walkingSound.mp3",
+    "sounds/minigames/cyclops/marker-hit.ogg",
+    "sounds/minigames/cyclops/marker-miss.ogg"
   };
 
   private final TerrainFactory terrainFactory;
