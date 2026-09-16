@@ -41,13 +41,6 @@ public class ItemFactory {
     return itemEntity;
   }
 
-  /**
-   * Creates a world entity containing the concrete item represented by the supplied type.
-   *
-   * @param type item type to create
-   * @param quantity number of items in the stack
-   * @return corresponding world item entity
-   */
   public static Entity createItem(ItemType type, int quantity) {
     return switch (type) {
       case STANDARD_ARROW -> createStandardArrow(quantity);
@@ -59,6 +52,28 @@ public class ItemFactory {
       case Spear -> createSpear(quantity);
       case SpeedPotion -> createSpeedPotion(quantity);
       case PoisonPotion -> createPoisonPotion(quantity);
+    };
+  }
+
+  /**
+   * Creates a world entity containing the concrete item represented by the supplied type.
+   *
+   * @param type item type to create
+   * @param quantity number of items in the stack
+   * @return corresponding world item entity
+   */
+  public static Entity createItem(String itemName, int quantity) {
+    return switch (itemName) {
+      case "standardArrow" -> createItem(ItemType.STANDARD_ARROW, quantity);
+      case "ropeArrow" -> createItem(ItemType.ROPE_ARROW, quantity);
+      case "healthPotion" -> createItem(ItemType.HEALTH_POTION, quantity);
+      case "fireArrow" -> createItem(ItemType.FIRE_ARROW, quantity);
+      case "iceArrow", "coldArrow" -> createItem(ItemType.ICE_ARROW, quantity);
+      case "sword" -> createItem(ItemType.Sword, quantity);
+      case "spear" -> createItem(ItemType.Spear, quantity);
+      case "speedPotion" -> createItem(ItemType.SpeedPotion, quantity);
+      case "poisonPotion" -> createItem(ItemType.PoisonPotion, quantity);
+      default -> throw new IllegalArgumentException("Unknown item type: " + itemName);
     };
   }
 

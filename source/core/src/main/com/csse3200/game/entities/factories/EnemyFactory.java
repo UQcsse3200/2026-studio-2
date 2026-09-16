@@ -8,9 +8,9 @@ import com.csse3200.game.ai.tasks.AITaskComponent;
 import com.csse3200.game.components.BurnStatsComponent;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.EnemyDeathComponent;
+import com.csse3200.game.components.EnemyItemDropComponent;
 import com.csse3200.game.components.PoisonStatsComponent;
 import com.csse3200.game.components.SlowStatsComponent;
-import com.csse3200.game.components.EnemyItemDropComponent;
 import com.csse3200.game.components.npc.SkeletonAnimationController;
 import com.csse3200.game.components.tasks.ChaseTask;
 import com.csse3200.game.components.tasks.DelayedAttackTask;
@@ -29,9 +29,8 @@ import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.physics.components.PhysicsMovementComponent;
 import com.csse3200.game.rendering.AnimationRenderComponent;
 import com.csse3200.game.rendering.EnemyHealthRenderComponent;
-import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.rendering.TextureRenderComponent;
-
+import com.csse3200.game.services.ServiceLocator;
 
 /**
  * Factory to create enemy entities.

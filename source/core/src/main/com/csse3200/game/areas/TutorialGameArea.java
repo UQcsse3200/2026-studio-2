@@ -153,7 +153,7 @@ public class TutorialGameArea extends GameArea {
     "images/health_potion.png",
     "images/speed_potion.png",
     "images/poison_potion.png",
-    ItemFactory.GOLD_TEXTURE
+    ItemFactory.GOLD_TEXTURE,
     "images/cold_arrow.png",
     "images/necromancer_projectile.png",
   };

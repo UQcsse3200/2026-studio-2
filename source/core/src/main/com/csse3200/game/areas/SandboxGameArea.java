@@ -281,12 +281,8 @@ public class SandboxGameArea extends GameArea {
     }
 
     return switch (enemyType) {
-      case SKELETON_WARRIOR ->
-          EnemyFactory.createSkeletonWarrior(
-              player, SANDBOX_ACTIVE_CHASE_DISTANCE, SANDBOX_ACTIVE_CHASE_DISTANCE);
-      case SKELETON_ARCHER ->
-          EnemyFactory.createSkeletonArcher(
-              player, SANDBOX_ACTIVE_CHASE_DISTANCE, SANDBOX_ACTIVE_CHASE_DISTANCE);
+      case SKELETON_WARRIOR -> EnemyFactory.createSkeletonWarrior(player);
+      case SKELETON_ARCHER -> EnemyFactory.createSkeletonArcher(player);
     };
   }
 
