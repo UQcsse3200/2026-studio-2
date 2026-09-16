@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
 /** Tutorial area for the game with platforms, enemies, and a player. */
 public class TutorialGameArea extends GameArea {
   private static final Logger logger = LoggerFactory.getLogger(TutorialGameArea.class);
+  private KeyboardPlayerInputComponent input;
 
   /*
   private static final PlatformConfig[] floors = {
@@ -41,13 +42,39 @@ public class TutorialGameArea extends GameArea {
 
   private static final GridPoint2[] skeletonWarriorSpawnLocations =
       new GridPoint2[] {
-        new GridPoint2(45, 17), new GridPoint2(56, 16), new GridPoint2(77, 12),
+        new GridPoint2(45, 17),
+        new GridPoint2(56, 16),
+        new GridPoint2(77, 12),
+        new GridPoint2(30, 5),
       };
+
+  private static final GridPoint2[] VultureSpawnLocations = new GridPoint2[] {};
+
+  private static final GridPoint2[] NecromancerSpawnLocations = new GridPoint2[] {};
 
   private static final GridPoint2[] skeletonArcherSpawnLocations =
       new GridPoint2[] {
         new GridPoint2(60, 1), new GridPoint2(57, 10),
       };
+
+  // ============ TESTING SPAWN LOCATIONS ================
+
+  private static final GridPoint2[] skeletonArcherTestSpawnLocations =
+      new GridPoint2[] {
+        new GridPoint2(60, 1), new GridPoint2(4, 4),
+      };
+
+  private static final GridPoint2[] VultureTestSpawnLocations =
+      new GridPoint2[] {
+        new GridPoint2(6, 10),
+      };
+
+  private static final GridPoint2[] testSpawnLocations =
+      new GridPoint2[] {
+        new GridPoint2(6, 4),
+      };
+
+  // ======== ^^^^^^^^^^ ============================
 
   public static final GridPoint2 PLAYER_SPAWN = new GridPoint2(1, 4);
   public static final GridPoint2 ROPE_ARROW_SPAWN = new GridPoint2(2, 3);
@@ -112,14 +139,19 @@ public class TutorialGameArea extends GameArea {
     "images/arrow.png",
     "images/rope_arrow.png",
     "images/fire_arrow.png",
-    "images/cold_arrow.png"
+    "images/cold_arrow.png",
+    "images/necromancer_projectile.png",
   };
 
   private static final String[] forestTextureAtlases = {
     "images/terrain_iso_grass.atlas",
     "images/ghost.atlas",
     "images/ghostKing.atlas",
-    "images/player.atlas"
+    "images/player.atlas",
+    "images/skeleton_archer.atlas",
+    "images/skeleton_warrior.atlas",
+    "images/necromancer.atlas",
+    "images/vulture.atlas",
   };
 
   private static final String[] forestSounds = {"sounds/Impact4.ogg"};
@@ -159,12 +191,29 @@ public class TutorialGameArea extends GameArea {
     //// spawnWinCondition();
     spawnSkeletonArcher();
     spawnSkeletonWarrior();
+
+    // Test enemy functionalitys
+    // spawnTestSkeletonWarrior();
+    // spawnTestSkeletonArcher();
+    // spawnTestVulture();
+    // spawnTestNecromancer();
+
+    // spawnVulture();
+    // spawnNecromancer();
+
+    // spawnTestWinCondition(); // Temporary test win condition near player spawn for quick testing
+
     //// spawnTestEnemyNearPlayer(); // Temporary enemy near player spawn for quick HUD/flicker
     // testing
     // testing
     // spawnTestWinCondition(); // Temporary test win condition near player spawn for quick testing
 
     // playMusic();
+
+  }
+
+  public KeyboardPlayerInputComponent getInput() {
+    return input;
   }
 
   private void displayUI() {
@@ -312,20 +361,24 @@ public class TutorialGameArea extends GameArea {
     Entity newPlayer = PlayerFactory.createPlayer();
     newPlayer.getEvents().addListener("grappleRequested", this::checkSuccessfulGrapple);
 
-    KeyboardPlayerInputComponent input = newPlayer.getComponent(KeyboardPlayerInputComponent.class);
+    input = newPlayer.getComponent(KeyboardPlayerInputComponent.class);
     if (input != null) {
+      System.out.println("input is not null");
       input.setCameraComponent(cameraComponent);
     }
     spawnEntityAt(newPlayer, config.getPlayerSpawn(), true, true);
 
+    System.out.println("player spawned");
+    System.out.println(input);
+
     return newPlayer;
   }
 
-  /*
   private void spawnWinCondition() {
     Entity winCon = ObstacleFactory.createWinConEntity();
     spawnEntityAt(winCon, new GridPoint2(80, 18), true, true);
   }
+
   // Temporary test win condition near player spawn for quick testing
   private void spawnTestWinCondition() {
     // Temporary test win condition near player spawn for quick testing
@@ -338,11 +391,17 @@ public class TutorialGameArea extends GameArea {
     Entity testEnemy = EnemyFactory.createSkeletonWarrior(player);
     spawnEntityAt(testEnemy, new GridPoint2(12, 4), true, true);
   }
-  */
 
   private void spawnSkeletonWarrior() {
     for (GridPoint2 spawnLocation : skeletonWarriorSpawnLocations) {
       Entity enemy = EnemyFactory.createSkeletonWarrior(player);
+      spawnEntityAt(enemy, spawnLocation, true, true);
+    }
+  }
+
+  private void spawnNecromancer() {
+    for (GridPoint2 spawnLocation : NecromancerSpawnLocations) {
+      Entity enemy = EnemyFactory.createNecromancer(player);
       spawnEntityAt(enemy, spawnLocation, true, true);
     }
   }
@@ -353,6 +412,44 @@ public class TutorialGameArea extends GameArea {
       spawnEntityAt(enemy, spawnLocation, true, true);
     }
   }
+
+  private void spawnVulture() {
+    for (GridPoint2 spawnLocation : VultureSpawnLocations) {
+      Entity enemy = EnemyFactory.createVulture(player);
+      spawnEntityAt(enemy, spawnLocation, true, true);
+    }
+  }
+
+  // ======== TEST ENEMY SPAWN FUNCTIONS. ============
+  private void spawnTestSkeletonWarrior() {
+    for (GridPoint2 spawnLocation : testSpawnLocations) {
+      Entity enemy = EnemyFactory.createSkeletonWarrior(player);
+      spawnEntityAt(enemy, spawnLocation, true, true);
+    }
+  }
+
+  private void spawnTestNecromancer() {
+    for (GridPoint2 spawnLocation : testSpawnLocations) {
+      Entity enemy = EnemyFactory.createNecromancer(player);
+      spawnEntityAt(enemy, spawnLocation, true, true);
+    }
+  }
+
+  private void spawnTestSkeletonArcher() {
+    for (GridPoint2 spawnLocation : skeletonArcherTestSpawnLocations) {
+      Entity enemy = EnemyFactory.createSkeletonArcher(player);
+      spawnEntityAt(enemy, spawnLocation, true, true);
+    }
+  }
+
+  private void spawnTestVulture() {
+    for (GridPoint2 spawnLocation : VultureTestSpawnLocations) {
+      Entity enemy = EnemyFactory.createVulture(player);
+      spawnEntityAt(enemy, spawnLocation, true, true);
+    }
+  }
+
+  // ======== ^^^^^ ============
 
   /** Plays the background music. */
   private void playMusic() {

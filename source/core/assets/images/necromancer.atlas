@@ -1,0 +1,40 @@
+necromancer_walk.png
+size: 75, 32
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+default
+  rotate: false
+  xy: 25, 0
+  size: 25, 32
+  orig: 25, 32
+  offset: 0, 0
+  index: 0
+walk
+  rotate: false
+  xy: 0, 0
+  size: 25, 32
+  orig: 25, 32
+  offset: 0, 0
+  index: 0
+walk
+  rotate: false
+  xy: 25, 0
+  size: 25, 32
+  orig: 25, 32
+  offset: 0, 0
+  index: 1
+walk
+  rotate: false
+  xy: 50, 0
+  size: 25, 32
+  orig: 25, 32
+  offset: 0, 0
+  index: 2
+idle
+  rotate: false
+  xy: 25, 0
+  size: 25, 32
+  orig: 25, 32
+  offset: 0, 0
+  index: 0
