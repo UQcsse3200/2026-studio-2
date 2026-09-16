@@ -141,14 +141,16 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#addLayer(java.lang.String,com.badlogic.gdx.math.Vector2,float,float,com.badlogic.gdx.math.Vector2,com.csse3200.game.areas.GameArea.BackgroundType,com.badlogic.gdx.math.Vector2,boolean)" class="member-name-link">addLayer</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;texturePath,
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#addLayer(java.lang.String,com.badlogic.gdx.math.Vector2,float,float,com.badlogic.gdx.math.Vector2,com.csse3200.game.areas.GameArea.BackgroundType,com.badlogic.gdx.math.Vector2,boolean,float,float)" class="member-name-link">addLayer</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;texturePath,
  com.badlogic.gdx.math.Vector2&nbsp;parallaxFactor,
  float&nbsp;width,
  float&nbsp;height,
  com.badlogic.gdx.math.Vector2&nbsp;offset,
  <a href="../areas/GameArea.BackgroundType.html" title="enum class in com.csse3200.game.areas">GameArea.BackgroundType</a>&nbsp;backgroundType,
  com.badlogic.gdx.math.Vector2&nbsp;velocity,
- boolean&nbsp;repeat)</code></div>
+ boolean&nbsp;repeat,
+ float&nbsp;distance,
+ float&nbsp;transparency)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Adds a parallax layer with a custom size and vertical position.</div>
 </div>
@@ -219,7 +221,7 @@ loadScripts(document, 'script');</script>
 <h2>Method Details</h2>
 <ul class="member-list">
 <li>
-<section class="detail" id="addLayer(java.lang.String,com.badlogic.gdx.math.Vector2,float,float,com.badlogic.gdx.math.Vector2,com.csse3200.game.areas.GameArea.BackgroundType,com.badlogic.gdx.math.Vector2,boolean)">
+<section class="detail" id="addLayer(java.lang.String,com.badlogic.gdx.math.Vector2,float,float,com.badlogic.gdx.math.Vector2,com.csse3200.game.areas.GameArea.BackgroundType,com.badlogic.gdx.math.Vector2,boolean,float,float)">
 <h3>addLayer</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">addLayer</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;texturePath,
  com.badlogic.gdx.math.Vector2&nbsp;parallaxFactor,
@@ -228,8 +230,12 @@ loadScripts(document, 'script');</script>
  com.badlogic.gdx.math.Vector2&nbsp;offset,
  <a href="../areas/GameArea.BackgroundType.html" title="enum class in com.csse3200.game.areas">GameArea.BackgroundType</a>&nbsp;backgroundType,
  com.badlogic.gdx.math.Vector2&nbsp;velocity,
- boolean&nbsp;repeat)</span></div>
-<div class="block">Adds a parallax layer with a custom size and vertical position.</div>
+ boolean&nbsp;repeat,
+ float&nbsp;distance,
+ float&nbsp;transparency)</span></div>
+<div class="block">Adds a parallax layer with a custom size and vertical position. Distance is a float between 0
+ and 1. 1 causes the background to have no vertical movement, while 0 causes it to follow player
+ directly.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>texturePath</code> - path to the texture</dd>
@@ -240,6 +246,8 @@ loadScripts(document, 'script');</script>
 <dd><code>backgroundType</code> - the type of background this layer is</dd>
 <dd><code>velocity</code> - the independent velocity of the layer</dd>
 <dd><code>repeat</code> - whether or not this layer should repeat horizontally</dd>
+<dd><code>distance</code> - the distance from POV affecting vertical parallax movement</dd>
+<dd><code>transparency</code> - the transparency of the layer</dd>
 </dl>
 </section>
 </li>
