@@ -3,7 +3,6 @@ package com.csse3200.game.areas;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
-// import com.csse3200.game.areas.terrain.PlatformConfig;
 import com.csse3200.game.areas.terrain.TerrainFactory;
 import com.csse3200.game.areas.terrain.TerrainFactory.TerrainType;
 import com.csse3200.game.areas.terrain.configs.levelconfigs.LevelTutorialConfig;
@@ -12,21 +11,19 @@ import com.csse3200.game.components.gamearea.GameAreaDisplay;
 import com.csse3200.game.components.player.KeyboardPlayerInputComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.EnemyFactory;
-// import com.csse3200.game.entities.factories.ItemFactory;
-// import com.csse3200.game.entities.factories.NPCFactory;
 import com.csse3200.game.entities.factories.ObstacleFactory;
 import com.csse3200.game.entities.factories.PlayerFactory;
 import com.csse3200.game.rendering.BackgroundRenderComponent;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.utils.math.GridPoint2Utils;
-//// import com.csse3200.game.utils.math.RandomUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /** Tutorial area for the game with platforms, enemies, and a player. */
 public class TutorialGameArea extends GameArea {
   private static final Logger logger = LoggerFactory.getLogger(TutorialGameArea.class);
+  private KeyboardPlayerInputComponent input;
 
   /*
   private static final PlatformConfig[] floors = {
@@ -45,13 +42,39 @@ public class TutorialGameArea extends GameArea {
 
   private static final GridPoint2[] skeletonWarriorSpawnLocations =
       new GridPoint2[] {
-        new GridPoint2(45, 17), new GridPoint2(56, 16), new GridPoint2(77, 12),
+        new GridPoint2(45, 17),
+        new GridPoint2(56, 16),
+        new GridPoint2(77, 12),
+        new GridPoint2(30, 5),
       };
+
+  private static final GridPoint2[] VultureSpawnLocations = new GridPoint2[] {};
+
+  private static final GridPoint2[] NecromancerSpawnLocations = new GridPoint2[] {};
 
   private static final GridPoint2[] skeletonArcherSpawnLocations =
       new GridPoint2[] {
         new GridPoint2(60, 1), new GridPoint2(57, 10),
       };
+
+  // ============ TESTING SPAWN LOCATIONS ================
+
+  private static final GridPoint2[] skeletonArcherTestSpawnLocations =
+      new GridPoint2[] {
+        new GridPoint2(60, 1), new GridPoint2(4, 4),
+      };
+
+  private static final GridPoint2[] VultureTestSpawnLocations =
+      new GridPoint2[] {
+        new GridPoint2(6, 10),
+      };
+
+  private static final GridPoint2[] testSpawnLocations =
+      new GridPoint2[] {
+        new GridPoint2(6, 4),
+      };
+
+  // ======== ^^^^^^^^^^ ============================
 
   public static final GridPoint2 PLAYER_SPAWN = new GridPoint2(1, 4);
   public static final GridPoint2 ROPE_ARROW_SPAWN = new GridPoint2(2, 3);
@@ -96,6 +119,8 @@ public class TutorialGameArea extends GameArea {
     "images/iso_grass_1.png",
     "images/iso_grass_2.png",
     "images/iso_grass_3.png",
+    "images/checkpoint_unlit.png",
+    "images/checkpoint_lit.png",
 
     // Parallax background layers
     "images/parallax/original_background.png",
@@ -104,6 +129,9 @@ public class TutorialGameArea extends GameArea {
     "images/parallax/Mountains.png",
     "images/parallax/ground.png",
     "images/parallax/Rocks.png",
+    "images/parallax/level_1_background.png",
+    "images/parallax/level_1_clouds.png",
+    "images/parallax/level_1_furthest.png",
 
     // Enemy textures
     "images/skeleton_warrior.png",
@@ -111,14 +139,19 @@ public class TutorialGameArea extends GameArea {
     "images/arrow.png",
     "images/rope_arrow.png",
     "images/fire_arrow.png",
-    "images/cold_arrow.png"
+    "images/cold_arrow.png",
+    "images/necromancer_projectile.png",
   };
 
   private static final String[] forestTextureAtlases = {
     "images/terrain_iso_grass.atlas",
     "images/ghost.atlas",
     "images/ghostKing.atlas",
-    "images/player.atlas"
+    "images/player.atlas",
+    "images/skeleton_archer.atlas",
+    "images/skeleton_warrior.atlas",
+    "images/necromancer.atlas",
+    "images/vulture.atlas",
   };
 
   private static final String[] forestSounds = {"sounds/Impact4.ogg"};
@@ -158,12 +191,29 @@ public class TutorialGameArea extends GameArea {
     //// spawnWinCondition();
     spawnSkeletonArcher();
     spawnSkeletonWarrior();
+
+    // Test enemy functionalitys
+    // spawnTestSkeletonWarrior();
+    // spawnTestSkeletonArcher();
+    // spawnTestVulture();
+    // spawnTestNecromancer();
+
+    // spawnVulture();
+    // spawnNecromancer();
+
+    // spawnTestWinCondition(); // Temporary test win condition near player spawn for quick testing
+
     //// spawnTestEnemyNearPlayer(); // Temporary enemy near player spawn for quick HUD/flicker
     // testing
     // testing
     // spawnTestWinCondition(); // Temporary test win condition near player spawn for quick testing
 
     // playMusic();
+
+  }
+
+  public KeyboardPlayerInputComponent getInput() {
+    return input;
   }
 
   private void displayUI() {
@@ -194,25 +244,68 @@ public class TutorialGameArea extends GameArea {
 
     // Complete original background image
     backgroundComponent.addLayer(
-        "images/parallax/original_background.png",
+        "images/parallax/level_1_background.png",
         new Vector2(0.1f, 0f), // Parallax factor
         30f,
-        15f,
-        new Vector2(0f, 3.5f), // Positional offset
+        12f,
+        new Vector2(0f, 4.25f), // Positional offset
         BackgroundType.DEPENDENT,
         new Vector2(0f, 0f), // Independent velocity
-        false);
+        false,
+        1f,
+        1f);
 
     // Complete clouds image
     backgroundComponent.addLayer(
-        "images/parallax/Clouds.png",
+        "images/parallax/level_1_clouds.png",
+        new Vector2(0.1f, 0f), // Parallax factor
+        30f,
+        4f,
+        new Vector2(0f, 10f), // Positional offset
+        BackgroundType.DEPENDENT,
+        new Vector2(0.1f, 0f), // Independent velocity
+        true,
+        1f,
+        1f);
+
+    // Complete mountains image
+    backgroundComponent.addLayer(
+        "images/parallax/level_1_clouds.png",
         new Vector2(0.1f, 0f), // Parallax factor
         30f,
         15f,
-        new Vector2(0f, 3.5f), // Positional offset
+        new Vector2(25f, 7.5f), // Positional offset
         BackgroundType.DEPENDENT,
-        new Vector2(0.1f, 0f), // Independent velocity
-        true);
+        new Vector2(0.2f, 0f), // Independent velocity
+        true,
+        1f,
+        1f);
+
+    // Complete furthest mountains image
+    backgroundComponent.addLayer(
+        "images/parallax/level_1_furthest.png",
+        new Vector2(0.06f, 0f), // Parallax factor 0.12
+        30f,
+        7f,
+        new Vector2(5f, 6.5f), // Positional offset
+        BackgroundType.DEPENDENT,
+        new Vector2(0f, 0f), // Independent velocity
+        true,
+        1f,
+        0.5f);
+
+    // Complete second-furthest mountains image
+    backgroundComponent.addLayer(
+        "images/parallax/level_1_furthest.png",
+        new Vector2(0.11f, 0f), // Parallax factor 0.12
+        30f,
+        10f,
+        new Vector2(0f, 5f), // Positional offset
+        BackgroundType.DEPENDENT,
+        new Vector2(0f, 0f), // Independent velocity
+        true,
+        1f,
+        1f);
 
     // Create the background entity.
     Entity background = new Entity().addComponent(backgroundComponent);
@@ -267,22 +360,25 @@ public class TutorialGameArea extends GameArea {
   private Entity spawnPlayer() {
     Entity newPlayer = PlayerFactory.createPlayer();
     newPlayer.getEvents().addListener("grappleRequested", this::checkSuccessfulGrapple);
-    newPlayer.getEvents().addListener("respawnAtCheckpoint", this::respawn);
 
-    KeyboardPlayerInputComponent input = newPlayer.getComponent(KeyboardPlayerInputComponent.class);
+    input = newPlayer.getComponent(KeyboardPlayerInputComponent.class);
     if (input != null) {
+      System.out.println("input is not null");
       input.setCameraComponent(cameraComponent);
     }
     spawnEntityAt(newPlayer, config.getPlayerSpawn(), true, true);
 
+    System.out.println("player spawned");
+    System.out.println(input);
+
     return newPlayer;
   }
 
-  /*
   private void spawnWinCondition() {
     Entity winCon = ObstacleFactory.createWinConEntity();
     spawnEntityAt(winCon, new GridPoint2(80, 18), true, true);
   }
+
   // Temporary test win condition near player spawn for quick testing
   private void spawnTestWinCondition() {
     // Temporary test win condition near player spawn for quick testing
@@ -295,11 +391,17 @@ public class TutorialGameArea extends GameArea {
     Entity testEnemy = EnemyFactory.createSkeletonWarrior(player);
     spawnEntityAt(testEnemy, new GridPoint2(12, 4), true, true);
   }
-  */
 
   private void spawnSkeletonWarrior() {
     for (GridPoint2 spawnLocation : skeletonWarriorSpawnLocations) {
       Entity enemy = EnemyFactory.createSkeletonWarrior(player);
+      spawnEntityAt(enemy, spawnLocation, true, true);
+    }
+  }
+
+  private void spawnNecromancer() {
+    for (GridPoint2 spawnLocation : NecromancerSpawnLocations) {
+      Entity enemy = EnemyFactory.createNecromancer(player);
       spawnEntityAt(enemy, spawnLocation, true, true);
     }
   }
@@ -310,6 +412,44 @@ public class TutorialGameArea extends GameArea {
       spawnEntityAt(enemy, spawnLocation, true, true);
     }
   }
+
+  private void spawnVulture() {
+    for (GridPoint2 spawnLocation : VultureSpawnLocations) {
+      Entity enemy = EnemyFactory.createVulture(player);
+      spawnEntityAt(enemy, spawnLocation, true, true);
+    }
+  }
+
+  // ======== TEST ENEMY SPAWN FUNCTIONS. ============
+  private void spawnTestSkeletonWarrior() {
+    for (GridPoint2 spawnLocation : testSpawnLocations) {
+      Entity enemy = EnemyFactory.createSkeletonWarrior(player);
+      spawnEntityAt(enemy, spawnLocation, true, true);
+    }
+  }
+
+  private void spawnTestNecromancer() {
+    for (GridPoint2 spawnLocation : testSpawnLocations) {
+      Entity enemy = EnemyFactory.createNecromancer(player);
+      spawnEntityAt(enemy, spawnLocation, true, true);
+    }
+  }
+
+  private void spawnTestSkeletonArcher() {
+    for (GridPoint2 spawnLocation : skeletonArcherTestSpawnLocations) {
+      Entity enemy = EnemyFactory.createSkeletonArcher(player);
+      spawnEntityAt(enemy, spawnLocation, true, true);
+    }
+  }
+
+  private void spawnTestVulture() {
+    for (GridPoint2 spawnLocation : VultureTestSpawnLocations) {
+      Entity enemy = EnemyFactory.createVulture(player);
+      spawnEntityAt(enemy, spawnLocation, true, true);
+    }
+  }
+
+  // ======== ^^^^^ ============
 
   /** Plays the background music. */
   private void playMusic() {

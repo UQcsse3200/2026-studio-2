@@ -105,16 +105,16 @@ public class Level2Config extends LevelConfig {
               1,
               2,
               triggerablePlatformTFP,
-              new String[] {"enemyArenaComplete"},
-              false), // P7
+              new String[] {}, // should be enemyArenaComplete
+              true), // P7
           new TriggerablePlatformConfig(
               new GridPoint2(33, 25),
               3,
               1,
               8,
               triggerablePlatformTFP,
-              new String[] {"enemyArenaComplete"},
-              false), // P8
+              new String[] {}, // should be enemyArenaComplete
+              true), // P8
           new TriggerablePlatformConfig(
               new GridPoint2(28, 40),
               4,
@@ -161,13 +161,7 @@ public class Level2Config extends LevelConfig {
           new TriggerButtonConfig(new GridPoint2(49, 7), 90f, true, new String[] {"b5"}), // B5 (D)
         };
 
-    items =
-        new HashMap<>(
-            Map.of(
-                new GridPoint2(1, 41),
-                new Arrow(ItemType.ROPE_ARROW, 1),
-                new GridPoint2(40, 29),
-                new Arrow(ItemType.STANDARD_ARROW, 99)));
+    items = new HashMap<>(Map.of(new GridPoint2(40, 29), new Arrow(ItemType.STANDARD_ARROW, 99)));
 
     ledges =
         new PlatformConfig[] {
@@ -274,7 +268,7 @@ public class Level2Config extends LevelConfig {
 
     checkpoints =
         new CheckpointConfig[] {
-          new CheckpointConfig(new GridPoint2(0, 42)),
+          new CheckpointConfig(new GridPoint2(0, 41)),
         };
   }
 }

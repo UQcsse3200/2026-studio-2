@@ -16,6 +16,9 @@ import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.physics.components.PhysicsMovementComponent;
 import com.csse3200.game.rendering.*;
+import com.csse3200.game.rendering.GrappleSideRenderComponent;
+import com.csse3200.game.rendering.TextureRenderComponent;
+import com.csse3200.game.rendering.TiledRenderComponent;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.ArrayList;
 import java.util.List;
@@ -111,7 +114,8 @@ public class ObstacleFactory {
             .addComponent(new TextureRenderComponent(texturePath))
             .addComponent(new PhysicsComponent())
             .addComponent(new ColliderComponent().setLayer(PhysicsLayer.GROUND))
-            .addComponent(new PlatformGrappleComponent(grappleSides));
+            .addComponent(new PlatformGrappleComponent(grappleSides))
+            .addComponent(new GrappleSideRenderComponent());
 
     platform.getComponent(PhysicsComponent.class).setBodyType(BodyType.StaticBody);
 
@@ -144,6 +148,10 @@ public class ObstacleFactory {
                     config.getSpeed()))
             .addComponent(new PlatformGrappleComponent(config.grappleSides))
             .addComponent(new ActivatableComponent(config.activateIds));
+
+    if (config.grappleSides != 0) {
+      movingPlatform.addComponent(new GrappleSideRenderComponent());
+    }
 
     physicsComponent.getBody().setGravityScale(0f);
     physicsComponent.setBodyType(BodyType.KinematicBody);
@@ -193,7 +201,6 @@ public class ObstacleFactory {
             .addComponent(new TriggerablePlatformComponent());
 
     platform.getComponent(PhysicsComponent.class).setBodyType(BodyType.StaticBody);
-    platform.setEnabled(false);
 
     return platform;
   }
@@ -218,7 +225,7 @@ public class ObstacleFactory {
         new Entity()
             .addComponent(animator)
             .addComponent(new PhysicsComponent())
-            .addComponent(new HitboxComponent().setLayer(PhysicsLayer.NPC))
+            .addComponent(new HitboxComponent().setLayer(PhysicsLayer.DEFAULT))
             .addComponent(new ActivatableComponent(config.getIds()))
             .addComponent(new TriggerButtonComponent())
             .addComponent(new RotatableMapComponent(config.getRotation()));
@@ -273,7 +280,7 @@ public class ObstacleFactory {
             .addComponent(collider)
             .addComponent(new LevelTriggerComponent(nextLevelName));
 
-    trigger.getComponent(ColliderComponent.class).setAsBox(new Vector2(2f, 2f));
+    trigger.getComponent(ColliderComponent.class).setAsBox(new Vector2(2f, 16f));
 
     return trigger;
   }
@@ -291,6 +298,10 @@ public class ObstacleFactory {
             .addComponent(new PhysicsComponent().setBodyType(BodyType.StaticBody))
             .addComponent(new ColliderComponent().setLayer(PhysicsLayer.OBSTACLE))
             .addComponent(new PlatformGrappleComponent(config.grappleSides));
+
+    if (config.grappleSides != 0) {
+      floor.addComponent(new GrappleSideRenderComponent());
+    }
 
     floor.getComponent(PhysicsComponent.class).setBodyType(BodyType.StaticBody);
 
@@ -341,7 +352,7 @@ public class ObstacleFactory {
     return new Entity()
         .addComponent(new TextureRenderComponent("images/Greek Statues Pack I/Brute.png"))
         .addComponent(new PhysicsComponent().setBodyType(BodyType.StaticBody))
-        .addComponent(new ColliderComponent().setLayer(PhysicsLayer.DEFAULT));
+        .addComponent(new ColliderComponent().setLayer(PhysicsLayer.NONE));
   }
 
   /**

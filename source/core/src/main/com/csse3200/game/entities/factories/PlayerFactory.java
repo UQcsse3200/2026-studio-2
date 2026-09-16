@@ -22,7 +22,6 @@ import com.csse3200.game.physics.components.ColliderComponent;
 import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.rendering.AnimationRenderComponent;
-import com.csse3200.game.rendering.TextureRenderComponent;
 import com.csse3200.game.rendering.item.GrappleRenderComponent;
 import com.csse3200.game.rendering.item.MeleeRenderComponent;
 import com.csse3200.game.services.ServiceLocator;
@@ -53,6 +52,12 @@ public class PlayerFactory {
     animator.addAnimation("hurt", 0.04f, PlayMode.NORMAL);
     animator.addAnimation("death", 0.1458f, PlayMode.NORMAL);
     animator.addAnimation("sleep", 0.1458f, PlayMode.LOOP);
+    animator.addAnimation("melee", 0.03f, PlayMode.NORMAL, 79f, 38f);
+    animator.addAnimation("dash", 0.025f, PlayMode.NORMAL, 134.5f, 39f);
+    animator.addAnimation("air_dash", 0.025f, PlayMode.NORMAL, 94f, 39f);
+    animator.addAnimation("bow_draw", 0.08f, PlayMode.NORMAL, 72f, 23f);
+    animator.addAnimation("bow_hold", 0.1f, PlayMode.LOOP, 72f, 24f);
+    animator.addAnimation("bow_shoot", 0.05f, PlayMode.NORMAL, 71f, 23f);
 
     Entity player =
         new Entity()
@@ -78,25 +83,59 @@ public class PlayerFactory {
             .addComponent(new GrappleRenderComponent())
             .addComponent(new PlayerAnimationController())
             .addComponent(new MeleeRenderComponent())
-            .addComponent(new PlayerAnimationController())
             .addComponent(new RespawnComponent());
 
     player.getComponent(ColliderComponent.class).setDensity(1.5f);
     player.getComponent(AnimationRenderComponent.class).scaleEntity();
     player.scaleWidth(0.6f);
-    PhysicsUtils.setScaledCollider(player, 0.9f, 0.9f);
+    PhysicsUtils.setScaledCollider(player, 1f, 1f);
     return player;
   }
 
   /**
    * Create a player display entity.
    *
+   * <p>Takes away specific components from the user that are not needed in particular situations
+   * like minigames and cutscenes.
+   *
+   * <p>Currently removed: - Grappling Components - Player Actions Components - Bow Components
+   *
    * @return entity
    */
   public static Entity createPlayerDisplay() {
+    InputComponent inputComponent =
+        ServiceLocator.getInputService().getInputFactory().createForPlayer();
+
+    AnimationRenderComponent animator =
+        new AnimationRenderComponent(
+            ServiceLocator.getResourceService()
+                .getAsset("images/player.atlas", TextureAtlas.class));
+    animator.addAnimation("idle", 0.15f, PlayMode.LOOP);
+    animator.addAnimation("walk", 0.1f, PlayMode.LOOP);
+    animator.addAnimation("sprint", 0.1f, PlayMode.LOOP);
+    animator.addAnimation("jump", 0.05f, PlayMode.NORMAL);
+    animator.addAnimation("hurt", 0.04f, PlayMode.NORMAL);
+    animator.addAnimation("death", 0.1458f, PlayMode.NORMAL);
+    animator.addAnimation("sleep", 0.1458f, PlayMode.LOOP);
+
     Entity player =
-        new Entity().addComponent(new TextureRenderComponent("images/box_boy_leaf.png"));
-    player.getComponent(TextureRenderComponent.class).scaleEntity();
+        new Entity()
+            .addComponent(animator)
+            .addComponent(new PhysicsComponent())
+            .addComponent(new ColliderComponent())
+            .addComponent(new HitboxComponent().setLayer(PhysicsLayer.PLAYER))
+            .addComponent(
+                new CombatStatsComponent(
+                    stats.health, stats.baseAttack, stats.invulnerabilityDuration))
+            .addComponent(new PlayerStatsDisplay())
+            .addComponent(new PlayerAnimationController())
+            .addComponent(new RespawnComponent());
+
+    PhysicsUtils.setScaledCollider(player, 0.6f, 0.3f);
+    player.getComponent(ColliderComponent.class).setDensity(1.5f);
+    player.getComponent(AnimationRenderComponent.class).scaleEntity();
+    player.scaleWidth(0.75f);
+
     return player;
   }
 

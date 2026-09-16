@@ -36,7 +36,7 @@ public class KeyboardPlayerInputComponent extends InputComponent {
   @Override
   public void create() {
     super.create();
-    entity.getEvents().addListener("togglePause", this::triggerWalkEvent);
+    entity.getEvents().addListener("togglePause", this::unpause);
     entity.getEvents().addListener("death", () -> dead = true);
   }
 
@@ -90,8 +90,7 @@ public class KeyboardPlayerInputComponent extends InputComponent {
         entity.getEvents().trigger("selectQuickSlot", 8);
         return true;
       case Keys.W:
-        // walkDirection.add(Vector2Utils.UP);
-        // triggerWalkEvent();
+        entity.getEvents().trigger("grappleClimbStart");
         keysHeld[UP] = true;
         triggerWalkEvent();
         return true;
@@ -135,10 +134,13 @@ public class KeyboardPlayerInputComponent extends InputComponent {
         entity.getEvents().trigger("switchItem", -1);
         return true;
       case Input.Keys.S:
+        entity.getEvents().trigger("grappleDescendStart");
         entity.getEvents().trigger("updateLedgeDrop", true);
         keysHeld[DOWN] = true;
         triggerWalkEvent();
         return true;
+      case Keys.ESCAPE:
+        entity.getEvents().trigger("togglePause");
       default:
         return false;
     }
@@ -167,11 +169,19 @@ public class KeyboardPlayerInputComponent extends InputComponent {
         triggerWalkEvent();
         return true;
       case Keys.W:
+        entity.getEvents().trigger("grappleClimbStop");
+        keysHeld[UP] = false;
+        triggerWalkEvent();
+        return true;
       case Keys.UP:
         keysHeld[UP] = false;
         triggerWalkEvent();
         return true;
       case Keys.S:
+        entity.getEvents().trigger("grappleDescendStop");
+        keysHeld[DOWN] = false;
+        triggerWalkEvent();
+        return true;
       case Keys.DOWN:
         keysHeld[DOWN] = false;
         triggerWalkEvent();
@@ -321,5 +331,10 @@ public class KeyboardPlayerInputComponent extends InputComponent {
     } else {
       entity.getEvents().trigger("walk", walkDirection.cpy());
     }
+  }
+
+  public void unpause() {
+    triggerWalkEvent();
+    triggerSprintEvent();
   }
 }

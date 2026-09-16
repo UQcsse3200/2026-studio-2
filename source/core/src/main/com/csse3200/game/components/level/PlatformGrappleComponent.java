@@ -6,10 +6,10 @@ import com.csse3200.game.entities.Entity;
 
 public class PlatformGrappleComponent extends Component {
   /// Helper constants provided for more readable code :)
-  private static final int LEFT_SIDE = 8;
-  private static final int TOP_SIDE = 4;
-  private static final int RIGHT_SIDE = 2;
-  private static final int BOTTOM_SIDE = 1;
+  public static final int LEFT_SIDE = 8;
+  public static final int TOP_SIDE = 4;
+  public static final int RIGHT_SIDE = 2;
+  public static final int BOTTOM_SIDE = 1;
 
   /**
    * Represents the sides of the platform that can be grappled to through a base 10 integer used to
@@ -41,6 +41,16 @@ public class PlatformGrappleComponent extends Component {
 
   public int getGrappleSides() {
     return grappleSides;
+  }
+
+  /**
+   * Simple check of if a side is grappleable.
+   *
+   * @param side the side that you want to check if grappleble
+   * @return true if grappleable
+   */
+  public boolean isSideGrappleable(int side) {
+    return (grappleSides & side) != 0;
   }
 
   /**
