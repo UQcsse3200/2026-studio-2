@@ -12,7 +12,6 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.rendering.RenderService;
 import com.csse3200.game.services.ServiceLocator;
-import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

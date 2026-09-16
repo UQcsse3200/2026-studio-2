@@ -241,7 +241,7 @@ public class Level2GameScreen extends ScreenAdapter {
         .addComponent(
             new GameEndDisplay(GameEndState.LOSE)) // Add GameEndDisplay component to the UI entity
         .addComponent(new GameEndActions(this.game))
-        .addComponent(new Terminal())
+        .addComponent(new Terminal(game, GdxGame.ScreenType.LEVEL_2_GAME))
         .addComponent(inputComponent)
         .addComponent(new TerminalDisplay());
 
