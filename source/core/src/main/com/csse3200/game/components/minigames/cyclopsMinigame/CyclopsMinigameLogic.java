@@ -161,7 +161,6 @@ public class CyclopsMinigameLogic extends Component {
    * is moved to the next loss location and returns True
    *
    * @param success - boolean on whether to move player to next win or loss location
-   * @return True if player moved location, otherwise false if moved to win location
    */
   public void moveToNextLocation(boolean success) {
     if (success) {
