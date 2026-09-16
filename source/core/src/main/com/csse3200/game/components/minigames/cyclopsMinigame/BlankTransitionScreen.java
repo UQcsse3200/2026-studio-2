@@ -1,30 +1,41 @@
-package com.csse3200.game.components.minigames.CyclopsTimingBar;
+package com.csse3200.game.components.minigames.cyclopsMinigame;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.csse3200.game.ui.UIComponent;
 
 public class BlankTransitionScreen extends UIComponent {
-  private static final float Z_INDEX = 4;
+  private static final float Z_INDEX = 10f;
 
   private Texture texture;
-  private Image blackScreen;
+  private Table table;
 
-  public boolean isVisible() {
-    return blackScreen.isVisible();
+  public void fadeIn(float duration) {
+    table.clearActions();
+    table.setVisible(true);
+    table.addAction(Actions.fadeIn(duration));
+  }
+
+  public void fadeOut(float duration) {
+    table.clearActions();
+    table.addAction(Actions.sequence(Actions.fadeOut(duration), Actions.visible(false)));
   }
 
   public void setVisible(boolean visible) {
-    blackScreen.setVisible(visible);
+    table.setVisible(visible);
   }
 
   @Override
   public void create() {
     super.create();
+    table = new Table();
+    table.setFillParent(true);
 
     Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
     pixmap.setColor(Color.BLACK);
@@ -34,12 +45,10 @@ public class BlankTransitionScreen extends UIComponent {
     TextureRegion textureRegion = new TextureRegion(texture);
     pixmap.dispose();
 
-    blackScreen = new Image(textureRegion);
-    blackScreen.setPosition(0, 0);
-    blackScreen.setSize(stage.getWidth(), stage.getHeight());
-
-    stage.addActor(blackScreen);
-    blackScreen.setVisible(false);
+    table.setBackground(new TextureRegionDrawable(textureRegion));
+    table.setColor(1, 1, 1, 0);
+    table.setVisible(false);
+    stage.addActor(table);
   }
 
   /**

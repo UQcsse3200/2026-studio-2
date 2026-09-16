@@ -216,4 +216,12 @@ public class PlayerAnimationController extends Component {
       animator.startAnimation(desired);
     }
   }
+
+  public void playAnimation(String animationName) {
+    animator.startAnimation(animationName);
+  }
+
+  public AnimationRenderComponent getAnimator() {
+    return this.animator;
+  }
 }

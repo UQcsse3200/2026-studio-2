@@ -1,10 +1,15 @@
-package com.csse3200.game.components.minigames.CyclopsTimingBar;
+package com.csse3200.game.components.minigames.cyclopsMinigame;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Mathematical state of the components in the timing bar. Keeps track of size and location of
  * scoring bar. Keeps track of the location of the sweeping marker.
  */
 public class TimingBarLogic {
+  private static final Logger logger = LoggerFactory.getLogger(TimingBarLogic.class);
+
   public float barStart = 0f;
   public float barWidth = 1f; // Acts as 100% etc.
   public float scoringAreaSize;
@@ -19,9 +24,8 @@ public class TimingBarLogic {
   public boolean isStopped = true;
 
   /**
-   * Scoring area width is designed to be a float as a percentage (e.g 0-100)
-   *
-   * @param scoringAreaWidth
+   * @param scoringAreaWidth Scoring area width is designed to be a float as a percentage (e.g 0 -
+   *     100%)
    */
   public TimingBarLogic(float scoringAreaWidth) {
     this.changeScoringAreaWidth(scoringAreaWidth);
@@ -40,6 +44,8 @@ public class TimingBarLogic {
 
     this.greenStart = barCenter - (coveredArea / 2);
     this.greenEnd = barCenter + (coveredArea / 2);
+
+    logger.debug("scoring area size changed to {}", scoringAreaSize);
   }
 
   /**
@@ -66,11 +72,18 @@ public class TimingBarLogic {
   /** Stops the sliding marker */
   public void stopMarker() {
     this.isStopped = true;
+    logger.trace("sliding marker stopped");
   }
 
   /** Starts the sliding marker */
   public void startMarker() {
     this.isStopped = false;
+    logger.trace("sliding marker started");
+  }
+
+  public void resetMarker() {
+    this.markerX = 0;
+    logger.trace("sliding marker position set to 0");
   }
 
   /**
