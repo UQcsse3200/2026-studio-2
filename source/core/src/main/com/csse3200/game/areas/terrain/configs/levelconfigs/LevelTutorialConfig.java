@@ -12,6 +12,18 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class LevelTutorialConfig extends LevelConfig {
+
+  private static final GridPoint2 ROPE_ARROW_SPAWN = new GridPoint2(2, 3);
+  private static final GridPoint2 STANDARD_ARROW_SPAWN = new GridPoint2(4, 3);
+  private static final GridPoint2 FIRE_ARROW_SPAWN = new GridPoint2(6, 3);
+  private static final GridPoint2 COLD_ARROW_SPAWN = new GridPoint2(8, 5);
+  private static final GridPoint2 HEALTH_POTION_SPAWN = new GridPoint2(10, 5);
+
+  private static final int STANDARD_ARROW_QUANTITY = 5;
+  private static final int FIRE_ARROW_QUANTITY = 5;
+  private static final int COLD_ARROW_QUANTITY = 5;
+  private static final int HEALTH_POTION_QUANTITY = 3;
+
   /** Creates the tutorial level config */
   public LevelTutorialConfig() {
     platformTFP = "images/platform.png";
@@ -186,7 +198,13 @@ public class LevelTutorialConfig extends LevelConfig {
     // Example checkpoint set to player spawn position
     checkpoints =
         new CheckpointConfig[] {
-          new CheckpointConfig(new GridPoint2(1, 4)), // Use 4 not 3
+          new CheckpointConfig(new GridPoint2(1, 3)),
+          new CheckpointConfig(new GridPoint2(23, 5)),
+          new CheckpointConfig(new GridPoint2(5, 16)),
+          new CheckpointConfig(new GridPoint2(15, 12)),
+          new CheckpointConfig(new GridPoint2(47, 17)),
+          new CheckpointConfig(new GridPoint2(54, 1)),
+          new CheckpointConfig(new GridPoint2(73, 1)),
         };
   }
 }

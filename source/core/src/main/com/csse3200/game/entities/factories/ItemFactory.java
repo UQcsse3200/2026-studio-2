@@ -35,6 +35,28 @@ public class ItemFactory {
     return itemEntity;
   }
 
+  /**
+   * Creates a world entity for an item based on encoded string representations of items.
+   *
+   * @param itemName String representation of a given item to create
+   * @param quantity Quantity of the given item to create
+   * @return Entity
+   */
+  public static Entity createItem(String itemName, int quantity) {
+    switch (itemName) {
+      case "standardArrow":
+        return createStandardArrow(quantity);
+      case "ropeArrow":
+        return createRopeArrow(quantity);
+
+      // !! add the rest when needed. E.G. COINS ONCE MERGED WITH ITEMS TEAM
+
+      default:
+        throw new IllegalArgumentException(
+            itemName + " has no string based creation: createItem(String itemName, int quantity)");
+    }
+  }
+
   public static Entity createRopeArrow() {
     return createRopeArrow(1);
   }

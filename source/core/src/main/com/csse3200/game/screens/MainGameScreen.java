@@ -12,7 +12,10 @@ import com.csse3200.game.components.ButtonSound;
 import com.csse3200.game.components.gamearea.PerformanceDisplay;
 import com.csse3200.game.components.maingame.MainGameActions;
 import com.csse3200.game.components.maingame.MainGameExitDisplay;
-import com.csse3200.game.components.maingame.PauseMenuDisplay;
+import com.csse3200.game.components.maingame.PauseMenuOverlay;
+import com.csse3200.game.components.minigames.MinigameOverlayManager;
+import com.csse3200.game.components.minigames.blackjack.BlackjackConfig;
+import com.csse3200.game.components.minigames.blackjack.BlackjackOverlay;
 import com.csse3200.game.components.minigames.spinthewheel.SpinTheWheelOverlay;
 import com.csse3200.game.components.minigames.spinthewheel.WheelConfig;
 import com.csse3200.game.entities.Entity;
@@ -55,6 +58,9 @@ public class MainGameScreen extends ScreenAdapter {
   private final PhysicsEngine physicsEngine;
   private Entity player;
   private final SpinTheWheelOverlay wheelOverlay;
+  private final BlackjackOverlay blackjackOverlay;
+  private final MinigameOverlayManager minigameOverlayManager;
+  private final PauseMenuOverlay pauseOverlay;
 
   public MainGameScreen(GdxGame game) {
     this.game = game;
@@ -86,7 +92,10 @@ public class MainGameScreen extends ScreenAdapter {
     forestGameArea.create();
     player = forestGameArea.getPlayer();
     player.getEvents().addListener("deathAnimationFinished", this::onPlayerDeath);
-    wheelOverlay = new SpinTheWheelOverlay(WheelConfig.ITEMS, player);
+    minigameOverlayManager = new MinigameOverlayManager();
+    wheelOverlay = new SpinTheWheelOverlay(WheelConfig.ITEMS, player, minigameOverlayManager);
+    blackjackOverlay = new BlackjackOverlay(player, minigameOverlayManager);
+    pauseOverlay = new PauseMenuOverlay(game, forestGameArea);
   }
 
   private void onPlayerDeath() {
@@ -99,12 +108,19 @@ public class MainGameScreen extends ScreenAdapter {
   public void render(float delta) {
     if (Gdx.input.isKeyJustPressed(Input.Keys.K)) {
       wheelOverlay.request();
+    } else if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
+      pauseOverlay.request();
+    }
+    if (Gdx.input.isKeyJustPressed(Input.Keys.L)) {
+      blackjackOverlay.request();
     }
 
     physicsEngine.update();
     ServiceLocator.getEntityService().update();
     renderer.render();
     wheelOverlay.afterRender();
+    blackjackOverlay.afterRender();
+    pauseOverlay.afterRender();
   }
 
   @Override
@@ -154,6 +170,7 @@ public class MainGameScreen extends ScreenAdapter {
                 "images/PixelArt_HeartBack.png",
                 "images/Damaged_heart.png",
                 "images/Last_Health.png",
+                "images/scroll_bg.png",
                 "images/Buttons/continue_up_btn.png",
                 "images/Buttons/continue_down_btn.png",
                 "images/Buttons/settings_up_btn.png",
@@ -161,8 +178,15 @@ public class MainGameScreen extends ScreenAdapter {
                 "images/Buttons/quit_up_btn.png",
                 "images/Buttons/quit_down_btn.png",
                 "images/Buttons/exit_up_btn.png",
-                "images/Buttons/exit_down_btn.png"));
+                "images/Buttons/exit_down_btn.png",
+                "images/Buttons/restart_up_btn.png",
+                "images/Buttons/restart_down_btn.png",
+                "images/Buttons/main_menu_up_btn.png",
+                "images/Buttons/main_menu_down_btn.png",
+                "images/Buttons/exit_game_up_btn.png",
+                "images/Buttons/exit_game_down_btn.png"));
     paths.addAll(List.of(WheelConfig.TEXTURES));
+    paths.addAll(List.of(BlackjackConfig.TEXTURES));
     return paths.toArray(new String[0]);
   }
 
@@ -200,10 +224,9 @@ public class MainGameScreen extends ScreenAdapter {
         .addComponent(new MainGameExitDisplay())
         .addComponent(new GameEndDisplay(GameEndState.LOSE))
         .addComponent(new GameEndActions(this.game))
-        .addComponent(new Terminal())
+        .addComponent(new Terminal(game, GdxGame.ScreenType.MAIN_GAME))
         .addComponent(inputComponent)
-        .addComponent(new TerminalDisplay())
-        .addComponent(new PauseMenuDisplay(this.game));
+        .addComponent(new TerminalDisplay());
 
     ServiceLocator.getEntityService().register(ui);
   }

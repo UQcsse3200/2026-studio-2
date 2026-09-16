@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 
 import com.csse3200.game.areas.GameArea;
+import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.entities.Entity;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -27,6 +28,7 @@ public class RespawnComponentTest {
     respawnComponent = new RespawnComponent();
     respawnCalled = false;
     player = spy(Entity.class);
+    player.addComponent(new CombatStatsComponent(10, 0));
   }
 
   @Test

@@ -5,8 +5,10 @@ import static com.badlogic.gdx.Gdx.app;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.csse3200.game.cutscene.CutsceneLoader;
 import com.csse3200.game.files.UserSettings;
 import com.csse3200.game.screens.*;
+import com.csse3200.game.screens.CutsceneScreen;
 import com.csse3200.game.screens.MainGameScreen;
 import com.csse3200.game.screens.MainMenuScreen;
 import com.csse3200.game.screens.SettingsFromPauseScreen;
@@ -29,6 +31,10 @@ public class GdxGame extends Game {
   private static final Logger logger = LoggerFactory.getLogger(GdxGame.class);
 
   private boolean transitioning = false;
+
+  // a check for if the intro cutscene has been triggered, once per game session, to prevent the
+  // cutscene from being triggered multiple times.
+  private boolean introStarted = false;
 
   @Override
   public void create() {
@@ -77,6 +83,37 @@ public class GdxGame extends Game {
     setScreen(new TransitionScreen(this, getScreen(), screenType));
   }
 
+  /** Starts a validated cutscene and creates the destination level after it completes. */
+  public void startCutscene(CutsceneLoader.LoadedCutscene cutscene, ScreenType destination) {
+    logger.info("Starting cutscene {}", cutscene.getName());
+    Screen currentScreen = getScreen();
+    if (currentScreen != null) {
+      currentScreen.dispose();
+    }
+    setScreen(new CutsceneScreen(this, cutscene, destination));
+  }
+
+  /** Starts the initial cutscene once per game session, then falls back to the tutorial level. */
+  public void startInitialCutscene() {
+    if (introStarted) {
+      transitionTo(ScreenType.TUTORIAL_GAME);
+      return;
+    }
+
+    // logging for if the cutscene is not available, and fallback to tutorial level
+    CutsceneLoader.Result result = new CutsceneLoader().load("cutscene1");
+    if (!result.isSuccess()) {
+      logger.debug("Initial cutscene unavailable: {}", result.getError());
+      transitionTo(ScreenType.TUTORIAL_GAME);
+      return;
+    }
+
+    // For now, the intro cutscene will be recorded as a bool until a proper save state is
+    // implemented
+    introStarted = true;
+    startCutscene(result.getCutscene(), ScreenType.TUTORIAL_GAME);
+  }
+
   /**
    * Called by {@link TransitionScreen} once its fade-in has finished, handing control to the screen
    * it faded into.
@@ -113,7 +150,9 @@ public class GdxGame extends Game {
       case TUTORIAL_GAME:
         return new TutorialGameScreen(this);
       case LEVEL_2_GAME:
-        return new Level2GameScreen(this);
+        TutorialGameScreen screen = new TutorialGameScreen(this);
+        screen.queueAreaSwap("level2");
+        return screen;
       case SETTINGS:
         return new SettingsScreen(this);
       case SETTINGS_FROM_PAUSE:
