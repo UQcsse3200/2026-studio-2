@@ -29,7 +29,13 @@ public class CyclopsMinigameLogic extends Component {
   private GameEndState outcome = GameEndState.LOSE;
   private State state;
 
+  /* Timing Components */
   Timer timer = new Timer();
+  private static final float FADE = 0.1f;
+  private static final float START_TRANSITION_DELAY = 0.2f;
+  private static final float END_TRANSITION_DELAY = 0.8f;
+  private static final float SHOW_HIDE_DELAY = 0.4f;
+  private static final float SHOW_GAME_OVER_DELAY = 1.4f;
 
   /* Minigame Components */
   private final TimingBarLogic timingBarLogic;
@@ -230,14 +236,21 @@ public class CyclopsMinigameLogic extends Component {
   }
 
   private void onTransitionStart() {
-    transitionScreen.setVisible(true);
+    transitionScreen.fadeIn(FADE);
     playWalkingSound();
-    transition();
+    timer.scheduleTask(
+        new Timer.Task() {
+          @Override
+          public void run() {
+            transition();
+          }
+        },
+        FADE); // Wait until after FADE to move player
   }
 
   private void onTransitionEnd() {
     stopWalkingSound();
-    transitionScreen.setVisible(false);
+    transitionScreen.fadeOut(FADE);
   }
 
   public void restartMinigame() {
@@ -277,7 +290,7 @@ public class CyclopsMinigameLogic extends Component {
             state = State.PLAYING;
           }
         },
-        0.3f);
+        SHOW_HIDE_DELAY);
   }
 
   void scheduleTimingMinigameHide() {
@@ -289,7 +302,7 @@ public class CyclopsMinigameLogic extends Component {
             scheduleTransitionStart();
           }
         },
-        0.3f);
+        SHOW_HIDE_DELAY);
   }
 
   void scheduleTransitionStart() {
@@ -301,7 +314,7 @@ public class CyclopsMinigameLogic extends Component {
             scheduleTransitionEnd();
           }
         },
-        0.2f);
+        START_TRANSITION_DELAY);
   }
 
   void scheduleTransitionEnd() {
@@ -316,7 +329,7 @@ public class CyclopsMinigameLogic extends Component {
             }
           }
         },
-        0.8f);
+        END_TRANSITION_DELAY);
   }
 
   void scheduleGameOver() {
@@ -327,7 +340,7 @@ public class CyclopsMinigameLogic extends Component {
             gameOver();
           }
         },
-        1f);
+        SHOW_GAME_OVER_DELAY);
     player.getComponent(PlayerAnimationController.class).playAnimation("death");
   }
 }

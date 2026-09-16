@@ -5,12 +5,14 @@ import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.areas.terrain.TerrainFactory;
 import com.csse3200.game.components.CameraComponent;
+import com.csse3200.game.components.TextBoxComponent;
 import com.csse3200.game.components.minigames.cyclopsMinigame.CyclopsMinigameLogic;
 import com.csse3200.game.components.minigames.cyclopsMinigame.TimingBarDisplay;
 import com.csse3200.game.components.minigames.cyclopsMinigame.TimingBarLogic;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.ObstacleFactory;
 import com.csse3200.game.entities.factories.PlayerFactory;
+import com.csse3200.game.input.CutsceneInputComponent;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.ArrayList;
@@ -70,6 +72,9 @@ public class CyclopsMinigameArea extends GameArea {
   private ArrayList<GridPoint2> statueLocations;
   private ArrayList<GridPoint2> statueGapLocations;
   private CyclopsMinigameLogic cyclopsMinigameLogic;
+
+  private CutsceneInputComponent input;
+  private TextBoxComponent textBox;
 
   public CyclopsMinigameArea(CameraComponent camera, TerrainFactory terrainFactory) {
     super(camera);
@@ -183,7 +188,7 @@ public class CyclopsMinigameArea extends GameArea {
         ServiceLocator.getResourceService()
             .getAsset("sounds/minigames/cyclops/cave_background_noise.mp3", Music.class);
     music.setLooping(true);
-    music.setVolume(0.35f);
+    music.setVolume(0.4f);
     music.play();
   }
 

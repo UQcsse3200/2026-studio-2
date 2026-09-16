@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.csse3200.game.components.TextBoxComponent;
 import com.csse3200.game.ui.UIComponent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,6 +29,7 @@ public class TimingBarDisplay extends UIComponent {
   private Texture blankTexture;
 
   private Table table;
+  private TextBoxComponent textBox;
   private Image marker;
 
   private boolean visible = false;
@@ -93,6 +95,7 @@ public class TimingBarDisplay extends UIComponent {
     table.add(group).expand().center();
 
     table.setVisible(visible);
+
     stage.addActor(table);
   }
 

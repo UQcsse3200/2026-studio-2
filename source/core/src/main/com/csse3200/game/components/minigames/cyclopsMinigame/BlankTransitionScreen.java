@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.csse3200.game.ui.UIComponent;
@@ -13,6 +14,18 @@ public class BlankTransitionScreen extends UIComponent {
 
   private Texture texture;
   private Table table;
+
+  public void fadeIn(float duration) {
+    table.clearActions();
+    table.setVisible(true);
+    table.toFront();
+    table.addAction(Actions.fadeIn(duration));
+  }
+
+  public void fadeOut(float duration) {
+    table.clearActions();
+    table.addAction(Actions.sequence(Actions.fadeOut(duration), Actions.visible(false)));
+  }
 
   public void setVisible(boolean visible) {
     table.setVisible(visible);
@@ -36,6 +49,7 @@ public class BlankTransitionScreen extends UIComponent {
     pixmap.dispose();
 
     table.setBackground(new TextureRegionDrawable(textureRegion));
+    table.setColor(1, 1, 1, 0);
     table.setVisible(false);
     stage.addActor(table);
   }
