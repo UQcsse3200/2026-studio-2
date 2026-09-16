@@ -31,6 +31,7 @@ import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.events.listeners.EventListener0;
 import com.csse3200.game.events.listeners.EventListener1;
 import com.csse3200.game.extensions.GameExtension;
+import com.csse3200.game.input.InputService;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -422,5 +423,76 @@ class KeyboardPlayerInputComponentTest {
 
     assertTrue(component.keyDown(Keys.F));
     assertFalse(interaction.isShopOpen());
+  }
+
+  @Test
+  void shouldCancelChargeWhenShopOpensAndWhenRightMouseIsReleasedWhileShopIsOpen() {
+    ServiceLocator.registerInputService(mock(InputService.class));
+    ServiceLocator.registerEntityService(new EntityService());
+    KeyboardPlayerInputComponent component = new KeyboardPlayerInputComponent();
+    InventoryComponent inventory = new InventoryComponent(0);
+    PlayerInteractionComponent interaction = new PlayerInteractionComponent();
+    Entity player =
+        new Entity()
+            .addComponent(component)
+            .addComponent(inventory)
+            .addComponent(new ItemUseComponent())
+            .addComponent(interaction);
+    player.setPosition(0f, 0f);
+    component.setCameraComponent(new CameraComponent(camera));
+    player.create();
+
+    Entity shopNpc = new Entity().addComponent(new ShopNpcComponent());
+    shopNpc.setPosition(0.5f, 0f);
+    ServiceLocator.getEntityService().register(shopNpc);
+
+    AtomicInteger cancels = new AtomicInteger();
+    AtomicInteger stops = new AtomicInteger();
+    player.getEvents().addListener("chargeCancel", cancels::incrementAndGet);
+    player.getEvents().addListener("stopShoot", stops::incrementAndGet);
+
+    assertTrue(component.touchDown(4, 2, 0, Buttons.RIGHT));
+    assertTrue(component.isRightMouseHeld());
+
+    assertTrue(interaction.interact());
+    assertTrue(interaction.isShopOpen());
+    assertFalse(component.isRightMouseHeld());
+    assertEquals(1, cancels.get());
+    assertEquals(0, stops.get());
+
+    assertTrue(component.touchUp(4, 2, 0, Buttons.RIGHT));
+    assertEquals(2, cancels.get());
+    assertEquals(0, stops.get());
+
+    when(Gdx.input.isButtonPressed(Buttons.RIGHT)).thenReturn(false);
+    assertTrue(interaction.interact());
+    assertFalse(interaction.isShopOpen());
+    assertEquals(2, cancels.get());
+    assertEquals(0, stops.get());
+  }
+
+  @Test
+  void shouldCancelSwallowedChargeOnShopCloseWhenOpenDidNotClearIt() {
+    ServiceLocator.registerInputService(mock(InputService.class));
+    KeyboardPlayerInputComponent component = new KeyboardPlayerInputComponent();
+    Entity player = new Entity().addComponent(component);
+    player.setPosition(0f, 0f);
+    component.setCameraComponent(new CameraComponent(camera));
+    player.create();
+
+    AtomicInteger cancels = new AtomicInteger();
+    AtomicInteger stops = new AtomicInteger();
+    player.getEvents().addListener("chargeCancel", cancels::incrementAndGet);
+    player.getEvents().addListener("stopShoot", stops::incrementAndGet);
+
+    assertTrue(component.touchDown(4, 2, 0, Buttons.RIGHT));
+    assertTrue(component.isRightMouseHeld());
+
+    when(Gdx.input.isButtonPressed(Buttons.RIGHT)).thenReturn(false);
+    player.getEvents().trigger("closeShop");
+
+    assertFalse(component.isRightMouseHeld());
+    assertEquals(1, cancels.get());
+    assertEquals(0, stops.get());
   }
 }

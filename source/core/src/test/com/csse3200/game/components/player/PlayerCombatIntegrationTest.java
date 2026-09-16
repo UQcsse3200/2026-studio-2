@@ -517,6 +517,32 @@ class PlayerCombatIntegrationTest {
   }
 
   @Test
+  void shouldCancelChargingBowWhenShopOpensWithoutFiring() {
+    inventory.addItem(ItemType.STANDARD_ARROW, 2);
+    when(time.getTime()).thenReturn(0L);
+
+    assertTrue(input.touchDown(40, 60, 0, Buttons.RIGHT));
+    assertFalse(bow.isReady());
+    assertTrue(input.isRightMouseHeld());
+    verify(chargeStart).handle(new Vector2(3f, 4f));
+    assertEquals(1, inventory.getItemCount(ItemType.STANDARD_ARROW));
+
+    player.getEvents().trigger("openShop");
+
+    assertFalse(input.isRightMouseHeld());
+    assertTrue(bow.isReady());
+    factory.verifyNoInteractions();
+    verifyNoInteractions(entities, primaryAttack, animation, sound);
+
+    input.touchUp(40, 60, 0, Buttons.RIGHT);
+    player.getEvents().trigger("closeShop");
+
+    assertTrue(bow.isReady());
+    factory.verifyNoInteractions();
+    verifyNoInteractions(entities, primaryAttack, animation, sound);
+  }
+
+  @Test
   void shouldUsePotionWithEButNotRightClickAndPreserveItAtFullHealth() {
     CombatStatsComponent stats = player.getComponent(CombatStatsComponent.class);
     stats.setHealth(75);

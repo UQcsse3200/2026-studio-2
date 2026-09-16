@@ -48,6 +48,7 @@ public class BowComponent extends Component implements PrimaryWeapon {
     entity.getEvents().addListener("setArrowType", this::setArrowType);
     entity.getEvents().addListener("chargeStart", this::startCharge);
     entity.getEvents().addListener("chargeRelease", this::releaseCharge);
+    entity.getEvents().addListener("chargeCancel", this::cancelCharge);
     entity.getEvents().addListener("death", this::cancelCharge);
   }
 
@@ -137,7 +138,10 @@ public class BowComponent extends Component implements PrimaryWeapon {
     }
   }
 
-  /** Cancels an in-progress charge without firing, e.g. if the player dies mid-draw. */
+  /**
+   * Cancels an in-progress charge without firing, e.g. if the player dies mid-draw or a UI overlay
+   * steals the mouse-up.
+   */
   private void cancelCharge() {
     isCharging = false;
   }
