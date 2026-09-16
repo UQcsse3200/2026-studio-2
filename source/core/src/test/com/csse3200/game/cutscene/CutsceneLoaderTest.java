@@ -29,6 +29,24 @@ class CutsceneLoaderTest {
   }
 
   @Test
+  void shouldLoadCutscene2() {
+    CutsceneLoader.Result result = new CutsceneLoader().load("cutscene2");
+
+    assertTrue(result.isSuccess());
+    assertEquals(6, result.getCutscene().getImagePaths().length);
+    assertTrue(result.getCutscene().getImagePaths()[0].endsWith("scene1.jpeg"));
+  }
+
+  @Test
+  void shouldLoadCutscene3() {
+    CutsceneLoader.Result result = new CutsceneLoader().load("cutscene3");
+
+    assertTrue(result.isSuccess());
+    assertEquals(5, result.getCutscene().getImagePaths().length);
+    assertTrue(result.getCutscene().getImagePaths()[0].endsWith("scene1.jpeg"));
+  }
+
+  @Test
   void shouldLoadConfiguredMusicFromManifest() {
     CutsceneLoader.Result result = new CutsceneLoader().load("cutscene1");
 
