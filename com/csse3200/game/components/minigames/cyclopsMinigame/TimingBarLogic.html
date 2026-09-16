@@ -5,7 +5,7 @@
 <title>TimingBarLogic (core 1.0 API)</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-<meta name="description" content="declaration: package: com.csse3200.game.components.minigames.CyclopsTimingBar, class: TimingBarLogic">
+<meta name="description" content="declaration: package: com.csse3200.game.components.minigames.cyclopsMinigame, class: TimingBarLogic">
 <meta name="generator" content="javadoc/ClassWriterImpl">
 <link rel="stylesheet" type="text/css" href="../../../../../../stylesheet.css" title="Style">
 <link rel="stylesheet" type="text/css" href="../../../../../../script-dir/jquery-ui.min.css" title="Style">
@@ -81,11 +81,11 @@ loadScripts(document, 'script');</script>
 <main role="main">
 <!-- ======== START OF CLASS DATA ======== -->
 <div class="header">
-<div class="sub-title"><span class="package-label-in-type">Package</span>&nbsp;<a href="package-summary.html">com.csse3200.game.components.minigames.CyclopsTimingBar</a></div>
+<div class="sub-title"><span class="package-label-in-type">Package</span>&nbsp;<a href="package-summary.html">com.csse3200.game.components.minigames.cyclopsMinigame</a></div>
 <h1 title="Class TimingBarLogic" class="title">Class TimingBarLogic</h1>
 </div>
 <div class="inheritance" title="Inheritance Tree"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">java.lang.Object</a>
-<div class="inheritance">com.csse3200.game.components.minigames.CyclopsTimingBar.TimingBarLogic</div>
+<div class="inheritance">com.csse3200.game.components.minigames.cyclopsMinigame.TimingBarLogic</div>
 </div>
 <section class="class-description" id="class-description">
 <hr>
@@ -144,9 +144,7 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-first">Constructor</div>
 <div class="table-header col-last">Description</div>
 <div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(float)" class="member-name-link">TimingBarLogic</a><wbr>(float&nbsp;scoringAreaWidth)</code></div>
-<div class="col-last even-row-color">
-<div class="block">Scoring area width is designed to be a float as a percentage (e.g 0-100)</div>
-</div>
+<div class="col-last even-row-color">&nbsp;</div>
 </div>
 </section>
 </li>
@@ -172,18 +170,21 @@ loadScripts(document, 'script');</script>
 <div class="block">Checks whether the marker is in the scoring green area.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#startMarker()" class="member-name-link">startMarker</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#resetMarker()" class="member-name-link">resetMarker</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#startMarker()" class="member-name-link">startMarker</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Starts the sliding marker</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#stopMarker()" class="member-name-link">stopMarker</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#stopMarker()" class="member-name-link">stopMarker</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Stops the sliding marker</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#update(float)" class="member-name-link">update</a><wbr>(float&nbsp;deltaTime)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#update(float)" class="member-name-link">update</a><wbr>(float&nbsp;deltaTime)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Update the marker to move along the bar.</div>
 </div>
 </div>
@@ -229,7 +230,7 @@ loadScripts(document, 'script');</script>
 <dt>See Also:</dt>
 <dd>
 <ul class="tag-list">
-<li><a href="../../../../../../constant-values.html#com.csse3200.game.components.minigames.CyclopsTimingBar.TimingBarLogic.markerSpeed">Constant Field Values</a></li>
+<li><a href="../../../../../../constant-values.html#com.csse3200.game.components.minigames.cyclopsMinigame.TimingBarLogic.markerSpeed">Constant Field Values</a></li>
 </ul>
 </dd>
 </dl>
@@ -277,10 +278,10 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="&lt;init&gt;(float)">
 <h3>TimingBarLogic</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">TimingBarLogic</span><wbr><span class="parameters">(float&nbsp;scoringAreaWidth)</span></div>
-<div class="block">Scoring area width is designed to be a float as a percentage (e.g 0-100)</div>
 <dl class="notes">
 <dt>Parameters:</dt>
-<dd><code>scoringAreaWidth</code> - </dd>
+<dd><code>scoringAreaWidth</code> - Scoring area width is designed to be a float as a percentage (e.g 0 -
+     100%)</dd>
 </dl>
 </section>
 </li>
@@ -326,6 +327,12 @@ loadScripts(document, 'script');</script>
 <h3>startMarker</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">startMarker</span>()</div>
 <div class="block">Starts the sliding marker</div>
+</section>
+</li>
+<li>
+<section class="detail" id="resetMarker()">
+<h3>resetMarker</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">resetMarker</span>()</div>
 </section>
 </li>
 <li>

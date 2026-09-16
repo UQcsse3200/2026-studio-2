@@ -20,7 +20,7 @@ com.csse3200.game.components.maingame
 com.csse3200.game.components.mainmenu
 com.csse3200.game.components.minigames
 com.csse3200.game.components.minigames.blackjack
-com.csse3200.game.components.minigames.CyclopsTimingBar
+com.csse3200.game.components.minigames.cyclopsMinigame
 com.csse3200.game.components.minigames.spinthewheel
 com.csse3200.game.components.npc
 com.csse3200.game.components.player
@@ -49,5 +49,6 @@ com.csse3200.game.ui
 com.csse3200.game.ui.dialogue
 com.csse3200.game.ui.terminal
 com.csse3200.game.ui.terminal.commands
+com.csse3200.game.ui.terminal.commands.cyclopsMinigameCommands
 com.csse3200.game.utils
 com.csse3200.game.utils.math

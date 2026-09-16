@@ -142,21 +142,24 @@ implements com.badlogic.gdx.utils.Disposable</span></div>
 <div class="col-first even-row-color"><code>protected <a href="terrain/configs/LevelConfig.html" title="class in com.csse3200.game.areas.terrain.configs">LevelConfig</a></code></div>
 <div class="col-second even-row-color"><code><a href="#config" class="member-name-link">config</a></code></div>
 <div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><code>protected <a href="../entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
-<div class="col-second odd-row-color"><code><a href="#levelChanger" class="member-name-link">levelChanger</a></code></div>
+<div class="col-first odd-row-color"><code>protected <a href="../components/player/KeyboardPlayerInputComponent.html" title="class in com.csse3200.game.components.player">KeyboardPlayerInputComponent</a></code></div>
+<div class="col-second odd-row-color"><code><a href="#input" class="member-name-link">input</a></code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
-<div class="col-first even-row-color"><code>protected <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="../entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a>&gt;</code></div>
-<div class="col-second even-row-color"><code><a href="#platforms" class="member-name-link">platforms</a></code></div>
+<div class="col-first even-row-color"><code>protected <a href="../entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
+<div class="col-second even-row-color"><code><a href="#levelChanger" class="member-name-link">levelChanger</a></code></div>
 <div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><code>protected <a href="../entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
-<div class="col-second odd-row-color"><code><a href="#player" class="member-name-link">player</a></code></div>
+<div class="col-first odd-row-color"><code>protected <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="../entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a>&gt;</code></div>
+<div class="col-second odd-row-color"><code><a href="#platforms" class="member-name-link">platforms</a></code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
-<div class="col-first even-row-color"><code>protected <a href="terrain/TerrainComponent.html" title="class in com.csse3200.game.areas.terrain">TerrainComponent</a></code></div>
-<div class="col-second even-row-color"><code><a href="#terrain" class="member-name-link">terrain</a></code></div>
+<div class="col-first even-row-color"><code>protected <a href="../entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
+<div class="col-second even-row-color"><code><a href="#player" class="member-name-link">player</a></code></div>
 <div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><code>protected <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/HashMap.html" title="class or interface in java.util" class="external-link">HashMap</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>,<wbr><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/ArrayList.html" title="class or interface in java.util" class="external-link">ArrayList</a>&lt;<a href="../entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a>&gt;&gt;</code></div>
-<div class="col-second odd-row-color"><code><a href="#triggerableEntities" class="member-name-link">triggerableEntities</a></code></div>
+<div class="col-first odd-row-color"><code>protected <a href="terrain/TerrainComponent.html" title="class in com.csse3200.game.areas.terrain">TerrainComponent</a></code></div>
+<div class="col-second odd-row-color"><code><a href="#terrain" class="member-name-link">terrain</a></code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><code>protected <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/HashMap.html" title="class or interface in java.util" class="external-link">HashMap</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>,<wbr><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/ArrayList.html" title="class or interface in java.util" class="external-link">ArrayList</a>&lt;<a href="../entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a>&gt;&gt;</code></div>
+<div class="col-second even-row-color"><code><a href="#triggerableEntities" class="member-name-link">triggerableEntities</a></code></div>
+<div class="col-last even-row-color">&nbsp;</div>
 </div>
 </section>
 </li>
@@ -209,39 +212,42 @@ implements com.badlogic.gdx.utils.Disposable</span></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">A protected method that loops through all stored platforms</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getLevelChanger()" class="member-name-link">getLevelChanger</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../components/player/KeyboardPlayerInputComponent.html" title="class in com.csse3200.game.components.player">KeyboardPlayerInputComponent</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getInput()" class="member-name-link">getInput</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getLevelChanger()" class="member-name-link">getLevelChanger</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Gets the level changer from this level specified by the level config</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getPlayer()" class="member-name-link">getPlayer</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="terrain/TerrainComponent.html" title="class in com.csse3200.game.areas.terrain">TerrainComponent</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getTerrain()" class="member-name-link">getTerrain</a>()</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getPlayer()" class="member-name-link">getPlayer</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#respawn()" class="member-name-link">respawn</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="terrain/TerrainComponent.html" title="class in com.csse3200.game.areas.terrain">TerrainComponent</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getTerrain()" class="member-name-link">getTerrain</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#respawn()" class="member-name-link">respawn</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Public method to respawn the player at the last collected checkpoint upon an event trigger.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#spawnConfigEntities()" class="member-name-link">spawnConfigEntities</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#spawnConfigEntities()" class="member-name-link">spawnConfigEntities</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Requests the game area's config file to create all level entities and then spawns them at their
  specified position</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#spawnEntity(com.csse3200.game.entities.Entity)" class="member-name-link">spawnEntity</a><wbr>(<a href="../entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;entity)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#spawnEntity(com.csse3200.game.entities.Entity)" class="member-name-link">spawnEntity</a><wbr>(<a href="../entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;entity)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Spawn entity at its current position</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#spawnEntityAt(com.csse3200.game.entities.Entity,com.badlogic.gdx.math.GridPoint2,boolean,boolean)" class="member-name-link">spawnEntityAt</a><wbr>(<a href="../entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;entity,
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#spawnEntityAt(com.csse3200.game.entities.Entity,com.badlogic.gdx.math.GridPoint2,boolean,boolean)" class="member-name-link">spawnEntityAt</a><wbr>(<a href="../entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;entity,
  com.badlogic.gdx.math.GridPoint2&nbsp;tilePos,
  boolean&nbsp;centerX,
  boolean&nbsp;centerY)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Spawn entity on a given tile.</div>
 </div>
 </div>
@@ -296,6 +302,12 @@ implements com.badlogic.gdx.utils.Disposable</span></div>
 <section class="detail" id="player">
 <h3>player</h3>
 <div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type"><a href="../entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">player</span></div>
+</section>
+</li>
+<li>
+<section class="detail" id="input">
+<h3>input</h3>
+<div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type"><a href="../components/player/KeyboardPlayerInputComponent.html" title="class in com.csse3200.game.components.player">KeyboardPlayerInputComponent</a></span>&nbsp;<span class="element-name">input</span></div>
 </section>
 </li>
 <li>
@@ -450,6 +462,12 @@ implements com.badlogic.gdx.utils.Disposable</span></div>
 <h3>respawn</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">respawn</span>()</div>
 <div class="block">Public method to respawn the player at the last collected checkpoint upon an event trigger.</div>
+</section>
+</li>
+<li>
+<section class="detail" id="getInput()">
+<h3>getInput</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../components/player/KeyboardPlayerInputComponent.html" title="class in com.csse3200.game.components.player">KeyboardPlayerInputComponent</a></span>&nbsp;<span class="element-name">getInput</span>()</div>
 </section>
 </li>
 </ul>
