@@ -28,7 +28,10 @@ public class CyclopsMinigameArea extends GameArea {
     "images/box_boy_leaf.png",
     "images/transparent.png",
     "images/Greek Statues Pack I/Brute.png",
-    "images/CyclopsMinigameFloor.png"
+    "images/CyclopsMinigameFloor.png",
+    "images/minigames/cyclops/cyclops_bg.png",
+    "images/minigames/cyclops/cyclops_open.png",
+    "images/minigames/cyclops/cyclops_closed.png"
   };
 
   private final TerrainFactory terrainFactory;
