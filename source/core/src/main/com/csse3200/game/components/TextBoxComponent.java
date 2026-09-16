@@ -50,7 +50,7 @@ public class TextBoxComponent extends UIComponent {
   // only once the last page has been fully shown does TAB dismiss the box entirely.
 
   /**
-   * @param fontPath path to a bitmap font (.fnt) file, relative to assets, e.g. "fonts/scroll.fnt".
+   * @param font path to a bitmap font (.fnt) file, relative to assets, e.g. "fonts/scroll.fnt".
    *     Pass {@code null} to use the skin's default font.
    * @param textAlignment horizontal alignment of the text within the box, e.g. {@link Align#left},
    *     {@link Align#center}, {@link Align#right}.
@@ -321,15 +321,18 @@ public class TextBoxComponent extends UIComponent {
 
     // On TAB: skip to the full page if it's still typing; otherwise move to the next page,
     // or dismiss the box entirely if this was the last page
-    if (!externallyControlled && Gdx.input.isKeyJustPressed(Keys.TAB)) {
+    if (Gdx.input.isKeyJustPressed(Keys.TAB)) {
       if (!fullyRevealed) {
-        revealCurrentPage();
+        this.revealedChars = fullContent.length();
+        this.label.setText(fullContent);
+        this.table.pack();
       } else if (this.currentPageIndex < this.pages.size() - 1) {
         this.currentPageIndex++;
-        this.lastSourceContent = null;
         // next frame's content-changed check (above) will reset typing state automatically
       } else {
-        dismiss();
+        this.dismissed = true;
+        this.table.setVisible(false);
+        this.dispose();
         return;
       }
     }
@@ -344,7 +347,8 @@ public class TextBoxComponent extends UIComponent {
       y = (worldPos.y / 20f) * screenHeight + 18f;
     }
 
-    table.setPosition(x, y, Align.topLeft);
+    // alignment = 2 for top to bottom effect
+    table.setPosition(x, y, 2);
     table.setVisible(true);
     label.setVisible(true);
   }

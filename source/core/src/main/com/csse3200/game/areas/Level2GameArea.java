@@ -23,7 +23,7 @@ public class Level2GameArea extends GameArea {
 
   /** Textures used by the level 2 game area. */
   private static final String[] level2Textures = {
-
+    "images/scroll_bg.png",
     // Level 2 background
     "images/Background-2.png",
     "images/Platform_level-2.png",
@@ -57,7 +57,6 @@ public class Level2GameArea extends GameArea {
     "images/spiky_ball_trap.png",
     "images/checkpoint_lit.png",
     "images/checkpoint_unlit.png",
-
     // Enemy textures
     "images/skeleton_warrior.png",
     "images/skeleton_archer.png",

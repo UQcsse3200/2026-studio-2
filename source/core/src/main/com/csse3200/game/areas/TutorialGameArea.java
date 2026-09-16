@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
 /** Tutorial area for the game with platforms, enemies, and a player. */
 public class TutorialGameArea extends GameArea {
   private static final Logger logger = LoggerFactory.getLogger(TutorialGameArea.class);
+  private KeyboardPlayerInputComponent input;
 
   /*
   private static final PlatformConfig[] floors = {
@@ -211,6 +212,10 @@ public class TutorialGameArea extends GameArea {
 
   }
 
+  public KeyboardPlayerInputComponent getInput() {
+    return input;
+  }
+
   private void displayUI() {
     Entity ui = new Entity();
     ui.addComponent(new GameAreaDisplay("Tutorial"));
@@ -356,11 +361,15 @@ public class TutorialGameArea extends GameArea {
     Entity newPlayer = PlayerFactory.createPlayer();
     newPlayer.getEvents().addListener("grappleRequested", this::checkSuccessfulGrapple);
 
-    KeyboardPlayerInputComponent input = newPlayer.getComponent(KeyboardPlayerInputComponent.class);
+    input = newPlayer.getComponent(KeyboardPlayerInputComponent.class);
     if (input != null) {
+      System.out.println("input is not null");
       input.setCameraComponent(cameraComponent);
     }
     spawnEntityAt(newPlayer, config.getPlayerSpawn(), true, true);
+
+    System.out.println("player spawned");
+    System.out.println(input);
 
     return newPlayer;
   }

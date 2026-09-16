@@ -150,7 +150,9 @@ public class GdxGame extends Game {
       case TUTORIAL_GAME:
         return new TutorialGameScreen(this);
       case LEVEL_2_GAME:
-        return new Level2GameScreen(this);
+        TutorialGameScreen screen = new TutorialGameScreen(this);
+        screen.queueAreaSwap("level2");
+        return screen;
       case SETTINGS:
         return new SettingsScreen(this);
       case SETTINGS_FROM_PAUSE:
