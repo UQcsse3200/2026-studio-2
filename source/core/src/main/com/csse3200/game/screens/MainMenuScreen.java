@@ -36,7 +36,8 @@ public class MainMenuScreen extends ScreenAdapter {
     "images/Buttons/settings_up_btn.png",
     "images/Buttons/settings_down_btn.png",
     "images/Buttons/quit_up_btn.png",
-    "images/Buttons/quit_down_btn.png"
+    "images/Buttons/quit_down_btn.png",
+    "images/scroll_bg.png"
   };
   private static final String mainMenuMusic = "sounds/Main_menu_sound.mp3";
   private static final String[] mainMenuMusicFiles = {mainMenuMusic};

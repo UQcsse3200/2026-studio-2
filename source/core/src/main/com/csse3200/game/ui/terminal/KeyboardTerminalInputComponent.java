@@ -52,24 +52,10 @@ public class KeyboardTerminalInputComponent extends InputComponent {
       terminal.toggleIsOpen();
       return true;
     }
-    if (keycode == Input.Keys.ESCAPE) {
-      if (closeOpenShop()) {
-        return true;
-      }
-
-      EntityService entityService = ServiceLocator.getEntityService();
-      if (entityService == null) {
-        return terminal.isOpen();
-      }
-
-      entityService.togglePaused();
-      entity.getEvents().trigger("togglePause");
-
-      if (entityService.getPaused()) {
-        entity.getEvents().trigger("showPauseMenu");
-      } else {
-        entity.getEvents().trigger("hidePauseMenu");
-      }
+    // Shop close stays here because this handler runs before player input, which swallows keys
+    // while the shop is open. Pause itself is owned by the pause overlay on main.
+    if (keycode == Input.Keys.ESCAPE && closeOpenShop()) {
+      return true;
     }
 
     return terminal.isOpen();

@@ -1,0 +1,361 @@
+package com.csse3200.game.components.minigames.cyclopsMinigame;
+
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.math.GridPoint2;
+import com.badlogic.gdx.utils.Timer;
+import com.csse3200.game.areas.terrain.TerrainComponent;
+import com.csse3200.game.components.Component;
+import com.csse3200.game.components.player.PlayerAnimationController;
+import com.csse3200.game.entities.Entity;
+import com.csse3200.game.events.EventHandler;
+import com.csse3200.game.services.ServiceLocator;
+import com.csse3200.game.ui.GameEndState;
+import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+public class CyclopsMinigameLogic extends Component {
+  private static final Logger logger = LoggerFactory.getLogger(CyclopsMinigameLogic.class);
+
+  /* State Machine */
+  private enum State {
+    STOPPED,
+    PLAYING,
+    GAME_OVER
+  }
+
+  private GameEndState outcome = GameEndState.LOSE;
+  private State state;
+
+  /* Timing Components */
+  Timer timer = new Timer();
+  private static final float FADE = 0.1f;
+  private static final float START_TRANSITION_DELAY = 0.2f;
+  private static final float END_TRANSITION_DELAY = 0.8f;
+  private static final float SHOW_HIDE_DELAY = 0.4f;
+  private static final float SHOW_GAME_OVER_DELAY = 1.4f;
+
+  /* Minigame Components */
+  private final TimingBarLogic timingBarLogic;
+  private final TimingBarDisplay timingBarDisplay;
+
+  /* Screen Components */
+  private BlankTransitionScreen transitionScreen;
+
+  /* Music / Sound effect components*/
+  private Sound walkingSound;
+  private long walkingSoundID;
+  private static final float walkingSoundVolume = 0.3f;
+
+  private Sound hitSound;
+  private long hitSoundID;
+  private static final float hitSoundVolume = 0.1f;
+
+  private Sound missSound;
+  private long missSoundID;
+  private static final float missSoundVolume = 0.2f;
+
+  /* Player */
+  private final Entity player;
+
+  /* Map Info */
+  private final TerrainComponent terrain;
+  private GridPoint2 winLocation;
+  private List<GridPoint2> safeLocations;
+  private List<GridPoint2> lossLocations;
+  private int currentSafeLoc = 0;
+
+  /**
+   * Creates the game logic for the Cyclops minigame.
+   *
+   * @param logic - TimingBar Logic component
+   * @param display - TimingBar display component
+   * @param terrain - The terrain the minigame game area uses
+   * @param player - A display only player entity
+   */
+  public CyclopsMinigameLogic(
+      TimingBarLogic logic, TimingBarDisplay display, TerrainComponent terrain, Entity player) {
+    this.timingBarLogic = logic;
+    this.timingBarDisplay = display;
+    this.terrain = terrain;
+    this.player = player;
+
+    this.state = State.STOPPED;
+  }
+
+  @Override
+  public void create() {
+    EventHandler eventHandler = ServiceLocator.getCyclopsMinigameEventHandler();
+    eventHandler.addListener("start", this::startMinigame);
+    eventHandler.addListener("restart", this::restartMinigame);
+    eventHandler.addListener("stop", this::stopMinigame);
+    eventHandler.addListener("success", this::onTimingSuccess);
+    eventHandler.addListener("failure", this::onTimingFailure);
+    eventHandler.addListener(
+        "showBar",
+        () -> {
+          showTimingBar();
+          timingBarLogic.startMarker();
+        });
+    eventHandler.addListener(
+        "hideBar",
+        () -> {
+          hideTimingBar();
+          timingBarLogic.stopMarker();
+        });
+
+    walkingSound =
+        ServiceLocator.getResourceService()
+            .getAsset("sounds/walkingSounds/walkingSound.mp3", Sound.class);
+    hitSound =
+        ServiceLocator.getResourceService()
+            .getAsset("sounds/minigames/cyclops/marker-hit.ogg", Sound.class);
+    missSound =
+        ServiceLocator.getResourceService()
+            .getAsset("sounds/minigames/cyclops/marker-miss.ogg", Sound.class);
+
+    transitionScreen = new BlankTransitionScreen();
+    ServiceLocator.getEntityService().register(new Entity().addComponent(this.transitionScreen));
+  }
+
+  @Override
+  public void update() {
+    switch (state) {
+      case PLAYING -> updatePlaying();
+      case GAME_OVER -> scheduleGameOver();
+    }
+  }
+
+  @Override
+  public void dispose() {
+    hitSound.stop();
+    missSound.stop();
+    walkingSound.stop();
+
+    super.dispose();
+  }
+
+  public void setWinLocation(GridPoint2 winLocation) {
+    this.winLocation = winLocation;
+  }
+
+  public void setLossLocations(List<GridPoint2> lossLocations) {
+    this.lossLocations = lossLocations;
+  }
+
+  public void setSafeLocations(List<GridPoint2> safeLocations) {
+    this.safeLocations = safeLocations;
+  }
+
+  private void movePlayer(GridPoint2 location) {
+    player.setPosition(terrain.tileToWorldPosition(location));
+  }
+
+  /**
+   * Moves the player to the next locations.
+   *
+   * <p>If 'success' player moves to next safe location. Returns False is player has moved to the
+   * win position otherwise True if player moves to next safe location. If not 'success' then player
+   * is moved to the next loss location and returns True
+   *
+   * @param success - boolean on whether to move player to next win or loss location
+   */
+  public void moveToNextLocation(boolean success) {
+    if (success) {
+      currentSafeLoc += 1;
+      if (currentSafeLoc >= safeLocations.size()) {
+        player.setPosition(terrain.tileToWorldPosition(winLocation));
+        state = State.GAME_OVER;
+        outcome = GameEndState.WIN;
+        logger.info("Player moved to win location: {}", winLocation);
+        return;
+      }
+      movePlayer(safeLocations.get(currentSafeLoc));
+      logger.info("Player moved to next safe location: {}", safeLocations.get(currentSafeLoc));
+    } else {
+      movePlayer(lossLocations.get(currentSafeLoc));
+      logger.info("Player moved to next loss location: {}", lossLocations.get(currentSafeLoc));
+      state = State.GAME_OVER;
+    }
+  }
+
+  private void updatePlaying() {
+    timingBarLogic.update(Gdx.graphics.getDeltaTime());
+
+    if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
+      timingBarLogic.stopMarker();
+      logger.info("sliding marker was stopped at {} (0.0 - 1.0)", timingBarLogic.markerX);
+
+      if (timingBarLogic.checkHit()) {
+        hitSoundID = hitSound.play();
+        hitSound.setVolume(hitSoundID, hitSoundVolume);
+      } else {
+        missSoundID = missSound.play();
+        missSound.setVolume(missSoundID, missSoundVolume);
+      }
+
+      scheduleTimingMinigameHide();
+    }
+  }
+
+  private void showTimingBar() {
+    timingBarDisplay.setVisible(true);
+  }
+
+  private void hideTimingBar() {
+    timingBarDisplay.setVisible(false);
+  }
+
+  private void onTimingSuccess() {
+    moveToNextLocation(true);
+  }
+
+  private void onTimingFailure() {
+    moveToNextLocation(false);
+  }
+
+  private void playWalkingSound() {
+    walkingSoundID = walkingSound.play();
+    walkingSound.setLooping(walkingSoundID, true);
+    walkingSound.setVolume(walkingSoundID, walkingSoundVolume);
+  }
+
+  private void transition() {
+    if (timingBarLogic.checkHit()) {
+      onTimingSuccess();
+    } else {
+      onTimingFailure();
+    }
+  }
+
+  private void stopWalkingSound() {
+    walkingSound.stop(walkingSoundID);
+  }
+
+  private void onTransitionStart() {
+    transitionScreen.fadeIn(FADE);
+    playWalkingSound();
+    timer.scheduleTask(
+        new Timer.Task() {
+          @Override
+          public void run() {
+            transition();
+          }
+        },
+        FADE); // Wait until after FADE to move player
+  }
+
+  private void onTransitionEnd() {
+    stopWalkingSound();
+    transitionScreen.fadeOut(FADE);
+  }
+
+  public void restartMinigame() {
+    logger.info("restarting minigame");
+    timer.clear();
+    timingBarLogic.stopMarker();
+    timingBarLogic.resetMarker();
+    timingBarDisplay.setVisible(false);
+    if (transitionScreen != null) {
+      transitionScreen.setVisible(false);
+    }
+    movePlayer(safeLocations.getFirst());
+    scheduleTimingMinigameShow();
+  }
+
+  public void startMinigame() {
+    logger.info("starting cyclops minigame");
+    scheduleTimingMinigameShow();
+  }
+
+  public void stopMinigame() {
+    state = State.STOPPED;
+    timingBarLogic.stopMarker();
+    hideTimingBar();
+    transitionScreen.setVisible(false);
+
+    if (timer != null) timer.clear();
+    if (walkingSound != null) walkingSound.stop();
+  }
+
+  public void gameOver() {
+    ServiceLocator.getGameEndEventHandler().trigger("gameEnd", outcome);
+    state = State.STOPPED;
+  }
+
+  void scheduleTimingMinigameShow() {
+    timer.scheduleTask(
+        new Timer.Task() {
+          @Override
+          public void run() {
+            showTimingBar();
+            timingBarLogic.resetMarker();
+            timingBarLogic.startMarker();
+            state = State.PLAYING;
+          }
+        },
+        SHOW_HIDE_DELAY);
+  }
+
+  void scheduleTimingMinigameHide() {
+    timer.scheduleTask(
+        new Timer.Task() {
+          @Override
+          public void run() {
+            hideTimingBar();
+            scheduleTransitionStart();
+          }
+        },
+        SHOW_HIDE_DELAY);
+  }
+
+  void scheduleTransitionStart() {
+    timer.scheduleTask(
+        new Timer.Task() {
+          @Override
+          public void run() {
+            onTransitionStart();
+            scheduleTransitionEnd();
+          }
+        },
+        START_TRANSITION_DELAY);
+  }
+
+  void scheduleTransitionEnd() {
+    timer.scheduleTask(
+        new Timer.Task() {
+          @Override
+          public void run() {
+            onTransitionEnd();
+
+            if (state == State.PLAYING) {
+              scheduleTimingMinigameShow();
+            }
+          }
+        },
+        END_TRANSITION_DELAY);
+  }
+
+  void scheduleGameOver() {
+    state = State.STOPPED;
+    timer.scheduleTask(
+        new Timer.Task() {
+          @Override
+          public void run() {
+            player.getComponent(PlayerAnimationController.class).playAnimation("death");
+
+            timer.scheduleTask(
+                new Timer.Task() {
+                  @Override
+                  public void run() {
+                    gameOver();
+                  }
+                },
+                SHOW_GAME_OVER_DELAY);
+          }
+        },
+        FADE + 0.2f);
+  }
+}

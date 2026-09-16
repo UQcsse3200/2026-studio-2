@@ -1,5 +1,6 @@
 package com.csse3200.game.components.item.weapons.bow.grapple;
 
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Fixture;
@@ -115,6 +116,13 @@ public class GrappleComponent extends Component {
   public void fire(Vector2 direction) {
     if (direction == null || direction.isZero() || cooldownRemaining > 0f || isAttached()) {
       return;
+    }
+    try {
+      Sound arrowSound =
+          ServiceLocator.getResourceService().getAsset("sounds/Arrow_release.wav", Sound.class);
+      arrowSound.play(0.4f);
+    } catch (Exception e) {
+      // skip
     }
 
     Vector2 aim = direction.cpy().nor();

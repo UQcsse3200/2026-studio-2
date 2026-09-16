@@ -222,4 +222,24 @@ class BowComponentTest {
     assertFalse(component.isReady());
     assertTrue(component.getCooldownRemaining() > 0f);
   }
+
+  @Test
+  void shouldCancelChargeWithoutFiringOrStartingCooldown() {
+    Entity projectile = mock(Entity.class);
+    BowComponent component =
+        new BowComponent((shooter, position, direction, speedMultiplier) -> projectile);
+    Entity player = new Entity().addComponent(component);
+    player.create();
+    when(gameTime.getTime()).thenReturn(0L);
+
+    component.startCharge(new Vector2(1f, 0f));
+    assertFalse(component.isReady());
+
+    player.getEvents().trigger("chargeCancel");
+
+    assertTrue(component.isReady());
+    assertEquals(0f, component.getCooldownRemaining());
+    verify(entityService, never()).register(projectile);
+    verify(attackSound, never()).play();
+  }
 }

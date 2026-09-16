@@ -41,6 +41,13 @@ public class ItemFactory {
     return itemEntity;
   }
 
+  /**
+   * Creates a world entity containing the concrete item represented by the supplied type.
+   *
+   * @param type item type to create
+   * @param quantity number of items in the stack
+   * @return corresponding world item entity
+   */
   public static Entity createItem(ItemType type, int quantity) {
     return switch (type) {
       case STANDARD_ARROW -> createStandardArrow(quantity);
@@ -56,9 +63,9 @@ public class ItemFactory {
   }
 
   /**
-   * Creates a world entity containing the concrete item represented by the supplied type.
+   * Creates a world entity for an item identified by its catalog name.
    *
-   * @param type item type to create
+   * @param itemName catalog name of the item to create
    * @param quantity number of items in the stack
    * @return corresponding world item entity
    */

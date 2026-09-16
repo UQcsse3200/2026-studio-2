@@ -35,9 +35,10 @@ public class KeyboardPlayerInputComponent extends InputComponent {
   @Override
   public void create() {
     super.create();
-    entity.getEvents().addListener("togglePause", this::triggerWalkEvent);
+    entity.getEvents().addListener("togglePause", this::unpause);
     entity.getEvents().addListener("death", () -> dead = true);
     entity.getEvents().addListener("openShop", this::releaseHeldGameplayInput);
+    entity.getEvents().addListener("closeShop", this::syncReleasedShootButton);
     entity.getEvents().addListener("releaseHeldGameplayInput", this::releaseHeldGameplayInput);
   }
 
@@ -145,6 +146,9 @@ public class KeyboardPlayerInputComponent extends InputComponent {
         return true;
       case Keys.TAB:
         entity.getEvents().trigger("openArrowWheel");
+        return true;
+      case Keys.ESCAPE:
+        entity.getEvents().trigger("togglePause");
         return true;
       default:
         return false;
@@ -260,11 +264,8 @@ public class KeyboardPlayerInputComponent extends InputComponent {
    */
   @Override
   public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-    if (isShopOpen()) {
-      return true;
-    }
     if (dead) {
-      return false;
+      return isShopOpen();
     }
 
     if (button == Buttons.LEFT) {
@@ -273,12 +274,13 @@ public class KeyboardPlayerInputComponent extends InputComponent {
     }
 
     if (button == Buttons.RIGHT) {
-      rightMouseHeld = false;
-      entity.getEvents().trigger("stopShoot");
+      // Clear even if the shop is open. The overlay may still deliver this event, and swallowing
+      // it without cancelling leaves the bow stuck charging after the shop closes.
+      clearHeldShootButton(isShopOpen());
       return true;
     }
 
-    return false;
+    return isShopOpen();
   }
 
   /** Reports the pointer's offset from the centre of the screen, where the wheel is drawn. */
@@ -310,6 +312,35 @@ public class KeyboardPlayerInputComponent extends InputComponent {
     attackHeld = false;
     triggerWalkEvent();
     entity.getEvents().trigger("sprintStop");
+    // Opening a UI can steal the mouse-up, so drop the charge immediately instead of firing.
+    clearHeldShootButton(true);
+  }
+
+  /**
+   * If the shop consumed the mouse-up, right-click still looks held here. After close, fire/cancel
+   * based on whether the button is actually down.
+   */
+  private void syncReleasedShootButton() {
+    if (!rightMouseHeld) {
+      return;
+    }
+    if (Gdx.input != null && Gdx.input.isButtonPressed(Buttons.RIGHT)) {
+      return;
+    }
+    clearHeldShootButton(true);
+  }
+
+  /**
+   * Drops the right-mouse held flag. {@code cancelCharge} skips firing so a UI overlay cannot spawn
+   * an arrow; otherwise this is a normal shoot release.
+   */
+  private void clearHeldShootButton(boolean cancelCharge) {
+    rightMouseHeld = false;
+    if (cancelCharge) {
+      entity.getEvents().trigger("chargeCancel");
+    } else {
+      entity.getEvents().trigger("stopShoot");
+    }
   }
 
   private boolean isArrowWheelOpen() {
@@ -381,5 +412,10 @@ public class KeyboardPlayerInputComponent extends InputComponent {
     } else {
       entity.getEvents().trigger("walk", walkDirection.cpy());
     }
+  }
+
+  public void unpause() {
+    triggerWalkEvent();
+    triggerSprintEvent();
   }
 }
