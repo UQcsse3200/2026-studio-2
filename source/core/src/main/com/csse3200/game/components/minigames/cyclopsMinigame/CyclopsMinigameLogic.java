@@ -255,6 +255,13 @@ public class CyclopsMinigameLogic extends Component {
 
   public void restartMinigame() {
     logger.info("restarting minigame");
+    timer.clear();
+    timingBarLogic.stopMarker();
+    timingBarLogic.resetMarker();
+    timingBarDisplay.setVisible(false);
+    if (transitionScreen != null) {
+      transitionScreen.setVisible(false);
+    }
     movePlayer(safeLocations.getFirst());
     scheduleTimingMinigameShow();
   }
