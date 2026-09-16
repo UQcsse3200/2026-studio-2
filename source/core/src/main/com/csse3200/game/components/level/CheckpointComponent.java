@@ -4,6 +4,7 @@ import com.badlogic.gdx.math.GridPoint2;
 import com.csse3200.game.components.Component;
 import com.csse3200.game.components.player.PlayerActions;
 import com.csse3200.game.entities.Entity;
+import com.csse3200.game.rendering.TextureRenderComponent;
 import com.csse3200.game.services.ServiceLocator;
 
 public class CheckpointComponent extends Component {
@@ -24,7 +25,19 @@ public class CheckpointComponent extends Component {
   }
 
   public void activate() {
+    if (collected) {
+      return;
+    }
+
     this.collected = true;
+
+    Entity litTorch =
+        new Entity().addComponent(new TextureRenderComponent("images/checkpoint_lit.png"));
+
+    litTorch.setScale(1f, 1.5f);
+    litTorch.setPosition(position.x, position.y);
+
+    ServiceLocator.getEntityService().register(litTorch);
   }
 
   public void deactivate() {

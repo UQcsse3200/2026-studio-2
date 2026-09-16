@@ -7,6 +7,7 @@ import com.csse3200.game.areas.terrain.TerrainComponent;
 import com.csse3200.game.areas.terrain.configs.LevelConfig;
 import com.csse3200.game.areas.terrain.configs.SpawnData;
 import com.csse3200.game.components.CameraComponent;
+import com.csse3200.game.components.item.ItemComponent;
 import com.csse3200.game.components.level.ActivatableComponent;
 import com.csse3200.game.components.level.CheckpointComponent;
 import com.csse3200.game.components.level.LevelTriggerComponent;
@@ -52,6 +53,16 @@ public abstract class GameArea implements Disposable {
   /** Dispose of all internal entities in the area */
   public void dispose() {
     areaEntities.remove(player);
+    ArrayList<Entity> items = new ArrayList<Entity>();
+    for (Entity entity : areaEntities) {
+      if (entity.getComponent(ItemComponent.class) != null) {
+        items.add(entity);
+      }
+    }
+
+    for (Entity entity : items) {
+      areaEntities.remove(entity);
+    }
 
     for (Entity entity : areaEntities) {
       entity.dispose();
