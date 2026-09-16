@@ -2,6 +2,9 @@ package com.csse3200.game.components.level;
 
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.csse3200.game.components.Component;
+import com.csse3200.game.components.projectile.ArrowProjectileComponent;
+import com.csse3200.game.entities.Entity;
+import com.csse3200.game.physics.BodyUserData;
 import com.csse3200.game.rendering.RotatableAnimationRenderComponent;
 import com.csse3200.game.services.ServiceLocator;
 
@@ -24,6 +27,11 @@ public class TriggerButtonComponent extends Component {
   }
 
   private void onCollisionStart(Fixture me, Fixture other) {
+    Entity otherEntity = ((BodyUserData) other.getBody().getUserData()).entity;
+    if (otherEntity.getComponent(ArrowProjectileComponent.class) == null) {
+      return;
+    }
+
     ActivatableComponent activeComponent = entity.getComponent(ActivatableComponent.class);
     String[] ids = activeComponent.getIds();
 
