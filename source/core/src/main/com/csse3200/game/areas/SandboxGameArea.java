@@ -68,7 +68,12 @@ public class SandboxGameArea extends GameArea {
   private static final String EXIT_BUTTON_DOWN_TEXTURE = "images/Buttons/exit_down_btn.png";
   private static final String SKELETON_WARRIOR_TEXTURE = "images/skeleton_warrior.png";
   private static final String SKELETON_ARCHER_TEXTURE = "images/skeleton_archer.png";
-  private static final String[] SANDBOX_ATLASES = {"images/player.atlas", "images/ghost.atlas"};
+  private static final String[] SANDBOX_ATLASES = {
+    "images/player.atlas",
+    "images/ghost.atlas",
+    "images/skeleton_warrior.atlas",
+    "images/skeleton_archer.atlas"
+  };
   private static final String[] SANDBOX_SOUNDS = {"sounds/Impact4.ogg"};
 
   private final TerrainFactory terrainFactory;
