@@ -117,6 +117,7 @@ public class TutorialGameScreen extends ScreenAdapter {
     }
 
     player = tutorialGameArea.getPlayer();
+    player.getEvents().addListener("respawnAtCheckpoint", () -> currentGameArea.respawn());
 
     // Follow the player with the camera.
     renderer.getCamera().setTarget(player);
