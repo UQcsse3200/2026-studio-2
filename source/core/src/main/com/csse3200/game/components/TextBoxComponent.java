@@ -50,7 +50,7 @@ public class TextBoxComponent extends UIComponent {
   // only once the last page has been fully shown does TAB dismiss the box entirely.
 
   /**
-   * @param font path to a bitmap font (.fnt) file, relative to assets, e.g. "fonts/scroll.fnt".
+   * @param fontPath path to a bitmap font (.fnt) file, relative to assets, e.g. "fonts/scroll.fnt".
    *     Pass {@code null} to use the skin's default font.
    * @param textAlignment horizontal alignment of the text within the box, e.g. {@link Align#left},
    *     {@link Align#center}, {@link Align#right}.
