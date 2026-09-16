@@ -1,8 +1,11 @@
 package com.csse3200.game.rendering;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
+import com.csse3200.game.areas.GameArea.BackgroundType;
 import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.ArrayList;
@@ -11,21 +14,46 @@ import java.util.List;
 /** Render multiple layers of a parallax background. */
 public class BackgroundRenderComponent extends RenderComponent {
 
+  Vector2 backgroundPos;
+  Vector2 worldBounds;
+
   /** A single parallax background layer. */
   private static class ParallaxLayer {
     private final Texture texture;
-    private final float parallaxFactor;
+    private final Vector2 parallaxFactor;
     private final float width;
     private final float height;
-    private final float yOffset;
+    private final Vector2 offset;
+    private final BackgroundType backgroundType;
+    private final Vector2 velocity;
+    private Vector2 position;
+    private final boolean repeat;
+    private final float distance;
+    private final float transparency;
 
-    ParallaxLayer(Texture texture, float parallaxFactor, float width, float height, float yOffset) {
+    ParallaxLayer(
+        Texture texture,
+        Vector2 parallaxFactor,
+        float width,
+        float height,
+        Vector2 offset,
+        BackgroundType backgroundType,
+        Vector2 velocity,
+        boolean repeat,
+        float distance,
+        float transparency) {
 
       this.texture = texture;
       this.parallaxFactor = parallaxFactor;
       this.width = width;
       this.height = height;
-      this.yOffset = yOffset;
+      this.offset = offset;
+      this.backgroundType = backgroundType;
+      this.velocity = velocity;
+      this.position = new Vector2(velocity);
+      this.repeat = repeat;
+      this.distance = distance;
+      this.transparency = transparency;
     }
   }
 
@@ -36,46 +64,115 @@ public class BackgroundRenderComponent extends RenderComponent {
    * Creates a multi-layer parallax background.
    *
    * @param camera camera used to calculate parallax movement
+   * @param backgroundPos the position of the background
+   * @param worldBounds the maximum x and y values of the world bounds
    */
-  public BackgroundRenderComponent(CameraComponent camera) {
+  public BackgroundRenderComponent(
+      CameraComponent camera, Vector2 backgroundPos, Vector2 worldBounds) {
     this.camera = camera;
+    this.backgroundPos = backgroundPos;
+    this.worldBounds = worldBounds;
   }
 
   /**
-   * Adds a parallax layer with a custom size and vertical position.
+   * Adds a parallax layer with a custom size and vertical position. Distance is a float between 0
+   * and 1. 1 causes the background to have no vertical movement, while 0 causes it to follow player
+   * directly.
    *
-   * @param texturePath internal path of the texture
-   * @param parallaxFactor controls how much the layer moves
-   * @param width width of the layer in world units
-   * @param height height of the layer in world units
-   * @param yOffset vertical position relative to the background entity
+   * @param texturePath path to the texture
+   * @param parallaxFactor controls how much the layer moves relative to player movement
+   * @param width width of the layer
+   * @param height height of the layer
+   * @param offset positional offset relative to backgroundPos
+   * @param backgroundType the type of background this layer is
+   * @param velocity the independent velocity of the layer
+   * @param repeat whether or not this layer should repeat horizontally
+   * @param distance the distance from POV affecting vertical parallax movement
+   * @param transparency the transparency of the layer
    */
   public void addLayer(
-      String texturePath, float parallaxFactor, float width, float height, float yOffset) {
+      String texturePath,
+      Vector2 parallaxFactor,
+      float width,
+      float height,
+      Vector2 offset,
+      BackgroundType backgroundType,
+      Vector2 velocity,
+      boolean repeat,
+      float distance,
+      float transparency) {
 
     Texture texture = ServiceLocator.getResourceService().getAsset(texturePath, Texture.class);
 
-    layers.add(new ParallaxLayer(texture, parallaxFactor, width, height, yOffset));
-  }
-
-  /**
-   * Adds a parallax layer using its texture dimensions.
-   *
-   * @param texture texture for the layer
-   * @param parallaxFactor controls how much the layer moves
-   * @param width width of the layer in world units
-   * @param height height of the layer in world units
-   * @param yOffset vertical position relative to the background entity
-   */
-  public void addLayer(
-      Texture texture, float parallaxFactor, float width, float height, float yOffset) {
-
-    layers.add(new ParallaxLayer(texture, parallaxFactor, width, height, yOffset));
+    layers.add(
+        new ParallaxLayer(
+            texture,
+            parallaxFactor,
+            width,
+            height,
+            offset,
+            backgroundType,
+            velocity,
+            repeat,
+            distance,
+            transparency));
   }
 
   /** Scale is controlled individually for each layer. */
   public void scaleEntity() {
     // Layer sizes are defined when they are added.
+  }
+
+  /**
+   * Calculates incrementing position for layers with non-zero velocity
+   *
+   * @param layer the layer to get new position for
+   */
+  private void getPosUpdate(ParallaxLayer layer) {
+    // Since this is called every frame, changing frame rates will change speed
+    layer.position.x += layer.velocity.x / 100;
+    layer.position.y += layer.velocity.y / 100;
+  }
+
+  /**
+   * Get position for layers whose position does not depend on player movement e.g. sky, super
+   * distant objects
+   *
+   * @param layer the layer to calculate position for
+   * @param cameraPos the position of the camera
+   * @param position the current position of the layer
+   * @return updated position of the layer
+   */
+  private Vector2 getIndependentPosition(ParallaxLayer layer, Vector3 cameraPos, Vector2 position) {
+    float cameraX = cameraPos.x;
+    float cameraY = cameraPos.y;
+    getPosUpdate(layer);
+
+    float backgroundX = cameraX + layer.offset.x;
+    float backgroundY = cameraY + layer.offset.y + position.y + layer.position.y;
+
+    return new Vector2(backgroundX, backgroundY);
+  }
+
+  /**
+   * Get position for layers whose position depends on player movement e.g. mountains, ground,
+   * ocean, clouds
+   *
+   * @param layer the layer to calculate position for
+   * @param cameraPos the position of the camera
+   * @param position the current position of the layer
+   * @return updated position of the layer
+   */
+  private Vector2 getDependentPosition(ParallaxLayer layer, Vector3 cameraPos, Vector2 position) {
+    float cameraX = cameraPos.x;
+    float cameraY = cameraPos.y;
+    getPosUpdate(layer);
+
+    float backgroundX =
+        position.x + layer.offset.x + cameraX * (1f - layer.parallaxFactor.x) + layer.position.x;
+    float backgroundY = position.y + layer.offset.y + cameraY * layer.distance + layer.position.y;
+
+    return new Vector2(backgroundX, backgroundY);
   }
 
   @Override
@@ -85,22 +182,52 @@ public class BackgroundRenderComponent extends RenderComponent {
     }
 
     Vector2 position = entity.getPosition();
+    Vector3 cameraPos = camera.getCamera().position;
 
-    float cameraX = camera.getCamera().position.x;
-
-    /*
-     * Draw layers from back to front.
-     *
-     * Lower parallax factors move more slowly.
-     * Higher parallax factors move more quickly.
-     */
     for (ParallaxLayer layer : layers) {
+      Vector2 layerPos = null;
+      float layerX;
+      float layerY;
 
-      float backgroundX = position.x + cameraX * (1f - layer.parallaxFactor);
+      switch (layer.backgroundType) {
+        case INDEPENDENT:
+          layerPos = getIndependentPosition(layer, cameraPos, position);
+          break;
+        case DEPENDENT:
+          layerPos = getDependentPosition(layer, cameraPos, position);
+          break;
+      }
 
-      float backgroundY = position.y + layer.yOffset;
+      layerX = layerPos.x;
+      layerY = layerPos.y;
+      batch.setColor(1f, 1f, 1f, layer.transparency);
+      batch.draw(layer.texture, layerX, layerY, layer.width, layer.height);
+      batch.setColor(Color.WHITE);
 
-      batch.draw(layer.texture, backgroundX, backgroundY, layer.width, layer.height);
+      // Draw copies of repeating layers to fill screen
+      if (layer.repeat) {
+        float newLeftDrawPosX = layerX - layer.width;
+        float newRightDrawPosX = layerX + layer.width;
+
+        // if left most x coord of layer >= left most x coord of background pos
+        // backgroundPos is used over worldBound.x since backgroundPos extends beyond worldBound
+        while (newLeftDrawPosX >= backgroundPos.x - layer.width) {
+          batch.setColor(1f, 1f, 1f, layer.transparency);
+          batch.draw(layer.texture, newLeftDrawPosX, layerY, layer.width, layer.height);
+          batch.setColor(Color.WHITE);
+          newLeftDrawPosX -= layer.width;
+        }
+
+        // if right most x coord of layer <= right of worldBound + extra you can see
+        // NOTE: this relies on backgroudPos starting at a negative value, which will always be
+        // true if player starts at x = 0
+        while (newRightDrawPosX <= worldBounds.x - backgroundPos.x) {
+          batch.setColor(1f, 1f, 1f, layer.transparency);
+          batch.draw(layer.texture, newRightDrawPosX, layerY, layer.width, layer.height);
+          batch.setColor(Color.WHITE);
+          newRightDrawPosX += layer.width;
+        }
+      }
     }
   }
 

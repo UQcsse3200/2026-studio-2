@@ -58,7 +58,8 @@ public class ForestGameArea extends GameArea {
     "images/iso_grass_3.png",
     "images/rope_arrow.png",
     "images/fire_arrow.png",
-    "images/cold_arrow.png"
+    "images/cold_arrow.png",
+    "scroll_bg.png"
   };
   private static final String[] forestTextureAtlases = {
     "images/terrain_iso_grass.atlas",
@@ -162,9 +163,9 @@ public class ForestGameArea extends GameArea {
   }
 
   private void spawnPlatforms() {
-    GridPoint2 platformPos = new GridPoint2(10, 7);
-    Entity platform = ObstacleFactory.createPlatform(0);
-    spawnEntityAt(platform, platformPos, true, false);
+    // GridPoint2 platformPos = new GridPoint2(10, 7);
+    // Entity platform = ObstacleFactory.createPlatform(p);
+    // spawnEntityAt(platform, platformPos, true, false);
   }
 
   private Entity spawnPlayer() {

@@ -16,8 +16,11 @@ import com.badlogic.gdx.utils.Align;
 import com.csse3200.game.ui.UIComponent;
 import java.util.Collections;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class TextBoxComponent extends UIComponent {
+  private static final Logger logger = LoggerFactory.getLogger(TextBoxComponent.class);
 
   private final float xPos;
   private final float yPos;
@@ -36,6 +39,7 @@ public class TextBoxComponent extends UIComponent {
   private float typeTimer = 0f;
   private int revealedChars = 0;
   private boolean dismissed = false;
+  private boolean externallyControlled = false;
   private String fullContent = "";
   private String lastSourceContent = null;
   private Table table;
@@ -61,7 +65,7 @@ public class TextBoxComponent extends UIComponent {
       int maxWidth,
       int padding,
       int borderThickness,
-      BitmapFont font,
+      String fontPath,
       int textAlignment,
       List<String> pages) {
 
@@ -76,7 +80,116 @@ public class TextBoxComponent extends UIComponent {
     this.borderThickness = borderThickness;
     this.textAlignment = textAlignment;
     this.pages = (pages == null || pages.isEmpty()) ? Collections.singletonList("") : pages;
-    this.customFont = font;
+    this.customFont = loadFont(fontPath);
+  }
+
+  /** Enables cutscene-style input control instead of polling TAB while rendering. */
+  public void setExternallyControlled(boolean externallyControlled) {
+    this.externallyControlled = externallyControlled;
+  }
+
+  /**
+   * @return whether the current page has finished revealing.
+   */
+  public boolean isCurrentPageComplete() {
+    return revealedChars >= fullContent.length();
+  }
+
+  /**
+   * @return whether the current page is the final page.
+   */
+  public boolean isOnLastPage() {
+    return currentPageIndex >= pages.size() - 1;
+  }
+
+  /**
+   * @return whether this textbox has been dismissed.
+   */
+  public boolean isDismissed() {
+    return dismissed;
+  }
+
+  /**
+   * Handles one externally supplied advance request.
+   *
+   * <p>The first request completes the current page, the next requests move through pages, and a
+   * request on the final page dismisses the textbox.
+   *
+   * @return the action consumed by this request
+   */
+  public AdvanceResult advance() {
+    if (dismissed) {
+      return AdvanceResult.DISMISSED;
+    }
+    if (!isCurrentPageComplete()) {
+      revealCurrentPage();
+      return AdvanceResult.REVEALED_PAGE;
+    }
+    if (!isOnLastPage()) {
+      currentPageIndex++;
+      lastSourceContent = null;
+      return AdvanceResult.NEXT_PAGE;
+    }
+    if (externallyControlled) {
+      return AdvanceResult.DISMISSED;
+    }
+    dismiss();
+    return AdvanceResult.DISMISSED;
+  }
+
+  /** Immediately reveals the current page without changing pages. */
+  public void revealCurrentPage() {
+    revealedChars = fullContent.length();
+    if (label != null) {
+      label.setText(fullContent);
+      table.pack();
+    }
+  }
+
+  /** Dismisses the textbox and removes its scene2d actors. */
+  public void dismiss() {
+    if (dismissed) {
+      return;
+    }
+    dismissed = true;
+    if (table != null) {
+      table.setVisible(false);
+    }
+    dispose();
+  }
+
+  /** Sets the opacity of the textbox while it remains mounted. */
+  public void setOpacity(float opacity) {
+    float clampedOpacity = Math.max(0f, Math.min(1f, opacity));
+    if (table != null) {
+      table.getColor().a = clampedOpacity;
+    }
+    if (label != null) {
+      Color fontColor = label.getStyle().fontColor.cpy();
+      fontColor.a = clampedOpacity;
+      Label.LabelStyle style = new Label.LabelStyle(label.getStyle());
+      style.fontColor = fontColor;
+      label.setStyle(style);
+    }
+  }
+
+  public enum AdvanceResult {
+    REVEALED_PAGE,
+    NEXT_PAGE,
+    DISMISSED
+  }
+
+  /** Loads a bitmap font from assets, or returns null (meaning "use the skin's default font"). */
+  private static BitmapFont loadFont(String fontPath) {
+    if (fontPath == null || fontPath.isBlank()) {
+      return null;
+    }
+    try {
+      return new BitmapFont(Gdx.files.internal(fontPath));
+    } catch (Exception e) {
+      logger.error("Failed to load font from {}: {}", fontPath, e.getMessage());
+      return null;
+    }
   }
 
   /**
@@ -197,10 +310,9 @@ public class TextBoxComponent extends UIComponent {
     // Reveal characters over time
     if (!fullyRevealed) {
       this.typeTimer += Gdx.graphics.getDeltaTime();
-      int charsToShow = (int) (this.typeTimer * this.charsPerSecond) + 1;
+      int charsToShow = (int) (this.typeTimer * this.charsPerSecond);
       if (charsToShow > this.revealedChars) {
         this.revealedChars = Math.min(charsToShow, this.fullContent.length());
-        // System.out.println(revealedChars);
         this.label.setText(this.fullContent.substring(0, this.revealedChars));
         this.table.pack(); // resize box to fit the new (wrapped) text height
         fullyRevealed = this.revealedChars >= this.fullContent.length();

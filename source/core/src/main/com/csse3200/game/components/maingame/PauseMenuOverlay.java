@@ -49,7 +49,6 @@ public class PauseMenuOverlay {
   }
 
   private void open() {
-    System.out.println("opening");
     open = true;
     BlurredBackdropDisplay backdrop = new BlurredBackdropDisplay(ScreenBlur.capture());
     PauseMenuDisplay display = new PauseMenuDisplay(game, area);
@@ -67,7 +66,6 @@ public class PauseMenuOverlay {
   }
 
   private void close() {
-    System.out.println("closing");
 
     open = false;
     ServiceLocator.getEntityService().scheduleRemoval(overlay);
