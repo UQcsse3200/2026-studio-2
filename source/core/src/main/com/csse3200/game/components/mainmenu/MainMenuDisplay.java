@@ -36,7 +36,7 @@ public class MainMenuDisplay extends UIComponent {
     float pad = screenHeight * 0.02f;
     Image background =
         new Image(
-            ServiceLocator.getResourceService().getAsset("images/main_menu_bg.png", Texture.class));
+            ServiceLocator.getResourceService().getAsset("images/backgrounds/main_menu_bg.png", Texture.class));
 
     // Oversized slightly so the shake below never reveals an edge/gap.
     float overscan = 1.03f;
@@ -60,7 +60,7 @@ public class MainMenuDisplay extends UIComponent {
     Image title =
         new Image(
             ServiceLocator.getResourceService()
-                .getAsset("images/title_odysseus_logo.png", Texture.class));
+                .getAsset("images/ui/title_odysseus_logo.png", Texture.class));
 
     Texture playUpTexture =
         ServiceLocator.getResourceService()

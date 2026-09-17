@@ -182,7 +182,7 @@ public class GameEndDisplay extends UIComponent {
 
     stack = new Stack();
     Texture backgroundTexture =
-        ServiceLocator.getResourceService().getAsset("images/scroll_bg.png", Texture.class);
+        ServiceLocator.getResourceService().getAsset("images/ui/scroll_bg.png", Texture.class);
 
     backgroundTable = new Table();
     background = new Image(backgroundTexture);

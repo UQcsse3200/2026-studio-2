@@ -18,12 +18,12 @@ public class Level2Config extends LevelConfig {
   public Level2Config() {
     // Textures
     // TFP = Texture File Path
-    platformTFP = "images/Platform_level-2.png";
-    movingPlatformTFP = "images/Platform_level-2.png";
-    crumblingPlatformTFP = "images/Platform_level-2.png";
-    triggerablePlatformTFP = "images/Platform_level-2.png";
-    ledgesTFP = "images/Platform_level-2.png";
-    groundTFP = "images/tile-level2.png";
+    platformTFP = "images/backgrounds/Platform_level-2.png";
+    movingPlatformTFP = "images/backgrounds/Platform_level-2.png";
+    crumblingPlatformTFP = "images/backgrounds/Platform_level-2.png";
+    triggerablePlatformTFP = "images/backgrounds/Platform_level-2.png";
+    ledgesTFP = "images/backgrounds/Platform_level-2.png";
+    groundTFP = "images/terrain/tile-level2.png";
 
     playerSpawn = new GridPoint2(0, 42);
     winConditionSpawn = new GridPoint2(33, 8);

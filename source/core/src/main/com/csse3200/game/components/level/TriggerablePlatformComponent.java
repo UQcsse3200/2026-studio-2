@@ -29,7 +29,7 @@ public class TriggerablePlatformComponent extends Component {
     if (texture == null) {
       texture = textureComponent.getTexture();
       transparentTexture =
-          ServiceLocator.getResourceService().getAsset("images/transparent.png", Texture.class);
+          ServiceLocator.getResourceService().getAsset("images/ui/transparent.png", Texture.class);
     }
 
     Texture newTexture = activated ? texture : transparentTexture;

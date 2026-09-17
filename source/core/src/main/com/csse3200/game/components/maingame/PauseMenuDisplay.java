@@ -121,7 +121,7 @@ public class PauseMenuDisplay extends UIComponent {
     ImageButton controlsBtn = new ImageButton(controlsButtonStyle);
 
     Texture controlsGraphicTexture =
-        ServiceLocator.getResourceService().getAsset("images/controls_graphic.png", Texture.class);
+        ServiceLocator.getResourceService().getAsset("images/ui/controls_graphic.png", Texture.class);
 
     resumeBtn.addListener(
         new ChangeListener() {
@@ -196,7 +196,7 @@ public class PauseMenuDisplay extends UIComponent {
     Image title =
         new Image(
             ServiceLocator.getResourceService()
-                .getAsset("images/title_odysseus_logo.png", Texture.class));
+                .getAsset("images/ui/title_odysseus_logo.png", Texture.class));
     table.add(title).width(350f).height(122f).padTop(-35f);
     table.row();
     table.add(resumeBtn).width(200f).height(70f).padTop(30f);

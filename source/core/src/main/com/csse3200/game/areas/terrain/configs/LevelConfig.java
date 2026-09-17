@@ -277,7 +277,7 @@ public class LevelConfig {
       entities.add(new SpawnData(c.getPosition(), checkpoint));
 
       Entity torch =
-          new Entity().addComponent(new TextureRenderComponent("images/checkpoint_unlit.png"));
+          new Entity().addComponent(new TextureRenderComponent("images/terrain/checkpoint_unlit.png"));
 
       torch.setScale(1f, 1.5f);
 

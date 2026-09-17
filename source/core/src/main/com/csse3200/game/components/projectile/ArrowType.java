@@ -12,7 +12,7 @@ public enum ArrowType {
   FIRE(Color.RED),
   GRAPPLE(Color.BROWN);
 
-  private static final String TEXTURE_PATH = "images/arrow.png";
+  private static final String TEXTURE_PATH = "images/projectiles/arrow.png";
   private final Color tintColor;
 
   ArrowType(Color tintColor) {

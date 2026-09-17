@@ -10,14 +10,14 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-/** Verifies images/player.atlas parses correctly and exposes the regions the player uses. */
+/** Verifies images/player/player.atlas parses correctly and exposes the regions the player uses. */
 @ExtendWith(GameExtension.class)
 class PlayerAtlasTest {
   private TextureAtlas atlas;
 
   @BeforeEach
   void beforeEach() {
-    atlas = new TextureAtlas(Gdx.files.internal("images/player.atlas"));
+    atlas = new TextureAtlas(Gdx.files.internal("images/player/player.atlas"));
   }
 
   @AfterEach

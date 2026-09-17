@@ -26,8 +26,8 @@ public class LevelTutorialConfig extends LevelConfig {
 
   /** Creates the tutorial level config */
   public LevelTutorialConfig() {
-    platformTFP = "images/platform.png";
-    groundTFP = "images/Tile_2.png";
+    platformTFP = "images/terrain/platform.png";
+    groundTFP = "images/terrain/Tile_2.png";
 
     // TEMP
     playerSpawn = new GridPoint2(1, 4);
@@ -112,13 +112,13 @@ public class LevelTutorialConfig extends LevelConfig {
 
     spikes =
         new SpikeClusterConfig[] {
-          new SpikeClusterConfig(53, 55, 17, 17, 0f, false),
-          new SpikeClusterConfig(59, 68, 19, 19, 0f, false),
-          new SpikeClusterConfig(60, 62, 1, 1, 0f, false),
-          new SpikeClusterConfig(13, 21, 5, 5, 0f, false), // Use 21 not 23
-          new SpikeClusterConfig(2, 13, 21, 21, 180f, false), // Use 21,21 not 20,20
-          new SpikeClusterConfig(1, 1, 16, 20, 270f, false),
-          new SpikeClusterConfig(39, 39, 0, 15, 90f, false),
+        //   new SpikeClusterConfig(53, 55, 17, 17, 0f, false),
+        //   new SpikeClusterConfig(59, 68, 19, 19, 0f, false),
+        //   new SpikeClusterConfig(60, 62, 1, 1, 0f, false),
+        //   new SpikeClusterConfig(13, 21, 5, 5, 0f, false), // Use 21 not 23
+        //   new SpikeClusterConfig(2, 13, 21, 21, 180f, false), // Use 21,21 not 20,20
+        //   new SpikeClusterConfig(1, 1, 16, 20, 270f, false),
+        //   new SpikeClusterConfig(39, 39, 0, 15, 90f, false),
 
           //  second-half
           new SpikeClusterConfig(72, 72, 15, 20, 270f, false), // right wall of floor(71,15)
@@ -199,10 +199,10 @@ public class LevelTutorialConfig extends LevelConfig {
     checkpoints =
         new CheckpointConfig[] {
           new CheckpointConfig(new GridPoint2(1, 3)),
-          new CheckpointConfig(new GridPoint2(23, 5)),
-          new CheckpointConfig(new GridPoint2(5, 16)),
-          new CheckpointConfig(new GridPoint2(15, 12)),
-          new CheckpointConfig(new GridPoint2(47, 17)),
+          //new CheckpointConfig(new GridPoint2(23, 5)),
+          //new CheckpointConfig(new GridPoint2(5, 16)),
+          //new CheckpointConfig(new GridPoint2(15, 12)),
+          //new CheckpointConfig(new GridPoint2(47, 17)),
           new CheckpointConfig(new GridPoint2(54, 1)),
           new CheckpointConfig(new GridPoint2(73, 1)),
         };

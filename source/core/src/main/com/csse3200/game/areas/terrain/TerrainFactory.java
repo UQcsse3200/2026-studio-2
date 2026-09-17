@@ -82,11 +82,11 @@ public class TerrainFactory {
         return createForestDemoTerrain(1f, hexGrass, hexTuft, hexRocks);
       case CYCLOPS_ROOM:
         TextureRegion cyclopsTile =
-            new TextureRegion(resourceService.getAsset("images/transparent.png", Texture.class));
+            new TextureRegion(resourceService.getAsset("images/ui/transparent.png", Texture.class));
         return createCyclopsRoomTerrain(0.5f, cyclopsTile);
       case BACKGROUND_DESERT:
         TextureRegion desertTile =
-            new TextureRegion(resourceService.getAsset("images/transparent.png", Texture.class));
+            new TextureRegion(resourceService.getAsset("images/ui/transparent.png", Texture.class));
         return createDesertTerrain(1f, desertTile);
       default:
         return null;

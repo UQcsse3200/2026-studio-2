@@ -26,8 +26,8 @@ public class SettingsScreen extends ScreenAdapter {
     "images/Buttons/exit_down_btn.png",
     "images/Buttons/apply_up_btn.png",
     "images/Buttons/apply_down_btn.png",
-    "images/main_menu_bg_2.png",
-    "images/settings_box.png"
+    "images/backgrounds/main_menu_bg_2.png",
+    "images/ui/settings_box.png"
   };
 
   private final GdxGame game;

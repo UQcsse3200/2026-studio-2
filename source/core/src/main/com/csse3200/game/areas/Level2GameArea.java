@@ -23,24 +23,25 @@ public class Level2GameArea extends GameArea {
 
   /** Textures used by the level 2 game area. */
   private static final String[] level2Textures = {
-    "images/scroll_bg.png",
+    "images/ui/scroll_bg.png",
     // Level 2 background
-    "images/Background-2.png",
-    "images/Platform_level-2.png",
+    "images/backgrounds/Background-2.png",
+    "images/backgrounds/Platform_level-2.png",
 
     // Level 2 ground tile
-    "images/tile-level2.png",
+    "images/terrain/tile-level2.png",
 
     // Transparent texture used for the physics-only floor
-    "images/transparent.png",
+    "images/ui/transparent.png",
 
     // Existing game textures
-    "images/black_roof.png",
-    "images/purple_heart.png",
+    "images/backgrounds/black_roof.png",
+    "images/health/purple_heart.png",
     "images/DevGridTile.png",
-    "images/Tile_2.png",
+    "images/terrain/Tile_2.png",
+    "images/terrain/grapple_tile.png",
     "images/box_boy_leaf.png",
-    "images/spike.png",
+    "images/terrain/spike.png",
     "images/tree.png",
     "images/ghost_king.png",
     "images/ghost_1.png",
@@ -53,21 +54,21 @@ public class Level2GameArea extends GameArea {
     "images/iso_grass_1.png",
     "images/iso_grass_2.png",
     "images/iso_grass_3.png",
-    "images/spiky_ball.png",
-    "images/spiky_ball_trap.png",
-    "images/checkpoint_lit.png",
-    "images/checkpoint_unlit.png",
+    "images/traps/spiky_ball.png",
+    "images/traps/spiky_ball_trap.png",
+    "images/terrain/checkpoint_lit.png",
+    "images/terrain/checkpoint_unlit.png",
     // Enemy textures
-    "images/skeleton_warrior.png",
-    "images/skeleton_archer.png",
-    "images/arrow.png",
-    "images/rope_arrow.png",
-    "images/fire_arrow.png",
-    "images/cold_arrow.png"
+    "images/enemies/skeleton_warrior.png",
+    "images/enemies/skeleton_archer.png",
+    "images/projectiles/arrow.png",
+    "images/projectiles/rope_arrow.png",
+    "images/projectiles/fire_arrow.png",
+    "images/projectiles/cold_arrow.png"
   };
 
   private static final String[] level2TexturesAtlas = {
-    "images/terrain_iso_grass.atlas", "images/in_level_button.atlas"
+    "images/terrain_iso_grass.atlas", "images/ui/in_level_button.atlas"
   };
 
   private static final String[] level2Sounds = {"sounds/Impact4.ogg"};
@@ -109,7 +110,7 @@ public class Level2GameArea extends GameArea {
     BackgroundRenderComponent backgroundComponent =
         new BackgroundRenderComponent(camera, backgroundPos, worldBounds);
     backgroundComponent.addLayer(
-        "images/Background-2.png",
+        "images/backgrounds/Background-2.png",
         new Vector2(0.10f, 0f),
         30f,
         15f,

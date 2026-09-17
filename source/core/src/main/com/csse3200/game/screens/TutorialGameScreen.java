@@ -116,8 +116,6 @@ public class TutorialGameScreen extends ScreenAdapter {
     // Pass the same camera to the TutorialGameArea so that
     // the parallax background can follow camera movement.
     tutorialGameArea = new TutorialGameArea(terrainFactory, renderer.getCamera());
-
-    TutorialGameArea tutorialGameArea = new TutorialGameArea(terrainFactory, renderer.getCamera());
     tutorialGameArea.create();
 
     currentGameArea = tutorialGameArea;
@@ -298,13 +296,11 @@ public class TutorialGameScreen extends ScreenAdapter {
     List<String> paths =
         new ArrayList<>(
             List.of(
-                "images/heart.png",
-                "images/title_odysseus_logo.png",
-                "images/Health_Bar_Background.png",
-                "images/red_heart.png",
-                "images/PixelArt_HeartBack.png",
-                "images/Damaged_heart.png",
-                "images/Last_Health.png",
+                "images/ui/title_odysseus_logo.png",
+                "images/health/red_heart.png",
+                "images/health/PixelArt_HeartBack.png",
+                "images/health/Damaged_heart.png",
+                "images/health/Last_Health.png",
                 "images/Buttons/continue_up_btn.png",
                 "images/Buttons/continue_down_btn.png",
                 "images/Buttons/settings_up_btn.png",
@@ -315,7 +311,7 @@ public class TutorialGameScreen extends ScreenAdapter {
                 "images/Buttons/exit_down_btn.png",
                 "images/Buttons/control_up_btn.png",
                 "images/Buttons/control_down_btn.png",
-                "images/controls_graphic.png",
+                "images/ui/controls_graphic.png",
                 "images/Buttons/restart_up_btn.png",
                 "images/Buttons/restart_down_btn.png",
                 "images/Buttons/main_menu_up_btn.png",
@@ -324,11 +320,11 @@ public class TutorialGameScreen extends ScreenAdapter {
                 "images/Buttons/exit_game_down_btn.png",
                 "images/Buttons/back_up_btn.png",
                 "images/Buttons/back_down_btn.png",
-                "images/scroll_bg.png",
+                "images/ui/scroll_bg.png",
                 "images/Buttons/exit_down_btn.png",
-                "images/rope_arrow.png",
-                "images/fire_arrow.png",
-                "images/cold_arrow.png"));
+                "images/projectiles/rope_arrow.png",
+                "images/projectiles/fire_arrow.png",
+                "images/projectiles/cold_arrow.png"));
     paths.addAll(List.of(WheelConfig.TEXTURES));
     paths.addAll(List.of(BlackjackConfig.TEXTURES));
     return paths.toArray(new String[0]);
@@ -340,7 +336,7 @@ public class TutorialGameScreen extends ScreenAdapter {
    * @return every atlas the levels need
    */
   private static String[] createAtlas() {
-    List<String> paths = new ArrayList<>(List.of("images/player.atlas"));
+    List<String> paths = new ArrayList<>(List.of("images/player/player.atlas"));
     return paths.toArray(new String[0]);
   }
 

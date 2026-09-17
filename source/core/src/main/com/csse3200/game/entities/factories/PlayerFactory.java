@@ -44,7 +44,7 @@ public class PlayerFactory {
     AnimationRenderComponent animator =
         new AnimationRenderComponent(
             ServiceLocator.getResourceService()
-                .getAsset("images/player.atlas", TextureAtlas.class));
+                .getAsset("images/player/player.atlas", TextureAtlas.class));
     animator.addAnimation("idle", 0.2f, PlayMode.LOOP);
     animator.addAnimation("walk", 0.1f, PlayMode.LOOP);
     animator.addAnimation("sprint", 0.125f, PlayMode.LOOP);
@@ -109,7 +109,7 @@ public class PlayerFactory {
     AnimationRenderComponent animator =
         new AnimationRenderComponent(
             ServiceLocator.getResourceService()
-                .getAsset("images/player.atlas", TextureAtlas.class));
+                .getAsset("images/player/player.atlas", TextureAtlas.class));
     animator.addAnimation("idle", 0.15f, PlayMode.LOOP);
     animator.addAnimation("walk", 0.1f, PlayMode.LOOP);
     animator.addAnimation("sprint", 0.1f, PlayMode.LOOP);

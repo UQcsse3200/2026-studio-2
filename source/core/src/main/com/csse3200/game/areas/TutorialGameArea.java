@@ -95,32 +95,20 @@ public class TutorialGameArea extends GameArea {
   private static final String[] forestTextures = {
 
     // Existing game textures
-    "images/black_roof.png",
-    "images/purple_heart.png",
-    "images/red_heart.png",
-    "images/PixelArt_HeartBack.png",
-    "images/transparent.png",
-    "images/DevGridTile.png",
-    "images/Tile_2.png",
-    "images/platform.png",
-    "images/hook_platform.png",
-    "images/tall_platform.png",
-    "images/box_boy_leaf.png",
-    "images/spike.png",
-    "images/tree.png",
-    "images/ghost_king.png",
-    "images/ghost_1.png",
-    "images/grass_1.png",
-    "images/grass_2.png",
-    "images/grass_3.png",
-    "images/hex_grass_1.png",
-    "images/hex_grass_2.png",
-    "images/hex_grass_3.png",
-    "images/iso_grass_1.png",
-    "images/iso_grass_2.png",
-    "images/iso_grass_3.png",
-    "images/checkpoint_unlit.png",
-    "images/checkpoint_lit.png",
+    "images/backgrounds/black_roof.png",
+    "images/health/purple_heart.png",
+    "images/health/red_heart.png",
+    "images/health/PixelArt_HeartBack.png",
+    "images/ui/transparent.png",
+    "images/terrain/Tile_2.png",
+    "images/terrain/grapple_tile.png",
+    "images/terrain/platform.png",
+    "images/terrain/hook_platform.png",
+    "images/terrain/tall_platform.png",
+    //"images/terrain/spike.png",
+    "images/terrain/spike_tile.png",
+    "images/terrain/checkpoint_unlit.png",
+    "images/terrain/checkpoint_lit.png",
 
     // Parallax background layers
     "images/parallax/original_background.png",
@@ -134,24 +122,21 @@ public class TutorialGameArea extends GameArea {
     "images/parallax/level_1_furthest.png",
 
     // Enemy textures
-    "images/skeleton_warrior.png",
-    "images/skeleton_archer.png",
-    "images/arrow.png",
-    "images/rope_arrow.png",
-    "images/fire_arrow.png",
-    "images/cold_arrow.png",
-    "images/necromancer_projectile.png",
+    "images/enemies/skeleton_warrior.png",
+    "images/enemies/skeleton_archer.png",
+    "images/projectiles/arrow.png",
+    "images/projectiles/rope_arrow.png",
+    "images/projectiles/fire_arrow.png",
+    "images/projectiles/cold_arrow.png",
+    "images/projectiles/necromancer_projectile.png",
   };
 
   private static final String[] forestTextureAtlases = {
-    "images/terrain_iso_grass.atlas",
-    "images/ghost.atlas",
-    "images/ghostKing.atlas",
-    "images/player.atlas",
-    "images/skeleton_archer.atlas",
-    "images/skeleton_warrior.atlas",
-    "images/necromancer.atlas",
-    "images/vulture.atlas",
+    "images/player/player.atlas",
+    "images/enemies/skeleton_archer.atlas",
+    "images/enemies/skeleton_warrior.atlas",
+    "images/enemies/necromancer.atlas",
+    "images/enemies/vulture.atlas",
   };
 
   private static final String[] forestSounds = {"sounds/Impact4.ogg"};
@@ -189,8 +174,8 @@ public class TutorialGameArea extends GameArea {
     player = spawnPlayer();
     //// spawnItems(); // test items
     //// spawnWinCondition();
-    spawnSkeletonArcher();
-    spawnSkeletonWarrior();
+    //spawnSkeletonArcher();
+    //spawnSkeletonWarrior();
 
     // Test enemy functionalitys
     // spawnTestSkeletonWarrior();
@@ -374,80 +359,80 @@ public class TutorialGameArea extends GameArea {
     return newPlayer;
   }
 
-  private void spawnWinCondition() {
-    Entity winCon = ObstacleFactory.createWinConEntity();
-    spawnEntityAt(winCon, new GridPoint2(80, 18), true, true);
-  }
+  // private void spawnWinCondition() {
+  //   Entity winCon = ObstacleFactory.createWinConEntity();
+  //   spawnEntityAt(winCon, new GridPoint2(80, 18), true, true);
+  // }
 
-  // Temporary test win condition near player spawn for quick testing
-  private void spawnTestWinCondition() {
-    // Temporary test win condition near player spawn for quick testing
-    Entity testWinCon = ObstacleFactory.createWinConEntity();
-    spawnEntityAt(testWinCon, new GridPoint2(3, 4), true, true);
-  }
+  // // Temporary test win condition near player spawn for quick testing
+  // private void spawnTestWinCondition() {
+  //   // Temporary test win condition near player spawn for quick testing
+  //   Entity testWinCon = ObstacleFactory.createWinConEntity();
+  //   spawnEntityAt(testWinCon, new GridPoint2(3, 4), true, true);
+  // }
 
-  // Temporary enemy near player spawn for quick HUD/flicker testing
-  private void spawnTestEnemyNearPlayer() {
-    Entity testEnemy = EnemyFactory.createSkeletonWarrior(player);
-    spawnEntityAt(testEnemy, new GridPoint2(12, 4), true, true);
-  }
+  // // Temporary enemy near player spawn for quick HUD/flicker testing
+  // private void spawnTestEnemyNearPlayer() {
+  //   Entity testEnemy = EnemyFactory.createSkeletonWarrior(player);
+  //   spawnEntityAt(testEnemy, new GridPoint2(12, 4), true, true);
+  // }
 
-  private void spawnSkeletonWarrior() {
-    for (GridPoint2 spawnLocation : skeletonWarriorSpawnLocations) {
-      Entity enemy = EnemyFactory.createSkeletonWarrior(player);
-      spawnEntityAt(enemy, spawnLocation, true, true);
-    }
-  }
+  // private void spawnSkeletonWarrior() {
+  //   for (GridPoint2 spawnLocation : skeletonWarriorSpawnLocations) {
+  //     Entity enemy = EnemyFactory.createSkeletonWarrior(player);
+  //     spawnEntityAt(enemy, spawnLocation, true, true);
+  //   }
+  // }
 
-  private void spawnNecromancer() {
-    for (GridPoint2 spawnLocation : NecromancerSpawnLocations) {
-      Entity enemy = EnemyFactory.createNecromancer(player);
-      spawnEntityAt(enemy, spawnLocation, true, true);
-    }
-  }
+  // private void spawnNecromancer() {
+  //   for (GridPoint2 spawnLocation : NecromancerSpawnLocations) {
+  //     Entity enemy = EnemyFactory.createNecromancer(player);
+  //     spawnEntityAt(enemy, spawnLocation, true, true);
+  //   }
+  // }
 
-  private void spawnSkeletonArcher() {
-    for (GridPoint2 spawnLocation : skeletonArcherSpawnLocations) {
-      Entity enemy = EnemyFactory.createSkeletonArcher(player);
-      spawnEntityAt(enemy, spawnLocation, true, true);
-    }
-  }
+  // private void spawnSkeletonArcher() {
+  //   for (GridPoint2 spawnLocation : skeletonArcherSpawnLocations) {
+  //     Entity enemy = EnemyFactory.createSkeletonArcher(player);
+  //     spawnEntityAt(enemy, spawnLocation, true, true);
+  //   }
+  // }
 
-  private void spawnVulture() {
-    for (GridPoint2 spawnLocation : VultureSpawnLocations) {
-      Entity enemy = EnemyFactory.createVulture(player);
-      spawnEntityAt(enemy, spawnLocation, true, true);
-    }
-  }
+  // private void spawnVulture() {
+  //   for (GridPoint2 spawnLocation : VultureSpawnLocations) {
+  //     Entity enemy = EnemyFactory.createVulture(player);
+  //     spawnEntityAt(enemy, spawnLocation, true, true);
+  //   }
+  // }
 
-  // ======== TEST ENEMY SPAWN FUNCTIONS. ============
-  private void spawnTestSkeletonWarrior() {
-    for (GridPoint2 spawnLocation : testSpawnLocations) {
-      Entity enemy = EnemyFactory.createSkeletonWarrior(player);
-      spawnEntityAt(enemy, spawnLocation, true, true);
-    }
-  }
+  // // ======== TEST ENEMY SPAWN FUNCTIONS. ============
+  // private void spawnTestSkeletonWarrior() {
+  //   for (GridPoint2 spawnLocation : testSpawnLocations) {
+  //     Entity enemy = EnemyFactory.createSkeletonWarrior(player);
+  //     spawnEntityAt(enemy, spawnLocation, true, true);
+  //   }
+  // }
 
-  private void spawnTestNecromancer() {
-    for (GridPoint2 spawnLocation : testSpawnLocations) {
-      Entity enemy = EnemyFactory.createNecromancer(player);
-      spawnEntityAt(enemy, spawnLocation, true, true);
-    }
-  }
+  // private void spawnTestNecromancer() {
+  //   for (GridPoint2 spawnLocation : testSpawnLocations) {
+  //     Entity enemy = EnemyFactory.createNecromancer(player);
+  //     spawnEntityAt(enemy, spawnLocation, true, true);
+  //   }
+  // }
 
-  private void spawnTestSkeletonArcher() {
-    for (GridPoint2 spawnLocation : skeletonArcherTestSpawnLocations) {
-      Entity enemy = EnemyFactory.createSkeletonArcher(player);
-      spawnEntityAt(enemy, spawnLocation, true, true);
-    }
-  }
+  // private void spawnTestSkeletonArcher() {
+  //   for (GridPoint2 spawnLocation : skeletonArcherTestSpawnLocations) {
+  //     Entity enemy = EnemyFactory.createSkeletonArcher(player);
+  //     spawnEntityAt(enemy, spawnLocation, true, true);
+  //   }
+  // }
 
-  private void spawnTestVulture() {
-    for (GridPoint2 spawnLocation : VultureTestSpawnLocations) {
-      Entity enemy = EnemyFactory.createVulture(player);
-      spawnEntityAt(enemy, spawnLocation, true, true);
-    }
-  }
+  // private void spawnTestVulture() {
+  //   for (GridPoint2 spawnLocation : VultureTestSpawnLocations) {
+  //     Entity enemy = EnemyFactory.createVulture(player);
+  //     spawnEntityAt(enemy, spawnLocation, true, true);
+  //   }
+  // }
 
   // ======== ^^^^^ ============
 

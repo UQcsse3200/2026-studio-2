@@ -50,7 +50,7 @@ public class EnemyFactory {
     AnimationRenderComponent animator =
         new AnimationRenderComponent(
             ServiceLocator.getResourceService()
-                .getAsset("images/skeleton_warrior.atlas", TextureAtlas.class));
+                .getAsset("images/enemies/skeleton_warrior.atlas", TextureAtlas.class));
     animator.addAnimation("walk", 0.15f, Animation.PlayMode.LOOP);
     animator.addAnimation("idle", 0.15f, Animation.PlayMode.LOOP);
 
@@ -77,7 +77,7 @@ public class EnemyFactory {
     AnimationRenderComponent animator =
         new AnimationRenderComponent(
             ServiceLocator.getResourceService()
-                .getAsset("images/skeleton_archer.atlas", TextureAtlas.class));
+                .getAsset("images/enemies/skeleton_archer.atlas", TextureAtlas.class));
     animator.addAnimation("walk", 0.15f, Animation.PlayMode.LOOP);
     animator.addAnimation("idle", 0.15f, Animation.PlayMode.LOOP);
 
@@ -104,7 +104,7 @@ public class EnemyFactory {
     AnimationRenderComponent animator =
         new AnimationRenderComponent(
             ServiceLocator.getResourceService()
-                .getAsset("images/vulture.atlas", TextureAtlas.class));
+                .getAsset("images/enemies/vulture.atlas", TextureAtlas.class));
     animator.addAnimation("walk", 0.15f, Animation.PlayMode.LOOP);
     animator.addAnimation("idle", 0.15f, Animation.PlayMode.LOOP);
 
@@ -134,7 +134,7 @@ public class EnemyFactory {
     AnimationRenderComponent animator =
         new AnimationRenderComponent(
             ServiceLocator.getResourceService()
-                .getAsset("images/necromancer.atlas", TextureAtlas.class));
+                .getAsset("images/enemies/necromancer.atlas", TextureAtlas.class));
     animator.addAnimation("walk", 0.15f, Animation.PlayMode.LOOP);
     animator.addAnimation("idle", 0.15f, Animation.PlayMode.LOOP);
 

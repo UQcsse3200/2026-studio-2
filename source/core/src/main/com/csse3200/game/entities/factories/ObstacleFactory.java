@@ -67,9 +67,9 @@ public class ObstacleFactory {
      * Use the tiled renderer only for the Level 2 ground texture.
      * All normal platforms continue to use TextureRenderComponent.
      */
-    if ("images/tile-level2.png".equals(config.textureFilepath)) {
+    if ("images/terrain/tile-level2.png".equals(config.textureFilepath)) {
 
-      platform.addComponent(new TiledRenderComponent("images/tile-level2.png", 0.75f));
+      platform.addComponent(new TiledRenderComponent("images/terrain/tile-level2.png", 0.75f));
 
     } else {
 
@@ -102,11 +102,11 @@ public class ObstacleFactory {
   public static Entity createPlatform(int grappleSides, boolean tall) {
     String texturePath;
     if (tall) {
-      texturePath = "images/tall_platform.png";
+      texturePath = "images/terrain/tall_platform.png";
     } else if (grappleSides != 0) {
-      texturePath = "images/hook_platform.png";
+      texturePath = "images/terrain/hook_platform.png";
     } else {
-      texturePath = "images/platform.png";
+      texturePath = "images/terrain/platform.png";
     }
 
     Entity platform =
@@ -215,7 +215,7 @@ public class ObstacleFactory {
     RotatableAnimationRenderComponent animator =
         new RotatableAnimationRenderComponent(
             ServiceLocator.getResourceService()
-                .getAsset("images/in_level_button.atlas", TextureAtlas.class));
+                .getAsset("images/ui/in_level_button.atlas", TextureAtlas.class));
 
     animator.addAnimation("default", 1f, Animation.PlayMode.LOOP);
     animator.addAnimation("pressed", 0.075f, Animation.PlayMode.NORMAL);
@@ -364,7 +364,7 @@ public class ObstacleFactory {
   public static Entity createSpike(SpikeClusterConfig config) {
     Entity spike =
         new Entity()
-            .addComponent(new DynamicTextureRenderComponent("images/spike.png"))
+            .addComponent(new DynamicTextureRenderComponent("images/terrain/spike_tile.png"))
             .addComponent(new PhysicsComponent())
             .addComponent(new ColliderComponent().setLayer(PhysicsLayer.OBSTACLE))
             .addComponent(new CombatStatsComponent(100, 2))
@@ -401,7 +401,7 @@ public class ObstacleFactory {
 
     Entity trap =
         new Entity()
-            .addComponent(new DynamicTextureRenderComponent("images/spiky_ball_trap.png"))
+            .addComponent(new DynamicTextureRenderComponent("images/traps/spiky_ball_trap.png"))
             .addComponent(new PhysicsComponent().setBodyType(BodyType.StaticBody))
             .addComponent(new ActivatableComponent(config.getIds()))
             .addComponent(
@@ -419,7 +419,7 @@ public class ObstacleFactory {
   public static Entity createSpikyBall(Vector2 moveDirection) {
     Entity spikyBall =
         new Entity()
-            .addComponent(new TextureRenderComponent("images/spiky_ball.png"))
+            .addComponent(new TextureRenderComponent("images/traps/spiky_ball.png"))
             .addComponent(new PhysicsComponent().setBodyType(BodyType.DynamicBody))
             .addComponent(new ColliderComponent().setLayer(PhysicsLayer.OBSTACLE))
             .addComponent(new HitboxComponent().setLayer(PhysicsLayer.OBSTACLE))

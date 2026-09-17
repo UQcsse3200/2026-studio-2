@@ -39,7 +39,7 @@ public class CheckpointComponentTest {
 
     ResourceService resourceService = mock(ResourceService.class);
     Texture mockTexture = mock(Texture.class);
-    when(resourceService.getAsset("images/checkpoint_lit.png", Texture.class))
+    when(resourceService.getAsset("images/terrain/checkpoint_lit.png", Texture.class))
         .thenReturn(mockTexture);
     ServiceLocator.registerResourceService(resourceService);
   }
