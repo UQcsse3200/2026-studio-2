@@ -47,7 +47,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The game screen containing the tutorial.
+ * The game screen containing the main game levels.
  *
  * <p>Details on libGDX screens: https://happycoding.io/tutorials/libgdx/game-screens
  */
@@ -108,7 +108,7 @@ public class LevelsGameScreen extends ScreenAdapter {
     createUI();
     playMusic();
 
-    logger.debug("Initialising tutorial game screen entities");
+    logger.debug("Initialising level 1 game screen entities");
 
     // Pass the renderer's camera to the terrain factory.
     TerrainFactory terrainFactory = new TerrainFactory(renderer.getCamera());
@@ -286,7 +286,7 @@ public class LevelsGameScreen extends ScreenAdapter {
   }
 
   /**
-   * The tutorial's textures and spin the wheel's so it can be opened as an overlay.
+   * The level's textures and spin the wheel's so it can be opened as an overlay.
    *
    * @return every texture this screen needs loaded
    */
