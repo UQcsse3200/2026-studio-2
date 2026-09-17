@@ -11,6 +11,8 @@ import com.csse3200.game.components.gamearea.GameAreaDisplay;
 import com.csse3200.game.components.player.KeyboardPlayerInputComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.EnemyFactory;
+import com.csse3200.game.entities.factories.ItemFactory;
+import com.csse3200.game.entities.factories.NPCFactory;
 import com.csse3200.game.entities.factories.ObstacleFactory;
 import com.csse3200.game.entities.factories.PlayerFactory;
 import com.csse3200.game.rendering.BackgroundRenderComponent;
@@ -77,11 +79,15 @@ public class TutorialGameArea extends GameArea {
   // ======== ^^^^^^^^^^ ============================
 
   public static final GridPoint2 PLAYER_SPAWN = new GridPoint2(1, 4);
+  public static final GridPoint2 SHOPKEEPER_SPAWN = new GridPoint2(3, 1);
   public static final GridPoint2 ROPE_ARROW_SPAWN = new GridPoint2(2, 3);
   public static final GridPoint2 STANDARD_ARROW_SPAWN = new GridPoint2(4, 3);
   public static final GridPoint2 FIRE_ARROW_SPAWN = new GridPoint2(6, 3);
   public static final GridPoint2 COLD_ARROW_SPAWN = new GridPoint2(8, 5);
   public static final GridPoint2 HEALTH_POTION_SPAWN = new GridPoint2(10, 5);
+  public static final GridPoint2[] GOLD_SPAWNS = {
+    new GridPoint2(10, 1), new GridPoint2(9, 4), new GridPoint2(7, 1)
+  };
 
   public static final int STANDARD_ARROW_QUANTITY = 5;
   public static final int FIRE_ARROW_QUANTITY = 5;
@@ -136,9 +142,19 @@ public class TutorialGameArea extends GameArea {
     // Enemy textures
     "images/skeleton_warrior.png",
     "images/skeleton_archer.png",
+    NPCFactory.SHOPKEEPER_TEXTURE,
     "images/arrow.png",
     "images/rope_arrow.png",
     "images/fire_arrow.png",
+    "images/fireArr_animation.png",
+    "images/coldArr_animation.png",
+    "images/heart.png",
+    "images/sword.png",
+    "images/spear.png",
+    "images/health_potion.png",
+    "images/speed_potion.png",
+    "images/poison_potion.png",
+    ItemFactory.GOLD_TEXTURE,
     "images/cold_arrow.png",
     "images/necromancer_projectile.png",
   };
@@ -187,8 +203,8 @@ public class TutorialGameArea extends GameArea {
     spawnBackground();
     spawnConfigEntities();
     player = spawnPlayer();
-    //// spawnItems(); // test items
-    //// spawnWinCondition();
+    spawnShopkeeper();
+    spawnGold();
     spawnSkeletonArcher();
     spawnSkeletonWarrior();
 
@@ -374,6 +390,18 @@ public class TutorialGameArea extends GameArea {
     return newPlayer;
   }
 
+  private void spawnShopkeeper() {
+    Entity shopkeeper = NPCFactory.createShopkeeper();
+    spawnEntityAt(shopkeeper, SHOPKEEPER_SPAWN, true, false);
+  }
+
+  private void spawnGold() {
+    for (GridPoint2 goldSpawn : GOLD_SPAWNS) {
+      spawnEntityAt(ItemFactory.createGold(), goldSpawn, true, false);
+    }
+  }
+
+  /*
   private void spawnWinCondition() {
     Entity winCon = ObstacleFactory.createWinConEntity();
     spawnEntityAt(winCon, new GridPoint2(80, 18), true, true);
@@ -391,6 +419,7 @@ public class TutorialGameArea extends GameArea {
     Entity testEnemy = EnemyFactory.createSkeletonWarrior(player);
     spawnEntityAt(testEnemy, new GridPoint2(12, 4), true, true);
   }
+  */
 
   private void spawnSkeletonWarrior() {
     for (GridPoint2 spawnLocation : skeletonWarriorSpawnLocations) {

@@ -191,7 +191,7 @@ public class LevelTutorialConfig extends LevelConfig {
                     .getComponent(ItemComponent.class)
                     .getItem(),
                 COLD_ARROW_SPAWN,
-                ItemFactory.createColdArrow(COLD_ARROW_QUANTITY)
+                ItemFactory.createIceArrow(COLD_ARROW_QUANTITY)
                     .getComponent(ItemComponent.class)
                     .getItem()));
 

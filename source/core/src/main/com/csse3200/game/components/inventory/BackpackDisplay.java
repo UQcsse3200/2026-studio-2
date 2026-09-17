@@ -66,6 +66,8 @@ public class BackpackDisplay extends UIComponent {
 
     entity.getEvents().addListener("inventorySelectionChanged", this::refresh);
 
+    entity.getEvents().addListener("dictionaryOpened", this::hideBackpack);
+
     populateSlots();
     showEmptyDetails();
 
@@ -385,6 +387,9 @@ public class BackpackDisplay extends UIComponent {
 
   /** Hides the backpack and restores the quick bar. */
   public void hideBackpack() {
+    if (!visible) {
+      return;
+    }
     visible = false;
     table.setVisible(false);
 
