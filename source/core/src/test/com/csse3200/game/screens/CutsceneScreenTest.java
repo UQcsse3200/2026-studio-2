@@ -116,9 +116,9 @@ class CutsceneScreenTest {
     driveToTextActive(screen);
     advanceViaTab();
     screen.render(10f); // FADE_TEXT → FADE_TO_BLACK
-    screen.render(10f); // FADE_TO_BLACK → COMPLETE → game.setScreen(...)
+    screen.render(10f); // FADE_TO_BLACK → COMPLETE → game.transitionTo(...)
 
-    verify(game).setScreen(GdxGame.ScreenType.MAIN_GAME);
+    verify(game).transitionTo(GdxGame.ScreenType.MAIN_GAME);
   }
 
   @Test
@@ -134,9 +134,9 @@ class CutsceneScreenTest {
     driveToTextActive(screen);
     advanceViaTab();
     screen.render(10f); // FADE_TEXT → FADE_TO_BLACK
-    screen.render(10f); // FADE_TO_BLACK → COMPLETE → game.setScreen(...)
+    screen.render(10f); // FADE_TO_BLACK → COMPLETE → game.transitionTo(...)
 
-    verify(game).setScreen(GdxGame.ScreenType.TUTORIAL_GAME);
+    verify(game).transitionTo(GdxGame.ScreenType.TUTORIAL_GAME);
   }
 
   @Test
@@ -172,7 +172,7 @@ class CutsceneScreenTest {
     screen.render(10f); // FADE_TEXT → FADE_TO_BLACK
     screen.render(10f); // COMPLETE
 
-    verify(game).setScreen(GdxGame.ScreenType.MAIN_GAME);
+    verify(game).transitionTo(GdxGame.ScreenType.MAIN_GAME);
   }
 
   @Test
