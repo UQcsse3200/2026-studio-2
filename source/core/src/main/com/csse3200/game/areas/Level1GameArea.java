@@ -5,7 +5,7 @@ import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.areas.terrain.TerrainFactory;
 import com.csse3200.game.areas.terrain.TerrainFactory.TerrainType;
-import com.csse3200.game.areas.terrain.configs.levelconfigs.LevelTutorialConfig;
+import com.csse3200.game.areas.terrain.configs.levelconfigs.Level1Config;
 import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.components.gamearea.GameAreaDisplay;
 import com.csse3200.game.components.player.KeyboardPlayerInputComponent;
@@ -20,9 +20,9 @@ import com.csse3200.game.utils.math.GridPoint2Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/** Tutorial area for the game with platforms, enemies, and a player. */
-public class TutorialGameArea extends GameArea {
-  private static final Logger logger = LoggerFactory.getLogger(TutorialGameArea.class);
+/** Level 1 area for the game with platforms, enemies, and a player. */
+public class Level1GameArea extends GameArea {
+  private static final Logger logger = LoggerFactory.getLogger(Level1GameArea.class);
   private KeyboardPlayerInputComponent input;
 
   /*
@@ -91,7 +91,7 @@ public class TutorialGameArea extends GameArea {
   private static final float WALL_WIDTH = 0.1f;
   private Vector2 worldBounds;
 
-  /** Textures used by the tutorial game area. */
+  /** Textures used by the level 1 game area. */
   private static final String[] forestTextures = {
 
     // Existing game textures
@@ -164,15 +164,15 @@ public class TutorialGameArea extends GameArea {
   private final CameraComponent camera;
 
   /**
-   * Initialise this TutorialGameArea using the provided TerrainFactory and CameraComponent.
+   * Initialise this Level1GameArea using the provided TerrainFactory and CameraComponent.
    *
    * @param terrainFactory TerrainFactory used to create the terrain.
    * @param camera CameraComponent used by the parallax background.
    */
-  public TutorialGameArea(TerrainFactory terrainFactory, CameraComponent camera) {
+  public Level1GameArea(TerrainFactory terrainFactory, CameraComponent camera) {
     super(camera);
 
-    config = new LevelTutorialConfig();
+    config = new Level1Config();
     this.terrainFactory = terrainFactory;
     this.camera = camera;
   }
@@ -218,7 +218,7 @@ public class TutorialGameArea extends GameArea {
 
   private void displayUI() {
     Entity ui = new Entity();
-    ui.addComponent(new GameAreaDisplay("Tutorial"));
+    ui.addComponent(new GameAreaDisplay("Level1"));
     spawnEntity(ui);
   }
 
