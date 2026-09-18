@@ -46,15 +46,25 @@ public class TutorialGameArea extends GameArea {
         new GridPoint2(56, 16),
         new GridPoint2(77, 12),
         new GridPoint2(30, 5),
+        new GridPoint2(18, 5),
+        new GridPoint2(4, 16),
+        new GridPoint2(10, 23),
+        new GridPoint2(42, 22),
       };
 
-  private static final GridPoint2[] VultureSpawnLocations = new GridPoint2[] {};
+  private static final GridPoint2[] VultureSpawnLocations =
+      new GridPoint2[] {
+        new GridPoint2(30, 24), new GridPoint2(65, 20),
+      };
 
   private static final GridPoint2[] NecromancerSpawnLocations = new GridPoint2[] {};
 
   private static final GridPoint2[] skeletonArcherSpawnLocations =
       new GridPoint2[] {
-        new GridPoint2(60, 1), new GridPoint2(57, 10),
+        new GridPoint2(60, 1),
+        new GridPoint2(57, 10),
+        new GridPoint2(20, 8),
+        new GridPoint2(46, 16),
       };
 
   // ============ TESTING SPAWN LOCATIONS ================
@@ -174,8 +184,9 @@ public class TutorialGameArea extends GameArea {
     player = spawnPlayer();
     //// spawnItems(); // test items
     //// spawnWinCondition();
-    //spawnSkeletonArcher();
-    //spawnSkeletonWarrior();
+    spawnSkeletonArcher();
+    spawnSkeletonWarrior();
+    spawnVulture();
 
     // Test enemy functionalitys
     // spawnTestSkeletonWarrior();
@@ -183,7 +194,6 @@ public class TutorialGameArea extends GameArea {
     // spawnTestVulture();
     // spawnTestNecromancer();
 
-    // spawnVulture();
     // spawnNecromancer();
 
     // spawnTestWinCondition(); // Temporary test win condition near player spawn for quick testing
@@ -377,12 +387,12 @@ public class TutorialGameArea extends GameArea {
   //   spawnEntityAt(testEnemy, new GridPoint2(12, 4), true, true);
   // }
 
-  // private void spawnSkeletonWarrior() {
-  //   for (GridPoint2 spawnLocation : skeletonWarriorSpawnLocations) {
-  //     Entity enemy = EnemyFactory.createSkeletonWarrior(player);
-  //     spawnEntityAt(enemy, spawnLocation, true, true);
-  //   }
-  // }
+  private void spawnSkeletonWarrior() {
+    for (GridPoint2 spawnLocation : skeletonWarriorSpawnLocations) {
+      Entity enemy = EnemyFactory.createSkeletonWarrior(player);
+      spawnEntityAt(enemy, spawnLocation, true, true);
+    }
+  }
 
   // private void spawnNecromancer() {
   //   for (GridPoint2 spawnLocation : NecromancerSpawnLocations) {
@@ -391,19 +401,19 @@ public class TutorialGameArea extends GameArea {
   //   }
   // }
 
-  // private void spawnSkeletonArcher() {
-  //   for (GridPoint2 spawnLocation : skeletonArcherSpawnLocations) {
-  //     Entity enemy = EnemyFactory.createSkeletonArcher(player);
-  //     spawnEntityAt(enemy, spawnLocation, true, true);
-  //   }
-  // }
+  private void spawnSkeletonArcher() {
+    for (GridPoint2 spawnLocation : skeletonArcherSpawnLocations) {
+      Entity enemy = EnemyFactory.createSkeletonArcher(player);
+      spawnEntityAt(enemy, spawnLocation, true, true);
+    }
+  }
 
-  // private void spawnVulture() {
-  //   for (GridPoint2 spawnLocation : VultureSpawnLocations) {
-  //     Entity enemy = EnemyFactory.createVulture(player);
-  //     spawnEntityAt(enemy, spawnLocation, true, true);
-  //   }
-  // }
+  private void spawnVulture() {
+    for (GridPoint2 spawnLocation : VultureSpawnLocations) {
+      Entity enemy = EnemyFactory.createVulture(player);
+      spawnEntityAt(enemy, spawnLocation, true, true);
+    }
+  }
 
   // // ======== TEST ENEMY SPAWN FUNCTIONS. ============
   // private void spawnTestSkeletonWarrior() {

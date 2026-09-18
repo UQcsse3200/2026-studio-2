@@ -9,20 +9,8 @@ import com.csse3200.game.components.item.ItemComponent;
 import com.csse3200.game.components.item.weapons.*;
 import com.csse3200.game.entities.factories.ItemFactory;
 import java.util.HashMap;
-import java.util.Map;
 
 public class LevelTutorialConfig extends LevelConfig {
-
-  private static final GridPoint2 ROPE_ARROW_SPAWN = new GridPoint2(2, 3);
-  private static final GridPoint2 STANDARD_ARROW_SPAWN = new GridPoint2(4, 3);
-  private static final GridPoint2 FIRE_ARROW_SPAWN = new GridPoint2(6, 3);
-  private static final GridPoint2 COLD_ARROW_SPAWN = new GridPoint2(8, 5);
-  private static final GridPoint2 HEALTH_POTION_SPAWN = new GridPoint2(10, 5);
-
-  private static final int STANDARD_ARROW_QUANTITY = 5;
-  private static final int FIRE_ARROW_QUANTITY = 5;
-  private static final int COLD_ARROW_QUANTITY = 5;
-  private static final int HEALTH_POTION_QUANTITY = 3;
 
   /** Creates the tutorial level config */
   public LevelTutorialConfig() {
@@ -41,19 +29,20 @@ public class LevelTutorialConfig extends LevelConfig {
           new PlatformConfig(new GridPoint2(8, 4), 3, 1, 0, platformTFP),
           new PlatformConfig(new GridPoint2(14, 6), 3, 1, 0, platformTFP),
           new PlatformConfig(new GridPoint2(19, 7), 3, 1, 0, platformTFP), // Use 7 not 6
+          new PlatformConfig(new GridPoint2(23, 4), 3, 1, 0, platformTFP), // Bridges the big gap below
           new PlatformConfig(new GridPoint2(27, 1), 3, 1, 0, platformTFP), // Use 1 not 2
           new PlatformConfig(new GridPoint2(31, 2), 3, 1, 0, platformTFP),
-          new PlatformConfig(new GridPoint2(34, 4), 3, 1, 2, platformTFP), // Use 34 not 32
+          new PlatformConfig(new GridPoint2(34, 4), 3, 1, 0, platformTFP), // Use 34 not 32
           new PlatformConfig(new GridPoint2(30, 6), 3, 1, 0, platformTFP),
-          new PlatformConfig(new GridPoint2(27, 8), 3, 1, 10, platformTFP),
-          new PlatformConfig(new GridPoint2(23, 10), 3, 1, 2, platformTFP),
+          new PlatformConfig(new GridPoint2(27, 8), 3, 1, 0, platformTFP),
+          new PlatformConfig(new GridPoint2(23, 10), 3, 1, 0, platformTFP),
           new PlatformConfig(new GridPoint2(14, 11), 3, 1, 0, platformTFP),
           new PlatformConfig(new GridPoint2(9, 13), 3, 1, 0, platformTFP),
 
           // second half
-          new PlatformConfig(new GridPoint2(56, 25), 3, 1, 1, platformTFP), // Use 25 not 22
-          new PlatformConfig(new GridPoint2(61, 26), 3, 1, 1, platformTFP), // Use 61,26 not 60,23
-          new PlatformConfig(new GridPoint2(66, 25), 3, 1, 1, platformTFP), // Use 66,25 not 64,22
+          new PlatformConfig(new GridPoint2(56, 25), 3, 1, 0, platformTFP), // Use 25 not 22
+          new PlatformConfig(new GridPoint2(61, 26), 3, 1, 0, platformTFP), // Use 61,26 not 60,23
+          new PlatformConfig(new GridPoint2(66, 25), 3, 1, 0, platformTFP), // Use 66,25 not 64,22
         };
 
     movingPlatforms =
@@ -108,6 +97,18 @@ public class LevelTutorialConfig extends LevelConfig {
               new Vector2(72, 12),
               new Vector2(0, 3),
               new String[] {}),
+
+          // Spike gauntlet crossing: ferries the player over the spike strip on floor(0,22)
+          new MovingPlatformConfig(
+              new GridPoint2(4, 24),
+              2,
+              1,
+              0,
+              platformTFP,
+              new Vector2(4, 24),
+              new Vector2(12, 24),
+              new Vector2(3, 0),
+              new String[] {}),
         };
 
     spikes =
@@ -119,6 +120,9 @@ public class LevelTutorialConfig extends LevelConfig {
         //   new SpikeClusterConfig(2, 13, 21, 21, 180f, false), // Use 21,21 not 20,20
         //   new SpikeClusterConfig(1, 1, 16, 20, 270f, false),
         //   new SpikeClusterConfig(39, 39, 0, 15, 90f, false),
+
+          // first-half spike gauntlet: gap in floor(0,22) crossed via the moving platform above
+          new SpikeClusterConfig(6, 10, 23, 23, 0f, false),
 
           //  second-half
           new SpikeClusterConfig(72, 72, 15, 20, 270f, false), // right wall of floor(71,15)
@@ -145,11 +149,11 @@ public class LevelTutorialConfig extends LevelConfig {
         new PlatformConfig[] {
           // first half
           new PlatformConfig(new GridPoint2(0, 0), 3, 3, 0, groundTFP),
-          new PlatformConfig(new GridPoint2(13, 0), 12, 5, 2, groundTFP),
+          new PlatformConfig(new GridPoint2(13, 0), 12, 5, 0, groundTFP),
           new PlatformConfig(new GridPoint2(40, 0), 10, 15, 0, groundTFP),
-          new PlatformConfig(new GridPoint2(40, 15), 10, 2, 8, groundTFP),
-          new PlatformConfig(new GridPoint2(18, 15), 6, 2, 9, groundTFP),
-          new PlatformConfig(new GridPoint2(0, 13), 8, 3, 2, groundTFP),
+          new PlatformConfig(new GridPoint2(40, 15), 10, 2, 0, groundTFP),
+          new PlatformConfig(new GridPoint2(18, 15), 6, 2, 0, groundTFP),
+          new PlatformConfig(new GridPoint2(0, 13), 8, 3, 0, groundTFP),
           new PlatformConfig(new GridPoint2(0, 16), 1, 5, 0, groundTFP),
           new PlatformConfig(new GridPoint2(0, 22), 17, 1, 0, groundTFP), // Use 22 not 21
           new PlatformConfig(new GridPoint2(28, 19), 4, 1, 0, groundTFP),
@@ -158,7 +162,7 @@ public class LevelTutorialConfig extends LevelConfig {
           // second half
           new PlatformConfig(new GridPoint2(53, 13), 3, 4, 0, groundTFP),
           new PlatformConfig(new GridPoint2(56, 15), 3, 1, 0, groundTFP),
-          new PlatformConfig(new GridPoint2(56, 16), 1, 3, 2, groundTFP),
+          new PlatformConfig(new GridPoint2(56, 16), 1, 3, 0, groundTFP),
           new PlatformConfig(new GridPoint2(53, 7), 3, 4, 0, groundTFP),
           new PlatformConfig(new GridPoint2(56, 10), 4, 1, 0, groundTFP),
           new PlatformConfig(new GridPoint2(63, 0), 1, 18, 0, groundTFP),
@@ -168,32 +172,28 @@ public class LevelTutorialConfig extends LevelConfig {
           new PlatformConfig(new GridPoint2(64, 15), 1, 1, 0, groundTFP),
           new PlatformConfig(new GridPoint2(68, 11), 1, 3, 0, groundTFP),
           new PlatformConfig(new GridPoint2(68, 11), 3, 1, 0, groundTFP),
-          new PlatformConfig(new GridPoint2(75, 15), 3, 1, 8, groundTFP),
-          new PlatformConfig(new GridPoint2(75, 12), 1, 3, 8, groundTFP),
+          new PlatformConfig(new GridPoint2(75, 15), 3, 1, 0, groundTFP),
+          new PlatformConfig(new GridPoint2(75, 12), 1, 3, 0, groundTFP),
           new PlatformConfig(new GridPoint2(78, 0), 13, 17, 0, groundTFP),
         };
 
-    items =
-        new HashMap<>(
-            Map.of(
-                ROPE_ARROW_SPAWN,
-                ItemFactory.createRopeArrow().getComponent(ItemComponent.class).getItem(),
-                STANDARD_ARROW_SPAWN,
-                ItemFactory.createStandardArrow(STANDARD_ARROW_QUANTITY)
-                    .getComponent(ItemComponent.class)
-                    .getItem(),
-                HEALTH_POTION_SPAWN,
-                ItemFactory.createHealthPotion(HEALTH_POTION_QUANTITY)
-                    .getComponent(ItemComponent.class)
-                    .getItem(),
-                FIRE_ARROW_SPAWN,
-                ItemFactory.createFireArrow(FIRE_ARROW_QUANTITY)
-                    .getComponent(ItemComponent.class)
-                    .getItem(),
-                COLD_ARROW_SPAWN,
-                ItemFactory.createColdArrow(COLD_ARROW_QUANTITY)
-                    .getComponent(ItemComponent.class)
-                    .getItem()));
+    // No items are placed at the player's start; pickups are spread out further into the level.
+    items = new HashMap<>();
+    items.put(
+        new GridPoint2(20, 8),
+        ItemFactory.createHealthPotion(2).getComponent(ItemComponent.class).getItem());
+    items.put(
+        new GridPoint2(35, 5),
+        ItemFactory.createRopeArrow(2).getComponent(ItemComponent.class).getItem());
+    items.put(
+        new GridPoint2(45, 17),
+        ItemFactory.createHealthPotion(2).getComponent(ItemComponent.class).getItem());
+    items.put(
+        new GridPoint2(57, 26),
+        ItemFactory.createFireArrow(3).getComponent(ItemComponent.class).getItem());
+    items.put(
+        new GridPoint2(67, 26),
+        ItemFactory.createColdArrow(3).getComponent(ItemComponent.class).getItem());
 
     // Example checkpoint set to player spawn position
     checkpoints =
