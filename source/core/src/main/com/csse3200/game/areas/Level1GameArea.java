@@ -79,14 +79,16 @@ public class Level1GameArea extends GameArea {
   // ======== ^^^^^^^^^^ ============================
 
   public static final GridPoint2 PLAYER_SPAWN = new GridPoint2(1, 4);
-  public static final GridPoint2 SHOPKEEPER_SPAWN = new GridPoint2(3, 1);
+  /** First floating platform is at (4, 2) and is 3 tiles wide; stand on its centre. */
+  public static final GridPoint2 SHOPKEEPER_SPAWN = new GridPoint2(5, 3);
   public static final GridPoint2 ROPE_ARROW_SPAWN = new GridPoint2(2, 3);
   public static final GridPoint2 STANDARD_ARROW_SPAWN = new GridPoint2(4, 3);
   public static final GridPoint2 FIRE_ARROW_SPAWN = new GridPoint2(6, 3);
   public static final GridPoint2 COLD_ARROW_SPAWN = new GridPoint2(8, 5);
   public static final GridPoint2 HEALTH_POTION_SPAWN = new GridPoint2(10, 5);
+  /** Sit on top of the 1-tile-tall floating platforms (skip the first, which has the shop). */
   public static final GridPoint2[] GOLD_SPAWNS = {
-    new GridPoint2(10, 1), new GridPoint2(9, 4), new GridPoint2(7, 1)
+    new GridPoint2(9, 5), new GridPoint2(15, 7), new GridPoint2(20, 8)
   };
 
   public static final int STANDARD_ARROW_QUANTITY = 5;
