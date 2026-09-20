@@ -129,14 +129,14 @@ class CutsceneScreenTest {
     Stage stage = mock(Stage.class);
 
     CutsceneScreen screen =
-        new CutsceneScreen(game, cutscene, GdxGame.ScreenType.TUTORIAL_GAME, batch, stage);
+        new CutsceneScreen(game, cutscene, GdxGame.ScreenType.LEVEL_1_GAME, batch, stage);
 
     driveToTextActive(screen);
     advanceViaTab();
     screen.render(10f); // FADE_TEXT → FADE_TO_BLACK
     screen.render(10f); // FADE_TO_BLACK → COMPLETE → game.setScreen(...)
 
-    verify(game).setScreen(GdxGame.ScreenType.TUTORIAL_GAME);
+    verify(game).setScreen(GdxGame.ScreenType.LEVEL_1_GAME);
   }
 
   @Test

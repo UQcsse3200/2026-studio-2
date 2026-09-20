@@ -7,8 +7,8 @@ import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.csse3200.game.GdxGame;
 import com.csse3200.game.areas.GameArea;
+import com.csse3200.game.areas.Level1GameArea;
 import com.csse3200.game.areas.Level2GameArea;
-import com.csse3200.game.areas.TutorialGameArea;
 import com.csse3200.game.areas.terrain.TerrainFactory;
 import com.csse3200.game.components.ButtonSound;
 import com.csse3200.game.components.gamearea.PerformanceDisplay;
@@ -47,13 +47,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The game screen containing the tutorial.
+ * The game screen containing level 1.
  *
  * <p>Details on libGDX screens: https://happycoding.io/tutorials/libgdx/game-screens
  */
-public class TutorialGameScreen extends ScreenAdapter {
+public class Level1GameScreen extends ScreenAdapter {
 
-  private static final Logger logger = LoggerFactory.getLogger(TutorialGameScreen.class);
+  private static final Logger logger = LoggerFactory.getLogger(Level1GameScreen.class);
 
   private static final String[] mainGameTextures = createTextures();
   private static final String[] mainGameAtlas = createAtlas();
@@ -78,10 +78,10 @@ public class TutorialGameScreen extends ScreenAdapter {
   private static final String[] gameSounds = {
     "sounds/hit.ogg", "sounds/Arrow_release.wav", "sounds/jump.ogg", "sounds/itempick.wav"
   };
-  private final TutorialGameArea tutorialGameArea;
+  private final Level1GameArea level1GameArea;
   private boolean cheats = false;
 
-  public TutorialGameScreen(GdxGame game) {
+  public Level1GameScreen(GdxGame game) {
     this.game = game;
 
     logger.debug("Initialising main game screen services");
@@ -108,23 +108,23 @@ public class TutorialGameScreen extends ScreenAdapter {
     createUI();
     playMusic();
 
-    logger.debug("Initialising tutorial game screen entities");
+    logger.debug("Initialising level 1 game screen entities");
 
     // Pass the renderer's camera to the terrain factory.
     TerrainFactory terrainFactory = new TerrainFactory(renderer.getCamera());
 
-    // Pass the same camera to the TutorialGameArea so that
+    // Pass the same camera to the Level1GameArea so that
     // the parallax background can follow camera movement.
-    tutorialGameArea = new TutorialGameArea(terrainFactory, renderer.getCamera());
-    tutorialGameArea.create();
+    level1GameArea = new Level1GameArea(terrainFactory, renderer.getCamera());
+    level1GameArea.create();
 
-    currentGameArea = tutorialGameArea;
+    currentGameArea = level1GameArea;
     Entity levelChanger = currentGameArea.getLevelChanger();
     if (levelChanger != null) {
       levelChanger.getEvents().addListener("triggerNextLevel", this::queueAreaSwap);
     }
 
-    player = tutorialGameArea.getPlayer();
+    player = level1GameArea.getPlayer();
     player.getEvents().addListener("respawnAtCheckpoint", () -> currentGameArea.respawn());
 
     player
@@ -173,18 +173,18 @@ public class TutorialGameScreen extends ScreenAdapter {
     renderer.getCamera().setTarget(player);
     player.getEvents().addListener("deathAnimationFinished", this::onPlayerDeath);
     wheelOverlay = new SpinTheWheelOverlay(WheelConfig.ITEMS, player);
-    pauseOverlay = new PauseMenuOverlay(game, tutorialGameArea);
+    pauseOverlay = new PauseMenuOverlay(game, level1GameArea);
 
     minigameOverlayManager = new MinigameOverlayManager();
     blackjackOverlay = new BlackjackOverlay(player, minigameOverlayManager);
 
     if (cheats) {
-      tutorialGameArea
+      level1GameArea
           .getPlayer()
           .getComponent(PhysicsComponent.class)
           .getBody()
           .setGravityScale(0);
-      tutorialGameArea.getPlayer().getComponent(KeyboardPlayerInputComponent.class).toggleCheats();
+      level1GameArea.getPlayer().getComponent(KeyboardPlayerInputComponent.class).toggleCheats();
     }
   }
 
@@ -204,8 +204,8 @@ public class TutorialGameScreen extends ScreenAdapter {
     TerrainFactory terrainFactory = new TerrainFactory(renderer.getCamera());
 
     switch (level) {
-      case "tutorial":
-        nextGameArea = new TutorialGameArea(terrainFactory, renderer.getCamera());
+      case "level1":
+        nextGameArea = new Level1GameArea(terrainFactory, renderer.getCamera());
         break;
       case "level2":
         nextGameArea = new Level2GameArea(terrainFactory, renderer.getCamera(), player);
@@ -288,7 +288,7 @@ public class TutorialGameScreen extends ScreenAdapter {
   }
 
   /**
-   * The tutorial's textures and spin the wheel's so it can be opened as an overlay.
+   * Level 1's textures and spin the wheel's so it can be opened as an overlay.
    *
    * @return every texture this screen needs loaded
    */
@@ -393,7 +393,7 @@ public class TutorialGameScreen extends ScreenAdapter {
         .addComponent(
             new GameEndDisplay(GameEndState.LOSE)) // Add GameEndDisplay component to the UI entity
         .addComponent(new GameEndActions(this.game))
-        .addComponent(new Terminal(game, GdxGame.ScreenType.TUTORIAL_GAME))
+        .addComponent(new Terminal(game, GdxGame.ScreenType.LEVEL_1_GAME))
         .addComponent(inputComponent)
         .addComponent(new TerminalDisplay());
 

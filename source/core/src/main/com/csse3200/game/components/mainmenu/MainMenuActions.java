@@ -27,8 +27,8 @@ public class MainMenuActions extends Component {
   }
 
   /**
-   * Starts the intro cutscene, then enters the tutorial level. if cutscene is completed, proceeds
-   * to tutorial level
+   * Starts the intro cutscene, then enters level 1. if cutscene is completed, proceeds
+   * to level 1
    */
   private void onPlay() {
     logger.info("Play");

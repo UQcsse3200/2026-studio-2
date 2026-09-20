@@ -1,0 +1,26 @@
+cave_checkpoint.png
+size: 1536, 1024
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+default
+  rotate: false
+  xy: 0, 0
+  size: 768, 1024
+  orig: 768, 1024
+  offset: 0, 0
+  index: -1
+unlit
+  rotate: false
+  xy: 0, 0
+  size: 768, 1024
+  orig: 768, 1024
+  offset: 0, 0
+  index: -1
+lit
+  rotate: false
+  xy: 768, 0
+  size: 768, 1024
+  orig: 768, 1024
+  offset: 0, 0
+  index: -1

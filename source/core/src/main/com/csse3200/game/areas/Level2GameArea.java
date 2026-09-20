@@ -39,7 +39,6 @@ public class Level2GameArea extends GameArea {
     "images/health/purple_heart.png",
     "images/DevGridTile.png",
     "images/terrain/Tile_2.png",
-    "images/terrain/grapple_tile.png",
     "images/box_boy_leaf.png",
     "images/terrain/spike.png",
     "images/tree.png",

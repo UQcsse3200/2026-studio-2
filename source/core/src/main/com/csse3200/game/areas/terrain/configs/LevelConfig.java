@@ -13,6 +13,7 @@ import java.util.Map;
 
 public class LevelConfig {
   protected String platformTFP;
+  protected String mossyPlatformTFP;
   protected String movingPlatformTFP;
   protected String crumblingPlatformTFP;
   protected String triggerablePlatformTFP;
@@ -83,6 +84,9 @@ public class LevelConfig {
    */
   public ArrayList<CheckpointComponent> getCheckpoints() {
     ArrayList<CheckpointComponent> checkpointComponents = new ArrayList<>();
+    if (checkpoints == null) {
+      return checkpointComponents;
+    }
     for (CheckpointConfig c : checkpoints) {
       checkpointComponents.add(c.getEntity().getComponent(CheckpointComponent.class));
     }

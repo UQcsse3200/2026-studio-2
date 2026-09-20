@@ -157,7 +157,7 @@ public class Level2GameScreen extends ScreenAdapter {
   }
 
   /**
-   * The tutorial's textures and spin the wheel's so it can be opened as an overlay.
+   * Level 2's textures and spin the wheel's so it can be opened as an overlay.
    *
    * @return every texture this screen needs loaded
    */

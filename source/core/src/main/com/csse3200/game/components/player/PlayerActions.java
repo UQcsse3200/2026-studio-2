@@ -46,6 +46,15 @@ public class PlayerActions extends Component {
   private boolean dead = false;
   private long jumpImpulseAt = -1; // Timestamp to apply the queued jump impulse, -1 if none queued
 
+  /**
+   * The direction the player is currently facing.
+   *
+   * @return 1 if facing right, -1 if facing left
+   */
+  public int getFacingDirection() {
+    return facingDirection;
+  }
+
   @Override
   public void create() {
     physicsComponent = entity.getComponent(PhysicsComponent.class);
