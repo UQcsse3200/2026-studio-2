@@ -8,6 +8,7 @@ import com.csse3200.game.components.inventory.InventoryComponent;
 import com.csse3200.game.components.item.ItemType;
 import com.csse3200.game.components.item.weapons.PrimaryWeapon;
 import com.csse3200.game.components.item.weapons.WeaponComponent;
+import com.csse3200.game.entities.factories.ProjectileFactory;
 import com.csse3200.game.services.ServiceLocator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -225,9 +226,11 @@ public class ItemUseComponent extends Component {
       return false;
     }
 
-    PoisonBuff poisonBuff = entity.getComponent(PoisonBuff.class);
-    if (poisonBuff != null && poisonBuff.isActive()) {
-      logger.debug("Poison potion buff is already active");
+    Vector2 direction = getAimDirection();
+    if (direction == null
+        || direction.isZero()
+        || ServiceLocator.getEntityService() == null
+        || ServiceLocator.getPhysicsService() == null) {
       entity.getEvents().trigger("itemUseFailed", ItemType.PoisonPotion);
       return false;
     }
@@ -237,12 +240,12 @@ public class ItemUseComponent extends Component {
       return false;
     }
 
-    entity
-        .getEvents()
-        .trigger(
-            "poisonPotionUsed",
-            ItemType.PoisonPotion.getPoisonDamagePerSecond(),
-            ItemType.PoisonPotion.getPoisonDuration());
+    Vector2 throwDirection = direction.cpy().nor();
+    Vector2 spawnPosition =
+        entity.getCenterPosition().mulAdd(throwDirection, entity.getScale().x * 0.8f);
+    ServiceLocator.getEntityService()
+        .register(
+            ProjectileFactory.createThrownPoisonPotion(entity, spawnPosition, throwDirection));
     entity.getEvents().trigger("itemUsed", ItemType.PoisonPotion);
     return true;
   }

@@ -4,7 +4,6 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.item.ItemType;
-import com.csse3200.game.components.player.PoisonBuff;
 import com.csse3200.game.components.projectile.ArrowProjectileComponent;
 import com.csse3200.game.components.projectile.ArrowType;
 import com.csse3200.game.entities.Entity;
@@ -28,6 +27,11 @@ public class ProjectileFactory {
   public static final float GRAPPLE_ARROW_RANGE = 50f;
   public static final float PLAYER_ARROW_WIDTH = 0.6f;
   public static final float PLAYER_ARROW_HEIGHT = 0.3f;
+
+  public static final float POISON_POTION_SPEED = 12f;
+  public static final float POISON_POTION_RANGE = 20f;
+  public static final float POISON_POTION_WIDTH = 0.45f;
+  public static final float POISON_POTION_HEIGHT = 0.55f;
 
   public static Entity createPlayerArrow(Vector2 position, Vector2 direction) {
     return createPlayerArrow(null, position, direction);
@@ -134,6 +138,31 @@ public class ProjectileFactory {
         ArrowType.POISON);
   }
 
+  /**
+   * Creates a thrown poison flask that applies the potion's poison debuff on impact.
+   *
+   * @param shooter entity that threw the flask
+   * @param position world spawn position
+   * @param direction throw direction
+   * @return potion projectile
+   */
+  public static Entity createThrownPoisonPotion(
+      Entity shooter, Vector2 position, Vector2 direction) {
+    Entity potion =
+        createArrow(
+            shooter,
+            position,
+            direction,
+            ItemType.PoisonPotion.getDamage(),
+            POISON_POTION_SPEED,
+            POISON_POTION_RANGE,
+            ArrowType.POTION,
+            ItemType.PoisonPotion.getPoisonDamagePerSecond(),
+            ItemType.PoisonPotion.getPoisonDuration());
+    potion.setScale(POISON_POTION_WIDTH, POISON_POTION_HEIGHT);
+    return potion;
+  }
+
   private static Entity createArrow(
       Entity shooter,
       Vector2 position,
@@ -142,10 +171,20 @@ public class ProjectileFactory {
       float speed,
       float range,
       ArrowType arrowType) {
+    return createArrow(shooter, position, direction, damage, speed, range, arrowType, 0f, 0f);
+  }
+
+  private static Entity createArrow(
+      Entity shooter,
+      Vector2 position,
+      Vector2 direction,
+      int damage,
+      float speed,
+      float range,
+      ArrowType arrowType,
+      float poisonDamagePerSecond,
+      float poisonDuration) {
     Vector2 normalizedDir = direction.cpy().nor();
-    PoisonBuff poisonBuff = shooter != null ? shooter.getComponent(PoisonBuff.class) : null;
-    float poisonDps = poisonBuff != null ? poisonBuff.getPoisonDamagePerSecond() : 0f;
-    float poisonDuration = poisonBuff != null ? poisonBuff.getPoisonDuration() : 0f;
 
     Entity arrow =
         new Entity()
@@ -154,7 +193,13 @@ public class ProjectileFactory {
             .addComponent(new CombatStatsComponent(1, damage))
             .addComponent(
                 new ArrowProjectileComponent(
-                    shooter, normalizedDir, speed, range, arrowType, poisonDps, poisonDuration))
+                    shooter,
+                    normalizedDir,
+                    speed,
+                    range,
+                    arrowType,
+                    poisonDamagePerSecond,
+                    poisonDuration))
             .addComponent(new ArrowRenderComponent(arrowType));
 
     arrow.setScale(PLAYER_ARROW_WIDTH, PLAYER_ARROW_HEIGHT);

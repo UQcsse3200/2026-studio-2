@@ -11,11 +11,8 @@ import com.csse3200.game.services.ServiceLocator;
 
 /** Handles sword and spear attacks against the closet NPC in the aimed direction */
 public class MeleeAttackComponent extends Component {
-  private PoisonBuff poisonBuff;
-
   @Override
   public void create() {
-    poisonBuff = entity.getComponent(PoisonBuff.class);
     entity.getEvents().addListener("meleeAttack", this::attack);
   }
 
@@ -53,17 +50,7 @@ public class MeleeAttackComponent extends Component {
       return;
     }
 
-    int healthBefore = targetStats.getHealth();
-
     CombatStatsComponent damageSource = new CombatStatsComponent(1, damage);
     target.getEvents().trigger("takeDamage", damageSource);
-
-    boolean damageWasApplied = targetStats.getHealth() < healthBefore;
-    if (damageWasApplied && poisonBuff != null && poisonBuff.isActive()) {
-      target
-          .getEvents()
-          .trigger(
-              "applyPoison", poisonBuff.getPoisonDamagePerSecond(), poisonBuff.getPoisonDuration());
-    }
   }
 }

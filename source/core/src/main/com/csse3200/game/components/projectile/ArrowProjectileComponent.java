@@ -195,9 +195,7 @@ public class ArrowProjectileComponent extends Component {
 
     int healthBefore = targetStats.getHealth();
     target.getEvents().trigger("takeDamage", combatStats);
-    if (targetStats.getHealth() >= healthBefore) {
-      return false;
-    }
+    boolean damaged = targetStats.getHealth() < healthBefore;
 
     switch (arrowType) {
       case FIRE:
@@ -224,7 +222,9 @@ public class ArrowProjectileComponent extends Component {
     if (poisonDamagePerSecond > 0f && poisonDuration > 0f) {
       target.getEvents().trigger("applyPoison", poisonDamagePerSecond, poisonDuration);
     }
-    return true;
+
+    // Thrown potions deal their effect as a debuff, even when instant damage is zero.
+    return damaged || arrowType == ArrowType.POTION;
   }
 
   private void expire() {

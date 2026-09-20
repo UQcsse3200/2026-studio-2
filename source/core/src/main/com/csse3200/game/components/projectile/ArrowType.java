@@ -9,7 +9,8 @@ public enum ArrowType {
   FIRE("Fire", Color.RED),
   ICE("Ice", Color.BLUE),
   GRAPPLE("Grapple", Color.BROWN),
-  POISON("Poison", Color.PURPLE);
+  POISON("Poison", Color.PURPLE),
+  POTION("Potion", Color.PURPLE);
 
   /** Pointer distance from the wheel centre below which nothing is pointed at. */
   public static final float DEADZONE_RADIUS = 40f;
@@ -33,6 +34,7 @@ public enum ArrowType {
     return switch (this) {
       case FIRE -> "images/fireArr_animation.png";
       case ICE -> "images/coldArr_animation.png";
+      case POTION -> "images/poison_potion.png";
       default -> "images/arrow.png";
     };
   }

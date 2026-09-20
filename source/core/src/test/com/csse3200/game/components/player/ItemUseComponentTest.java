@@ -3,7 +3,9 @@ package com.csse3200.game.components.player;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.badlogic.gdx.math.Vector2;
@@ -15,7 +17,9 @@ import com.csse3200.game.components.item.weapons.PrimaryWeapon;
 import com.csse3200.game.components.item.weapons.WeaponComponent;
 import com.csse3200.game.components.projectile.ArrowType;
 import com.csse3200.game.entities.Entity;
+import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.extensions.GameExtension;
+import com.csse3200.game.physics.PhysicsService;
 import com.csse3200.game.services.GameTime;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -296,34 +300,32 @@ class ItemUseComponentTest {
   }
 
   @Test
-  void shouldNotUseSecondPoisonPotionWhileBuffIsActive() {
+  void shouldThrowPoisonPotionAndConsumeOne() {
+    ServiceLocator.registerPhysicsService(new PhysicsService());
+    EntityService entities = mock(EntityService.class);
+    ServiceLocator.registerEntityService(entities);
+
     Entity player = createPlayer();
     InventoryComponent inventory = player.getComponent(InventoryComponent.class);
-    ItemUseComponent itemUse = player.getComponent(ItemUseComponent.class);
-
     inventory.addItem(ItemType.PoisonPotion, 2);
 
-    assertTrue(itemUse.useSelectedItem());
+    assertTrue(player.getComponent(ItemUseComponent.class).useSelectedItem());
     assertEquals(1, inventory.getItemCount(ItemType.PoisonPotion));
-
-    assertFalse(itemUse.useSelectedItem());
-    assertEquals(1, inventory.getItemCount(ItemType.PoisonPotion));
+    verify(entities).register(any(Entity.class));
   }
 
   @Test
-  void shouldAllowPoisonPotionAfterBuffExpires() {
+  void shouldThrowAnotherPoisonPotionImmediately() {
+    ServiceLocator.registerPhysicsService(new PhysicsService());
+    EntityService entities = mock(EntityService.class);
+    ServiceLocator.registerEntityService(entities);
+
     Entity player = createPlayer();
     InventoryComponent inventory = player.getComponent(InventoryComponent.class);
-    ItemUseComponent itemUse = player.getComponent(ItemUseComponent.class);
-
     inventory.addItem(ItemType.PoisonPotion, 2);
 
-    assertTrue(itemUse.useSelectedItem());
-    assertEquals(1, inventory.getItemCount(ItemType.PoisonPotion));
-
-    when(time.getTime()).thenReturn(5000L);
-
-    assertTrue(itemUse.useSelectedItem());
+    assertTrue(player.getComponent(ItemUseComponent.class).useSelectedItem());
+    assertTrue(player.getComponent(ItemUseComponent.class).useSelectedItem());
     assertEquals(0, inventory.getItemCount(ItemType.PoisonPotion));
   }
 

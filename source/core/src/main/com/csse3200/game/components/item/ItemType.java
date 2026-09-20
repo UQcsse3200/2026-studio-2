@@ -109,7 +109,7 @@ public enum ItemType {
   PoisonPotion(
       9,
       "Poison Potion",
-      "Applies poison damage over time.",
+      "Throws a poison flask that applies poison damage over time.",
       "images/poison_potion.png",
       0,
       0f,
