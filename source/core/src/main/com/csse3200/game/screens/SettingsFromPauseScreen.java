@@ -94,7 +94,7 @@ public class SettingsFromPauseScreen extends ScreenAdapter {
     logger.debug("Creating ui");
     Stage stage = ServiceLocator.getRenderService().getStage();
     Entity ui = new Entity();
-    ui.addComponent(new SettingsMenuDisplay(game, GdxGame.ScreenType.TUTORIAL_GAME))
+    ui.addComponent(new SettingsMenuDisplay(game, GdxGame.ScreenType.LEVEL_1_GAME))
         .addComponent(new InputDecorator(stage, 10));
     ServiceLocator.getEntityService().register(ui);
   }

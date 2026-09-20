@@ -7,15 +7,14 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.csse3200.game.cutscene.CutsceneLoader;
 import com.csse3200.game.files.UserSettings;
-import com.csse3200.game.screens.*;
 import com.csse3200.game.screens.CutsceneScreen;
+import com.csse3200.game.screens.LevelsGameScreen;
 import com.csse3200.game.screens.MainGameScreen;
 import com.csse3200.game.screens.MainMenuScreen;
 import com.csse3200.game.screens.SandboxGameScreen;
 import com.csse3200.game.screens.SettingsFromPauseScreen;
 import com.csse3200.game.screens.SettingsScreen;
 import com.csse3200.game.screens.TransitionScreen;
-import com.csse3200.game.screens.TutorialGameScreen;
 import com.csse3200.game.screens.minigames.BlackjackScreen;
 import com.csse3200.game.screens.minigames.CyclopsMinigameRoomScreen;
 import com.csse3200.game.screens.minigames.MinigameSelectScreen;
@@ -97,7 +96,7 @@ public class GdxGame extends Game {
   /** Starts the initial cutscene once per game session, then falls back to the tutorial level. */
   public void startInitialCutscene() {
     if (introStarted) {
-      transitionTo(ScreenType.TUTORIAL_GAME);
+      transitionTo(ScreenType.LEVEL_1_GAME);
       return;
     }
 
@@ -105,14 +104,14 @@ public class GdxGame extends Game {
     CutsceneLoader.Result result = new CutsceneLoader().load("cutscene1");
     if (!result.isSuccess()) {
       logger.debug("Initial cutscene unavailable: {}", result.getError());
-      transitionTo(ScreenType.TUTORIAL_GAME);
+      transitionTo(ScreenType.LEVEL_1_GAME);
       return;
     }
 
     // For now, the intro cutscene will be recorded as a bool until a proper save state is
     // implemented
     introStarted = true;
-    startCutscene(result.getCutscene(), ScreenType.TUTORIAL_GAME);
+    startCutscene(result.getCutscene(), ScreenType.LEVEL_1_GAME);
   }
 
   /**
@@ -148,12 +147,12 @@ public class GdxGame extends Game {
         return new MainMenuScreen(this);
       case MAIN_GAME:
         return new MainGameScreen(this);
-      case TUTORIAL_GAME:
-        return new TutorialGameScreen(this);
+      case LEVEL_1_GAME:
+        return new LevelsGameScreen(this);
       case SANDBOX:
         return new SandboxGameScreen(this);
       case LEVEL_2_GAME:
-        TutorialGameScreen screen = new TutorialGameScreen(this);
+        LevelsGameScreen screen = new LevelsGameScreen(this);
         screen.queueAreaSwap("level2");
         return screen;
       case SETTINGS:
@@ -176,7 +175,7 @@ public class GdxGame extends Game {
   public enum ScreenType {
     MAIN_MENU,
     MAIN_GAME,
-    TUTORIAL_GAME,
+    LEVEL_1_GAME,
     SANDBOX,
     LEVEL_2_GAME,
     SETTINGS,

@@ -1,6 +1,6 @@
 package com.csse3200.game.areas.terrain.configs.levelconfigs;
 
-import static com.csse3200.game.areas.TutorialGameArea.*;
+import static com.csse3200.game.areas.Level1GameArea.*;
 
 import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
