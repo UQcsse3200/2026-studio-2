@@ -30,11 +30,11 @@ public class ForestGameArea extends GameArea {
   private static final GridPoint2 ROPE_ARROW_SPAWN = new GridPoint2(12, 10);
   private static final GridPoint2 STANDARD_ARROW_SPAWN = new GridPoint2(8, 10);
   private static final GridPoint2 FIRE_ARROW_SPAWN = new GridPoint2(6, 6);
-  private static final GridPoint2 COLD_ARROW_SPAWN = new GridPoint2(8, 8);
+  private static final GridPoint2 ICE_ARROW_SPAWN = new GridPoint2(8, 8);
   private static final GridPoint2 HEALTH_POTION_SPAWN = new GridPoint2(10, 8);
   private static final int STANDARD_ARROW_QUANTITY = 5;
   private static final int FIRE_ARROW_QUANTITY = 5;
-  private static final int COLD_ARROW_QUANTITY = 5;
+  private static final int ICE_ARROW_QUANTITY = 5;
   private static final int HEALTH_POTION_QUANTITY = 3;
   private static final float WALL_WIDTH = 0.1f;
   private static final String[] forestTextures = {
@@ -187,12 +187,12 @@ public class ForestGameArea extends GameArea {
         true,
         false);
 
-    spawnEntityAt(
-        ItemFactory.createHealthPotion(HEALTH_POTION_QUANTITY), HEALTH_POTION_SPAWN, true, false);
-
     spawnEntityAt(ItemFactory.createFireArrow(FIRE_ARROW_QUANTITY), FIRE_ARROW_SPAWN, true, false);
 
-    spawnEntityAt(ItemFactory.createColdArrow(COLD_ARROW_QUANTITY), COLD_ARROW_SPAWN, true, false);
+    spawnEntityAt(ItemFactory.createIceArrow(ICE_ARROW_QUANTITY), ICE_ARROW_SPAWN, true, false);
+
+    spawnEntityAt(
+        ItemFactory.createHealthPotion(HEALTH_POTION_QUANTITY), HEALTH_POTION_SPAWN, true, false);
   }
 
   private void spawnGhosts() {

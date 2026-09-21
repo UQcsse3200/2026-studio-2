@@ -40,21 +40,25 @@ public enum ItemType {
   FIRE_ARROW(
       4,
       "Fire Arrow",
-      "An arrow that burns enemies over time.",
+      "Deals 5 direct damage and burns enemies for 10 damage per second for 5 seconds.",
       "images/fire_arrow.png",
       5,
       16f,
       0f,
       0,
       true,
-      3f,
+      10f,
       5f,
       0f,
+      0f,
+      0f,
+      0f,
+      0f,
       0f),
-  COLD_ARROW(
+  ICE_ARROW(
       5,
-      "Cold Arrow",
-      "An arrow that slows enemies.",
+      "Ice Arrow",
+      "Slows enemies for 5 seconds.",
       "images/cold_arrow.png",
       8,
       16f,
@@ -63,7 +67,62 @@ public enum ItemType {
       true,
       0f,
       0f,
-      0.75f,
+      0.5f,
+      5f,
+      0f,
+      0f,
+      0f,
+      0f),
+
+  Sword(
+      6,
+      "Great Sword",
+      "A heavy sword with high damage.",
+      "images/sword.png",
+      20,
+      5f,
+      0f,
+      0,
+      false),
+
+  Spear(7, "Spear", "A long spear with extended range.", "images/spear.png", 12, 8f, 0f, 0, false),
+
+  SpeedPotion(
+      8,
+      "Speed Potion",
+      "Increases movement speed by 70% for 3 seconds.",
+      "images/speed_potion.png",
+      0,
+      0f,
+      0f,
+      0,
+      true,
+      0f,
+      0f,
+      0f,
+      0f,
+      0.7f,
+      3f,
+      0f,
+      0f),
+
+  PoisonPotion(
+      9,
+      "Poison Potion",
+      "Throws a poison flask that applies poison damage over time.",
+      "images/poison_potion.png",
+      0,
+      0f,
+      0f,
+      0,
+      true,
+      0f,
+      0f,
+      0f,
+      0f,
+      0f,
+      0f,
+      5f,
       5f);
 
   private final int id;
@@ -79,6 +138,10 @@ public enum ItemType {
   private final float burnTime;
   private final float slowSpeed;
   private final float slowTime;
+  private final float speedBoost;
+  private final float speedDuration;
+  private final float poisonDamagePerSecond;
+  private final float poisonDuration;
 
   ItemType(
       int id,
@@ -103,6 +166,10 @@ public enum ItemType {
         0f,
         0f,
         0f,
+        0f,
+        0f,
+        0f,
+        0f,
         0f);
   }
 
@@ -119,7 +186,11 @@ public enum ItemType {
       float burnDamagePerSecond,
       float burnTime,
       float slowSpeed,
-      float slowTime) {
+      float slowTime,
+      float speedBoost,
+      float speedDuration,
+      float poisonDamagePerSecond,
+      float poisonDuration) {
     this.id = id;
     this.displayName = displayName;
     this.description = description;
@@ -133,6 +204,10 @@ public enum ItemType {
     this.burnTime = burnTime;
     this.slowSpeed = slowSpeed;
     this.slowTime = slowTime;
+    this.speedBoost = speedBoost;
+    this.speedDuration = speedDuration;
+    this.poisonDamagePerSecond = poisonDamagePerSecond;
+    this.poisonDuration = poisonDuration;
   }
 
   public int getId() {
@@ -149,6 +224,14 @@ public enum ItemType {
 
   public String getTexturePath() {
     return texturePath;
+  }
+
+  public String getProjectileTexturePath() {
+    return switch (this) {
+      case FIRE_ARROW -> "images/fireArr_animation.png";
+      case ICE_ARROW -> "images/coldArr_animation.png";
+      default -> "images/arrow.png";
+    };
   }
 
   public int getDamage() {
@@ -174,8 +257,8 @@ public enum ItemType {
   /** Checks if the item is arrow ammunition. */
   public boolean isArrow() {
     return switch (this) {
-      case STANDARD_ARROW, ROPE_ARROW, FIRE_ARROW, COLD_ARROW -> true;
-      case HEALTH_POTION -> false;
+      case STANDARD_ARROW, ROPE_ARROW, FIRE_ARROW, ICE_ARROW -> true;
+      case HEALTH_POTION, Sword, Spear, SpeedPotion, PoisonPotion -> false;
     };
   }
 
@@ -183,7 +266,7 @@ public enum ItemType {
   public ArrowType toArrowType() {
     return switch (this) {
       case FIRE_ARROW -> ArrowType.FIRE;
-      case COLD_ARROW -> ArrowType.COLD;
+      case ICE_ARROW -> ArrowType.ICE;
       case ROPE_ARROW -> ArrowType.GRAPPLE;
       case STANDARD_ARROW -> ArrowType.STANDARD;
       default -> null;
@@ -204,5 +287,21 @@ public enum ItemType {
 
   public float getSlowTime() {
     return slowTime;
+  }
+
+  public float getSpeedBoost() {
+    return speedBoost;
+  }
+
+  public float getDuration() {
+    return speedDuration;
+  }
+
+  public float getPoisonDamagePerSecond() {
+    return poisonDamagePerSecond;
+  }
+
+  public float getPoisonDuration() {
+    return poisonDuration;
   }
 }

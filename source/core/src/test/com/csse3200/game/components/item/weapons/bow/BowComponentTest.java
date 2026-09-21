@@ -110,6 +110,12 @@ class BowComponentTest {
     component.setArrowType(ArrowType.FIRE);
     assertEquals(ArrowType.FIRE, component.getArrowType());
 
+    component.setArrowType(ArrowType.ICE);
+    assertEquals(ArrowType.ICE, component.getArrowType());
+
+    component.setArrowType(ArrowType.POISON);
+    assertEquals(ArrowType.POISON, component.getArrowType());
+
     component.setArrowType(null);
     assertEquals(ArrowType.STANDARD, component.getArrowType());
   }
@@ -215,5 +221,25 @@ class BowComponentTest {
     component.releaseCharge(new Vector2(1f, 0f));
     assertFalse(component.isReady());
     assertTrue(component.getCooldownRemaining() > 0f);
+  }
+
+  @Test
+  void shouldCancelChargeWithoutFiringOrStartingCooldown() {
+    Entity projectile = mock(Entity.class);
+    BowComponent component =
+        new BowComponent((shooter, position, direction, speedMultiplier) -> projectile);
+    Entity player = new Entity().addComponent(component);
+    player.create();
+    when(gameTime.getTime()).thenReturn(0L);
+
+    component.startCharge(new Vector2(1f, 0f));
+    assertFalse(component.isReady());
+
+    player.getEvents().trigger("chargeCancel");
+
+    assertTrue(component.isReady());
+    assertEquals(0f, component.getCooldownRemaining());
+    verify(entityService, never()).register(projectile);
+    verify(attackSound, never()).play();
   }
 }

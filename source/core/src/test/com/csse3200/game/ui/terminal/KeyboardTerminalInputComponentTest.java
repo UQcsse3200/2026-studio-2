@@ -4,7 +4,14 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import com.badlogic.gdx.Input;
+import com.csse3200.game.components.inventory.InventoryComponent;
+import com.csse3200.game.components.npc.ShopNpcComponent;
+import com.csse3200.game.components.player.PlayerInteractionComponent;
+import com.csse3200.game.entities.Entity;
+import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.extensions.GameExtension;
+import com.csse3200.game.physics.PhysicsService;
+import com.csse3200.game.services.ServiceLocator;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -58,5 +65,33 @@ class KeyboardTerminalInputComponentTest {
     when(terminal.isOpen()).thenReturn(false);
     assertFalse(terminalInput.keyDown('a'));
     assertFalse(terminalInput.keyUp('a'));
+  }
+
+  @Test
+  void escapeShouldCloseShopInsteadOfTogglingPause() {
+    EntityService entityService = new EntityService();
+    ServiceLocator.registerEntityService(entityService);
+    ServiceLocator.registerPhysicsService(new PhysicsService());
+
+    PlayerInteractionComponent interaction = new PlayerInteractionComponent();
+    Entity player = new Entity().addComponent(new InventoryComponent(0)).addComponent(interaction);
+    player.setPosition(0f, 0f);
+    entityService.register(player);
+
+    Entity shopNpc = new Entity().addComponent(new ShopNpcComponent());
+    shopNpc.setPosition(0.5f, 0f);
+    entityService.register(shopNpc);
+
+    player.getEvents().trigger("interact");
+    assertTrue(interaction.isShopOpen());
+    assertFalse(entityService.getPaused());
+
+    Terminal terminal = new Terminal();
+    KeyboardTerminalInputComponent terminalInput = new KeyboardTerminalInputComponent(terminal);
+    new Entity().addComponent(terminalInput);
+
+    assertTrue(terminalInput.keyDown(Input.Keys.ESCAPE));
+    assertFalse(interaction.isShopOpen());
+    assertFalse(entityService.getPaused());
   }
 }
