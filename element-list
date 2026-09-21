@@ -15,6 +15,7 @@ com.csse3200.game.components.item.weapons.bow
 com.csse3200.game.components.item.weapons.bow.arrow
 com.csse3200.game.components.item.weapons.bow.grapple
 com.csse3200.game.components.item.weapons.melee
+com.csse3200.game.components.itemdictionary
 com.csse3200.game.components.level
 com.csse3200.game.components.maingame
 com.csse3200.game.components.mainmenu
@@ -25,7 +26,9 @@ com.csse3200.game.components.minigames.spinthewheel
 com.csse3200.game.components.npc
 com.csse3200.game.components.player
 com.csse3200.game.components.projectile
+com.csse3200.game.components.sandbox
 com.csse3200.game.components.settingsmenu
+com.csse3200.game.components.shop
 com.csse3200.game.components.tasks
 com.csse3200.game.concurrency
 com.csse3200.game.cutscene

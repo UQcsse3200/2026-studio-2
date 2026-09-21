@@ -38,7 +38,7 @@ loadScripts(document, 'script');</script>
 <p>Summary:</p>
 <ul>
 <li>Nested</li>
-<li>Field</li>
+<li><a href="#field-summary">Field</a></li>
 <li>Constr</li>
 <li><a href="#method-summary">Method</a></li>
 </ul>
@@ -46,7 +46,7 @@ loadScripts(document, 'script');</script>
 <li>
 <p>Detail:</p>
 <ul>
-<li>Field</li>
+<li><a href="#field-detail">Field</a></li>
 <li>Constr</li>
 <li><a href="#method-detail">Method</a></li>
 </ul>
@@ -58,13 +58,13 @@ loadScripts(document, 'script');</script>
 <ul class="sub-nav-list">
 <li>Summary:&nbsp;</li>
 <li>Nested&nbsp;|&nbsp;</li>
-<li>Field&nbsp;|&nbsp;</li>
+<li><a href="#field-summary">Field</a>&nbsp;|&nbsp;</li>
 <li>Constr&nbsp;|&nbsp;</li>
 <li><a href="#method-summary">Method</a></li>
 </ul>
 <ul class="sub-nav-list">
 <li>Detail:&nbsp;</li>
-<li>Field&nbsp;|&nbsp;</li>
+<li><a href="#field-detail">Field</a>&nbsp;|&nbsp;</li>
 <li>Constr&nbsp;|&nbsp;</li>
 <li><a href="#method-detail">Method</a></li>
 </ul>
@@ -95,6 +95,21 @@ loadScripts(document, 'script');</script>
 </section>
 <section class="summary">
 <ul class="summary-list">
+<!-- =========== FIELD SUMMARY =========== -->
+<li>
+<section class="field-summary" id="field-summary">
+<h2>Field Summary</h2>
+<div class="caption"><span>Fields</span></div>
+<div class="summary-table three-column-summary">
+<div class="table-header col-first">Modifier and Type</div>
+<div class="table-header col-second">Field</div>
+<div class="table-header col-last">Description</div>
+<div class="col-first even-row-color"><code>static final <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second even-row-color"><code><a href="#GOLD_TEXTURE" class="member-name-link">GOLD_TEXTURE</a></code></div>
+<div class="col-last even-row-color">&nbsp;</div>
+</div>
+</section>
+</li>
 <!-- ========== METHOD SUMMARY =========== -->
 <li>
 <section class="method-summary" id="method-summary">
@@ -107,13 +122,23 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createColdArrow(int)" class="member-name-link">createColdArrow</a><wbr>(int&nbsp;quantity)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createFireArrow(int)" class="member-name-link">createFireArrow</a><wbr>(int&nbsp;quantity)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createFireArrow(int)" class="member-name-link">createFireArrow</a><wbr>(int&nbsp;quantity)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createGold()" class="member-name-link">createGold</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Creates a world gold coin worth <a href="../../components/item/GoldPickupComponent.html#DEFAULT_AMOUNT"><code>GoldPickupComponent.DEFAULT_AMOUNT</code></a> gold.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createGold(int)" class="member-name-link">createGold</a><wbr>(int&nbsp;amount)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Creates a world gold coin worth the given amount.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createHealthPotion(int)" class="member-name-link">createHealthPotion</a><wbr>(int&nbsp;quantity)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createHealthPotion(int)" class="member-name-link">createHealthPotion</a><wbr>(int&nbsp;quantity)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createIceArrow(int)" class="member-name-link">createIceArrow</a><wbr>(int&nbsp;quantity)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createItem(com.csse3200.game.components.item.Item)" class="member-name-link">createItem</a><wbr>(<a href="../../components/item/Item.html" title="class in com.csse3200.game.components.item">Item</a>&nbsp;item)</code></div>
@@ -121,11 +146,20 @@ loadScripts(document, 'script');</script>
 <div class="block">Creates a world entity for an item using the texture from its <code>ItemType</code>.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createItem(java.lang.String,int)" class="member-name-link">createItem</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;itemName,
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createItem(com.csse3200.game.components.item.ItemType,int)" class="member-name-link">createItem</a><wbr>(<a href="../../components/item/ItemType.html" title="enum class in com.csse3200.game.components.item">ItemType</a>&nbsp;type,
  int&nbsp;quantity)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
-<div class="block">Creates a world entity for an item based on encoded string representations of items.</div>
+<div class="block">Creates a world entity containing the concrete item represented by the supplied type.</div>
 </div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createItem(java.lang.String,int)" class="member-name-link">createItem</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;itemName,
+ int&nbsp;quantity)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Creates a world entity for an item identified by its catalog name.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createPoisonPotion(int)" class="member-name-link">createPoisonPotion</a><wbr>(int&nbsp;quantity)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createRopeArrow()" class="member-name-link">createRopeArrow</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
@@ -133,8 +167,17 @@ loadScripts(document, 'script');</script>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createRopeArrow(int)" class="member-name-link">createRopeArrow</a><wbr>(int&nbsp;quantity)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createSpear(int)" class="member-name-link">createSpear</a><wbr>(int&nbsp;quantity)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createSpeedPotion(int)" class="member-name-link">createSpeedPotion</a><wbr>(int&nbsp;quantity)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createStandardArrow(int)" class="member-name-link">createStandardArrow</a><wbr>(int&nbsp;quantity)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createSword(int)" class="member-name-link">createSword</a><wbr>(int&nbsp;quantity)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
 </div>
 </div>
 </div>
@@ -147,6 +190,28 @@ loadScripts(document, 'script');</script>
 </section>
 <section class="details">
 <ul class="details-list">
+<!-- ============ FIELD DETAIL =========== -->
+<li>
+<section class="field-details" id="field-detail">
+<h2>Field Details</h2>
+<ul class="member-list">
+<li>
+<section class="detail" id="GOLD_TEXTURE">
+<h3>GOLD_TEXTURE</h3>
+<div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">GOLD_TEXTURE</span></div>
+<dl class="notes">
+<dt>See Also:</dt>
+<dd>
+<ul class="tag-list">
+<li><a href="../../../../../constant-values.html#com.csse3200.game.entities.factories.ItemFactory.GOLD_TEXTURE">Constant Field Values</a></li>
+</ul>
+</dd>
+</dl>
+</section>
+</li>
+</ul>
+</section>
+</li>
 <!-- ============ METHOD DETAIL ========== -->
 <li>
 <section class="method-details" id="method-detail">
@@ -166,18 +231,39 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li>
+<section class="detail" id="createItem(com.csse3200.game.components.item.ItemType,int)">
+<h3>createItem</h3>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createItem</span><wbr><span class="parameters">(<a href="../../components/item/ItemType.html" title="enum class in com.csse3200.game.components.item">ItemType</a>&nbsp;type,
+ int&nbsp;quantity)</span></div>
+<div class="block">Creates a world entity containing the concrete item represented by the supplied type.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>type</code> - item type to create</dd>
+<dd><code>quantity</code> - number of items in the stack</dd>
+<dt>Returns:</dt>
+<dd>corresponding world item entity</dd>
+</dl>
+</section>
+</li>
+<li>
 <section class="detail" id="createItem(java.lang.String,int)">
 <h3>createItem</h3>
 <div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createItem</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;itemName,
  int&nbsp;quantity)</span></div>
-<div class="block">Creates a world entity for an item based on encoded string representations of items.</div>
+<div class="block">Creates a world entity for an item identified by its catalog name.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
-<dd><code>itemName</code> - String representation of a given item to create</dd>
-<dd><code>quantity</code> - Quantity of the given item to create</dd>
+<dd><code>itemName</code> - catalog name of the item to create</dd>
+<dd><code>quantity</code> - number of items in the stack</dd>
 <dt>Returns:</dt>
-<dd>Entity</dd>
+<dd>corresponding world item entity</dd>
 </dl>
+</section>
+</li>
+<li>
+<section class="detail" id="createStandardArrow(int)">
+<h3>createStandardArrow</h3>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createStandardArrow</span><wbr><span class="parameters">(int&nbsp;quantity)</span></div>
 </section>
 </li>
 <li>
@@ -193,27 +279,69 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li>
-<section class="detail" id="createStandardArrow(int)">
-<h3>createStandardArrow</h3>
-<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createStandardArrow</span><wbr><span class="parameters">(int&nbsp;quantity)</span></div>
-</section>
-</li>
-<li>
 <section class="detail" id="createFireArrow(int)">
 <h3>createFireArrow</h3>
 <div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createFireArrow</span><wbr><span class="parameters">(int&nbsp;quantity)</span></div>
 </section>
 </li>
 <li>
-<section class="detail" id="createColdArrow(int)">
-<h3>createColdArrow</h3>
-<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createColdArrow</span><wbr><span class="parameters">(int&nbsp;quantity)</span></div>
+<section class="detail" id="createIceArrow(int)">
+<h3>createIceArrow</h3>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createIceArrow</span><wbr><span class="parameters">(int&nbsp;quantity)</span></div>
 </section>
 </li>
 <li>
 <section class="detail" id="createHealthPotion(int)">
 <h3>createHealthPotion</h3>
 <div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createHealthPotion</span><wbr><span class="parameters">(int&nbsp;quantity)</span></div>
+</section>
+</li>
+<li>
+<section class="detail" id="createSword(int)">
+<h3>createSword</h3>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createSword</span><wbr><span class="parameters">(int&nbsp;quantity)</span></div>
+</section>
+</li>
+<li>
+<section class="detail" id="createSpear(int)">
+<h3>createSpear</h3>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createSpear</span><wbr><span class="parameters">(int&nbsp;quantity)</span></div>
+</section>
+</li>
+<li>
+<section class="detail" id="createSpeedPotion(int)">
+<h3>createSpeedPotion</h3>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createSpeedPotion</span><wbr><span class="parameters">(int&nbsp;quantity)</span></div>
+</section>
+</li>
+<li>
+<section class="detail" id="createPoisonPotion(int)">
+<h3>createPoisonPotion</h3>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createPoisonPotion</span><wbr><span class="parameters">(int&nbsp;quantity)</span></div>
+</section>
+</li>
+<li>
+<section class="detail" id="createGold()">
+<h3>createGold</h3>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createGold</span>()</div>
+<div class="block">Creates a world gold coin worth <a href="../../components/item/GoldPickupComponent.html#DEFAULT_AMOUNT"><code>GoldPickupComponent.DEFAULT_AMOUNT</code></a> gold.</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>gold pickup entity</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="createGold(int)">
+<h3>createGold</h3>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createGold</span><wbr><span class="parameters">(int&nbsp;amount)</span></div>
+<div class="block">Creates a world gold coin worth the given amount.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>amount</code> - gold granted on pickup</dd>
+<dt>Returns:</dt>
+<dd>gold pickup entity</dd>
+</dl>
 </section>
 </li>
 </ul>

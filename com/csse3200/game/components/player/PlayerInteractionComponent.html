@@ -93,8 +93,10 @@ loadScripts(document, 'script');</script>
 <hr>
 <div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">PlayerInteractionComponent</span>
 <span class="extends-implements">extends <a href="../Component.html" title="class in com.csse3200.game.components">Component</a></span></div>
-<div class="block">Detects items within the player's interaction range and validates and performs pickup, drop,
- delete and switch interactions on behalf of the player.</div>
+<div class="block">Detects interactable entities within range and performs pickup, shop, drop, delete and switch
+ actions on behalf of the player.
+
+ <p>Requires an InventoryComponent on this entity.</div>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -110,7 +112,7 @@ loadScripts(document, 'script');</script>
 <div class="col-first even-row-color"><code>static final float</code></div>
 <div class="col-second even-row-color"><code><a href="#INTERACTION_RANGE" class="member-name-link">INTERACTION_RANGE</a></code></div>
 <div class="col-last even-row-color">
-<div class="block">Maximum distance, in metres, at which the player can interact with an item.</div>
+<div class="block">Maximum distance, in metres, at which the player can interact with an item or NPC.</div>
 </div>
 </div>
 <div class="inherited-list">
@@ -147,6 +149,9 @@ loadScripts(document, 'script');</script>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Called when the entity is created and registered.</div>
 </div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isShopOpen()" class="member-name-link">isShopOpen</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 </div>
 </div>
 </div>
@@ -171,7 +176,7 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="INTERACTION_RANGE">
 <h3>INTERACTION_RANGE</h3>
 <div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type">float</span>&nbsp;<span class="element-name">INTERACTION_RANGE</span></div>
-<div class="block">Maximum distance, in metres, at which the player can interact with an item.</div>
+<div class="block">Maximum distance, in metres, at which the player can interact with an item or NPC.</div>
 <dl class="notes">
 <dt>See Also:</dt>
 <dd>
@@ -214,6 +219,16 @@ loadScripts(document, 'script');</script>
 <dl class="notes">
 <dt>Overrides:</dt>
 <dd><code><a href="../Component.html#create()">create</a></code>&nbsp;in class&nbsp;<code><a href="../Component.html" title="class in com.csse3200.game.components">Component</a></code></dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="isShopOpen()">
+<h3>isShopOpen</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">isShopOpen</span>()</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>true if the shop page is currently open</dd>
 </dl>
 </section>
 </li>

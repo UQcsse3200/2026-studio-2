@@ -104,18 +104,6 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-first">Modifier and Type</div>
 <div class="table-header col-second">Field</div>
 <div class="table-header col-last">Description</div>
-<div class="col-first even-row-color"><code>static final int</code></div>
-<div class="col-second even-row-color"><code><a href="#COLD_ARROW_DAMAGE" class="member-name-link">COLD_ARROW_DAMAGE</a></code></div>
-<div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><code>static final float</code></div>
-<div class="col-second odd-row-color"><code><a href="#COLD_ARROW_RANGE" class="member-name-link">COLD_ARROW_RANGE</a></code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
-<div class="col-first even-row-color"><code>static final float</code></div>
-<div class="col-second even-row-color"><code><a href="#COLD_ARROW_SPEED" class="member-name-link">COLD_ARROW_SPEED</a></code></div>
-<div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><code>static final int</code></div>
-<div class="col-second odd-row-color"><code><a href="#FIRE_ARROW_DAMAGE" class="member-name-link">FIRE_ARROW_DAMAGE</a></code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code>static final float</code></div>
 <div class="col-second even-row-color"><code><a href="#FIRE_ARROW_RANGE" class="member-name-link">FIRE_ARROW_RANGE</a></code></div>
 <div class="col-last even-row-color">&nbsp;</div>
@@ -128,15 +116,36 @@ loadScripts(document, 'script');</script>
 <div class="col-first odd-row-color"><code>static final float</code></div>
 <div class="col-second odd-row-color"><code><a href="#GRAPPLE_ARROW_SPEED" class="member-name-link">GRAPPLE_ARROW_SPEED</a></code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
-<div class="col-first even-row-color"><code>static final int</code></div>
-<div class="col-second even-row-color"><code><a href="#STANDARD_ARROW_DAMAGE" class="member-name-link">STANDARD_ARROW_DAMAGE</a></code></div>
+<div class="col-first even-row-color"><code>static final float</code></div>
+<div class="col-second even-row-color"><code><a href="#ICE_ARROW_RANGE" class="member-name-link">ICE_ARROW_RANGE</a></code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code>static final float</code></div>
-<div class="col-second odd-row-color"><code><a href="#STANDARD_ARROW_RANGE" class="member-name-link">STANDARD_ARROW_RANGE</a></code></div>
+<div class="col-second odd-row-color"><code><a href="#ICE_ARROW_SPEED" class="member-name-link">ICE_ARROW_SPEED</a></code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code>static final float</code></div>
-<div class="col-second even-row-color"><code><a href="#STANDARD_ARROW_SPEED" class="member-name-link">STANDARD_ARROW_SPEED</a></code></div>
+<div class="col-second even-row-color"><code><a href="#PLAYER_ARROW_HEIGHT" class="member-name-link">PLAYER_ARROW_HEIGHT</a></code></div>
 <div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><code>static final float</code></div>
+<div class="col-second odd-row-color"><code><a href="#PLAYER_ARROW_WIDTH" class="member-name-link">PLAYER_ARROW_WIDTH</a></code></div>
+<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><code>static final float</code></div>
+<div class="col-second even-row-color"><code><a href="#POISON_POTION_HEIGHT" class="member-name-link">POISON_POTION_HEIGHT</a></code></div>
+<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><code>static final float</code></div>
+<div class="col-second odd-row-color"><code><a href="#POISON_POTION_RANGE" class="member-name-link">POISON_POTION_RANGE</a></code></div>
+<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><code>static final float</code></div>
+<div class="col-second even-row-color"><code><a href="#POISON_POTION_SPEED" class="member-name-link">POISON_POTION_SPEED</a></code></div>
+<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><code>static final float</code></div>
+<div class="col-second odd-row-color"><code><a href="#POISON_POTION_WIDTH" class="member-name-link">POISON_POTION_WIDTH</a></code></div>
+<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><code>static final float</code></div>
+<div class="col-second even-row-color"><code><a href="#STANDARD_ARROW_RANGE" class="member-name-link">STANDARD_ARROW_RANGE</a></code></div>
+<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><code>static final float</code></div>
+<div class="col-second odd-row-color"><code><a href="#STANDARD_ARROW_SPEED" class="member-name-link">STANDARD_ARROW_SPEED</a></code></div>
+<div class="col-last odd-row-color">&nbsp;</div>
 </div>
 </section>
 </li>
@@ -152,46 +161,49 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createColdArrow(com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2)" class="member-name-link">createColdArrow</a><wbr>(com.badlogic.gdx.math.Vector2&nbsp;position,
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createFireArrow(com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2)" class="member-name-link">createFireArrow</a><wbr>(com.badlogic.gdx.math.Vector2&nbsp;position,
  com.badlogic.gdx.math.Vector2&nbsp;direction)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createColdArrow(com.csse3200.game.entities.Entity,com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2)" class="member-name-link">createColdArrow</a><wbr>(<a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;shooter,
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createFireArrow(com.csse3200.game.entities.Entity,com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2)" class="member-name-link">createFireArrow</a><wbr>(<a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;shooter,
  com.badlogic.gdx.math.Vector2&nbsp;position,
  com.badlogic.gdx.math.Vector2&nbsp;direction)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createColdArrow(com.csse3200.game.entities.Entity,com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2,float)" class="member-name-link">createColdArrow</a><wbr>(<a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;shooter,
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createFireArrow(com.csse3200.game.entities.Entity,com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2,float)" class="member-name-link">createFireArrow</a><wbr>(<a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;shooter,
  com.badlogic.gdx.math.Vector2&nbsp;position,
  com.badlogic.gdx.math.Vector2&nbsp;direction,
  float&nbsp;speedMultiplier)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createFireArrow(com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2)" class="member-name-link">createFireArrow</a><wbr>(com.badlogic.gdx.math.Vector2&nbsp;position,
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createGrappleArrow(com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2)" class="member-name-link">createGrappleArrow</a><wbr>(com.badlogic.gdx.math.Vector2&nbsp;position,
  com.badlogic.gdx.math.Vector2&nbsp;direction)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createFireArrow(com.csse3200.game.entities.Entity,com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2)" class="member-name-link">createFireArrow</a><wbr>(<a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;shooter,
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createGrappleArrow(com.csse3200.game.entities.Entity,com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2)" class="member-name-link">createGrappleArrow</a><wbr>(<a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;shooter,
  com.badlogic.gdx.math.Vector2&nbsp;position,
  com.badlogic.gdx.math.Vector2&nbsp;direction)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createFireArrow(com.csse3200.game.entities.Entity,com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2,float)" class="member-name-link">createFireArrow</a><wbr>(<a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;shooter,
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createGrappleArrow(com.csse3200.game.entities.Entity,com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2,float)" class="member-name-link">createGrappleArrow</a><wbr>(<a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;shooter,
  com.badlogic.gdx.math.Vector2&nbsp;position,
  com.badlogic.gdx.math.Vector2&nbsp;direction,
  float&nbsp;speedMultiplier)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">The grapple arrow never goes through the player's charge-release path, so <code>
+ speedMultiplier</code> is unused.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createGrappleArrow(com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2)" class="member-name-link">createGrappleArrow</a><wbr>(com.badlogic.gdx.math.Vector2&nbsp;position,
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createIceArrow(com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2)" class="member-name-link">createIceArrow</a><wbr>(com.badlogic.gdx.math.Vector2&nbsp;position,
  com.badlogic.gdx.math.Vector2&nbsp;direction)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createGrappleArrow(com.csse3200.game.entities.Entity,com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2)" class="member-name-link">createGrappleArrow</a><wbr>(<a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;shooter,
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createIceArrow(com.csse3200.game.entities.Entity,com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2)" class="member-name-link">createIceArrow</a><wbr>(<a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;shooter,
  com.badlogic.gdx.math.Vector2&nbsp;position,
  com.badlogic.gdx.math.Vector2&nbsp;direction)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createGrappleArrow(com.csse3200.game.entities.Entity,com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2,float)" class="member-name-link">createGrappleArrow</a><wbr>(<a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;shooter,
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createIceArrow(com.csse3200.game.entities.Entity,com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2,float)" class="member-name-link">createIceArrow</a><wbr>(<a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;shooter,
  com.badlogic.gdx.math.Vector2&nbsp;position,
  com.badlogic.gdx.math.Vector2&nbsp;direction,
  float&nbsp;speedMultiplier)</code></div>
@@ -211,6 +223,28 @@ loadScripts(document, 'script');</script>
  com.badlogic.gdx.math.Vector2&nbsp;direction,
  float&nbsp;speedMultiplier)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createPoisonArrow(com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2)" class="member-name-link">createPoisonArrow</a><wbr>(com.badlogic.gdx.math.Vector2&nbsp;position,
+ com.badlogic.gdx.math.Vector2&nbsp;direction)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createPoisonArrow(com.csse3200.game.entities.Entity,com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2)" class="member-name-link">createPoisonArrow</a><wbr>(<a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;shooter,
+ com.badlogic.gdx.math.Vector2&nbsp;position,
+ com.badlogic.gdx.math.Vector2&nbsp;direction)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createPoisonArrow(com.csse3200.game.entities.Entity,com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2,float)" class="member-name-link">createPoisonArrow</a><wbr>(<a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;shooter,
+ com.badlogic.gdx.math.Vector2&nbsp;position,
+ com.badlogic.gdx.math.Vector2&nbsp;direction,
+ float&nbsp;speedMultiplier)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createThrownPoisonPotion(com.csse3200.game.entities.Entity,com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2)" class="member-name-link">createThrownPoisonPotion</a><wbr>(<a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;shooter,
+ com.badlogic.gdx.math.Vector2&nbsp;position,
+ com.badlogic.gdx.math.Vector2&nbsp;direction)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Creates a thrown poison flask that applies the potion's poison debuff on impact.</div>
+</div>
 </div>
 </div>
 </div>
@@ -228,20 +262,6 @@ loadScripts(document, 'script');</script>
 <section class="field-details" id="field-detail">
 <h2>Field Details</h2>
 <ul class="member-list">
-<li>
-<section class="detail" id="STANDARD_ARROW_DAMAGE">
-<h3>STANDARD_ARROW_DAMAGE</h3>
-<div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">STANDARD_ARROW_DAMAGE</span></div>
-<dl class="notes">
-<dt>See Also:</dt>
-<dd>
-<ul class="tag-list">
-<li><a href="../../../../../constant-values.html#com.csse3200.game.entities.factories.ProjectileFactory.STANDARD_ARROW_DAMAGE">Constant Field Values</a></li>
-</ul>
-</dd>
-</dl>
-</section>
-</li>
 <li>
 <section class="detail" id="STANDARD_ARROW_SPEED">
 <h3>STANDARD_ARROW_SPEED</h3>
@@ -271,56 +291,28 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li>
-<section class="detail" id="COLD_ARROW_DAMAGE">
-<h3>COLD_ARROW_DAMAGE</h3>
-<div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">COLD_ARROW_DAMAGE</span></div>
+<section class="detail" id="ICE_ARROW_SPEED">
+<h3>ICE_ARROW_SPEED</h3>
+<div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type">float</span>&nbsp;<span class="element-name">ICE_ARROW_SPEED</span></div>
 <dl class="notes">
 <dt>See Also:</dt>
 <dd>
 <ul class="tag-list">
-<li><a href="../../../../../constant-values.html#com.csse3200.game.entities.factories.ProjectileFactory.COLD_ARROW_DAMAGE">Constant Field Values</a></li>
+<li><a href="../../../../../constant-values.html#com.csse3200.game.entities.factories.ProjectileFactory.ICE_ARROW_SPEED">Constant Field Values</a></li>
 </ul>
 </dd>
 </dl>
 </section>
 </li>
 <li>
-<section class="detail" id="COLD_ARROW_SPEED">
-<h3>COLD_ARROW_SPEED</h3>
-<div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type">float</span>&nbsp;<span class="element-name">COLD_ARROW_SPEED</span></div>
+<section class="detail" id="ICE_ARROW_RANGE">
+<h3>ICE_ARROW_RANGE</h3>
+<div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type">float</span>&nbsp;<span class="element-name">ICE_ARROW_RANGE</span></div>
 <dl class="notes">
 <dt>See Also:</dt>
 <dd>
 <ul class="tag-list">
-<li><a href="../../../../../constant-values.html#com.csse3200.game.entities.factories.ProjectileFactory.COLD_ARROW_SPEED">Constant Field Values</a></li>
-</ul>
-</dd>
-</dl>
-</section>
-</li>
-<li>
-<section class="detail" id="COLD_ARROW_RANGE">
-<h3>COLD_ARROW_RANGE</h3>
-<div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type">float</span>&nbsp;<span class="element-name">COLD_ARROW_RANGE</span></div>
-<dl class="notes">
-<dt>See Also:</dt>
-<dd>
-<ul class="tag-list">
-<li><a href="../../../../../constant-values.html#com.csse3200.game.entities.factories.ProjectileFactory.COLD_ARROW_RANGE">Constant Field Values</a></li>
-</ul>
-</dd>
-</dl>
-</section>
-</li>
-<li>
-<section class="detail" id="FIRE_ARROW_DAMAGE">
-<h3>FIRE_ARROW_DAMAGE</h3>
-<div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">FIRE_ARROW_DAMAGE</span></div>
-<dl class="notes">
-<dt>See Also:</dt>
-<dd>
-<ul class="tag-list">
-<li><a href="../../../../../constant-values.html#com.csse3200.game.entities.factories.ProjectileFactory.FIRE_ARROW_DAMAGE">Constant Field Values</a></li>
+<li><a href="../../../../../constant-values.html#com.csse3200.game.entities.factories.ProjectileFactory.ICE_ARROW_RANGE">Constant Field Values</a></li>
 </ul>
 </dd>
 </dl>
@@ -382,6 +374,90 @@ loadScripts(document, 'script');</script>
 </dl>
 </section>
 </li>
+<li>
+<section class="detail" id="PLAYER_ARROW_WIDTH">
+<h3>PLAYER_ARROW_WIDTH</h3>
+<div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type">float</span>&nbsp;<span class="element-name">PLAYER_ARROW_WIDTH</span></div>
+<dl class="notes">
+<dt>See Also:</dt>
+<dd>
+<ul class="tag-list">
+<li><a href="../../../../../constant-values.html#com.csse3200.game.entities.factories.ProjectileFactory.PLAYER_ARROW_WIDTH">Constant Field Values</a></li>
+</ul>
+</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="PLAYER_ARROW_HEIGHT">
+<h3>PLAYER_ARROW_HEIGHT</h3>
+<div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type">float</span>&nbsp;<span class="element-name">PLAYER_ARROW_HEIGHT</span></div>
+<dl class="notes">
+<dt>See Also:</dt>
+<dd>
+<ul class="tag-list">
+<li><a href="../../../../../constant-values.html#com.csse3200.game.entities.factories.ProjectileFactory.PLAYER_ARROW_HEIGHT">Constant Field Values</a></li>
+</ul>
+</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="POISON_POTION_SPEED">
+<h3>POISON_POTION_SPEED</h3>
+<div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type">float</span>&nbsp;<span class="element-name">POISON_POTION_SPEED</span></div>
+<dl class="notes">
+<dt>See Also:</dt>
+<dd>
+<ul class="tag-list">
+<li><a href="../../../../../constant-values.html#com.csse3200.game.entities.factories.ProjectileFactory.POISON_POTION_SPEED">Constant Field Values</a></li>
+</ul>
+</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="POISON_POTION_RANGE">
+<h3>POISON_POTION_RANGE</h3>
+<div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type">float</span>&nbsp;<span class="element-name">POISON_POTION_RANGE</span></div>
+<dl class="notes">
+<dt>See Also:</dt>
+<dd>
+<ul class="tag-list">
+<li><a href="../../../../../constant-values.html#com.csse3200.game.entities.factories.ProjectileFactory.POISON_POTION_RANGE">Constant Field Values</a></li>
+</ul>
+</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="POISON_POTION_WIDTH">
+<h3>POISON_POTION_WIDTH</h3>
+<div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type">float</span>&nbsp;<span class="element-name">POISON_POTION_WIDTH</span></div>
+<dl class="notes">
+<dt>See Also:</dt>
+<dd>
+<ul class="tag-list">
+<li><a href="../../../../../constant-values.html#com.csse3200.game.entities.factories.ProjectileFactory.POISON_POTION_WIDTH">Constant Field Values</a></li>
+</ul>
+</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="POISON_POTION_HEIGHT">
+<h3>POISON_POTION_HEIGHT</h3>
+<div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type">float</span>&nbsp;<span class="element-name">POISON_POTION_HEIGHT</span></div>
+<dl class="notes">
+<dt>See Also:</dt>
+<dd>
+<ul class="tag-list">
+<li><a href="../../../../../constant-values.html#com.csse3200.game.entities.factories.ProjectileFactory.POISON_POTION_HEIGHT">Constant Field Values</a></li>
+</ul>
+</dd>
+</dl>
+</section>
+</li>
 </ul>
 </section>
 </li>
@@ -398,9 +474,9 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li>
-<section class="detail" id="createColdArrow(com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2)">
-<h3>createColdArrow</h3>
-<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createColdArrow</span><wbr><span class="parameters">(com.badlogic.gdx.math.Vector2&nbsp;position,
+<section class="detail" id="createIceArrow(com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2)">
+<h3>createIceArrow</h3>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createIceArrow</span><wbr><span class="parameters">(com.badlogic.gdx.math.Vector2&nbsp;position,
  com.badlogic.gdx.math.Vector2&nbsp;direction)</span></div>
 </section>
 </li>
@@ -415,6 +491,13 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="createGrappleArrow(com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2)">
 <h3>createGrappleArrow</h3>
 <div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createGrappleArrow</span><wbr><span class="parameters">(com.badlogic.gdx.math.Vector2&nbsp;position,
+ com.badlogic.gdx.math.Vector2&nbsp;direction)</span></div>
+</section>
+</li>
+<li>
+<section class="detail" id="createPoisonArrow(com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2)">
+<h3>createPoisonArrow</h3>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createPoisonArrow</span><wbr><span class="parameters">(com.badlogic.gdx.math.Vector2&nbsp;position,
  com.badlogic.gdx.math.Vector2&nbsp;direction)</span></div>
 </section>
 </li>
@@ -436,17 +519,17 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li>
-<section class="detail" id="createColdArrow(com.csse3200.game.entities.Entity,com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2)">
-<h3>createColdArrow</h3>
-<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createColdArrow</span><wbr><span class="parameters">(<a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;shooter,
+<section class="detail" id="createIceArrow(com.csse3200.game.entities.Entity,com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2)">
+<h3>createIceArrow</h3>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createIceArrow</span><wbr><span class="parameters">(<a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;shooter,
  com.badlogic.gdx.math.Vector2&nbsp;position,
  com.badlogic.gdx.math.Vector2&nbsp;direction)</span></div>
 </section>
 </li>
 <li>
-<section class="detail" id="createColdArrow(com.csse3200.game.entities.Entity,com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2,float)">
-<h3>createColdArrow</h3>
-<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createColdArrow</span><wbr><span class="parameters">(<a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;shooter,
+<section class="detail" id="createIceArrow(com.csse3200.game.entities.Entity,com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2,float)">
+<h3>createIceArrow</h3>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createIceArrow</span><wbr><span class="parameters">(<a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;shooter,
  com.badlogic.gdx.math.Vector2&nbsp;position,
  com.badlogic.gdx.math.Vector2&nbsp;direction,
  float&nbsp;speedMultiplier)</span></div>
@@ -484,6 +567,43 @@ loadScripts(document, 'script');</script>
  com.badlogic.gdx.math.Vector2&nbsp;position,
  com.badlogic.gdx.math.Vector2&nbsp;direction,
  float&nbsp;speedMultiplier)</span></div>
+<div class="block">The grapple arrow never goes through the player's charge-release path, so <code>
+ speedMultiplier</code> is unused. This overload exists so <code>BowComponent</code> can type-check against
+ <code>ProjectileCreator</code>.</div>
+</section>
+</li>
+<li>
+<section class="detail" id="createPoisonArrow(com.csse3200.game.entities.Entity,com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2)">
+<h3>createPoisonArrow</h3>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createPoisonArrow</span><wbr><span class="parameters">(<a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;shooter,
+ com.badlogic.gdx.math.Vector2&nbsp;position,
+ com.badlogic.gdx.math.Vector2&nbsp;direction)</span></div>
+</section>
+</li>
+<li>
+<section class="detail" id="createPoisonArrow(com.csse3200.game.entities.Entity,com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2,float)">
+<h3>createPoisonArrow</h3>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createPoisonArrow</span><wbr><span class="parameters">(<a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;shooter,
+ com.badlogic.gdx.math.Vector2&nbsp;position,
+ com.badlogic.gdx.math.Vector2&nbsp;direction,
+ float&nbsp;speedMultiplier)</span></div>
+</section>
+</li>
+<li>
+<section class="detail" id="createThrownPoisonPotion(com.csse3200.game.entities.Entity,com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2)">
+<h3>createThrownPoisonPotion</h3>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createThrownPoisonPotion</span><wbr><span class="parameters">(<a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;shooter,
+ com.badlogic.gdx.math.Vector2&nbsp;position,
+ com.badlogic.gdx.math.Vector2&nbsp;direction)</span></div>
+<div class="block">Creates a thrown poison flask that applies the potion's poison debuff on impact.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>shooter</code> - entity that threw the flask</dd>
+<dd><code>position</code> - world spawn position</dd>
+<dd><code>direction</code> - throw direction</dd>
+<dt>Returns:</dt>
+<dd>potion projectile</dd>
+</dl>
 </section>
 </li>
 </ul>
