@@ -260,6 +260,7 @@ public class CutsceneScreen extends ScreenAdapter {
   @Override
   public void dispose() {
     logger.debug("Disposing cutscene screen");
+    GdxGame.applyDefaultClearColor();
     input.dispose();
     if (textBox != null && !textBox.isDismissed()) {
       textBox.dismiss();

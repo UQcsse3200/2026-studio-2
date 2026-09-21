@@ -6,6 +6,7 @@ import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.inventory.BackpackDisplay;
 import com.csse3200.game.components.inventory.InventoryBarDisplay;
 import com.csse3200.game.components.inventory.InventoryComponent;
+import com.csse3200.game.components.item.ItemType;
 import com.csse3200.game.components.item.weapons.WeaponComponent;
 import com.csse3200.game.components.item.weapons.bow.BowComponent;
 import com.csse3200.game.components.item.weapons.bow.grapple.GrappleComponent;
@@ -101,6 +102,36 @@ public class PlayerFactory {
     player.scaleWidth(0.6f);
     PhysicsUtils.setScaledCollider(player, 1f, 1f);
     return player;
+  }
+
+  /**
+   * Puts a rope arrow, great sword, and spear into the player's inventory.
+   *
+   * <p>Call this after the player entity has been created so inventory UI can refresh. Sandbox
+   * should not use this; it keeps world pickups instead.
+   *
+   * @param player player entity with an inventory
+   */
+  public static void giveStartingLoadout(Entity player) {
+    if (player == null) {
+      return;
+    }
+
+    InventoryComponent inventory = player.getComponent(InventoryComponent.class);
+    if (inventory == null) {
+      return;
+    }
+
+    inventory.addItem(ItemType.ROPE_ARROW, 1);
+    inventory.addItem(ItemType.Sword, 1);
+    inventory.addItem(ItemType.Spear, 1);
+
+    ItemDictionaryComponent dictionary = player.getComponent(ItemDictionaryComponent.class);
+    if (dictionary != null) {
+      dictionary.unlockItem(ItemType.ROPE_ARROW);
+      dictionary.unlockItem(ItemType.Sword);
+      dictionary.unlockItem(ItemType.Spear);
+    }
   }
 
   /**

@@ -41,10 +41,21 @@ public class GdxGame extends Game {
     logger.info("Creating game");
     loadSettings();
 
-    // Sets background to light yellow
-    Gdx.gl.glClearColor(248f / 255f, 249 / 255f, 178 / 255f, 1);
+    applyDefaultClearColor();
 
     setScreen(ScreenType.MAIN_MENU);
+  }
+
+  /**
+   * Restores the default light-yellow clear colour used behind transparent terrain (e.g. Sandbox).
+   *
+   * <p>Cutscenes set a black clear colour while they are on screen; this puts the game colour back.
+   */
+  public static void applyDefaultClearColor() {
+    if (Gdx.gl == null) {
+      return;
+    }
+    Gdx.gl.glClearColor(248f / 255f, 249 / 255f, 178 / 255f, 1);
   }
 
   /** Loads the game's settings. */

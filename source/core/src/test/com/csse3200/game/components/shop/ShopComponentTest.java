@@ -60,15 +60,16 @@ class ShopComponentTest {
   }
 
   @Test
-  void shouldRejectDuplicateSword() {
+  void shouldRejectUnsoldMeleeWeapons() {
     Entity player = createPlayer(50);
-    InventoryComponent inventory = player.getComponent(InventoryComponent.class);
-    inventory.addItem(ItemType.Sword, 1);
-
     ShopComponent shop = player.getComponent(ShopComponent.class);
-    assertEquals(PurchaseResult.ALREADY_OWNED, shop.buy(ItemType.Sword));
+    InventoryComponent inventory = player.getComponent(InventoryComponent.class);
+
+    assertEquals(PurchaseResult.INVALID, shop.buy(ItemType.Sword));
+    assertEquals(PurchaseResult.INVALID, shop.buy(ItemType.Spear));
     assertEquals(50, inventory.getGold());
-    assertEquals(1, inventory.getItemCount(ItemType.Sword));
+    assertEquals(0, inventory.getItemCount(ItemType.Sword));
+    assertEquals(0, inventory.getItemCount(ItemType.Spear));
   }
 
   @Test
@@ -93,11 +94,11 @@ class ShopComponentTest {
     Entity player = createPlayer(ShopCatalog.STANDARD_ARROW_PRICE);
     ShopComponent shop = player.getComponent(ShopComponent.class);
     ShopListing arrows = ShopCatalog.getListing(ItemType.STANDARD_ARROW);
-    ShopListing sword = ShopCatalog.getListing(ItemType.Sword);
+    ShopListing fireArrows = ShopCatalog.getListing(ItemType.FIRE_ARROW);
 
     assertTrue(shop.canBuy(arrows));
-    assertFalse(shop.canAfford(sword));
-    assertFalse(shop.canBuy(sword));
+    assertFalse(shop.canAfford(fireArrows));
+    assertFalse(shop.canBuy(fireArrows));
   }
 
   Entity createPlayer(int gold) {

@@ -27,7 +27,6 @@ public class ForestGameArea extends GameArea {
   private static final int NUM_TREES = 7;
   private static final int NUM_GHOSTS = 2;
   private static final GridPoint2 PLAYER_SPAWN = new GridPoint2(10, 10);
-  private static final GridPoint2 ROPE_ARROW_SPAWN = new GridPoint2(12, 10);
   private static final GridPoint2 STANDARD_ARROW_SPAWN = new GridPoint2(8, 10);
   private static final GridPoint2 FIRE_ARROW_SPAWN = new GridPoint2(6, 6);
   private static final GridPoint2 ICE_ARROW_SPAWN = new GridPoint2(8, 8);
@@ -175,12 +174,11 @@ public class ForestGameArea extends GameArea {
       input.setCameraComponent(cameraComponent);
     }
     spawnEntityAt(newPlayer, PLAYER_SPAWN, true, true);
+    PlayerFactory.giveStartingLoadout(newPlayer);
     return newPlayer;
   }
 
   private void spawnItems() {
-    spawnEntityAt(ItemFactory.createRopeArrow(), ROPE_ARROW_SPAWN, true, false);
-
     spawnEntityAt(
         ItemFactory.createStandardArrow(STANDARD_ARROW_QUANTITY),
         STANDARD_ARROW_SPAWN,

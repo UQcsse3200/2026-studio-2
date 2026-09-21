@@ -388,6 +388,7 @@ public class Level1GameArea extends GameArea {
       input.setCameraComponent(cameraComponent);
     }
     spawnEntityAt(newPlayer, config.getPlayerSpawn(), true, true);
+    PlayerFactory.giveStartingLoadout(newPlayer);
 
     System.out.println("player spawned");
     System.out.println(input);
