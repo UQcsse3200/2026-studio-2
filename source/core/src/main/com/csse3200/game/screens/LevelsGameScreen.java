@@ -79,7 +79,7 @@ public class LevelsGameScreen extends ScreenAdapter {
     "sounds/hit.ogg", "sounds/Arrow_release.wav", "sounds/jump.ogg", "sounds/itempick.wav"
   };
   private final Level1GameArea level1GameArea;
-  private boolean cheats = false;
+  private boolean cheats = true;
 
   public LevelsGameScreen(GdxGame game) {
     this.game = game;

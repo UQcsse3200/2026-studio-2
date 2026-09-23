@@ -205,11 +205,6 @@ public abstract class GameArea implements Disposable {
     return terrain;
   }
 
-  public enum BackgroundType {
-    INDEPENDENT,
-    DEPENDENT
-  }
-
   /**
    * Public method for grapples to check the end of the raycast position hits a valid side of a
    * platform to confirm a successful grapple location was hit

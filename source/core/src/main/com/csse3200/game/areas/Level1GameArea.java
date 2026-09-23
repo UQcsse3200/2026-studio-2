@@ -270,7 +270,6 @@ public class Level1GameArea extends GameArea {
         30f,
         12f,
         new Vector2(0f, 4.25f), // Positional offset
-        BackgroundType.DEPENDENT,
         new Vector2(0f, 0f), // Independent velocity
         false,
         1f,
@@ -283,7 +282,6 @@ public class Level1GameArea extends GameArea {
         30f,
         4f,
         new Vector2(0f, 10f), // Positional offset
-        BackgroundType.DEPENDENT,
         new Vector2(0.1f, 0f), // Independent velocity
         true,
         1f,
@@ -296,7 +294,6 @@ public class Level1GameArea extends GameArea {
         30f,
         15f,
         new Vector2(25f, 7.5f), // Positional offset
-        BackgroundType.DEPENDENT,
         new Vector2(0.2f, 0f), // Independent velocity
         true,
         1f,
@@ -309,7 +306,6 @@ public class Level1GameArea extends GameArea {
         30f,
         7f,
         new Vector2(5f, 6.5f), // Positional offset
-        BackgroundType.DEPENDENT,
         new Vector2(0f, 0f), // Independent velocity
         true,
         1f,
@@ -322,7 +318,6 @@ public class Level1GameArea extends GameArea {
         30f,
         10f,
         new Vector2(0f, 5f), // Positional offset
-        BackgroundType.DEPENDENT,
         new Vector2(0f, 0f), // Independent velocity
         true,
         1f,

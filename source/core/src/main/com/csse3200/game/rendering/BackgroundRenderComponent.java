@@ -5,7 +5,6 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
-import com.csse3200.game.areas.GameArea.BackgroundType;
 import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.ArrayList;
@@ -24,9 +23,8 @@ public class BackgroundRenderComponent extends RenderComponent {
     private final float width;
     private final float height;
     private final Vector2 offset;
-    private final BackgroundType backgroundType;
     private final Vector2 velocity;
-    private Vector2 position;
+    private Vector2 startPos;
     private final boolean repeat;
     private final float distance;
     private final float transparency;
@@ -37,7 +35,6 @@ public class BackgroundRenderComponent extends RenderComponent {
         float width,
         float height,
         Vector2 offset,
-        BackgroundType backgroundType,
         Vector2 velocity,
         boolean repeat,
         float distance,
@@ -48,9 +45,8 @@ public class BackgroundRenderComponent extends RenderComponent {
       this.width = width;
       this.height = height;
       this.offset = offset;
-      this.backgroundType = backgroundType;
       this.velocity = velocity;
-      this.position = new Vector2(velocity);
+      this.startPos = new Vector2(velocity);
       this.repeat = repeat;
       this.distance = distance;
       this.transparency = transparency;
@@ -84,7 +80,6 @@ public class BackgroundRenderComponent extends RenderComponent {
    * @param width width of the layer
    * @param height height of the layer
    * @param offset positional offset relative to backgroundPos
-   * @param backgroundType the type of background this layer is
    * @param velocity the independent velocity of the layer
    * @param repeat whether or not this layer should repeat horizontally
    * @param distance the distance from POV affecting vertical parallax movement
@@ -96,7 +91,6 @@ public class BackgroundRenderComponent extends RenderComponent {
       float width,
       float height,
       Vector2 offset,
-      BackgroundType backgroundType,
       Vector2 velocity,
       boolean repeat,
       float distance,
@@ -111,7 +105,6 @@ public class BackgroundRenderComponent extends RenderComponent {
             width,
             height,
             offset,
-            backgroundType,
             velocity,
             repeat,
             distance,
@@ -130,28 +123,8 @@ public class BackgroundRenderComponent extends RenderComponent {
    */
   private void getPosUpdate(ParallaxLayer layer) {
     // Since this is called every frame, changing frame rates will change speed
-    layer.position.x += layer.velocity.x / 100;
-    layer.position.y += layer.velocity.y / 100;
-  }
-
-  /**
-   * Get position for layers whose position does not depend on player movement e.g. sky, super
-   * distant objects
-   *
-   * @param layer the layer to calculate position for
-   * @param cameraPos the position of the camera
-   * @param position the current position of the layer
-   * @return updated position of the layer
-   */
-  private Vector2 getIndependentPosition(ParallaxLayer layer, Vector3 cameraPos, Vector2 position) {
-    float cameraX = cameraPos.x;
-    float cameraY = cameraPos.y;
-    getPosUpdate(layer);
-
-    float backgroundX = cameraX + layer.offset.x;
-    float backgroundY = cameraY + layer.offset.y + position.y + layer.position.y;
-
-    return new Vector2(backgroundX, backgroundY);
+    layer.startPos.x += layer.velocity.x / 100;
+    layer.startPos.y += layer.velocity.y / 100;
   }
 
   /**
@@ -160,17 +133,17 @@ public class BackgroundRenderComponent extends RenderComponent {
    *
    * @param layer the layer to calculate position for
    * @param cameraPos the position of the camera
-   * @param position the current position of the layer
+   * @param currentPos the current position of the layer
    * @return updated position of the layer
    */
-  private Vector2 getDependentPosition(ParallaxLayer layer, Vector3 cameraPos, Vector2 position) {
+  private Vector2 getPosition(ParallaxLayer layer, Vector3 cameraPos, Vector2 currentPos) {
     float cameraX = cameraPos.x;
     float cameraY = cameraPos.y;
     getPosUpdate(layer);
 
     float backgroundX =
-        position.x + layer.offset.x + cameraX * (1f - layer.parallaxFactor.x) + layer.position.x;
-    float backgroundY = position.y + layer.offset.y + cameraY * layer.distance + layer.position.y;
+        currentPos.x + layer.offset.x + cameraX * (1f - layer.parallaxFactor.x) + layer.startPos.x;
+    float backgroundY = currentPos.y + layer.offset.y + cameraY * layer.distance + layer.startPos.y;
 
     return new Vector2(backgroundX, backgroundY);
   }
@@ -181,7 +154,7 @@ public class BackgroundRenderComponent extends RenderComponent {
       return;
     }
 
-    Vector2 position = entity.getPosition();
+    Vector2 currentPos = entity.getPosition();
     Vector3 cameraPos = camera.getCamera().position;
 
     for (ParallaxLayer layer : layers) {
@@ -189,14 +162,7 @@ public class BackgroundRenderComponent extends RenderComponent {
       float layerX;
       float layerY;
 
-      switch (layer.backgroundType) {
-        case INDEPENDENT:
-          layerPos = getIndependentPosition(layer, cameraPos, position);
-          break;
-        case DEPENDENT:
-          layerPos = getDependentPosition(layer, cameraPos, position);
-          break;
-      }
+      layerPos = getPosition(layer, cameraPos, currentPos);
 
       layerX = layerPos.x;
       layerY = layerPos.y;

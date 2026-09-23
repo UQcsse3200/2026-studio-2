@@ -114,7 +114,6 @@ public class Level2GameArea extends GameArea {
         30f,
         15f,
         new Vector2(0f, 3.5f),
-        BackgroundType.DEPENDENT,
         new Vector2(0f, 0f),
         false,
         1f,
