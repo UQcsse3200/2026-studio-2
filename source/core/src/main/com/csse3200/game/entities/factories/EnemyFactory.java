@@ -182,6 +182,60 @@ public class EnemyFactory {
   }
 
   /**
+   * Creates a cyclops miniboss
+   *
+   * @param target entity the enemy will chase and attack
+   * @return cyclops entity
+   */
+  public static Entity createCyclops(Entity target) {
+    EnemyConfig config = configs.cyclops;
+    Entity cyclops = createEnemy(target, config);
+
+    AnimationRenderComponent animator =
+        new AnimationRenderComponent(
+            ServiceLocator.getResourceService()
+                .getAsset("images/skeleton_warrior.atlas", TextureAtlas.class));
+    animator.addAnimation("walk", 0.15f, Animation.PlayMode.LOOP);
+    animator.addAnimation("idle", 0.15f, Animation.PlayMode.LOOP);
+
+    cyclops.addComponent(new SkeletonAnimationController(target));
+    cyclops.addComponent(animator);
+
+    cyclops
+        .getComponent(AITaskComponent.class)
+        .addTask(new DelayedAttackTask(target, 20, 0.8f, 0.5f));
+
+    return cyclops;
+  }
+
+  /**
+   * Creates a calypso mainboss
+   *
+   * @param target entity the enemy will chase and attack
+   * @return cyclops entity
+   */
+  public static Entity createCalypso(Entity target) {
+    EnemyConfig config = configs.calypso;
+    Entity calypso = createEnemy(target, config);
+
+    AnimationRenderComponent animator =
+        new AnimationRenderComponent(
+            ServiceLocator.getResourceService()
+                .getAsset("images/skeleton_warrior.atlas", TextureAtlas.class));
+    animator.addAnimation("walk", 0.15f, Animation.PlayMode.LOOP);
+    animator.addAnimation("idle", 0.15f, Animation.PlayMode.LOOP);
+
+    calypso.addComponent(new SkeletonAnimationController(target));
+    calypso.addComponent(animator);
+
+    calypso
+        .getComponent(AITaskComponent.class)
+        .addTask(new DelayedAttackTask(target, 20, 0.8f, 0.5f));
+
+    return calypso;
+  }
+
+  /**
    * Creates a base enemy entity
    *
    * @param target entity the enemy will chase
@@ -216,6 +270,10 @@ public class EnemyFactory {
               new RangedAttackTask(
                   target, 20, config.attackRange, 2f, config.baseAttack, 4.5f, 5f, true))
           .addTask(new SummonTask(target, 30, config.attackRange, 5f));
+    } else if (config.attackType.equals("cyclops")) {
+      // add melee sweep attack and throwing boulder range attack
+    } else if (config.attackType.equals("calypso")) {
+      // add wide aoe range attack + standard range + teleportation
     }
 
     Entity enemy =
