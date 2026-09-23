@@ -153,6 +153,8 @@ public class Level1GameArea extends GameArea {
     "images/fire_arrow.png",
     "images/fireArr_animation.png",
     "images/coldArr_animation.png",
+    "images/fire_status_effect.png",
+    "images/ice_status_effect.png",
     "images/heart.png",
     "images/sword.png",
     "images/spear.png",
