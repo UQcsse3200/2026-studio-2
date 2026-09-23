@@ -71,6 +71,22 @@ class ItemFactoryTest {
     assertEquals(GoldPickupComponent.DEFAULT_AMOUNT, gold.getAmount());
   }
 
+  @Test
+  void shouldCreateGoldPickupWithCustomAmount() {
+    Entity entity = ItemFactory.createGold(25);
+
+    assertEquals(25, entity.getComponent(GoldPickupComponent.class).getAmount());
+  }
+
+  @Test
+  void shouldSupportColdArrowCatalogAlias() {
+    Item item =
+        ItemFactory.createItem("coldArrow", 2).getComponent(ItemComponent.class).getItem();
+
+    assertEquals(ItemType.ICE_ARROW, item.getItemType());
+    assertEquals(2, item.getQuantity());
+  }
+
   private static void assertItemMapping(ItemType type, Class<? extends Item> expectedClass) {
     Entity entity = ItemFactory.createItem(type, 3);
     Item item = entity.getComponent(ItemComponent.class).getItem();
