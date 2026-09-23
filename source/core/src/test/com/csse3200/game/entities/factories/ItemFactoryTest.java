@@ -80,8 +80,7 @@ class ItemFactoryTest {
 
   @Test
   void shouldSupportColdArrowCatalogAlias() {
-    Item item =
-        ItemFactory.createItem("coldArrow", 2).getComponent(ItemComponent.class).getItem();
+    Item item = ItemFactory.createItem("coldArrow", 2).getComponent(ItemComponent.class).getItem();
 
     assertEquals(ItemType.ICE_ARROW, item.getItemType());
     assertEquals(2, item.getQuantity());

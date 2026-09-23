@@ -21,12 +21,12 @@ import com.csse3200.game.areas.terrain.configs.TriggerablePlatformConfig;
 import com.csse3200.game.components.level.ActivatableComponent;
 import com.csse3200.game.components.level.AttachableMapComponent;
 import com.csse3200.game.components.level.CrumblingPlatformComponent;
+import com.csse3200.game.components.level.LevelTriggerComponent;
 import com.csse3200.game.components.level.MovingPlatformComponent;
 import com.csse3200.game.components.level.SpawnerComponent;
 import com.csse3200.game.components.level.SpikyBallComponent;
 import com.csse3200.game.components.level.TriggerButtonComponent;
 import com.csse3200.game.components.level.TriggerablePlatformComponent;
-import com.csse3200.game.components.level.LevelTriggerComponent;
 import com.csse3200.game.components.level.WinConditionComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.extensions.GameExtension;
@@ -43,11 +43,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 @ExtendWith(GameExtension.class)
 class ObstacleFactoryTest {
-  private PhysicsService physicsService;
 
   @BeforeEach
   void setUp() {
-    physicsService = new PhysicsService();
+    PhysicsService physicsService = new PhysicsService();
     ServiceLocator.registerPhysicsService(physicsService);
     Texture texture = mock(Texture.class);
     when(texture.getWidth()).thenReturn(1);
@@ -111,7 +110,8 @@ class ObstacleFactoryTest {
             new PlatformConfig(new GridPoint2(1, 2), 3, 1, 2, "images/platform.png"));
 
     assertNotNull(platform.getComponent(TextureRenderComponent.class));
-    assertNotNull(platform.getComponent(com.csse3200.game.components.level.PlatformGrappleComponent.class));
+    assertNotNull(
+        platform.getComponent(com.csse3200.game.components.level.PlatformGrappleComponent.class));
     assertEquals(
         BodyType.KinematicBody, platform.getComponent(PhysicsComponent.class).getBody().getType());
   }
@@ -196,7 +196,8 @@ class ObstacleFactoryTest {
 
     assertNotNull(ball.getComponent(SpikyBallComponent.class));
     assertEquals(0.75f, ball.getScale().x);
-    assertEquals(BodyType.DynamicBody, ball.getComponent(PhysicsComponent.class).getBody().getType());
+    assertEquals(
+        BodyType.DynamicBody, ball.getComponent(PhysicsComponent.class).getBody().getType());
   }
 
   @Test

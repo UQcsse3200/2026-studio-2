@@ -59,7 +59,8 @@ class ProjectileFactoryTest {
     Entity arrow = ProjectileFactory.createFireArrow(Vector2.Zero, new Vector2(3f, 4f));
 
     assertEquals(ArrowType.FIRE, arrow.getComponent(ArrowProjectileComponent.class).getArrowType());
-    assertEquals(1f, arrow.getComponent(ArrowProjectileComponent.class).getDirection().len(), 0.001f);
+    assertEquals(
+        1f, arrow.getComponent(ArrowProjectileComponent.class).getDirection().len(), 0.001f);
   }
 
   @Test
