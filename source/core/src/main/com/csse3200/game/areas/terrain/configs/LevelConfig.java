@@ -272,19 +272,15 @@ public class LevelConfig {
     for (CheckpointConfig c : checkpoints) {
       Entity checkpoint = new Entity();
       checkpoint.addComponent(new CheckpointComponent(false, c.getPosition()));
+      checkpoint.addComponent(new TextureRenderComponent("images/checkpoint_unlit.png"));
+      checkpoint.setScale(1f, 1.5f);
 
       c.setEntity(checkpoint);
-      entities.add(new SpawnData(c.getPosition(), checkpoint));
-
-      Entity torch =
-          new Entity().addComponent(new TextureRenderComponent("images/checkpoint_unlit.png"));
-
-      torch.setScale(1f, 1.5f);
 
       GridPoint2 pos = c.getPosition();
-      torch.setPosition(pos.x, pos.y - 1.3f);
+      checkpoint.setPosition(pos.x, pos.y - 1.3f);
 
-      entities.add(new SpawnData(c.getPosition(), torch));
+      entities.add(new SpawnData(c.getPosition(), checkpoint));
     }
   }
 }

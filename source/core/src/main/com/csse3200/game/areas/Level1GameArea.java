@@ -309,7 +309,7 @@ public class Level1GameArea extends GameArea {
         new Vector2(0f, 0f), // Independent velocity
         true,
         1f,
-        0.5f);
+        0.6f);
 
     // Second-furthest mountains image
     backgroundComponent.addLayer(

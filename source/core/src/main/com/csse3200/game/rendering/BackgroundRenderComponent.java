@@ -166,6 +166,7 @@ public class BackgroundRenderComponent extends RenderComponent {
 
       layerX = layerPos.x;
       layerY = layerPos.y;
+      // batch.setColor(0.5f, 0.5f, 0.5f, layer.transparency); Night mode
       batch.setColor(1f, 1f, 1f, layer.transparency);
       batch.draw(layer.texture, layerX, layerY, layer.width, layer.height);
       batch.setColor(Color.WHITE);
