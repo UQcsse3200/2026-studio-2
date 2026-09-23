@@ -12,6 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.csse3200.game.GdxGame;
 import com.csse3200.game.areas.GameArea;
 import com.csse3200.game.components.ButtonSound;
+import com.csse3200.game.components.settingsmenu.SettingsMenuDisplayInGame;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.UIComponent;
@@ -138,10 +139,10 @@ public class PauseMenuDisplay extends UIComponent {
                     ServiceLocator.getResourceService()
                         .getAsset("sounds/gameplay_bg.ogg", Music.class);
                 gameplay.play();
-              } catch (Exception e) {
+              } catch (Exception ignored) {
               }
               entity.getEvents().trigger("togglePause");
-              area.getInput().unpause();
+              // area.getInput().unpause();
             }
           }
         });
@@ -153,8 +154,12 @@ public class PauseMenuDisplay extends UIComponent {
             if (ServiceLocator.getEntityService().getPaused()) {
               ButtonSound.playClickThen(
                   () -> {
-                    entity.getEvents().trigger("settingsFromPause");
-                    game.setScreen(GdxGame.ScreenType.SETTINGS_FROM_PAUSE);
+                    ServiceLocator.getEntityService().setSettingsOpen(true);
+                    Entity ui = new Entity();
+                    SettingsMenuDisplayInGame settings =
+                        new SettingsMenuDisplayInGame(game, ui::dispose);
+                    ui.addComponent(settings);
+                    ServiceLocator.getEntityService().register(ui);
                   });
             }
           }

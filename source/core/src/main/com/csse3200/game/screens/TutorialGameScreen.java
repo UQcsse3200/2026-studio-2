@@ -243,7 +243,8 @@ public class TutorialGameScreen extends ScreenAdapter {
 
     if (Gdx.input.isKeyJustPressed(Input.Keys.K)) {
       wheelOverlay.request();
-    } else if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
+    } else if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)
+        && !ServiceLocator.getEntityService().getSettingsOpen()) {
       pauseOverlay.request();
     }
 
@@ -305,6 +306,8 @@ public class TutorialGameScreen extends ScreenAdapter {
                 "images/PixelArt_HeartBack.png",
                 "images/Damaged_heart.png",
                 "images/Last_Health.png",
+                "images/Buttons/apply_up_btn.png",
+                "images/Buttons/apply_down_btn.png",
                 "images/Buttons/continue_up_btn.png",
                 "images/Buttons/continue_down_btn.png",
                 "images/Buttons/settings_up_btn.png",
@@ -328,7 +331,9 @@ public class TutorialGameScreen extends ScreenAdapter {
                 "images/Buttons/exit_down_btn.png",
                 "images/rope_arrow.png",
                 "images/fire_arrow.png",
-                "images/cold_arrow.png"));
+                "images/cold_arrow.png",
+                "images/main_menu_bg_2.png",
+                "images/settings_box.png"));
     paths.addAll(List.of(WheelConfig.TEXTURES));
     paths.addAll(List.of(BlackjackConfig.TEXTURES));
     return paths.toArray(new String[0]);
