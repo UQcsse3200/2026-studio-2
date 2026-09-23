@@ -1,5 +1,6 @@
 package com.csse3200.game.rendering;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -49,8 +50,12 @@ public class RotatableAnimationRenderComponent extends AnimationRenderComponent 
       renderRegion.flip(true, false);
     }
 
+    float light = getDarkness();
+    Color prevColor = batch.getColor().cpy();
+    batch.setColor(light, light, light, 1f);
     batch.draw(
         renderRegion, pos.x, pos.y, width / 2f, height / 2f, width, height, 1f, 1f, rotation);
+    batch.setColor(prevColor);
     animationPlayTime += timeSource.getDeltaTime();
   }
 }

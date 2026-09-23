@@ -13,8 +13,10 @@ import java.util.List;
 /** Render multiple layers of a parallax background. */
 public class BackgroundRenderComponent extends RenderComponent {
 
-  Vector2 backgroundPos;
-  Vector2 worldBounds;
+  private final Vector2 backgroundPos;
+  private final Vector2 worldBounds;
+  private float light;
+  private float backgroundLight = 1f;
 
   /** A single parallax background layer. */
   private static class ParallaxLayer {
@@ -125,6 +127,22 @@ public class BackgroundRenderComponent extends RenderComponent {
     // Since this is called every frame, changing frame rates will change speed
     layer.position.x += layer.velocity.x * ServiceLocator.getTimeSource().getDeltaTime();
     layer.position.y += layer.velocity.y * ServiceLocator.getTimeSource().getDeltaTime();
+    if (backgroundLight <= 0.075f) {
+      backgroundLight = 0.075f;
+    }
+    if (backgroundLight > 0.075f) {
+      // backgroundTime -= ServiceLocator.getTimeSource().getDeltaTime() / 1000f;
+      backgroundLight = 1f - (ServiceLocator.getTimeSource().getTime() / 30000f); // 50,000
+    }
+    light = getDarkness();
+    if (light == 1f) {
+      if (backgroundLight < 0.3f) {
+        backgroundLight = 0.3f;
+      }
+    }
+    if (light > backgroundLight) {
+      light = backgroundLight;
+    }
   }
 
   /**
@@ -167,21 +185,24 @@ public class BackgroundRenderComponent extends RenderComponent {
       layerX = layerPos.x;
       layerY = layerPos.y;
       // batch.setColor(0.5f, 0.5f, 0.5f, layer.transparency); Night mode
-      batch.setColor(1f, 1f, 1f, layer.transparency);
+      Color prevColor = batch.getColor().cpy();
+      // time = getDarkness();
+      batch.setColor(light, light, light, layer.transparency);
       batch.draw(layer.texture, layerX, layerY, layer.width, layer.height);
-      batch.setColor(Color.WHITE);
+      batch.setColor(prevColor);
 
       // Draw copies of repeating layers to fill screen
       if (layer.repeat) {
+        batch.setColor(light, light, light, layer.transparency);
         float newLeftDrawPosX = layerX - layer.width;
         float newRightDrawPosX = layerX + layer.width;
 
         // if left most x coord of layer >= left most x coord of background pos
         // backgroundPos is used over worldBound.x since backgroundPos extends beyond worldBound
         while (newLeftDrawPosX >= backgroundPos.x - layer.width) {
-          batch.setColor(1f, 1f, 1f, layer.transparency);
+          // batch.setColor(1f, 1f, 1f, layer.transparency);
           batch.draw(layer.texture, newLeftDrawPosX, layerY, layer.width, layer.height);
-          batch.setColor(Color.WHITE);
+          // batch.setColor(Color.WHITE);
           newLeftDrawPosX -= layer.width;
         }
 
@@ -189,11 +210,12 @@ public class BackgroundRenderComponent extends RenderComponent {
         // NOTE: this relies on backgroudPos starting at a negative value, which will always be
         // true if player starts at x = 0
         while (newRightDrawPosX <= worldBounds.x - backgroundPos.x) {
-          batch.setColor(1f, 1f, 1f, layer.transparency);
+          // batch.setColor(1f, 1f, 1f, layer.transparency);
           batch.draw(layer.texture, newRightDrawPosX, layerY, layer.width, layer.height);
-          batch.setColor(Color.WHITE);
+          // batch.setColor(Color.WHITE);
           newRightDrawPosX += layer.width;
         }
+        batch.setColor(prevColor);
       }
     }
   }

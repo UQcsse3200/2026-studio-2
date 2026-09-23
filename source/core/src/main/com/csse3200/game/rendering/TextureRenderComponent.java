@@ -55,6 +55,8 @@ public class TextureRenderComponent extends RenderComponent {
     Vector2 scale = entity.getScale();
     Color previous = batch.getColor().cpy();
     batch.setColor(tint);
+    float light = getDarkness();
+    batch.setColor(light, light, light, 1f);
     batch.draw(
         texture,
         position.x,

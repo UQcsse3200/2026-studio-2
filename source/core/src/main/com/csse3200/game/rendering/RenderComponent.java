@@ -11,6 +11,8 @@ import com.csse3200.game.services.ServiceLocator;
  */
 public abstract class RenderComponent extends Component implements Renderable, Disposable {
   private static final int DEFAULT_LAYER = 1;
+  public float darkness = 1f;
+  public float lightning = 0f;
 
   @Override
   public void create() {
@@ -35,6 +37,34 @@ public abstract class RenderComponent extends Component implements Renderable, D
   @Override
   public int getLayer() {
     return DEFAULT_LAYER;
+  }
+
+  public float getDarkness() {
+    return this.darkness;
+  }
+
+  @Override
+  public void update() {
+    if (ServiceLocator.getTimeSource() != null) {
+      if (darkness <= 0.2f) {
+        darkness = 0.2f;
+      }
+      if (darkness > 0.2f) {
+        // darkness -= ServiceLocator.getTimeSource().getDeltaTime() / 100f;
+        darkness = 1 - (ServiceLocator.getTimeSource().getTime() / 30000f); // 50,000
+      }
+      lightning += ServiceLocator.getTimeSource().getDeltaTime();
+      lightning %= 20; // 40
+      if (lightning > 5f && lightning < 5.5f) {
+        darkness = 1f;
+      }
+      if (lightning > 5.7f && lightning < 5.8f) {
+        darkness = 1f;
+      }
+      if (lightning > 13f && lightning < 13.3f) {
+        darkness = 1f;
+      }
+    }
   }
 
   @Override
