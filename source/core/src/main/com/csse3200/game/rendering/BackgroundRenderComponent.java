@@ -24,7 +24,7 @@ public class BackgroundRenderComponent extends RenderComponent {
     private final float height;
     private final Vector2 offset;
     private final Vector2 velocity;
-    private Vector2 startPos;
+    private Vector2 position;
     private final boolean repeat;
     private final float distance;
     private final float transparency;
@@ -46,7 +46,7 @@ public class BackgroundRenderComponent extends RenderComponent {
       this.height = height;
       this.offset = offset;
       this.velocity = velocity;
-      this.startPos = new Vector2(velocity);
+      this.position = new Vector2(velocity);
       this.repeat = repeat;
       this.distance = distance;
       this.transparency = transparency;
@@ -123,8 +123,8 @@ public class BackgroundRenderComponent extends RenderComponent {
    */
   private void getPosUpdate(ParallaxLayer layer) {
     // Since this is called every frame, changing frame rates will change speed
-    layer.startPos.x += layer.velocity.x / 100;
-    layer.startPos.y += layer.velocity.y / 100;
+    layer.position.x += layer.velocity.x * ServiceLocator.getTimeSource().getDeltaTime();
+    layer.position.y += layer.velocity.y * ServiceLocator.getTimeSource().getDeltaTime();
   }
 
   /**
@@ -133,17 +133,17 @@ public class BackgroundRenderComponent extends RenderComponent {
    *
    * @param layer the layer to calculate position for
    * @param cameraPos the position of the camera
-   * @param currentPos the current position of the layer
+   * @param position the current position of the layer
    * @return updated position of the layer
    */
-  private Vector2 getPosition(ParallaxLayer layer, Vector3 cameraPos, Vector2 currentPos) {
+  private Vector2 getPosition(ParallaxLayer layer, Vector3 cameraPos, Vector2 position) {
     float cameraX = cameraPos.x;
     float cameraY = cameraPos.y;
     getPosUpdate(layer);
 
     float backgroundX =
-        currentPos.x + layer.offset.x + cameraX * (1f - layer.parallaxFactor.x) + layer.startPos.x;
-    float backgroundY = currentPos.y + layer.offset.y + cameraY * layer.distance + layer.startPos.y;
+        position.x + layer.offset.x + cameraX * (1f - layer.parallaxFactor.x) + layer.position.x;
+    float backgroundY = position.y + layer.offset.y + cameraY * layer.distance + layer.position.y;
 
     return new Vector2(backgroundX, backgroundY);
   }
@@ -154,7 +154,7 @@ public class BackgroundRenderComponent extends RenderComponent {
       return;
     }
 
-    Vector2 currentPos = entity.getPosition();
+    Vector2 position = entity.getPosition();
     Vector3 cameraPos = camera.getCamera().position;
 
     for (ParallaxLayer layer : layers) {
@@ -162,7 +162,7 @@ public class BackgroundRenderComponent extends RenderComponent {
       float layerX;
       float layerY;
 
-      layerPos = getPosition(layer, cameraPos, currentPos);
+      layerPos = getPosition(layer, cameraPos, position);
 
       layerX = layerPos.x;
       layerY = layerPos.y;

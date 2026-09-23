@@ -275,31 +275,31 @@ public class Level1GameArea extends GameArea {
         1f,
         1f);
 
-    // Complete clouds image
+    // Furthest clouds image
     backgroundComponent.addLayer(
         "images/parallax/level_1_clouds.png",
         new Vector2(0.1f, 0f), // Parallax factor
         30f,
         4f,
-        new Vector2(0f, 10f), // Positional offset
-        new Vector2(0.1f, 0f), // Independent velocity
+        new Vector2(-3f, 9f), // Positional offset
+        new Vector2(-0.06f, 0f), // Independent velocity
         true,
         1f,
         1f);
 
-    // Complete mountains image
+    // Second-furthest clouds image
     backgroundComponent.addLayer(
         "images/parallax/level_1_clouds.png",
         new Vector2(0.1f, 0f), // Parallax factor
         30f,
         15f,
         new Vector2(25f, 7.5f), // Positional offset
-        new Vector2(0.2f, 0f), // Independent velocity
+        new Vector2(0.12f, 0f), // Independent velocity
         true,
         1f,
         1f);
 
-    // Complete furthest mountains image
+    // Furthest mountains image
     backgroundComponent.addLayer(
         "images/parallax/level_1_furthest.png",
         new Vector2(0.06f, 0f), // Parallax factor 0.12
@@ -311,7 +311,7 @@ public class Level1GameArea extends GameArea {
         1f,
         0.5f);
 
-    // Complete second-furthest mountains image
+    // Second-furthest mountains image
     backgroundComponent.addLayer(
         "images/parallax/level_1_furthest.png",
         new Vector2(0.11f, 0f), // Parallax factor 0.12
