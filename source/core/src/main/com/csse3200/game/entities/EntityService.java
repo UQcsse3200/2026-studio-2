@@ -123,6 +123,7 @@ public class EntityService {
 
   void updatePhysicsPauseState() {
     ServiceLocator.getPhysicsService().getPhysics().setPaused(paused);
+    ServiceLocator.getTimeSource().setTimeScale(paused ? 0f : 1f);
   }
 
   public boolean getSettingsOpen() {

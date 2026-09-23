@@ -1,31 +1,19 @@
 package com.csse3200.game.areas.terrain.configs.levelconfigs;
 
-import static com.csse3200.game.areas.TutorialGameArea.*;
-
 import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.areas.terrain.configs.*;
 import com.csse3200.game.components.item.ItemComponent;
-import com.csse3200.game.components.item.weapons.*;
 import com.csse3200.game.entities.factories.ItemFactory;
 import java.util.HashMap;
 import java.util.Map;
 
-public class LevelTutorialConfig extends LevelConfig {
+public class Level1Config extends LevelConfig {
 
   private static final GridPoint2 ROPE_ARROW_SPAWN = new GridPoint2(2, 3);
-  private static final GridPoint2 STANDARD_ARROW_SPAWN = new GridPoint2(4, 3);
-  private static final GridPoint2 FIRE_ARROW_SPAWN = new GridPoint2(6, 3);
-  private static final GridPoint2 COLD_ARROW_SPAWN = new GridPoint2(8, 5);
-  private static final GridPoint2 HEALTH_POTION_SPAWN = new GridPoint2(10, 5);
 
-  private static final int STANDARD_ARROW_QUANTITY = 5;
-  private static final int FIRE_ARROW_QUANTITY = 5;
-  private static final int COLD_ARROW_QUANTITY = 5;
-  private static final int HEALTH_POTION_QUANTITY = 3;
-
-  /** Creates the tutorial level config */
-  public LevelTutorialConfig() {
+  /** Creates the level 1 config */
+  public Level1Config() {
     platformTFP = "images/platform.png";
     groundTFP = "images/Tile_2.png";
 
@@ -173,27 +161,12 @@ public class LevelTutorialConfig extends LevelConfig {
           new PlatformConfig(new GridPoint2(78, 0), 13, 17, 0, groundTFP),
         };
 
+    // Rope arrows stay in the world; every other item is bought from the shop.
     items =
         new HashMap<>(
             Map.of(
                 ROPE_ARROW_SPAWN,
-                ItemFactory.createRopeArrow().getComponent(ItemComponent.class).getItem(),
-                STANDARD_ARROW_SPAWN,
-                ItemFactory.createStandardArrow(STANDARD_ARROW_QUANTITY)
-                    .getComponent(ItemComponent.class)
-                    .getItem(),
-                HEALTH_POTION_SPAWN,
-                ItemFactory.createHealthPotion(HEALTH_POTION_QUANTITY)
-                    .getComponent(ItemComponent.class)
-                    .getItem(),
-                FIRE_ARROW_SPAWN,
-                ItemFactory.createFireArrow(FIRE_ARROW_QUANTITY)
-                    .getComponent(ItemComponent.class)
-                    .getItem(),
-                COLD_ARROW_SPAWN,
-                ItemFactory.createColdArrow(COLD_ARROW_QUANTITY)
-                    .getComponent(ItemComponent.class)
-                    .getItem()));
+                ItemFactory.createRopeArrow().getComponent(ItemComponent.class).getItem()));
 
     // Example checkpoint set to player spawn position
     checkpoints =

@@ -7,6 +7,7 @@ import com.csse3200.game.components.item.weapons.bow.grapple.GrappleComponent;
 import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.physics.raycast.RaycastHit;
+import com.csse3200.game.services.GameTime;
 import com.csse3200.game.services.ServiceLocator;
 
 /** Action component for interacting with the player */
@@ -24,6 +25,9 @@ public class PlayerActions extends Component {
   private static final float DASH_RECOVERY = 0.1f;
   private static final float DASH_RECOVERY_CONTROL = 0.2f;
   private static final float SPRINT_RELEASE_GRACE = 0.12f;
+
+  private float extraSpeedMultiplier = 1f; // The Speed multiplier
+  private long speedPotionEndTimeMs = 0; // The time that speed_potion ends
 
   private PhysicsComponent physicsComponent;
   private GrappleComponent grapple;
@@ -57,6 +61,7 @@ public class PlayerActions extends Component {
     entity.getEvents().addListener("dash", this::dash);
     entity.getEvents().addListener("hurt", this::onHurtInterruptDash);
     entity.getEvents().addListener("updateLedgeDrop", this::setLedgeDropping);
+    entity.getEvents().addListener("speedPotionUsed", this::applySpeedPotion);
     entity.getEvents().addListener("death", this::die);
   }
 
@@ -118,6 +123,11 @@ public class PlayerActions extends Component {
     } else {
       updateSpeed();
     }
+
+    GameTime time = ServiceLocator.getTimeSource();
+    if (extraSpeedMultiplier != 1f && time != null && time.getTime() >= speedPotionEndTimeMs) {
+      extraSpeedMultiplier = 1f;
+    }
   }
 
   private boolean isGrappling() {
@@ -148,8 +158,9 @@ public class PlayerActions extends Component {
   private void updateSpeed() {
     Body body = physicsComponent.getBody();
     Vector2 velocity = body.getLinearVelocity();
+
     float speedMultiplier = isSprinting ? SPRINT_MULTIPLIER : 1f;
-    float desiredVelocityX = walkDirection.x * MAX_SPEED.x * speedMultiplier;
+    float desiredVelocityX = walkDirection.x * MAX_SPEED.x * speedMultiplier * extraSpeedMultiplier;
 
     // Reduced control while recovering from a dash; otherwise full control on the ground and
     // weak in the air so swing momentum isn't wiped on landing.
@@ -234,6 +245,16 @@ public class PlayerActions extends Component {
       jumpImpulseAt = ServiceLocator.getTimeSource().getTime() + JUMP_WINDUP_MS;
       entity.getEvents().trigger("jumpStart");
     }
+  }
+
+  // one para is the extraMutiplier, another one is the time the potion last
+  private void applySpeedPotion(float boost, float duration) {
+    extraSpeedMultiplier = 1f + boost;
+
+    long durationMs = (long) (duration * 1000f);
+    speedPotionEndTimeMs = ServiceLocator.getTimeSource().getTime() + durationMs;
+
+    updateSpeed();
   }
 
   void sprint() {
@@ -349,5 +370,11 @@ public class PlayerActions extends Component {
         body.setAwake(true); // force awaken the body to respond to the current contact
       }
     }
+  }
+
+  public boolean isSpeedPotionActive() {
+    GameTime time = ServiceLocator.getTimeSource();
+
+    return extraSpeedMultiplier != 1f && time != null && time.getTime() < speedPotionEndTimeMs;
   }
 }

@@ -7,6 +7,7 @@ import com.badlogic.gdx.physics.box2d.Filter;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.Component;
+import com.csse3200.game.components.item.ItemType;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.physics.BodyUserData;
 import com.csse3200.game.physics.PhysicsLayer;
@@ -23,9 +24,6 @@ public class ArrowProjectileComponent extends Component {
   private static final short TARGET_LAYERS = PhysicsLayer.NPC;
   private static final short TERRAIN = (short) (PhysicsLayer.GROUND | PhysicsLayer.OBSTACLE);
   private static final float ARC_GRAVITY_SCALE = 0.4f;
-
-  // An arrow ignores hits until it has cleared this distance from its spawn, so it doesn't die on
-  // frame one when it spawns touching the wall/platform the shooter is standing against.
   private static final float MIN_TRAVEL = 0.5f;
 
   private final Entity shooter;
@@ -33,6 +31,8 @@ public class ArrowProjectileComponent extends Component {
   private final float speed;
   private final float maximumRange;
   private final ArrowType arrowType;
+  private final float poisonDamagePerSecond;
+  private final float poisonDuration;
 
   private PhysicsComponent physicsComponent;
   private HitboxComponent hitboxComponent;
@@ -51,9 +51,21 @@ public class ArrowProjectileComponent extends Component {
 
   public ArrowProjectileComponent(
       Entity shooter, Vector2 direction, float speed, float maximumRange, ArrowType arrowType) {
+    this(shooter, direction, speed, maximumRange, arrowType, 0f, 0f);
+  }
+
+  public ArrowProjectileComponent(
+      Entity shooter,
+      Vector2 direction,
+      float speed,
+      float maximumRange,
+      ArrowType arrowType,
+      float poisonDamagePerSecond,
+      float poisonDuration) {
     if (direction == null || direction.isZero()) {
       throw new IllegalArgumentException("Arrow direction must not be zero");
     }
+
     if (speed <= 0f || maximumRange <= 0f) {
       throw new IllegalArgumentException("Arrow speed and range must be positive");
     }
@@ -62,6 +74,8 @@ public class ArrowProjectileComponent extends Component {
     this.speed = speed;
     this.maximumRange = maximumRange;
     this.arrowType = arrowType != null ? arrowType : ArrowType.STANDARD;
+    this.poisonDamagePerSecond = poisonDamagePerSecond;
+    this.poisonDuration = poisonDuration;
   }
 
   @Override
@@ -72,7 +86,6 @@ public class ArrowProjectileComponent extends Component {
 
     Body body = physicsComponent.getBody();
     body.setFixedRotation(true);
-    // The grapple line needs to fly straight so it lands where you aimed; combat arrows arc.
     body.setGravityScale(arrowType == ArrowType.GRAPPLE ? 0f : ARC_GRAVITY_SCALE);
     body.setLinearDamping(0f);
     body.setBullet(true);
@@ -116,11 +129,6 @@ public class ArrowProjectileComponent extends Component {
     updateRotation(body);
   }
 
-  /**
-   * Range is measured live from the shooter's current position, not the arrow's spawn point, so a
-   * shot lands relative to wherever the shooter ends up while it's in flight. Falls back to the
-   * spawn point if no shooter was given.
-   */
   private Vector2 rangeOrigin() {
     return shooter != null ? shooter.getCenterPosition() : startPosition;
   }
@@ -139,13 +147,10 @@ public class ArrowProjectileComponent extends Component {
       return;
     }
 
-    // The grapple line does no damage and sticks via GrappleArrowComponent; a miss just runs out
-    // of range. It should never be killed by a collision here.
     if (arrowType == ArrowType.GRAPPLE) {
       return;
     }
 
-    // Ignore collisions with the shooter entity
     Object userData = other.getBody().getUserData();
     if (userData instanceof BodyUserData) {
       Entity hitEntity = ((BodyUserData) userData).entity;
@@ -155,15 +160,11 @@ public class ArrowProjectileComponent extends Component {
     }
 
     short otherLayer = other.getFilterData().categoryBits;
-
-    // Ignore all player layer collisions
     if (PhysicsLayer.contains(PhysicsLayer.PLAYER, otherLayer)) {
       return;
     }
 
     if (PhysicsLayer.contains(TARGET_LAYERS, otherLayer)) {
-      // Only stop on something we can actually damage; trigger sensors (e.g. the win zone) sit on
-      // the NPC layer too and the arrow should sail straight through them.
       if (damageTarget(other)) {
         expire();
       }
@@ -176,42 +177,54 @@ public class ArrowProjectileComponent extends Component {
     return physicsComponent.getBody().getPosition().dst2(startPosition) > MIN_TRAVEL * MIN_TRAVEL;
   }
 
-  /**
-   * @return true if a damageable target was hit (so the arrow should stop), false for a non-combat
-   *     collider such as a trigger sensor
-   */
   private boolean damageTarget(Fixture other) {
     Object userData = other.getBody().getUserData();
     if (!(userData instanceof BodyUserData)) {
       return false;
     }
+
     Entity target = ((BodyUserData) userData).entity;
     if (target == null || target == entity) {
       return false;
     }
-    if (target.getComponent(CombatStatsComponent.class) == null) {
+
+    CombatStatsComponent targetStats = target.getComponent(CombatStatsComponent.class);
+    if (targetStats == null || combatStats == null) {
       return false;
     }
 
-    if (combatStats != null) {
-      target.getEvents().trigger("takeDamage", combatStats);
-    }
+    int healthBefore = targetStats.getHealth();
+    target.getEvents().trigger("takeDamage", combatStats);
+    boolean damaged = targetStats.getHealth() < healthBefore;
 
     switch (arrowType) {
-      case COLD:
-        target.getEvents().trigger("applyCold", 0.5f, 3.0f);
-        target.getEvents().trigger("slow", 0.5f);
-        break;
-
       case FIRE:
-        target.getEvents().trigger("applyFire", 5, 3.0f);
-        target.getEvents().trigger("burn", 5);
+        target
+            .getEvents()
+            .trigger(
+                "applyBurn",
+                ItemType.FIRE_ARROW.getBurnDamagePerSecond(),
+                ItemType.FIRE_ARROW.getBurnTime());
         break;
-
+      case ICE:
+        target
+            .getEvents()
+            .trigger(
+                "applySlow", ItemType.ICE_ARROW.getSlowSpeed(), ItemType.ICE_ARROW.getSlowTime());
+        break;
+      case POISON:
+        target.getEvents().trigger("applyPoison", 5f, 3f);
+        break;
       default:
         break;
     }
-    return true;
+
+    if (poisonDamagePerSecond > 0f && poisonDuration > 0f) {
+      target.getEvents().trigger("applyPoison", poisonDamagePerSecond, poisonDuration);
+    }
+
+    // Thrown potions deal their effect as a debuff, even when instant damage is zero.
+    return damaged || arrowType == ArrowType.POTION;
   }
 
   private void expire() {

@@ -1,7 +1,6 @@
 package com.csse3200.game.components.player;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Input.Buttons;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputProcessor;
@@ -39,6 +38,9 @@ public class KeyboardPlayerInputComponent extends InputComponent {
     super.create();
     entity.getEvents().addListener("togglePause", this::unpause);
     entity.getEvents().addListener("death", () -> dead = true);
+    entity.getEvents().addListener("openShop", this::releaseHeldGameplayInput);
+    entity.getEvents().addListener("closeShop", this::syncReleasedShootButton);
+    entity.getEvents().addListener("releaseHeldGameplayInput", this::releaseHeldGameplayInput);
   }
 
   /**
@@ -60,6 +62,9 @@ public class KeyboardPlayerInputComponent extends InputComponent {
   public boolean keyDown(int keycode) {
     if (dead) {
       return false;
+    }
+    if (isShopOpen() && keycode != Keys.F) {
+      return true;
     }
     switch (keycode) {
       // Hotbar number keys
@@ -144,13 +149,16 @@ public class KeyboardPlayerInputComponent extends InputComponent {
       case Keys.COMMA:
         entity.getEvents().trigger("switchItem", -1);
         return true;
-      case Input.Keys.S:
+      case Keys.S:
         entity.getEvents().trigger("grappleDescendStart");
         entity.getEvents().trigger("updateLedgeDrop", true);
         keysHeld[DOWN] = true;
         if (!ServiceLocator.getEntityService().getPaused()) {
           triggerWalkEvent();
         }
+        return true;
+      case Keys.TAB:
+        entity.getEvents().trigger("openArrowWheel");
         return true;
       case Keys.ESCAPE:
         if (!ServiceLocator.getEntityService().getSettingsOpen()) {
@@ -210,6 +218,9 @@ public class KeyboardPlayerInputComponent extends InputComponent {
       case Keys.E:
         attackHeld = false;
         return true;
+      case Keys.TAB:
+        entity.getEvents().trigger("closeArrowWheel");
+        return true;
       default:
         return false;
     }
@@ -228,7 +239,10 @@ public class KeyboardPlayerInputComponent extends InputComponent {
    */
   @Override
   public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-    if (dead) {
+    if (isShopOpen()) {
+      return true;
+    }
+    if (dead || isArrowWheelOpen()) {
       return false;
     }
     if (button == Buttons.LEFT) {
@@ -266,7 +280,7 @@ public class KeyboardPlayerInputComponent extends InputComponent {
   @Override
   public boolean touchUp(int screenX, int screenY, int pointer, int button) {
     if (dead) {
-      return false;
+      return isShopOpen();
     }
 
     if (button == Buttons.LEFT) {
@@ -275,16 +289,82 @@ public class KeyboardPlayerInputComponent extends InputComponent {
     }
 
     if (button == Buttons.RIGHT) {
-      rightMouseHeld = false;
-      entity.getEvents().trigger("stopShoot");
+      // Clear even if the shop is open. The overlay may still deliver this event, and swallowing
+      // it without cancelling leaves the bow stuck charging after the shop closes.
+      clearHeldShootButton(isShopOpen());
       return true;
     }
 
+    return isShopOpen();
+  }
+
+  /** Reports the pointer's offset from the centre of the screen, where the wheel is drawn. */
+  @Override
+  public boolean mouseMoved(int screenX, int screenY) {
+    if (Gdx.graphics == null) {
+      return false;
+    }
+
+    float centreX = Gdx.graphics.getWidth() / 2f;
+    float centreY = Gdx.graphics.getHeight() / 2f;
+    // Screen y grows downwards, so flip it to match the wheel's y-up directions.
+    Vector2 offsetFromCentre = new Vector2(screenX - centreX, centreY - screenY);
+    entity.getEvents().trigger("arrowWheelPointerMoved", offsetFromCentre);
+
+    // Reported, not consumed, so other handlers still see the movement.
     return false;
   }
 
+  private boolean isShopOpen() {
+    PlayerInteractionComponent interaction = entity.getComponent(PlayerInteractionComponent.class);
+    return interaction != null && interaction.isShopOpen();
+  }
+
+  private void releaseHeldGameplayInput() {
+    keysHeld[LEFT] = false;
+    keysHeld[RIGHT] = false;
+    sprintHeld = false;
+    attackHeld = false;
+    triggerWalkEvent();
+    entity.getEvents().trigger("sprintStop");
+    // Opening a UI can steal the mouse-up, so drop the charge immediately instead of firing.
+    clearHeldShootButton(true);
+  }
+
+  /**
+   * If the shop consumed the mouse-up, right-click still looks held here. After close, fire/cancel
+   * based on whether the button is actually down.
+   */
+  private void syncReleasedShootButton() {
+    if (!rightMouseHeld) {
+      return;
+    }
+    if (Gdx.input != null && Gdx.input.isButtonPressed(Buttons.RIGHT)) {
+      return;
+    }
+    clearHeldShootButton(true);
+  }
+
+  /**
+   * Drops the right-mouse held flag. {@code cancelCharge} skips firing so a UI overlay cannot spawn
+   * an arrow; otherwise this is a normal shoot release.
+   */
+  private void clearHeldShootButton(boolean cancelCharge) {
+    rightMouseHeld = false;
+    if (cancelCharge) {
+      entity.getEvents().trigger("chargeCancel");
+    } else {
+      entity.getEvents().trigger("stopShoot");
+    }
+  }
+
+  private boolean isArrowWheelOpen() {
+    ArrowWheelComponent wheel = entity.getComponent(ArrowWheelComponent.class);
+    return wheel != null && wheel.isOpen();
+  }
+
   private void triggerAttackOrItemUse() {
-    if (attackHeld) {
+    if (attackHeld || isArrowWheelOpen()) {
       return;
     }
     attackHeld = true;

@@ -12,12 +12,10 @@ import com.csse3200.game.services.ServiceLocator;
 
 /** Draws a projectile's sprite rotated to face its flight direction. */
 public class ArrowRenderComponent extends RenderComponent {
-  private static final float RENDER_SIZE = 0.6f;
-
   private static Texture pixelTexture;
 
   private final ArrowType arrowType;
-  private float renderSize = RENDER_SIZE;
+  private Float renderSize;
   private ArrowProjectileComponent projectile;
   private Texture arrowTexture;
 
@@ -54,17 +52,20 @@ public class ArrowRenderComponent extends RenderComponent {
     Vector2 dir = (projectile != null) ? projectile.getCurrentDirection() : new Vector2(1f, 0f);
     float rotationDeg = dir.angleDeg();
 
-    float width;
-    float height;
-    if (arrowType == ArrowType.GRAPPLE) {
-      width = renderSize;
-      height = renderSize * 0.25f;
-    } else if (texture.getWidth() >= texture.getHeight()) {
-      width = renderSize;
-      height = renderSize * texture.getHeight() / texture.getWidth();
-    } else {
-      width = renderSize * texture.getWidth() / texture.getHeight();
-      height = renderSize;
+    Vector2 scale = entity.getScale();
+    float width = scale.x;
+    float height = scale.y;
+    if (renderSize != null) {
+      if (arrowType == ArrowType.GRAPPLE) {
+        width = renderSize;
+        height = renderSize * 0.25f;
+      } else if (texture.getWidth() >= texture.getHeight()) {
+        width = renderSize;
+        height = renderSize * texture.getHeight() / texture.getWidth();
+      } else {
+        width = renderSize * texture.getWidth() / texture.getHeight();
+        height = renderSize;
+      }
     }
 
     Vector2 center = entity.getCenterPosition();

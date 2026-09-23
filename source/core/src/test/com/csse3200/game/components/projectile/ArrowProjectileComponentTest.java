@@ -7,6 +7,7 @@ import static org.mockito.Mockito.spy;
 
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.components.CombatStatsComponent;
+import com.csse3200.game.components.item.ItemType;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.extensions.GameExtension;
@@ -15,6 +16,7 @@ import com.csse3200.game.physics.PhysicsService;
 import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.services.ServiceLocator;
+import java.util.concurrent.atomic.AtomicReference;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -167,6 +169,45 @@ class ArrowProjectileComponentTest {
     triggerCollision(arrow, terrain);
 
     assertFalse(arrow.getComponent(ArrowProjectileComponent.class).isSpent());
+  }
+
+  @Test
+  void thrownPoisonPotionAppliesDebuffWithoutInstantDamage() {
+    Entity potion =
+        new Entity()
+            .addComponent(new PhysicsComponent())
+            .addComponent(new HitboxComponent().setLayer(PhysicsLayer.PLAYER_PROJECTILE))
+            .addComponent(new CombatStatsComponent(1, 0))
+            .addComponent(
+                new ArrowProjectileComponent(
+                    null,
+                    Vector2.X,
+                    12f,
+                    20f,
+                    ArrowType.POTION,
+                    ItemType.PoisonPotion.getPoisonDamagePerSecond(),
+                    ItemType.PoisonPotion.getPoisonDuration()));
+    potion.setPosition(0f, 0f);
+    entityService.register(potion);
+
+    Entity target = createTarget(PhysicsLayer.NPC, true, 20);
+    AtomicReference<Float> dps = new AtomicReference<>();
+    AtomicReference<Float> duration = new AtomicReference<>();
+    target
+        .getEvents()
+        .addListener(
+            "applyPoison",
+            (Float damage, Float seconds) -> {
+              dps.set(damage);
+              duration.set(seconds);
+            });
+
+    triggerCollision(potion, target);
+
+    assertEquals(20, target.getComponent(CombatStatsComponent.class).getHealth());
+    assertEquals(ItemType.PoisonPotion.getPoisonDamagePerSecond(), dps.get());
+    assertEquals(ItemType.PoisonPotion.getPoisonDuration(), duration.get());
+    assertTrue(potion.getComponent(ArrowProjectileComponent.class).isSpent());
   }
 
   @Test
