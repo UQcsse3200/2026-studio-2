@@ -17,38 +17,42 @@ public class PoisonStatsComponent extends Component {
   }
 
   private void applyPoison(float damagePerSecond, float durationSeconds) {
-    GameTime time = ServiceLocator.getTimeSource();
-
-    if (time == null || damagePerSecond <= 0f || durationSeconds <= 0f) {
+    if (damagePerSecond <= 0f || durationSeconds <= 0f) {
       return;
     }
-
+    GameTime time = ServiceLocator.getTimeSource();
+    if (time == null) {
+      return;
+    }
     long currentTime = time.getTime();
     this.damagePerSecond = damagePerSecond;
-    poisonEndTime = currentTime + (long) (durationSeconds * 1000f);
-    nextDamageTime = currentTime + DAMAGE_INTERVAL;
+    this.poisonEndTime = currentTime + (long) (durationSeconds * 1000f);
+    this.nextDamageTime = currentTime + DAMAGE_INTERVAL;
   }
 
   @Override
   public void update() {
-    GameTime time = ServiceLocator.getTimeSource();
-    if (combatStats == null || time == null || damagePerSecond <= 0f) {
+    if (combatStats == null || damagePerSecond <= 0f) {
       return;
     }
-
+    GameTime time = ServiceLocator.getTimeSource();
+    if (time == null) {
+      return;
+    }
     long currentTime = time.getTime();
 
-    while (currentTime >= nextDamageTime
-        && nextDamageTime <= poisonEndTime
-        && !combatStats.isDead()) {
+    // Deal every missed one-second tick, including the final tick at burnEndTimeMs.
+    while (currentTime >= nextDamageTime && nextDamageTime <= poisonEndTime) {
       combatStats.addHealth(-Math.round(damagePerSecond));
       nextDamageTime += DAMAGE_INTERVAL;
     }
 
-    if (currentTime >= poisonEndTime || combatStats.isDead()) {
+    if (currentTime >= poisonEndTime && nextDamageTime > poisonEndTime) {
       damagePerSecond = 0f;
-      poisonEndTime = 0L;
-      nextDamageTime = 0L;
     }
+  }
+
+  public boolean isPoisoned() {
+    return damagePerSecond > 0f;
   }
 }

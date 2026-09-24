@@ -251,7 +251,8 @@ public class EnemyFactory {
         .addComponent(new EnemyDeathComponent())
         .addComponent(new PoisonStatsComponent())
         .addComponent(new BurnStatsComponent())
-        .addComponent(new SlowStatsComponent());
+        .addComponent(new SlowStatsComponent())
+        .addComponent(new ParticleEffectsRenderingComponent());
   }
 
   private EnemyFactory() {
