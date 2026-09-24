@@ -16,7 +16,9 @@ public enum ArrowType {
   public static final float DEADZONE_RADIUS = 40f;
 
   private static final float DEADZONE_RADIUS_SQ = DEADZONE_RADIUS * DEADZONE_RADIUS;
-  private static final ArrowType[] WHEEL_TYPES = {STANDARD, FIRE, ICE, POISON};
+
+  /** Types shown on the arrow wheel, clockwise from the top. Wedges are shared evenly. */
+  private static final ArrowType[] WHEEL_TYPES = {STANDARD, FIRE, ICE};
 
   private final String label;
   private final Color tintColor;
@@ -41,6 +43,11 @@ public enum ArrowType {
 
   public Color getTintColor() {
     return tintColor;
+  }
+
+  /** Returns the arrow types shown on the wheel, clockwise from the top. */
+  public static ArrowType[] getWheelTypes() {
+    return WHEEL_TYPES.clone();
   }
 
   /** Returns the arrow type the pointer is aimed at, or null inside the centre deadzone. */

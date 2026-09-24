@@ -78,6 +78,7 @@ public class PlayerFactory {
             .addComponent(new PoisonBuff())
             .addComponent(new MeleeAttackComponent())
             .addComponent(new ArrowWheelComponent())
+            .addComponent(new ArrowWheelDisplay())
             .addComponent(new MeleeComponent())
             .addComponent(new WeaponComponent(bowComponent))
             .addComponent(new InventoryComponent(stats.gold))
