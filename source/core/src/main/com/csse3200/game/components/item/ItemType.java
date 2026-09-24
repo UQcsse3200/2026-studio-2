@@ -74,19 +74,6 @@ public enum ItemType {
       0f,
       0f),
 
-  Sword(
-      6,
-      "Great Sword",
-      "A heavy sword with high damage.",
-      "images/sword.png",
-      20,
-      5f,
-      0f,
-      0,
-      false),
-
-  Spear(7, "Spear", "A long spear with extended range.", "images/spear.png", 12, 8f, 0f, 0, false),
-
   SpeedPotion(
       8,
       "Speed Potion",
@@ -258,7 +245,7 @@ public enum ItemType {
   public boolean isArrow() {
     return switch (this) {
       case STANDARD_ARROW, ROPE_ARROW, FIRE_ARROW, ICE_ARROW -> true;
-      case HEALTH_POTION, Sword, Spear, SpeedPotion, PoisonPotion -> false;
+      case HEALTH_POTION, SpeedPotion, PoisonPotion -> false;
     };
   }
 

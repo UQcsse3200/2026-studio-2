@@ -142,8 +142,7 @@ public class SandboxGameArea extends GameArea {
                 EXIT_BUTTON_DOWN_TEXTURE,
                 SKELETON_WARRIOR_TEXTURE,
                 SKELETON_ARCHER_TEXTURE,
-                NPCFactory.SHOPKEEPER_TEXTURE),
-                SKELETON_ARCHER_TEXTURE,
+                NPCFactory.SHOPKEEPER_TEXTURE,
                 FIRE_STATUS_TEXTURE,
                 ICE_STATUS_TEXTURE),
             Arrays.stream(ItemType.values())

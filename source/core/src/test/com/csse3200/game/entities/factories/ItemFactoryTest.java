@@ -15,8 +15,6 @@ import com.csse3200.game.components.item.ItemType;
 import com.csse3200.game.components.item.consumables.HealthPotion;
 import com.csse3200.game.components.item.consumables.PoisonPotion;
 import com.csse3200.game.components.item.consumables.SpeedPotion;
-import com.csse3200.game.components.item.weapons.Spear;
-import com.csse3200.game.components.item.weapons.Sword;
 import com.csse3200.game.components.item.weapons.bow.arrow.Arrow;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.extensions.GameExtension;
@@ -57,8 +55,6 @@ class ItemFactoryTest {
     assertItemMapping(ItemType.HEALTH_POTION, HealthPotion.class);
     assertItemMapping(ItemType.FIRE_ARROW, Arrow.class);
     assertItemMapping(ItemType.ICE_ARROW, Arrow.class);
-    assertItemMapping(ItemType.Sword, Sword.class);
-    assertItemMapping(ItemType.Spear, Spear.class);
     assertItemMapping(ItemType.SpeedPotion, SpeedPotion.class);
     assertItemMapping(ItemType.PoisonPotion, PoisonPotion.class);
   }

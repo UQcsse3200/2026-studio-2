@@ -266,16 +266,6 @@ class ItemUseComponentTest {
   }
 
   @Test
-  void shouldUseSwordThroughMeleeAttackEvent() {
-    assertMeleeItemUsesDamageAndRange(ItemType.Sword);
-  }
-
-  @Test
-  void shouldUseSpearThroughMeleeAttackEvent() {
-    assertMeleeItemUsesDamageAndRange(ItemType.Spear);
-  }
-
-  @Test
   void shouldTriggerSpeedPotionBuffAndConsumePotion() {
     Entity player = createPlayer();
     InventoryComponent inventory = player.getComponent(InventoryComponent.class);

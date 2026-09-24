@@ -8,8 +8,6 @@ import com.csse3200.game.components.item.ItemType;
 import com.csse3200.game.components.item.consumables.HealthPotion;
 import com.csse3200.game.components.item.consumables.PoisonPotion;
 import com.csse3200.game.components.item.consumables.SpeedPotion;
-import com.csse3200.game.components.item.weapons.Spear;
-import com.csse3200.game.components.item.weapons.Sword;
 import com.csse3200.game.components.item.weapons.bow.arrow.Arrow;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.physics.PhysicsLayer;
@@ -55,8 +53,6 @@ public class ItemFactory {
       case HEALTH_POTION -> createHealthPotion(quantity);
       case FIRE_ARROW -> createFireArrow(quantity);
       case ICE_ARROW -> createIceArrow(quantity);
-      case Sword -> createSword(quantity);
-      case Spear -> createSpear(quantity);
       case SpeedPotion -> createSpeedPotion(quantity);
       case PoisonPotion -> createPoisonPotion(quantity);
     };
@@ -76,8 +72,6 @@ public class ItemFactory {
       case "healthPotion" -> createItem(ItemType.HEALTH_POTION, quantity);
       case "fireArrow" -> createItem(ItemType.FIRE_ARROW, quantity);
       case "iceArrow", "coldArrow" -> createItem(ItemType.ICE_ARROW, quantity);
-      case "sword" -> createItem(ItemType.Sword, quantity);
-      case "spear" -> createItem(ItemType.Spear, quantity);
       case "speedPotion" -> createItem(ItemType.SpeedPotion, quantity);
       case "poisonPotion" -> createItem(ItemType.PoisonPotion, quantity);
       default -> throw new IllegalArgumentException("Unknown item type: " + itemName);
@@ -106,14 +100,6 @@ public class ItemFactory {
 
   public static Entity createHealthPotion(int quantity) {
     return createItem(new HealthPotion(quantity));
-  }
-
-  public static Entity createSword(int quantity) {
-    return createItem(new Sword(quantity));
-  }
-
-  public static Entity createSpear(int quantity) {
-    return createItem(new Spear(quantity));
   }
 
   public static Entity createSpeedPotion(int quantity) {

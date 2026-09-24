@@ -1,7 +1,6 @@
 package com.csse3200.game.components.shop;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.csse3200.game.components.inventory.InventoryComponent;
@@ -60,18 +59,6 @@ class ShopComponentTest {
   }
 
   @Test
-  void shouldRejectDuplicateSword() {
-    Entity player = createPlayer(50);
-    InventoryComponent inventory = player.getComponent(InventoryComponent.class);
-    inventory.addItem(ItemType.Sword, 1);
-
-    ShopComponent shop = player.getComponent(ShopComponent.class);
-    assertEquals(PurchaseResult.ALREADY_OWNED, shop.buy(ItemType.Sword));
-    assertEquals(50, inventory.getGold());
-    assertEquals(1, inventory.getItemCount(ItemType.Sword));
-  }
-
-  @Test
   void shouldRejectRopeArrow() {
     Entity player = createPlayer(50);
     ShopComponent shop = player.getComponent(ShopComponent.class);
@@ -93,11 +80,8 @@ class ShopComponentTest {
     Entity player = createPlayer(ShopCatalog.STANDARD_ARROW_PRICE);
     ShopComponent shop = player.getComponent(ShopComponent.class);
     ShopListing arrows = ShopCatalog.getListing(ItemType.STANDARD_ARROW);
-    ShopListing sword = ShopCatalog.getListing(ItemType.Sword);
 
     assertTrue(shop.canBuy(arrows));
-    assertFalse(shop.canAfford(sword));
-    assertFalse(shop.canBuy(sword));
   }
 
   Entity createPlayer(int gold) {

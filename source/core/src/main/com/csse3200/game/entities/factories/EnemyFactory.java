@@ -27,9 +27,9 @@ import com.csse3200.game.physics.components.ColliderComponent;
 import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.physics.components.PhysicsMovementComponent;
-import com.csse3200.game.rendering.StatusEffectRenderComponent;
 import com.csse3200.game.rendering.AnimationRenderComponent;
 import com.csse3200.game.rendering.EnemyHealthRenderComponent;
+import com.csse3200.game.rendering.StatusEffectRenderComponent;
 import com.csse3200.game.rendering.TextureRenderComponent;
 import com.csse3200.game.services.ServiceLocator;
 
@@ -234,7 +234,7 @@ public class EnemyFactory {
             .addComponent(new SlowStatsComponent())
             .addComponent(new EnemyItemDropComponent(config.itemDrops))
             .addComponent(new EnemyHealthRenderComponent())
-            .addComponent(aiComponent);
+            .addComponent(aiComponent)
             .addComponent(new SlowStatsComponent())
             .addComponent(new StatusEffectRenderComponent());
 
