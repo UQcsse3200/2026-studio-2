@@ -37,10 +37,11 @@ public class GrappleSideRenderComponent extends RenderComponent {
 
     // todo: change this shaperenderer into a tiled png of a rope or somethng
     batch.end();
-
+    float light = getDarkness();
+    shapeRenderer.setColor(light, light, light, 1f);
     shapeRenderer.setProjectionMatrix(batch.getProjectionMatrix());
     shapeRenderer.begin(ShapeType.Filled);
-    shapeRenderer.setColor(Color.GOLD);
+    // shapeRenderer.setColor(Color.GOLD);
 
     drawSide(PlatformGrappleComponent.LEFT_SIDE, new Vector2(left, bottom), new Vector2(left, top));
 
@@ -54,6 +55,7 @@ public class GrappleSideRenderComponent extends RenderComponent {
         new Vector2(left, bottom),
         new Vector2(right, bottom));
 
+    shapeRenderer.setColor(Color.GOLD);
     shapeRenderer.end();
     batch.begin();
   }
