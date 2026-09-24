@@ -108,7 +108,8 @@ public class MainGameScreen extends ScreenAdapter {
   public void render(float delta) {
     if (Gdx.input.isKeyJustPressed(Input.Keys.K)) {
       wheelOverlay.request();
-    } else if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
+    } else if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)
+        && !ServiceLocator.getEntityService().getSettingsOpen()) {
       pauseOverlay.request();
     }
     if (Gdx.input.isKeyJustPressed(Input.Keys.L)) {

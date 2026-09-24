@@ -20,7 +20,8 @@ public class EntityService {
   private final Array<Entity> entitiesToDispose = new Array<>();
   private final Array<Entity> pendingRemoval = new Array<>(false, INITIAL_CAPACITY);
 
-  private boolean paused;
+  private boolean paused = false;
+  private boolean settingsOpen = false;
 
   /**
    * Register a new entity with the entity service. The entity will be created and start updating.
@@ -123,5 +124,15 @@ public class EntityService {
   void updatePhysicsPauseState() {
     ServiceLocator.getPhysicsService().getPhysics().setPaused(paused);
     ServiceLocator.getTimeSource().setTimeScale(paused ? 0f : 1f);
+  }
+
+  public boolean getSettingsOpen() {
+    System.out.printf("Settings status requested : %b", settingsOpen);
+    return settingsOpen;
+  }
+
+  public void setSettingsOpen(boolean newSettingsState) {
+    System.out.printf("Settings status set : %b", newSettingsState);
+    settingsOpen = newSettingsState;
   }
 }
