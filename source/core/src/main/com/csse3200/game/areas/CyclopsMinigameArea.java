@@ -87,8 +87,8 @@ public class CyclopsMinigameArea extends GameArea {
     loadAssets();
 
     spawnTerrain();
-    displayFloor();
     spawnStatues();
+    displayFloor();
 
     player = spawnPlayer();
 
@@ -130,7 +130,7 @@ public class CyclopsMinigameArea extends GameArea {
     terrain = terrainFactory.createTerrain(TerrainFactory.TerrainType.CYCLOPS_ROOM);
     spawnEntity(new Entity().addComponent(terrain));
 
-    statueYLevel = 5;
+    statueYLevel = 3;
     winLocation = new GridPoint2(MAP_SIZE.x + 10, statueYLevel);
 
     Entity cameraEntityHolder = new Entity();
@@ -160,6 +160,10 @@ public class CyclopsMinigameArea extends GameArea {
       Entity statue = ObstacleFactory.createStatue();
       statue.setScale(new Vector2(3, 6));
       spawnEntityAt(statue, new GridPoint2(x, statueYLevel), true, false);
+      logger.info(
+          "Spawned statue {} at: {}",
+          i,
+          terrain.tileToWorldPosition(new GridPoint2(x, statueYLevel)));
 
       int gapX = (MAP_SIZE.x / NUM_STATUES) * i - 2;
       GridPoint2 gapLocation = new GridPoint2(gapX, statueYLevel);
@@ -169,7 +173,11 @@ public class CyclopsMinigameArea extends GameArea {
 
   /** Creates and displays the floor entity that spans the entire screen */
   private void displayFloor() {
-    spawnEntityAt(ObstacleFactory.createWall(MAP_SIZE.x, 0.1f), new GridPoint2(0, 1), true, true);
+    spawnEntityAt(
+        ObstacleFactory.createWall(MAP_SIZE.x, 0.1f),
+        new GridPoint2(0, statueYLevel - 1),
+        false,
+        false);
   }
 
   /**
@@ -179,7 +187,8 @@ public class CyclopsMinigameArea extends GameArea {
    */
   private Entity spawnPlayer() {
     Entity newPlayer = PlayerFactory.createPlayerDisplay();
-    spawnEntityAt(newPlayer, statueLocations.getFirst(), false, true);
+    spawnEntityAt(newPlayer, statueLocations.getFirst(), false, false);
+    newPlayer.setPosition(terrain.tileToWorldPosition(statueLocations.getFirst()));
     return newPlayer;
   }
 
