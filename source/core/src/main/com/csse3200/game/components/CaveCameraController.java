@@ -50,6 +50,11 @@ public class CaveCameraController {
     recomputeCameraBounds();
   }
 
+  /** Removes room bounds so the camera follows the target unclamped again. */
+  public void clearRoomBounds() {
+    roomBoundsSet = false;
+  }
+
   /**
    * Updates the viewport size this controller clamps against, e.g. after a window resize.
    */

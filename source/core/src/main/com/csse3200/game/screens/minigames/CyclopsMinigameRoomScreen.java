@@ -37,11 +37,7 @@ public class CyclopsMinigameRoomScreen extends ScreenAdapter {
   private static final Logger logger = LoggerFactory.getLogger(CyclopsMinigameRoomScreen.class);
   private static final String[] cyclopsMinigameTextures = {
     "images/ui/title_odysseus_logo.png",
-    "images/box_boy_title.png",
-    "images/Health_Bar_Background.png",
-    "images/Inventory_background.png",
     "images/health/red_heart.png",
-    "images/heart.png",
     "images/Buttons/exit_up_btn.png",
     "images/Buttons/exit_down_btn.png",
     "images/Buttons/restart_up_btn.png",

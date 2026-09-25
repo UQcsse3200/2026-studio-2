@@ -56,7 +56,7 @@ public class GameEndDisplay extends UIComponent {
     this.resultText =
         state == GameEndState.WIN
             ? "You achieved victory and completed the objective."
-            : "better luck next time bub...";
+            : "Better luck next time bub...";
     this.typewriterEffect = new TypewriterEffect(MESSAGE_SPEED);
     this.typewriterEffect.setText(this.resultText);
   }
@@ -74,7 +74,7 @@ public class GameEndDisplay extends UIComponent {
     String newResultText =
         state == GameEndState.WIN
             ? "You achieved victory and completed the objective."
-            : "better luck next time bub...";
+            : "Better luck next time bub...";
     this.resultText = newResultText;
     visible = true;
     if (typewriterEffect != null) {
@@ -191,7 +191,7 @@ public class GameEndDisplay extends UIComponent {
     panel = new Table();
     panel.setVisible(visible);
     // panel.setBackground(getBackgroundDrawable());
-    Value padding = Value.percentWidth(0.02f, root);
+    Value padding = Value.percentWidth(0.01f, root);
 
     titleLabel = new Label(titleText, skin);
     titleLabel.setFontScale(2f);

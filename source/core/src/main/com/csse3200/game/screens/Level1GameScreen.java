@@ -11,9 +11,10 @@ import com.csse3200.game.areas.Level1GameArea;
 import com.csse3200.game.areas.Level2GameArea;
 import com.csse3200.game.areas.terrain.TerrainFactory;
 import com.csse3200.game.components.ButtonSound;
+import com.csse3200.game.components.gamearea.CoordinateDisplay;
 import com.csse3200.game.components.gamearea.PerformanceDisplay;
 import com.csse3200.game.components.maingame.MainGameActions;
-import com.csse3200.game.components.maingame.MainGameExitDisplay;
+import com.csse3200.game.components.maingame.PauseButtonDisplay;
 import com.csse3200.game.components.maingame.PauseMenuOverlay;
 import com.csse3200.game.components.minigames.MinigameOverlayManager;
 import com.csse3200.game.components.minigames.blackjack.BlackjackConfig;
@@ -245,6 +246,12 @@ public class Level1GameScreen extends ScreenAdapter {
       pauseOverlay.request();
     }
 
+    // F3 toggles debug mode: physics outlines plus player and mouse coordinates
+    if (Gdx.input.isKeyJustPressed(Input.Keys.F3)) {
+      var debug = ServiceLocator.getRenderService().getDebug();
+      debug.setActive(!debug.getActive());
+    }
+
     if (Gdx.input.isKeyJustPressed(Input.Keys.L)) {
       blackjackOverlay.request();
     }
@@ -325,6 +332,7 @@ public class Level1GameScreen extends ScreenAdapter {
                 "images/projectiles/rope_arrow.png",
                 "images/projectiles/fire_arrow.png",
                 "images/projectiles/cold_arrow.png"));
+    paths.addAll(List.of(PauseButtonDisplay.extraTextures()));
     paths.addAll(List.of(WheelConfig.TEXTURES));
     paths.addAll(List.of(BlackjackConfig.TEXTURES));
     return paths.toArray(new String[0]);
@@ -388,8 +396,9 @@ public class Level1GameScreen extends ScreenAdapter {
 
     ui.addComponent(new InputDecorator(stage, 10))
         .addComponent(new PerformanceDisplay())
+        .addComponent(new CoordinateDisplay(renderer.getCamera()))
         .addComponent(new MainGameActions(this.game))
-        .addComponent(new MainGameExitDisplay())
+        .addComponent(new PauseButtonDisplay(() -> pauseOverlay.request()))
         .addComponent(
             new GameEndDisplay(GameEndState.LOSE)) // Add GameEndDisplay component to the UI entity
         .addComponent(new GameEndActions(this.game))

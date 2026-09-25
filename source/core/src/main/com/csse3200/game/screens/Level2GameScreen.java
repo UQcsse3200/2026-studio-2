@@ -165,9 +165,7 @@ public class Level2GameScreen extends ScreenAdapter {
     List<String> paths =
         new ArrayList<>(
             List.of(
-                "images/heart.png",
                 "images/ui/title_odysseus_logo.png",
-                "images/Health_Bar_Background.png",
                 "images/health/red_heart.png",
                 "images/health/PixelArt_HeartBack.png",
                 "images/health/Damaged_heart.png",

@@ -29,7 +29,6 @@ public class Level2GameArea extends GameArea {
     "images/backgrounds/Platform_level-2.png",
 
     // Level 2 ground tile
-    "images/terrain/tile-level2.png",
 
     // Transparent texture used for the physics-only floor
     "images/ui/transparent.png",
@@ -37,26 +36,8 @@ public class Level2GameArea extends GameArea {
     // Existing game textures
     "images/backgrounds/black_roof.png",
     "images/health/purple_heart.png",
-    "images/DevGridTile.png",
-    "images/terrain/Tile_2.png",
-    "images/box_boy_leaf.png",
-    "images/terrain/spike.png",
-    "images/tree.png",
-    "images/ghost_king.png",
-    "images/ghost_1.png",
-    "images/grass_1.png",
-    "images/grass_2.png",
-    "images/grass_3.png",
-    "images/hex_grass_1.png",
-    "images/hex_grass_2.png",
-    "images/hex_grass_3.png",
-    "images/iso_grass_1.png",
-    "images/iso_grass_2.png",
-    "images/iso_grass_3.png",
     "images/traps/spiky_ball.png",
     "images/traps/spiky_ball_trap.png",
-    "images/terrain/checkpoint_lit.png",
-    "images/terrain/checkpoint_unlit.png",
     // Enemy textures
     "images/enemies/skeleton_warrior.png",
     "images/enemies/skeleton_archer.png",
@@ -92,6 +73,9 @@ public class Level2GameArea extends GameArea {
   @Override
   public void create() {
     loadAssets();
+
+    // The camera is shared with the previous level, so drop its room bounds before spawning.
+    camera.clearRoomBounds();
 
     // Spawn the Level 2 background before the terrain.
     spawnBackground();

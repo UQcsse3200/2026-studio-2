@@ -1,26 +1,26 @@
-cave_checkpoint.png
-size: 1536, 1024
+Level_1_checkpoint.png
+size: 1418, 890
 format: RGBA8888
 filter: Nearest,Nearest
 repeat: none
 default
   rotate: false
   xy: 0, 0
-  size: 768, 1024
-  orig: 768, 1024
+  size: 709, 890
+  orig: 709, 890
   offset: 0, 0
   index: -1
 unlit
   rotate: false
   xy: 0, 0
-  size: 768, 1024
-  orig: 768, 1024
+  size: 709, 890
+  orig: 709, 890
   offset: 0, 0
   index: -1
 lit
   rotate: false
-  xy: 768, 0
-  size: 768, 1024
-  orig: 768, 1024
+  xy: 709, 0
+  size: 709, 890
+  orig: 709, 890
   offset: 0, 0
   index: -1

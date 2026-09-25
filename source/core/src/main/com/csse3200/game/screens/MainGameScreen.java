@@ -164,8 +164,6 @@ public class MainGameScreen extends ScreenAdapter {
             List.of(
                 "images/health/purple_heart.png",
                 "images/ui/title_odysseus_logo.png",
-                "images/box_boy_title.png",
-                "images/Health_Bar_Background.png",
                 "images/health/red_heart.png",
                 "images/health/PixelArt_HeartBack.png",
                 "images/health/Damaged_heart.png",

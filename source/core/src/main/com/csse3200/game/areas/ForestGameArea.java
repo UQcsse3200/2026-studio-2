@@ -38,33 +38,16 @@ public class ForestGameArea extends GameArea {
   private static final int HEALTH_POTION_QUANTITY = 3;
   private static final float WALL_WIDTH = 0.1f;
   private static final String[] forestTextures = {
-    "images/box_boy_leaf.png",
-    "images/tree.png",
-    "images/heart.png",
-    "images/ghost_king.png",
     "images/enemies/skeleton_warrior.png",
     "images/enemies/skeleton_archer.png",
     "images/projectiles/arrow.png",
-    "images/ghost_1.png",
-    "images/grass_1.png",
-    "images/grass_2.png",
-    "images/grass_3.png",
     "images/ui/black_box.png",
-    "images/hex_grass_1.png",
-    "images/hex_grass_2.png",
-    "images/hex_grass_3.png",
-    "images/iso_grass_1.png",
-    "images/iso_grass_2.png",
-    "images/iso_grass_3.png",
     "images/projectiles/rope_arrow.png",
     "images/projectiles/fire_arrow.png",
     "images/projectiles/cold_arrow.png",
     "scroll_bg.png"
   };
   private static final String[] forestTextureAtlases = {
-    "images/terrain_iso_grass.atlas",
-    "images/ghost.atlas",
-    "images/ghostKing.atlas",
     "images/player/player.atlas"
   };
   private static final String[] forestSounds = {"sounds/Impact4.ogg"};

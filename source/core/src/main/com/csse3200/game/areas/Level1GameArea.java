@@ -38,32 +38,25 @@ public class Level1GameArea extends GameArea {
     new GridPoint2(10, 2), new GridPoint2(20, 2), new GridPoint2(35, 2)
   };
 
-  // private static final GridPoint2[] skeletonWarriorSpawnLocations =
-  //     new GridPoint2[] {
-  //       new GridPoint2(45, 17),
-  //       new GridPoint2(56, 16),
-  //       new GridPoint2(77, 12),
-  //       new GridPoint2(30, 5),
-  //       new GridPoint2(18, 5),
-  //       new GridPoint2(4, 16),
-  //       new GridPoint2(10, 23),
-  //       new GridPoint2(42, 22),
-  //     };
+  private static final GridPoint2[] skeletonWarriorSpawnLocations =
+    new GridPoint2[] {
+      new GridPoint2(1, 16),
+  };
 
   // private static final GridPoint2[] VultureSpawnLocations =
   //     new GridPoint2[] {
   //       new GridPoint2(30, 24), new GridPoint2(65, 20),
   //     };
 
-  // private static final GridPoint2[] NecromancerSpawnLocations = new GridPoint2[] {};
+  private static final GridPoint2[] NecromancerSpawnLocations = new GridPoint2[] {new GridPoint2(23, 17)};
 
-  // private static final GridPoint2[] skeletonArcherSpawnLocations =
-  //     new GridPoint2[] {
-  //       new GridPoint2(60, 1),
-  //       new GridPoint2(57, 10),
-  //       new GridPoint2(20, 8),
-  //       new GridPoint2(46, 16),
-  //     };
+  private static final GridPoint2[] skeletonArcherSpawnLocations =
+    new GridPoint2[] {
+    new GridPoint2(23, 5),
+    // new GridPoint2(57, 10),
+    // new GridPoint2(20, 8),
+    // new GridPoint2(46, 16),
+  };
 
   // // ============ TESTING SPAWN LOCATIONS ================
 
@@ -106,19 +99,16 @@ public class Level1GameArea extends GameArea {
     "images/health/PixelArt_HeartBack.png",
     "images/ui/transparent.png",
     "images/backgrounds/level_1_bg.png",
-    "images/terrain/cave_platform.png",
-    "images/terrain/cave_tile.png",
-    "images/terrain/cave_touch.png",
+    "images/backgrounds/level_1_idea.png",
     "images/terrain/closed_door.png",
     "images/terrain/open_door.png",
-    "images/terrain/sheeps_cave.png",
+    "images/terrain/Level_1/sheeps_cave.png",
     "images/terrain/treasure_room.png",
-    "images/terrain/cave_mossy.png",
     "images/terrain/npc_room.png",
     "images/terrain/normal_cave.png",
-    "images/terrain/checkpoint_unlit.png",
-    "images/terrain/checkpoint_lit.png",
-    "images/terrain/cave_checkpoint.png",
+    "images/terrain/Level_1/Level_1_tile.png",
+    "images/terrain/Level_1/Level_1_platform.png",
+    "images/terrain/Level_1/Level_1_Spike.png",
 
 
     // Enemy textures
@@ -133,6 +123,7 @@ public class Level1GameArea extends GameArea {
 
   private static final String[] forestTextureAtlases = {
     "images/player/player.atlas",
+    "images/terrain/Level_1/Level_1_checkpoint.atlas",
     "images/enemies/skeleton_archer.atlas",
     "images/enemies/skeleton_warrior.atlas",
     "images/enemies/necromancer.atlas",
@@ -174,8 +165,8 @@ public class Level1GameArea extends GameArea {
     player = spawnPlayer();
     //// spawnItems(); // test items
     //// spawnWinCondition();
-    //spawnSkeletonArcher();
-    //spawnSkeletonWarrior();
+    spawnSkeletonArcher();
+    spawnSkeletonWarrior();
     //spawnVulture();
 
     // Test enemy functionalitys
@@ -184,7 +175,7 @@ public class Level1GameArea extends GameArea {
     // spawnTestVulture();
     // spawnTestNecromancer();
 
-    // spawnNecromancer();
+    spawnNecromancer();
 
     // spawnTestWinCondition(); // Temporary test win condition near player spawn for quick testing
 
@@ -227,22 +218,25 @@ public class Level1GameArea extends GameArea {
     BackgroundRenderComponent backgroundComponent =
         new BackgroundRenderComponent(camera, backgroundPos, worldBounds);
 
-    // Starting area background only — fixed in world space (parallaxFactor.x = 1, distance = 0
-    // cancel out the camera-following terms) so it doesn't scroll with the camera like the old
-    // level-wide backdrop did. Sized bigger than the default camera viewport (20 x 11.25) plus
-    // margin, so it fully covers the screen with no black bars while the player is in this area.
-    // Other areas will get their own layer positioned at their own world location as they're
-    // built, e.g. treasure_room.png, sheeps_cave.png, etc.
+    // Level-wide background: a single copy of level_1_idea.png (1672 x 940, ~1.78 aspect ratio)
+    // that drifts slowly with the camera like a distant backdrop, so one image always fills the
+    // screen and nothing has to be repeated. The layer's world position is
+    //   x = backgroundPos.x + offset.x + cameraX * (1 - parallaxFactor.x)
+    //   y = backgroundPos.y + offset.y + cameraY * distance
+    // With the values below (parallax x 0.15, distance 0.7) the image covers the view for camera
+    // positions of roughly x 5..95 and y 3..25, i.e. the whole 90 x 27 level. Making the image
+    // smaller looks further away, but needs a smaller parallax x / larger distance to keep
+    // covering the screen; making it larger is always safe.
     backgroundComponent.addLayer(
-        "images/terrain/normal_cave.png",
-        new Vector2(1f, 0f),
-        29f,
-        21.4f,
-        new Vector2(3f, 3f),
+        "images/backgrounds/level_1_idea.png",
+        new Vector2(0.15f, 0f),
+        36f,
+        20.2f,
+        new Vector2(0f, 5f),
         BackgroundType.DEPENDENT,
         new Vector2(0f, 0f),
         false,
-        0f,
+        0.7f,
         1f);
 
     // Create the background entity.
@@ -283,26 +277,26 @@ public class Level1GameArea extends GameArea {
     return newPlayer;
   }
 
-  // private void spawnSkeletonWarrior() {
-  //   for (GridPoint2 spawnLocation : skeletonWarriorSpawnLocations) {
-  //     Entity enemy = EnemyFactory.createSkeletonWarrior(player);
-  //     spawnEntityAt(enemy, spawnLocation, true, true);
-  //   }
-  // }
+  private void spawnSkeletonWarrior() {
+    for (GridPoint2 spawnLocation : skeletonWarriorSpawnLocations) {
+      Entity enemy = EnemyFactory.createSkeletonWarrior(player);
+     spawnEntityAt(enemy, spawnLocation, true, true);
+    }
+  }
 
-  // // private void spawnNecromancer() {
-  // //   for (GridPoint2 spawnLocation : NecromancerSpawnLocations) {
-  // //     Entity enemy = EnemyFactory.createNecromancer(player);
-  // //     spawnEntityAt(enemy, spawnLocation, true, true);
-  // //   }
-  // // }
+  private void spawnNecromancer() {
+    for (GridPoint2 spawnLocation : NecromancerSpawnLocations) {
+      Entity enemy = EnemyFactory.createNecromancer(player);
+      spawnEntityAt(enemy, spawnLocation, true, true);
+    }
+  }
 
-  // private void spawnSkeletonArcher() {
-  //   for (GridPoint2 spawnLocation : skeletonArcherSpawnLocations) {
-  //     Entity enemy = EnemyFactory.createSkeletonArcher(player);
-  //     spawnEntityAt(enemy, spawnLocation, true, true);
-  //   }
-  // }
+  private void spawnSkeletonArcher() {
+    for (GridPoint2 spawnLocation : skeletonArcherSpawnLocations) {
+      Entity enemy = EnemyFactory.createSkeletonArcher(player);
+      spawnEntityAt(enemy, spawnLocation, true, true);
+    }
+  }
 
   // private void spawnVulture() {
   //   for (GridPoint2 spawnLocation : VultureSpawnLocations) {

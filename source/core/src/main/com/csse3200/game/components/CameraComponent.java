@@ -37,6 +37,11 @@ public class CameraComponent extends Component {
     lookahead().setRoomBounds(minX, minY, maxX, maxY);
   }
 
+  /** Removes any room bounds set by a previous level so the camera is no longer clamped. */
+  public void clearRoomBounds() {
+    lookahead().clearRoomBounds();
+  }
+
   @Override
   public void update() {
     if (this.target == null) {

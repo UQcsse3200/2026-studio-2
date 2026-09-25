@@ -149,9 +149,7 @@ public class ObstacleFactory {
             .addComponent(new PlatformGrappleComponent(config.grappleSides))
             .addComponent(new ActivatableComponent(config.activateIds));
 
-    if (config.grappleSides != 0) {
-      movingPlatform.addComponent(new GrappleSideRenderComponent());
-    }
+    // Grapple edge visuals disabled while the grapple_tile texture is removed.
 
     physicsComponent.getBody().setGravityScale(0f);
     physicsComponent.setBodyType(BodyType.KinematicBody);
@@ -299,10 +297,8 @@ public class ObstacleFactory {
             .addComponent(new ColliderComponent().setLayer(PhysicsLayer.OBSTACLE))
             .addComponent(new PlatformGrappleComponent(config.grappleSides));
 
-    if (config.grappleSides != 0) {
-      floor.addComponent(new GrappleSideRenderComponent());
-    }
-
+    // Grapple edge visuals are disabled while the grapple_tile texture is removed. The grapple
+    // logic itself (PlatformGrappleComponent) still applies.
     floor.getComponent(PhysicsComponent.class).setBodyType(BodyType.StaticBody);
 
     return floor;
@@ -362,9 +358,21 @@ public class ObstacleFactory {
    * @return spike entity
    */
   public static Entity createSpike(SpikeClusterConfig config) {
+    return createSpike(config, "images/terrain/spike_tile.png");
+  }
+
+  /**
+   * Creates an upward-facing spike hazard entity that uses the given texture, so each level can
+   * have its own spike design.
+   *
+   * @param config configuration object for the spike
+   * @param texturePath texture to draw the spike with
+   * @return spike entity
+   */
+  public static Entity createSpike(SpikeClusterConfig config, String texturePath) {
     Entity spike =
         new Entity()
-            .addComponent(new DynamicTextureRenderComponent("images/terrain/spike_tile.png"))
+            .addComponent(new DynamicTextureRenderComponent(texturePath))
             .addComponent(new PhysicsComponent())
             .addComponent(new ColliderComponent().setLayer(PhysicsLayer.OBSTACLE))
             .addComponent(new CombatStatsComponent(100, 2))
