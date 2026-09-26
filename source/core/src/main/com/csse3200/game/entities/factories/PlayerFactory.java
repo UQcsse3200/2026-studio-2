@@ -10,7 +10,6 @@ import com.csse3200.game.components.item.ItemType;
 import com.csse3200.game.components.item.weapons.WeaponComponent;
 import com.csse3200.game.components.item.weapons.bow.BowComponent;
 import com.csse3200.game.components.item.weapons.bow.grapple.GrappleComponent;
-import com.csse3200.game.components.item.weapons.melee.MeleeComponent;
 import com.csse3200.game.components.itemdictionary.ItemDictionaryComponent;
 import com.csse3200.game.components.itemdictionary.ItemDictionaryDisplay;
 import com.csse3200.game.components.level.RespawnComponent;
@@ -28,7 +27,6 @@ import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.rendering.AnimationRenderComponent;
 import com.csse3200.game.rendering.item.GrappleRenderComponent;
-import com.csse3200.game.rendering.item.MeleeRenderComponent;
 import com.csse3200.game.services.ServiceLocator;
 
 /** Factory to create a player entity. */
@@ -57,7 +55,6 @@ public class PlayerFactory {
     animator.addAnimation("hurt", 0.04f, PlayMode.NORMAL);
     animator.addAnimation("death", 0.1458f, PlayMode.NORMAL);
     animator.addAnimation("sleep", 0.1458f, PlayMode.LOOP);
-    animator.addAnimation("melee", 0.03f, PlayMode.NORMAL, 79f, 38f);
     animator.addAnimation("dash", 0.025f, PlayMode.NORMAL, 134.5f, 39f);
     animator.addAnimation("air_dash", 0.025f, PlayMode.NORMAL, 94f, 39f);
     animator.addAnimation("bow_draw", 0.08f, PlayMode.NORMAL, 72f, 23f);
@@ -76,10 +73,8 @@ public class PlayerFactory {
                     stats.health, stats.baseAttack, stats.invulnerabilityDuration))
             .addComponent(bowComponent)
             .addComponent(new PoisonBuff())
-            .addComponent(new MeleeAttackComponent())
             .addComponent(new ArrowWheelComponent())
             .addComponent(new ArrowWheelDisplay())
-            .addComponent(new MeleeComponent())
             .addComponent(new WeaponComponent(bowComponent))
             .addComponent(new InventoryComponent(stats.gold))
             .addComponent(new InventoryBarDisplay())
@@ -95,7 +90,6 @@ public class PlayerFactory {
             .addComponent(new GrappleComponent())
             .addComponent(new GrappleRenderComponent())
             .addComponent(new PlayerAnimationController())
-            .addComponent(new MeleeRenderComponent())
             .addComponent(new RespawnComponent());
 
     player.getComponent(ColliderComponent.class).setDensity(1.5f);
@@ -106,7 +100,7 @@ public class PlayerFactory {
   }
 
   /**
-   * Puts a rope arrow, great sword, and spear into the player's inventory.
+   * Puts a rope arrow into the player's inventory.
    *
    * <p>Call this after the player entity has been created so inventory UI can refresh. Sandbox
    * should not use this; it keeps world pickups instead.
@@ -124,14 +118,10 @@ public class PlayerFactory {
     }
 
     inventory.addItem(ItemType.ROPE_ARROW, 1);
-    inventory.addItem(ItemType.Sword, 1);
-    inventory.addItem(ItemType.Spear, 1);
 
     ItemDictionaryComponent dictionary = player.getComponent(ItemDictionaryComponent.class);
     if (dictionary != null) {
       dictionary.unlockItem(ItemType.ROPE_ARROW);
-      dictionary.unlockItem(ItemType.Sword);
-      dictionary.unlockItem(ItemType.Spear);
     }
   }
 

@@ -26,13 +26,9 @@ class PlayerFactoryTest {
 
     InventoryComponent inventory = player.getComponent(InventoryComponent.class);
     assertEquals(1, inventory.getItemCount(ItemType.ROPE_ARROW));
-    assertEquals(1, inventory.getItemCount(ItemType.Sword));
-    assertEquals(1, inventory.getItemCount(ItemType.Spear));
 
     ItemDictionaryComponent dictionary = player.getComponent(ItemDictionaryComponent.class);
     assertTrue(dictionary.isDiscovered(ItemType.ROPE_ARROW));
-    assertTrue(dictionary.isDiscovered(ItemType.Sword));
-    assertTrue(dictionary.isDiscovered(ItemType.Spear));
   }
 
   @Test

@@ -75,6 +75,8 @@ public class SandboxGameArea extends GameArea {
     "images/skeleton_archer.atlas"
   };
   private static final String[] SANDBOX_SOUNDS = {"sounds/Impact4.ogg"};
+  private static final String FIRE_STATUS_TEXTURE = "images/fire_status_effect.png";
+  private static final String ICE_STATUS_TEXTURE = "images/ice_status_effect.png";
 
   private final TerrainFactory terrainFactory;
   private final String[] sandboxTextures;
@@ -140,7 +142,9 @@ public class SandboxGameArea extends GameArea {
                 EXIT_BUTTON_DOWN_TEXTURE,
                 SKELETON_WARRIOR_TEXTURE,
                 SKELETON_ARCHER_TEXTURE,
-                NPCFactory.SHOPKEEPER_TEXTURE),
+                NPCFactory.SHOPKEEPER_TEXTURE,
+                FIRE_STATUS_TEXTURE,
+                ICE_STATUS_TEXTURE),
             Arrays.stream(ItemType.values())
                 .flatMap(
                     itemType ->

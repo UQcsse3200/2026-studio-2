@@ -60,19 +60,6 @@ class ShopComponentTest {
   }
 
   @Test
-  void shouldRejectUnsoldMeleeWeapons() {
-    Entity player = createPlayer(50);
-    ShopComponent shop = player.getComponent(ShopComponent.class);
-    InventoryComponent inventory = player.getComponent(InventoryComponent.class);
-
-    assertEquals(PurchaseResult.INVALID, shop.buy(ItemType.Sword));
-    assertEquals(PurchaseResult.INVALID, shop.buy(ItemType.Spear));
-    assertEquals(50, inventory.getGold());
-    assertEquals(0, inventory.getItemCount(ItemType.Sword));
-    assertEquals(0, inventory.getItemCount(ItemType.Spear));
-  }
-
-  @Test
   void shouldRejectRopeArrow() {
     Entity player = createPlayer(50);
     ShopComponent shop = player.getComponent(ShopComponent.class);

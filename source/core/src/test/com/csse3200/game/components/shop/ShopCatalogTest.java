@@ -34,7 +34,7 @@ class ShopCatalogTest {
   @Test
   void shouldSellEveryItemExceptRopeArrowAndMeleeWeapons() {
     for (ItemType type : ItemType.values()) {
-      if (type == ItemType.ROPE_ARROW || type == ItemType.Sword || type == ItemType.Spear) {
+      if (type == ItemType.ROPE_ARROW) {
         assertNull(ShopCatalog.getListing(type));
       } else {
         assertNotNull(ShopCatalog.getListing(type));
