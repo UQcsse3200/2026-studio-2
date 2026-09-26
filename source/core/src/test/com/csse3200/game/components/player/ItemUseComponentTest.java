@@ -335,30 +335,6 @@ class ItemUseComponentTest {
     assertEquals(1, inventory.getItemCount(itemType));
   }
 
-  private void assertMeleeItemUsesDamageAndRange(ItemType itemType) {
-    Entity player = createPlayer();
-    InventoryComponent inventory = player.getComponent(InventoryComponent.class);
-    inventory.addItem(itemType, 1);
-
-    AtomicReference<Vector2> direction = new AtomicReference<>();
-    AtomicInteger damage = new AtomicInteger();
-    AtomicReference<Float> range = new AtomicReference<>();
-    player
-        .getEvents()
-        .addListener(
-            "meleeAttack",
-            (Vector2 aim, Integer itemDamage, Float itemRange) -> {
-              direction.set(aim);
-              damage.set(itemDamage);
-              range.set(itemRange);
-            });
-
-    assertTrue(player.getComponent(ItemUseComponent.class).useSelectedItem());
-    assertFalse(direction.get().isZero());
-    assertEquals(itemType.getDamage(), damage.get());
-    assertEquals(itemType.getRange(), range.get(), 0.001f);
-  }
-
   @Test
   void shouldChargeAndReleaseFireArrowThroughShootHold() {
     Entity player = createPlayer();

@@ -33,7 +33,6 @@ public class PlayerAnimationController extends Component {
     entity.getEvents().addListener("dashStart", this::dashStart);
     entity.getEvents().addListener("airDashStart", this::airDashStart);
     entity.getEvents().addListener("hurt", this::hurt);
-    entity.getEvents().addListener("melee", this::meleeStart);
     entity.getEvents().addListener("chargeStart", this::drawStart);
     entity.getEvents().addListener("chargeRelease", this::drawRelease);
     entity.getEvents().addListener("chargeCancel", this::drawCancel);
@@ -171,17 +170,6 @@ public class PlayerAnimationController extends Component {
   void sleep() {
     sleep = true;
     animator.startAnimation("sleep");
-  }
-
-  void meleeStart(Vector2 aim) {
-    if (dead || bowActive) {
-      return;
-    }
-    attacking = true;
-    if (aim.x != 0) {
-      animator.setFlipX(aim.x < 0);
-    }
-    animator.startAnimation("melee");
   }
 
   void drawStart(Vector2 aim) {
