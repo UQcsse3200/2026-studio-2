@@ -28,9 +28,10 @@ public class StatusEffectRenderComponent extends RenderComponent {
 
     Texture fireTexture =
         ServiceLocator.getResourceService()
-            .getAsset("images/fire_status_effect.png", Texture.class);
+            .getAsset("images/items/effects/fire_status_effect.png", Texture.class);
     Texture iceTexture =
-        ServiceLocator.getResourceService().getAsset("images/ice_status_effect.png", Texture.class);
+        ServiceLocator.getResourceService()
+            .getAsset("images/items/effects/ice_status_effect.png", Texture.class);
 
     fireFrames =
         TextureRegion.split(

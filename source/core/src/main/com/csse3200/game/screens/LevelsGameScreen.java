@@ -297,7 +297,7 @@ public class LevelsGameScreen extends ScreenAdapter {
                 "images/heart.png",
                 "images/title_odysseus_logo.png",
                 "images/Health_Bar_Background.png",
-                "images/red_heart.png",
+                "images/items/consumables/red_heart.png",
                 "images/PixelArt_HeartBack.png",
                 "images/Damaged_heart.png",
                 "images/Last_Health.png",
@@ -322,9 +322,9 @@ public class LevelsGameScreen extends ScreenAdapter {
                 "images/Buttons/back_down_btn.png",
                 "images/scroll_bg.png",
                 "images/Buttons/exit_down_btn.png",
-                "images/rope_arrow.png",
-                "images/fire_arrow.png",
-                "images/cold_arrow.png"));
+                "images/items/arrows/rope_arrow.png",
+                "images/items/arrows/fire_arrow.png",
+                "images/items/arrows/cold_arrow.png"));
     paths.addAll(List.of(WheelConfig.TEXTURES));
     paths.addAll(List.of(BlackjackConfig.TEXTURES));
     return paths.toArray(new String[0]);
