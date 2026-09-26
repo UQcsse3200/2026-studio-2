@@ -3,6 +3,7 @@ package com.csse3200.game.entities.factories;
 import com.badlogic.gdx.graphics.g2d.Animation.PlayMode;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.csse3200.game.components.CombatStatsComponent;
+import com.csse3200.game.components.MeleeAttackComponent;
 import com.csse3200.game.components.inventory.BackpackDisplay;
 import com.csse3200.game.components.inventory.InventoryBarDisplay;
 import com.csse3200.game.components.inventory.InventoryComponent;
@@ -132,9 +133,6 @@ public class PlayerFactory {
     Entity player =
         new Entity()
             .addComponent(animator)
-            .addComponent(new PhysicsComponent())
-            .addComponent(new ColliderComponent())
-            .addComponent(new HitboxComponent().setLayer(PhysicsLayer.PLAYER))
             .addComponent(
                 new CombatStatsComponent(
                     stats.health, stats.baseAttack, stats.invulnerabilityDuration))
@@ -142,10 +140,8 @@ public class PlayerFactory {
             .addComponent(new PlayerAnimationController())
             .addComponent(new RespawnComponent());
 
-    PhysicsUtils.setScaledCollider(player, 0.6f, 0.3f);
-    player.getComponent(ColliderComponent.class).setDensity(1.5f);
     player.getComponent(AnimationRenderComponent.class).scaleEntity();
-    player.scaleWidth(0.75f);
+    player.scaleWidth(0.6f);
 
     return player;
   }

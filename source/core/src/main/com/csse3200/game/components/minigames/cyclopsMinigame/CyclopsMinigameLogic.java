@@ -151,6 +151,7 @@ public class CyclopsMinigameLogic extends Component {
 
   private void movePlayer(GridPoint2 location) {
     player.setPosition(terrain.tileToWorldPosition(location));
+    logger.info("Player moved to WorldPosition: {}", terrain.tileToWorldPosition(location));
   }
 
   /**
@@ -184,7 +185,7 @@ public class CyclopsMinigameLogic extends Component {
   private void updatePlaying() {
     timingBarLogic.update(Gdx.graphics.getDeltaTime());
 
-    if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
+    if (Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) {
       timingBarLogic.stopMarker();
       logger.info("sliding marker was stopped at {} (0.0 - 1.0)", timingBarLogic.markerX);
 

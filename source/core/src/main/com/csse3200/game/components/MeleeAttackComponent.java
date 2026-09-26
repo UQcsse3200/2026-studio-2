@@ -1,8 +1,6 @@
-package com.csse3200.game.components.player;
+package com.csse3200.game.components;
 
 import com.badlogic.gdx.math.Vector2;
-import com.csse3200.game.components.CombatStatsComponent;
-import com.csse3200.game.components.Component;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.physics.BodyUserData;
 import com.csse3200.game.physics.PhysicsLayer;
