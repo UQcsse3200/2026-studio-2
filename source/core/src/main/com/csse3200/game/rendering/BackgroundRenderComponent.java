@@ -132,7 +132,8 @@ public class BackgroundRenderComponent extends RenderComponent {
     }
     if (backgroundLight > 0.075f) {
       // backgroundTime -= ServiceLocator.getTimeSource().getDeltaTime() / 1000f;
-      backgroundLight = 1f - (ServiceLocator.getTimeSource().getTime() / 30000f); // 50,000
+      backgroundLight = 1f - (ServiceLocator.getTimeSource().getTime() / 50000f); // 50,000
+      backgroundLight = 1;
     }
     light = getDarkness();
     if (light == 1f) {

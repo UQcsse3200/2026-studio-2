@@ -79,7 +79,8 @@ public class LevelsGameScreen extends ScreenAdapter {
     "sounds/hit.ogg", "sounds/Arrow_release.wav", "sounds/jump.ogg", "sounds/itempick.wav"
   };
   private final Level1GameArea level1GameArea;
-  private boolean cheats = true;
+  private boolean cheats = false;
+  private float gravity;
 
   public LevelsGameScreen(GdxGame game) {
     this.game = game;
@@ -179,11 +180,6 @@ public class LevelsGameScreen extends ScreenAdapter {
 
     minigameOverlayManager = new MinigameOverlayManager();
     blackjackOverlay = new BlackjackOverlay(player, minigameOverlayManager);
-
-    if (cheats) {
-      level1GameArea.getPlayer().getComponent(PhysicsComponent.class).getBody().setGravityScale(0);
-      level1GameArea.getPlayer().getComponent(KeyboardPlayerInputComponent.class).toggleCheats();
-    }
   }
 
   private void onPlayerDeath() {
@@ -245,6 +241,18 @@ public class LevelsGameScreen extends ScreenAdapter {
 
     if (Gdx.input.isKeyJustPressed(Input.Keys.L)) {
       blackjackOverlay.request();
+    }
+
+    if (Gdx.input.isKeyJustPressed(Input.Keys.BACKSPACE)) {
+      cheats = !cheats;
+      if (cheats) {
+        gravity = player.getComponent(PhysicsComponent.class).getBody().getGravityScale();
+        player.getComponent(PhysicsComponent.class).getBody().setGravityScale(0);
+        player.getComponent(KeyboardPlayerInputComponent.class).toggleCheats();
+      } else {
+        player.getComponent(PhysicsComponent.class).getBody().setGravityScale(gravity);
+        player.getComponent(KeyboardPlayerInputComponent.class).toggleCheats();
+      }
     }
 
     physicsEngine.update();
