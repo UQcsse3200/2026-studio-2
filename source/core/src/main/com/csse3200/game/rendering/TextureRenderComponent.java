@@ -8,7 +8,7 @@ import com.csse3200.game.services.ServiceLocator;
 
 /** Render a static texture. */
 public class TextureRenderComponent extends RenderComponent {
-  private final Texture texture;
+  private Texture texture;
 
   private float rotation = 0f;
 
@@ -31,6 +31,11 @@ public class TextureRenderComponent extends RenderComponent {
    */
   public TextureRenderComponent(Texture texture) {
     this.texture = texture;
+  }
+
+  public void replaceTexture(String texturePath) {
+    Texture newTexture = ServiceLocator.getResourceService().getAsset(texturePath, Texture.class);
+    this.texture = newTexture;
   }
 
   /**

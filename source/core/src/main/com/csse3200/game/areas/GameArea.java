@@ -14,6 +14,7 @@ import com.csse3200.game.components.level.LevelTriggerComponent;
 import com.csse3200.game.components.level.PlatformGrappleComponent;
 import com.csse3200.game.components.level.TriggerButtonComponent;
 import com.csse3200.game.components.player.KeyboardPlayerInputComponent;
+import com.csse3200.game.components.player.PlayerInteractionComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.ArrayList;
@@ -54,11 +55,16 @@ public abstract class GameArea implements Disposable {
 
   /** Dispose of all internal entities in the area */
   public void dispose() {
+    ItemComponent itemComponent;
     areaEntities.remove(player);
     ArrayList<Entity> items = new ArrayList<Entity>();
     for (Entity entity : areaEntities) {
-      if (entity.getComponent(ItemComponent.class) != null) {
-        items.add(entity);
+      itemComponent = entity.getComponent(ItemComponent.class);
+      if (itemComponent != null) {
+        if (player
+            .getComponent(PlayerInteractionComponent.class)
+            .getInventory()
+            .hasItem(itemComponent.getItem().getItemType())) items.add(entity);
       }
     }
 

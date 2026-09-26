@@ -10,6 +10,7 @@ import com.badlogic.gdx.utils.Array;
 import com.csse3200.game.components.player.PlayerActions;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
+import com.csse3200.game.rendering.TextureRenderComponent;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,13 +24,16 @@ public class CheckpointComponentTest {
   private Entity player;
   private Entity checkpointEntity;
   CheckpointComponent checkpointComponent;
+  TextureRenderComponent textureRenderComponent;
 
   @BeforeEach
   void beforeEach() {
     Array<Entity> entities = new Array<>();
     checkpointComponent = new CheckpointComponent(false, new GridPoint2(10, 10));
+    textureRenderComponent = mock(TextureRenderComponent.class);
     checkpointEntity = new Entity();
     checkpointEntity.addComponent(checkpointComponent);
+    checkpointEntity.addComponent(textureRenderComponent);
     player = new Entity();
     player.addComponent(new PlayerActions());
     entities.add(player);
