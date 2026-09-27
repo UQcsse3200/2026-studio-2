@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
+import com.csse3200.game.areas.GameArea.RepeatMode;
 import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.components.player.PlayerActions;
 import com.csse3200.game.services.ServiceLocator;
@@ -28,9 +29,10 @@ public class BackgroundRenderComponent extends RenderComponent {
     private final Vector2 offset;
     private final Vector2 velocity;
     private Vector2 position;
-    private final boolean repeat;
+    private final RepeatMode repeat;
     private final float distance;
-    private final float transparency;
+    private float transparency;
+    private final boolean flash;
 
     ParallaxLayer(
         Texture texture,
@@ -39,9 +41,10 @@ public class BackgroundRenderComponent extends RenderComponent {
         float height,
         Vector2 offset,
         Vector2 velocity,
-        boolean repeat,
+        RepeatMode repeat,
         float distance,
-        float transparency) {
+        float transparency,
+        boolean flash) {
 
       this.texture = texture;
       this.parallaxFactor = parallaxFactor;
@@ -53,9 +56,11 @@ public class BackgroundRenderComponent extends RenderComponent {
       this.repeat = repeat;
       this.distance = distance;
       this.transparency = transparency;
+      this.flash = flash;
     }
   }
 
+  private ArrayList<Vector2> rainPositions = new ArrayList<>();
   private final List<ParallaxLayer> layers = new ArrayList<>();
   private final CameraComponent camera;
 
@@ -95,9 +100,10 @@ public class BackgroundRenderComponent extends RenderComponent {
       float height,
       Vector2 offset,
       Vector2 velocity,
-      boolean repeat,
+      RepeatMode repeat,
       float distance,
-      float transparency) {
+      float transparency,
+      boolean flash) {
 
     Texture texture = ServiceLocator.getResourceService().getAsset(texturePath, Texture.class);
 
@@ -111,7 +117,12 @@ public class BackgroundRenderComponent extends RenderComponent {
             velocity,
             repeat,
             distance,
-            transparency));
+            transparency,
+            flash));
+
+    if (repeat == RepeatMode.CHAOTIC) {
+      generateRainPositions();
+    }
   }
 
   /** Scale is controlled individually for each layer. */
@@ -149,23 +160,70 @@ public class BackgroundRenderComponent extends RenderComponent {
     // Since this is called every frame, changing frame rates will change speed
     layer.position.x += layer.velocity.x * ServiceLocator.getTimeSource().getDeltaTime();
     layer.position.y += layer.velocity.y * ServiceLocator.getTimeSource().getDeltaTime();
+    // Prevent black screen after flash
     if (backgroundLight <= 0.075f) {
       backgroundLight = 0.075f;
     }
+    // Keep decrementing light until full night reached
     if (backgroundLight > 0.075f) {
       // backgroundTime -= ServiceLocator.getTimeSource().getDeltaTime() / 1000f;
-      backgroundLight = 1f - (ServiceLocator.getTimeSource().getTime() / 50000f); // 50,000
+      backgroundLight = 1f - (ServiceLocator.getTimeSource().getTime() / 30000f); // 50,000
       backgroundLight = 1;
     }
     light = getDarkness();
+    // if lightning currently striking
     if (light == 1f) {
+      // only flash background if it is dark enough, limit how bright it may flash
       if (backgroundLight < 0.3f) {
         backgroundLight = 0.3f;
       }
     }
+    // Flash layers that flash during lightning
+    if (layer.flash) {
+      if (light == 1f) {
+        layer.transparency = 1f;
+      } else {
+        layer.transparency = 0f;
+      }
+    }
+    // Allow background to get darker than entities
     if (light > backgroundLight) {
       light = backgroundLight;
     }
+  }
+
+  private void generateRainPositions() {
+    float cameraWidth = camera.getCamera().viewportWidth;
+    float cameraHeight = camera.getCamera().viewportHeight;
+    float centerX = camera.getCamera().position.x;
+    float centerY = camera.getCamera().position.y;
+    float startX = centerX - (cameraWidth / 2);
+    float endX = centerX + (cameraWidth / 2);
+    float startY = centerY + (cameraHeight / 2);
+    float endY = centerY - (cameraHeight / 2);
+    float currentX;
+    float currentY = startY;
+
+    while (currentY > endY) {
+      currentX = startX;
+      while (currentX < endX) {
+        // batch.draw(layer.texture, currentX, currentY, layer.width, layer.height);
+        rainPositions.add(new Vector2(currentX, currentY));
+        currentX += 0.5f;
+      }
+      currentY -= 0.5f;
+    }
+
+    // distance between horizontal droplets needs to be random
+    // distance between vertical droplets needs to be random
+    // lowest part of some drops should be lower than highest part of drops on layer beneath it
+    // drops should never cross over
+
+    // for entire height
+    //    for entire width
+    //        from    centerX - (cameraWidth / 2)    TO    centerX + (cameraWidth / 2)
+
+    //    from    centerY - (cameraHeight / 2)    TO    centerY + (cameraHeight / 2)
   }
 
   /**
@@ -216,13 +274,22 @@ public class BackgroundRenderComponent extends RenderComponent {
       // batch.setColor(0.5f, 0.5f, 0.5f, layer.transparency); Night mode
       Color prevColor = batch.getColor().cpy();
       // time = getDarkness();
-      batch.setColor(light, light, light, layer.transparency);
+      if (layer.flash) {
+        batch.setColor(1, 1, 1, layer.transparency);
+      } else {
+        batch.setColor(light, light, light, layer.transparency);
+      }
+
       batch.draw(layer.texture, layerX, layerY, layer.width, layer.height);
       batch.setColor(prevColor);
 
       // Draw copies of repeating layers to fill screen
-      if (layer.repeat) {
+      if (layer.flash) {
+        batch.setColor(1, 1, 1, layer.transparency);
+      } else {
         batch.setColor(light, light, light, layer.transparency);
+      }
+      if (layer.repeat == RepeatMode.HORIZONTAL) {
         float newLeftDrawPosX = layerX - layer.width;
         float newRightDrawPosX = layerX + layer.width;
 
@@ -244,8 +311,44 @@ public class BackgroundRenderComponent extends RenderComponent {
           // batch.setColor(Color.WHITE);
           newRightDrawPosX += layer.width;
         }
-        batch.setColor(prevColor);
+      } else if (layer.repeat == RepeatMode.CHAOTIC) {
+        /*
+        for (Vector2 pos : rainPositions) {
+          batch.draw(layer.texture, pos.x, pos.y, layer.width, layer.height);
+        }
+        */
+        float cameraWidth = camera.getCamera().viewportWidth;
+        float cameraHeight = camera.getCamera().viewportHeight;
+        float centerX = camera.getCamera().position.x;
+        float centerY = camera.getCamera().position.y;
+        float startX = centerX - (cameraWidth / 2);
+        float endX = centerX + (cameraWidth / 2);
+        float startY = centerY + (cameraHeight / 2);
+        float endY = centerY - (cameraHeight / 2);
+        float currentX;
+        float currentY = startY;
+        float drawPosX;
+        float drawPosY;
+
+        while (currentY > endY) {
+          drawPosY = currentY + layer.position.y;
+          if (drawPosY <= endY) {
+            drawPosY += cameraHeight;
+          }
+          currentX = startX;
+          while (currentX < endX) {
+            drawPosX = currentX + layer.position.x;
+            if (drawPosX >= endX) {
+              drawPosX -= cameraWidth;
+            }
+            batch.draw(layer.texture, drawPosX, drawPosY, layer.width, layer.height);
+            // rainPositions.add(new Vector2(currentX, currentY));
+            currentX += 0.5f;
+          }
+          currentY -= 0.5f;
+        }
       }
+      batch.setColor(prevColor);
     }
   }
 

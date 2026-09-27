@@ -18,6 +18,7 @@ import com.csse3200.game.entities.factories.NPCFactory;
 import com.csse3200.game.entities.factories.ObstacleFactory;
 import com.csse3200.game.entities.factories.PlayerFactory;
 import com.csse3200.game.rendering.BackgroundRenderComponent;
+import com.csse3200.game.rendering.ForegroundRenderComponent;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.utils.math.GridPoint2Utils;
@@ -145,6 +146,16 @@ public class Level1GameArea extends GameArea {
     "images/parallax/level_1_background.png",
     "images/parallax/level_1_clouds.png",
     "images/parallax/level_1_furthest.png",
+    "images/parallax/white_box.png",
+    "images/parallax/lightning_1.png",
+    "images/parallax/lightning_2.png",
+    "images/parallax/lightning_3.png",
+    "images/parallax/lightning_4.png",
+    "images/parallax/rain_small.png",
+    "images/parallax/rain_medium.png",
+    "images/parallax/rain_large.png",
+    "images/parallax/rain_xl.png",
+    "images/parallax/rain_xxl.png",
 
     // Enemy textures
     "images/skeleton_warrior.png",
@@ -186,6 +197,7 @@ public class Level1GameArea extends GameArea {
   private final TerrainFactory terrainFactory;
   private final CameraComponent camera;
   private BackgroundRenderComponent backgroundComponent;
+  private ForegroundRenderComponent foregroundComponent;
   private boolean mapToggled = false;
   private float viewportWidth;
   private float viewportHeight;
@@ -219,6 +231,7 @@ public class Level1GameArea extends GameArea {
     spawnGold();
     spawnSkeletonArcher();
     spawnSkeletonWarrior();
+    spawnForeground();
 
     // Test enemy functionalitys
     // spawnTestSkeletonWarrior();
@@ -250,6 +263,46 @@ public class Level1GameArea extends GameArea {
     spawnEntity(ui);
   }
 
+  private void spawnForeground() {
+    final Vector2 foregroundPos = new Vector2(-10f, -10f);
+    foregroundComponent = new ForegroundRenderComponent(camera, foregroundPos, worldBounds);
+
+    // Lightning strike flash layer
+    /*
+    foregroundComponent.addLayer(
+            "images/parallax/white_box.png",
+            new Vector2(0f, 0f), // Parallax factor
+            30f,
+            12f,
+            new Vector2(0f, 4.25f), // Positional offset
+            new Vector2(0f, 0f), // Independent velocity
+            RepeatMode.NONE,
+            1f,
+            0f,
+            true);
+
+     */
+    foregroundComponent.addLayer(
+        "images/parallax/rain_small.png", // 0.2,0.4 for xxl
+        new Vector2(0f, 0f),
+        0.1f,
+        0.2f,
+        new Vector2(0f, 0f),
+        new Vector2(1f, -0.5f),
+        RepeatMode.CHAOTIC,
+        1f,
+        1f,
+        false);
+
+    // Create the background entity.
+    Entity foreground = new Entity().addComponent(foregroundComponent);
+
+    // Position the background in the game world.
+    foreground.setPosition(foregroundPos);
+
+    spawnEntity(foreground);
+  }
+
   /**
    * ============================================================ CURRENT ACTIVE BACKGROUND
    * ============================================================
@@ -277,9 +330,10 @@ public class Level1GameArea extends GameArea {
         12f,
         new Vector2(0f, 4.25f), // Positional offset
         new Vector2(0f, 0f), // Independent velocity
-        false,
+        RepeatMode.NONE,
         1f,
-        1f);
+        1f,
+        false);
 
     // Furthest clouds image
     backgroundComponent.addLayer(
@@ -289,9 +343,10 @@ public class Level1GameArea extends GameArea {
         4f,
         new Vector2(-3f, 9f), // Positional offset
         new Vector2(-0.06f, 0f), // Independent velocity
-        true,
+        RepeatMode.HORIZONTAL,
         1f,
-        1f);
+        1f,
+        false);
 
     // Second-furthest clouds image
     backgroundComponent.addLayer(
@@ -301,9 +356,23 @@ public class Level1GameArea extends GameArea {
         15f,
         new Vector2(25f, 7.5f), // Positional offset
         new Vector2(0.12f, 0f), // Independent velocity
-        true,
+        RepeatMode.HORIZONTAL,
         1f,
-        1f);
+        1f,
+        false);
+
+    // Lightning image
+    backgroundComponent.addLayer(
+        "images/parallax/lightning_1.png",
+        new Vector2(0f, 0f),
+        2f,
+        7f,
+        new Vector2(15f, 9.5f),
+        new Vector2(0f, 0f),
+        RepeatMode.NONE,
+        1f,
+        0f,
+        true);
 
     // Furthest mountains image
     backgroundComponent.addLayer(
@@ -313,9 +382,10 @@ public class Level1GameArea extends GameArea {
         7f,
         new Vector2(5f, 6.5f), // Positional offset
         new Vector2(0f, 0f), // Independent velocity
-        true,
+        RepeatMode.HORIZONTAL,
         1f,
-        0.6f);
+        0.6f,
+        false);
 
     // Second-furthest mountains image
     backgroundComponent.addLayer(
@@ -325,9 +395,10 @@ public class Level1GameArea extends GameArea {
         10f,
         new Vector2(0f, 5f), // Positional offset
         new Vector2(0f, 0f), // Independent velocity
-        true,
+        RepeatMode.HORIZONTAL,
         1f,
-        1f);
+        1f,
+        false);
 
     // Create the background entity.
     Entity background = new Entity().addComponent(backgroundComponent);

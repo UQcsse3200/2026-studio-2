@@ -46,12 +46,13 @@ public abstract class RenderComponent extends Component implements Renderable, D
   @Override
   public void update() {
     if (ServiceLocator.getTimeSource() != null) {
+      // Prevent black items after flash
       if (darkness <= 0.2f) {
         darkness = 0.2f;
       }
       if (darkness > 0.2f) {
         // darkness -= ServiceLocator.getTimeSource().getDeltaTime() / 100f;
-        darkness = 1 - (ServiceLocator.getTimeSource().getTime() / 50000f); // 50,000
+        darkness = 1 - (ServiceLocator.getTimeSource().getTime() / 30000f); // 50,000
         darkness = 1;
       }
       lightning += ServiceLocator.getTimeSource().getDeltaTime();

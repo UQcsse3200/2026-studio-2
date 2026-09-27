@@ -246,6 +246,13 @@ public abstract class GameArea implements Disposable {
     }
   }
 
+  /** Layer repeat behaviour for background layers */
+  public enum RepeatMode {
+    NONE,
+    HORIZONTAL,
+    CHAOTIC
+  }
+
   /** Public method to respawn the player at the last collected checkpoint upon an event trigger. */
   public void respawn() {
     ArrayList<CheckpointComponent> checkpoints = config.getCheckpoints();
