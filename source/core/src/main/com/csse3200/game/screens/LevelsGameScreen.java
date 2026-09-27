@@ -9,6 +9,7 @@ import com.csse3200.game.GdxGame;
 import com.csse3200.game.areas.GameArea;
 import com.csse3200.game.areas.Level1GameArea;
 import com.csse3200.game.areas.Level2GameArea;
+import com.csse3200.game.areas.Level3GameArea;
 import com.csse3200.game.areas.terrain.TerrainFactory;
 import com.csse3200.game.components.ButtonSound;
 import com.csse3200.game.components.gamearea.PerformanceDisplay;
@@ -203,6 +204,9 @@ public class LevelsGameScreen extends ScreenAdapter {
         break;
       case "level2":
         nextGameArea = new Level2GameArea(terrainFactory, renderer.getCamera(), player);
+        break;
+      case "level3":
+        nextGameArea = new Level3GameArea(terrainFactory, renderer.getCamera(), player);
         break;
       default:
         return;

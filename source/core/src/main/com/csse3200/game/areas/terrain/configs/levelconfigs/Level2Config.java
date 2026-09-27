@@ -24,9 +24,10 @@ public class Level2Config extends LevelConfig {
     triggerablePlatformTFP = "images/Platform_level-2.png";
     ledgesTFP = "images/Platform_level-2.png";
     groundTFP = "images/tile-level2.png";
-
+    
     playerSpawn = new GridPoint2(0, 42);
     winConditionSpawn = new GridPoint2(33, 8);
+    nextLevelName = "level3";
 
     platforms =
         new PlatformConfig[] {
