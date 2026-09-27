@@ -39,7 +39,6 @@ public class CyclopsMinigameRoomScreen extends ScreenAdapter {
     "images/title_odysseus_logo.png",
     "images/box_boy_title.png",
     "images/Health_Bar_Background.png",
-    "images/inventory/Inventory_background.png",
     "images/items/consumables/red_heart.png",
     "images/heart.png",
     "images/Buttons/exit_up_btn.png",

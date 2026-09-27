@@ -6,12 +6,58 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.csse3200.game.components.inventory.InventoryComponent;
 import com.csse3200.game.components.item.weapons.bow.arrow.Arrow;
+import com.csse3200.game.components.item.weapons.bow.arrow.ColdArr;
+import com.csse3200.game.components.item.weapons.bow.arrow.FireArr;
+import com.csse3200.game.components.item.weapons.bow.arrow.StandardArr;
+import com.csse3200.game.components.item.weapons.bow.grapple.RopeArr;
 import com.csse3200.game.extensions.GameExtension;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 @ExtendWith(GameExtension.class)
 class ArrowTest {
+  @Test
+  void shouldPreserveColdArrowClassAndSlowEffect() {
+    ColdArr cold = new ColdArr(3);
+    assertEquals(ItemType.ICE_ARROW, cold.getItemType());
+    assertEquals(3, cold.getQuantity());
+    assertEquals(8, cold.getDamage());
+    assertEquals(0.5f, cold.getSlowSpeed(), 0.001f);
+    assertEquals(5f, cold.getSlowTime(), 0.001f);
+  }
+
+  @Test
+  void shouldPreserveFireArrowClassAndBurnEffect() {
+    FireArr fire = new FireArr(3);
+    assertEquals(ItemType.FIRE_ARROW, fire.getItemType());
+    assertEquals(3, fire.getQuantity());
+    assertEquals(5, fire.getDamage());
+    assertEquals(10f, fire.getBurnDamagePerSecond(), 0.001f);
+    assertEquals(5f, fire.getBurnTime(), 0.001f);
+  }
+
+  @Test
+  void shouldConsumeStandardArrowsUntilEmpty() {
+    StandardArr standard = new StandardArr(2);
+    assertEquals(ItemType.STANDARD_ARROW, standard.getItemType());
+    assertTrue(standard.useArr());
+    assertEquals(1, standard.getQuantity());
+    assertTrue(standard.useArr());
+    assertFalse(standard.useArr());
+    assertEquals(0, standard.getQuantity());
+  }
+
+  @Test
+  void shouldPreserveRopeArrowConstructorsAndCooldownWithoutAmmoConsumption() {
+    RopeArr rope = new RopeArr();
+    assertEquals(ItemType.ROPE_ARROW, rope.getItemType());
+    assertEquals(1, rope.getQuantity());
+    assertEquals(3, new RopeArr(3).getQuantity());
+    assertEquals(0, rope.getDamage());
+    assertFalse(rope.isConsumeAmmo());
+    assertEquals(5f, rope.getCooldown(), 0.001f);
+  }
+
   @Test
   void shouldGiveEachArrowItsOwnItemType() {
     assertEquals(ItemType.STANDARD_ARROW, new Arrow(ItemType.STANDARD_ARROW, 1).getItemType());

@@ -242,7 +242,7 @@ class ItemUseComponentTest {
   }
 
   @Test
-  void shouldNotReleaseGrappleOnStopShootForOtherArrows() {
+  void shouldSignalGrappleReleaseEvenWhenAnotherArrowIsSelected() {
     Entity player = createPlayer();
     InventoryComponent inventory = player.getComponent(InventoryComponent.class);
     inventory.addItem(ItemType.STANDARD_ARROW, 1);
@@ -252,7 +252,26 @@ class ItemUseComponentTest {
 
     player.getEvents().trigger("stopShoot");
 
-    assertEquals(0, released.get());
+    assertEquals(1, released.get());
+  }
+
+  @Test
+  void shouldReleaseGrappleAfterSwitchingAwayFromTheFiredRopeArrow() {
+    Entity player = createPlayer();
+    InventoryComponent inventory = player.getComponent(InventoryComponent.class);
+    inventory.addItem(ItemType.ROPE_ARROW, 1);
+    inventory.addItem(ItemType.STANDARD_ARROW, 3);
+    AtomicInteger fired = new AtomicInteger();
+    AtomicInteger released = new AtomicInteger();
+    player.getEvents().addListener("grappleFire", (Vector2 ignored) -> fired.incrementAndGet());
+    player.getEvents().addListener("grappleRelease", released::incrementAndGet);
+    player.getEvents().trigger("shoot", new Vector2(1f, 0f));
+    inventory.selectSlot(1);
+    player.getEvents().trigger("stopShoot");
+    assertEquals(1, fired.get());
+    assertEquals(1, released.get());
+    assertEquals(1, inventory.getItemCount(ItemType.ROPE_ARROW));
+    assertEquals(3, inventory.getItemCount(ItemType.STANDARD_ARROW));
   }
 
   @Test

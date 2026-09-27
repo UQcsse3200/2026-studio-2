@@ -12,6 +12,7 @@ import com.csse3200.game.areas.Level2GameArea;
 import com.csse3200.game.areas.terrain.TerrainFactory;
 import com.csse3200.game.components.ButtonSound;
 import com.csse3200.game.components.gamearea.PerformanceDisplay;
+import com.csse3200.game.components.item.ItemAssets;
 import com.csse3200.game.components.maingame.MainGameActions;
 import com.csse3200.game.components.maingame.MainGameExitDisplay;
 import com.csse3200.game.components.maingame.PauseMenuOverlay;
@@ -327,7 +328,8 @@ public class LevelsGameScreen extends ScreenAdapter {
                 "images/items/arrows/cold_arrow.png"));
     paths.addAll(List.of(WheelConfig.TEXTURES));
     paths.addAll(List.of(BlackjackConfig.TEXTURES));
-    return paths.toArray(new String[0]);
+    paths.addAll(List.of(ItemAssets.getTextures()));
+    return paths.stream().distinct().toArray(String[]::new);
   }
 
   /**
