@@ -9,8 +9,8 @@ import com.csse3200.game.components.item.*;
 import com.csse3200.game.components.item.weapons.bow.arrow.*;
 
 public class Level3Config extends LevelConfig {
-    GridPoint2 risingWaterSpawn;
-    float risingWaterSpeed;
+  GridPoint2 risingWaterSpawn;
+  float risingWaterSpeed;
 
   public Level3Config() {
     // Textures
@@ -110,7 +110,7 @@ public class Level3Config extends LevelConfig {
 
     checkpoints =
         new CheckpointConfig[] {
-            new CheckpointConfig( new GridPoint2(9, 6)),
+          new CheckpointConfig(new GridPoint2(9, 6)),
         };
 
     // crumblingPlatforms =
@@ -120,22 +120,22 @@ public class Level3Config extends LevelConfig {
     //     };
   }
 
-    /**
-     * Public getter for the rising water entity spawn for a level config
-     *
-     * @return The spawn coordinates for the rising water entity stored by this config as a GridPoint2
-     */
-    public GridPoint2 getRisingWaterSpawn() {
-        return risingWaterSpawn;
-    }
+  /**
+   * Public getter for the rising water entity spawn for a level config
+   *
+   * @return The spawn coordinates for the rising water entity stored by this config as a GridPoint2
+   */
+  public GridPoint2 getRisingWaterSpawn() {
+    return risingWaterSpawn;
+  }
 
-    /**
-     * Public getter for the rising water entity's base speed specified by the level config
-     *
-     * @return The base speed of the water as a float that represents how many units should be
-     * moved up in each second
-     */
+  /**
+   * Public getter for the rising water entity's base speed specified by the level config
+   *
+   * @return The base speed of the water as a float that represents how many units should be moved
+   *     up in each second
+   */
   public float getWaterSpeed() {
-      return risingWaterSpeed;
+    return risingWaterSpeed;
   }
 }
