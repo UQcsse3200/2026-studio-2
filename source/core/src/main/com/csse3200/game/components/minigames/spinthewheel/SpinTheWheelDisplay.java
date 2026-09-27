@@ -58,7 +58,7 @@ public class SpinTheWheelDisplay extends UIComponent {
   private static final float POINTER_ANGLE = 90f;
   private static final float SPIN_DURATION = 3.5f;
   private static final int FULL_TURNS = 4;
-  private static final float SEGMENT_RADIUS_RATIO = 0.62f;
+  private static final float SEGMENT_RADIUS_RATIO = 0.5f;
   private static final float ICON_SIZE = 48f;
 
   private static final float BUTTON_WIDTH = 160f;
