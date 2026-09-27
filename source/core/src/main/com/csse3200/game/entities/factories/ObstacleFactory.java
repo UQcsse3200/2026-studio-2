@@ -435,7 +435,8 @@ public class ObstacleFactory {
   }
 
   public static Entity createRisingWaterEntity(float speed, float initialHeight) {
-    Entity waterHitbox = new Entity()
+    Entity waterHitbox =
+        new Entity()
             .addComponent(new PhysicsComponent().setBodyType(BodyType.KinematicBody))
             .addComponent(new HitboxComponent().setLayer(PhysicsLayer.OBSTACLE));
 

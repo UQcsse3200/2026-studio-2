@@ -71,7 +71,8 @@ public class RisingWaterComponent extends Component {
     currentHeight += heightIncrease;
 
     entity.setScale(new Vector2(entity.getScale().x, currentHeight));
-    hitbox.setPosition(new Vector2(hitbox.getPosition().x, hitbox.getPosition().y + heightIncrease));
+    hitbox.setPosition(
+        new Vector2(hitbox.getPosition().x, hitbox.getPosition().y + heightIncrease));
   }
 
   @Override
