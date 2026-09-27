@@ -435,16 +435,15 @@ public class ObstacleFactory {
   }
 
   public static Entity createRisingWaterEntity(float speed, float initialHeight) {
-    ColliderComponent collider = new ColliderComponent();
-    collider.setLayer(PhysicsLayer.NPC);
-    collider.setSensor(true);
+    Entity waterHitbox = new Entity()
+            .addComponent(new PhysicsComponent().setBodyType(BodyType.KinematicBody))
+            .addComponent(new HitboxComponent().setLayer(PhysicsLayer.OBSTACLE));
 
     Entity water =
         new Entity()
-            .addComponent(new DynamicTextureRenderComponent("images/Platform_level-3.png"))
+            .addComponent(new TiledRenderComponent("images/tile-level3.png", 1f))
             .addComponent(new PhysicsComponent().setBodyType(BodyType.KinematicBody))
-            .addComponent(collider)
-            .addComponent(new RisingWaterComponent(speed, initialHeight));
+            .addComponent(new RisingWaterComponent(speed, initialHeight, waterHitbox));
 
     return water;
   }
