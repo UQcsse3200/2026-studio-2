@@ -5,12 +5,13 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.NinePatch;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
+import com.badlogic.gdx.utils.Disposable;
 
 /**
  * Shared rounded-box slot background used by the inventory bar and backpack, so both draw slots
  * with the same style instead of relying on an image.
  */
-final class InventorySlotStyle {
+final class InventorySlotStyle implements Disposable {
 
   private static final int CORNER_RADIUS = 10;
   private static final int BORDER_THICKNESS = 3;
@@ -23,23 +24,36 @@ final class InventorySlotStyle {
   /** Border turns brown when a slot is selected. */
   private static final Color SELECTED_BORDER_COLOR = new Color(0.55f, 0.33f, 0.14f, 1f);
 
-  private static NinePatchDrawable cachedNormalBox;
-  private static NinePatchDrawable cachedSelectedBox;
+  private NinePatchDrawable cachedNormalBox;
+  private NinePatchDrawable cachedSelectedBox;
 
-  private InventorySlotStyle() {}
+  InventorySlotStyle() {}
 
-  static NinePatchDrawable getNormalBox() {
+  NinePatchDrawable getNormalBox() {
     if (cachedNormalBox == null) {
       cachedNormalBox = buildRoundedBoxDrawable(NORMAL_BORDER_COLOR);
     }
     return cachedNormalBox;
   }
 
-  static NinePatchDrawable getSelectedBox() {
+  NinePatchDrawable getSelectedBox() {
     if (cachedSelectedBox == null) {
       cachedSelectedBox = buildRoundedBoxDrawable(SELECTED_BORDER_COLOR);
     }
     return cachedSelectedBox;
+  }
+
+  /** Each display owns its generated textures and releases them when its actors are removed. */
+  @Override
+  public void dispose() {
+    if (cachedNormalBox != null) {
+      cachedNormalBox.getPatch().getTexture().dispose();
+      cachedNormalBox = null;
+    }
+    if (cachedSelectedBox != null) {
+      cachedSelectedBox.getPatch().getTexture().dispose();
+      cachedSelectedBox = null;
+    }
   }
 
   /**

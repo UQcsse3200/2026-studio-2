@@ -34,10 +34,10 @@ public enum ArrowType {
 
   public String getTexturePath() {
     return switch (this) {
-      case FIRE -> "images/fireArr_animation.png";
-      case ICE -> "images/coldArr_animation.png";
-      case POTION -> "images/poison_potion.png";
-      default -> "images/arrow.png";
+      case FIRE -> "images/items/arrows/fireArr_animation.png";
+      case ICE -> "images/items/arrows/coldArr_animation.png";
+      case POTION -> "images/items/consumables/poison_potion.png";
+      default -> "images/items/arrows/arrow.png";
     };
   }
 

@@ -59,7 +59,7 @@ public class SandboxGameArea extends GameArea {
   private static final String TRANSPARENT_TEXTURE = "images/transparent.png";
   private static final String FLOOR_TEXTURE = "images/Tile_2.png";
   private static final String HOOK_PLATFORM_TEXTURE = "images/hook_platform.png";
-  private static final String PLAYER_HEART_TEXTURE = "images/red_heart.png";
+  private static final String PLAYER_HEART_TEXTURE = "images/items/consumables/red_heart.png";
   private static final String PLAYER_HEALTH_BAR_BACKGROUND_TEXTURE =
       "images/PixelArt_HeartBack.png";
   private static final String PLAYER_DAMAGED_HEART_TEXTURE = "images/Damaged_heart.png";
@@ -75,8 +75,8 @@ public class SandboxGameArea extends GameArea {
     "images/skeleton_archer.atlas"
   };
   private static final String[] SANDBOX_SOUNDS = {"sounds/Impact4.ogg"};
-  private static final String FIRE_STATUS_TEXTURE = "images/fire_status_effect.png";
-  private static final String ICE_STATUS_TEXTURE = "images/ice_status_effect.png";
+  private static final String FIRE_STATUS_TEXTURE = "images/items/effects/fire_status_effect.png";
+  private static final String ICE_STATUS_TEXTURE = "images/items/effects/ice_status_effect.png";
 
   private final TerrainFactory terrainFactory;
   private final String[] sandboxTextures;

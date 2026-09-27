@@ -10,6 +10,10 @@ import com.csse3200.game.areas.terrain.TerrainFactory;
 import com.csse3200.game.areas.terrain.configs.LevelConfig;
 import com.csse3200.game.areas.terrain.configs.SpawnData;
 import com.csse3200.game.components.CameraComponent;
+import com.csse3200.game.components.inventory.InventoryComponent;
+import com.csse3200.game.components.item.ItemComponent;
+import com.csse3200.game.components.item.ItemType;
+import com.csse3200.game.components.item.weapons.bow.arrow.Arrow;
 import com.csse3200.game.components.level.ActivatableComponent;
 import com.csse3200.game.components.level.LevelTriggerComponent;
 import com.csse3200.game.components.level.PlatformGrappleComponent;
@@ -24,6 +28,55 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 @ExtendWith(GameExtension.class)
 class GameAreaTest {
+  @Test
+  void shouldNotDisposeCollectedItemsAgainWhenLeavingArea() {
+    EntityService entities = new EntityService();
+    ServiceLocator.registerEntityService(entities);
+    GameArea area =
+        new GameArea(new CameraComponent()) {
+          @Override
+          public void create() {}
+        };
+    ItemComponent item = spy(new ItemComponent(new Arrow(ItemType.ICE_ARROW, 3)));
+    Entity pickup = new Entity().addComponent(item);
+    area.spawnEntity(pickup);
+
+    // Successful pickups dispose their world entity immediately, before the area is left.
+    pickup.dispose();
+    area.dispose();
+
+    verify(item, times(1)).dispose();
+    assertTrue(entities.getEntities().isEmpty());
+    assertTrue(area.areaEntities.isEmpty());
+  }
+
+  @Test
+  void shouldDisposeWorldItemsButPreservePlayerInventoryOnAreaChange() {
+    EntityService entities = new EntityService();
+    ServiceLocator.registerEntityService(entities);
+    GameArea area =
+        new GameArea(new CameraComponent()) {
+          @Override
+          public void create() {}
+        };
+    InventoryComponent inventory = new InventoryComponent(50);
+    inventory.addItem(ItemType.FIRE_ARROW, 5);
+    Entity player = new Entity().addComponent(inventory);
+    area.player = player;
+    area.spawnEntity(player);
+    Entity pickup = new Entity().addComponent(new ItemComponent(new Arrow(ItemType.ICE_ARROW, 3)));
+    area.spawnEntity(pickup);
+
+    area.dispose();
+
+    assertFalse(entities.getEntities().contains(pickup, true));
+    assertTrue(entities.getEntities().contains(player, true));
+    assertEquals(5, inventory.getItemCount(ItemType.FIRE_ARROW));
+    assertEquals(50, inventory.getGold());
+    assertTrue(area.areaEntities.isEmpty());
+    entities.dispose();
+  }
+
   @Test
   void shouldSpawnEntities() {
     TerrainFactory factory = mock(TerrainFactory.class);

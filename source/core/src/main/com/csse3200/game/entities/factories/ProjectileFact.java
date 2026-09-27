@@ -40,7 +40,7 @@ public class ProjectileFact {
             .addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER))
             .addComponent(new ProjectileComponent(lifetime))
             .addComponent(new ColliderComponent())
-            .addComponent(new TextureRenderComponent("images/arrow.png"));
+            .addComponent(new TextureRenderComponent("images/items/arrows/arrow.png"));
 
     projectile.getComponent(TextureRenderComponent.class).scaleEntity();
     projectile.setScale(projectile.getScale().scl(0.6f));

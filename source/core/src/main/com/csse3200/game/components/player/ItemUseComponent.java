@@ -97,9 +97,7 @@ public class ItemUseComponent extends Component {
     if (inventory == null) {
       return;
     }
-    if (inventory.getSelectedItem() == ItemType.ROPE_ARROW) {
-      entity.getEvents().trigger("grappleRelease");
-    }
+    entity.getEvents().trigger("grappleRelease");
     entity.getEvents().trigger("chargeRelease", getAimDirection());
   }
 
