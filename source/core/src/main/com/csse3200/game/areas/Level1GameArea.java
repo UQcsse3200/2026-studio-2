@@ -3,13 +3,14 @@ package com.csse3200.game.areas;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Vector3;
 import com.csse3200.game.areas.terrain.TerrainFactory;
 import com.csse3200.game.areas.terrain.TerrainFactory.TerrainType;
 import com.csse3200.game.areas.terrain.configs.levelconfigs.Level1Config;
 import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.components.gamearea.GameAreaDisplay;
+import com.csse3200.game.components.inventory.InventoryBarDisplay;
 import com.csse3200.game.components.player.KeyboardPlayerInputComponent;
+import com.csse3200.game.components.player.PlayerStatsDisplay;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.EnemyFactory;
 import com.csse3200.game.entities.factories.ItemFactory;
@@ -186,11 +187,8 @@ public class Level1GameArea extends GameArea {
   private final CameraComponent camera;
   private BackgroundRenderComponent backgroundComponent;
   private boolean mapToggled = false;
-  private Vector3 cameraPos;
   private float viewportWidth;
   private float viewportHeight;
-  private float screenWidth;
-  private float screenHeight;
   private Vector2 resizeScale;
 
   /**
@@ -346,7 +344,6 @@ public class Level1GameArea extends GameArea {
       int worldBoundY = (int) worldBounds.y;
       viewportWidth = camera.getCamera().viewportWidth;
       viewportHeight = camera.getCamera().viewportHeight;
-      cameraPos = cameraComponent.getCamera().position.cpy();
 
       cameraComponent.resize(worldBoundX, worldBoundY, worldBoundX + 10);
       Entity camera = new Entity();
@@ -357,11 +354,15 @@ public class Level1GameArea extends GameArea {
       float scaleY = worldBoundY / viewportHeight;
       resizeScale = new Vector2(scaleX, scaleY);
 
-      backgroundComponent.scaleEntity(resizeScale, true);
+      backgroundComponent.scaleEntity(resizeScale, worldBounds,true);
+      player.getComponent(InventoryBarDisplay.class).hideBar();
+      player.getComponent(PlayerStatsDisplay.class).hide();
     } else {
       cameraComponent.resize((int) viewportWidth, (int) viewportHeight, viewportWidth);
       cameraComponent.setTarget(player);
-      backgroundComponent.scaleEntity(resizeScale, false);
+      backgroundComponent.scaleEntity(resizeScale, worldBounds,false);
+      player.getComponent(InventoryBarDisplay.class).showBar();
+      player.getComponent(PlayerStatsDisplay.class).show();
     }
     mapToggled = !mapToggled;
   }

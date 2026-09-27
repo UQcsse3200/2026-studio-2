@@ -115,7 +115,7 @@ public class BackgroundRenderComponent extends RenderComponent {
   }
 
   /** Scale is controlled individually for each layer. */
-  public void scaleEntity(Vector2 factor, boolean up) {
+  public void scaleEntity(Vector2 factor, Vector2 worldBounds, boolean up) {
     // Layer sizes are defined when they are added.
     for (ParallaxLayer layer : layers) {
       if (up) {
@@ -123,15 +123,19 @@ public class BackgroundRenderComponent extends RenderComponent {
         layer.height *= factor.y;
         layer.offset.x *= factor.x;
         layer.offset.y *= factor.y;
-        layer.position.x -= 36;
-        layer.position.y -= 15.5f;
+        layer.position.x -= worldBounds.x / 2;
+        layer.position.y -= worldBounds.y / 2 + factor.y; // factor is a glue-on fix
+        layer.velocity.x *= factor.x;
+        layer.velocity.y *= factor.y;
       } else {
         layer.width /= factor.x;
         layer.height /= factor.y;
         layer.offset.x /= factor.x;
         layer.offset.y /= factor.y;
-        layer.position.x += 36;
-        layer.position.y += 15.5f;
+        layer.position.x += worldBounds.x / 2;
+        layer.position.y += worldBounds.y / 2 + factor.y; // factor is a glue-on fix
+        layer.velocity.x /= factor.x;
+        layer.velocity.y /= factor.y;
       }
     }
   }
