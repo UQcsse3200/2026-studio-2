@@ -3,9 +3,11 @@ package com.csse3200.game.areas;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Fixture;
 import com.csse3200.game.areas.terrain.TerrainFactory;
 import com.csse3200.game.areas.terrain.configs.levelconfigs.Level3Config;
 import com.csse3200.game.components.CameraComponent;
+import com.csse3200.game.components.level.RisingWaterComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.ObstacleFactory;
 import com.csse3200.game.rendering.BackgroundRenderComponent;
@@ -97,12 +99,9 @@ public class Level3GameArea extends GameArea {
   public void create() {
     loadAssets();
 
-    // Spawn the Level 2 background before the terrain.
     spawnBackground();
     spawnTerrain();
     spawnConfigEntities();
-    // player = spawnPlayer();
-    // spawnEntityAt(player, config.getPlayerSpawn(), true, true);
     spawnRisingWater();
     player.setPosition(new Vector2(config.getPlayerSpawn().x, config.getPlayerSpawn().y));
   }
@@ -139,13 +138,17 @@ public class Level3GameArea extends GameArea {
   }
 
   private void spawnRisingWater() {
-    water = ObstacleFactory.createRisingWaterEntity(1f, 0f);
-    water.getEvents().addListener("collisionStart", this::waterCollided);
+    water = ObstacleFactory.createRisingWaterEntity(5f, 1f);
+
+    RisingWaterComponent risingWater = water.getComponent(RisingWaterComponent.class);
     spawnEntityAt(water, config.getRisingWaterSpawn(), true, true);
+    spawnEntityAt(risingWater.hitbox, config.getRisingWaterSpawn(), true, true);
+
+    risingWater.hitbox.getEvents().addListener("collisionStart", this::waterCollided);
   }
 
-  private void waterCollided() {
-    water.getEvents().trigger("setHeight", 0f);
+  private void waterCollided(Fixture me, Fixture other) {
+    water.getEvents().trigger("setHeight", 1f);
     // player.getEvents().trigger("respawnAtCheckpoint");
   }
 
