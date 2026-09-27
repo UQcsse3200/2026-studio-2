@@ -141,7 +141,15 @@ public class Level3GameArea extends GameArea {
     water = ObstacleFactory.createRisingWaterEntity(5f, 1f);
 
     RisingWaterComponent risingWater = water.getComponent(RisingWaterComponent.class);
-    spawnEntityAt(water, config.getRisingWaterSpawn(), true, true);
+
+    // offset the spawn by half of the stage width to ensure the spawn location is the center
+    float stageWidth = ServiceLocator.getRenderService().getStage().getWidth();
+    GridPoint2 offsetSpawn =
+        new GridPoint2(
+            (int) (config.getRisingWaterSpawn().x - stageWidth / 2),
+            config.getRisingWaterSpawn().y);
+
+    spawnEntityAt(water, offsetSpawn, true, true);
     spawnEntityAt(risingWater.hitbox, config.getRisingWaterSpawn(), true, true);
 
     risingWater.hitbox.getEvents().addListener("collisionStart", this::waterCollided);
