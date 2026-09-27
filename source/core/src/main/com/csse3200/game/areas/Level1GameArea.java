@@ -156,7 +156,6 @@ public class Level1GameArea extends GameArea {
     "images/items/effects/fire_status_effect.png",
     "images/items/effects/ice_status_effect.png",
     "images/heart.png",
-    "images/health_potion.png",
     "images/items/consumables/speed_potion.png",
     "images/items/consumables/poison_potion.png",
     ItemFactory.GOLD_TEXTURE,

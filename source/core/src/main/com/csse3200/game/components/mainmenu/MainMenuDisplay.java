@@ -128,7 +128,7 @@ public class MainMenuDisplay extends UIComponent {
     ImageButton exitButton = new ImageButton(exitButtonStyle);
     Texture sandboxUpTexture =
         ServiceLocator.getResourceService()
-            .getAsset("images/Buttons/sandox_up_btn.png", Texture.class);
+            .getAsset("images/Buttons/sandbox_up_btn.png", Texture.class);
     Texture sandboxDownTexture =
         ServiceLocator.getResourceService()
             .getAsset("images/Buttons/sandbox_down_btn.png", Texture.class);

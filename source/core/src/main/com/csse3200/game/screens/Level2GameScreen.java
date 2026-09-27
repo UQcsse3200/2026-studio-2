@@ -8,6 +8,7 @@ import com.csse3200.game.areas.GameArea;
 import com.csse3200.game.areas.Level2GameArea;
 import com.csse3200.game.areas.terrain.TerrainFactory;
 import com.csse3200.game.components.gamearea.PerformanceDisplay;
+import com.csse3200.game.components.item.ItemAssets;
 import com.csse3200.game.components.maingame.MainGameActions;
 import com.csse3200.game.components.maingame.MainGameExitDisplay;
 import com.csse3200.game.components.minigames.spinthewheel.SpinTheWheelOverlay;
@@ -181,6 +182,7 @@ public class Level2GameScreen extends ScreenAdapter {
                 "images/Buttons/exit_up_btn.png",
                 "images/Buttons/exit_down_btn.png",
                 "images/items/arrows/rope_arrow.png"));
+    paths.addAll(List.of(ItemAssets.getTextures()));
     paths.addAll(List.of(WheelConfig.TEXTURES));
     return paths.toArray(new String[0]);
   }
