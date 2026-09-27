@@ -36,6 +36,7 @@ public class Level3GameArea extends GameArea {
 
     // Level 3 ground tile
     "images/tile-level3.png",
+    "images/water tile.png",
 
     // Transparent texture used for the physics-only floor
     "images/transparent.png",
@@ -138,21 +139,22 @@ public class Level3GameArea extends GameArea {
   }
 
   private void spawnRisingWater() {
-    water = ObstacleFactory.createRisingWaterEntity(5f, 1f);
+    if (config instanceof Level3Config c) {
+      water = ObstacleFactory.createRisingWaterEntity(c.getWaterSpeed(), 1f);
 
-    RisingWaterComponent risingWater = water.getComponent(RisingWaterComponent.class);
+      RisingWaterComponent risingWater = water.getComponent(RisingWaterComponent.class);
 
-    // offset the spawn by half of the stage width to ensure the spawn location is the center
-    float stageWidth = ServiceLocator.getRenderService().getStage().getWidth();
-    GridPoint2 offsetSpawn =
-        new GridPoint2(
-            (int) (config.getRisingWaterSpawn().x - stageWidth / 2),
-            config.getRisingWaterSpawn().y);
+      // offset the spawn by half of the stage width to ensure the spawn location is the center
+      float stageWidth = ServiceLocator.getRenderService().getStage().getWidth();
+      GridPoint2 offsetSpawn =
+          new GridPoint2(
+              (int) (c.getRisingWaterSpawn().x - stageWidth / 2), c.getRisingWaterSpawn().y);
 
-    spawnEntityAt(water, offsetSpawn, true, true);
-    spawnEntityAt(risingWater.hitbox, config.getRisingWaterSpawn(), true, true);
+      spawnEntityAt(water, offsetSpawn, true, true);
+      spawnEntityAt(risingWater.hitbox, c.getRisingWaterSpawn(), true, true);
 
-    risingWater.hitbox.getEvents().addListener("collisionStart", this::waterCollided);
+      risingWater.hitbox.getEvents().addListener("collisionStart", this::waterCollided);
+    }
   }
 
   private void waterCollided(Fixture me, Fixture other) {
