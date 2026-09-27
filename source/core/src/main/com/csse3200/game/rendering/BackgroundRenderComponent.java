@@ -361,7 +361,7 @@ public class BackgroundRenderComponent extends RenderComponent {
             if (drawPosX >= endX) {
               drawPosX -= (cameraWidth);
             }
-            if ((int) (currentY % 2) == 0) {
+            if ((int) ((currentY * 2) % 2) == 0) {
               // batch.draw(layer.texture, drawPosX, drawPosY, layer.width, layer.height);
               batch.draw(
                   layer.texture,

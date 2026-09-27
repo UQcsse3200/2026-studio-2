@@ -117,7 +117,7 @@ public class Level2GameArea extends GameArea {
         new Vector2(0f, 0f),
         RepeatMode.NONE,
         1f,
-        0f,
+        1f,
         false,
         0);
 
