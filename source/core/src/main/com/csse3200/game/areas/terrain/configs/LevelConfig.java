@@ -79,6 +79,7 @@ public class LevelConfig {
 
   /**
    * Public getter for the rising water entity spawn for a level config
+   *
    * @return The spawn coordinates for the rising water entity stored by this config as a GridPoint2
    */
   public GridPoint2 getRisingWaterSpawn() {

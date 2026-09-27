@@ -439,7 +439,8 @@ public class ObstacleFactory {
     collider.setLayer(PhysicsLayer.NPC);
     collider.setSensor(true);
 
-    Entity water = new Entity()
+    Entity water =
+        new Entity()
             .addComponent(new DynamicTextureRenderComponent("images/Platform_level-3.png"))
             .addComponent(new PhysicsComponent().setBodyType(BodyType.KinematicBody))
             .addComponent(collider)
