@@ -25,6 +25,7 @@ public class Level3Config extends LevelConfig {
 
     playerSpawn = new GridPoint2(0, 42);
     winConditionSpawn = new GridPoint2(33, 8);
+    risingWaterSpawn = new GridPoint2(0, 40);
 
     platforms =
         new PlatformConfig[] {

@@ -434,6 +434,20 @@ public class ObstacleFactory {
     return spikyBall;
   }
 
+  public static Entity createRisingWaterEntity(float speed, float initialHeight) {
+    ColliderComponent collider = new ColliderComponent();
+    collider.setLayer(PhysicsLayer.NPC);
+    collider.setSensor(true);
+
+    Entity water = new Entity()
+            .addComponent(new DynamicTextureRenderComponent("images/Platform_level-3.png"))
+            .addComponent(new PhysicsComponent().setBodyType(BodyType.KinematicBody))
+            .addComponent(collider)
+            .addComponent(new RisingWaterComponent(speed, initialHeight));
+
+    return water;
+  }
+
   private ObstacleFactory() {
     throw new IllegalStateException("Instantiating static util class");
   }
