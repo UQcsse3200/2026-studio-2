@@ -37,6 +37,7 @@ public class LevelConfig {
   protected GridPoint2 nextLevelTriggerSpawn;
   protected String nextLevelName;
   protected GridPoint2 winConditionSpawn;
+  protected GridPoint2 risingWaterSpawn;
 
   protected ArrayList<SpawnData> entities = new ArrayList<>();
 
@@ -74,6 +75,15 @@ public class LevelConfig {
    */
   public GridPoint2 getPlayerSpawn() {
     return playerSpawn;
+  }
+
+  /**
+   * Public getter for the rising water entity spawn for a level config
+   *
+   * @return The spawn coordinates for the rising water entity stored by this config as a GridPoint2
+   */
+  public GridPoint2 getRisingWaterSpawn() {
+    return risingWaterSpawn;
   }
 
   /**

@@ -7,6 +7,7 @@ import com.csse3200.game.areas.terrain.TerrainFactory;
 import com.csse3200.game.areas.terrain.configs.levelconfigs.Level3Config;
 import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.entities.Entity;
+import com.csse3200.game.entities.factories.ObstacleFactory;
 import com.csse3200.game.rendering.BackgroundRenderComponent;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
@@ -20,6 +21,8 @@ public class Level3GameArea extends GameArea {
   private static final float WALL_WIDTH = 0.1f;
 
   private Vector2 worldBounds;
+
+  private Entity water;
 
   /** Textures used by the level 2 game area. */
   private static final String[] level3Textures = {
@@ -100,6 +103,7 @@ public class Level3GameArea extends GameArea {
     spawnConfigEntities();
     // player = spawnPlayer();
     // spawnEntityAt(player, config.getPlayerSpawn(), true, true);
+    spawnRisingWater();
     player.setPosition(new Vector2(config.getPlayerSpawn().x, config.getPlayerSpawn().y));
   }
 
@@ -132,6 +136,17 @@ public class Level3GameArea extends GameArea {
     float tileSize = terrain.getTileSize();
     GridPoint2 tileBounds = terrain.getMapBounds(0);
     worldBounds = new Vector2(tileBounds.x * tileSize, tileBounds.y * tileSize);
+  }
+
+  private void spawnRisingWater() {
+    water = ObstacleFactory.createRisingWaterEntity(1f, 0f);
+    water.getEvents().addListener("collisionStart", this::waterCollided);
+    spawnEntityAt(water, config.getRisingWaterSpawn(), true, true);
+  }
+
+  private void waterCollided() {
+    water.getEvents().trigger("setHeight", 0f);
+    // player.getEvents().trigger("respawnAtCheckpoint");
   }
 
   /** Plays the background music. */
