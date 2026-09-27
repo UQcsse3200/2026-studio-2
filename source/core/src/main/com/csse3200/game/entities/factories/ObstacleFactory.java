@@ -440,9 +440,12 @@ public class ObstacleFactory {
             .addComponent(new PhysicsComponent().setBodyType(BodyType.KinematicBody))
             .addComponent(new HitboxComponent().setLayer(PhysicsLayer.OBSTACLE));
 
+    // ensure the hitbox always tries to collide with the player
+    waterHitbox.getComponent(PhysicsComponent.class).getBody().setSleepingAllowed(false);
+
     Entity water =
         new Entity()
-            .addComponent(new TiledRenderComponent("images/tile-level3.png", 1f))
+            .addComponent(new TiledRenderComponent("images/water tile.png", 1f))
             .addComponent(new PhysicsComponent().setBodyType(BodyType.KinematicBody))
             .addComponent(new RisingWaterComponent(speed, initialHeight, waterHitbox));
 
