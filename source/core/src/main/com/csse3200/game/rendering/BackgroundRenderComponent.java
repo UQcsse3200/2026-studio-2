@@ -317,31 +317,36 @@ public class BackgroundRenderComponent extends RenderComponent {
           batch.draw(layer.texture, pos.x, pos.y, layer.width, layer.height);
         }
         */
-        float cameraWidth = camera.getCamera().viewportWidth;
-        float cameraHeight = camera.getCamera().viewportHeight;
-        float centerX = camera.getCamera().position.x;
-        float centerY = camera.getCamera().position.y;
-        float startX = centerX - (cameraWidth / 2);
-        float endX = centerX + (cameraWidth / 2);
-        float startY = centerY + (cameraHeight / 2);
-        float endY = centerY - (cameraHeight / 2);
+        float cameraWidth = (float) (int) camera.getCamera().viewportWidth + 4;
+        float cameraHeight = (float) (int) camera.getCamera().viewportHeight + 6;
+        float centerX = (float) (int) camera.getCamera().position.x;
+        float centerY = (float) (int) camera.getCamera().position.y;
+        float startX = (float) (int) centerX - (cameraWidth / 2) - 2;
+        float endX = (float) (int) centerX + (cameraWidth / 2);
+        float startY = (float) (int) centerY + (cameraHeight / 2);
+        float endY = (float) (int) centerY - (cameraHeight / 2);
         float currentX;
         float currentY = startY;
         float drawPosX;
         float drawPosY;
 
         while (currentY > endY) {
-          drawPosY = currentY + layer.position.y;
+          drawPosY = currentY + (layer.position.y % cameraHeight);
           if (drawPosY <= endY) {
-            drawPosY += cameraHeight;
+            drawPosY += (cameraHeight);
           }
           currentX = startX;
           while (currentX < endX) {
-            drawPosX = currentX + layer.position.x;
+            drawPosX = currentX + (layer.position.x % cameraWidth);
             if (drawPosX >= endX) {
-              drawPosX -= cameraWidth;
+              drawPosX -= (cameraWidth);
             }
-            batch.draw(layer.texture, drawPosX, drawPosY, layer.width, layer.height);
+            if ((int) (currentY % 2) == 0) {
+              batch.draw(layer.texture, drawPosX, drawPosY, layer.width, layer.height);
+            } else {
+              batch.draw(layer.texture, drawPosX + 0.25f, drawPosY, layer.width, layer.height);
+            }
+
             // rainPositions.add(new Vector2(currentX, currentY));
             currentX += 0.5f;
           }

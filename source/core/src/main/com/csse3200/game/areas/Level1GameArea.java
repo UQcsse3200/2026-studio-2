@@ -288,7 +288,7 @@ public class Level1GameArea extends GameArea {
         0.1f,
         0.2f,
         new Vector2(0f, 0f),
-        new Vector2(1f, -0.5f),
+        new Vector2(3f, -3f),
         RepeatMode.CHAOTIC,
         1f,
         1f,
