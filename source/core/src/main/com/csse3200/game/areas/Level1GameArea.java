@@ -354,13 +354,13 @@ public class Level1GameArea extends GameArea {
       float scaleY = worldBoundY / viewportHeight;
       resizeScale = new Vector2(scaleX, scaleY);
 
-      backgroundComponent.scaleEntity(resizeScale, worldBounds,true);
+      backgroundComponent.scaleEntity(resizeScale, worldBounds, true);
       player.getComponent(InventoryBarDisplay.class).hideBar();
       player.getComponent(PlayerStatsDisplay.class).hide();
     } else {
       cameraComponent.resize((int) viewportWidth, (int) viewportHeight, viewportWidth);
       cameraComponent.setTarget(player);
-      backgroundComponent.scaleEntity(resizeScale, worldBounds,false);
+      backgroundComponent.scaleEntity(resizeScale, worldBounds, false);
       player.getComponent(InventoryBarDisplay.class).showBar();
       player.getComponent(PlayerStatsDisplay.class).show();
     }
