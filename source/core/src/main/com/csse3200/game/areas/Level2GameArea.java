@@ -118,7 +118,8 @@ public class Level2GameArea extends GameArea {
         RepeatMode.NONE,
         1f,
         0f,
-        false);
+        false,
+        0);
 
     Entity background = new Entity().addComponent(backgroundComponent);
     background.setPosition(backgroundPos);

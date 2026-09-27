@@ -292,7 +292,8 @@ public class Level1GameArea extends GameArea {
         RepeatMode.CHAOTIC,
         1f,
         1f,
-        false);
+        false,
+        0);
 
     // Create the background entity.
     Entity foreground = new Entity().addComponent(foregroundComponent);
@@ -333,7 +334,8 @@ public class Level1GameArea extends GameArea {
         RepeatMode.NONE,
         1f,
         1f,
-        false);
+        false,
+        0);
 
     // Furthest clouds image
     backgroundComponent.addLayer(
@@ -346,7 +348,8 @@ public class Level1GameArea extends GameArea {
         RepeatMode.HORIZONTAL,
         1f,
         1f,
-        false);
+        false,
+        0);
 
     // Second-furthest clouds image
     backgroundComponent.addLayer(
@@ -359,7 +362,8 @@ public class Level1GameArea extends GameArea {
         RepeatMode.HORIZONTAL,
         1f,
         1f,
-        false);
+        false,
+        0);
 
     // Lightning image
     backgroundComponent.addLayer(
@@ -372,7 +376,8 @@ public class Level1GameArea extends GameArea {
         RepeatMode.NONE,
         1f,
         0f,
-        true);
+        true,
+        0);
 
     // Furthest mountains image
     backgroundComponent.addLayer(
@@ -385,7 +390,8 @@ public class Level1GameArea extends GameArea {
         RepeatMode.HORIZONTAL,
         1f,
         0.6f,
-        false);
+        false,
+        0);
 
     // Second-furthest mountains image
     backgroundComponent.addLayer(
@@ -398,7 +404,8 @@ public class Level1GameArea extends GameArea {
         RepeatMode.HORIZONTAL,
         1f,
         1f,
-        false);
+        false,
+        0);
 
     // Create the background entity.
     Entity background = new Entity().addComponent(backgroundComponent);

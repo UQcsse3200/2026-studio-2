@@ -33,6 +33,7 @@ public class BackgroundRenderComponent extends RenderComponent {
     private final float distance;
     private float transparency;
     private final boolean flash;
+    private int rotation;
 
     ParallaxLayer(
         Texture texture,
@@ -44,7 +45,8 @@ public class BackgroundRenderComponent extends RenderComponent {
         RepeatMode repeat,
         float distance,
         float transparency,
-        boolean flash) {
+        boolean flash,
+        int rotation) {
 
       this.texture = texture;
       this.parallaxFactor = parallaxFactor;
@@ -57,6 +59,7 @@ public class BackgroundRenderComponent extends RenderComponent {
       this.distance = distance;
       this.transparency = transparency;
       this.flash = flash;
+      this.rotation = rotation;
     }
   }
 
@@ -103,7 +106,8 @@ public class BackgroundRenderComponent extends RenderComponent {
       RepeatMode repeat,
       float distance,
       float transparency,
-      boolean flash) {
+      boolean flash,
+      int rotation) {
 
     Texture texture = ServiceLocator.getResourceService().getAsset(texturePath, Texture.class);
 
@@ -118,7 +122,8 @@ public class BackgroundRenderComponent extends RenderComponent {
             repeat,
             distance,
             transparency,
-            flash));
+            flash,
+            rotation));
 
     if (repeat == RepeatMode.CHAOTIC) {
       generateRainPositions();
@@ -317,11 +322,26 @@ public class BackgroundRenderComponent extends RenderComponent {
           batch.draw(layer.texture, pos.x, pos.y, layer.width, layer.height);
         }
         */
+
+        /// TODO
+        /// make gap a customiseable variable on layer instantiation
+        /// make rotation a variable of addLayer
+        /// make system that can transition to heavier storms
+        /// add lightning/rain sounds for light/medium/heavy
+
+        /// offset every 2nd vertical layer by (gap / 2)
+        /// add tiny random +/- y adjustments to each raindrop
+
+        // so with heavier rain i will use longer rain
+        // will need to custom make its size, gap, speed, angle
+
+        // gap between raindrops, works best if gap * int = 1, where int is any integer
+        float gap = 0.5f;
         float cameraWidth = (float) (int) camera.getCamera().viewportWidth + 4;
         float cameraHeight = (float) (int) camera.getCamera().viewportHeight + 6;
         float centerX = (float) (int) camera.getCamera().position.x;
         float centerY = (float) (int) camera.getCamera().position.y;
-        float startX = (float) (int) centerX - (cameraWidth / 2) - 2;
+        float startX = (float) (int) centerX - (cameraWidth / 2);
         float endX = (float) (int) centerX + (cameraWidth / 2);
         float startY = (float) (int) centerY + (cameraHeight / 2);
         float endY = (float) (int) centerY - (cameraHeight / 2);
@@ -342,15 +362,50 @@ public class BackgroundRenderComponent extends RenderComponent {
               drawPosX -= (cameraWidth);
             }
             if ((int) (currentY % 2) == 0) {
-              batch.draw(layer.texture, drawPosX, drawPosY, layer.width, layer.height);
+              // batch.draw(layer.texture, drawPosX, drawPosY, layer.width, layer.height);
+              batch.draw(
+                  layer.texture,
+                  drawPosX,
+                  drawPosY,
+                  layer.width / 2,
+                  layer.height / 2,
+                  layer.width,
+                  layer.height,
+                  1f,
+                  1f,
+                  layer.rotation,
+                  0,
+                  0,
+                  layer.texture.getWidth(),
+                  layer.texture.getHeight(),
+                  false,
+                  false);
             } else {
-              batch.draw(layer.texture, drawPosX + 0.25f, drawPosY, layer.width, layer.height);
+              // batch.draw(layer.texture, drawPosX + (gap / 2), drawPosY, layer.width,
+              // layer.height);
+              batch.draw(
+                  layer.texture,
+                  drawPosX + (gap / 2),
+                  drawPosY,
+                  layer.width / 2,
+                  layer.height / 2,
+                  layer.width,
+                  layer.height,
+                  1f,
+                  1f,
+                  layer.rotation,
+                  0,
+                  0,
+                  layer.texture.getWidth(),
+                  layer.texture.getHeight(),
+                  false,
+                  false);
             }
 
             // rainPositions.add(new Vector2(currentX, currentY));
-            currentX += 0.5f;
+            currentX += gap;
           }
-          currentY -= 0.5f;
+          currentY -= gap;
         }
       }
       batch.setColor(prevColor);
