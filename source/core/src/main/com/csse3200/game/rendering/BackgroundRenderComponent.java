@@ -4,8 +4,8 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Vector3;
 import com.csse3200.game.components.CameraComponent;
+import com.csse3200.game.components.player.PlayerActions;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,13 +17,14 @@ public class BackgroundRenderComponent extends RenderComponent {
   private final Vector2 worldBounds;
   private float light;
   private float backgroundLight = 1f;
+  private Vector2 lastCameraPos;
 
   /** A single parallax background layer. */
   private static class ParallaxLayer {
     private final Texture texture;
     private final Vector2 parallaxFactor;
-    private final float width;
-    private final float height;
+    private float width;
+    private float height;
     private final Vector2 offset;
     private final Vector2 velocity;
     private Vector2 position;
@@ -114,8 +115,25 @@ public class BackgroundRenderComponent extends RenderComponent {
   }
 
   /** Scale is controlled individually for each layer. */
-  public void scaleEntity() {
+  public void scaleEntity(Vector2 factor, boolean up) {
     // Layer sizes are defined when they are added.
+    for (ParallaxLayer layer : layers) {
+      if (up) {
+        layer.width *= factor.x;
+        layer.height *= factor.y;
+        layer.offset.x *= factor.x;
+        layer.offset.y *= factor.y;
+        layer.position.x -= 36;
+        layer.position.y -= 15.5f;
+      } else {
+        layer.width /= factor.x;
+        layer.height /= factor.y;
+        layer.offset.x /= factor.x;
+        layer.offset.y /= factor.y;
+        layer.position.x += 36;
+        layer.position.y += 15.5f;
+      }
+    }
   }
 
   /**
@@ -155,7 +173,7 @@ public class BackgroundRenderComponent extends RenderComponent {
    * @param position the current position of the layer
    * @return updated position of the layer
    */
-  private Vector2 getPosition(ParallaxLayer layer, Vector3 cameraPos, Vector2 position) {
+  private Vector2 getPosition(ParallaxLayer layer, Vector2 cameraPos, Vector2 position) {
     float cameraX = cameraPos.x;
     float cameraY = cameraPos.y;
     getPosUpdate(layer);
@@ -173,8 +191,14 @@ public class BackgroundRenderComponent extends RenderComponent {
       return;
     }
 
+    if (camera.getEntity().getComponent(PlayerActions.class) == null) {
+      float posX = camera.getCamera().position.x;
+      float posY = camera.getCamera().position.y;
+      lastCameraPos = new Vector2(posX, posY);
+    }
+
     Vector2 position = entity.getPosition();
-    Vector3 cameraPos = camera.getCamera().position;
+    Vector2 cameraPos = lastCameraPos;
 
     for (ParallaxLayer layer : layers) {
       Vector2 layerPos = null;

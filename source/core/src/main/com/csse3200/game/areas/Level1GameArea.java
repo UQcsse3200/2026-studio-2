@@ -3,6 +3,7 @@ package com.csse3200.game.areas;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.csse3200.game.areas.terrain.TerrainFactory;
 import com.csse3200.game.areas.terrain.TerrainFactory.TerrainType;
 import com.csse3200.game.areas.terrain.configs.levelconfigs.Level1Config;
@@ -183,6 +184,14 @@ public class Level1GameArea extends GameArea {
 
   private final TerrainFactory terrainFactory;
   private final CameraComponent camera;
+  private BackgroundRenderComponent backgroundComponent;
+  private boolean mapToggled = false;
+  private Vector3 cameraPos;
+  private float viewportWidth;
+  private float viewportHeight;
+  private float screenWidth;
+  private float screenHeight;
+  private Vector2 resizeScale;
 
   /**
    * Initialise this Level1GameArea using the provided TerrainFactory and CameraComponent.
@@ -260,8 +269,7 @@ public class Level1GameArea extends GameArea {
    */
   private void spawnBackground() {
     final Vector2 backgroundPos = new Vector2(-10f, -10f);
-    BackgroundRenderComponent backgroundComponent =
-        new BackgroundRenderComponent(camera, backgroundPos, worldBounds);
+    backgroundComponent = new BackgroundRenderComponent(camera, backgroundPos, worldBounds);
 
     // Complete original background image
     backgroundComponent.addLayer(
@@ -332,6 +340,32 @@ public class Level1GameArea extends GameArea {
     spawnEntity(background);
   }
 
+  private void toggleMap() {
+    if (!mapToggled) {
+      int worldBoundX = (int) worldBounds.x;
+      int worldBoundY = (int) worldBounds.y;
+      viewportWidth = camera.getCamera().viewportWidth;
+      viewportHeight = camera.getCamera().viewportHeight;
+      cameraPos = cameraComponent.getCamera().position.cpy();
+
+      cameraComponent.resize(worldBoundX, worldBoundY, worldBoundX + 10);
+      Entity camera = new Entity();
+      camera.setPosition(worldBounds.x / 2, worldBounds.y / 2);
+      cameraComponent.setTarget(camera);
+
+      float scaleX = worldBoundX / viewportWidth;
+      float scaleY = worldBoundY / viewportHeight;
+      resizeScale = new Vector2(scaleX, scaleY);
+
+      backgroundComponent.scaleEntity(resizeScale, true);
+    } else {
+      cameraComponent.resize((int) viewportWidth, (int) viewportHeight, viewportWidth);
+      cameraComponent.setTarget(player);
+      backgroundComponent.scaleEntity(resizeScale, false);
+    }
+    mapToggled = !mapToggled;
+  }
+
   private void spawnTerrain() {
 
     // Background terrain
@@ -376,6 +410,7 @@ public class Level1GameArea extends GameArea {
   private Entity spawnPlayer() {
     Entity newPlayer = PlayerFactory.createPlayer();
     newPlayer.getEvents().addListener("grappleRequested", this::checkSuccessfulGrapple);
+    newPlayer.getEvents().addListener("toggleMap", this::toggleMap);
 
     input = newPlayer.getComponent(KeyboardPlayerInputComponent.class);
     if (input != null) {

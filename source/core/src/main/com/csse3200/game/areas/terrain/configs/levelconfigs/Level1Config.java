@@ -113,7 +113,7 @@ public class Level1Config extends LevelConfig {
           new SpikeClusterConfig(67, 67, 11, 13, 90f, false), // left wall of notch
           new SpikeClusterConfig(68, 70, 12, 12, 0f, false), // floor of notch
 
-          // box cluster (took me 3 hours)
+          // box cluster
           new SpikeClusterConfig(52, 52, 7, 10, 90f, false), // left wall of floor(53,7)
           new SpikeClusterConfig(53, 55, 11, 11, 0f, false), // top of floor(53,7) 3x4, facing up
           new SpikeClusterConfig(
