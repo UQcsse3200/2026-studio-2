@@ -179,8 +179,8 @@ public class BackgroundRenderComponent extends RenderComponent {
     // Keep decrementing light until full night reached
     if (backgroundLight > 0.125f) {
       // backgroundTime -= ServiceLocator.getTimeSource().getDeltaTime() / 1000f;
-      backgroundLight = 1f - (ServiceLocator.getTimeSource().getTime() / 40000f); // 50,000
-      backgroundLight = 1;
+      backgroundLight = 1f - (ServiceLocator.getTimeSource().getTime() / 60000f); // 50000, 40000
+      //backgroundLight = 1; //
     }
     light = getDarkness();
     // if lightning currently striking
@@ -311,9 +311,7 @@ public class BackgroundRenderComponent extends RenderComponent {
         /// make rotation a variable of addLayer
         /// make system that can transition to heavier storms
         /// add lightning/rain sounds for light/medium/heavy
-
-        /// offset every 2nd vertical layer by (gap / 2)
-        /// add tiny random +/- y adjustments to each raindrop
+        /// add random lightning generation (1 time slots for each lightning so 4 total)
 
         // so with heavier rain i will use longer rain
         // will need to custom make its size, gap, speed, angle

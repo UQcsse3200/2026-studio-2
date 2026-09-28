@@ -97,12 +97,8 @@ public class Level2GameArea extends GameArea {
   public void create() {
     loadAssets();
 
-    // Terrain first so worldBounds is calculated before the background.
     spawnTerrain();
-
-    // Spawn the Level 2 parallax background.
     spawnBackground();
-
     spawnConfigEntities();
 
     // player = spawnPlayer();
@@ -117,9 +113,7 @@ public class Level2GameArea extends GameArea {
     BackgroundRenderComponent backgroundComponent =
         new BackgroundRenderComponent(camera, backgroundPos, worldBounds);
 
-    // =========================================================
-    // LAYER 1: Main background
-    // =========================================================
+    // Main background
     backgroundComponent.addLayer(
         "images/Background-2.png",
         new Vector2(0.30f, 0f),
@@ -134,9 +128,7 @@ public class Level2GameArea extends GameArea {
         0,
         -1);
 
-    // =========================================================
-    // LAYER 2: Mountains
-    // =========================================================
+    // Mountains layer
     backgroundComponent.addLayer(
         "images/parallax/Mountains-layer.png",
         new Vector2(0.18f, 0f),
@@ -151,9 +143,7 @@ public class Level2GameArea extends GameArea {
         0,
         -1);
 
-    // =========================================================
-    // LAYER 3: Clouds + Birds
-    // =========================================================
+    // Clouds and birds layer
     backgroundComponent.addLayer(
         "images/parallax/Clouds-birds.png",
         new Vector2(0f, 0f),
@@ -177,10 +167,8 @@ public class Level2GameArea extends GameArea {
   private void spawnTerrain() {
     terrain = terrainFactory.createTerrain(TerrainFactory.TerrainType.BACKGROUND_DESERT);
     spawnEntity(new Entity().addComponent(terrain));
-
     float tileSize = terrain.getTileSize();
     GridPoint2 tileBounds = terrain.getMapBounds(0);
-
     worldBounds = new Vector2(tileBounds.x * tileSize, tileBounds.y * tileSize);
   }
 
@@ -198,7 +186,6 @@ public class Level2GameArea extends GameArea {
     logger.debug("Loading assets");
 
     ResourceService resourceService = ServiceLocator.getResourceService();
-
     resourceService.loadTextures(level2Textures);
     resourceService.loadTextureAtlases(level2TexturesAtlas);
     resourceService.loadSounds(level2Sounds);
@@ -214,7 +201,6 @@ public class Level2GameArea extends GameArea {
     logger.debug("Unloading assets");
 
     ResourceService resourceService = ServiceLocator.getResourceService();
-
     resourceService.unloadAssets(level2Textures);
     resourceService.unloadAssets(level2TexturesAtlas);
     resourceService.unloadAssets(level2Sounds);
@@ -225,9 +211,7 @@ public class Level2GameArea extends GameArea {
   @Override
   public void dispose() {
     super.dispose();
-
     ServiceLocator.getResourceService().getAsset(backgroundMusic, Music.class).stop();
-
     this.unloadAssets();
   }
 }
