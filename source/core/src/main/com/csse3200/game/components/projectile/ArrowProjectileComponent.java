@@ -113,8 +113,7 @@ public class ArrowProjectileComponent extends Component {
 
     Body body = physicsComponent.getBody();
     Vector2 origin = rangeOrigin();
-    if (arrowType != ArrowType.POTION
-        && body.getPosition().dst2(origin) >= maximumRange * maximumRange) {
+    if (body.getPosition().dst2(origin) >= maximumRange * maximumRange) {
       logger.info(
           "{} arrow hit max range: origin={} ({}) arrowPos={} distance={} maxRange={}",
           arrowType,

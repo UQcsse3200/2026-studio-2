@@ -25,8 +25,8 @@ class ItemDictionaryDisplayTest extends UiTestSupport {
     assertTrue(labels(content).contains("Duration: 3.0s"));
     click(content.getChildren().peek());
     click(content.getChildren().get(ItemType.PoisonPotion.ordinal() + 1));
-    assertTrue(labels(content).contains("Poison Damage: 5.0/s"));
-    assertTrue(labels(content).contains("Poison Duration: 5.0s"));
+    assertTrue(labels(content).contains("Poison Damage: 3.0/s"));
+    assertTrue(labels(content).contains("Poison Duration: 3.0s"));
   }
 
   @Test

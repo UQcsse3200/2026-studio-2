@@ -109,8 +109,8 @@ public enum ItemType {
       0f,
       0f,
       0f,
-      5f,
-      5f);
+      3f,
+      3f);
 
   private final int id;
   private final String displayName;
