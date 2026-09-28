@@ -140,7 +140,7 @@ public class Level3GameArea extends GameArea {
 
   private void spawnRisingWater() {
     if (config instanceof Level3Config c) {
-      water = ObstacleFactory.createRisingWaterEntity(c.getWaterSpeed(), 1f);
+      water = ObstacleFactory.createRisingWaterEntity(c.getWaterSpeed(), 14f);
 
       RisingWaterComponent risingWater = water.getComponent(RisingWaterComponent.class);
 
@@ -158,8 +158,16 @@ public class Level3GameArea extends GameArea {
   }
 
   private void waterCollided(Fixture me, Fixture other) {
-    water.getEvents().trigger("setHeight", 1f);
+    water
+        .getEvents()
+        .trigger("setHeight", water.getComponent(RisingWaterComponent.class).getStoredHeight());
     // player.getEvents().trigger("respawnAtCheckpoint");
+  }
+
+  @Override
+  protected void onCheckpointActivated(GridPoint2 position) {
+    super.onCheckpointActivated(position);
+    water.getEvents().trigger("checkpointEncountered", position.y);
   }
 
   /** Plays the background music. */
