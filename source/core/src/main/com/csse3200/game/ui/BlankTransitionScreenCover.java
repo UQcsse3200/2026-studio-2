@@ -9,7 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 
-public class BlankTransitionScreen extends UIComponent {
+public class BlankTransitionScreenCover extends UIComponent {
   private static final float Z_INDEX = 10f;
 
   private Texture texture;
