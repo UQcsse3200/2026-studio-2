@@ -134,6 +134,11 @@ public abstract class GameArea implements Disposable {
       }
     }
 
+    CheckpointComponent checkpoint = entity.getComponent(CheckpointComponent.class);
+    if (checkpoint != null) {
+      entity.getEvents().addListener("checkpointActivated", this::onCheckpointActivated);
+    }
+
     LevelTriggerComponent trigger = entity.getComponent(LevelTriggerComponent.class);
     if (trigger != null) {
       levelChanger = entity;
@@ -244,6 +249,16 @@ public abstract class GameArea implements Disposable {
       boolean newActive = !activate.isActive();
       activate.setActive(newActive);
     }
+  }
+
+  /**
+   * Represents functionality that all game areas should use when a checkpoint is encountered
+   */
+  protected void onCheckpointActivated(GridPoint2 position) {
+    // currently no functionality is required by all game areas, however, this method is required
+    // here as it allows the checkpoint system to bind to the current game area's respective
+    // onCheckpointActivated method. For any level specific behaviour for checkpoint activation,
+    // such as level 3's rising water saving, that game area should override this method
   }
 
   /** Public method to respawn the player at the last collected checkpoint upon an event trigger. */

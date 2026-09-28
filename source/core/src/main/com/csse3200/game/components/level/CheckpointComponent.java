@@ -29,6 +29,7 @@ public class CheckpointComponent extends Component {
       return;
     }
     this.collected = true;
+    entity.getEvents().trigger("checkpointActivated", position);
     this.getEntity()
         .getComponent(TextureRenderComponent.class)
         .replaceTexture("images/checkpoint_lit.png");
