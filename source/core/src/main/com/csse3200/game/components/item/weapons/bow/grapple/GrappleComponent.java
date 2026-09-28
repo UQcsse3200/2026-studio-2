@@ -283,12 +283,12 @@ public class GrappleComponent extends Component {
     }
 
     Vector2 anchor = getOriginalAnchorPoint();
-    if (ropeContacts.isEmpty()) {
+    RopeContact activeContact = activeContact();
+    if (activeContact == null) {
       createJointAt(originalAnchorBody, anchor, totalRopeLength);
       return;
     }
 
-    RopeContact activeContact = activeContact();
     createJointAt(activeContact.body, activeContact.getWorldPoint(), remainingRopeLength(anchor));
   }
 
