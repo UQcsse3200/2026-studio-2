@@ -25,13 +25,13 @@ public class Level3Config extends LevelConfig {
     playerSpawn = new GridPoint2(9, 6);
     winConditionSpawn = new GridPoint2(33, 8);
     risingWaterSpawn = new GridPoint2(0, -10);
-    risingWaterSpeed = 8f;
+    risingWaterSpeed = 0.3f;
 
     platforms =
         new PlatformConfig[] {
           new PlatformConfig(new GridPoint2(9, 5), 3, 1, 0, platformTFP), // P1
           new PlatformConfig(new GridPoint2(13, 7), 3, 1, 0, platformTFP), // P2
-          new PlatformConfig(new GridPoint2(6, 10), 3, 1, 3, platformTFP), // P3
+          new PlatformConfig(new GridPoint2(6, 10), 3, 1, 11, platformTFP), // P3
           new PlatformConfig(new GridPoint2(17, 10), 3, 1, 0, platformTFP), // P4
           new PlatformConfig(new GridPoint2(12, 12), 3, 1, 0, platformTFP), // P5
           new PlatformConfig(new GridPoint2(16, 15), 3, 1, 0, platformTFP), // P6
@@ -110,7 +110,8 @@ public class Level3Config extends LevelConfig {
 
     checkpoints =
         new CheckpointConfig[] {
-          new CheckpointConfig(new GridPoint2(9, 6)),
+          new CheckpointConfig(new GridPoint2(10, 6)),
+          new CheckpointConfig(new GridPoint2(13, 21)),
         };
 
     // crumblingPlatforms =
