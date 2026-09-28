@@ -71,8 +71,7 @@ public class Level2GameArea extends GameArea {
   };
 
   private static final String[] level2TexturesAtlas = {
-    "images/terrain_iso_grass.atlas",
-    "images/in_level_button.atlas"
+    "images/terrain_iso_grass.atlas", "images/in_level_button.atlas"
   };
 
   private static final String[] level2Sounds = {"sounds/Impact4.ogg"};
@@ -187,8 +186,7 @@ public class Level2GameArea extends GameArea {
 
   /** Plays the background music. */
   private void playMusic() {
-    Music music =
-        ServiceLocator.getResourceService().getAsset(backgroundMusic, Music.class);
+    Music music = ServiceLocator.getResourceService().getAsset(backgroundMusic, Music.class);
 
     music.setLooping(true);
     music.setVolume(0.3f);
@@ -228,9 +226,7 @@ public class Level2GameArea extends GameArea {
   public void dispose() {
     super.dispose();
 
-    ServiceLocator.getResourceService()
-        .getAsset(backgroundMusic, Music.class)
-        .stop();
+    ServiceLocator.getResourceService().getAsset(backgroundMusic, Music.class).stop();
 
     this.unloadAssets();
   }

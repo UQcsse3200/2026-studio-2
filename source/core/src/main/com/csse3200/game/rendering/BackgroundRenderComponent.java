@@ -180,7 +180,7 @@ public class BackgroundRenderComponent extends RenderComponent {
     if (backgroundLight > 0.125f) {
       // backgroundTime -= ServiceLocator.getTimeSource().getDeltaTime() / 1000f;
       backgroundLight = 1f - (ServiceLocator.getTimeSource().getTime() / 40000f); // 50,000
-       backgroundLight = 1; 
+      backgroundLight = 1;
     }
     light = getDarkness();
     // if lightning currently striking
