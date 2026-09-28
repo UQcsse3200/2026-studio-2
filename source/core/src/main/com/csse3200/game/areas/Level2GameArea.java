@@ -119,7 +119,8 @@ public class Level2GameArea extends GameArea {
         1f,
         1f,
         false,
-        0);
+        0,
+        -1);
 
     Entity background = new Entity().addComponent(backgroundComponent);
     background.setPosition(backgroundPos);

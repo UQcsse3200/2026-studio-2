@@ -288,12 +288,13 @@ public class Level1GameArea extends GameArea {
         0.1f,
         0.2f,
         new Vector2(0f, 0f),
-        new Vector2(3f, -3f),
+        new Vector2(2f, -2f),
         RepeatMode.CHAOTIC,
         1f,
-        1f,
+        0.4f,
         false,
-        0);
+        0,
+        -1);
 
     // Create the background entity.
     Entity foreground = new Entity().addComponent(foregroundComponent);
@@ -335,7 +336,8 @@ public class Level1GameArea extends GameArea {
         1f,
         1f,
         false,
-        0);
+        0,
+        -1);
 
     // Furthest clouds image
     backgroundComponent.addLayer(
@@ -349,7 +351,8 @@ public class Level1GameArea extends GameArea {
         1f,
         1f,
         false,
-        0);
+        0,
+        -1);
 
     // Second-furthest clouds image
     backgroundComponent.addLayer(
@@ -363,9 +366,10 @@ public class Level1GameArea extends GameArea {
         1f,
         1f,
         false,
-        0);
+        0,
+        -1);
 
-    // Lightning image
+    // Lightning image 1
     backgroundComponent.addLayer(
         "images/parallax/lightning_1.png",
         new Vector2(0f, 0f),
@@ -377,7 +381,23 @@ public class Level1GameArea extends GameArea {
         1f,
         0f,
         true,
+        0,
         0);
+
+    // Lightning image 2
+    backgroundComponent.addLayer(
+        "images/parallax/lightning_2.png",
+        new Vector2(0f, 0f),
+        2f,
+        7f,
+        new Vector2(6f, 9.5f),
+        new Vector2(0f, 0f),
+        RepeatMode.NONE,
+        1f,
+        0f,
+        true,
+        0,
+        1);
 
     // Furthest mountains image
     backgroundComponent.addLayer(
@@ -391,7 +411,8 @@ public class Level1GameArea extends GameArea {
         1f,
         0.6f,
         false,
-        0);
+        0,
+        -1);
 
     // Second-furthest mountains image
     backgroundComponent.addLayer(
@@ -405,7 +426,8 @@ public class Level1GameArea extends GameArea {
         1f,
         1f,
         false,
-        0);
+        0,
+        -1);
 
     // Create the background entity.
     Entity background = new Entity().addComponent(backgroundComponent);
