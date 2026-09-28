@@ -125,7 +125,8 @@ public class RisingWaterComponent extends Component {
   protected void captureValues(int checkpointY) {
     // calculate the smallest between the current water surface level and the lenience water level
     // and convert it into a height relative to the entity's bottom left position
-    float lenientSurfaceLevel = Math.min(entity.getPosition().y + currentHeight, checkpointY - CHECKPOINT_LENIENCE);
+    float lenientSurfaceLevel =
+        Math.min(entity.getPosition().y + currentHeight, checkpointY - CHECKPOINT_LENIENCE);
     float lenientHeight = lenientSurfaceLevel - entity.getPosition().y;
 
     // store the initial height if the lenient height is calculated below the starting height

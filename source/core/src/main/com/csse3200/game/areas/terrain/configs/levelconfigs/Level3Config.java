@@ -110,8 +110,7 @@ public class Level3Config extends LevelConfig {
 
     checkpoints =
         new CheckpointConfig[] {
-          new CheckpointConfig(new GridPoint2(10, 6)),
-          new CheckpointConfig(new GridPoint2(13, 21)),
+          new CheckpointConfig(new GridPoint2(10, 6)), new CheckpointConfig(new GridPoint2(13, 21)),
         };
 
     // crumblingPlatforms =

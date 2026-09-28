@@ -251,9 +251,7 @@ public abstract class GameArea implements Disposable {
     }
   }
 
-  /**
-   * Represents functionality that all game areas should use when a checkpoint is encountered
-   */
+  /** Represents functionality that all game areas should use when a checkpoint is encountered */
   protected void onCheckpointActivated(GridPoint2 position) {
     // currently no functionality is required by all game areas, however, this method is required
     // here as it allows the checkpoint system to bind to the current game area's respective
