@@ -30,6 +30,7 @@ public class ShopDisplay extends UIComponent {
   private Label goldLabel;
   private Label statusLabel;
   private boolean open;
+  private boolean dirty;
 
   @Override
   public void create() {
@@ -115,21 +116,22 @@ public class ShopDisplay extends UIComponent {
 
   private void onItemPurchased(ItemType itemType) {
     statusLabel.setText("Purchased " + itemType.getDisplayName() + ".");
-    refresh();
+    dirty = true;
   }
 
   private void onPurchaseFailed(String reason) {
     statusLabel.setText(reason);
-    refresh();
+    dirty = true;
   }
 
   private void refreshIfOpen() {
     if (open) {
-      refresh();
+      dirty = true;
     }
   }
 
   private void refresh() {
+    dirty = false;
     goldLabel.setText(goldText());
     refreshListings();
   }
@@ -196,7 +198,10 @@ public class ShopDisplay extends UIComponent {
 
   @Override
   public void draw(SpriteBatch batch) {
-    // draw is handled by the stage
+    // Render callbacks still run while gameplay is paused by this overlay.
+    if (open && dirty) {
+      refresh();
+    }
   }
 
   @Override

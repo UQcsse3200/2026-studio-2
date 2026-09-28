@@ -68,18 +68,6 @@ class KeyboardPlayerInputComponentTest {
   }
 
   @Test
-  void shouldMeleeOnLeftClick() {
-    Entity player = new Entity();
-    KeyboardPlayerInputComponent component = aimedComponent(player);
-
-    AtomicReference<Vector2> direction = new AtomicReference<>();
-    player.getEvents().addListener("melee", (Vector2 aim) -> direction.set(aim));
-
-    assertTrue(component.touchDown(4, 2, 0, Buttons.LEFT));
-    assertTrue(direction.get().epsilonEquals(new Vector2(9.5f, 4.5f)));
-  }
-
-  @Test
   void shouldShootOnRightClick() {
     Entity player = new Entity();
     KeyboardPlayerInputComponent component = aimedComponent(player);
@@ -109,18 +97,6 @@ class KeyboardPlayerInputComponentTest {
     player.getEvents().addListener("stopShoot", stops::incrementAndGet);
 
     assertTrue(component.touchUp(4, 2, 0, Buttons.RIGHT));
-    assertEquals(1, stops.get());
-  }
-
-  @Test
-  void shouldSignalStopMeleeOnLeftRelease() {
-    Entity player = new Entity();
-    KeyboardPlayerInputComponent component = aimedComponent(player);
-
-    AtomicInteger stops = new AtomicInteger();
-    player.getEvents().addListener("stopMelee", stops::incrementAndGet);
-
-    assertTrue(component.touchUp(4, 2, 0, Buttons.LEFT));
     assertEquals(1, stops.get());
   }
 
@@ -365,26 +341,6 @@ class KeyboardPlayerInputComponentTest {
     assertFalse(component.mouseMoved(400, 100));
 
     assertEquals(ArrowType.STANDARD, wheel.getHighlighted());
-  }
-
-  @Test
-  void shouldBlockWeaponInputWhileTheArrowWheelIsOpen() {
-    KeyboardPlayerInputComponent component = new KeyboardPlayerInputComponent();
-    ArrowWheelComponent wheel = new ArrowWheelComponent();
-    Entity player = new Entity().addComponent(component).addComponent(wheel);
-    player.setPosition(0f, 0f);
-    wheel.create();
-    component.setCameraComponent(new CameraComponent(camera));
-    AtomicInteger melee = new AtomicInteger();
-    player.getEvents().addListener("melee", (Vector2 ignored) -> melee.incrementAndGet());
-
-    component.keyDown(Keys.TAB);
-    assertFalse(component.touchDown(4, 2, 0, Buttons.LEFT));
-    assertEquals(0, melee.get());
-
-    component.keyUp(Keys.TAB);
-    assertTrue(component.touchDown(4, 2, 0, Buttons.LEFT));
-    assertEquals(1, melee.get());
   }
 
   @Test

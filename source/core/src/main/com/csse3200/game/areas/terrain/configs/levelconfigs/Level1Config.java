@@ -3,14 +3,8 @@ package com.csse3200.game.areas.terrain.configs.levelconfigs;
 import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.areas.terrain.configs.*;
-import com.csse3200.game.components.item.ItemComponent;
-import com.csse3200.game.entities.factories.ItemFactory;
-import java.util.HashMap;
-import java.util.Map;
 
 public class Level1Config extends LevelConfig {
-
-  private static final GridPoint2 ROPE_ARROW_SPAWN = new GridPoint2(2, 3);
 
   /** Creates the level 1 config */
   public Level1Config() {
@@ -161,12 +155,7 @@ public class Level1Config extends LevelConfig {
           new PlatformConfig(new GridPoint2(78, 0), 13, 17, 0, groundTFP),
         };
 
-    // Rope arrows stay in the world; every other item is bought from the shop.
-    items =
-        new HashMap<>(
-            Map.of(
-                ROPE_ARROW_SPAWN,
-                ItemFactory.createRopeArrow().getComponent(ItemComponent.class).getItem()));
+    // Rope arrow, great sword, and spear start in the player's inventory instead of the world.
 
     // Example checkpoint set to player spawn position
     checkpoints =

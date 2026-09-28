@@ -12,20 +12,23 @@ import org.junit.jupiter.api.extension.ExtendWith;
 @ExtendWith(GameExtension.class)
 class ArrowTypeTest {
   private static final float FAR = ArrowType.DEADZONE_RADIUS * 3f;
+  // Wedge centres for three types: top, then 120 degrees clockwise, then 240 degrees clockwise.
+  private static final Vector2 TOP = new Vector2(0f, FAR);
+  private static final Vector2 LOWER_RIGHT = new Vector2(0.866f * FAR, -0.5f * FAR);
+  private static final Vector2 LOWER_LEFT = new Vector2(-0.866f * FAR, -0.5f * FAR);
 
   @Test
   void shouldResolveEachWedgeFromItsDirection() {
-    assertEquals(ArrowType.STANDARD, ArrowType.forDirection(new Vector2(0f, FAR)));
-    assertEquals(ArrowType.FIRE, ArrowType.forDirection(new Vector2(FAR, 0f)));
-    assertEquals(ArrowType.ICE, ArrowType.forDirection(new Vector2(0f, -FAR)));
-    assertEquals(ArrowType.POISON, ArrowType.forDirection(new Vector2(-FAR, 0f)));
+    assertEquals(ArrowType.STANDARD, ArrowType.forDirection(TOP));
+    assertEquals(ArrowType.FIRE, ArrowType.forDirection(LOWER_RIGHT));
+    assertEquals(ArrowType.ICE, ArrowType.forDirection(LOWER_LEFT));
   }
 
   @Test
   void shouldResolveDirectionsBetweenWedgeCentres() {
-    assertEquals(ArrowType.STANDARD, ArrowType.forDirection(new Vector2(FAR * 0.3f, FAR)));
-    assertEquals(ArrowType.FIRE, ArrowType.forDirection(new Vector2(FAR, FAR * 0.3f)));
-    assertEquals(ArrowType.POISON, ArrowType.forDirection(new Vector2(-FAR, -FAR * 0.3f)));
+    assertEquals(ArrowType.STANDARD, ArrowType.forDirection(new Vector2(FAR * 0.5f, FAR)));
+    assertEquals(ArrowType.FIRE, ArrowType.forDirection(new Vector2(FAR, 0f)));
+    assertEquals(ArrowType.ICE, ArrowType.forDirection(new Vector2(-FAR, 0f)));
   }
 
   @Test
@@ -53,8 +56,8 @@ class ArrowTypeTest {
 
   @Test
   void shouldUseSpecialProjectileTexturesForElementalArrows() {
-    assertEquals("images/fireArr_animation.png", ArrowType.FIRE.getTexturePath());
-    assertEquals("images/coldArr_animation.png", ArrowType.ICE.getTexturePath());
-    assertEquals("images/poison_potion.png", ArrowType.POTION.getTexturePath());
+    assertEquals("images/items/arrows/fireArr_animation.png", ArrowType.FIRE.getTexturePath());
+    assertEquals("images/items/arrows/coldArr_animation.png", ArrowType.ICE.getTexturePath());
+    assertEquals("images/items/consumables/poison_potion.png", ArrowType.POTION.getTexturePath());
   }
 }

@@ -9,7 +9,6 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.csse3200.game.components.ButtonSound;
@@ -127,7 +126,18 @@ public class MainMenuDisplay extends UIComponent {
     exitButtonStyle.down = new TextureRegionDrawable(quitDownTexture);
 
     ImageButton exitButton = new ImageButton(exitButtonStyle);
-    TextButton sandboxButton = new TextButton("Sandbox", skin);
+    Texture sandboxUpTexture =
+        ServiceLocator.getResourceService()
+            .getAsset("images/Buttons/sandbox_up_btn.png", Texture.class);
+    Texture sandboxDownTexture =
+        ServiceLocator.getResourceService()
+            .getAsset("images/Buttons/sandbox_down_btn.png", Texture.class);
+
+    ImageButton.ImageButtonStyle sandboxButtonStyle = new ImageButton.ImageButtonStyle();
+    sandboxButtonStyle.up = new TextureRegionDrawable(sandboxUpTexture);
+    sandboxButtonStyle.down = new TextureRegionDrawable(sandboxDownTexture);
+
+    ImageButton sandboxButton = new ImageButton(sandboxButtonStyle);
 
     // Triggers an event when the button is pressed
     // ImageButton automatically swaps to the "down" drawable while pressed and back to "up" on
@@ -213,7 +223,7 @@ public class MainMenuDisplay extends UIComponent {
     table.row();
     table.add(columnPair).center().padTop(screenHeight * 0.02f);
     table.row();
-    table.add(sandboxButton).center().padTop(pad);
+    table.add(sandboxButton).center().width(buttonWidth).height(buttonHeight).padTop(pad);
     table.row();
     table
         .add(exitButton)

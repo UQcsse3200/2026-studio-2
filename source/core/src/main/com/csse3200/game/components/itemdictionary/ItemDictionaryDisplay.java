@@ -274,6 +274,24 @@ public class ItemDictionaryDisplay extends UIComponent {
       statsTable.row();
     }
 
+    if (itemType.getSpeedBoost() > 0f) {
+      statsTable
+          .add(new Label("Speed Boost: " + Math.round(itemType.getSpeedBoost() * 100f) + "%", skin))
+          .left();
+      statsTable.row();
+      statsTable.add(new Label("Duration: " + itemType.getDuration() + "s", skin)).left();
+      statsTable.row();
+    }
+    if (itemType.getPoisonDamagePerSecond() > 0f) {
+      statsTable
+          .add(new Label("Poison Damage: " + itemType.getPoisonDamagePerSecond() + "/s", skin))
+          .left();
+      statsTable.row();
+      statsTable
+          .add(new Label("Poison Duration: " + itemType.getPoisonDuration() + "s", skin))
+          .left();
+      statsTable.row();
+    }
     contentTable.add(statsTable).width(300f);
   }
 

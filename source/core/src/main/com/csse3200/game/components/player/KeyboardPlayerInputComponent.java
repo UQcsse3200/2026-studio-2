@@ -230,9 +230,6 @@ public class KeyboardPlayerInputComponent extends InputComponent {
     if (dead || isArrowWheelOpen()) {
       return false;
     }
-    if (button == Buttons.LEFT) {
-      return triggerAimedEvent("melee", screenX, screenY);
-    }
     if (button == Buttons.RIGHT) {
       rightMouseHeld = true;
       return triggerAimedEvent("shoot", screenX, screenY);
@@ -266,11 +263,6 @@ public class KeyboardPlayerInputComponent extends InputComponent {
   public boolean touchUp(int screenX, int screenY, int pointer, int button) {
     if (dead) {
       return isShopOpen();
-    }
-
-    if (button == Buttons.LEFT) {
-      entity.getEvents().trigger("stopMelee");
-      return true;
     }
 
     if (button == Buttons.RIGHT) {

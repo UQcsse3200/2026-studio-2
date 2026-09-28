@@ -60,10 +60,10 @@ public class Level2GameArea extends GameArea {
     // Enemy textures
     "images/skeleton_warrior.png",
     "images/skeleton_archer.png",
-    "images/arrow.png",
-    "images/rope_arrow.png",
-    "images/fire_arrow.png",
-    "images/cold_arrow.png"
+    "images/items/arrows/arrow.png",
+    "images/items/arrows/rope_arrow.png",
+    "images/items/arrows/fire_arrow.png",
+    "images/items/arrows/cold_arrow.png"
   };
 
   private static final String[] level2TexturesAtlas = {

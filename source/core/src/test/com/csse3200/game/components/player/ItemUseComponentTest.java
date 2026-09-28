@@ -242,7 +242,7 @@ class ItemUseComponentTest {
   }
 
   @Test
-  void shouldNotReleaseGrappleOnStopShootForOtherArrows() {
+  void shouldSignalGrappleReleaseEvenWhenAnotherArrowIsSelected() {
     Entity player = createPlayer();
     InventoryComponent inventory = player.getComponent(InventoryComponent.class);
     inventory.addItem(ItemType.STANDARD_ARROW, 1);
@@ -252,7 +252,26 @@ class ItemUseComponentTest {
 
     player.getEvents().trigger("stopShoot");
 
-    assertEquals(0, released.get());
+    assertEquals(1, released.get());
+  }
+
+  @Test
+  void shouldReleaseGrappleAfterSwitchingAwayFromTheFiredRopeArrow() {
+    Entity player = createPlayer();
+    InventoryComponent inventory = player.getComponent(InventoryComponent.class);
+    inventory.addItem(ItemType.ROPE_ARROW, 1);
+    inventory.addItem(ItemType.STANDARD_ARROW, 3);
+    AtomicInteger fired = new AtomicInteger();
+    AtomicInteger released = new AtomicInteger();
+    player.getEvents().addListener("grappleFire", (Vector2 ignored) -> fired.incrementAndGet());
+    player.getEvents().addListener("grappleRelease", released::incrementAndGet);
+    player.getEvents().trigger("shoot", new Vector2(1f, 0f));
+    inventory.selectSlot(1);
+    player.getEvents().trigger("stopShoot");
+    assertEquals(1, fired.get());
+    assertEquals(1, released.get());
+    assertEquals(1, inventory.getItemCount(ItemType.ROPE_ARROW));
+    assertEquals(3, inventory.getItemCount(ItemType.STANDARD_ARROW));
   }
 
   @Test
@@ -263,16 +282,6 @@ class ItemUseComponentTest {
   @Test
   void shouldFireIceArrowThroughBowAndConsumeAmmo() {
     assertArrowUsesBowType(ItemType.ICE_ARROW, ArrowType.ICE);
-  }
-
-  @Test
-  void shouldUseSwordThroughMeleeAttackEvent() {
-    assertMeleeItemUsesDamageAndRange(ItemType.Sword);
-  }
-
-  @Test
-  void shouldUseSpearThroughMeleeAttackEvent() {
-    assertMeleeItemUsesDamageAndRange(ItemType.Spear);
   }
 
   @Test
@@ -343,30 +352,6 @@ class ItemUseComponentTest {
     assertEquals(expectedArrowType, bowType.get());
     assertEquals(1, shots.get());
     assertEquals(1, inventory.getItemCount(itemType));
-  }
-
-  private void assertMeleeItemUsesDamageAndRange(ItemType itemType) {
-    Entity player = createPlayer();
-    InventoryComponent inventory = player.getComponent(InventoryComponent.class);
-    inventory.addItem(itemType, 1);
-
-    AtomicReference<Vector2> direction = new AtomicReference<>();
-    AtomicInteger damage = new AtomicInteger();
-    AtomicReference<Float> range = new AtomicReference<>();
-    player
-        .getEvents()
-        .addListener(
-            "meleeAttack",
-            (Vector2 aim, Integer itemDamage, Float itemRange) -> {
-              direction.set(aim);
-              damage.set(itemDamage);
-              range.set(itemRange);
-            });
-
-    assertTrue(player.getComponent(ItemUseComponent.class).useSelectedItem());
-    assertFalse(direction.get().isZero());
-    assertEquals(itemType.getDamage(), damage.get());
-    assertEquals(itemType.getRange(), range.get(), 0.001f);
   }
 
   @Test

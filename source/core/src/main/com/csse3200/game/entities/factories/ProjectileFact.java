@@ -35,12 +35,12 @@ public class ProjectileFact {
         new Entity()
             .addComponent(new PhysicsComponent())
             .addComponent(movement)
-            .addComponent(new HitboxComponent().setLayer(PhysicsLayer.NPC))
+            .addComponent(new HitboxComponent().setLayer(PhysicsLayer.ENEMY_PROJECTILE))
             .addComponent(new CombatStatsComponent(1, damage))
             .addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER))
             .addComponent(new ProjectileComponent(lifetime))
             .addComponent(new ColliderComponent())
-            .addComponent(new TextureRenderComponent("images/arrow.png"));
+            .addComponent(new TextureRenderComponent("images/items/arrows/arrow.png"));
 
     projectile.getComponent(TextureRenderComponent.class).scaleEntity();
     projectile.setScale(projectile.getScale().scl(0.6f));
@@ -59,7 +59,7 @@ public class ProjectileFact {
         new Entity()
             .addComponent(new PhysicsComponent())
             .addComponent(movement)
-            .addComponent(new HitboxComponent().setLayer(PhysicsLayer.NPC))
+            .addComponent(new HitboxComponent().setLayer(PhysicsLayer.ENEMY_PROJECTILE))
             .addComponent(new CombatStatsComponent(1, damage))
             .addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER))
             .addComponent(new ProjectileComponent(lifetime))

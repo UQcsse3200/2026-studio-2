@@ -21,7 +21,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 class ArrowWheelComponentTest {
   private static final float FAR = ArrowType.DEADZONE_RADIUS * 3f;
   private static final Vector2 TOWARDS_FIRE = new Vector2(FAR, 0f);
-  private static final Vector2 TOWARDS_COLD = new Vector2(0f, -FAR);
+  // Three wedges: Standard at the top, Fire 120 degrees clockwise, Ice 240 degrees clockwise.
+  private static final Vector2 TOWARDS_COLD = new Vector2(-0.866f * FAR, -0.5f * FAR);
   private static final Vector2 CENTRE = new Vector2(0f, 0f);
 
   private ArrowWheelComponent wheel;
@@ -82,7 +83,7 @@ class ArrowWheelComponentTest {
     wheel.open();
     wheel.highlightFromPointer(TOWARDS_COLD);
 
-    assertFalse(wheel.highlightFromPointer(new Vector2(FAR * 0.2f, -FAR)));
+    assertFalse(wheel.highlightFromPointer(new Vector2(-FAR * 0.2f, -FAR)));
     assertEquals(ArrowType.ICE, wheel.getHighlighted());
   }
 

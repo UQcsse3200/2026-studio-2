@@ -2,12 +2,12 @@ package com.csse3200.game.areas;
 
 import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
 import com.csse3200.game.areas.terrain.TerrainComponent;
 import com.csse3200.game.areas.terrain.configs.LevelConfig;
 import com.csse3200.game.areas.terrain.configs.SpawnData;
 import com.csse3200.game.components.CameraComponent;
-import com.csse3200.game.components.item.ItemComponent;
 import com.csse3200.game.components.level.ActivatableComponent;
 import com.csse3200.game.components.level.CheckpointComponent;
 import com.csse3200.game.components.level.LevelTriggerComponent;
@@ -54,20 +54,14 @@ public abstract class GameArea implements Disposable {
 
   /** Dispose of all internal entities in the area */
   public void dispose() {
+    // Only the player carries state between areas. World pickups belong to this area.
     areaEntities.remove(player);
-    ArrayList<Entity> items = new ArrayList<Entity>();
+    Array<Entity> registeredEntities = ServiceLocator.getEntityService().getEntities();
     for (Entity entity : areaEntities) {
-      if (entity.getComponent(ItemComponent.class) != null) {
-        items.add(entity);
+      // Collected pickups have already disposed their components and unregistered themselves.
+      if (registeredEntities.contains(entity, true)) {
+        entity.dispose();
       }
-    }
-
-    for (Entity entity : items) {
-      areaEntities.remove(entity);
-    }
-
-    for (Entity entity : areaEntities) {
-      entity.dispose();
     }
 
     // clear all references

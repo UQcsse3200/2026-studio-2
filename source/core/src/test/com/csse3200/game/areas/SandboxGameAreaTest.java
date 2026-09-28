@@ -19,7 +19,7 @@ class SandboxGameAreaTest {
 
   @Test
   void shouldPreloadPlayerStatsDisplayTextures() {
-    assertPreloadsTexture("images/red_heart.png");
+    assertPreloadsTexture("images/items/consumables/red_heart.png");
     assertPreloadsTexture("images/PixelArt_HeartBack.png");
     assertPreloadsTexture("images/Damaged_heart.png");
     assertPreloadsTexture("images/Last_Health.png");

@@ -27,7 +27,6 @@ public class ForestGameArea extends GameArea {
   private static final int NUM_TREES = 7;
   private static final int NUM_GHOSTS = 2;
   private static final GridPoint2 PLAYER_SPAWN = new GridPoint2(10, 10);
-  private static final GridPoint2 ROPE_ARROW_SPAWN = new GridPoint2(12, 10);
   private static final GridPoint2 STANDARD_ARROW_SPAWN = new GridPoint2(8, 10);
   private static final GridPoint2 FIRE_ARROW_SPAWN = new GridPoint2(6, 6);
   private static final GridPoint2 ICE_ARROW_SPAWN = new GridPoint2(8, 8);
@@ -44,7 +43,7 @@ public class ForestGameArea extends GameArea {
     "images/ghost_king.png",
     "images/skeleton_warrior.png",
     "images/skeleton_archer.png",
-    "images/arrow.png",
+    "images/items/arrows/arrow.png",
     "images/ghost_1.png",
     "images/grass_1.png",
     "images/grass_2.png",
@@ -56,9 +55,9 @@ public class ForestGameArea extends GameArea {
     "images/iso_grass_1.png",
     "images/iso_grass_2.png",
     "images/iso_grass_3.png",
-    "images/rope_arrow.png",
-    "images/fire_arrow.png",
-    "images/cold_arrow.png",
+    "images/items/arrows/rope_arrow.png",
+    "images/items/arrows/fire_arrow.png",
+    "images/items/arrows/cold_arrow.png",
     "scroll_bg.png"
   };
   private static final String[] forestTextureAtlases = {
@@ -175,12 +174,11 @@ public class ForestGameArea extends GameArea {
       input.setCameraComponent(cameraComponent);
     }
     spawnEntityAt(newPlayer, PLAYER_SPAWN, true, true);
+    PlayerFactory.giveStartingLoadout(newPlayer);
     return newPlayer;
   }
 
   private void spawnItems() {
-    spawnEntityAt(ItemFactory.createRopeArrow(), ROPE_ARROW_SPAWN, true, false);
-
     spawnEntityAt(
         ItemFactory.createStandardArrow(STANDARD_ARROW_QUANTITY),
         STANDARD_ARROW_SPAWN,

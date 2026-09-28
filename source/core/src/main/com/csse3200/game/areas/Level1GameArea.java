@@ -108,7 +108,7 @@ public class Level1GameArea extends GameArea {
     // Existing game textures
     "images/black_roof.png",
     "images/purple_heart.png",
-    "images/red_heart.png",
+    "images/items/consumables/red_heart.png",
     "images/PixelArt_HeartBack.png",
     "images/transparent.png",
     "images/DevGridTile.png",
@@ -148,19 +148,18 @@ public class Level1GameArea extends GameArea {
     "images/skeleton_warrior.png",
     "images/skeleton_archer.png",
     NPCFactory.SHOPKEEPER_TEXTURE,
-    "images/arrow.png",
-    "images/rope_arrow.png",
-    "images/fire_arrow.png",
-    "images/fireArr_animation.png",
-    "images/coldArr_animation.png",
+    "images/items/arrows/arrow.png",
+    "images/items/arrows/rope_arrow.png",
+    "images/items/arrows/fire_arrow.png",
+    "images/items/arrows/fireArr_animation.png",
+    "images/items/arrows/coldArr_animation.png",
+    "images/items/effects/fire_status_effect.png",
+    "images/items/effects/ice_status_effect.png",
     "images/heart.png",
-    "images/sword.png",
-    "images/spear.png",
-    "images/health_potion.png",
-    "images/speed_potion.png",
-    "images/poison_potion.png",
+    "images/items/consumables/speed_potion.png",
+    "images/items/consumables/poison_potion.png",
     ItemFactory.GOLD_TEXTURE,
-    "images/cold_arrow.png",
+    "images/items/arrows/cold_arrow.png",
     "images/necromancer_projectile.png",
   };
 
@@ -388,6 +387,7 @@ public class Level1GameArea extends GameArea {
       input.setCameraComponent(cameraComponent);
     }
     spawnEntityAt(newPlayer, config.getPlayerSpawn(), true, true);
+    PlayerFactory.giveStartingLoadout(newPlayer);
 
     System.out.println("player spawned");
     System.out.println(input);

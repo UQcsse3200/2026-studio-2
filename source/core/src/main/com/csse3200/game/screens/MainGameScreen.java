@@ -10,6 +10,7 @@ import com.csse3200.game.areas.ForestGameArea;
 import com.csse3200.game.areas.terrain.TerrainFactory;
 import com.csse3200.game.components.ButtonSound;
 import com.csse3200.game.components.gamearea.PerformanceDisplay;
+import com.csse3200.game.components.item.ItemAssets;
 import com.csse3200.game.components.maingame.MainGameActions;
 import com.csse3200.game.components.maingame.MainGameExitDisplay;
 import com.csse3200.game.components.maingame.PauseMenuOverlay;
@@ -166,7 +167,7 @@ public class MainGameScreen extends ScreenAdapter {
                 "images/title_odysseus_logo.png",
                 "images/box_boy_title.png",
                 "images/Health_Bar_Background.png",
-                "images/red_heart.png",
+                "images/items/consumables/red_heart.png",
                 "images/PixelArt_HeartBack.png",
                 "images/Damaged_heart.png",
                 "images/Last_Health.png",
@@ -185,6 +186,7 @@ public class MainGameScreen extends ScreenAdapter {
                 "images/Buttons/main_menu_down_btn.png",
                 "images/Buttons/exit_game_up_btn.png",
                 "images/Buttons/exit_game_down_btn.png"));
+    paths.addAll(List.of(ItemAssets.getTextures()));
     paths.addAll(List.of(WheelConfig.TEXTURES));
     paths.addAll(List.of(BlackjackConfig.TEXTURES));
     return paths.toArray(new String[0]);
