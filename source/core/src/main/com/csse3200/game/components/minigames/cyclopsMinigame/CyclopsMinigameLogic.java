@@ -272,7 +272,7 @@ public class CyclopsMinigameLogic extends Component {
     timeInState += delta;
 
     switch (state) {
-      case STOP-> {
+      case STOP -> {
         /* Do Nothing / Wait for External Input */
       }
       case WIN -> {

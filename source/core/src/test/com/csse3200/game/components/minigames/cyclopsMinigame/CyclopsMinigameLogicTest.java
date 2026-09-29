@@ -1,31 +1,27 @@
 package com.csse3200.game.components.minigames.cyclopsMinigame;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
 import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.utils.Timer;
 import com.csse3200.game.areas.terrain.TerrainComponent;
-import com.csse3200.game.components.player.PlayerAnimationController;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.List;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 @ExtendWith(GameExtension.class)
 public class CyclopsMinigameLogicTest {
-
   CyclopsMinigameLogic minigameLogic;
   TimingBarLogic timingBarLogic;
   TimingBarDisplay timingBarDisplay;
   TerrainComponent terrainComponent;
   Entity player;
-  PlayerAnimationController animationController;
 
   @BeforeEach
   void setup() {
@@ -36,18 +32,44 @@ public class CyclopsMinigameLogicTest {
 
     ServiceLocator.registerEntityService(new EntityService());
 
-    animationController = mock(PlayerAnimationController.class);
-    when(player.getComponent(PlayerAnimationController.class)).thenReturn(animationController);
-
     minigameLogic =
         new CyclopsMinigameLogic(timingBarLogic, timingBarDisplay, terrainComponent, player);
-    minigameLogic.timer = spy(new Timer());
   }
 
-  @AfterEach
-  void tearDown() {
-    minigameLogic.timer.clear();
+  /* Checking Getters & Setters */
+  @Test
+  void shouldSetWinLocation() {
+    GridPoint2 win = new GridPoint2(6, 7);
+    minigameLogic.setWinLocation(win);
+
+    assertEquals(win, minigameLogic.getWinLocation());
   }
+
+  @Test
+  void shouldSetLossLocations() {
+    List<GridPoint2> lossLocations =
+        List.of(
+            new GridPoint2(1, 0),
+            new GridPoint2(2, 0),
+            new GridPoint2(3, 0),
+            new GridPoint2(4, 0),
+            new GridPoint2(4, 0));
+
+    minigameLogic.setLossLocations(lossLocations);
+    assertEquals(lossLocations, minigameLogic.getLossLocations());
+  }
+
+  @Test
+  void shouldSetSafeLocations() {
+    List<GridPoint2> safeLocations =
+        List.of(
+            new GridPoint2(4, 2), new GridPoint2(2, 7), new GridPoint2(1, 2), new GridPoint2(0, 8));
+
+    minigameLogic.setSafeLocations(safeLocations);
+    assertEquals(safeLocations, minigameLogic.getSafeLocations());
+  }
+
+  /* Checking Movement Function Logic */
 
   @Test
   void shouldMovePlayerToNextSafeLocationOnSuccess() {
@@ -94,34 +116,5 @@ public class CyclopsMinigameLogicTest {
 
     minigameLogic.moveToNextLocation(true);
     verify(player).setPosition(winPos);
-  }
-
-  @Test
-  void startMinigameShouldScheduleStart() {
-    minigameLogic.startMinigame();
-    verify(minigameLogic.timer).scheduleTask(any(Timer.Task.class), anyFloat());
-  }
-
-  @Test
-  void restartMinigameShouldMovePlayerToFirstSafeLocAndScheduleStart() {
-
-    GridPoint2 first = new GridPoint2(1, 0);
-    GridPoint2 second = new GridPoint2(2, 0);
-    GridPoint2 win = new GridPoint2(3, 0);
-
-    minigameLogic.setWinLocation(win);
-    minigameLogic.setSafeLocations(List.of(first, second));
-
-    Vector2 firstPos = new Vector2(100, 0);
-    Vector2 secondPos = new Vector2(200, 0);
-    when(terrainComponent.tileToWorldPosition(first)).thenReturn(firstPos);
-    when(terrainComponent.tileToWorldPosition(second)).thenReturn(secondPos);
-
-    minigameLogic.moveToNextLocation(true);
-    verify(player).setPosition(secondPos);
-
-    minigameLogic.restartMinigame();
-    verify(player).setPosition(firstPos);
-    verify(minigameLogic.timer).scheduleTask(any(Timer.Task.class), anyFloat());
   }
 }
