@@ -54,9 +54,10 @@ public class GrappleArrowComponent extends Component {
         // check if other fixture that was hit with the arrow is a slippery platform to inform it
         // the player has grappled to it
         if (other.getBody().getUserData() instanceof BodyUserData data) {
-          SlipperyPlatformComponent platform = data.entity.getComponent(SlipperyPlatformComponent.class);
+          SlipperyPlatformComponent platform =
+              data.entity.getComponent(SlipperyPlatformComponent.class);
           if (platform != null) {
-           platform.setGrappled(true);
+            platform.setGrappled(true);
           }
         }
       }
