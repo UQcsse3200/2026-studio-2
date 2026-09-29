@@ -179,7 +179,6 @@ public class CyclopsMinigameLogicTest {
     assertTrue(minigameLogic.elapsed(4f));
   }
 
-
   /* Test Game Start */
   @Test
   public void startMinigameStartsTimingMinigame() {
@@ -196,5 +195,4 @@ public class CyclopsMinigameLogicTest {
     verify(timingBarLogic).resetMarker();
     verify(timingBarLogic).startMarker();
   }
-
 }
