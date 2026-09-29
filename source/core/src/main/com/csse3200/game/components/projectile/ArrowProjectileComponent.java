@@ -98,6 +98,10 @@ public class ArrowProjectileComponent extends Component {
 
   /** Lets a fired arrow pass through the player instead of shoving them. */
   private void ignorePlayerCollisions(Body body) {
+    // Entity component creation order is unspecified: the hitbox may not have a fixture yet.
+    if (hitboxComponent != null) {
+      hitboxComponent.excludeCollisionLayers(PhysicsLayer.PLAYER);
+    }
     for (Fixture fixture : body.getFixtureList()) {
       Filter filter = fixture.getFilterData();
       filter.maskBits &= ~PhysicsLayer.PLAYER;
