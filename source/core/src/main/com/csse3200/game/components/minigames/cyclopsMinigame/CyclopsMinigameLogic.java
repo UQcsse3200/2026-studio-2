@@ -18,7 +18,7 @@ public class CyclopsMinigameLogic extends Component {
   private static final Logger logger = LoggerFactory.getLogger(CyclopsMinigameLogic.class);
 
   /* State Machine */
-  private enum State {
+  enum State {
     STOP,
     SHOW_DELAY,
     PLAY,
@@ -29,13 +29,13 @@ public class CyclopsMinigameLogic extends Component {
     WIN
   }
 
-  private State state = State.STOP;
-  private float timeInState = 0f;
+  State state = State.STOP;
+  float timeInState = 0f;
   private boolean hasWon = false;
 
-  private static final float SHOW_HIDE_DELAY = 0.3f;
-  private static final float TRANSITION_DELAY_GAP = 0.2f;
-  private static final float TRANSITION_DELAY = 0.8f;
+  static final float SHOW_HIDE_DELAY = 0.3f;
+  static final float TRANSITION_DELAY_GAP = 0.2f;
+  static final float TRANSITION_DELAY = 0.8f;
 
   /* Components */
   private final TimingBarLogic timingBarLogic;
@@ -53,18 +53,19 @@ public class CyclopsMinigameLogic extends Component {
   private List<GridPoint2> lossLocations;
   private GridPoint2 winLocation;
   private int currentSafeLocation = 0;
+
   /* Audio/Sound Effects */
-  private Sound walkingSound;
-  private long walkingSoundID;
+  Sound walkingSound;
+  long walkingSoundID;
   private static final String walkingSoundPath = "sounds/walkingSounds/walkingSound.mp3";
   private static final float walkingSoundVolume = 0.4f;
 
-  private Sound hitSound;
+  Sound hitSound;
   private long hitSoundID;
   private static final String hitSoundPath = "sounds/minigames/cyclops/marker-hit.ogg";
   private static final float hitSoundVolume = 0.4f;
 
-  private Sound missSound;
+  Sound missSound;
   private long missSoundID;
   private static final String missSoundPath = "sounds/minigames/cyclops/marker-miss.ogg";
   private static final float missSoundVolume = 0.4f;
@@ -162,19 +163,19 @@ public class CyclopsMinigameLogic extends Component {
 
   /* Audio */
 
-  private void loadSounds() {
+  void loadSounds() {
     walkingSound = ServiceLocator.getResourceService().getAsset(walkingSoundPath, Sound.class);
     hitSound = ServiceLocator.getResourceService().getAsset(hitSoundPath, Sound.class);
     missSound = ServiceLocator.getResourceService().getAsset(missSoundPath, Sound.class);
   }
 
-  private void playWalkingSound() {
+  void playWalkingSound() {
     this.walkingSoundID = walkingSound.play();
     walkingSound.setLooping(this.walkingSoundID, true);
     walkingSound.setVolume(this.walkingSoundID, walkingSoundVolume);
   }
 
-  private void stopWalkingSound() {
+  void stopWalkingSound() {
     if (walkingSound == null) {
       logger.warn("Attempting to stop walking sound when walkingSound variable is null");
       return;
@@ -183,13 +184,13 @@ public class CyclopsMinigameLogic extends Component {
     logger.debug("Stopped walking sound");
   }
 
-  private void playMarkerHitSound() {
+  void playMarkerHitSound() {
     this.hitSoundID = hitSound.play();
     hitSound.setVolume(this.hitSoundID, hitSoundVolume);
     logger.debug("Starting hit sound (ID: {}) with volume {}", this.hitSoundID, hitSoundVolume);
   }
 
-  private void stopMarkerHitSound() {
+  void stopMarkerHitSound() {
     if (hitSound == null) {
       logger.warn("Attempting to stop hit sound when hitSound variable is null");
       return;
@@ -198,13 +199,13 @@ public class CyclopsMinigameLogic extends Component {
     logger.debug("Stopped hit sound");
   }
 
-  private void playMarkerMissSound() {
+  void playMarkerMissSound() {
     this.missSoundID = missSound.play();
     missSound.setVolume(this.missSoundID, missSoundVolume);
     logger.debug("Starting miss sound (ID: {}) with volume {}", this.missSoundID, missSoundVolume);
   }
 
-  private void stopMarkerMissSound() {
+  void stopMarkerMissSound() {
     if (missSound == null) {
       logger.warn("Attempting to stop miss sound when missSound variable is null");
       return;
@@ -213,7 +214,7 @@ public class CyclopsMinigameLogic extends Component {
     logger.debug("Stopped miss sound");
   }
 
-  private void playCorrectMarkerSound() {
+  void playCorrectMarkerSound() {
     if (this.timingBarLogic.checkHit()) {
       playMarkerHitSound();
     } else {
@@ -222,12 +223,12 @@ public class CyclopsMinigameLogic extends Component {
   }
 
   /* Game Logic */
-  private void changeState(State next) {
+  void changeState(State next) {
     state = next;
     timeInState = 0f;
   }
 
-  private boolean elapsed(float seconds) {
+  boolean elapsed(float seconds) {
     return timeInState >= seconds;
   }
 

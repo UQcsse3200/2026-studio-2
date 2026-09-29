@@ -1,6 +1,6 @@
 package com.csse3200.game.components.minigames.cyclopsMinigame;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import com.badlogic.gdx.math.GridPoint2;
@@ -9,6 +9,8 @@ import com.csse3200.game.areas.terrain.TerrainComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.extensions.GameExtension;
+import com.csse3200.game.services.GameTime;
+import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,6 +25,8 @@ public class CyclopsMinigameLogicTest {
   TerrainComponent terrainComponent;
   Entity player;
 
+  GameTime gameTime;
+
   @BeforeEach
   void setup() {
     timingBarLogic = mock(TimingBarLogic.class);
@@ -30,13 +34,18 @@ public class CyclopsMinigameLogicTest {
     terrainComponent = mock(TerrainComponent.class);
     player = mock(Entity.class);
 
+    ServiceLocator.registerResourceService(new ResourceService());
     ServiceLocator.registerEntityService(new EntityService());
+
+    gameTime = mock(GameTime.class);
+    ServiceLocator.registerTimeSource(gameTime);
 
     minigameLogic =
         new CyclopsMinigameLogic(timingBarLogic, timingBarDisplay, terrainComponent, player);
   }
 
   /* Checking Getters & Setters */
+
   @Test
   void shouldSetWinLocation() {
     GridPoint2 win = new GridPoint2(6, 7);
@@ -117,4 +126,39 @@ public class CyclopsMinigameLogicTest {
     minigameLogic.moveToNextLocation(true);
     verify(player).setPosition(winPos);
   }
+
+  /* Test State Changing */
+
+  @Test
+  void changeStateUpdatesTimerAndState() {
+    minigameLogic.changeState(CyclopsMinigameLogic.State.STOP);
+    assertEquals(CyclopsMinigameLogic.State.STOP, minigameLogic.state);
+    assertEquals(0f, minigameLogic.timeInState);
+
+    /* Update Once to change timInState */
+    when(gameTime.getDeltaTime()).thenReturn(0.5f);
+
+    minigameLogic.update();
+    assertNotEquals(0f, minigameLogic.timeInState);
+    assertTrue(minigameLogic.timeInState > 0f);
+
+    minigameLogic.changeState(CyclopsMinigameLogic.State.MOVING);
+    assertEquals(CyclopsMinigameLogic.State.MOVING, minigameLogic.state);
+    assertEquals(0f, minigameLogic.timeInState);
+  }
+
+  @Test
+  void testElapsedTimeIsCorrectlyEvaluated() {
+    minigameLogic.changeState(CyclopsMinigameLogic.State.STOP);
+    assertEquals(0f, minigameLogic.timeInState);
+
+    when(gameTime.getDeltaTime()).thenReturn(2f);
+    minigameLogic.update();
+    assertFalse(minigameLogic.elapsed(4f));
+    minigameLogic.update();
+    assertTrue(minigameLogic.elapsed(4f));
+  }
+
+  /* Test Game Logic */
+
 }
