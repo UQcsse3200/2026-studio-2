@@ -29,7 +29,7 @@ public class Level3Config extends LevelConfig {
 
     platforms =
         new PlatformConfig[] {
-          new PlatformConfig(new GridPoint2(9, 5), 3, 1, 0, platformTFP), // P1
+          // new PlatformConfig(new GridPoint2(9, 5), 3, 1, 0, platformTFP), // P1
           new PlatformConfig(new GridPoint2(13, 7), 3, 1, 0, platformTFP), // P2
           new PlatformConfig(new GridPoint2(6, 10), 3, 1, 11, platformTFP), // P3
           new PlatformConfig(new GridPoint2(17, 10), 3, 1, 0, platformTFP), // P4
@@ -118,6 +118,11 @@ public class Level3Config extends LevelConfig {
     //       new CrumblingPlatformConfig(
     //           new GridPoint2(16, 8), 3, 1, 0, crumblingPlatformTFP, 1.25f, 0.75f, 3f), // CP1
     //     };
+
+    slipperyPlatforms =
+        new SlipperyPlatformConfig[] {
+          new SlipperyPlatformConfig(new GridPoint2(9, 5), 3, 1, 0, platformTFP, 5f, 0.2f), // P1
+        };
   }
 
   /**

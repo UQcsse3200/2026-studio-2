@@ -240,6 +240,22 @@ public class ObstacleFactory {
     return button;
   }
 
+  public static Entity createSlipperyPlatform(SlipperyPlatformConfig config) {
+    Entity platform =
+        new Entity()
+            .addComponent(new DynamicTextureRenderComponent(config.textureFilepath))
+            .addComponent(new PhysicsComponent())
+            .addComponent(new ColliderComponent().setLayer(PhysicsLayer.OBSTACLE))
+            .addComponent(new PlatformGrappleComponent(config.grappleSides))
+            .addComponent(
+                new SlipperyPlatformComponent(
+                    config.getSlipperiness(), config.getMaxGrappleTime()));
+
+    platform.getComponent(PhysicsComponent.class).setBodyType(BodyType.StaticBody);
+
+    return platform;
+  }
+
   /**
    * Creates a win condition entity.
    *

@@ -23,6 +23,7 @@ public class LevelConfig {
   protected MovingPlatformConfig[] movingPlatforms;
   protected CrumblingPlatformConfig[] crumblingPlatforms;
   protected TriggerablePlatformConfig[] triggerablePlatforms;
+  protected SlipperyPlatformConfig[] slipperyPlatforms;
   protected PlatformConfig[] ledges;
   protected SpikeClusterConfig[] spikes;
   protected SpikyBallTrapConfig[] ballTraps;
@@ -55,6 +56,7 @@ public class LevelConfig {
     createMovingPlatforms();
     createCrumblingPlatforms();
     createTriggerablePlatforms();
+    createSlipperyPlatforms();
     createLedges();
     createSpikes();
     createTraps();
@@ -149,6 +151,22 @@ public class LevelConfig {
       Entity triggerablePlatform = ObstacleFactory.createTriggerablePlatform(t);
       triggerablePlatform.setScale(t.width, t.height);
       entities.add(new SpawnData(t.position, triggerablePlatform));
+    }
+  }
+
+  /**
+   * Creates all slippery platforms for this level and adds them to the entities Map for the level
+   * to spawn
+   */
+  private void createSlipperyPlatforms() {
+    if (slipperyPlatforms == null) {
+      return;
+    }
+
+    for (SlipperyPlatformConfig s : slipperyPlatforms) {
+      Entity slipperyPlatform = ObstacleFactory.createSlipperyPlatform(s);
+      slipperyPlatform.setScale(s.width, s.height);
+      entities.add(new SpawnData(s.position, slipperyPlatform));
     }
   }
 
