@@ -17,6 +17,7 @@ public class RespawnComponent extends Component {
     }
 
     if (respawnQueued && respawnCoordinates != null) {
+      entity.getEvents().trigger("grappleRelease");
       entity.setPosition(respawnCoordinates.x, respawnCoordinates.y);
       respawnQueued = false;
       respawnCoordinates = null;
