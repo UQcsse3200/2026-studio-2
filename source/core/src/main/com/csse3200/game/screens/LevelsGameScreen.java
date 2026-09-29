@@ -175,6 +175,7 @@ public class LevelsGameScreen extends ScreenAdapter {
     renderer.getCamera().setTarget(player);
     player.getEvents().addListener("deathAnimationFinished", this::onPlayerDeath);
     wheelOverlay = new SpinTheWheelOverlay(WheelConfig.ITEMS, player);
+    player.getEvents().addListener("wheelTokenPickedUp", wheelOverlay::request);
     pauseOverlay = new PauseMenuOverlay(game, level1GameArea);
 
     minigameOverlayManager = new MinigameOverlayManager();
