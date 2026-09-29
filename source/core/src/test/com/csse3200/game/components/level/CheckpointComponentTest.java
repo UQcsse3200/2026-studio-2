@@ -25,6 +25,7 @@ public class CheckpointComponentTest {
   private Entity checkpointEntity;
   CheckpointComponent checkpointComponent;
   TextureRenderComponent textureRenderComponent;
+  EntityService entityService;
 
   @BeforeEach
   void beforeEach() {
@@ -34,10 +35,11 @@ public class CheckpointComponentTest {
     checkpointEntity = new Entity();
     checkpointEntity.addComponent(checkpointComponent);
     checkpointEntity.addComponent(textureRenderComponent);
+
     player = new Entity();
     player.addComponent(new PlayerActions());
     entities.add(player);
-    EntityService entityService = mock(EntityService.class);
+    entityService = mock(EntityService.class);
     when(entityService.getEntities()).thenReturn(entities);
     ServiceLocator.registerEntityService(entityService);
 
@@ -103,5 +105,27 @@ public class CheckpointComponentTest {
     player.setPosition(11, 9);
     checkpointComponent.update();
     assertFalse(checkpointComponent.isActive());
+  }
+
+  @Test
+  void shouldNotActivatedCollectedCheckpoint() {
+    checkpointComponent = new CheckpointComponent(true, new GridPoint2(0, 0));
+    assertTrue(checkpointComponent.isActive());
+    checkpointComponent.activate();
+    assertTrue(checkpointComponent.isActive());
+
+    // ensure activate method doesn't attempt to spawn another lit checkpoint entity
+    // ensures early return
+    verify(entityService, never()).register(any(Entity.class));
+  }
+
+  @Test
+  void shouldRepeatPlayerFindingIfNoPlayerFound() {
+    entityService.scheduleForDisposal(player);
+
+    checkpointComponent.update();
+    verify(entityService, atLeastOnce()).getEntities();
+    checkpointComponent.update();
+    verify(entityService, atLeastOnce()).getEntities();
   }
 }
