@@ -176,6 +176,7 @@ public class LevelsGameScreen extends ScreenAdapter {
     player.getEvents().addListener("deathAnimationFinished", this::onPlayerDeath);
     wheelOverlay = new SpinTheWheelOverlay(WheelConfig.ITEMS, player);
     player.getEvents().addListener("wheelTokenPickedUp", wheelOverlay::request);
+    player.getEvents().addListener("spinTheWheel", wheelOverlay::request);
     pauseOverlay = new PauseMenuOverlay(game, level1GameArea);
 
     minigameOverlayManager = new MinigameOverlayManager();
@@ -238,9 +239,7 @@ public class LevelsGameScreen extends ScreenAdapter {
       levelSwapQueued = false;
     }
 
-    if (Gdx.input.isKeyJustPressed(Input.Keys.K)) {
-      wheelOverlay.request();
-    } else if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
+    if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
       pauseOverlay.request();
     }
 
