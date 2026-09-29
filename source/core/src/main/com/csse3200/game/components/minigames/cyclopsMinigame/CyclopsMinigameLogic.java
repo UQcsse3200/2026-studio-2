@@ -236,7 +236,7 @@ public class CyclopsMinigameLogic extends Component {
     if (this.timingBarLogic.checkHit()) {
       timingSuccess();
       if (hasWon) changeState(State.WIN);
-      else changeState(State.SHOW_DELAY);
+      else startMinigame();
     } else {
       timingFailure();
       changeState(State.LOSS);
@@ -254,6 +254,20 @@ public class CyclopsMinigameLogic extends Component {
 
   public void startMinigame() {
     changeState(State.SHOW_DELAY);
+  }
+
+  public void stopMinigame() {
+    changeState(State.STOP);
+    timingBarLogic.stopMarker();
+
+    stopMarkerMissSound();
+    stopMarkerHitSound();
+    stopWalkingSound();
+  }
+
+  public void restartMinigame() {
+    movePlayer(safeLocations.getFirst());
+    startMinigame();
   }
 
   /* Component Overrides */

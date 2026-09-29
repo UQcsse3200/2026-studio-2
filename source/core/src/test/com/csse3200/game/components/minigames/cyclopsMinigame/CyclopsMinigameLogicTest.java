@@ -127,6 +127,26 @@ public class CyclopsMinigameLogicTest {
     verify(player).setPosition(winPos);
   }
 
+  @Test
+  public void restartMinigameMovesPlayerBackToFirstLocation() {
+    GridPoint2 start = new GridPoint2(1, 0);
+    GridPoint2 next = new GridPoint2(2, 0);
+
+    minigameLogic.setSafeLocations(List.of(start, next));
+
+    Vector2 startPos = new Vector2(100, 0);
+    when(terrainComponent.tileToWorldPosition(start)).thenReturn(startPos);
+
+    Vector2 nextPos = new Vector2(200, 0);
+    when(terrainComponent.tileToWorldPosition(next)).thenReturn(nextPos);
+
+    minigameLogic.moveToNextLocation(true);
+    verify(player).setPosition(nextPos);
+
+    minigameLogic.restartMinigame();
+    verify(player).setPosition(startPos);
+  }
+
   /* Test State Changing */
 
   @Test
@@ -159,6 +179,22 @@ public class CyclopsMinigameLogicTest {
     assertTrue(minigameLogic.elapsed(4f));
   }
 
-  /* Test Game Logic */
+
+  /* Test Game Start */
+  @Test
+  public void startMinigameStartsTimingMinigame() {
+
+    /* Call start minigame and check the state correctly changes */
+    minigameLogic.startMinigame();
+
+    /* Update as it is intended to happen after a small delay */
+    when(gameTime.getDeltaTime()).thenReturn(2f);
+    minigameLogic.update();
+
+    /* Check all components are started for minigame */
+    verify(timingBarDisplay).setVisible(true);
+    verify(timingBarLogic).resetMarker();
+    verify(timingBarLogic).startMarker();
+  }
 
 }
