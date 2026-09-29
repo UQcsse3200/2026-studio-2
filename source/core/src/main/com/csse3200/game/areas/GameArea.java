@@ -8,11 +8,7 @@ import com.csse3200.game.areas.terrain.configs.LevelConfig;
 import com.csse3200.game.areas.terrain.configs.SpawnData;
 import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.components.item.ItemComponent;
-import com.csse3200.game.components.level.ActivatableComponent;
-import com.csse3200.game.components.level.CheckpointComponent;
-import com.csse3200.game.components.level.LevelTriggerComponent;
-import com.csse3200.game.components.level.PlatformGrappleComponent;
-import com.csse3200.game.components.level.TriggerButtonComponent;
+import com.csse3200.game.components.level.*;
 import com.csse3200.game.components.player.KeyboardPlayerInputComponent;
 import com.csse3200.game.components.player.PlayerInteractionComponent;
 import com.csse3200.game.entities.Entity;
@@ -275,7 +271,9 @@ public abstract class GameArea implements Disposable {
     }
     float x = respawnPoint.x;
     float y = respawnPoint.y;
-    player.setPosition(x, y);
+
+    RespawnComponent respawn = player.getComponent(RespawnComponent.class);
+    respawn.queueRespawn(new Vector2(x, y));
   }
 
   public KeyboardPlayerInputComponent getInput() {

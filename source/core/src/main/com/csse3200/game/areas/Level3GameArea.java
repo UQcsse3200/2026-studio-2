@@ -161,7 +161,7 @@ public class Level3GameArea extends GameArea {
     water
         .getEvents()
         .trigger("setHeight", water.getComponent(RisingWaterComponent.class).getStoredHeight());
-    // player.getEvents().trigger("respawnAtCheckpoint");
+    player.getEvents().trigger("respawnAtCheckpoint");
   }
 
   @Override

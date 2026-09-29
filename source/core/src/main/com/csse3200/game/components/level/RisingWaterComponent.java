@@ -55,7 +55,6 @@ public class RisingWaterComponent extends Component {
   }
 
   public float getStoredHeight() {
-    System.out.println("storedHeight: " + storedHeight);
     return storedHeight;
   }
 
