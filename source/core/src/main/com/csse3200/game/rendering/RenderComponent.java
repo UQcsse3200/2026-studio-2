@@ -57,7 +57,7 @@ public abstract class RenderComponent extends Component implements Renderable, D
       if (darkness > 0.25f) {
         // darkness -= ServiceLocator.getTimeSource().getDeltaTime() / 100f;
         darkness = 1 - (ServiceLocator.getTimeSource().getTime() / 60000f); // 50000, 40000
-        //darkness = 1; //
+        // darkness = 1; //
       }
       lightning += ServiceLocator.getTimeSource().getDeltaTime();
       lightning %= 20; // 40
