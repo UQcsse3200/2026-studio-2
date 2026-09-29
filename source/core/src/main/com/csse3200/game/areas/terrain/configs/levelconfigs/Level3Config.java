@@ -8,6 +8,9 @@ import com.csse3200.game.areas.terrain.configs.*;
 import com.csse3200.game.components.item.*;
 import com.csse3200.game.components.item.weapons.bow.arrow.*;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class Level3Config extends LevelConfig {
   GridPoint2 risingWaterSpawn;
   float risingWaterSpeed;
@@ -89,8 +92,8 @@ public class Level3Config extends LevelConfig {
     // B1
     //     };
 
-    // items = new HashMap<>(Map.of(new GridPoint2(40, 29), new Arrow(ItemType.STANDARD_ARROW,
-    // 99)));
+    items = new HashMap<>(Map.of(new GridPoint2(9, 7), new Arrow(ItemType.ROPE_ARROW,
+            1)));
 
     // spikes =
     //     new SpikeClusterConfig[] {

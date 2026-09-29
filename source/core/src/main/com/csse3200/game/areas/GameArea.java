@@ -135,6 +135,12 @@ public abstract class GameArea implements Disposable {
       entity.getEvents().addListener("checkpointActivated", this::onCheckpointActivated);
     }
 
+    SlipperyPlatformComponent slipperyPlatform = entity.getComponent(SlipperyPlatformComponent.class);
+    if (slipperyPlatform != null) {
+      entity.getEvents().addListener("grappleTimeExceeded", () -> player.getEvents().trigger("grappleRelease"));
+      player.getEvents().addListener("grappleRelease", () -> slipperyPlatform.setGrappled(false));
+    }
+
     LevelTriggerComponent trigger = entity.getComponent(LevelTriggerComponent.class);
     if (trigger != null) {
       levelChanger = entity;

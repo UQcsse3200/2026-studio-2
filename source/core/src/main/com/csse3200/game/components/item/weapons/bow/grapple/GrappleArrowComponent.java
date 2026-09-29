@@ -2,8 +2,10 @@ package com.csse3200.game.components.item.weapons.bow.grapple;
 
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.csse3200.game.components.Component;
+import com.csse3200.game.components.level.SlipperyPlatformComponent;
 import com.csse3200.game.components.player.KeyboardPlayerInputComponent;
 import com.csse3200.game.entities.Entity;
+import com.csse3200.game.physics.BodyUserData;
 import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.services.ServiceLocator;
 
@@ -48,6 +50,15 @@ public class GrappleArrowComponent extends Component {
       GrappleComponent grapple = shooter.getComponent(GrappleComponent.class);
       if (grapple != null) {
         grapple.attachTo(other.getBody(), entity.getCenterPosition());
+
+        // check if other fixture that was hit with the arrow is a slippery platform to inform it
+        // the player has grappled to it
+        if (other.getBody().getUserData() instanceof BodyUserData data) {
+          SlipperyPlatformComponent platform = data.entity.getComponent(SlipperyPlatformComponent.class);
+          if (platform != null) {
+           platform.setGrappled(true);
+          }
+        }
       }
     }
 

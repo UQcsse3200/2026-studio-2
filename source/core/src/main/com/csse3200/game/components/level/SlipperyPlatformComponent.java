@@ -26,10 +26,13 @@ public class SlipperyPlatformComponent extends Component {
   public void update() {
     if (grappled) {
       currentGrappleTime += ServiceLocator.getTimeSource().getDeltaTime();
-
       if (currentGrappleTime >= maxGrappleTime) {
         entity.getEvents().trigger("grappleTimeExceeded");
         grappled = false;
+        currentGrappleTime = 0f;
+      }
+    } else {
+      if (currentGrappleTime > 0f) {
         currentGrappleTime = 0f;
       }
     }
