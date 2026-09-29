@@ -16,22 +16,26 @@ public class BlankTransitionScreenCover extends UIComponent {
   private Table table;
 
   public void fadeIn(float duration) {
+    table.setColor(1, 1, 1, 0);
     table.clearActions();
     table.setVisible(true);
     table.addAction(Actions.fadeIn(duration));
   }
 
   public void fadeOut(float duration) {
+    table.setColor(1, 1, 1, 0);
     table.clearActions();
     table.addAction(Actions.sequence(Actions.fadeOut(duration), Actions.visible(false)));
   }
 
   public void setVisible(boolean visible) {
+    table.setColor(1, 1, 1, 1);
     table.setVisible(visible);
   }
 
   /**
    * Checks whether the Transition Screen has finished fading in/out
+   *
    * @return True if all actions are finished, otherwise false
    */
   public boolean isFadeDone() {
@@ -53,7 +57,7 @@ public class BlankTransitionScreenCover extends UIComponent {
     pixmap.dispose();
 
     table.setBackground(new TextureRegionDrawable(textureRegion));
-    table.setColor(1, 1, 1, 0);
+    table.setColor(1, 1, 1, 1);
     table.setVisible(false);
     stage.addActor(table);
   }
