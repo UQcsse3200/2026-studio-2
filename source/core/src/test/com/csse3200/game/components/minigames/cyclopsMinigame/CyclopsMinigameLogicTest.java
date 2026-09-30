@@ -15,6 +15,7 @@ import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.services.GameTime;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
+import com.csse3200.game.ui.BlankTransitionScreenCover;
 import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -51,6 +52,7 @@ public class CyclopsMinigameLogicTest {
     minigameLogic =
         new CyclopsMinigameLogic(timingBarLogic, timingBarDisplay, terrainComponent, player);
 
+    minigameLogic.transitionScreenCover = mock(BlankTransitionScreenCover.class);
     minigameLogic.walkingSound = mock(Sound.class);
     minigameLogic.missSound = mock(Sound.class);
     minigameLogic.hitSound = mock(Sound.class);
@@ -285,6 +287,52 @@ public class CyclopsMinigameLogicTest {
     verify(minigameLogic.missSound).play();
     verify(minigameLogic.hitSound, never()).play();
     assertEquals(CyclopsMinigameLogic.State.HIDE_DELAY, minigameLogic.state);
+  }
+
+  /* Testing Transitioning */
+  @Test
+  void timingBarHidesAfterATurnOfTheMinigame() {
+    when(gameTime.getDeltaTime()).thenReturn(10f);
+    when(mockInput.isButtonJustPressed(CyclopsMinigameLogic.BUTTON)).thenReturn(true);
+
+    minigameLogic.startMinigame();
+    minigameLogic.changeState(CyclopsMinigameLogic.State.PLAY);
+    minigameLogic.update(); /* Part where timing bar marker is sweeping across */
+    assertEquals(CyclopsMinigameLogic.State.HIDE_DELAY, minigameLogic.state);
+    minigameLogic.update();
+    verify(timingBarDisplay).setVisible(false);
+  }
+
+  @Test
+  void minigameHidesScreenAndPlaysSoundEffectAfterHidingTimingBarAndMovesToNextState() {
+    when(gameTime.getDeltaTime()).thenReturn(10f);
+
+    minigameLogic.changeState(CyclopsMinigameLogic.State.HIDE_DELAY);
+    minigameLogic.update();
+    assertEquals(CyclopsMinigameLogic.State.PRE_MOVE, minigameLogic.state);
+    minigameLogic.update();
+    verify(minigameLogic.transitionScreenCover).setVisible(true);
+    verify(minigameLogic.walkingSound).play();
+    assertEquals(CyclopsMinigameLogic.State.MOVING, minigameLogic.state);
+  }
+
+  @Test
+  void minigameMovesPlayDuringTransitionWhenScreenIsHiddenOnSuccess() {
+    GridPoint2 start = new GridPoint2(1, 0);
+    GridPoint2 next = new GridPoint2(2, 0);
+    GridPoint2 win = new GridPoint2(3, 0);
+
+    minigameLogic.setSafeLocations(List.of(start, next));
+    minigameLogic.setWinLocation(win);
+
+    Vector2 nextPos = new Vector2(200, 0);
+    when(terrainComponent.tileToWorldPosition(next)).thenReturn(nextPos);
+
+    when(gameTime.getDeltaTime()).thenReturn(10f);
+    when(timingBarLogic.checkHit()).thenReturn(true);
+    minigameLogic.changeState(CyclopsMinigameLogic.State.MOVING);
+    minigameLogic.update();
+    verify(player).setPosition(nextPos);
   }
 
   /* Testing Creating and Dispose */

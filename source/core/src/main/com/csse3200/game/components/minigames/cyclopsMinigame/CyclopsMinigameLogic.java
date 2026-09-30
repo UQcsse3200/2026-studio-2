@@ -48,7 +48,7 @@ public class CyclopsMinigameLogic extends Component {
   private final Entity playerEntity;
   private static final String playerLossAnimation = "hurt";
 
-  private BlankTransitionScreenCover transitionScreenCover;
+  BlankTransitionScreenCover transitionScreenCover;
 
   /* Important Grid Locations */
   private List<GridPoint2> safeLocations;
@@ -58,7 +58,7 @@ public class CyclopsMinigameLogic extends Component {
 
   /* Audio/Sound Effects */
   Sound walkingSound;
-  long walkingSoundID;
+  private long walkingSoundID;
   private static final String walkingSoundPath = "sounds/walkingSounds/walkingSound.mp3";
   private static final float walkingSoundVolume = 0.4f;
 
