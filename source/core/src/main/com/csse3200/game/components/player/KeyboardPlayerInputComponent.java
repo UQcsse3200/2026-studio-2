@@ -379,8 +379,14 @@ public class KeyboardPlayerInputComponent extends InputComponent {
       return null;
     }
     Camera camera = cameraComponent.getCamera();
-    Vector3 worldPosition = camera.unproject(new Vector3((float) screenX, (float) screenY, 0f));
+    Vector3 screenPosition = screenPosition(screenX, screenY);
+    Vector3 worldPosition = camera.unproject(screenPosition);
     return new Vector2(worldPosition.x, worldPosition.y).sub(entity.getCenterPosition());
+  }
+
+  /** Converts pixel coordinates to the floating-point vector required by the camera. */
+  private static Vector3 screenPosition(double x, double y) {
+    return new Vector3((float) x, (float) y, 0f);
   }
 
   private void triggerWalkEvent() {
