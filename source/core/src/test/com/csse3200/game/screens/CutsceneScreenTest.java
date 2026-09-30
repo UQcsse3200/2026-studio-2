@@ -5,10 +5,14 @@ import static org.mockito.Mockito.*;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Graphics;
+import com.badlogic.gdx.Input.Buttons;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.csse3200.game.GdxGame;
 import com.csse3200.game.cutscene.CutsceneDefinition;
 import com.csse3200.game.cutscene.CutsceneLoader;
@@ -186,5 +190,114 @@ class CutsceneScreenTest {
         new CutsceneScreen(game, cutscene, GdxGame.ScreenType.MAIN_GAME, batch, stage);
     screen.render(0.016f);
     assertDoesNotThrow(screen::dispose);
+  }
+
+  @Test
+  void shouldHaveSkipButtonInBottomRight() {
+    GdxGame game = mock(GdxGame.class);
+    CutsceneLoader.LoadedCutscene cutscene = makeSingleSceneCutscene();
+    SpriteBatch batch = mock(SpriteBatch.class);
+    Stage stage = mock(Stage.class);
+
+    CutsceneScreen screen =
+        new CutsceneScreen(game, cutscene, GdxGame.ScreenType.MAIN_GAME, batch, stage);
+
+    assertNotNull(screen.getSkipButton());
+    assertNotNull(screen.getSkipTable());
+    // Skip table anchors the button: it must contain the button as a child.
+    assertTrue(screen.getSkipTable().getChildren().contains(screen.getSkipButton(), true));
+    // Bottom-right alignment: bottom + right bits set on the table's align flag.
+    int align = screen.getSkipTable().getAlign();
+    assertTrue((align & com.badlogic.gdx.utils.Align.bottom) != 0);
+    assertTrue((align & com.badlogic.gdx.utils.Align.right) != 0);
+    // Skip uses the continue button textures.
+    assertEquals(
+        "images/Buttons/continue_up_btn.png", CutsceneScreen.SKIP_UP_TEXTURE);
+    assertEquals(
+        "images/Buttons/continue_down_btn.png", CutsceneScreen.SKIP_DOWN_TEXTURE);
+  }
+
+  @Test
+  void shouldSkipCutsceneFromFirstScene() {
+    GdxGame game = mock(GdxGame.class);
+    CutsceneLoader.LoadedCutscene cutscene = makeTwoSceneCutscene();
+    SpriteBatch batch = mock(SpriteBatch.class);
+    Stage stage = mock(Stage.class);
+
+    CutsceneScreen screen =
+        new CutsceneScreen(game, cutscene, GdxGame.ScreenType.LEVEL_1_GAME, batch, stage);
+
+    screen.skipCutscene();
+
+    verify(game).transitionTo(GdxGame.ScreenType.LEVEL_1_GAME);
+  }
+
+  @Test
+  void shouldSkipOnlyOnce() {
+    GdxGame game = mock(GdxGame.class);
+    CutsceneLoader.LoadedCutscene cutscene = makeSingleSceneCutscene();
+    SpriteBatch batch = mock(SpriteBatch.class);
+    Stage stage = mock(Stage.class);
+
+    CutsceneScreen screen =
+        new CutsceneScreen(game, cutscene, GdxGame.ScreenType.MAIN_GAME, batch, stage);
+
+    screen.skipCutscene();
+    screen.skipCutscene();
+
+    verify(game, times(1)).transitionTo(GdxGame.ScreenType.MAIN_GAME);
+  }
+
+  /** Stage coordinates of the skip button's center, converted to screen coordinates. */
+  private Vector2 buttonCenterScreenCoords(CutsceneScreen screen, Stage stage) {
+    ImageButton button = screen.getSkipButton();
+    Vector2 center =
+        new Vector2(button.getWidth() / 2f, button.getHeight() / 2f);
+    button.localToStageCoordinates(center);
+    return stage.stageToScreenCoordinates(center);
+  }
+
+  @Test
+  void shouldSkipWhenSkipButtonClicked() {
+    GdxGame game = mock(GdxGame.class);
+    CutsceneLoader.LoadedCutscene cutscene = makeSingleSceneCutscene();
+    SpriteBatch batch = mock(SpriteBatch.class);
+    Stage stage = new Stage(new ScreenViewport(), batch);
+    CutsceneScreen screen =
+        new CutsceneScreen(game, cutscene, GdxGame.ScreenType.MAIN_GAME, batch, stage);
+    screen.resize(800, 600);
+    screen.getSkipTable().validate();
+
+    Vector2 coords = buttonCenterScreenCoords(screen, stage);
+    com.csse3200.game.services.ServiceLocator.getInputService()
+        .touchDown((int) coords.x, (int) coords.y, 0, Buttons.LEFT);
+    com.csse3200.game.services.ServiceLocator.getInputService()
+        .touchUp((int) coords.x, (int) coords.y, 0, Buttons.LEFT);
+
+    verify(game).transitionTo(GdxGame.ScreenType.MAIN_GAME);
+  }
+
+  @Test
+  void shouldAdvanceWhenTouchingOutsideSkipButton() {
+    GdxGame game = mock(GdxGame.class);
+    CutsceneLoader.LoadedCutscene cutscene = makeSingleSceneCutscene();
+    SpriteBatch batch = mock(SpriteBatch.class);
+    // Stage.draw() reads the batch matrices; a bare mock returns null and NPEs inside Group.draw.
+    when(batch.getTransformMatrix()).thenReturn(new com.badlogic.gdx.math.Matrix4());
+    when(batch.getProjectionMatrix()).thenReturn(new com.badlogic.gdx.math.Matrix4());
+    Stage stage = new Stage(new ScreenViewport(), batch);
+    CutsceneScreen screen =
+        new CutsceneScreen(game, cutscene, GdxGame.ScreenType.MAIN_GAME, batch, stage);
+    screen.resize(800, 600);
+    screen.getSkipTable().validate();
+
+    screen.render(10f); // FADE_IN → TEXT_ACTIVE
+    // Top-left corner is far from the bottom-right skip button.
+    com.csse3200.game.services.ServiceLocator.getInputService().touchDown(10, 10, 0, Buttons.LEFT);
+    com.csse3200.game.services.ServiceLocator.getInputService().touchUp(10, 10, 0, Buttons.LEFT);
+    screen.render(10f); // FADE_TEXT → FADE_TO_BLACK
+    screen.render(10f); // FADE_TO_BLACK → COMPLETE → game.transitionTo(...)
+
+    verify(game).transitionTo(GdxGame.ScreenType.MAIN_GAME);
   }
 }
