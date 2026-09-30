@@ -52,8 +52,10 @@ class GrappleContactLimitTest {
       contactsField.setAccessible(true);
       contacts = (List<GrappleComponent.RopeContact>) contactsField.get(grapple);
       Fixture support = wall(0f, 50f);
-      for (int i = 1; i <= count; i++) {
-        contacts.add(new GrappleComponent.RopeContact(support, new Vector2(i, 0f), 1));
+      Vector2 point = new Vector2(1f, 0f);
+      for (int i = 0; i < count; i++) {
+        contacts.add(new GrappleComponent.RopeContact(support, point, 1));
+        point.x += 1f;
       }
       var lengthField = GrappleComponent.class.getDeclaredField("totalRopeLength");
       lengthField.setAccessible(true);
