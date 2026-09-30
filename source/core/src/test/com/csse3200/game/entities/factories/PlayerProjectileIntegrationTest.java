@@ -6,7 +6,9 @@ import static org.mockito.Mockito.mock;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.csse3200.game.components.CombatStatsComponent;
+import com.csse3200.game.components.item.weapons.bow.BowComponent;
 import com.csse3200.game.components.projectile.ArrowProjectileComponent;
+import com.csse3200.game.components.projectile.ArrowType;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.extensions.GameExtension;
@@ -15,6 +17,7 @@ import com.csse3200.game.physics.PhysicsService;
 import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.rendering.RenderService;
+import com.csse3200.game.services.GameTime;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.ArrayList;
 import java.util.List;
@@ -134,8 +137,14 @@ class PlayerProjectileIntegrationTest {
 
   @Test
   void shouldKeepGrappleSpeedIndependentOfChargeAndIgnoreEnemyImpacts() {
-    Entity arrow = ProjectileFactory.createGrappleArrow(null, Vector2.Zero, Vector2.X, 0.25f);
-    entities.register(arrow);
+    ServiceLocator.registerTimeSource(mock(GameTime.class));
+    BowComponent bow = new BowComponent(ArrowType.GRAPPLE);
+    Entity shooter = new Entity().addComponent(bow);
+    entities.register(shooter);
+    // An immediate release gives ordinary arrows minimum charge, but grapples retain full speed.
+    bow.startCharge(Vector2.X);
+    bow.releaseCharge(Vector2.X);
+    Entity arrow = entities.getEntities().get(1);
     Body body = arrow.getComponent(PhysicsComponent.class).getBody();
     assertEquals(new Vector2(22f, 0f), body.getLinearVelocity());
     assertEquals(0f, body.getGravityScale());

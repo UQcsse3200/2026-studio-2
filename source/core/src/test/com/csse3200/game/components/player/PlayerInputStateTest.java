@@ -66,6 +66,43 @@ class PlayerInputStateTest {
   }
 
   @Test
+  void shouldForwardEveryNumberKeyToItsQuickSlot() {
+    List<Integer> slots = new ArrayList<>();
+    player.getEvents().addListener("selectQuickSlot", (Integer slot) -> slots.add(slot));
+    for (int key :
+        new int[] {
+          Keys.NUM_1,
+          Keys.NUM_2,
+          Keys.NUM_3,
+          Keys.NUM_4,
+          Keys.NUM_5,
+          Keys.NUM_6,
+          Keys.NUM_7,
+          Keys.NUM_8,
+          Keys.NUM_9
+        }) {
+      assertTrue(input.keyDown(key));
+    }
+    assertEquals(List.of(0, 1, 2, 3, 4, 5, 6, 7, 8), slots);
+  }
+
+  @Test
+  void shouldLeaveMouseMovementUnconsumedWithoutGraphics() {
+    var originalGraphics = Gdx.graphics;
+    List<Vector2> pointerEvents = new ArrayList<>();
+    player
+        .getEvents()
+        .addListener("arrowWheelPointerMoved", (Vector2 point) -> pointerEvents.add(point));
+    try {
+      Gdx.graphics = null;
+      assertFalse(input.mouseMoved(100, 200));
+      assertTrue(pointerEvents.isEmpty());
+    } finally {
+      Gdx.graphics = originalGraphics;
+    }
+  }
+
+  @Test
   void shouldReplayHeldMovementAndSprintOnResume() {
     input.keyDown(Keys.RIGHT);
     input.keyDown(Keys.SHIFT_RIGHT);

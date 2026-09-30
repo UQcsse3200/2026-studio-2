@@ -246,34 +246,43 @@ public class GrappleComponent extends Component {
     Vector2 before = anchor;
     int nextIndex = 0;
     int attempts = 0;
-    while (nextIndex <= ropeContacts.size() && attempts++ < MAX_ROPE_CONTACTS) {
-      if (ropeContacts.size() >= MAX_ROPE_CONTACTS) {
-        break;
-      }
+    while (nextIndex <= ropeContacts.size()
+        && attempts++ < MAX_ROPE_CONTACTS
+        && ropeContacts.size() < MAX_ROPE_CONTACTS) {
       Vector2 after =
           nextIndex == ropeContacts.size() ? player : ropeContacts.get(nextIndex).getWorldPoint();
       RopeRayHit obstruction = findObstruction(world, before, after);
       if (obstruction == null) {
         before = after;
-        nextIndex++;
-        continue;
+      } else {
+        Vector2 point = findNextContact(world, obstruction, before, after, ropeContacts);
+        if (!insertContactWithinRopeLength(obstruction, before, after, point, nextIndex, anchor)) {
+          break;
+        }
+        before = point;
       }
-
-      Vector2 point = findNextContact(world, obstruction, before, after, ropeContacts);
-      if (point == null) {
-        break;
-      }
-      RopeContact contact =
-          new RopeContact(obstruction.fixture, point, sideOf(before, after, point));
-      ropeContacts.add(nextIndex, contact);
-      if (fixedPathLength(anchor, ropeContacts) > totalRopeLength - MIN_JOINT_LENGTH) {
-        // This bend would consume more rope than exists and leave no valid player constraint.
-        ropeContacts.remove(nextIndex);
-        break;
-      }
-      before = point;
       nextIndex++;
     }
+  }
+
+  private boolean insertContactWithinRopeLength(
+      RopeRayHit obstruction,
+      Vector2 before,
+      Vector2 after,
+      Vector2 point,
+      int index,
+      Vector2 anchor) {
+    if (point == null) {
+      return false;
+    }
+    ropeContacts.add(
+        index, new RopeContact(obstruction.fixture, point, sideOf(before, after, point)));
+    if (fixedPathLength(anchor, ropeContacts) > totalRopeLength - MIN_JOINT_LENGTH) {
+      // This bend would consume more rope than exists and leave no valid player constraint.
+      ropeContacts.remove(index);
+      return false;
+    }
+    return true;
   }
 
   private void rebuildJointForPath() {
@@ -335,10 +344,10 @@ public class GrappleComponent extends Component {
     Vector2 cursor = anchor.cpy();
     for (int i = 0; i < MAX_ROPE_CONTACTS; i++) {
       RopeRayHit obstruction = findObstruction(world, cursor, player);
-      if (obstruction == null) {
-        break;
-      }
-      Vector2 next = findNextContact(world, obstruction, cursor, player, contacts);
+      Vector2 next =
+          obstruction == null
+              ? null
+              : findNextContact(world, obstruction, cursor, player, contacts);
       if (next == null) {
         break;
       }
@@ -519,7 +528,7 @@ public class GrappleComponent extends Component {
 
   private void setTotalRopeLength(float requestedLength, float fixedLength) {
     float minimumLength = Math.min(initialRopeLength, fixedLength + MIN_PLAYER_SEGMENT_LENGTH);
-    totalRopeLength = Math.max(minimumLength, Math.min(initialRopeLength, requestedLength));
+    totalRopeLength = Math.clamp(requestedLength, minimumLength, initialRopeLength);
     ropeJoint.setLength(Math.max(totalRopeLength - fixedLength, MIN_JOINT_LENGTH));
   }
 

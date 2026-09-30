@@ -87,25 +87,9 @@ public class PlayerActions extends Component {
       dashCooldownRemaining -= ServiceLocator.getTimeSource().getDeltaTime();
     }
 
-    if (sprintStopPending) {
-      sprintStopGraceRemaining -= ServiceLocator.getTimeSource().getDeltaTime();
-      if (sprintStopGraceRemaining <= 0f) {
-        confirmStopSprinting();
-      }
-    }
-
-    if (isDashing) {
-      dashTimeRemaining -= ServiceLocator.getTimeSource().getDeltaTime();
-      if (dashTimeRemaining <= 0f) {
-        endDash();
-        dashRecoveryRemaining = DASH_RECOVERY;
-      } else {
-        // Re-assert the burst every frame so collisions and stray impulses can't eat it.
-        // Vertical velocity is held at zero to match the zero-gravity dash.
-        Body body = physicsComponent.getBody();
-        body.setLinearVelocity(dashDirection * DASH_SPEED, 0f);
-        return;
-      }
+    updateSprintRelease();
+    if (updateDash()) {
+      return;
     }
 
     if (dashRecoveryRemaining > 0f) {
@@ -130,6 +114,33 @@ public class PlayerActions extends Component {
     if (extraSpeedMultiplier != 1f && time != null && time.getTime() >= speedPotionEndTimeMs) {
       extraSpeedMultiplier = 1f;
     }
+  }
+
+  private void updateSprintRelease() {
+    if (sprintStopPending) {
+      sprintStopGraceRemaining -= ServiceLocator.getTimeSource().getDeltaTime();
+      if (sprintStopGraceRemaining <= 0f) {
+        confirmStopSprinting();
+      }
+    }
+  }
+
+  /**
+   * @return whether the active dash consumes this frame's movement.
+   */
+  private boolean updateDash() {
+    if (!isDashing) {
+      return false;
+    }
+    dashTimeRemaining -= ServiceLocator.getTimeSource().getDeltaTime();
+    if (dashTimeRemaining <= 0f) {
+      endDash();
+      dashRecoveryRemaining = DASH_RECOVERY;
+      return false;
+    }
+    // Re-assert the burst so collisions cannot consume it; keep vertical drift at zero.
+    physicsComponent.getBody().setLinearVelocity(dashDirection * DASH_SPEED, 0f);
+    return true;
   }
 
   private boolean isGrappling() {
@@ -166,8 +177,10 @@ public class PlayerActions extends Component {
 
     // Reduced control while recovering from a dash; otherwise full control on the ground and
     // weak in the air so swing momentum isn't wiped on landing.
-    float control =
-        dashRecoveryRemaining > 0f ? DASH_RECOVERY_CONTROL : (isGrounded ? 1f : AIR_CONTROL);
+    float control = isGrounded ? 1f : AIR_CONTROL;
+    if (dashRecoveryRemaining > 0f) {
+      control = DASH_RECOVERY_CONTROL;
+    }
 
     // impulse = (desiredVel - currentVel) * mass
     float impulseX = (desiredVelocityX - velocity.x) * body.getMass() * control;

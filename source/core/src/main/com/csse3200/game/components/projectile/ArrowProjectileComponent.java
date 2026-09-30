@@ -156,8 +156,8 @@ public class ArrowProjectileComponent extends Component {
     }
 
     Object userData = other.getBody().getUserData();
-    if (userData instanceof BodyUserData) {
-      Entity hitEntity = ((BodyUserData) userData).entity;
+    if (userData instanceof BodyUserData bodyUserData) {
+      Entity hitEntity = bodyUserData.entity;
       if (hitEntity != null && hitEntity == shooter) {
         return;
       }
