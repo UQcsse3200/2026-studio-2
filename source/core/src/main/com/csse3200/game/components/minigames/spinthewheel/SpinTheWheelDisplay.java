@@ -44,8 +44,6 @@ public class SpinTheWheelDisplay extends UIComponent {
   private static final String POINTER_TEXTURE = "images/minigames/spinthewheel/wheel-pointer.png";
   private static final String SPIN_UP_TEXTURE = "images/Buttons/spin_up_btn.png";
   private static final String SPIN_DOWN_TEXTURE = "images/Buttons/spin_down_btn.png";
-  private static final String BACK_UP_TEXTURE = "images/Buttons/back_up_btn.png";
-  private static final String BACK_DOWN_TEXTURE = "images/Buttons/back_down_btn.png";
   private static final String GLOW_TEXTURE = "images/minigames/spinthewheel/glow-radial.png";
   private static final String RAYS_TEXTURE = "images/minigames/spinthewheel/glow-rays.png";
 
@@ -121,8 +119,6 @@ public class SpinTheWheelDisplay extends UIComponent {
                 POINTER_TEXTURE,
                 SPIN_UP_TEXTURE,
                 SPIN_DOWN_TEXTURE,
-                BACK_UP_TEXTURE,
-                BACK_DOWN_TEXTURE,
                 GLOW_TEXTURE,
                 RAYS_TEXTURE));
     items.forEach(item -> paths.add(item.type().getTexturePath()));
@@ -159,22 +155,9 @@ public class SpinTheWheelDisplay extends UIComponent {
           }
         });
 
-    ImageButton backBtn = imageButton(BACK_UP_TEXTURE, BACK_DOWN_TEXTURE);
-    backBtn.setName("wheel-back-button");
-    backBtn.addListener(
-        new ChangeListener() {
-          @Override
-          public void changed(ChangeEvent changeEvent, Actor actor) {
-            logger.debug("Back button clicked");
-            entity.getEvents().trigger("back");
-          }
-        });
-
     table.add(createWheel()).size(WHEEL_SIZE).padTop(30f);
     table.row();
     table.add(spinBtn).size(BUTTON_WIDTH, BUTTON_HEIGHT).padTop(24f);
-    table.row();
-    table.add(backBtn).size(BUTTON_WIDTH, BUTTON_HEIGHT).padTop(12f);
 
     prizeLayer = createPrizeLayer();
 
