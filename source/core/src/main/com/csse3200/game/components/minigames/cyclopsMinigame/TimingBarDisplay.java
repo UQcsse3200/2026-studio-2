@@ -8,7 +8,6 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.csse3200.game.components.TextBoxComponent;
 import com.csse3200.game.ui.UIComponent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,9 +15,9 @@ import org.slf4j.LoggerFactory;
 public class TimingBarDisplay extends UIComponent {
   private static final Logger logger = LoggerFactory.getLogger(TimingBarDisplay.class);
 
-  private static final float MARKER_WIDTH = 10f;
-  private static final float BAR_WIDTH = 400f;
-  private static final float BAR_HEIGHT = 30f;
+  static final float MARKER_WIDTH = 10f;
+  static final float BAR_WIDTH = 400f;
+  static final float BAR_HEIGHT = 30f;
 
   private static final Color MARKER_COLOR = Color.valueOf("#FFFFFF");
   private static final Color SCORING_COLOR = Color.valueOf("#009A66");
@@ -28,9 +27,8 @@ public class TimingBarDisplay extends UIComponent {
   private final TimingBarLogic logic;
   private Texture blankTexture;
 
-  private Table table;
-  private TextBoxComponent textBox;
-  private Image marker;
+  Table table;
+  Image marker;
 
   private boolean visible = false;
 
@@ -85,7 +83,7 @@ public class TimingBarDisplay extends UIComponent {
     marker = new Image(blankRegion);
     marker.setColor(MARKER_COLOR);
     marker.setSize(10f, BAR_HEIGHT);
-    marker.setPosition(logic.markerX, 0);
+    marker.setPosition(logic.getMarkerX(), 0);
     group.addActor(marker);
 
     table = new Table();
@@ -101,7 +99,7 @@ public class TimingBarDisplay extends UIComponent {
   @Override
   public void update() {
     if (marker != null) {
-      marker.setX(logic.markerX * BAR_WIDTH);
+      marker.setX(logic.getMarkerX() * BAR_WIDTH);
     }
   }
 

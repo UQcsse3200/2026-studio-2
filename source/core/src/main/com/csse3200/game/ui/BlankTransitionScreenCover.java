@@ -12,8 +12,8 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 public class BlankTransitionScreenCover extends UIComponent {
   private static final float Z_INDEX = 10f;
 
-  private Texture texture;
-  private Table table;
+  Texture texture;
+  Table table;
 
   public void fadeIn(float duration) {
     table.setColor(1, 1, 1, 0);
