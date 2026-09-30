@@ -6,11 +6,14 @@ import static org.mockito.Mockito.*;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.CircleShape;
+import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.csse3200.game.components.item.weapons.bow.grapple.GrappleComponent;
 import com.csse3200.game.components.projectile.ArrowProjectileComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.extensions.GameExtension;
+import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.physics.PhysicsService;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.rendering.RenderService;
@@ -166,5 +169,46 @@ class GrappleLifecycleTest {
     grapple.swing(0f);
     physics.getPhysics().getWorld().step(0.01f, 6, 2);
     assertTrue(playerBody.getLinearVelocity().isZero(0.0001f));
+  }
+
+  @Test
+  void shouldRetainOriginalJointWhenObstructionHasNoPolygonCorners() {
+    grapple.attachTo(anchor(10f, 0f), new Vector2(10f, 0f));
+    grapple.update();
+    Body obstacle = anchor(5f, 0f);
+    CircleShape shape = new CircleShape();
+    shape.setRadius(1f);
+    var fixture = obstacle.createFixture(shape, 0f);
+    shape.dispose();
+    var filter = fixture.getFilterData();
+    filter.categoryBits = PhysicsLayer.SOLID;
+    fixture.setFilterData(filter);
+    grapple.update();
+    assertTrue(grapple.isAttached());
+    assertEquals(2, grapple.getRopePath().size());
+    assertEquals(new Vector2(10f, 0f), grapple.getAnchorPoint());
+    assertEquals(10f, grapple.getRopeLength(), 0.001f);
+    assertEquals(1, physics.getPhysics().getWorld().getJointCount());
+  }
+
+  @Test
+  void shouldRollBackBendThatWouldExhaustRopeLength() {
+    grapple.attachTo(anchor(10f, 0f), new Vector2(10f, 0f));
+    grapple.update();
+    Body obstacle = anchor(5f, 0f);
+    PolygonShape shape = new PolygonShape();
+    shape.setAsBox(1f, 20f);
+    var fixture = obstacle.createFixture(shape, 0f);
+    shape.dispose();
+    var filter = fixture.getFilterData();
+    filter.categoryBits = PhysicsLayer.SOLID;
+    fixture.setFilterData(filter);
+    // Every visible corner is farther from the anchor than the entire available rope.
+    grapple.update();
+    assertTrue(grapple.isAttached());
+    assertEquals(2, grapple.getRopePath().size());
+    assertEquals(new Vector2(10f, 0f), grapple.getAnchorPoint());
+    assertEquals(10f, grapple.getRopeLength(), 0.001f);
+    assertEquals(1, physics.getPhysics().getWorld().getJointCount());
   }
 }
