@@ -3,6 +3,9 @@ package com.csse3200.game.components.minigames.cyclopsMinigame;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.areas.terrain.TerrainComponent;
@@ -13,6 +16,7 @@ import com.csse3200.game.services.GameTime;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.List;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,9 +30,13 @@ public class CyclopsMinigameLogicTest {
   Entity player;
 
   GameTime gameTime;
+  Input mockInput;
 
   @BeforeEach
   void setup() {
+    mockInput = mock(Input.class);
+    Gdx.input = mockInput;
+
     timingBarLogic = mock(TimingBarLogic.class);
     timingBarDisplay = mock(TimingBarDisplay.class);
     terrainComponent = mock(TerrainComponent.class);
@@ -42,6 +50,15 @@ public class CyclopsMinigameLogicTest {
 
     minigameLogic =
         new CyclopsMinigameLogic(timingBarLogic, timingBarDisplay, terrainComponent, player);
+
+    minigameLogic.walkingSound = mock(Sound.class);
+    minigameLogic.missSound = mock(Sound.class);
+    minigameLogic.hitSound = mock(Sound.class);
+  }
+
+  @AfterEach
+  void teardown() {
+    Gdx.input = null;
   }
 
   /* Checking Getters & Setters */
@@ -92,7 +109,7 @@ public class CyclopsMinigameLogicTest {
     Vector2 nextPos = new Vector2(200, 0);
     when(terrainComponent.tileToWorldPosition(next)).thenReturn(nextPos);
 
-    minigameLogic.moveToNextLocation(true);
+    minigameLogic.timingSuccess();
     verify(player).setPosition(nextPos);
   }
 
@@ -108,7 +125,7 @@ public class CyclopsMinigameLogicTest {
     Vector2 nextLossPos = new Vector2(200, 0);
     when(terrainComponent.tileToWorldPosition(nextLoss)).thenReturn(nextLossPos);
 
-    minigameLogic.moveToNextLocation(false);
+    minigameLogic.timingFailure();
     verify(player).setPosition(nextLossPos);
   }
 
@@ -123,7 +140,7 @@ public class CyclopsMinigameLogicTest {
     Vector2 winPos = new Vector2(200, 0);
     when(terrainComponent.tileToWorldPosition(win)).thenReturn(winPos);
 
-    minigameLogic.moveToNextLocation(true);
+    minigameLogic.timingSuccess();
     verify(player).setPosition(winPos);
   }
 
@@ -181,8 +198,7 @@ public class CyclopsMinigameLogicTest {
 
   /* Test Game Start */
   @Test
-  public void startMinigameStartsTimingMinigame() {
-
+  void startMinigameStartsTimingMinigame() {
     /* Call start minigame and check the state correctly changes */
     minigameLogic.startMinigame();
 
@@ -194,5 +210,89 @@ public class CyclopsMinigameLogicTest {
     verify(timingBarDisplay).setVisible(true);
     verify(timingBarLogic).resetMarker();
     verify(timingBarLogic).startMarker();
+  }
+
+  private void stopMinigame() {
+    minigameLogic.stopMinigame();
+    assertEquals(CyclopsMinigameLogic.State.STOP, minigameLogic.state);
+    verify(timingBarLogic).stopMarker();
+
+    /* Verify that the sounds are stopped */
+    verify(minigameLogic.walkingSound).stop(anyLong());
+    verify(minigameLogic.missSound).stop(anyLong());
+    verify(minigameLogic.hitSound).stop(anyLong());
+  }
+
+  @Test
+  void stopMinigameCallsNecessaryFunctions() {
+    stopMinigame();
+  }
+
+  @Test
+  void minigameCanBeStoppedAnywhereInPlay() {
+    when(gameTime.getDeltaTime()).thenReturn(0.1f);
+
+    for (CyclopsMinigameLogic.State state : CyclopsMinigameLogic.State.values()) {
+      reset(
+          timingBarLogic,
+          minigameLogic.walkingSound,
+          minigameLogic.missSound,
+          minigameLogic.hitSound);
+
+      minigameLogic.startMinigame();
+      minigameLogic.update();
+      minigameLogic.changeState(state);
+      minigameLogic.update();
+      stopMinigame();
+    }
+  }
+
+  @Test
+  void timingMinigamePlaysSuccessSoundOnSuccessStop() {
+    when(gameTime.getDeltaTime()).thenReturn(5f);
+    minigameLogic.startMinigame();
+    minigameLogic.update();
+
+    verify(timingBarDisplay).setVisible(true);
+    verify(timingBarLogic).resetMarker();
+    verify(timingBarLogic).startMarker();
+    assertEquals(CyclopsMinigameLogic.State.PLAY, minigameLogic.state);
+
+    when(mockInput.isButtonJustPressed(CyclopsMinigameLogic.BUTTON)).thenReturn(true);
+    when(timingBarLogic.checkHit()).thenReturn(true);
+    minigameLogic.update();
+    verify(timingBarLogic).stopMarker();
+    verify(minigameLogic.hitSound).play();
+    verify(minigameLogic.missSound, never()).play();
+    assertEquals(CyclopsMinigameLogic.State.HIDE_DELAY, minigameLogic.state);
+  }
+
+  @Test
+  void timingMinigamePlaysFailSoundOnFail() {
+    when(gameTime.getDeltaTime()).thenReturn(5f);
+    minigameLogic.startMinigame();
+    minigameLogic.update();
+
+    verify(timingBarDisplay).setVisible(true);
+    verify(timingBarLogic).resetMarker();
+    verify(timingBarLogic).startMarker();
+    assertEquals(CyclopsMinigameLogic.State.PLAY, minigameLogic.state);
+
+    when(mockInput.isButtonJustPressed(CyclopsMinigameLogic.BUTTON)).thenReturn(true);
+    when(timingBarLogic.checkHit()).thenReturn(false);
+    minigameLogic.update();
+    verify(timingBarLogic).stopMarker();
+    verify(minigameLogic.missSound).play();
+    verify(minigameLogic.hitSound, never()).play();
+    assertEquals(CyclopsMinigameLogic.State.HIDE_DELAY, minigameLogic.state);
+  }
+
+  /* Testing Creating and Dispose */
+  @Test
+  void disposeStopsAllSoundsAndDoesSuperCall() {
+    minigameLogic.dispose();
+    verify(minigameLogic.walkingSound).stop(anyLong());
+    verify(minigameLogic.missSound).stop(anyLong());
+    verify(minigameLogic.hitSound).stop(anyLong());
   }
 }

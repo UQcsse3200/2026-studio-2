@@ -17,6 +17,8 @@ import org.slf4j.LoggerFactory;
 public class CyclopsMinigameLogic extends Component {
   private static final Logger logger = LoggerFactory.getLogger(CyclopsMinigameLogic.class);
 
+  static final int BUTTON = Input.Buttons.LEFT;
+
   /* State Machine */
   enum State {
     STOP,
@@ -158,24 +160,24 @@ public class CyclopsMinigameLogic extends Component {
   }
 
   private boolean stopPressed() {
-    return Gdx.input.isButtonJustPressed(Input.Buttons.LEFT);
+    return Gdx.input.isButtonJustPressed(BUTTON);
   }
 
   /* Audio */
 
-  void loadSounds() {
+  private void loadSounds() {
     walkingSound = ServiceLocator.getResourceService().getAsset(walkingSoundPath, Sound.class);
     hitSound = ServiceLocator.getResourceService().getAsset(hitSoundPath, Sound.class);
     missSound = ServiceLocator.getResourceService().getAsset(missSoundPath, Sound.class);
   }
 
-  void playWalkingSound() {
+  private void playWalkingSound() {
     this.walkingSoundID = walkingSound.play();
     walkingSound.setLooping(this.walkingSoundID, true);
     walkingSound.setVolume(this.walkingSoundID, walkingSoundVolume);
   }
 
-  void stopWalkingSound() {
+  private void stopWalkingSound() {
     if (walkingSound == null) {
       logger.warn("Attempting to stop walking sound when walkingSound variable is null");
       return;
@@ -184,13 +186,13 @@ public class CyclopsMinigameLogic extends Component {
     logger.debug("Stopped walking sound");
   }
 
-  void playMarkerHitSound() {
+  private void playMarkerHitSound() {
     this.hitSoundID = hitSound.play();
     hitSound.setVolume(this.hitSoundID, hitSoundVolume);
     logger.debug("Starting hit sound (ID: {}) with volume {}", this.hitSoundID, hitSoundVolume);
   }
 
-  void stopMarkerHitSound() {
+  private void stopMarkerHitSound() {
     if (hitSound == null) {
       logger.warn("Attempting to stop hit sound when hitSound variable is null");
       return;
@@ -199,13 +201,13 @@ public class CyclopsMinigameLogic extends Component {
     logger.debug("Stopped hit sound");
   }
 
-  void playMarkerMissSound() {
+  private void playMarkerMissSound() {
     this.missSoundID = missSound.play();
     missSound.setVolume(this.missSoundID, missSoundVolume);
     logger.debug("Starting miss sound (ID: {}) with volume {}", this.missSoundID, missSoundVolume);
   }
 
-  void stopMarkerMissSound() {
+  private void stopMarkerMissSound() {
     if (missSound == null) {
       logger.warn("Attempting to stop miss sound when missSound variable is null");
       return;
