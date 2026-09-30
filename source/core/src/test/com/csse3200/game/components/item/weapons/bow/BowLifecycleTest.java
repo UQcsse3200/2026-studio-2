@@ -45,7 +45,7 @@ class BowLifecycleTest {
               return projectile;
             });
     player = new Entity().addComponent(bow);
-    player.getEvents().addListener("attackAnimation", (Vector2 aim) -> animations.add(aim));
+    player.getEvents().<Vector2>addListener("attackAnimation", animations::add);
     entities.register(player);
   }
 

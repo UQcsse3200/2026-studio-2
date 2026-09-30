@@ -36,7 +36,7 @@ class MeleeComponentTest {
     melee = new MeleeComponent();
     player = new Entity().addComponent(new CombatStatsComponent(20, 3)).addComponent(melee);
     player.create();
-    player.getEvents().addListener("attackAnimation", (Vector2 aim) -> animations.add(aim));
+    player.getEvents().<Vector2>addListener("attackAnimation", animations::add);
   }
 
   @AfterEach

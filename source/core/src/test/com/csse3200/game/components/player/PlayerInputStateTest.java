@@ -39,7 +39,7 @@ class PlayerInputStateTest {
     when(camera.unproject(any(Vector3.class))).thenAnswer(call -> call.getArgument(0));
     input.setCameraComponent(new CameraComponent(camera));
     player.create();
-    player.getEvents().addListener("walk", (Vector2 direction) -> directions.add(direction));
+    player.getEvents().<Vector2>addListener("walk", directions::add);
     for (String event :
         new String[] {
           "walkStop", "sprint", "sprintStop", "stopShoot", "chargeCancel", "stopMelee", "jump"
@@ -68,7 +68,7 @@ class PlayerInputStateTest {
   @Test
   void shouldForwardEveryNumberKeyToItsQuickSlot() {
     List<Integer> slots = new ArrayList<>();
-    player.getEvents().addListener("selectQuickSlot", (Integer slot) -> slots.add(slot));
+    player.getEvents().<Integer>addListener("selectQuickSlot", slots::add);
     for (int key :
         new int[] {
           Keys.NUM_1,
@@ -90,9 +90,7 @@ class PlayerInputStateTest {
   void shouldLeaveMouseMovementUnconsumedWithoutGraphics() {
     var originalGraphics = Gdx.graphics;
     List<Vector2> pointerEvents = new ArrayList<>();
-    player
-        .getEvents()
-        .addListener("arrowWheelPointerMoved", (Vector2 point) -> pointerEvents.add(point));
+    player.getEvents().<Vector2>addListener("arrowWheelPointerMoved", pointerEvents::add);
     try {
       Gdx.graphics = null;
       assertFalse(input.mouseMoved(100, 200));
@@ -170,7 +168,7 @@ class PlayerInputStateTest {
   @Test
   void shouldRejectAimAtPlayerCentreAndMissingCamera() {
     List<Vector2> attacks = new ArrayList<>();
-    player.getEvents().addListener("melee", (Vector2 aim) -> attacks.add(aim));
+    player.getEvents().<Vector2>addListener("melee", attacks::add);
     player.setPosition(-0.5f, -0.5f);
     assertFalse(input.touchDown(0, 0, 0, Buttons.LEFT));
     input.setCameraComponent(null);

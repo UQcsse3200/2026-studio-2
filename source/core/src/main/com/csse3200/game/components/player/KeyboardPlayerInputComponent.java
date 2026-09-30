@@ -379,7 +379,7 @@ public class KeyboardPlayerInputComponent extends InputComponent {
       return null;
     }
     Camera camera = cameraComponent.getCamera();
-    Vector3 worldPosition = camera.unproject(new Vector3(screenX, screenY, 0f));
+    Vector3 worldPosition = camera.unproject(new Vector3((float) screenX, (float) screenY, 0f));
     return new Vector2(worldPosition.x, worldPosition.y).sub(entity.getCenterPosition());
   }
 
