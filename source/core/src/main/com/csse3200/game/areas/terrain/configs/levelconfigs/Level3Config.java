@@ -40,6 +40,11 @@ public class Level3Config extends LevelConfig {
           new PlatformConfig(new GridPoint2(6, 18), 3, 1, 0, platformTFP), // P7
           new PlatformConfig(new GridPoint2(12, 20), 3, 1, 0, platformTFP), // SP1 TODO
           new PlatformConfig(new GridPoint2(3, 21), 3, 1, 0, platformTFP), // P10
+                // arena 2
+                new PlatformConfig(new GridPoint2(10, 37), 3, 1, 0, platformTFP), // P11
+                new PlatformConfig(new GridPoint2(16, 37), 3, 1, 0, platformTFP), // P12
+                new PlatformConfig(new GridPoint2(5, 40), 3, 1, 0, platformTFP), // P13
+
         };
 
     floors =
@@ -71,6 +76,16 @@ public class Level3Config extends LevelConfig {
               new Vector2(19, 24),
               new Vector2(3, 0),
               new String[] {}), // MP1
+                new MovingPlatformConfig( // MP3
+                        new GridPoint2(13, 40),
+                        3,
+                        1,
+                        0,
+                        movingPlatformTFP,
+                        new Vector2(13, 40),
+                        new Vector2(20, 40),
+                        new Vector2(3, 0),
+                        new String[] {}), // MP3
         };
 
     triggerablePlatforms =
@@ -93,10 +108,15 @@ public class Level3Config extends LevelConfig {
 
     items = new HashMap<>(Map.of(new GridPoint2(9, 7), new Arrow(ItemType.ROPE_ARROW, 1)));
 
-    // spikes =
-    //     new SpikeClusterConfig[] {
-    //       new SpikeClusterConfig(0, 11, 37, 37, 0f, false), // SC1
-    //     };
+    spikes =
+            new SpikeClusterConfig[] {
+                    new SpikeClusterConfig(5, 5, 18, 18, 90f, false), // SC1
+                    new SpikeClusterConfig(9, 9, 18, 18, 270f, false), // SC2
+
+                    new SpikeClusterConfig(13, 15, 41, 41, 0f, true), //mp3
+                    new SpikeClusterConfig(12, 12, 40, 40, 90f, true),//mp3
+                    new SpikeClusterConfig(16, 16, 40, 40, 270f, true),//mp3
+            };
 
     // ballTraps =
     //     new SpikyBallTrapConfig[] {
