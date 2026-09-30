@@ -12,7 +12,22 @@
     "wanderWaitTime": 2.0,
     "chasePriority": 10,
     "viewDistance": 6.0,
-    "maxChaseDistance": 9.0
+    "maxChaseDistance": 9.0,
+    "maxSpeed": 3.0,
+    "gravity": true,
+
+    "itemDrops": [
+      {
+        "item": "standardArrow",
+        "dropHealth": 10,
+        "quantity": 1
+      },
+      {
+        "item": "standardArrow",
+        "dropHealth": 0,
+        "quantity": 2
+      }
+    ]
   },
 
   "skeletonArcher": {
@@ -28,6 +43,83 @@
     "wanderWaitTime": 2.0,
     "chasePriority": 10,
     "viewDistance": 10.0,
-    "maxChaseDistance": 12.5
+    "maxChaseDistance": 12.5,
+    "maxSpeed": 2.0,
+    "gravity": true,
+
+    "itemDrops": [
+      {
+        "item": "standardArrow",
+        "dropHealth": 10,
+        "quantity": 1
+      },
+      {
+        "item": "standardArrow",
+        "dropHealth": 0,
+        "quantity": 2
+      }
+    ]
+  },
+
+  "vulture": {
+    "health": 20,
+    "baseAttack": 2,
+    "speed": 2.5,
+    "behaviour": "chase",
+    "attackType": "melee",
+    "attackRange": 6.0,
+
+    "wanderRangeX": 4.0,
+    "wanderRangeY": 0.0,
+    "wanderWaitTime": 2.0,
+    "chasePriority": 10,
+    "viewDistance": 6.0,
+    "maxChaseDistance": 12.5,
+    "maxSpeed": 4.5,
+    "gravity": false,
+
+    "itemDrops": [
+      {
+        "item": "standardArrow",
+        "dropHealth": 10,
+        "quantity": 1
+      },
+      {
+        "item": "standardArrow",
+        "dropHealth": 0,
+        "quantity": 2
+      }]
+  },
+
+  "necromancer": {
+    "health": 20,
+    "baseAttack": 2,
+    "speed": 2.5,
+    "behaviour": "chase",
+    "attackType": "summon",
+    "attackRange": 6.0,
+
+    "wanderRangeX": 4.0,
+    "wanderRangeY": 0.0,
+    "wanderWaitTime": 2.0,
+    "chasePriority": 10,
+    "viewDistance": 10.0,
+    "maxChaseDistance": 12.5,
+    "maxSpeed": 1.0,
+    "gravity": true,
+
+    "itemDrops": [
+      {
+        "item": "standardArrow",
+        "dropHealth": 10,
+        "quantity": 1
+      },
+      {
+        "item": "standardArrow",
+        "dropHealth": 0,
+        "quantity": 2
+      }]
   }
+
+
 }

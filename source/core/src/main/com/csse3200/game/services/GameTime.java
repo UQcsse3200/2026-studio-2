@@ -8,20 +8,31 @@ import org.slf4j.LoggerFactory;
 /** Controls the game time */
 public class GameTime {
   private static Logger logger = LoggerFactory.getLogger(GameTime.class);
-  private final long startTime;
+  private long gameTime;
+  private long lastUpdateTime;
   private float timeScale = 1f;
 
+  private void updateGameTime() {
+    long currentTime = TimeUtils.millis();
+    long elapsed = currentTime - lastUpdateTime;
+
+    gameTime += (long) (elapsed * timeScale);
+    lastUpdateTime = currentTime;
+  }
+
   public GameTime() {
-    startTime = TimeUtils.millis();
-    logger.debug("Setting game start time to {}", startTime);
+    lastUpdateTime = TimeUtils.millis();
+    gameTime = 0L;
+    logger.debug("Setting game start time to {}", lastUpdateTime);
   }
 
   /**
-   * Set the speed of time passing. This affects getDeltaTime()
+   * Set the speed of time passing. This affects getDeltaTime() and getTime().
    *
    * @param timeScale Time scale, where normal speed is 1.0, no time passing is 0.0
    */
   public void setTimeScale(float timeScale) {
+    updateGameTime();
     logger.debug("Setting time scale to {}", timeScale);
     this.timeScale = timeScale;
   }
@@ -44,7 +55,8 @@ public class GameTime {
    * @return time passed since the game started in milliseconds
    */
   public long getTime() {
-    return TimeUtils.timeSinceMillis(startTime);
+    updateGameTime();
+    return gameTime;
   }
 
   public long getTimeSince(long lastTime) {

@@ -1,0 +1,117 @@
+vulture_fly.png
+size: 215, 40
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+default
+  rotate: false
+  xy: 0, 0
+  size: 43, 40
+  orig: 43, 40
+  offset: 0, 0
+  index: 0
+fly
+  rotate: false
+  xy: 0, 0
+  size: 43, 40
+  orig: 43, 40
+  offset: 0, 0
+  index: 0
+fly
+  rotate: false
+  xy: 43, 0
+  size: 43, 40
+  orig: 43, 40
+  offset: 0, 0
+  index: 1
+fly
+  rotate: false
+  xy: 86, 0
+  size: 43, 40
+  orig: 43, 40
+  offset: 0, 0
+  index: 2
+fly
+  rotate: false
+  xy: 129, 0
+  size: 43, 40
+  orig: 43, 40
+  offset: 0, 0
+  index: 3
+fly
+  rotate: false
+  xy: 172, 0
+  size: 43, 40
+  orig: 43, 40
+  offset: 0, 0
+  index: 4
+walk
+  rotate: false
+  xy: 0, 0
+  size: 43, 40
+  orig: 43, 40
+  offset: 0, 0
+  index: 0
+walk
+  rotate: false
+  xy: 43, 0
+  size: 43, 40
+  orig: 43, 40
+  offset: 0, 0
+  index: 1
+walk
+  rotate: false
+  xy: 86, 0
+  size: 43, 40
+  orig: 43, 40
+  offset: 0, 0
+  index: 2
+walk
+  rotate: false
+  xy: 129, 0
+  size: 43, 40
+  orig: 43, 40
+  offset: 0, 0
+  index: 3
+walk
+  rotate: false
+  xy: 172, 0
+  size: 43, 40
+  orig: 43, 40
+  offset: 0, 0
+  index: 4
+idle
+  rotate: false
+  xy: 0, 0
+  size: 43, 40
+  orig: 43, 40
+  offset: 0, 0
+  index: 0
+idle
+  rotate: false
+  xy: 43, 0
+  size: 43, 40
+  orig: 43, 40
+  offset: 0, 0
+  index: 1
+idle
+  rotate: false
+  xy: 86, 0
+  size: 43, 40
+  orig: 43, 40
+  offset: 0, 0
+  index: 2
+idle
+  rotate: false
+  xy: 129, 0
+  size: 43, 40
+  orig: 43, 40
+  offset: 0, 0
+  index: 3
+idle
+  rotate: false
+  xy: 172, 0
+  size: 43, 40
+  orig: 43, 40
+  offset: 0, 0
+  index: 4

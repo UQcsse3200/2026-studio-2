@@ -16,19 +16,19 @@ class CutsceneCommandTest {
   @Test
   void shouldStartNamedCutscene() {
     GdxGame game = mock(GdxGame.class);
-    CutsceneCommand command = new CutsceneCommand(game, GdxGame.ScreenType.TUTORIAL_GAME);
+    CutsceneCommand command = new CutsceneCommand(game, GdxGame.ScreenType.LEVEL_1_GAME);
 
     assertTrue(command.action(new ArrayList<>(java.util.List.of("cutscene1"))));
     verify(game)
         .startCutscene(
             org.mockito.ArgumentMatchers.any(),
-            org.mockito.ArgumentMatchers.eq(GdxGame.ScreenType.TUTORIAL_GAME));
+            org.mockito.ArgumentMatchers.eq(GdxGame.ScreenType.LEVEL_1_GAME));
   }
 
   @Test
   void shouldRejectIncorrectArgumentCount() {
     CutsceneCommand command =
-        new CutsceneCommand(mock(GdxGame.class), GdxGame.ScreenType.TUTORIAL_GAME);
+        new CutsceneCommand(mock(GdxGame.class), GdxGame.ScreenType.LEVEL_1_GAME);
 
     assertFalse(command.action(new ArrayList<>()));
     assertFalse(command.action(new ArrayList<>(java.util.List.of("one", "two"))));

@@ -1,12 +1,21 @@
 package com.csse3200.game.entities.factories;
 
+import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.csse3200.game.ai.tasks.AITaskComponent;
+import com.csse3200.game.components.BurnStatsComponent;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.EnemyDeathComponent;
+import com.csse3200.game.components.EnemyItemDropComponent;
+import com.csse3200.game.components.PoisonStatsComponent;
+import com.csse3200.game.components.SlowStatsComponent;
+import com.csse3200.game.components.npc.SkeletonAnimationController;
 import com.csse3200.game.components.tasks.ChaseTask;
 import com.csse3200.game.components.tasks.DelayedAttackTask;
 import com.csse3200.game.components.tasks.RangedAttackTask;
+import com.csse3200.game.components.tasks.SummonTask;
 import com.csse3200.game.components.tasks.WanderTask;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.EnemyConfig;
@@ -18,7 +27,10 @@ import com.csse3200.game.physics.components.ColliderComponent;
 import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.physics.components.PhysicsMovementComponent;
+import com.csse3200.game.rendering.AnimationRenderComponent;
+import com.csse3200.game.rendering.EnemyHealthRenderComponent;
 import com.csse3200.game.rendering.TextureRenderComponent;
+import com.csse3200.game.services.ServiceLocator;
 
 /**
  * Factory to create enemy entities.
@@ -40,8 +52,15 @@ public class EnemyFactory {
     EnemyConfig config = configs.skeletonWarrior;
     Entity skeletonWarrior = createEnemy(target, config);
 
-    skeletonWarrior.addComponent(new TextureRenderComponent("images/skeleton_warrior.png"));
-    skeletonWarrior.getComponent(TextureRenderComponent.class).scaleEntity();
+    AnimationRenderComponent animator =
+        new AnimationRenderComponent(
+            ServiceLocator.getResourceService()
+                .getAsset("images/skeleton_warrior.atlas", TextureAtlas.class));
+    animator.addAnimation("walk", 0.15f, Animation.PlayMode.LOOP);
+    animator.addAnimation("idle", 0.15f, Animation.PlayMode.LOOP);
+
+    skeletonWarrior.addComponent(new SkeletonAnimationController(target));
+    skeletonWarrior.addComponent(animator);
 
     skeletonWarrior
         .getComponent(AITaskComponent.class)
@@ -60,13 +79,106 @@ public class EnemyFactory {
     EnemyConfig config = configs.skeletonArcher;
     Entity SkeletonArcher = createEnemy(target, config);
 
+    AnimationRenderComponent animator =
+        new AnimationRenderComponent(
+            ServiceLocator.getResourceService()
+                .getAsset("images/skeleton_archer.atlas", TextureAtlas.class));
+    animator.addAnimation("walk", 0.15f, Animation.PlayMode.LOOP);
+    animator.addAnimation("idle", 0.15f, Animation.PlayMode.LOOP);
+
     SkeletonArcher
         // .addComponent(new CombatStatsComponent(config.health, config.baseAttack))
-        .addComponent(new TextureRenderComponent("images/skeleton_archer.png"));
+        .addComponent(animator)
+        .addComponent(new SkeletonAnimationController(target));
 
-    SkeletonArcher.getComponent(TextureRenderComponent.class).scaleEntity();
+    SkeletonArcher.getComponent(AnimationRenderComponent.class).scaleEntity();
 
     return SkeletonArcher;
+  }
+
+  /**
+   * Creates a stationary skeleton warrior for combat testing. The enemy can take damage and die,
+   * but has no movement or attack AI.
+   *
+   * @return passive skeleton warrior entity
+   */
+  public static Entity createPassiveSkeletonWarrior() {
+    Entity skeletonWarrior = createPassiveEnemy(configs.skeletonWarrior);
+    skeletonWarrior.addComponent(new TextureRenderComponent("images/skeleton_warrior.png"));
+    skeletonWarrior.getComponent(TextureRenderComponent.class).scaleEntity();
+    PhysicsUtils.setScaledCollider(skeletonWarrior, 1.2f, 0.7f);
+    return skeletonWarrior;
+  }
+
+  /**
+   * Creates a stationary skeleton archer for combat testing. The enemy can take damage and die, but
+   * has no movement or attack AI.
+   *
+   * @return passive skeleton archer entity
+   */
+  public static Entity createPassiveSkeletonArcher() {
+    Entity skeletonArcher = createPassiveEnemy(configs.skeletonArcher);
+    skeletonArcher.addComponent(new TextureRenderComponent("images/skeleton_archer.png"));
+    skeletonArcher.getComponent(TextureRenderComponent.class).scaleEntity();
+    PhysicsUtils.setScaledCollider(skeletonArcher, 1.2f, 0.7f);
+    return skeletonArcher;
+  }
+
+  /**
+   * Creates a flying vulture that attack the player from the sky
+   *
+   * @param target entity the enemy will chase and shoot at
+   * @return skeleton archer entity
+   */
+  public static Entity createVulture(Entity target) {
+    EnemyConfig config = configs.vulture;
+    Entity Vulture = createEnemy(target, config);
+
+    AnimationRenderComponent animator =
+        new AnimationRenderComponent(
+            ServiceLocator.getResourceService()
+                .getAsset("images/vulture.atlas", TextureAtlas.class));
+    animator.addAnimation("walk", 0.15f, Animation.PlayMode.LOOP);
+    animator.addAnimation("idle", 0.15f, Animation.PlayMode.LOOP);
+
+    Vulture
+        // .addComponent(new CombatStatsComponent(config.health, config.baseAttack))
+        .addComponent(animator)
+        .addComponent(new SkeletonAnimationController(target));
+
+    Vulture.getComponent(AnimationRenderComponent.class).scaleEntity();
+
+    Vulture.getComponent(AITaskComponent.class)
+        .addTask(new DelayedAttackTask(target, 20, 0.8f, 0.5f));
+
+    return Vulture;
+  }
+
+  /**
+   * Creates a necromancer that summons skeleton warriors and fire magic projectile
+   *
+   * @param target entity the enemy will chase and shoot at
+   * @return skeleton archer entity
+   */
+  public static Entity createNecromancer(Entity target) {
+    EnemyConfig config = configs.necromancer;
+    Entity Necromancer = createEnemy(target, config);
+
+    AnimationRenderComponent animator =
+        new AnimationRenderComponent(
+            ServiceLocator.getResourceService()
+                .getAsset("images/necromancer.atlas", TextureAtlas.class));
+    animator.addAnimation("walk", 0.15f, Animation.PlayMode.LOOP);
+    animator.addAnimation("idle", 0.15f, Animation.PlayMode.LOOP);
+
+    Necromancer
+        // .addComponent(new CombatStatsComponent(config.health, config.baseAttack))
+        .addComponent(animator)
+        .addComponent(new SkeletonAnimationController(target));
+
+    Necromancer.getComponent(AnimationRenderComponent.class).scaleEntity();
+
+    return Necromancer;
   }
 
   /**
@@ -77,6 +189,11 @@ public class EnemyFactory {
    * @return base enemy entity, without a render component
    */
   public static Entity createEnemy(Entity target, EnemyConfig config) {
+    return createEnemy(target, config, config.viewDistance, config.maxChaseDistance);
+  }
+
+  private static Entity createEnemy(
+      Entity target, EnemyConfig config, float viewDistance, float maxChaseDistance) {
     AITaskComponent aiComponent =
         new AITaskComponent()
             .addTask(
@@ -85,28 +202,54 @@ public class EnemyFactory {
                     new Vector2(config.wanderRangeX, config.wanderRangeY), config.wanderWaitTime))
             .addTask(
                 // Adding the values for chase task from the enemy's config file
-                new ChaseTask(
-                    target, config.chasePriority, config.viewDistance, config.maxChaseDistance));
+                new ChaseTask(target, config.chasePriority, viewDistance, maxChaseDistance));
 
     // If the enemy is a range type, add a range task.
     if (config.attackType.equals("range")) {
       aiComponent.addTask(
-          new RangedAttackTask(target, 20, config.attackRange, 2f, config.baseAttack, 5f, 5f));
+          new RangedAttackTask(
+              target, 20, config.attackRange, 2f, config.baseAttack, 4.5f, 5f, false));
+      // If the enemy is a summon type, add summon + range task
+    } else if (config.attackType.equals("summon")) {
+      aiComponent
+          .addTask(
+              new RangedAttackTask(
+                  target, 20, config.attackRange, 2f, config.baseAttack, 4.5f, 5f, true))
+          .addTask(new SummonTask(target, 30, config.attackRange, 5f));
     }
 
     Entity enemy =
         new Entity()
             .addComponent(new PhysicsComponent())
-            .addComponent(new PhysicsMovementComponent())
+            .addComponent(
+                new PhysicsMovementComponent(
+                    new Vector2(config.maxSpeed, config.maxSpeed), config.gravity))
             .addComponent(new ColliderComponent())
             .addComponent(new HitboxComponent().setLayer(PhysicsLayer.NPC))
             .addComponent(new CombatStatsComponent(config.health, config.baseAttack))
             .addComponent(new EnemyDeathComponent())
+            .addComponent(new PoisonStatsComponent())
+            .addComponent(new BurnStatsComponent())
+            .addComponent(new SlowStatsComponent())
+            .addComponent(new EnemyItemDropComponent(config.itemDrops))
+            .addComponent(new EnemyHealthRenderComponent())
             .addComponent(aiComponent);
 
     PhysicsUtils.setScaledCollider(enemy, 0.9f, 0.4f);
 
     return enemy;
+  }
+
+  private static Entity createPassiveEnemy(EnemyConfig config) {
+    return new Entity()
+        .addComponent(new PhysicsComponent().setBodyType(BodyType.StaticBody))
+        .addComponent(new ColliderComponent())
+        .addComponent(new HitboxComponent().setLayer(PhysicsLayer.NPC))
+        .addComponent(new CombatStatsComponent(config.health, config.baseAttack))
+        .addComponent(new EnemyDeathComponent())
+        .addComponent(new PoisonStatsComponent())
+        .addComponent(new BurnStatsComponent())
+        .addComponent(new SlowStatsComponent());
   }
 
   private EnemyFactory() {

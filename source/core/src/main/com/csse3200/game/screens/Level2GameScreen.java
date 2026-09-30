@@ -10,7 +10,6 @@ import com.csse3200.game.areas.terrain.TerrainFactory;
 import com.csse3200.game.components.gamearea.PerformanceDisplay;
 import com.csse3200.game.components.maingame.MainGameActions;
 import com.csse3200.game.components.maingame.MainGameExitDisplay;
-import com.csse3200.game.components.maingame.PauseMenuDisplay;
 import com.csse3200.game.components.minigames.spinthewheel.SpinTheWheelOverlay;
 import com.csse3200.game.components.minigames.spinthewheel.WheelConfig;
 import com.csse3200.game.components.player.KeyboardPlayerInputComponent;
@@ -107,6 +106,7 @@ public class Level2GameScreen extends ScreenAdapter {
 
     player.getEvents().addListener("death", this::onPlayerDeath);
     wheelOverlay = new SpinTheWheelOverlay(WheelConfig.ITEMS, player);
+    player.getEvents().addListener("spinTheWheel", wheelOverlay::request);
 
     if (cheats) {
       level2.getPlayer().getComponent(PhysicsComponent.class).getBody().setGravityScale(0);
@@ -125,6 +125,7 @@ public class Level2GameScreen extends ScreenAdapter {
     physicsEngine.update();
     ServiceLocator.getEntityService().update();
     renderer.render();
+    wheelOverlay.afterRender();
   }
 
   @Override
@@ -158,7 +159,7 @@ public class Level2GameScreen extends ScreenAdapter {
   }
 
   /**
-   * The tutorial's textures and spin the wheel's so it can be opened as an overlay.
+   * The level's textures and spin the wheel's so it can be opened as an overlay.
    *
    * @return every texture this screen needs loaded
    */
@@ -226,8 +227,7 @@ public class Level2GameScreen extends ScreenAdapter {
         .addComponent(new GameEndActions(this.game))
         .addComponent(new Terminal())
         .addComponent(inputComponent)
-        .addComponent(new TerminalDisplay())
-        .addComponent(new PauseMenuDisplay(this.game));
+        .addComponent(new TerminalDisplay());
 
     ServiceLocator.getEntityService().register(ui);
   }

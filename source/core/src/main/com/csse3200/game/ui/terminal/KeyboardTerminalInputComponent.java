@@ -2,6 +2,10 @@ package com.csse3200.game.ui.terminal;
 
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.utils.Array;
+import com.csse3200.game.components.player.PlayerInteractionComponent;
+import com.csse3200.game.entities.Entity;
+import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.input.InputComponent;
 import com.csse3200.game.services.ServiceLocator;
 
@@ -48,18 +52,38 @@ public class KeyboardTerminalInputComponent extends InputComponent {
       terminal.toggleIsOpen();
       return true;
     }
-    if (keycode == Input.Keys.ESCAPE) {
-      ServiceLocator.getEntityService().togglePaused();
-      entity.getEvents().trigger("togglePause");
-
-      if (ServiceLocator.getEntityService().getPaused()) {
-        entity.getEvents().trigger("showPauseMenu");
-      } else {
-        entity.getEvents().trigger("hidePauseMenu");
-      }
+    // Shop close stays here because this handler runs before player input, which swallows keys
+    // while the shop is open. Pause itself is owned by the pause overlay on main.
+    if (keycode == Input.Keys.ESCAPE && closeOpenShop()) {
+      return true;
     }
 
     return terminal.isOpen();
+  }
+
+  /**
+   * Closes the shop instead of toggling the pause menu, so gameplay stays paused until the shop
+   * itself unpauses on close.
+   *
+   * @return true if an open shop was closed
+   */
+  private boolean closeOpenShop() {
+    EntityService entityService = ServiceLocator.getEntityService();
+    if (entityService == null) {
+      return false;
+    }
+
+    Array<Entity> entities = entityService.getEntities();
+    for (int i = 0; i < entities.size; i++) {
+      Entity shopEntity = entities.get(i);
+      PlayerInteractionComponent interaction =
+          shopEntity.getComponent(PlayerInteractionComponent.class);
+      if (interaction != null && interaction.isShopOpen()) {
+        shopEntity.getEvents().trigger("closeShop");
+        return true;
+      }
+    }
+    return false;
   }
 
   /**

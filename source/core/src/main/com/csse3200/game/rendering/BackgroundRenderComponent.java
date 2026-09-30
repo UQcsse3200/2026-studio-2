@@ -1,5 +1,6 @@
 package com.csse3200.game.rendering;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
@@ -27,6 +28,8 @@ public class BackgroundRenderComponent extends RenderComponent {
     private final Vector2 velocity;
     private Vector2 position;
     private final boolean repeat;
+    private final float distance;
+    private final float transparency;
 
     ParallaxLayer(
         Texture texture,
@@ -36,7 +39,9 @@ public class BackgroundRenderComponent extends RenderComponent {
         Vector2 offset,
         BackgroundType backgroundType,
         Vector2 velocity,
-        boolean repeat) {
+        boolean repeat,
+        float distance,
+        float transparency) {
 
       this.texture = texture;
       this.parallaxFactor = parallaxFactor;
@@ -47,6 +52,8 @@ public class BackgroundRenderComponent extends RenderComponent {
       this.velocity = velocity;
       this.position = new Vector2(velocity);
       this.repeat = repeat;
+      this.distance = distance;
+      this.transparency = transparency;
     }
   }
 
@@ -68,7 +75,9 @@ public class BackgroundRenderComponent extends RenderComponent {
   }
 
   /**
-   * Adds a parallax layer with a custom size and vertical position.
+   * Adds a parallax layer with a custom size and vertical position. Distance is a float between 0
+   * and 1. 1 causes the background to have no vertical movement, while 0 causes it to follow player
+   * directly.
    *
    * @param texturePath path to the texture
    * @param parallaxFactor controls how much the layer moves relative to player movement
@@ -78,6 +87,8 @@ public class BackgroundRenderComponent extends RenderComponent {
    * @param backgroundType the type of background this layer is
    * @param velocity the independent velocity of the layer
    * @param repeat whether or not this layer should repeat horizontally
+   * @param distance the distance from POV affecting vertical parallax movement
+   * @param transparency the transparency of the layer
    */
   public void addLayer(
       String texturePath,
@@ -87,13 +98,24 @@ public class BackgroundRenderComponent extends RenderComponent {
       Vector2 offset,
       BackgroundType backgroundType,
       Vector2 velocity,
-      boolean repeat) {
+      boolean repeat,
+      float distance,
+      float transparency) {
 
     Texture texture = ServiceLocator.getResourceService().getAsset(texturePath, Texture.class);
 
     layers.add(
         new ParallaxLayer(
-            texture, parallaxFactor, width, height, offset, backgroundType, velocity, repeat));
+            texture,
+            parallaxFactor,
+            width,
+            height,
+            offset,
+            backgroundType,
+            velocity,
+            repeat,
+            distance,
+            transparency));
   }
 
   /** Scale is controlled individually for each layer. */
@@ -148,7 +170,7 @@ public class BackgroundRenderComponent extends RenderComponent {
 
     float backgroundX =
         position.x + layer.offset.x + cameraX * (1f - layer.parallaxFactor.x) + layer.position.x;
-    float backgroundY = position.y + layer.offset.y + cameraY + layer.position.y;
+    float backgroundY = position.y + layer.offset.y + cameraY * layer.distance + layer.position.y;
 
     return new Vector2(backgroundX, backgroundY);
   }
@@ -178,7 +200,9 @@ public class BackgroundRenderComponent extends RenderComponent {
 
       layerX = layerPos.x;
       layerY = layerPos.y;
+      batch.setColor(1f, 1f, 1f, layer.transparency);
       batch.draw(layer.texture, layerX, layerY, layer.width, layer.height);
+      batch.setColor(Color.WHITE);
 
       // Draw copies of repeating layers to fill screen
       if (layer.repeat) {
@@ -188,7 +212,9 @@ public class BackgroundRenderComponent extends RenderComponent {
         // if left most x coord of layer >= left most x coord of background pos
         // backgroundPos is used over worldBound.x since backgroundPos extends beyond worldBound
         while (newLeftDrawPosX >= backgroundPos.x - layer.width) {
+          batch.setColor(1f, 1f, 1f, layer.transparency);
           batch.draw(layer.texture, newLeftDrawPosX, layerY, layer.width, layer.height);
+          batch.setColor(Color.WHITE);
           newLeftDrawPosX -= layer.width;
         }
 
@@ -196,7 +222,9 @@ public class BackgroundRenderComponent extends RenderComponent {
         // NOTE: this relies on backgroudPos starting at a negative value, which will always be
         // true if player starts at x = 0
         while (newRightDrawPosX <= worldBounds.x - backgroundPos.x) {
+          batch.setColor(1f, 1f, 1f, layer.transparency);
           batch.draw(layer.texture, newRightDrawPosX, layerY, layer.width, layer.height);
+          batch.setColor(Color.WHITE);
           newRightDrawPosX += layer.width;
         }
       }

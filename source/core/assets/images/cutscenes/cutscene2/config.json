@@ -1,0 +1,109 @@
+{
+  "fadeDuration": 0.4,
+  "music": "sounds/Main_menu_sound.mp3",
+  "scenes": [
+    {
+      "image": "scene1.jpeg",
+      "text": {
+        "xPos": 600,
+        "yPos": 150,
+        "charsPerSecond": 20,
+        "maxWidth": 600,
+        "padding": 16,
+        "borderThickness": 3,
+        "textAlignment": "center",
+        "pages": [
+          "After what seemed like an eternity at sea, Odysseus finally awoke upon the shores of an unfamiliar island...",
+          "Wandering the beach, he found the scattered remains of his ship and began collecting what little was left of it, not knowing why he felt compelled to do so.",
+          "Something within him told him that these broken pieces held the memories of a journey he could no longer remember..."
+
+        ]
+      }
+    },
+    {
+      "image": "scene2.jpeg",
+      "text": {
+        "xPos": 600,
+        "yPos": 150,
+        "charsPerSecond": 20,
+        "maxWidth": 600,
+        "padding": 16,
+        "borderThickness": 3,
+        "textAlignment": "center",
+        "pages": [
+          "As Odysseus wandered the shores, a woman approached him from the island, seeing the exhaustion that had taken hold of the once great warrior.",
+          "Calypso, the nymph of Ogygia, offered him a strange lotus flower, telling him that it would ease his suffering and help him recover from the trials he had endured.",
+          "Unbeknownst to Odysseus, the lotus would not only heal his body, but also quitely suppress the memories of the journey that had brought him here..."
+        ]
+      }
+    },
+    {
+      "image": "scene3.jpeg",
+      "text": {
+        "xPos": 600,
+        "yPos": 150,
+        "charsPerSecond": 20,
+        "maxWidth": 600,
+        "padding": 16,
+        "borderThickness": 3,
+        "textAlignment": "center",
+        "pages": [
+          "As Odysseus ate the lotus, he fell into a deep sleep, and within his dreams fragments of his forgotten journey began to return...",
+          "He saw himself upon a battered ship with his soldiers, drifting upon a windless sea with little food left and their vessel barely holding together from the storms they had survived.",
+          "With nowhere else to go and hunger taking hold of his men, they sailed onward until they finally spotted land upon the horizon..."
+        ]
+      }
+    },
+    {
+      "image": "scene4.jpeg",
+      "text": {
+        "xPos": 600,
+        "yPos": 150,
+        "charsPerSecond": 20,
+        "maxWidth": 600,
+        "padding": 16,
+        "borderThickness": 3,
+        "textAlignment": "center",
+        "pages": [
+          "Driven by hunger, Odysseus and his men rushed onto the island in search of food, where they soon found a great herd of sheep wandering the land.",
+          "Following the herd, the starving soldiers came upon a vast cave filled with food, wine and livestock, believing that at last they had found what they needed to survive.",
+          "But the cave was not empty... it belonged to a creature far greater than any man, and they had just wandered into the home of the Cyclops."
+        ]
+      }
+    },
+    {
+      "image": "scene5.jpeg",
+      "text": {
+        "xPos": 600,
+        "yPos": 150,
+        "charsPerSecond": 20,
+        "maxWidth": 600,
+        "padding": 16,
+        "borderThickness": 3,
+        "textAlignment": "center",
+        "pages": [
+          "Before Odysseus could lead his men away, the Cyclops returned to his cave and found the strangers who had entered his home.",
+          "Polyphemus, the one eyed son of Poseidon, seized the soldiers and dragged them into the darkness as Odysseus rushed forward to save his men.",
+          "But before they could escape, the Cyclops rolled a great boulder across the entrance, trapping them within his cave..."
+        ]
+      }
+    },
+    {
+      "image": "scene6.jpeg",
+      "text": {
+        "xPos": 600,
+        "yPos": 150,
+        "charsPerSecond": 20,
+        "maxWidth": 600,
+        "padding": 16,
+        "borderThickness": 3,
+        "textAlignment": "center",
+        "pages": [
+          "Days passed within the darkness of the cave, as Polyphemus returned each day to feast upon Odysseus' men and drink from his great barrels of wine.",
+          "With every passing day their numbers dwindled, while those who remained could only watch and wait for their inevitable fate.",
+          "But Odysseus refused to accept that this was where their journey would end... and began to devise a plan to escape."
+        ]
+      }
+    }
+  ]
+}

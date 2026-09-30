@@ -1,6 +1,6 @@
 {
   "health": 10,
-  "baseAttack": 2,
+  "baseAttack": 20,
   "invulnerabilityDuration": 1000,
   "gold": 50,
   "favouriteColour": "peach"

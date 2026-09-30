@@ -25,7 +25,9 @@ public class SettingsScreen extends ScreenAdapter {
     "images/Buttons/exit_up_btn.png",
     "images/Buttons/exit_down_btn.png",
     "images/Buttons/apply_up_btn.png",
-    "images/Buttons/apply_down_btn.png"
+    "images/Buttons/apply_down_btn.png",
+    "images/main_menu_bg_2.png",
+    "images/settings_box.png"
   };
 
   private final GdxGame game;
@@ -92,7 +94,8 @@ public class SettingsScreen extends ScreenAdapter {
     logger.debug("Creating ui");
     Stage stage = ServiceLocator.getRenderService().getStage();
     Entity ui = new Entity();
-    ui.addComponent(new SettingsMenuDisplay(game)).addComponent(new InputDecorator(stage, 10));
+    ui.addComponent(new SettingsMenuDisplay(game, GdxGame.ScreenType.MAIN_MENU))
+        .addComponent(new InputDecorator(stage, 10));
     ServiceLocator.getEntityService().register(ui);
   }
 }

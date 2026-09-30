@@ -1,21 +1,18 @@
 package com.csse3200.game.areas;
 
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.csse3200.game.areas.terrain.TerrainFactory;
 import com.csse3200.game.components.CameraComponent;
-import com.csse3200.game.components.gamearea.GameAreaDisplay;
-import com.csse3200.game.components.minigames.CyclopsTimingBar.CyclopsMinigameLogic;
-import com.csse3200.game.components.minigames.CyclopsTimingBar.TimingBarDisplay;
-import com.csse3200.game.components.minigames.CyclopsTimingBar.TimingBarLogic;
+import com.csse3200.game.components.TextBoxComponent;
+import com.csse3200.game.components.minigames.cyclopsMinigame.CyclopsMinigameLogic;
+import com.csse3200.game.components.minigames.cyclopsMinigame.TimingBarDisplay;
+import com.csse3200.game.components.minigames.cyclopsMinigame.TimingBarLogic;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.ObstacleFactory;
 import com.csse3200.game.entities.factories.PlayerFactory;
-import com.csse3200.game.physics.PhysicsLayer;
-import com.csse3200.game.physics.components.ColliderComponent;
-import com.csse3200.game.physics.components.PhysicsComponent;
-import com.csse3200.game.rendering.TextureRenderComponent;
+import com.csse3200.game.input.CutsceneInputComponent;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.ArrayList;
@@ -25,23 +22,59 @@ import org.slf4j.LoggerFactory;
 public class CyclopsMinigameArea extends GameArea {
   private static final Logger logger = LoggerFactory.getLogger(CyclopsMinigameArea.class);
   private static final String[] cyclopsMinigameTextures = {
+    "images/black_roof.png",
+    "images/purple_heart.png",
+    "images/transparent.png",
+    "images/DevGridTile.png",
+    "images/Tile_2.png",
+    "images/platform.png",
     "images/box_boy_leaf.png",
+    "images/spike.png",
+    "images/tree.png",
+    "images/ghost_king.png",
+    "images/ghost_1.png",
+    "images/grass_1.png",
+    "images/grass_2.png",
+    "images/grass_3.png",
+    "images/hex_grass_1.png",
+    "images/hex_grass_2.png",
+    "images/hex_grass_3.png",
+    "images/iso_grass_1.png",
+    "images/iso_grass_2.png",
+    "images/iso_grass_3.png",
     "images/transparent.png",
     "images/Greek Statues Pack I/Brute.png",
-    "images/CyclopsMinigameFloor.png"
+    "images/CyclopsMinigameFloor.png",
+    "images/PixelArt_HeartBack.png"
+  };
+
+  private static final String[] cyclopsMinigameTexturesAtlases = {"images/player.atlas"};
+
+  private static final String[] cyclopsMinigameMusic = {
+    "sounds/minigames/cyclops/cave_background_noise.mp3"
+  };
+
+  private static final String[] cyclopsMinigameSounds = {
+    "sounds/walkingSounds/walkingSound.mp3",
+    "sounds/minigames/cyclops/marker-hit.ogg",
+    "sounds/minigames/cyclops/marker-miss.ogg"
   };
 
   private final TerrainFactory terrainFactory;
 
   private Entity player;
+  private Entity minigame;
 
-  private static final GridPoint2 MAP_SIZE = new GridPoint2(30, 30);
+  private static final GridPoint2 MAP_SIZE = new GridPoint2(40, 30);
   private static final int NUM_STATUES = 3;
   private int statueYLevel;
   private GridPoint2 winLocation;
   private ArrayList<GridPoint2> statueLocations;
   private ArrayList<GridPoint2> statueGapLocations;
   private CyclopsMinigameLogic cyclopsMinigameLogic;
+
+  private CutsceneInputComponent input;
+  private TextBoxComponent textBox;
 
   public CyclopsMinigameArea(CameraComponent camera, TerrainFactory terrainFactory) {
     super(camera);
@@ -53,12 +86,13 @@ public class CyclopsMinigameArea extends GameArea {
   public void create() {
     loadAssets();
 
-    displayUI();
     spawnTerrain();
     displayFloor();
     spawnStatues();
 
     player = spawnPlayer();
+
+    playMusic();
 
     setupTimingMinigame();
     startTimingMinigame();
@@ -81,20 +115,14 @@ public class CyclopsMinigameArea extends GameArea {
     cyclopsMinigameLogic.setSafeLocations(statueLocations);
     cyclopsMinigameLogic.setLossLocations(statueGapLocations);
 
-    Entity timingMinigameEntity = new Entity();
-    timingMinigameEntity.addComponent(timingBarDisplay);
-    timingMinigameEntity.addComponent(cyclopsMinigameLogic);
-    spawnEntity(timingMinigameEntity);
+    minigame = new Entity();
+    minigame.addComponent(timingBarDisplay);
+    minigame.addComponent(cyclopsMinigameLogic);
+    spawnEntity(minigame);
   }
 
   private void startTimingMinigame() {
     cyclopsMinigameLogic.startMinigame();
-  }
-
-  private void displayUI() {
-    Entity ui = new Entity();
-    ui.addComponent(new GameAreaDisplay("Cyclops Minigame Room"));
-    spawnEntity(ui);
   }
 
   private void spawnTerrain() {
@@ -102,7 +130,7 @@ public class CyclopsMinigameArea extends GameArea {
     terrain = terrainFactory.createTerrain(TerrainFactory.TerrainType.CYCLOPS_ROOM);
     spawnEntity(new Entity().addComponent(terrain));
 
-    statueYLevel = (int) (MAP_SIZE.y * 0.1);
+    statueYLevel = 5;
     winLocation = new GridPoint2(MAP_SIZE.x + 10, statueYLevel);
 
     Entity cameraEntityHolder = new Entity();
@@ -141,14 +169,7 @@ public class CyclopsMinigameArea extends GameArea {
 
   /** Creates and displays the floor entity that spans the entire screen */
   private void displayFloor() {
-    Entity floor =
-        new Entity()
-            .addComponent(new TextureRenderComponent("images/CyclopsMinigameFloor.png"))
-            .addComponent(new PhysicsComponent().setBodyType(BodyDef.BodyType.StaticBody))
-            .addComponent(new ColliderComponent().setLayer(PhysicsLayer.NONE));
-    floor.getComponent(TextureRenderComponent.class).scaleEntity();
-    floor.setScale(20, 5);
-    spawnEntityAt(floor, new GridPoint2(-5, 2), false, false);
+    spawnEntityAt(ObstacleFactory.createWall(MAP_SIZE.x, 0.1f), new GridPoint2(0, 1), true, true);
   }
 
   /**
@@ -158,14 +179,26 @@ public class CyclopsMinigameArea extends GameArea {
    */
   private Entity spawnPlayer() {
     Entity newPlayer = PlayerFactory.createPlayerDisplay();
-    spawnEntityAt(newPlayer, statueLocations.getFirst(), true, false);
+    spawnEntityAt(newPlayer, statueLocations.getFirst(), false, true);
     return newPlayer;
+  }
+
+  private void playMusic() {
+    Music music =
+        ServiceLocator.getResourceService()
+            .getAsset("sounds/minigames/cyclops/cave_background_noise.mp3", Music.class);
+    music.setLooping(true);
+    music.setVolume(0.4f);
+    music.play();
   }
 
   private void loadAssets() {
     logger.debug("Loading assets");
     ResourceService resourceService = ServiceLocator.getResourceService();
     resourceService.loadTextures(cyclopsMinigameTextures);
+    resourceService.loadTextureAtlases(cyclopsMinigameTexturesAtlases);
+    resourceService.loadSounds(cyclopsMinigameSounds);
+    resourceService.loadMusic(cyclopsMinigameMusic);
 
     while (!resourceService.loadForMillis(10)) {
       logger.info("Loading... {}%", resourceService.getProgress());
@@ -176,11 +209,17 @@ public class CyclopsMinigameArea extends GameArea {
     logger.debug("Unloading assets");
     ResourceService resourceService = ServiceLocator.getResourceService();
     resourceService.unloadAssets(cyclopsMinigameTextures);
+    resourceService.unloadAssets(cyclopsMinigameTexturesAtlases);
+    resourceService.unloadAssets(cyclopsMinigameSounds);
+    resourceService.unloadAssets(cyclopsMinigameMusic);
   }
 
   @Override
   public void dispose() {
     super.dispose();
+    ServiceLocator.getResourceService()
+        .getAsset("sounds/minigames/cyclops/cave_background_noise.mp3", Music.class)
+        .stop();
     this.unloadAssets();
   }
 }

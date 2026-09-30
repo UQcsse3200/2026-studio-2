@@ -1,10 +1,15 @@
 package com.csse3200.game.components.player;
 
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.Component;
 import com.csse3200.game.components.inventory.InventoryComponent;
 import com.csse3200.game.components.item.ItemType;
+import com.csse3200.game.components.item.weapons.PrimaryWeapon;
+import com.csse3200.game.components.item.weapons.WeaponComponent;
+import com.csse3200.game.entities.factories.ProjectileFactory;
+import com.csse3200.game.services.ServiceLocator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,8 +38,13 @@ public class ItemUseComponent extends Component {
   }
 
   /**
-   * Fires the selected arrow item. Consumables are ignored here so holding or clicking the shoot
-   * button never accidentally drinks a potion.
+   * Starts using the selected arrow item on shoot-button-down. Consumables are ignored here so
+   * holding or clicking the shoot button never accidentally drinks a potion.
+   *
+   * <p>The rope arrow still fires instantly (unchanged). Other arrows lock in their type and spend
+   * their ammo immediately, same as before, but no longer fire right away - the shot is now held as
+   * a charge and only actually fires when {@link #stopShootSelectedArrow()} releases it, with power
+   * scaling based on how long the button was held.
    *
    * @param direction Input direction from mouse aim or controller
    */
@@ -43,16 +53,54 @@ public class ItemUseComponent extends Component {
       return;
     }
     ItemType selected = inventory.getSelectedItem();
-    if (selected != null && selected.isArrow()) {
-      useSelectedItem();
+    if (selected == null || !selected.isArrow() || !inventory.hasItem(selected)) {
+      return;
     }
+
+    if (selected == ItemType.ROPE_ARROW) {
+      useSelectedItem();
+      logger.debug("Arrow sound should play now");
+      try {
+        Sound arrowSound =
+            ServiceLocator.getResourceService().getAsset("sounds/Arrow_release.wav", Sound.class);
+        arrowSound.play(0.4f);
+      } catch (Exception e) {
+      }
+      return;
+    }
+
+    // Reject before reserving ammo. Readiness also covers a bow that already has a paid arrow
+    // charging, so repeat clicks and the alternate attack input cannot consume another arrow.
+    if (direction == null || direction.isZero() || !isPrimaryWeaponReady()) {
+      entity.getEvents().trigger("itemUseFailed", selected);
+      return;
+    }
+
+    entity.getEvents().trigger("setArrowType", selected.toArrowType());
+    if (selected.consumesAmmo()) {
+      inventory.removeItem(selected, 1);
+    }
+    entity.getEvents().trigger("itemUsed", selected);
+    entity.getEvents().trigger("chargeStart", direction);
   }
 
-  /** Releases the grapple when the shoot button is released while a rope arrow is equipped. */
+  /**
+   * Releases the grapple and any charging shot when the shoot button comes back up.
+   *
+   * <p>Both are signalled unconditionally rather than picking one based on the current selection:
+   * spending the last arrow in a slot auto-advances the inventory to the next occupied slot, so the
+   * item selected on release is not necessarily the one that started the draw. GrappleComponent
+   * ignores a release when no rope is attached, and BowComponent ignores one when nothing is
+   * charging, so signalling both is safe and guarantees a charge can never be left hanging.
+   */
   void stopShootSelectedArrow() {
-    if (inventory != null && inventory.getSelectedItem() == ItemType.ROPE_ARROW) {
+    if (inventory == null) {
+      return;
+    }
+    if (inventory.getSelectedItem() == ItemType.ROPE_ARROW) {
       entity.getEvents().trigger("grappleRelease");
     }
+    entity.getEvents().trigger("chargeRelease", getAimDirection());
   }
 
   /**
@@ -70,26 +118,34 @@ public class ItemUseComponent extends Component {
       return false;
     }
 
-    if (selected.isArrow()) {
-      return useArrow(selected);
-    } else if (selected == ItemType.HEALTH_POTION) {
-      return usePotion();
-    }
-
-    return false;
+    return switch (selected) {
+      case STANDARD_ARROW, FIRE_ARROW, ICE_ARROW, ROPE_ARROW ->
+          useArrow(selected, getAimDirection());
+      case HEALTH_POTION -> useHealthPotion();
+      case Sword -> useMeleeWeapon(ItemType.Sword);
+      case Spear -> useMeleeWeapon(ItemType.Spear);
+      case SpeedPotion -> useSpeedPotion();
+      case PoisonPotion -> usePoisonPotion();
+    };
   }
 
-  private boolean useArrow(ItemType arrowItem) {
-    Vector2 direction = getAimDirection();
-    if (direction.isZero()) {
+  private boolean useArrow(ItemType arrowItem, Vector2 direction) {
+    if (direction == null || direction.isZero() || !inventory.hasItem(arrowItem)) {
       entity.getEvents().trigger("itemUseFailed", arrowItem);
       return false;
     }
 
     if (arrowItem == ItemType.ROPE_ARROW) {
-      // GrappleComponent handles its own cooldown timer internally upon receiving "grappleFire"
       entity.getEvents().trigger("grappleFire", direction);
     } else {
+      // Dispatch is synchronous, so check readiness before publishing the attack or using ammo.
+      WeaponComponent weapons = entity.getComponent(WeaponComponent.class);
+      PrimaryWeapon primary = weapons == null ? null : weapons.getPrimaryWeapon();
+      if (primary == null || !primary.isReady()) {
+        entity.getEvents().trigger("itemUseFailed", arrowItem);
+        return false;
+      }
+
       // Configure bow variant and trigger primary weapon execution via WeaponComponent
       entity.getEvents().trigger("setArrowType", arrowItem.toArrowType());
       entity.getEvents().trigger("primaryAttack", direction);
@@ -103,7 +159,21 @@ public class ItemUseComponent extends Component {
     return true;
   }
 
-  private boolean usePotion() {
+  private boolean useMeleeWeapon(ItemType weaponType) {
+    if (!inventory.hasItem(weaponType)) {
+      logger.debug("No {} available to use", weaponType);
+      entity.getEvents().trigger("itemUseFailed", weaponType);
+      return false;
+    }
+
+    entity
+        .getEvents()
+        .trigger("meleeAttack", getAimDirection(), weaponType.getDamage(), weaponType.getRange());
+    entity.getEvents().trigger("itemUsed", weaponType);
+    return true;
+  }
+
+  private boolean useHealthPotion() {
     if (combatStats == null || combatStats.isHealthFull()) {
       logger.debug("Cannot use health potion: health is already full or stats missing.");
       entity.getEvents().trigger("itemUseFailed", ItemType.HEALTH_POTION);
@@ -118,6 +188,76 @@ public class ItemUseComponent extends Component {
     combatStats.addHealth(ItemType.HEALTH_POTION.getHealAmount());
     entity.getEvents().trigger("itemUsed", ItemType.HEALTH_POTION);
     return true;
+  }
+
+  private boolean useSpeedPotion() {
+    if (!inventory.hasItem(ItemType.SpeedPotion)) {
+      logger.debug("No speed potion available to use");
+      entity.getEvents().trigger("itemUseFailed", ItemType.SpeedPotion);
+      return false;
+    }
+
+    PlayerActions playerActions = entity.getComponent(PlayerActions.class);
+    if (playerActions != null && playerActions.isSpeedPotionActive()) {
+      logger.debug("Speed potion buff is already active");
+      entity.getEvents().trigger("itemUseFailed", ItemType.SpeedPotion);
+      return false;
+    }
+
+    if (!inventory.removeItem(ItemType.SpeedPotion, 1)) {
+      entity.getEvents().trigger("itemUseFailed", ItemType.SpeedPotion);
+      return false;
+    }
+
+    entity
+        .getEvents()
+        .trigger(
+            "speedPotionUsed",
+            ItemType.SpeedPotion.getSpeedBoost(),
+            ItemType.SpeedPotion.getDuration());
+    entity.getEvents().trigger("itemUsed", ItemType.SpeedPotion);
+    return true;
+  }
+
+  private boolean usePoisonPotion() {
+    if (!inventory.hasItem(ItemType.PoisonPotion)) {
+      logger.debug("No poison potion available to use");
+      entity.getEvents().trigger("itemUseFailed", ItemType.PoisonPotion);
+      return false;
+    }
+
+    Vector2 direction = getAimDirection();
+    if (direction == null
+        || direction.isZero()
+        || ServiceLocator.getEntityService() == null
+        || ServiceLocator.getPhysicsService() == null) {
+      entity.getEvents().trigger("itemUseFailed", ItemType.PoisonPotion);
+      return false;
+    }
+
+    if (!inventory.removeItem(ItemType.PoisonPotion, 1)) {
+      entity.getEvents().trigger("itemUseFailed", ItemType.PoisonPotion);
+      return false;
+    }
+
+    Vector2 throwDirection = direction.cpy().nor();
+    Vector2 spawnPosition =
+        entity.getCenterPosition().mulAdd(throwDirection, entity.getScale().x * 0.8f);
+    ServiceLocator.getEntityService()
+        .register(
+            ProjectileFactory.createThrownPoisonPotion(entity, spawnPosition, throwDirection));
+    entity.getEvents().trigger("itemUsed", ItemType.PoisonPotion);
+    return true;
+  }
+
+  /**
+   * @return true when an equipped primary weapon is ready to attack
+   */
+  private boolean isPrimaryWeaponReady() {
+    WeaponComponent weapon = entity.getComponent(WeaponComponent.class);
+    return weapon != null
+        && weapon.getPrimaryWeapon() != null
+        && weapon.getPrimaryWeapon().isReady();
   }
 
   private Vector2 getAimDirection() {

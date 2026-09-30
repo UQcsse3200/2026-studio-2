@@ -9,6 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.csse3200.game.components.ButtonSound;
@@ -47,8 +48,8 @@ public class MainMenuDisplay extends UIComponent {
     stage.addActor(background);
 
     // Subtle continuous shake so the background feels a bit alive.
-    float shakeAmount = 3f;
-    float shakeDuration = 0.12f;
+    float shakeAmount = 15f;
+    float shakeDuration = 1f;
     background.addAction(
         Actions.forever(
             Actions.sequence(
@@ -88,19 +89,6 @@ public class MainMenuDisplay extends UIComponent {
 
     ImageButton continueButton = new ImageButton(continueButtonStyle);
 
-    Texture minigamesUpTexture =
-        ServiceLocator.getResourceService()
-            .getAsset("images/Buttons/minigames_up_btn.png", Texture.class);
-    Texture minigamesDownTexture =
-        ServiceLocator.getResourceService()
-            .getAsset("images/Buttons/minigames_down_btn.png", Texture.class);
-
-    ImageButton.ImageButtonStyle minigamesButtonStyle = new ImageButton.ImageButtonStyle();
-    minigamesButtonStyle.up = new TextureRegionDrawable(minigamesUpTexture);
-    minigamesButtonStyle.down = new TextureRegionDrawable(minigamesDownTexture);
-
-    ImageButton minigamesButton = new ImageButton(minigamesButtonStyle);
-
     Texture settingsUpTexture =
         ServiceLocator.getResourceService()
             .getAsset("images/Buttons/settings_up_btn.png", Texture.class);
@@ -126,6 +114,7 @@ public class MainMenuDisplay extends UIComponent {
     exitButtonStyle.down = new TextureRegionDrawable(quitDownTexture);
 
     ImageButton exitButton = new ImageButton(exitButtonStyle);
+    TextButton sandboxButton = new TextButton("Sandbox", skin);
 
     // Triggers an event when the button is pressed
     // ImageButton automatically swaps to the "down" drawable while pressed and back to "up" on
@@ -148,12 +137,12 @@ public class MainMenuDisplay extends UIComponent {
           }
         });
 
-    minigamesButton.addListener(
+    sandboxButton.addListener(
         new ChangeListener() {
           @Override
           public void changed(ChangeEvent changeEvent, Actor actor) {
-            logger.debug("Minigames button clicked");
-            ButtonSound.playClickThen(() -> entity.getEvents().trigger("Minigames"));
+            logger.debug("Sandbox button clicked");
+            ButtonSound.playClickThen(() -> entity.getEvents().trigger("Sandbox"));
           }
         });
 
@@ -184,11 +173,9 @@ public class MainMenuDisplay extends UIComponent {
     leftColumn.row();
     leftColumn.add(continueButton).width(buttonWidth).height(buttonHeight).padTop(pad);
 
-    // Right column: Minigames, Exit.
+    // Right column: Settings.
     Table rightColumn = new Table();
-    rightColumn.add(minigamesButton).width(buttonWidth).height(buttonHeight);
-    rightColumn.row();
-    rightColumn.add(exitButton).width(buttonWidth).height(buttonHeight).padTop(pad);
+    rightColumn.add(settingsButton).width(buttonWidth).height(buttonHeight);
 
     // Left and right columns sit together as one centered pair, with a fixed gap between them
     // instead of being pushed out to the screen edges.
@@ -202,8 +189,10 @@ public class MainMenuDisplay extends UIComponent {
     table.row();
     table.add(columnPair).center().padTop(screenHeight * 0.02f);
     table.row();
+    table.add(sandboxButton).center().padTop(pad);
+    table.row();
     table
-        .add(settingsButton)
+        .add(exitButton)
         .center()
         .width(buttonWidth)
         .height(buttonHeight)

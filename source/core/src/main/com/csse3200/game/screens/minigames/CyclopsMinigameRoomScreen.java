@@ -7,11 +7,12 @@ import com.csse3200.game.GdxGame;
 import com.csse3200.game.areas.CyclopsMinigameArea;
 import com.csse3200.game.areas.terrain.TerrainFactory;
 import com.csse3200.game.components.gamearea.PerformanceDisplay;
-import com.csse3200.game.components.minigames.CyclopsTimingBar.CyclopsMinigameActions;
-import com.csse3200.game.components.minigames.CyclopsTimingBar.CyclopsMinigameDisplay;
+import com.csse3200.game.components.minigames.cyclopsMinigame.CyclopsMinigameActions;
+import com.csse3200.game.components.minigames.cyclopsMinigame.CyclopsMinigameDisplay;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.entities.factories.RenderFactory;
+import com.csse3200.game.events.EventHandler;
 import com.csse3200.game.input.InputComponent;
 import com.csse3200.game.input.InputDecorator;
 import com.csse3200.game.input.InputService;
@@ -27,6 +28,7 @@ import com.csse3200.game.ui.GameEndDisplay;
 import com.csse3200.game.ui.GameEndState;
 import com.csse3200.game.ui.terminal.Terminal;
 import com.csse3200.game.ui.terminal.TerminalDisplay;
+import com.csse3200.game.ui.terminal.commands.cyclopsMinigameCommands.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,7 +36,21 @@ public class CyclopsMinigameRoomScreen extends ScreenAdapter {
 
   private static final Logger logger = LoggerFactory.getLogger(CyclopsMinigameRoomScreen.class);
   private static final String[] cyclopsMinigameTextures = {
-    "images/heart.png", "images/Buttons/exit_up_btn.png", "images/Buttons/exit_down_btn.png"
+    "images/title_odysseus_logo.png",
+    "images/box_boy_title.png",
+    "images/Health_Bar_Background.png",
+    "images/Inventory_background.png",
+    "images/red_heart.png",
+    "images/heart.png",
+    "images/Buttons/exit_up_btn.png",
+    "images/Buttons/exit_down_btn.png",
+    "images/Buttons/restart_up_btn.png",
+    "images/Buttons/restart_down_btn.png",
+    "images/Buttons/main_menu_up_btn.png",
+    "images/Buttons/main_menu_down_btn.png",
+    "images/Buttons/exit_game_up_btn.png",
+    "images/Buttons/exit_game_down_btn.png",
+    "images/scroll_bg.png"
   };
   private static final Vector2 CAMERA_POSITION = new Vector2(7.5f, 7.5f);
 
@@ -56,6 +72,7 @@ public class CyclopsMinigameRoomScreen extends ScreenAdapter {
     ServiceLocator.registerResourceService(new ResourceService());
 
     ServiceLocator.registerEntityService(new EntityService());
+    ServiceLocator.registerCyclopsMinigameEventHandler(new EventHandler());
     ServiceLocator.registerRenderService(new RenderService());
 
     renderer = RenderFactory.createRenderer();
@@ -122,12 +139,21 @@ public class CyclopsMinigameRoomScreen extends ScreenAdapter {
     InputComponent inputComponent =
         ServiceLocator.getInputService().getInputFactory().createForTerminal();
 
+    Terminal terminal = new Terminal(game, GdxGame.ScreenType.CYCLOPS_MINIGAME);
+    terminal.addCommand("cyclopsStart", new CyclopsStartCommand());
+    terminal.addCommand("cyclopsStop", new CyclopsStopCommand());
+    terminal.addCommand("cyclopsRestart", new CyclopsRestartCommand());
+    terminal.addCommand("cyclopsSuccess", new CyclopsSuccessCommand());
+    terminal.addCommand("cyclopsFailure", new CyclopsFailureCommand());
+    terminal.addCommand("cyclopsShowBar", new CyclopsShowBarCommand());
+    terminal.addCommand("cyclopsHideBar", new CyclopsHideBarCommand());
+
     Entity ui = new Entity();
     ui.addComponent(new InputDecorator(stage, 10))
         .addComponent(new PerformanceDisplay())
         .addComponent(new CyclopsMinigameActions(this.game))
         .addComponent(new CyclopsMinigameDisplay())
-        .addComponent(new Terminal(game, GdxGame.ScreenType.CYCLOPS_MINIGAME))
+        .addComponent(terminal)
         .addComponent(inputComponent)
         .addComponent(new GameEndDisplay(GameEndState.LOSE))
         .addComponent(new GameEndActions(this.game))

@@ -58,7 +58,7 @@ public class SpinTheWheelDisplay extends UIComponent {
   private static final float POINTER_ANGLE = 90f;
   private static final float SPIN_DURATION = 3.5f;
   private static final int FULL_TURNS = 4;
-  private static final float SEGMENT_RADIUS_RATIO = 0.62f;
+  private static final float SEGMENT_RADIUS_RATIO = 0.5f;
   private static final float ICON_SIZE = 48f;
 
   private static final float BUTTON_WIDTH = 160f;
@@ -149,6 +149,7 @@ public class SpinTheWheelDisplay extends UIComponent {
     table.setFillParent(true);
 
     ImageButton spinBtn = imageButton(SPIN_UP_TEXTURE, SPIN_DOWN_TEXTURE);
+    spinBtn.setName("wheel-spin-button");
     spinBtn.addListener(
         new ChangeListener() {
           @Override
@@ -159,6 +160,7 @@ public class SpinTheWheelDisplay extends UIComponent {
         });
 
     ImageButton backBtn = imageButton(BACK_UP_TEXTURE, BACK_DOWN_TEXTURE);
+    backBtn.setName("wheel-back-button");
     backBtn.addListener(
         new ChangeListener() {
           @Override
@@ -229,7 +231,9 @@ public class SpinTheWheelDisplay extends UIComponent {
     prizeIcon = new Image();
     prizeIcon.setScaling(Scaling.fit);
     prizeName = new Label("", labelStyle("title", PRIZE_NAME_COLOUR));
+    prizeName.setName("wheel-prize-name");
     prizeAmount = new Label("", labelStyle("large", PRIZE_AMOUNT_COLOUR));
+    prizeAmount.setName("wheel-prize-amount");
 
     prizeContent = new Table();
     prizeContent.add(prizeIcon).size(PRIZE_ICON_SIZE);
@@ -247,6 +251,7 @@ public class SpinTheWheelDisplay extends UIComponent {
     prizeCard.addActor(prizeContent);
 
     Table layer = new Table();
+    layer.setName("wheel-prize");
     layer.setFillParent(true);
     layer.setTouchable(Touchable.enabled);
     layer.setVisible(false);
