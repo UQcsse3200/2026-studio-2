@@ -118,7 +118,6 @@ class SpinTheWheelDisplayTest {
     show(new SpinTheWheelDisplay(TWO_ITEMS));
 
     assertNotNull(find("wheel-spin-button"));
-    assertNotNull(find("wheel-back-button"));
     assertFalse(find("wheel-prize").isVisible());
   }
 
@@ -155,15 +154,6 @@ class SpinTheWheelDisplayTest {
     finishAnimations();
 
     assertEquals(3, inventory.getItemCount(ItemType.STANDARD_ARROW));
-  }
-
-  @Test
-  void shouldGoBackFromTheBackButton() {
-    EventListener0 back = listenForBack(show(new SpinTheWheelDisplay(TWO_ITEMS)));
-
-    click(find("wheel-back-button"));
-
-    verify(back).handle();
   }
 
   @Test
