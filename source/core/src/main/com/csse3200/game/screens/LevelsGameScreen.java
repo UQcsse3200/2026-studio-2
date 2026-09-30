@@ -70,6 +70,7 @@ public class LevelsGameScreen extends ScreenAdapter {
   private final BlackjackOverlay blackjackOverlay;
   private final MinigameOverlayManager minigameOverlayManager;
   private Entity player;
+  private GameEndDisplay gameEndDisplay;
   private static final String gameplayMusic = "sounds/gameplay_bg.ogg";
   private static final String[] gameplayMusicFiles = {gameplayMusic};
   private static final String winMusic = "sounds/Win_music.mp3";
@@ -187,9 +188,29 @@ public class LevelsGameScreen extends ScreenAdapter {
   }
 
   private void onPlayerDeath() {
-    ServiceLocator.getEntityService().scheduleRemoval(player);
+    // Keep the player entity so the restart button can revive at the last checkpoint.
     Gdx.app.postRunnable(
         () -> ServiceLocator.getGameEndEventHandler().trigger("gameEnd", GameEndState.LOSE));
+  }
+
+  /** Restart handler for the game-over panel: checkpoint respawn with health penalty. */
+  private void restartAtCheckpoint() {
+    if (currentGameArea != null) {
+      currentGameArea.restart();
+    }
+    if (gameEndDisplay != null) {
+      gameEndDisplay.hide();
+    }
+    try {
+      Music music = ServiceLocator.getResourceService().getAsset(gameplayMusic, Music.class);
+      if (!music.isPlaying()) {
+        music.setLooping(true);
+        music.setVolume(0.05f);
+        music.play();
+      }
+    } catch (Exception e) {
+      logger.warn("Could not resume gameplay music: {}", e.getMessage());
+    }
   }
 
   /**
@@ -386,13 +407,13 @@ public class LevelsGameScreen extends ScreenAdapter {
 
     Entity ui = new Entity();
 
+    gameEndDisplay = new GameEndDisplay(GameEndState.LOSE);
     ui.addComponent(new InputDecorator(stage, 10))
         .addComponent(new PerformanceDisplay())
         .addComponent(new MainGameActions(this.game))
         .addComponent(new MainGameExitDisplay())
-        .addComponent(
-            new GameEndDisplay(GameEndState.LOSE)) // Add GameEndDisplay component to the UI entity
-        .addComponent(new GameEndActions(this.game))
+        .addComponent(gameEndDisplay) // Add GameEndDisplay component to the UI entity
+        .addComponent(new GameEndActions(this.game, this::restartAtCheckpoint))
         .addComponent(new Terminal(game, GdxGame.ScreenType.LEVEL_1_GAME))
         .addComponent(inputComponent)
         .addComponent(new TerminalDisplay());

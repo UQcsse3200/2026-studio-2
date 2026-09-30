@@ -12,9 +12,11 @@ import com.csse3200.game.components.level.ActivatableComponent;
 import com.csse3200.game.components.level.CheckpointComponent;
 import com.csse3200.game.components.level.LevelTriggerComponent;
 import com.csse3200.game.components.level.PlatformGrappleComponent;
+import com.csse3200.game.components.level.RespawnComponent;
 import com.csse3200.game.components.level.TriggerButtonComponent;
 import com.csse3200.game.components.player.KeyboardPlayerInputComponent;
 import com.csse3200.game.entities.Entity;
+import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -247,6 +249,28 @@ public abstract class GameArea implements Disposable {
 
   /** Public method to respawn the player at the last collected checkpoint upon an event trigger. */
   public void respawn() {
+    GridPoint2 respawnPoint = getRespawnPoint();
+    float x = respawnPoint.x;
+    float y = respawnPoint.y;
+    player.setPosition(x, y);
+    resetPlayerVelocity();
+  }
+
+  /**
+   * Restart after death/game-over: teleport to the last checkpoint and revive with a health
+   * penalty. Unlike a full level reload, checkpoint progress is kept.
+   */
+  public void restart() {
+    GridPoint2 respawnPoint = getRespawnPoint();
+    player.setPosition(respawnPoint.x, respawnPoint.y);
+    resetPlayerVelocity();
+    player.setEnabled(true);
+    RespawnComponent.reviveWithPenalty(player);
+    player.getEvents().trigger("revive");
+  }
+
+  /** Last collected checkpoint position, or the level spawn if none collected. */
+  public GridPoint2 getRespawnPoint() {
     ArrayList<CheckpointComponent> checkpoints = config.getCheckpoints();
     // If no checkpoints collected use playerSpawn as respawnPoint
     GridPoint2 respawnPoint = config.getPlayerSpawn();
@@ -259,9 +283,17 @@ public abstract class GameArea implements Disposable {
         respawnPoint = checkpoint.getPosition();
       }
     }
-    float x = respawnPoint.x;
-    float y = respawnPoint.y;
-    player.setPosition(x, y);
+    return respawnPoint;
+  }
+
+  private void resetPlayerVelocity() {
+    if (player == null) {
+      return;
+    }
+    PhysicsComponent physics = player.getComponent(PhysicsComponent.class);
+    if (physics != null && physics.getBody() != null) {
+      physics.getBody().setLinearVelocity(0f, 0f);
+    }
   }
 
   public KeyboardPlayerInputComponent getInput() {

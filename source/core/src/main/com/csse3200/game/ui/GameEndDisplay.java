@@ -154,6 +154,49 @@ public class GameEndDisplay extends UIComponent {
     return typewriterEffect;
   }
 
+  public boolean isVisible() {
+    return visible;
+  }
+
+  /** Hides the game-end panel so gameplay can resume after a checkpoint restart. */
+  public void hide() {
+    visible = false;
+    if (panel != null) {
+      panel.setVisible(false);
+    }
+    if (root != null) {
+      root.setVisible(false);
+    }
+    if (backdropEntity != null) {
+      try {
+        ServiceLocator.getEntityService().scheduleRemoval(backdropEntity);
+      } catch (Exception e) {
+        logger.warn("Could not remove game-end backdrop: {}", e.getMessage());
+      }
+      backdropEntity = null;
+    }
+    try {
+      Music win =
+          ServiceLocator.getResourceService().getAsset("sounds/Win_music.mp3", Music.class);
+      win.stop();
+    } catch (Exception ignored) {
+      // Music may not be loaded in all screens/tests.
+    }
+    try {
+      Music death =
+          ServiceLocator.getResourceService().getAsset("sounds/Death_music.ogg", Music.class);
+      death.stop();
+    } catch (Exception ignored) {
+      // Music may not be loaded in all screens/tests.
+    }
+    if (entity != null) {
+      MainGameExitDisplay exitDisplay = entity.getComponent(MainGameExitDisplay.class);
+      if (exitDisplay != null) {
+        exitDisplay.setVisible(true);
+      }
+    }
+  }
+
   @Override
   public void create() {
     logger.info(">>> GameEndDisplay.create() START");

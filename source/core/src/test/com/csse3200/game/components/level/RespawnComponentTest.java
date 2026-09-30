@@ -1,5 +1,6 @@
 package com.csse3200.game.components.level;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
@@ -66,5 +67,25 @@ public class RespawnComponentTest {
     player.setPosition(0, -11);
     respawnComponent.update();
     verify(gameArea).respawn();
+  }
+
+  @Test
+  void shouldApplyHealthPenaltyOnFall() {
+    player.addComponent(respawnComponent);
+    player.setPosition(0, -11);
+    respawnComponent.update();
+    assertEquals(
+        10 - RespawnComponent.RESPAWN_HEALTH_PENALTY,
+        player.getComponent(CombatStatsComponent.class).getHealth());
+  }
+
+  @Test
+  void shouldReviveDeadPlayerWithPenalty() {
+    player.getComponent(CombatStatsComponent.class).setHealth(0);
+    RespawnComponent.reviveWithPenalty(player);
+    assertEquals(
+        player.getComponent(CombatStatsComponent.class).getMaxHealth()
+            - RespawnComponent.RESPAWN_HEALTH_PENALTY,
+        player.getComponent(CombatStatsComponent.class).getHealth());
   }
 }

@@ -9,9 +9,15 @@ import org.slf4j.LoggerFactory;
 public class GameEndActions extends Component {
   private static final Logger logger = LoggerFactory.getLogger(GameEndActions.class);
   private final GdxGame game;
+  private final Runnable restartHandler;
 
   public GameEndActions(GdxGame game) {
+    this(game, null);
+  }
+
+  public GameEndActions(GdxGame game, Runnable restartHandler) {
     this.game = game;
+    this.restartHandler = restartHandler;
   }
 
   @Override
@@ -27,8 +33,13 @@ public class GameEndActions extends Component {
     game.setScreen(GdxGame.ScreenType.MAIN_MENU);
   }
 
-  /** Hook for a future reset/restart system. */
+  /** Restarts from the last checkpoint with a health penalty, or reloads level 1 as fallback. */
   private void onRestart() {
+    if (restartHandler != null) {
+      logger.info("Restart requested, respawning at last checkpoint.");
+      restartHandler.run();
+      return;
+    }
     logger.info("Restart requested. No reset system is currently implemented.");
     game.transitionTo(GdxGame.ScreenType.LEVEL_1_GAME);
   }
