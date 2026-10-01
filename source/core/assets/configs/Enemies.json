@@ -13,6 +13,8 @@
     "chasePriority": 10,
     "viewDistance": 6.0,
     "maxChaseDistance": 9.0,
+    "repositionPriority": 25,
+    "repositionDistance": 2.0,
     "maxSpeed": 3.0,
     "gravity": true,
 
@@ -44,6 +46,8 @@
     "chasePriority": 10,
     "viewDistance": 10.0,
     "maxChaseDistance": 12.5,
+    "repositionPriority": 25,
+    "repositionDistance": 2.0,
     "maxSpeed": 2.0,
     "gravity": true,
 
@@ -75,6 +79,8 @@
     "chasePriority": 10,
     "viewDistance": 6.0,
     "maxChaseDistance": 12.5,
+    "repositionPriority": 25,
+    "repositionDistance": 5.0,
     "maxSpeed": 4.5,
     "gravity": false,
 
@@ -105,6 +111,8 @@
     "chasePriority": 10,
     "viewDistance": 10.0,
     "maxChaseDistance": 12.5,
+    "repositionPriority": 25,
+    "repositionDistance": 2.0,
     "maxSpeed": 1.0,
     "gravity": true,
 
@@ -135,6 +143,8 @@
     "chasePriority": 10,
     "viewDistance": 6.0,
     "maxChaseDistance": 9.0,
+    "repositionPriority": 25,
+    "repositionDistance": 2.0,
     "maxSpeed": 2.0,
     "gravity": true,
 
@@ -166,6 +176,8 @@
     "chasePriority": 10,
     "viewDistance": 6.0,
     "maxChaseDistance": 9.0,
+    "repositionPriority": 25,
+    "repositionDistance": 2.0,
     "maxSpeed": 2.0,
     "gravity": true,
 

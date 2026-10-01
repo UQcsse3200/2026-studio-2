@@ -15,6 +15,7 @@ import com.csse3200.game.components.npc.SkeletonAnimationController;
 import com.csse3200.game.components.tasks.ChaseTask;
 import com.csse3200.game.components.tasks.DelayedAttackTask;
 import com.csse3200.game.components.tasks.RangedAttackTask;
+import com.csse3200.game.components.tasks.RepositionTask;
 import com.csse3200.game.components.tasks.SummonTask;
 import com.csse3200.game.components.tasks.WanderTask;
 import com.csse3200.game.entities.Entity;
@@ -248,33 +249,8 @@ public class EnemyFactory {
 
   private static Entity createEnemy(
       Entity target, EnemyConfig config, float viewDistance, float maxChaseDistance) {
-    AITaskComponent aiComponent =
-        new AITaskComponent()
-            .addTask(
-                // Adding the values for wander task from the enemy's config file
-                new WanderTask(
-                    new Vector2(config.wanderRangeX, config.wanderRangeY), config.wanderWaitTime))
-            .addTask(
-                // Adding the values for chase task from the enemy's config file
-                new ChaseTask(target, config.chasePriority, viewDistance, maxChaseDistance));
 
-    // If the enemy is a range type, add a range task.
-    if (config.attackType.equals("range")) {
-      aiComponent.addTask(
-          new RangedAttackTask(
-              target, 20, config.attackRange, 2f, config.baseAttack, 4.5f, 5f, false));
-      // If the enemy is a summon type, add summon + range task
-    } else if (config.attackType.equals("summon")) {
-      aiComponent
-          .addTask(
-              new RangedAttackTask(
-                  target, 20, config.attackRange, 2f, config.baseAttack, 4.5f, 5f, true))
-          .addTask(new SummonTask(target, 30, config.attackRange, 5f));
-    } else if (config.attackType.equals("cyclops")) {
-      // add melee sweep attack and throwing boulder range attack
-    } else if (config.attackType.equals("calypso")) {
-      // add wide aoe range attack + standard range + teleportation
-    }
+    AITaskComponent aiComponent = new AITaskComponent();
 
     Entity enemy =
         new Entity()
@@ -294,6 +270,34 @@ public class EnemyFactory {
             .addComponent(aiComponent);
 
     PhysicsUtils.setScaledCollider(enemy, 0.9f, 0.4f);
+
+    aiComponent
+        .addTask(
+            // Adding the values for wander task from the enemy's config file
+            new WanderTask(
+                new Vector2(config.wanderRangeX, config.wanderRangeY), config.wanderWaitTime))
+        .addTask(
+            // Adding the values for chase task from the enemy's config file
+            new ChaseTask(target, config.chasePriority, viewDistance, maxChaseDistance))
+        .addTask(new RepositionTask(target, config.repositionPriority, config.repositionDistance));
+
+    // If the enemy is a range type, add a range task.
+    if (config.attackType.equals("range")) {
+      aiComponent.addTask(
+          new RangedAttackTask(
+              target, 20, config.attackRange, 2f, config.baseAttack, 4.5f, 5f, false));
+      // If the enemy is a summon type, add summon + range task
+    } else if (config.attackType.equals("summon")) {
+      aiComponent
+          .addTask(
+              new RangedAttackTask(
+                  target, 20, config.attackRange, 2f, config.baseAttack, 4.5f, 5f, true))
+          .addTask(new SummonTask(target, 30, config.attackRange, 5f));
+    } else if (config.attackType.equals("cyclops")) {
+      // add melee sweep attack and throwing boulder range attack
+    } else if (config.attackType.equals("calypso")) {
+      // add wide aoe range attack + standard range + teleportation
+    }
 
     return enemy;
   }
