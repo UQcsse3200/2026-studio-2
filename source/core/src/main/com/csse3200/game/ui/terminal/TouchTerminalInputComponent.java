@@ -85,6 +85,30 @@ public class TouchTerminalInputComponent extends InputComponent {
   }
 
   /**
+   * Swallows pointer input while the terminal is open so taps don't attack, shoot, or drive other
+   * overlays while typing.
+   */
+  @Override
+  public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+    return terminal.isOpen();
+  }
+
+  @Override
+  public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+    return terminal.isOpen();
+  }
+
+  @Override
+  public boolean touchDragged(int screenX, int screenY, int pointer) {
+    return terminal.isOpen();
+  }
+
+  @Override
+  public boolean mouseMoved(int screenX, int screenY) {
+    return terminal.isOpen();
+  }
+
+  /**
    * Scrolling up will open the terminal and scrolling down will close the terminal.
    *
    * @return whether the input was processed

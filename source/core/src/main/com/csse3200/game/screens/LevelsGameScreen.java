@@ -71,6 +71,7 @@ public class LevelsGameScreen extends ScreenAdapter {
   private final MinigameOverlayManager minigameOverlayManager;
   private Entity player;
   private GameEndDisplay gameEndDisplay;
+  private Terminal terminal;
   private static final String gameplayMusic = "sounds/gameplay_bg.ogg";
   private static final String[] gameplayMusicFiles = {gameplayMusic};
   private static final String winMusic = "sounds/Win_music.mp3";
@@ -258,13 +259,16 @@ public class LevelsGameScreen extends ScreenAdapter {
       levelSwapQueued = false;
     }
 
-    if (Gdx.input.isKeyJustPressed(Input.Keys.K)) {
+    // Overlay shortcuts bypass the input handler chain, so ignore them while the terminal is
+    // open. F1 still toggles the terminal itself.
+    boolean terminalOpen = terminal != null && terminal.isOpen();
+    if (!terminalOpen && Gdx.input.isKeyJustPressed(Input.Keys.K)) {
       wheelOverlay.request();
-    } else if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
+    } else if (!terminalOpen && Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
       pauseOverlay.request();
     }
 
-    if (Gdx.input.isKeyJustPressed(Input.Keys.L)) {
+    if (!terminalOpen && Gdx.input.isKeyJustPressed(Input.Keys.L)) {
       blackjackOverlay.request();
     }
 
@@ -408,13 +412,14 @@ public class LevelsGameScreen extends ScreenAdapter {
     Entity ui = new Entity();
 
     gameEndDisplay = new GameEndDisplay(GameEndState.LOSE);
+    terminal = new Terminal(game, GdxGame.ScreenType.LEVEL_1_GAME);
     ui.addComponent(new InputDecorator(stage, 10))
         .addComponent(new PerformanceDisplay())
         .addComponent(new MainGameActions(this.game))
         .addComponent(new MainGameExitDisplay())
         .addComponent(gameEndDisplay) // Add GameEndDisplay component to the UI entity
         .addComponent(new GameEndActions(this.game, this::restartAtCheckpoint))
-        .addComponent(new Terminal(game, GdxGame.ScreenType.LEVEL_1_GAME))
+        .addComponent(terminal)
         .addComponent(inputComponent)
         .addComponent(new TerminalDisplay());
 
