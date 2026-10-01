@@ -36,16 +36,14 @@ public class KeyboardTerminalInputComponent extends InputComponent {
   }
 
   /**
-  If the toggle key is pressed, the terminal will open / close.
-  Otherwise, handles input if the terminal is open. This is because keyDown events are
-  triggered alongside keyTyped events. If the user is typing in the terminal, the input shouldn't
-  trigger any other input handlers. While the terminal is open every key is swallowed, including
-  ESC — F1 is the only way out.
-  
-  @return whether the input was processed
-  @see InputProcessor#keyDown(int)
-  */
- 
+   * If the toggle key is pressed, the terminal will open / close. Otherwise, handles input if the
+   * terminal is open. This is because keyDown events are triggered alongside keyTyped events. If
+   * the user is typing in the terminal, the input shouldn't trigger any other input handlers. While
+   * the terminal is open every key is swallowed, including ESC — F1 is the only way out.
+   *
+   * @return whether the input was processed
+   * @see InputProcessor#keyDown(int)
+   */
   @Override
   public boolean keyDown(int keycode) {
     // handle open and close terminal

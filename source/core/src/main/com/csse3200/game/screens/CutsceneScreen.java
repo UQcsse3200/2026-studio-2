@@ -37,11 +37,13 @@ public class CutsceneScreen extends ScreenAdapter {
 
   static final String SKIP_UP_TEXTURE = "images/Buttons/continue_up_btn.png";
   static final String SKIP_DOWN_TEXTURE = "images/Buttons/continue_down_btn.png";
+
   /**
    * Stage input priority. Must exceed {@link CutsceneInputComponent}'s 100 so button presses reach
    * the stage first and don't also trigger a cutscene advance.
    */
   static final int STAGE_INPUT_PRIORITY = 200;
+
   private static final float SKIP_BUTTON_WIDTH = 200f;
   private static final float SKIP_BUTTON_HEIGHT = 70f;
   private static final float SKIP_BUTTON_PAD = 20f;

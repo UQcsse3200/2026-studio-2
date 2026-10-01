@@ -211,10 +211,8 @@ class CutsceneScreenTest {
     assertTrue((align & com.badlogic.gdx.utils.Align.bottom) != 0);
     assertTrue((align & com.badlogic.gdx.utils.Align.right) != 0);
     // Skip uses the continue button textures.
-    assertEquals(
-        "images/Buttons/continue_up_btn.png", CutsceneScreen.SKIP_UP_TEXTURE);
-    assertEquals(
-        "images/Buttons/continue_down_btn.png", CutsceneScreen.SKIP_DOWN_TEXTURE);
+    assertEquals("images/Buttons/continue_up_btn.png", CutsceneScreen.SKIP_UP_TEXTURE);
+    assertEquals("images/Buttons/continue_down_btn.png", CutsceneScreen.SKIP_DOWN_TEXTURE);
   }
 
   @Test
@@ -251,8 +249,7 @@ class CutsceneScreenTest {
   /** Stage coordinates of the skip button's center, converted to screen coordinates. */
   private Vector2 buttonCenterScreenCoords(CutsceneScreen screen, Stage stage) {
     ImageButton button = screen.getSkipButton();
-    Vector2 center =
-        new Vector2(button.getWidth() / 2f, button.getHeight() / 2f);
+    Vector2 center = new Vector2(button.getWidth() / 2f, button.getHeight() / 2f);
     button.localToStageCoordinates(center);
     return stage.stageToScreenCoordinates(center);
   }

@@ -176,8 +176,7 @@ public class GameEndDisplay extends UIComponent {
       backdropEntity = null;
     }
     try {
-      Music win =
-          ServiceLocator.getResourceService().getAsset("sounds/Win_music.mp3", Music.class);
+      Music win = ServiceLocator.getResourceService().getAsset("sounds/Win_music.mp3", Music.class);
       win.stop();
     } catch (Exception ignored) {
       // Music may not be loaded in all screens/tests.
