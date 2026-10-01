@@ -89,19 +89,6 @@ public class MainMenuDisplay extends UIComponent {
 
     ImageButton continueButton = new ImageButton(continueButtonStyle);
 
-    Texture minigamesUpTexture =
-        ServiceLocator.getResourceService()
-            .getAsset("images/Buttons/minigames_up_btn.png", Texture.class);
-    Texture minigamesDownTexture =
-        ServiceLocator.getResourceService()
-            .getAsset("images/Buttons/minigames_down_btn.png", Texture.class);
-
-    ImageButton.ImageButtonStyle minigamesButtonStyle = new ImageButton.ImageButtonStyle();
-    minigamesButtonStyle.up = new TextureRegionDrawable(minigamesUpTexture);
-    minigamesButtonStyle.down = new TextureRegionDrawable(minigamesDownTexture);
-
-    ImageButton minigamesButton = new ImageButton(minigamesButtonStyle);
-
     Texture settingsUpTexture =
         ServiceLocator.getResourceService()
             .getAsset("images/Buttons/settings_up_btn.png", Texture.class);
@@ -150,15 +137,6 @@ public class MainMenuDisplay extends UIComponent {
           }
         });
 
-    minigamesButton.addListener(
-        new ChangeListener() {
-          @Override
-          public void changed(ChangeEvent changeEvent, Actor actor) {
-            logger.debug("Minigames button clicked");
-            ButtonSound.playClickThen(() -> entity.getEvents().trigger("Minigames"));
-          }
-        });
-
     sandboxButton.addListener(
         new ChangeListener() {
           @Override
@@ -195,11 +173,9 @@ public class MainMenuDisplay extends UIComponent {
     leftColumn.row();
     leftColumn.add(continueButton).width(buttonWidth).height(buttonHeight).padTop(pad);
 
-    // Right column: Minigames, Exit.
+    // Right column: Settings.
     Table rightColumn = new Table();
-    rightColumn.add(minigamesButton).width(buttonWidth).height(buttonHeight);
-    rightColumn.row();
-    rightColumn.add(settingsButton).width(buttonWidth).height(buttonHeight).padTop(pad);
+    rightColumn.add(settingsButton).width(buttonWidth).height(buttonHeight);
 
     // Left and right columns sit together as one centered pair, with a fixed gap between them
     // instead of being pushed out to the screen edges.
