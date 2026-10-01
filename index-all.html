@@ -100,6 +100,8 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/ui/terminal/commands/KillAllEnemiesCommand.html#action(java.util.ArrayList)" class="member-name-link">action(ArrayList&lt;String&gt;)</a> - Method in class com.csse3200.game.ui.terminal.commands.<a href="com/csse3200/game/ui/terminal/commands/KillAllEnemiesCommand.html" title="class in com.csse3200.game.ui.terminal.commands">KillAllEnemiesCommand</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/ui/terminal/commands/SpinTheWheelCommand.html#action(java.util.ArrayList)" class="member-name-link">action(ArrayList&lt;String&gt;)</a> - Method in class com.csse3200.game.ui.terminal.commands.<a href="com/csse3200/game/ui/terminal/commands/SpinTheWheelCommand.html" title="class in com.csse3200.game.ui.terminal.commands">SpinTheWheelCommand</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/ui/terminal/commands/TextBoxCommand.html#action(java.util.ArrayList)" class="member-name-link">action(ArrayList&lt;String&gt;)</a> - Method in class com.csse3200.game.ui.terminal.commands.<a href="com/csse3200/game/ui/terminal/commands/TextBoxCommand.html" title="class in com.csse3200.game.ui.terminal.commands">TextBoxCommand</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/level/ActivatableComponent.html" class="type-name-link" title="class in com.csse3200.game.components.level">ActivatableComponent</a> - Class in <a href="com/csse3200/game/components/level/package-summary.html">com.csse3200.game.components.level</a></dt>
@@ -1218,6 +1220,10 @@ loadScripts(document, 'script');</script>
 <dt><a href="com/csse3200/game/entities/factories/ObstacleFactory.html#createWall(float,float)" class="member-name-link">createWall(float, float)</a> - Static method in class com.csse3200.game.entities.factories.<a href="com/csse3200/game/entities/factories/ObstacleFactory.html" title="class in com.csse3200.game.entities.factories">ObstacleFactory</a></dt>
 <dd>
 <div class="block">Creates an invisible physics wall.</div>
+</dd>
+<dt><a href="com/csse3200/game/entities/factories/ItemFactory.html#createWheelToken()" class="member-name-link">createWheelToken()</a> - Static method in class com.csse3200.game.entities.factories.<a href="com/csse3200/game/entities/factories/ItemFactory.html" title="class in com.csse3200.game.entities.factories">ItemFactory</a></dt>
+<dd>
+<div class="block">Creates a world wheel token, which opens Spin the Wheel when collected.</div>
 </dd>
 <dt><a href="com/csse3200/game/entities/factories/ObstacleFactory.html#createWinConEntity()" class="member-name-link">createWinConEntity()</a> - Static method in class com.csse3200.game.entities.factories.<a href="com/csse3200/game/entities/factories/ObstacleFactory.html" title="class in com.csse3200.game.entities.factories">ObstacleFactory</a></dt>
 <dd>
@@ -4632,6 +4638,12 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="com/csse3200/game/components/minigames/spinthewheel/SpinTheWheelActions.html#%3Cinit%3E(com.csse3200.game.GdxGame)" class="member-name-link">SpinTheWheelActions(GdxGame)</a> - Constructor for class com.csse3200.game.components.minigames.spinthewheel.<a href="com/csse3200/game/components/minigames/spinthewheel/SpinTheWheelActions.html" title="class in com.csse3200.game.components.minigames.spinthewheel">SpinTheWheelActions</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/ui/terminal/commands/SpinTheWheelCommand.html" class="type-name-link" title="class in com.csse3200.game.ui.terminal.commands">SpinTheWheelCommand</a> - Class in <a href="com/csse3200/game/ui/terminal/commands/package-summary.html">com.csse3200.game.ui.terminal.commands</a></dt>
+<dd>
+<div class="block">A Devtool that opens Spin the Wheel by triggering "spinTheWheel" on the player.</div>
+</dd>
+<dt><a href="com/csse3200/game/ui/terminal/commands/SpinTheWheelCommand.html#%3Cinit%3E()" class="member-name-link">SpinTheWheelCommand()</a> - Constructor for class com.csse3200.game.ui.terminal.commands.<a href="com/csse3200/game/ui/terminal/commands/SpinTheWheelCommand.html" title="class in com.csse3200.game.ui.terminal.commands">SpinTheWheelCommand</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/minigames/spinthewheel/SpinTheWheelDisplay.html" class="type-name-link" title="class in com.csse3200.game.components.minigames.spinthewheel">SpinTheWheelDisplay</a> - Class in <a href="com/csse3200/game/components/minigames/spinthewheel/package-summary.html">com.csse3200.game.components.minigames.spinthewheel</a></dt>
 <dd>
 <div class="block">A ui component for displaying the spin the wheel minigame.</div>
@@ -5557,6 +5569,12 @@ the order they are declared.</div>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/item/weapons/Weapons.html#%3Cinit%3E(com.csse3200.game.components.item.ItemType,int)" class="member-name-link">Weapons(ItemType, int)</a> - Constructor for class com.csse3200.game.components.item.weapons.<a href="com/csse3200/game/components/item/weapons/Weapons.html" title="class in com.csse3200.game.components.item.weapons">Weapons</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/areas/Level1GameArea.html#WHEEL_TOKEN_SPAWN" class="member-name-link">WHEEL_TOKEN_SPAWN</a> - Static variable in class com.csse3200.game.areas.<a href="com/csse3200/game/areas/Level1GameArea.html" title="class in com.csse3200.game.areas">Level1GameArea</a></dt>
+<dd>
+<div class="block">Centre of the stepping-stone platform at (31, 2)</div>
+</dd>
+<dt><a href="com/csse3200/game/entities/factories/ItemFactory.html#WHEEL_TOKEN_TEXTURE" class="member-name-link">WHEEL_TOKEN_TEXTURE</a> - Static variable in class com.csse3200.game.entities.factories.<a href="com/csse3200/game/entities/factories/ItemFactory.html" title="class in com.csse3200.game.entities.factories">ItemFactory</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/minigames/spinthewheel/WheelConfig.html" class="type-name-link" title="class in com.csse3200.game.components.minigames.spinthewheel">WheelConfig</a> - Class in <a href="com/csse3200/game/components/minigames/spinthewheel/package-summary.html">com.csse3200.game.components.minigames.spinthewheel</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/minigames/spinthewheel/WheelItem.html" class="type-name-link" title="class in com.csse3200.game.components.minigames.spinthewheel">WheelItem</a> - Record Class in <a href="com/csse3200/game/components/minigames/spinthewheel/package-summary.html">com.csse3200.game.components.minigames.spinthewheel</a></dt>
@@ -5572,6 +5590,12 @@ the order they are declared.</div>
 <div class="block">Stores and calculates the wheel's logic</div>
 </dd>
 <dt><a href="com/csse3200/game/components/minigames/spinthewheel/WheelLogic.html#%3Cinit%3E(java.util.List)" class="member-name-link">WheelLogic(List&lt;WheelItem&gt;)</a> - Constructor for class com.csse3200.game.components.minigames.spinthewheel.<a href="com/csse3200/game/components/minigames/spinthewheel/WheelLogic.html" title="class in com.csse3200.game.components.minigames.spinthewheel">WheelLogic</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/item/WheelTokenPickupComponent.html" class="type-name-link" title="class in com.csse3200.game.components.item">WheelTokenPickupComponent</a> - Class in <a href="com/csse3200/game/components/item/package-summary.html">com.csse3200.game.components.item</a></dt>
+<dd>
+<div class="block">Marks a world entity as a wheel token the player can pick up.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/item/WheelTokenPickupComponent.html#%3Cinit%3E()" class="member-name-link">WheelTokenPickupComponent()</a> - Constructor for class com.csse3200.game.components.item.<a href="com/csse3200/game/components/item/WheelTokenPickupComponent.html" title="class in com.csse3200.game.components.item">WheelTokenPickupComponent</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/areas/terrain/configs/PlatformConfig.html#width" class="member-name-link">width</a> - Variable in class com.csse3200.game.areas.terrain.configs.<a href="com/csse3200/game/areas/terrain/configs/PlatformConfig.html" title="class in com.csse3200.game.areas.terrain.configs">PlatformConfig</a></dt>
 <dd>&nbsp;</dd>
