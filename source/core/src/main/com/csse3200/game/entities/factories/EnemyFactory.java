@@ -234,11 +234,13 @@ public class EnemyFactory {
             .addComponent(new EnemyDeathComponent())
             .addComponent(new PoisonStatsComponent())
             .addComponent(new BurnStatsComponent())
-            .addComponent(new SlowStatsComponent()).addComponent(new PointLightComponent(
-                ServiceLocator.getLightingService().getEngine().getRayHandler(),
-                LightingDefaults.RAYS,
-                Color.CLEAR,
-                LightingDefaults.DIST))
+            .addComponent(new SlowStatsComponent())
+            .addComponent(
+                new PointLightComponent(
+                    ServiceLocator.getLightingService().getEngine().getRayHandler(),
+                    LightingDefaults.RAYS,
+                    Color.CLEAR,
+                    LightingDefaults.DIST))
             .addComponent(new ParticleEffectsRenderingComponent())
             .addComponent(new EnemyItemDropComponent(config.itemDrops))
             .addComponent(new EnemyHealthRenderComponent())

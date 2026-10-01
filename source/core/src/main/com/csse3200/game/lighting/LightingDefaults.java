@@ -1,7 +1,6 @@
 package com.csse3200.game.lighting;
 
 import com.badlogic.gdx.graphics.Color;
-import com.csse3200.game.physics.PhysicsLayer;
 
 public final class LightingDefaults {
   private LightingDefaults() {} // do not initialise
