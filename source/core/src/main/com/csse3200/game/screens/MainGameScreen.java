@@ -102,6 +102,7 @@ public class MainGameScreen extends ScreenAdapter {
     player.getEvents().addListener("deathAnimationFinished", this::onPlayerDeath);
     minigameOverlayManager = new MinigameOverlayManager();
     wheelOverlay = new SpinTheWheelOverlay(WheelConfig.ITEMS, player, minigameOverlayManager);
+    player.getEvents().addListener("spinTheWheel", wheelOverlay::request);
     blackjackOverlay = new BlackjackOverlay(player, minigameOverlayManager);
     pauseOverlay = new PauseMenuOverlay(game, forestGameArea);
   }
@@ -114,10 +115,7 @@ public class MainGameScreen extends ScreenAdapter {
 
   @Override
   public void render(float delta) {
-    if (Gdx.input.isKeyJustPressed(Input.Keys.K)) {
-      wheelOverlay.request();
-    } else if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)
-        && !ServiceLocator.getEntityService().getSettingsOpen()) {
+    if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
       pauseOverlay.request();
     }
     if (Gdx.input.isKeyJustPressed(Input.Keys.L)) {

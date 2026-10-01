@@ -10,6 +10,7 @@ import com.csse3200.game.ui.terminal.commands.DebugCommand;
 import com.csse3200.game.ui.terminal.commands.GameEndLoseCommand;
 import com.csse3200.game.ui.terminal.commands.GameEndWinCommand;
 import com.csse3200.game.ui.terminal.commands.KillAllEnemiesCommand;
+import com.csse3200.game.ui.terminal.commands.SpinTheWheelCommand;
 import com.csse3200.game.ui.terminal.commands.TextBoxCommand;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -39,6 +40,7 @@ public class Terminal extends Component {
     addCommand("killAllEnemies", new KillAllEnemiesCommand());
     addCommand("win", new GameEndWinCommand());
     addCommand("lose", new GameEndLoseCommand());
+    addCommand("spinTheWheel", new SpinTheWheelCommand());
     if (ServiceLocator.getGameEndEventHandler() == null) {
       ServiceLocator.registerGameEndEventHandler(new EventHandler());
     }
