@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 @ExtendWith(GameExtension.class)
-class enemydeathcomponenttest {
+class EnemyDeathComponentTest {
 
   @Test
   void shouldDisposeEnemyAtZeroHealth() {

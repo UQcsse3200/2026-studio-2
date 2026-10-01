@@ -11,6 +11,7 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.input.InputComponent;
 import com.csse3200.game.physics.components.PhysicsComponent;
+import com.csse3200.game.services.ServiceLocator;
 
 /** Input handler for player keyboard and mouse controls. */
 public class KeyboardPlayerInputComponent extends InputComponent {
@@ -97,25 +98,35 @@ public class KeyboardPlayerInputComponent extends InputComponent {
       case Keys.W:
         entity.getEvents().trigger("grappleClimbStart");
         keysHeld[UP] = true;
-        triggerWalkEvent();
+        if (!ServiceLocator.getEntityService().getPaused()) {
+          triggerWalkEvent();
+        }
         return true;
       case Keys.A:
       case Keys.LEFT:
         keysHeld[LEFT] = true;
-        triggerWalkEvent();
+        if (!ServiceLocator.getEntityService().getPaused()) {
+          triggerWalkEvent();
+        }
         return true;
       case Keys.D:
       case Keys.RIGHT:
         keysHeld[RIGHT] = true;
-        triggerWalkEvent();
+        if (!ServiceLocator.getEntityService().getPaused()) {
+          triggerWalkEvent();
+        }
         return true;
       case Keys.SPACE:
-        triggerJumpEvent();
+        if (!ServiceLocator.getEntityService().getPaused()) {
+          triggerJumpEvent();
+        }
         return true;
       case Keys.SHIFT_LEFT:
       case Keys.SHIFT_RIGHT:
-        sprintHeld = true;
-        triggerSprintEvent();
+        if (!ServiceLocator.getEntityService().getPaused()) {
+          sprintHeld = true;
+          triggerSprintEvent();
+        }
         return true;
       case Keys.E:
         triggerAttackOrItemUse();
@@ -142,14 +153,18 @@ public class KeyboardPlayerInputComponent extends InputComponent {
         entity.getEvents().trigger("grappleDescendStart");
         entity.getEvents().trigger("updateLedgeDrop", true);
         keysHeld[DOWN] = true;
-        triggerWalkEvent();
+        if (!ServiceLocator.getEntityService().getPaused()) {
+          triggerWalkEvent();
+        }
         return true;
       case Keys.TAB:
         entity.getEvents().trigger("openArrowWheel");
         return true;
       case Keys.ESCAPE:
-        entity.getEvents().trigger("togglePause");
-        return true;
+        if (!ServiceLocator.getEntityService().getSettingsOpen()) {
+          entity.getEvents().trigger("togglePause");
+        }
+        unpause();
       default:
         return false;
     }

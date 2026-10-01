@@ -35,7 +35,6 @@ public class PlayerActions extends Component {
   private boolean moving = false;
   private boolean isGrounded = false;
   private boolean isSprinting = false;
-  private boolean paused = false;
   private boolean isDashing = false;
   private float dashTimeRemaining = 0f;
   private float dashCooldownRemaining = 0f;
@@ -62,7 +61,6 @@ public class PlayerActions extends Component {
     entity.getEvents().addListener("dash", this::dash);
     entity.getEvents().addListener("hurt", this::onHurtInterruptDash);
     entity.getEvents().addListener("updateLedgeDrop", this::setLedgeDropping);
-    entity.getEvents().addListener("togglePaused", this::togglePause);
     entity.getEvents().addListener("speedPotionUsed", this::applySpeedPotion);
     entity.getEvents().addListener("death", this::die);
   }
@@ -186,10 +184,6 @@ public class PlayerActions extends Component {
         .raycast(rayStart, rayEnd, PhysicsLayer.SOLID, hit);
   }
 
-  void togglePause() {
-    paused = !paused;
-  }
-
   /** Stops the player permanently reacting to input once they've died. */
   void die() {
     dead = true;
@@ -208,15 +202,11 @@ public class PlayerActions extends Component {
     if (dead) {
       return;
     }
-    if (paused) {
-      stopWalking();
-    } else {
-      this.walkDirection = direction;
-      if (direction.x != 0) {
-        facingDirection = direction.x > 0 ? 1 : -1;
-      }
-      moving = true;
+    this.walkDirection = direction;
+    if (direction.x != 0) {
+      facingDirection = direction.x > 0 ? 1 : -1;
     }
+    moving = true;
   }
 
   /** Stops the player from walking. */
@@ -303,7 +293,7 @@ public class PlayerActions extends Component {
   }
 
   void dash() {
-    if (isDashing || dashCooldownRemaining > 0f || paused) {
+    if (isDashing || dashCooldownRemaining > 0f) {
       return;
     }
     if (isGrappling()) {
