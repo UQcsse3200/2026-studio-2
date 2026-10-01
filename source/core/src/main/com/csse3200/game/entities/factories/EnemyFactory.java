@@ -1,5 +1,6 @@
 package com.csse3200.game.entities.factories;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
@@ -11,6 +12,7 @@ import com.csse3200.game.components.EnemyDeathComponent;
 import com.csse3200.game.components.EnemyItemDropComponent;
 import com.csse3200.game.components.PoisonStatsComponent;
 import com.csse3200.game.components.SlowStatsComponent;
+import com.csse3200.game.components.lighting.PointLightComponent;
 import com.csse3200.game.components.npc.SkeletonAnimationController;
 import com.csse3200.game.components.tasks.ChaseTask;
 import com.csse3200.game.components.tasks.DelayedAttackTask;
@@ -21,6 +23,7 @@ import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.EnemyConfig;
 import com.csse3200.game.entities.configs.EnemyConfigs;
 import com.csse3200.game.files.FileLoader;
+import com.csse3200.game.lighting.LightingDefaults;
 import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.physics.PhysicsUtils;
 import com.csse3200.game.physics.components.ColliderComponent;
@@ -231,7 +234,11 @@ public class EnemyFactory {
             .addComponent(new EnemyDeathComponent())
             .addComponent(new PoisonStatsComponent())
             .addComponent(new BurnStatsComponent())
-            .addComponent(new SlowStatsComponent())
+            .addComponent(new SlowStatsComponent()).addComponent(new PointLightComponent(
+                ServiceLocator.getLightingService().getEngine().getRayHandler(),
+                LightingDefaults.RAYS,
+                Color.CLEAR,
+                LightingDefaults.DIST))
             .addComponent(new ParticleEffectsRenderingComponent())
             .addComponent(new EnemyItemDropComponent(config.itemDrops))
             .addComponent(new EnemyHealthRenderComponent())
