@@ -20,6 +20,8 @@ import com.csse3200.game.events.EventHandler;
 import com.csse3200.game.input.InputComponent;
 import com.csse3200.game.input.InputDecorator;
 import com.csse3200.game.input.InputService;
+import com.csse3200.game.lighting.LightingEngine;
+import com.csse3200.game.lighting.LightingService;
 import com.csse3200.game.physics.PhysicsEngine;
 import com.csse3200.game.physics.PhysicsService;
 import com.csse3200.game.physics.components.PhysicsComponent;
@@ -56,6 +58,7 @@ public class Level2GameScreen extends ScreenAdapter {
   private final GdxGame game;
   private final Renderer renderer;
   private final PhysicsEngine physicsEngine;
+  private final LightingEngine lightingEngine;
   private final SpinTheWheelOverlay wheelOverlay;
   private Entity player;
   private static final String gameplayMusic = "sounds/gameplay_bg.ogg";
@@ -84,6 +87,10 @@ public class Level2GameScreen extends ScreenAdapter {
 
     // renderer.getDebug().setActive(true);
     renderer.getDebug().renderPhysicsWorld(physicsEngine.getWorld());
+    LightingService lightingService =
+        new LightingService(renderer.getCamera(), physicsEngine.getWorld());
+    ServiceLocator.registerLightingService(lightingService);
+    lightingEngine = lightingService.getEngine();
 
     loadAssets();
     createUI();
@@ -124,6 +131,7 @@ public class Level2GameScreen extends ScreenAdapter {
     physicsEngine.update();
     ServiceLocator.getEntityService().update();
     renderer.render();
+    renderer.render(lightingEngine);
   }
 
   @Override
@@ -147,6 +155,7 @@ public class Level2GameScreen extends ScreenAdapter {
     logger.debug("Disposing main game screen");
 
     renderer.dispose();
+    lightingEngine.dispose();
     unloadAssets();
 
     ServiceLocator.getEntityService().dispose();

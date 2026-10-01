@@ -63,9 +63,9 @@ public class ItemFactory {
   }
 
   /**
-   * Creates a world entity for an item identified by its catalog name.
+   * Creates a world entity for an item identified by its catalogue name.
    *
-   * @param itemName catalog name of the item to create
+   * @param itemName catalogue name of the item to create
    * @param quantity number of items in the stack
    * @return corresponding world item entity
    */

@@ -3,6 +3,7 @@ package com.csse3200.game.files;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Graphics.DisplayMode;
 import com.csse3200.game.files.FileLoader.Location;
+import com.csse3200.game.lighting.LightingDefaults;
 import java.io.File;
 
 /** Reading, Writing, and applying user settings in the game. */
@@ -87,6 +88,8 @@ public class UserSettings {
     public float uiScale = 1f;
 
     public DisplaySettings displayMode = null;
+
+    public float brightnessValue = LightingDefaults.AMBIENT_LIGHT;
   }
 
   /** Stores chosen display settings. Can be serialised/deserialised. */
@@ -94,6 +97,7 @@ public class UserSettings {
     public int width;
     public int height;
     public int refreshRate;
+    public float brightness;
 
     public DisplaySettings() {}
 
