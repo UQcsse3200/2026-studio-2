@@ -2,6 +2,9 @@ package com.csse3200.game.ui.terminal;
 
 import com.csse3200.game.GdxGame;
 import com.csse3200.game.components.Component;
+import com.csse3200.game.components.player.KeyboardPlayerInputComponent;
+import com.csse3200.game.entities.Entity;
+import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.events.EventHandler;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.terminal.commands.Command;
@@ -82,10 +85,11 @@ public class Terminal extends Component {
     }
   }
 
-  /** Opens the terminal. */
+  /** Opens the terminal, releasing held gameplay input so the player stops moving. */
   public void setOpen() {
     logger.debug("Opening terminal");
     isOpen = true;
+    releaseHeldGameplayInput();
   }
 
   /** Closes the terminal and clears the stored message. */
@@ -93,6 +97,44 @@ public class Terminal extends Component {
     logger.debug("Closing terminal");
     isOpen = false;
     setEnteredMessage("");
+  }
+
+  /**
+   * Returns whether any terminal currently registered with the entity service is open. Used by raw
+   * {@code Gdx.input} polls (e.g. overlay shortcut keys) that bypass the input handler chain and
+   * therefore aren't blocked by the terminal input components.
+   *
+   * @return true if an open terminal exists, false otherwise (including when no entity service or
+   *     terminal is registered)
+   */
+  public static boolean isAnyOpen() {
+    EntityService entityService = ServiceLocator.getEntityService();
+    if (entityService == null) {
+      return false;
+    }
+    for (Entity entity : entityService.getEntities()) {
+      Terminal terminal = entity.getComponent(Terminal.class);
+      if (terminal != null && terminal.isOpen()) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /**
+   * Tells all player input handlers to drop held keys and buttons (walk, sprint, bow charge) so
+   * opening the terminal doesn't leave the player stuck moving while typing.
+   */
+  private void releaseHeldGameplayInput() {
+    EntityService entityService = ServiceLocator.getEntityService();
+    if (entityService == null) {
+      return;
+    }
+    for (Entity entity : entityService.getEntities()) {
+      if (entity.getComponent(KeyboardPlayerInputComponent.class) != null) {
+        entity.getEvents().trigger("releaseHeldGameplayInput");
+      }
+    }
   }
 
   /**

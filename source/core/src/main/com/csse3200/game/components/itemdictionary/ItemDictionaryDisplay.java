@@ -12,6 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.csse3200.game.components.item.ItemType;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.UIComponent;
+import com.csse3200.game.ui.terminal.Terminal;
 
 /**
  * Displays the player's item dictionary.
@@ -344,7 +345,8 @@ public class ItemDictionaryDisplay extends UIComponent {
   public void update() {
     super.update();
 
-    if (Gdx.input.isKeyJustPressed(Input.Keys.I)) {
+    // The I shortcut polls raw input, bypassing the handler chain, so check the terminal directly.
+    if (Gdx.input.isKeyJustPressed(Input.Keys.I) && !Terminal.isAnyOpen()) {
       toggleDictionary();
     }
   }
