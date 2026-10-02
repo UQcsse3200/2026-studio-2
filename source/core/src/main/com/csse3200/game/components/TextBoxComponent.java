@@ -22,8 +22,8 @@ import org.slf4j.LoggerFactory;
 public class TextBoxComponent extends UIComponent {
   private static final Logger logger = LoggerFactory.getLogger(TextBoxComponent.class);
 
-  private final float xPos;
-  private final float yPos;
+  private float posX;
+  private float posY;
   private final Color textColor;
   private final Color backgroundColour;
   private final Color borderColour;
@@ -69,8 +69,8 @@ public class TextBoxComponent extends UIComponent {
       int textAlignment,
       List<String> pages) {
 
-    this.xPos = xPos;
-    this.yPos = yPos;
+    this.posX = xPos;
+    this.posY = yPos;
     this.textColor = textColour;
     this.backgroundColour = backgroundColour;
     this.charsPerSecond = charsPerSecond;
@@ -143,6 +143,15 @@ public class TextBoxComponent extends UIComponent {
     if (label != null) {
       label.setText(fullContent);
       table.pack();
+    }
+  }
+
+  /** Repositions the textbox table, e.g. to track a responsive layout each frame. */
+  public void setPosition(float x, float y) {
+    posX = x;
+    posY = y;
+    if (table != null) {
+      table.setPosition(x, y, Align.top);
     }
   }
 
@@ -267,7 +276,7 @@ public class TextBoxComponent extends UIComponent {
   public void create() {
     super.create();
     this.table = new Table();
-    this.table.setPosition(xPos, yPos);
+    this.table.setPosition(posX, posY);
     this.table.setVisible(false);
     this.table.setBackground(getBackgroundDrawable());
 
@@ -320,8 +329,9 @@ public class TextBoxComponent extends UIComponent {
     }
 
     // On TAB: skip to the full page if it's still typing; otherwise move to the next page,
-    // or dismiss the box entirely if this was the last page
-    if (Gdx.input.isKeyJustPressed(Keys.TAB)) {
+    // or dismiss the box entirely if this was the last page. Externally controlled boxes (e.g.
+    // cutscenes, game-end screens) own advancement themselves, so TAB must not dismiss them.
+    if (!externallyControlled && Gdx.input.isKeyJustPressed(Keys.TAB)) {
       if (!fullyRevealed) {
         this.revealedChars = fullContent.length();
         this.label.setText(fullContent);
@@ -337,8 +347,8 @@ public class TextBoxComponent extends UIComponent {
       }
     }
 
-    float x = this.xPos;
-    float y = this.yPos;
+    float x = this.posX;
+    float y = this.posY;
     if (entity != null) {
       Vector2 worldPos = entity.getCenterPosition();
       float screenWidth = Gdx.graphics.getWidth();
