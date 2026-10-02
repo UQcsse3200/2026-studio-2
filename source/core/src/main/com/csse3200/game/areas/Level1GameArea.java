@@ -21,6 +21,8 @@ import com.csse3200.game.components.npc.MerchantDisplay;
 import com.csse3200.game.components.player.KeyboardPlayerInputComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.EnemyFactory;
+import com.csse3200.game.entities.factories.ItemFactory;
+import com.csse3200.game.entities.factories.NPCFactory;
 import com.csse3200.game.entities.factories.ObstacleFactory;
 import com.csse3200.game.entities.factories.PlayerFactory;
 import com.csse3200.game.rendering.AnimationRenderComponent;
@@ -67,31 +69,23 @@ public class Level1GameArea extends GameArea {
     new GridPoint2(23, 17), new GridPoint2(58, 11)
   };
 
-  // // ============ TESTING SPAWN LOCATIONS ================
-
-  // private static final GridPoint2[] skeletonArcherTestSpawnLocations =
-  //     new GridPoint2[] {
-  //       new GridPoint2(60, 1), new GridPoint2(4, 4),
-  //     };
-
-  // private static final GridPoint2[] VultureTestSpawnLocations =
-  //     new GridPoint2[] {
-  //       new GridPoint2(6, 10),
-  //     };
-
-  // private static final GridPoint2[] testSpawnLocations =
-  //     new GridPoint2[] {
-  //       new GridPoint2(6, 4),
-  //     };
-
   // ======== ^^^^^^^^^^ ============================
 
   public static final GridPoint2 PLAYER_SPAWN = new GridPoint2(1, 4);
+
+  /** First floating platform is at (4, 2) and is 3 tiles wide; stand on its centre. */
+  public static final GridPoint2 SHOPKEEPER_SPAWN = new GridPoint2(5, 3);
+
   public static final GridPoint2 ROPE_ARROW_SPAWN = new GridPoint2(2, 3);
   public static final GridPoint2 STANDARD_ARROW_SPAWN = new GridPoint2(4, 3);
   public static final GridPoint2 FIRE_ARROW_SPAWN = new GridPoint2(6, 3);
   public static final GridPoint2 COLD_ARROW_SPAWN = new GridPoint2(8, 5);
   public static final GridPoint2 HEALTH_POTION_SPAWN = new GridPoint2(10, 5);
+
+  /** Sit on top of the 1-tile-tall floating platforms (skip the first, which has the shop). */
+  public static final GridPoint2[] GOLD_SPAWNS = {
+    new GridPoint2(9, 5), new GridPoint2(15, 7), new GridPoint2(20, 8)
+  };
 
   public static final int STANDARD_ARROW_QUANTITY = 5;
   public static final int FIRE_ARROW_QUANTITY = 5;
@@ -124,9 +118,18 @@ public class Level1GameArea extends GameArea {
     // Enemy textures
     "images/enemies/skeleton_warrior.png",
     "images/enemies/skeleton_archer.png",
+    NPCFactory.SHOPKEEPER_TEXTURE,
     "images/projectiles/arrow.png",
     "images/projectiles/rope_arrow.png",
     "images/projectiles/fire_arrow.png",
+    "images/fireArr_animation.png",
+    "images/coldArr_animation.png",
+    "images/sword.png",
+    "images/spear.png",
+    "images/health/heart_potion.png",
+    "images/speed_potion.png",
+    "images/poison_potion.png",
+    ItemFactory.GOLD_TEXTURE,
     "images/projectiles/cold_arrow.png",
     "images/projectiles/necromancer_projectile.png",
   };
@@ -177,6 +180,8 @@ public class Level1GameArea extends GameArea {
     player = spawnPlayer();
     //// spawnItems(); // test items
     //// spawnWinCondition();
+    spawnShopkeeper();
+    spawnGold();
     spawnSkeletonArcher();
     spawnSkeletonWarrior();
     spawnWhenApproaching(
@@ -294,6 +299,17 @@ public class Level1GameArea extends GameArea {
     System.out.println(input);
 
     return newPlayer;
+  }
+
+  private void spawnShopkeeper() {
+    Entity shopkeeper = NPCFactory.createShopkeeper();
+    spawnEntityAt(shopkeeper, SHOPKEEPER_SPAWN, true, false);
+  }
+
+  private void spawnGold() {
+    for (GridPoint2 goldSpawn : GOLD_SPAWNS) {
+      spawnEntityAt(ItemFactory.createGold(), goldSpawn, true, false);
+    }
   }
 
   private void spawnSkeletonWarrior() {

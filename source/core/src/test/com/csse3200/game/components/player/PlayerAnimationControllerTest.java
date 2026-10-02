@@ -326,6 +326,22 @@ class PlayerAnimationControllerTest {
   }
 
   @Test
+  void shouldReturnToIdleWhenChargeIsCancelled() {
+    AnimationRenderComponent animator =
+        new AnimationRenderComponent(
+            mockAtlasWithRegions("idle", "death", "bow_draw", "bow_hold", "bow_shoot"));
+    Entity entity = new Entity();
+    createController(entity, animator);
+
+    entity.getEvents().trigger("chargeStart", new Vector2(1f, 0f));
+    assertEquals("bow_draw", animator.getCurrentAnimation());
+
+    entity.getEvents().trigger("chargeCancel");
+
+    assertEquals("idle", animator.getCurrentAnimation());
+  }
+
+  @Test
   void shouldIgnoreChargeStartAndReleaseWhileDead() {
     AnimationRenderComponent animator =
         new AnimationRenderComponent(

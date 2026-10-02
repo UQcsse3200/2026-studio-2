@@ -9,6 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+//import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.csse3200.game.components.ButtonSound;
@@ -88,18 +89,18 @@ public class MainMenuDisplay extends UIComponent {
 
     ImageButton continueButton = new ImageButton(continueButtonStyle);
 
-    Texture minigamesUpTexture =
+    Texture sandBoxgamesUpTexture =
         ServiceLocator.getResourceService()
-            .getAsset("images/Buttons/minigames_up_btn.png", Texture.class);
-    Texture minigamesDownTexture =
+            .getAsset("images/Buttons/sandBox_up_btn.png", Texture.class);
+    Texture sandBoxgamesDownTexture =
         ServiceLocator.getResourceService()
-            .getAsset("images/Buttons/minigames_down_btn.png", Texture.class);
+            .getAsset("images/Buttons/sandBox_down.png", Texture.class);
 
-    ImageButton.ImageButtonStyle minigamesButtonStyle = new ImageButton.ImageButtonStyle();
-    minigamesButtonStyle.up = new TextureRegionDrawable(minigamesUpTexture);
-    minigamesButtonStyle.down = new TextureRegionDrawable(minigamesDownTexture);
+    ImageButton.ImageButtonStyle sandBoxgamesButtonStyle = new ImageButton.ImageButtonStyle();
+    sandBoxgamesButtonStyle.up = new TextureRegionDrawable(sandBoxgamesUpTexture);
+    sandBoxgamesButtonStyle.down = new TextureRegionDrawable(sandBoxgamesDownTexture);
 
-    ImageButton minigamesButton = new ImageButton(minigamesButtonStyle);
+    ImageButton sandBoxgamesButton = new ImageButton(sandBoxgamesButtonStyle);
 
     Texture settingsUpTexture =
         ServiceLocator.getResourceService()
@@ -126,6 +127,7 @@ public class MainMenuDisplay extends UIComponent {
     exitButtonStyle.down = new TextureRegionDrawable(quitDownTexture);
 
     ImageButton exitButton = new ImageButton(exitButtonStyle);
+    //TextButton sandboxButton = new TextButton("Sandbox", skin);
 
     // Triggers an event when the button is pressed
     // ImageButton automatically swaps to the "down" drawable while pressed and back to "up" on
@@ -148,12 +150,12 @@ public class MainMenuDisplay extends UIComponent {
           }
         });
 
-    minigamesButton.addListener(
+    sandBoxgamesButton.addListener(
         new ChangeListener() {
           @Override
           public void changed(ChangeEvent changeEvent, Actor actor) {
-            logger.debug("Minigames button clicked");
-            ButtonSound.playClickThen(() -> entity.getEvents().trigger("Minigames"));
+            logger.debug("Sandbox button clicked");
+            ButtonSound.playClickThen(() -> entity.getEvents().trigger("Sandbox"));
           }
         });
 
@@ -184,9 +186,9 @@ public class MainMenuDisplay extends UIComponent {
     leftColumn.row();
     leftColumn.add(continueButton).width(buttonWidth).height(buttonHeight).padTop(pad);
 
-    // Right column: Minigames, Exit.
+    // Right column: Sandbox, Exit.
     Table rightColumn = new Table();
-    rightColumn.add(minigamesButton).width(buttonWidth).height(buttonHeight);
+    rightColumn.add(sandBoxgamesButton).width(buttonWidth).height(buttonHeight);
     rightColumn.row();
     rightColumn.add(settingsButton).width(buttonWidth).height(buttonHeight).padTop(pad);
 
@@ -201,6 +203,8 @@ public class MainMenuDisplay extends UIComponent {
     table.add(title).width(screenWidth * 0.3f).height(screenHeight * 0.18f).padBottom(pad);
     table.row();
     table.add(columnPair).center().padTop(screenHeight * 0.02f);
+    table.row();
+    //table.add(sandboxButton).center().padTop(pad);
     table.row();
     table
         .add(exitButton)

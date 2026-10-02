@@ -7,11 +7,11 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.csse3200.game.cutscene.CutsceneLoader;
 import com.csse3200.game.files.UserSettings;
-import com.csse3200.game.screens.*;
 import com.csse3200.game.screens.CutsceneScreen;
 import com.csse3200.game.screens.Level1GameScreen;
 import com.csse3200.game.screens.MainGameScreen;
 import com.csse3200.game.screens.MainMenuScreen;
+import com.csse3200.game.screens.SandboxGameScreen;
 import com.csse3200.game.screens.SettingsFromPauseScreen;
 import com.csse3200.game.screens.SettingsScreen;
 import com.csse3200.game.screens.TransitionScreen;
@@ -149,6 +149,8 @@ public class GdxGame extends Game {
         return new MainGameScreen(this);
       case LEVEL_1_GAME:
         return new Level1GameScreen(this);
+      case SANDBOX:
+        return new SandboxGameScreen(this);
       case LEVEL_2_GAME:
         Level1GameScreen screen = new Level1GameScreen(this);
         screen.queueAreaSwap("level2");
@@ -174,6 +176,7 @@ public class GdxGame extends Game {
     MAIN_MENU,
     MAIN_GAME,
     LEVEL_1_GAME,
+    SANDBOX,
     LEVEL_2_GAME,
     SETTINGS,
     SETTINGS_FROM_PAUSE,

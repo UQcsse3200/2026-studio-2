@@ -12,10 +12,12 @@ import static org.mockito.Mockito.when;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.components.inventory.InventoryComponent;
+import com.csse3200.game.components.item.GoldPickupComponent;
 import com.csse3200.game.components.item.Item;
 import com.csse3200.game.components.item.ItemComponent;
 import com.csse3200.game.components.item.ItemType;
 import com.csse3200.game.components.item.weapons.bow.arrow.Arrow;
+import com.csse3200.game.components.npc.ShopNpcComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.extensions.GameExtension;
@@ -209,6 +211,128 @@ class PlayerInteractionComponentTest {
     assertEquals(initial, inventory.getSelectedItem());
   }
 
+  @Test
+  void shouldFindShopNpcInRange() {
+    Entity player = createPlayer(new InventoryComponent(0));
+    Entity shopNpc = spawnShopNpc(new Vector2(0.5f, 0f));
+
+    PlayerInteractionComponent interaction = player.getComponent(PlayerInteractionComponent.class);
+
+    assertEquals(shopNpc, interaction.findNearestShopNpc());
+  }
+
+  @Test
+  void shouldNotFindShopNpcOutOfRange() {
+    Entity player = createPlayer(new InventoryComponent(0));
+    spawnShopNpc(new Vector2(10f, 10f));
+
+    PlayerInteractionComponent interaction = player.getComponent(PlayerInteractionComponent.class);
+
+    assertNull(interaction.findNearestShopNpc());
+  }
+
+  @Test
+  void shouldOpenShopWhenInteractingWithShopNpc() {
+    Entity player = createPlayer(new InventoryComponent(0));
+    spawnShopNpc(new Vector2(0.5f, 0f));
+
+    boolean[] opened = {false};
+    player.getEvents().addListener("openShop", () -> opened[0] = true);
+
+    PlayerInteractionComponent interaction = player.getComponent(PlayerInteractionComponent.class);
+
+    assertTrue(interaction.interact());
+    assertTrue(opened[0]);
+    assertTrue(interaction.isShopOpen());
+  }
+
+  @Test
+  void shouldPreferShopNpcOverItem() {
+    Entity player = createPlayer(new InventoryComponent(0));
+    spawnWorldItem(new Arrow(ItemType.ROPE_ARROW, 1), new Vector2(0.5f, 0f));
+    spawnShopNpc(new Vector2(0.5f, 0f));
+
+    boolean[] opened = {false};
+    player.getEvents().addListener("openShop", () -> opened[0] = true);
+
+    PlayerInteractionComponent interaction = player.getComponent(PlayerInteractionComponent.class);
+
+    assertTrue(interaction.interact());
+    assertTrue(opened[0]);
+    assertEquals(
+        0, player.getComponent(InventoryComponent.class).getItemCount(ItemType.ROPE_ARROW));
+  }
+
+  @Test
+  void shouldCloseShopOnSecondInteract() {
+    Entity player = createPlayer(new InventoryComponent(0));
+    spawnShopNpc(new Vector2(0.5f, 0f));
+
+    boolean[] closed = {false};
+    player.getEvents().addListener("closeShop", () -> closed[0] = true);
+
+    PlayerInteractionComponent interaction = player.getComponent(PlayerInteractionComponent.class);
+    interaction.interact();
+    assertTrue(interaction.isShopOpen());
+
+    assertTrue(interaction.interact());
+    assertTrue(closed[0]);
+    assertFalse(interaction.isShopOpen());
+  }
+
+  @Test
+  void shouldFindGoldInRange() {
+    Entity player = createPlayer(new InventoryComponent(0));
+    Entity gold = spawnGold(new Vector2(0.5f, 0f));
+
+    PlayerInteractionComponent interaction = player.getComponent(PlayerInteractionComponent.class);
+
+    assertEquals(gold, interaction.findNearestGold());
+  }
+
+  @Test
+  void shouldNotFindGoldOutOfRange() {
+    Entity player = createPlayer(new InventoryComponent(0));
+    spawnGold(new Vector2(10f, 10f));
+
+    PlayerInteractionComponent interaction = player.getComponent(PlayerInteractionComponent.class);
+
+    assertNull(interaction.findNearestGold());
+  }
+
+  @Test
+  void shouldPickUpGoldAndAddTenGold() {
+    Entity player = createPlayer(new InventoryComponent(0));
+    spawnGold(new Vector2(0.5f, 0f));
+
+    int[] collected = {0};
+    player.getEvents().addListener("goldPickedUp", (Integer amount) -> collected[0] = amount);
+
+    PlayerInteractionComponent interaction = player.getComponent(PlayerInteractionComponent.class);
+
+    assertTrue(interaction.interact());
+    assertEquals(GoldPickupComponent.DEFAULT_AMOUNT, collected[0]);
+    assertEquals(
+        GoldPickupComponent.DEFAULT_AMOUNT,
+        player.getComponent(InventoryComponent.class).getGold());
+  }
+
+  @Test
+  void shouldPreferShopNpcOverGold() {
+    Entity player = createPlayer(new InventoryComponent(0));
+    spawnGold(new Vector2(0.5f, 0f));
+    spawnShopNpc(new Vector2(0.5f, 0f));
+
+    boolean[] opened = {false};
+    player.getEvents().addListener("openShop", () -> opened[0] = true);
+
+    PlayerInteractionComponent interaction = player.getComponent(PlayerInteractionComponent.class);
+
+    assertTrue(interaction.interact());
+    assertTrue(opened[0]);
+    assertEquals(0, player.getComponent(InventoryComponent.class).getGold());
+  }
+
   Entity createPlayer(InventoryComponent inventory) {
     Entity player =
         new Entity()
@@ -229,5 +353,23 @@ class PlayerInteractionComponentTest {
     itemEntity.setPosition(position);
     ServiceLocator.getEntityService().register(itemEntity);
     return itemEntity;
+  }
+
+  Entity spawnShopNpc(Vector2 position) {
+    Entity shopNpc = new Entity().addComponent(new ShopNpcComponent());
+    shopNpc.setPosition(position);
+    ServiceLocator.getEntityService().register(shopNpc);
+    return shopNpc;
+  }
+
+  Entity spawnGold(Vector2 position) {
+    Entity gold =
+        new Entity()
+            .addComponent(new PhysicsComponent())
+            .addComponent(new HitboxComponent())
+            .addComponent(new GoldPickupComponent());
+    gold.setPosition(position);
+    ServiceLocator.getEntityService().register(gold);
+    return gold;
   }
 }

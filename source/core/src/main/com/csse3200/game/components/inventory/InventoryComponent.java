@@ -108,6 +108,9 @@ public class InventoryComponent extends Component {
   public void setGold(int gold) {
     this.gold = Math.max(gold, 0);
     logger.debug("Setting gold to {}", this.gold);
+    if (entity != null) {
+      entity.getEvents().trigger("goldChanged");
+    }
   }
 
   /**

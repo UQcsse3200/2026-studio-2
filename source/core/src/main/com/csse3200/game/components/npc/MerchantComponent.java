@@ -24,7 +24,7 @@ public class MerchantComponent extends Component {
           new Offer(ItemType.STANDARD_ARROW, 10, 5),
           new Offer(ItemType.HEALTH_POTION, 1, 10),
           new Offer(ItemType.FIRE_ARROW, 5, 15),
-          new Offer(ItemType.COLD_ARROW, 5, 15));
+          new Offer(ItemType.ICE_ARROW, 5, 15));
   private final Entity player;
 
   public MerchantComponent(Entity player) {

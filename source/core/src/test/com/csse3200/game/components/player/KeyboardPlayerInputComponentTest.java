@@ -11,6 +11,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Graphics;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Input.Buttons;
 import com.badlogic.gdx.Input.Keys;
@@ -23,11 +24,14 @@ import com.csse3200.game.components.inventory.InventoryComponent;
 import com.csse3200.game.components.item.ItemType;
 import com.csse3200.game.components.item.weapons.PrimaryWeapon;
 import com.csse3200.game.components.item.weapons.WeaponComponent;
+import com.csse3200.game.components.npc.ShopNpcComponent;
+import com.csse3200.game.components.projectile.ArrowType;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.events.listeners.EventListener0;
 import com.csse3200.game.events.listeners.EventListener1;
 import com.csse3200.game.extensions.GameExtension;
+import com.csse3200.game.input.InputService;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -330,5 +334,165 @@ class KeyboardPlayerInputComponentTest {
 
     assertFalse(component.keyDown(Keys.X));
     assertEquals(1, deletions.get());
+  }
+
+  @Test
+  void shouldOpenAndCloseTheArrowWheelWithTab() {
+    KeyboardPlayerInputComponent component = new KeyboardPlayerInputComponent();
+    ArrowWheelComponent wheel = new ArrowWheelComponent();
+    Entity player = new Entity().addComponent(component).addComponent(wheel);
+    wheel.create();
+
+    assertTrue(component.keyDown(Keys.TAB));
+    assertTrue(wheel.isOpen());
+
+    assertTrue(component.keyUp(Keys.TAB));
+    assertFalse(wheel.isOpen());
+  }
+
+  @Test
+  void shouldHighlightFromThePointerOffsetToTheScreenCentre() {
+    Graphics graphics = mock(Graphics.class);
+    when(graphics.getWidth()).thenReturn(800);
+    when(graphics.getHeight()).thenReturn(600);
+    Gdx.graphics = graphics;
+    KeyboardPlayerInputComponent component = new KeyboardPlayerInputComponent();
+    ArrowWheelComponent wheel = new ArrowWheelComponent();
+    Entity player = new Entity().addComponent(component).addComponent(wheel);
+    wheel.create();
+    component.keyDown(Keys.TAB);
+
+    assertFalse(component.mouseMoved(400, 100));
+
+    assertEquals(ArrowType.STANDARD, wheel.getHighlighted());
+  }
+
+  @Test
+  void shouldBlockWeaponInputWhileTheArrowWheelIsOpen() {
+    KeyboardPlayerInputComponent component = new KeyboardPlayerInputComponent();
+    ArrowWheelComponent wheel = new ArrowWheelComponent();
+    Entity player = new Entity().addComponent(component).addComponent(wheel);
+    player.setPosition(0f, 0f);
+    wheel.create();
+    component.setCameraComponent(new CameraComponent(camera));
+    AtomicInteger melee = new AtomicInteger();
+    player.getEvents().addListener("melee", (Vector2 ignored) -> melee.incrementAndGet());
+
+    component.keyDown(Keys.TAB);
+    assertFalse(component.touchDown(4, 2, 0, Buttons.LEFT));
+    assertEquals(0, melee.get());
+
+    component.keyUp(Keys.TAB);
+    assertTrue(component.touchDown(4, 2, 0, Buttons.LEFT));
+    assertEquals(1, melee.get());
+  }
+
+  @Test
+  void shouldIgnoreGameplayKeysWhileShopIsOpen() {
+    ServiceLocator.registerEntityService(new EntityService());
+    KeyboardPlayerInputComponent component = new KeyboardPlayerInputComponent();
+    InventoryComponent inventory = new InventoryComponent(0);
+    PlayerInteractionComponent interaction = new PlayerInteractionComponent();
+    Entity player =
+        new Entity()
+            .addComponent(component)
+            .addComponent(inventory)
+            .addComponent(new ItemUseComponent())
+            .addComponent(interaction);
+    player.setPosition(0f, 0f);
+    component.setCameraComponent(new CameraComponent(camera));
+    inventory.addItem(ItemType.STANDARD_ARROW, 2);
+    player.getComponent(ItemUseComponent.class).create();
+    interaction.create();
+
+    Entity shopNpc = new Entity().addComponent(new ShopNpcComponent());
+    shopNpc.setPosition(0.5f, 0f);
+    ServiceLocator.getEntityService().register(shopNpc);
+
+    AtomicInteger jumps = new AtomicInteger();
+    player.getEvents().addListener("jump", jumps::incrementAndGet);
+
+    assertTrue(interaction.interact());
+    assertTrue(interaction.isShopOpen());
+
+    assertTrue(component.keyDown(Keys.E));
+    assertEquals(2, inventory.getItemCount(ItemType.STANDARD_ARROW));
+    assertTrue(component.keyDown(Keys.SPACE));
+    assertEquals(0, jumps.get());
+    assertTrue(component.touchDown(4, 2, 0, Buttons.LEFT));
+
+    assertTrue(component.keyDown(Keys.F));
+    assertFalse(interaction.isShopOpen());
+  }
+
+  @Test
+  void shouldCancelChargeWhenShopOpensAndWhenRightMouseIsReleasedWhileShopIsOpen() {
+    ServiceLocator.registerInputService(mock(InputService.class));
+    ServiceLocator.registerEntityService(new EntityService());
+    KeyboardPlayerInputComponent component = new KeyboardPlayerInputComponent();
+    InventoryComponent inventory = new InventoryComponent(0);
+    PlayerInteractionComponent interaction = new PlayerInteractionComponent();
+    Entity player =
+        new Entity()
+            .addComponent(component)
+            .addComponent(inventory)
+            .addComponent(new ItemUseComponent())
+            .addComponent(interaction);
+    player.setPosition(0f, 0f);
+    component.setCameraComponent(new CameraComponent(camera));
+    player.create();
+
+    Entity shopNpc = new Entity().addComponent(new ShopNpcComponent());
+    shopNpc.setPosition(0.5f, 0f);
+    ServiceLocator.getEntityService().register(shopNpc);
+
+    AtomicInteger cancels = new AtomicInteger();
+    AtomicInteger stops = new AtomicInteger();
+    player.getEvents().addListener("chargeCancel", cancels::incrementAndGet);
+    player.getEvents().addListener("stopShoot", stops::incrementAndGet);
+
+    assertTrue(component.touchDown(4, 2, 0, Buttons.RIGHT));
+    assertTrue(component.isRightMouseHeld());
+
+    assertTrue(interaction.interact());
+    assertTrue(interaction.isShopOpen());
+    assertFalse(component.isRightMouseHeld());
+    assertEquals(1, cancels.get());
+    assertEquals(0, stops.get());
+
+    assertTrue(component.touchUp(4, 2, 0, Buttons.RIGHT));
+    assertEquals(2, cancels.get());
+    assertEquals(0, stops.get());
+
+    when(Gdx.input.isButtonPressed(Buttons.RIGHT)).thenReturn(false);
+    assertTrue(interaction.interact());
+    assertFalse(interaction.isShopOpen());
+    assertEquals(2, cancels.get());
+    assertEquals(0, stops.get());
+  }
+
+  @Test
+  void shouldCancelSwallowedChargeOnShopCloseWhenOpenDidNotClearIt() {
+    ServiceLocator.registerInputService(mock(InputService.class));
+    KeyboardPlayerInputComponent component = new KeyboardPlayerInputComponent();
+    Entity player = new Entity().addComponent(component);
+    player.setPosition(0f, 0f);
+    component.setCameraComponent(new CameraComponent(camera));
+    player.create();
+
+    AtomicInteger cancels = new AtomicInteger();
+    AtomicInteger stops = new AtomicInteger();
+    player.getEvents().addListener("chargeCancel", cancels::incrementAndGet);
+    player.getEvents().addListener("stopShoot", stops::incrementAndGet);
+
+    assertTrue(component.touchDown(4, 2, 0, Buttons.RIGHT));
+    assertTrue(component.isRightMouseHeld());
+
+    when(Gdx.input.isButtonPressed(Buttons.RIGHT)).thenReturn(false);
+    player.getEvents().trigger("closeShop");
+
+    assertFalse(component.isRightMouseHeld());
+    assertEquals(1, cancels.get());
+    assertEquals(0, stops.get());
   }
 }

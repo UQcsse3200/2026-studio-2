@@ -9,7 +9,7 @@ public final class WheelConfig {
       List.of(
           new WheelItem(ItemType.STANDARD_ARROW, 10),
           new WheelItem(ItemType.FIRE_ARROW, 5),
-          new WheelItem(ItemType.COLD_ARROW, 5),
+          new WheelItem(ItemType.ICE_ARROW, 5),
           new WheelItem(ItemType.HEALTH_POTION, 1));
 
   public static final String[] TEXTURES = SpinTheWheelDisplay.texturesFor(ITEMS);

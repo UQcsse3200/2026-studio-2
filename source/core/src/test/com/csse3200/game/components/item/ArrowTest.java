@@ -68,23 +68,23 @@ class ArrowTest {
     assertEquals(ItemType.STANDARD_ARROW.getRange() + 1, fire.getRange(), 0.001f);
     assertTrue(fire.isConsumeAmmo());
     assertEquals(0f, fire.getCooldown(), 0.001f);
-    assertEquals(3f, fire.getItemType().getBurnDamagePerSecond(), 0.001f);
-    assertEquals(5f, fire.getItemType().getBurnTime(), 0.001f);
+    assertEquals(10f, fire.getBurnDamagePerSecond(), 0.001f);
+    assertEquals(5f, fire.getBurnTime(), 0.001f);
   }
 
   @Test
-  void shouldKeepColdArrowSpecificAttributes() {
-    Arrow cold = new Arrow(ItemType.COLD_ARROW, 1);
+  void shouldKeepIceArrowSpecificAttributes() {
+    Arrow cold = new Arrow(ItemType.ICE_ARROW, 1);
 
-    assertEquals(ItemType.COLD_ARROW, cold.getItemType());
-    assertEquals(ItemType.COLD_ARROW.getId(), cold.getItemId());
-    assertEquals("Cold Arrow", cold.getItemName());
+    assertEquals(ItemType.ICE_ARROW, cold.getItemType());
+    assertEquals(ItemType.ICE_ARROW.getId(), cold.getItemId());
+    assertEquals("Ice Arrow", cold.getItemName());
     assertEquals(1, cold.getQuantity());
     assertEquals(8, cold.getDamage());
     assertEquals(ItemType.STANDARD_ARROW.getRange() + 1, cold.getRange(), 0.001f);
     assertTrue(cold.isConsumeAmmo());
     assertEquals(0f, cold.getCooldown(), 0.001f);
-    assertEquals(0.75f, cold.getItemType().getSlowSpeed(), 0.001f);
-    assertEquals(5f, cold.getItemType().getSlowTime(), 0.001f);
+    assertEquals(0.5f, cold.getSlowSpeed(), 0.001f);
+    assertEquals(5f, cold.getSlowTime(), 0.001f);
   }
 }

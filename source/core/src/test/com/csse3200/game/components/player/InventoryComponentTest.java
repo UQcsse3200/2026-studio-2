@@ -359,7 +359,7 @@ class InventoryComponentTest {
   @Test
   void shouldSortOccupiedSlotsByNumericItemId() {
     InventoryComponent inventory = new InventoryComponent(0, 5);
-    inventory.addItem(ItemType.COLD_ARROW, 5);
+    inventory.addItem(ItemType.ICE_ARROW, 5);
     inventory.addItem(ItemType.HEALTH_POTION, 3);
     inventory.addItem(ItemType.FIRE_ARROW, 4);
     inventory.addItem(ItemType.ROPE_ARROW, 2);
@@ -371,7 +371,7 @@ class InventoryComponentTest {
     assertEquals(ItemType.ROPE_ARROW, inventory.getSlot(1).getItemType());
     assertEquals(ItemType.HEALTH_POTION, inventory.getSlot(2).getItemType());
     assertEquals(ItemType.FIRE_ARROW, inventory.getSlot(3).getItemType());
-    assertEquals(ItemType.COLD_ARROW, inventory.getSlot(4).getItemType());
+    assertEquals(ItemType.ICE_ARROW, inventory.getSlot(4).getItemType());
   }
 
   @Test

@@ -1,0 +1,91 @@
+{
+  "fadeDuration": 0.4,
+  "music": "sounds/Main_menu_sound.mp3",
+  "scenes": [
+    {
+      "image": "scene1.jpeg",
+      "text": {
+        "xPos": 600,
+        "yPos": 150,
+        "charsPerSecond": 20,
+        "maxWidth": 600,
+        "padding": 16,
+        "borderThickness": 3,
+        "textAlignment": "center",
+        "pages": [
+          "Odysseus fashioned a grappling hook from his dagger and a length of rope, preparing to climb the great boulder that blocked their only way out.",
+          "His plan was simple yet clever, but it would require them to risk everything..."
+
+        ]
+      }
+    },
+    {
+      "image": "scene2.jpeg",
+      "text": {
+        "xPos": 600,
+        "yPos": 150,
+        "charsPerSecond": 20,
+        "maxWidth": 600,
+        "padding": 16,
+        "borderThickness": 3,
+        "textAlignment": "center",
+        "pages": [
+          "As Polyphemus slept, Odysseus climbed the great boulder with a sharpened log in his hands.",
+          "Below him, his remaining men hid themselves amongst the sheep, waiting for the Cyclops to awaken and open the cave.",
+          "All they could do now was wait for their chance to escape..."
+        ]
+      }
+    },
+    {
+      "image": "scene3.jpeg",
+      "text": {
+        "xPos": 600,
+        "yPos": 150,
+        "charsPerSecond": 20,
+        "maxWidth": 600,
+        "padding": 16,
+        "borderThickness": 3,
+        "textAlignment": "center",
+        "pages": [
+          "At last, Polyphemus awoke and approached the entrance of the cave, unaware of the men hiding amongst his sheep.",
+          "With his great strength, the Cyclops began to move the boulder aside, slowly opening the only path to freedom.",
+          "Odysseus clung to the boulder, waiting for the moment to strike..."
+        ]
+      }
+    },
+    {
+      "image": "scene4.jpeg",
+      "text": {
+        "xPos": 600,
+        "yPos": 150,
+        "charsPerSecond": 20,
+        "maxWidth": 600,
+        "padding": 16,
+        "borderThickness": 3,
+        "textAlignment": "center",
+        "pages": [
+          "Before Polyphemus could leave the cave, Odysseus leapt from the boulder and onto the Cyclops.",
+          "With all his remaining strength, he drove the sharpened log into the Cyclops' single eye, blinding the monstrous shepherd.",
+          "The Cyclops cried out in agony, but Odysseus and his men had already begun their escape..."
+        ]
+      }
+    },
+    {
+      "image": "scene5.jpeg",
+      "text": {
+        "xPos": 600,
+        "yPos": 150,
+        "charsPerSecond": 20,
+        "maxWidth": 600,
+        "padding": 16,
+        "borderThickness": 3,
+        "textAlignment": "center",
+        "pages": [
+          "Odysseus and the few men that remained rushed from the cave, escaping beneath the cover of the fleeing sheep.",
+          "But as they reached the shore, Odysseus stopped and looked back upon the cave where so many of his men had died.",
+          "Behind him, the blinded Cyclops cried out to his father... Poseidon..."
+        ]
+      }
+    }
+  ]
+}

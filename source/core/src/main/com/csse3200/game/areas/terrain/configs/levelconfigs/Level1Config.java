@@ -123,7 +123,7 @@ public class Level1Config extends LevelConfig {
     items.put(new GridPoint2(74, 1), new Arrow(ItemType.STANDARD_ARROW, 10));
     items.put(new GridPoint2(78, 17), new HealthPotion(1));
     items.put(new GridPoint2(15, 23), new Arrow(ItemType.FIRE_ARROW, 5));
-    items.put(new GridPoint2(62, 24), new Arrow(ItemType.COLD_ARROW, 5));
+    items.put(new GridPoint2(62, 24), new Arrow(ItemType.ICE_ARROW, 5));
 
     // Both are earned after a substantial climb/combat section, not grouped at the start.
     checkpoints =

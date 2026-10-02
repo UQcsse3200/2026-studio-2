@@ -9,7 +9,7 @@ import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.ProjectileFactory;
 import com.csse3200.game.services.ServiceLocator;
 
-/** Ranged attack behaviour that fires player arrow variants (Standard, Cold, Fire, Grapple). */
+/** Ranged attack behaviour that fires player arrow variants (Standard, Ice, Fire, Grapple). */
 public class BowComponent extends Component implements PrimaryWeapon {
 
   private static final String ATTACK_SOUND = "sounds/Impact4.ogg";
@@ -48,6 +48,7 @@ public class BowComponent extends Component implements PrimaryWeapon {
     entity.getEvents().addListener("setArrowType", this::setArrowType);
     entity.getEvents().addListener("chargeStart", this::startCharge);
     entity.getEvents().addListener("chargeRelease", this::releaseCharge);
+    entity.getEvents().addListener("chargeCancel", this::cancelCharge);
     entity.getEvents().addListener("death", this::cancelCharge);
   }
 
@@ -65,8 +66,11 @@ public class BowComponent extends Component implements PrimaryWeapon {
     }
     this.currentArrowType = arrowType;
     switch (arrowType) {
-      case COLD:
-        this.projectileCreator = ProjectileFactory::createColdArrow;
+      case ICE:
+        this.projectileCreator = ProjectileFactory::createIceArrow;
+        break;
+      case POISON:
+        this.projectileCreator = ProjectileFactory::createPoisonArrow;
         break;
       case FIRE:
         this.projectileCreator = ProjectileFactory::createFireArrow;
@@ -134,7 +138,10 @@ public class BowComponent extends Component implements PrimaryWeapon {
     }
   }
 
-  /** Cancels an in-progress charge without firing, e.g. if the player dies mid-draw. */
+  /**
+   * Cancels an in-progress charge without firing, e.g. if the player dies mid-draw or a UI overlay
+   * steals the mouse-up.
+   */
   private void cancelCharge() {
     isCharging = false;
   }

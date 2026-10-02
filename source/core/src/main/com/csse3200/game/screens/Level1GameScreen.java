@@ -242,7 +242,8 @@ public class Level1GameScreen extends ScreenAdapter {
 
     if (Gdx.input.isKeyJustPressed(Input.Keys.K)) {
       wheelOverlay.request();
-    } else if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
+    } else if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)
+        && !ServiceLocator.getEntityService().getSettingsOpen()) {
       pauseOverlay.request();
     }
 
@@ -295,7 +296,7 @@ public class Level1GameScreen extends ScreenAdapter {
   }
 
   /**
-   * Level 1's textures and spin the wheel's so it can be opened as an overlay.
+   * The level's textures and spin the wheel's so it can be opened as an overlay.
    *
    * @return every texture this screen needs loaded
    */
@@ -308,6 +309,8 @@ public class Level1GameScreen extends ScreenAdapter {
                 "images/health/PixelArt_HeartBack.png",
                 "images/health/Damaged_heart.png",
                 "images/health/Last_Health.png",
+                "images/Buttons/apply_up_btn.png",
+                "images/Buttons/apply_down_btn.png",
                 "images/Buttons/continue_up_btn.png",
                 "images/Buttons/continue_down_btn.png",
                 "images/Buttons/settings_up_btn.png",
@@ -331,7 +334,9 @@ public class Level1GameScreen extends ScreenAdapter {
                 "images/Buttons/exit_down_btn.png",
                 "images/projectiles/rope_arrow.png",
                 "images/projectiles/fire_arrow.png",
-                "images/projectiles/cold_arrow.png"));
+                "images/projectiles/cold_arrow.png",
+                "images/backgrounds/main_menu_bg_2.png",
+                "images/ui/settings_box.png"));
     paths.addAll(List.of(PauseButtonDisplay.extraTextures()));
     paths.addAll(List.of(WheelConfig.TEXTURES));
     paths.addAll(List.of(BlackjackConfig.TEXTURES));

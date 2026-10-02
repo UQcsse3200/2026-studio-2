@@ -36,6 +36,7 @@ public class PlayerAnimationController extends Component {
     entity.getEvents().addListener("melee", this::meleeStart);
     entity.getEvents().addListener("chargeStart", this::drawStart);
     entity.getEvents().addListener("chargeRelease", this::drawRelease);
+    entity.getEvents().addListener("chargeCancel", this::drawCancel);
     entity.getEvents().addListener("sprintEnd", this::sprintStop);
     entity.getEvents().addListener("death", this::death);
     entity.getEvents().addListener("sleep", this::sleep);
@@ -208,6 +209,17 @@ public class PlayerAnimationController extends Component {
       return;
     }
     animator.startAnimation("bow_shoot");
+  }
+
+  void drawCancel() {
+    if (dead || !bowActive) {
+      return;
+    }
+    charging = false;
+    drawingIn = false;
+    attacking = false;
+    bowActive = false;
+    updateAnimation();
   }
 
   private void updateAnimation() {

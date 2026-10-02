@@ -16,6 +16,7 @@ public class PhysicsMovementComponent extends Component implements MovementContr
   private PhysicsComponent physicsComponent;
   private Vector2 targetPosition;
   private boolean movementEnabled = true;
+  private float speedMultiplier = 1f;
   private boolean obeysGravity = false;
 
   public PhysicsMovementComponent() {}
@@ -85,7 +86,7 @@ public class PhysicsMovementComponent extends Component implements MovementContr
   }
 
   private void updateDirection(Body body) {
-    Vector2 desiredVelocity = targetPosition.cpy().sub(entity.getPosition()).nor().scl(maxSpeed);
+    Vector2 desiredVelocity = getDirection().scl(maxSpeed).scl(speedMultiplier);
     setToVelocity(body, desiredVelocity);
   }
 
@@ -97,5 +98,14 @@ public class PhysicsMovementComponent extends Component implements MovementContr
       impulse.y = 0;
     }
     body.applyLinearImpulse(impulse, body.getWorldCenter(), true);
+  }
+
+  private Vector2 getDirection() {
+    // Move towards targetPosition based on our current position
+    return targetPosition.cpy().sub(entity.getPosition()).nor();
+  }
+
+  public void setSpeedMultiplier(float speedMultiplier) {
+    this.speedMultiplier = Math.max(0f, speedMultiplier);
   }
 }

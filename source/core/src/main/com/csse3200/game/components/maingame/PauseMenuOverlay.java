@@ -57,7 +57,7 @@ public class PauseMenuOverlay {
         new Entity()
             .addComponent(backdrop)
             .addComponent(display)
-            .addComponent(new PauseMenuOverlayActions(this::close));
+            .addComponent(new PauseMenuOverlayActions(() -> openRequested = true));
     ServiceLocator.getEntityService().register(overlay);
 
     // Explicit, because Entity.create() runs components in hash order, not the order added.
@@ -66,7 +66,6 @@ public class PauseMenuOverlay {
   }
 
   private void close() {
-
     open = false;
     ServiceLocator.getEntityService().scheduleRemoval(overlay);
     overlay = null;
