@@ -313,11 +313,17 @@ public class BackgroundRenderComponent extends RenderComponent {
         /// add lightning/rain sounds for light/medium/heavy
         /// add random lightning generation (1 time slots for each lightning so 4 total)
 
+        /// want to have light/medium/heavy
+        /// light will have lightning 1-2, medium will have 2-3, heavy will have 3-4
+        /// light could have less frequent lightning, medium more, heavy much more
+        /// light could have chill vertical rain, medium longer more horizontal, heavy even more
+
         // so with heavier rain i will use longer rain
         // will need to custom make its size, gap, speed, angle
 
         // gap between raindrops, works best if gap * int = 1, where int is any positive integer
         float gap = 0.5f;
+        // random vertical offset applied to each rain drop in range -verticalOffset to verticalOffset
         float verticalOffset = 0.05f;
         float cameraWidth = (float) (int) camera.getCamera().viewportWidth + 4;
         float cameraHeight = (float) (int) camera.getCamera().viewportHeight + 6;
@@ -332,6 +338,7 @@ public class BackgroundRenderComponent extends RenderComponent {
         float drawPosX;
         float drawPosY;
 
+        // Compute array of offsets, so each raindrop has a set offset
         if (rainOffsets == null) {
           Random random = new Random();
           rainOffsets = new ArrayList<>();
@@ -368,12 +375,13 @@ public class BackgroundRenderComponent extends RenderComponent {
           while (currentX < endX) {
             // draw particle at currentX, ensuring it loops indefinitely
             drawPosX = currentX + (layer.position.x % cameraWidth);
-            // if drawPos is off-screen, loop it back to top
+            // if drawPos is off-screen, loop it back to left
             if (drawPosX >= endX) {
               drawPosX -= (cameraWidth);
             }
 
             // add a horizontal offset to every 2nd layer
+            // add random vertical offset to every raindrop
             if ((int) ((currentY * (1 / gap)) % 2) == 0) {
               batch.draw(
                   layer.texture,
