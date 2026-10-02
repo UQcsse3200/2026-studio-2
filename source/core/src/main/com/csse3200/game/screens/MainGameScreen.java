@@ -110,9 +110,11 @@ public class MainGameScreen extends ScreenAdapter {
     if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
       pauseOverlay.request();
     }
+    /*
     if (Gdx.input.isKeyJustPressed(Input.Keys.L)) {
       blackjackOverlay.request();
     }
+     */
 
     physicsEngine.update();
     ServiceLocator.getEntityService().update();
