@@ -250,4 +250,42 @@ class TextBoxComponentTest {
     boolean dismissed = getField(component, "dismissed");
     assertTrue(dismissed);
   }
+
+  @Test
+  void tabShouldBeIgnoredWhenExternallyControlled() {
+    TextBoxComponent component = makeComponent(List.of("A longer line of dialogue text"), 5f);
+    component.setExternallyControlled(true);
+    when(mockGraphics.getDeltaTime()).thenReturn(0.02f); // barely any time passed
+    when(mockInput.isKeyJustPressed(Keys.TAB)).thenReturn(true);
+
+    component.create();
+    invokeDraw(component); // TAB must not reveal, advance, or dismiss
+
+    int revealedChars = getField(component, "revealedChars");
+    assertEquals(0, revealedChars);
+    int currentPageIndex = getField(component, "currentPageIndex");
+    assertEquals(0, currentPageIndex);
+    boolean dismissed = getField(component, "dismissed");
+    assertFalse(dismissed);
+  }
+
+  @Test
+  void setPositionShouldSurviveRedraw() {
+    TextBoxComponent component = makeComponent(List.of("Some text"), 100f);
+    when(mockGraphics.getDeltaTime()).thenReturn(0f);
+    when(mockInput.isKeyJustPressed(Keys.TAB)).thenReturn(false);
+
+    component.create();
+    invokeDraw(component);
+    component.setPosition(100f, 200f);
+    invokeDraw(component); // draw() must not reset the table to the constructor coords
+
+    float posX = getField(component, "posX");
+    float posY = getField(component, "posY");
+    assertEquals(100f, posX);
+    assertEquals(200f, posY);
+    Table table = getField(component, "table");
+    assertEquals(100f, table.getX(), 0.01f);
+    assertEquals(200f, table.getY(), 0.01f);
+  }
 }

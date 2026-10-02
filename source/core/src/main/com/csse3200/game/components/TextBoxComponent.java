@@ -155,6 +155,13 @@ public class TextBoxComponent extends UIComponent {
     }
   }
 
+  /** Brings the textbox table above other stage actors. */
+  public void toFront() {
+    if (table != null) {
+      table.toFront();
+    }
+  }
+
   /** Dismisses the textbox and removes its scene2d actors. */
   public void dismiss() {
     if (dismissed) {
