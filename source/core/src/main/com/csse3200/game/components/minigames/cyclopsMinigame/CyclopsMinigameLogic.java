@@ -4,14 +4,12 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.math.GridPoint2;
-import com.badlogic.gdx.utils.Timer;
+import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.areas.terrain.TerrainComponent;
 import com.csse3200.game.components.Component;
-import com.csse3200.game.components.player.PlayerAnimationController;
 import com.csse3200.game.entities.Entity;
-import com.csse3200.game.events.EventHandler;
 import com.csse3200.game.services.ServiceLocator;
-import com.csse3200.game.ui.GameEndState;
+import com.csse3200.game.ui.BlankTransitionScreenCover;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,124 +17,74 @@ import org.slf4j.LoggerFactory;
 public class CyclopsMinigameLogic extends Component {
   private static final Logger logger = LoggerFactory.getLogger(CyclopsMinigameLogic.class);
 
+  static final int BUTTON = Input.Buttons.LEFT;
+
   /* State Machine */
-  private enum State {
-    STOPPED,
-    PLAYING,
-    GAME_OVER
+  enum State {
+    STOP,
+    SHOW_DELAY,
+    PLAY,
+    HIDE_DELAY,
+    PRE_MOVE,
+    MOVING,
+    LOSS,
+    WIN
   }
 
-  private GameEndState outcome = GameEndState.LOSE;
-  private State state;
+  State state = State.STOP;
+  float timeInState = 0f;
+  private boolean hasWon = false;
 
-  /* Timing Components */
-  Timer timer = new Timer();
-  private static final float FADE = 0.1f;
-  private static final float START_TRANSITION_DELAY = 0.2f;
-  private static final float END_TRANSITION_DELAY = 0.8f;
-  private static final float SHOW_HIDE_DELAY = 0.4f;
-  private static final float SHOW_GAME_OVER_DELAY = 1.4f;
+  static final float SHOW_HIDE_DELAY = 0.3f;
+  static final float TRANSITION_DELAY_GAP = 0.2f;
+  static final float TRANSITION_DELAY = 0.8f;
 
-  /* Minigame Components */
+  /* Components */
   private final TimingBarLogic timingBarLogic;
   private final TimingBarDisplay timingBarDisplay;
+  private final TerrainComponent terrainComponent;
 
-  /* Screen Components */
-  private BlankTransitionScreen transitionScreen;
+  /* Player Entity */
+  private final Entity playerEntity;
+  private static final String playerLossAnimation = "hurt";
 
-  /* Music / Sound effect components*/
-  private Sound walkingSound;
-  private long walkingSoundID;
-  private static final float walkingSoundVolume = 0.3f;
+  BlankTransitionScreenCover transitionScreenCover;
 
-  private Sound hitSound;
-  private long hitSoundID;
-  private static final float hitSoundVolume = 0.1f;
-
-  private Sound missSound;
-  private long missSoundID;
-  private static final float missSoundVolume = 0.2f;
-
-  /* Player */
-  private final Entity player;
-
-  /* Map Info */
-  private final TerrainComponent terrain;
-  private GridPoint2 winLocation;
+  /* Important Grid Locations */
   private List<GridPoint2> safeLocations;
   private List<GridPoint2> lossLocations;
-  private int currentSafeLoc = 0;
+  private GridPoint2 winLocation;
+  private int currentSafeLocation = 0;
 
-  /**
-   * Creates the game logic for the Cyclops minigame.
-   *
-   * @param logic - TimingBar Logic component
-   * @param display - TimingBar display component
-   * @param terrain - The terrain the minigame game area uses
-   * @param player - A display only player entity
-   */
+  /* Audio/Sound Effects */
+  Sound walkingSound;
+  private long walkingSoundID;
+  private static final String walkingSoundPath = "sounds/walkingSounds/walkingSound.mp3";
+  private static final float walkingSoundVolume = 0.4f;
+
+  Sound hitSound;
+  private long hitSoundID;
+  private static final String hitSoundPath = "sounds/minigames/cyclops/marker-hit.ogg";
+  private static final float hitSoundVolume = 0.4f;
+
+  Sound missSound;
+  private long missSoundID;
+  private static final String missSoundPath = "sounds/minigames/cyclops/marker-miss.ogg";
+  private static final float missSoundVolume = 0.4f;
+
+  /* Constructors */
   public CyclopsMinigameLogic(
-      TimingBarLogic logic, TimingBarDisplay display, TerrainComponent terrain, Entity player) {
+      TimingBarLogic logic,
+      TimingBarDisplay display,
+      TerrainComponent terrainComponent,
+      Entity player) {
     this.timingBarLogic = logic;
     this.timingBarDisplay = display;
-    this.terrain = terrain;
-    this.player = player;
-
-    this.state = State.STOPPED;
+    this.terrainComponent = terrainComponent;
+    this.playerEntity = player;
   }
 
-  @Override
-  public void create() {
-    EventHandler eventHandler = ServiceLocator.getCyclopsMinigameEventHandler();
-    eventHandler.addListener("start", this::startMinigame);
-    eventHandler.addListener("restart", this::restartMinigame);
-    eventHandler.addListener("stop", this::stopMinigame);
-    eventHandler.addListener("success", this::onTimingSuccess);
-    eventHandler.addListener("failure", this::onTimingFailure);
-    eventHandler.addListener(
-        "showBar",
-        () -> {
-          showTimingBar();
-          timingBarLogic.startMarker();
-        });
-    eventHandler.addListener(
-        "hideBar",
-        () -> {
-          hideTimingBar();
-          timingBarLogic.stopMarker();
-        });
-
-    walkingSound =
-        ServiceLocator.getResourceService()
-            .getAsset("sounds/walkingSounds/walkingSound.mp3", Sound.class);
-    hitSound =
-        ServiceLocator.getResourceService()
-            .getAsset("sounds/minigames/cyclops/marker-hit.ogg", Sound.class);
-    missSound =
-        ServiceLocator.getResourceService()
-            .getAsset("sounds/minigames/cyclops/marker-miss.ogg", Sound.class);
-
-    transitionScreen = new BlankTransitionScreen();
-    ServiceLocator.getEntityService().register(new Entity().addComponent(this.transitionScreen));
-  }
-
-  @Override
-  public void update() {
-    switch (state) {
-      case PLAYING -> updatePlaying();
-      case GAME_OVER -> scheduleGameOver();
-    }
-  }
-
-  @Override
-  public void dispose() {
-    hitSound.stop();
-    missSound.stop();
-    walkingSound.stop();
-
-    super.dispose();
-  }
-
+  /* Getters & Setters */
   public void setWinLocation(GridPoint2 winLocation) {
     this.winLocation = winLocation;
   }
@@ -149,214 +97,251 @@ public class CyclopsMinigameLogic extends Component {
     this.safeLocations = safeLocations;
   }
 
-  private void movePlayer(GridPoint2 location) {
-    player.setPosition(terrain.tileToWorldPosition(location));
-    logger.info("Player moved to WorldPosition: {}", terrain.tileToWorldPosition(location));
+  public boolean areNextSafeLocations() {
+    return this.currentSafeLocation < this.safeLocations.size();
   }
 
-  /**
-   * Moves the player to the next locations.
-   *
-   * <p>If 'success' player moves to next safe location. Returns False is player has moved to the
-   * win position otherwise True if player moves to next safe location. If not 'success' then player
-   * is moved to the next loss location and returns True
-   *
-   * @param success - boolean on whether to move player to next win or loss location
-   */
-  public void moveToNextLocation(boolean success) {
+  /* Package Private (Used for Testing) */
+  GridPoint2 getWinLocation() {
+    return this.winLocation;
+  }
+
+  List<GridPoint2> getLossLocations() {
+    return this.lossLocations;
+  }
+
+  List<GridPoint2> getSafeLocations() {
+    return this.safeLocations;
+  }
+
+  /* Player Handling Functions */
+  private void movePlayer(GridPoint2 location) {
+    Vector2 worldPos = this.terrainComponent.tileToWorldPosition(location);
+    logger.debug("Converting GridPoint2 Location ({}) to World Position ({})", location, worldPos);
+    logger.info(
+        "Moving Player (Entity {}) from orig:{} to dest:{}",
+        this.playerEntity.getId(),
+        this.playerEntity.getPosition(),
+        worldPos);
+    playerEntity.setPosition(worldPos);
+  }
+
+  void moveToNextLocation(boolean success) {
     if (success) {
-      currentSafeLoc += 1;
-      if (currentSafeLoc >= safeLocations.size()) {
-        player.setPosition(terrain.tileToWorldPosition(winLocation));
-        state = State.GAME_OVER;
-        outcome = GameEndState.WIN;
-        logger.info("Player moved to win location: {}", winLocation);
+      this.currentSafeLocation++;
+
+      if (!areNextSafeLocations()) { // Then player will move to win location
+        logger.info("Moving Player (Entity {}) to win location", this.playerEntity.getId());
+        movePlayer(this.winLocation);
+        hasWon = true;
         return;
       }
-      movePlayer(safeLocations.get(currentSafeLoc));
-      logger.info("Player moved to next safe location: {}", safeLocations.get(currentSafeLoc));
+
+      logger.info(
+          "Moving Player (Entity {}) to next safe location #{}",
+          this.playerEntity.getId(),
+          this.currentSafeLocation);
+      movePlayer(safeLocations.get(this.currentSafeLocation));
     } else {
-      movePlayer(lossLocations.get(currentSafeLoc));
-      logger.info("Player moved to next loss location: {}", lossLocations.get(currentSafeLoc));
-      state = State.GAME_OVER;
+      logger.info(
+          "Moving Player (Entity {}) to loss location #{}",
+          this.playerEntity.getId(),
+          this.currentSafeLocation);
+      movePlayer(lossLocations.get(this.currentSafeLocation));
     }
   }
 
-  private void updatePlaying() {
-    timingBarLogic.update(Gdx.graphics.getDeltaTime());
-
-    if (Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) {
-      timingBarLogic.stopMarker();
-      logger.info("sliding marker was stopped at {} (0.0 - 1.0)", timingBarLogic.markerX);
-
-      if (timingBarLogic.checkHit()) {
-        hitSoundID = hitSound.play();
-        hitSound.setVolume(hitSoundID, hitSoundVolume);
-      } else {
-        missSoundID = missSound.play();
-        missSound.setVolume(missSoundID, missSoundVolume);
-      }
-
-      scheduleTimingMinigameHide();
-    }
-  }
-
-  private void showTimingBar() {
-    timingBarDisplay.setVisible(true);
-  }
-
-  private void hideTimingBar() {
-    timingBarDisplay.setVisible(false);
-  }
-
-  private void onTimingSuccess() {
+  void timingSuccess() {
     moveToNextLocation(true);
   }
 
-  private void onTimingFailure() {
+  void timingFailure() {
     moveToNextLocation(false);
   }
 
-  private void playWalkingSound() {
-    walkingSoundID = walkingSound.play();
-    walkingSound.setLooping(walkingSoundID, true);
-    walkingSound.setVolume(walkingSoundID, walkingSoundVolume);
+  private boolean stopPressed() {
+    return Gdx.input.isButtonJustPressed(BUTTON);
   }
 
-  private void transition() {
-    if (timingBarLogic.checkHit()) {
-      onTimingSuccess();
-    } else {
-      onTimingFailure();
-    }
+  /* Audio */
+
+  private void loadSounds() {
+    walkingSound = ServiceLocator.getResourceService().getAsset(walkingSoundPath, Sound.class);
+    hitSound = ServiceLocator.getResourceService().getAsset(hitSoundPath, Sound.class);
+    missSound = ServiceLocator.getResourceService().getAsset(missSoundPath, Sound.class);
+  }
+
+  private void playWalkingSound() {
+    this.walkingSoundID = walkingSound.play();
+    walkingSound.setLooping(this.walkingSoundID, true);
+    walkingSound.setVolume(this.walkingSoundID, walkingSoundVolume);
   }
 
   private void stopWalkingSound() {
-    walkingSound.stop(walkingSoundID);
-  }
-
-  private void onTransitionStart() {
-    transitionScreen.fadeIn(FADE);
-    playWalkingSound();
-    timer.scheduleTask(
-        new Timer.Task() {
-          @Override
-          public void run() {
-            transition();
-          }
-        },
-        FADE); // Wait until after FADE to move player
-  }
-
-  private void onTransitionEnd() {
-    stopWalkingSound();
-    transitionScreen.fadeOut(FADE);
-  }
-
-  public void restartMinigame() {
-    logger.info("restarting minigame");
-    timer.clear();
-    timingBarLogic.stopMarker();
-    timingBarLogic.resetMarker();
-    timingBarDisplay.setVisible(false);
-    if (transitionScreen != null) {
-      transitionScreen.setVisible(false);
+    if (walkingSound == null) {
+      logger.warn("Attempting to stop walking sound when walkingSound variable is null");
+      return;
     }
-    movePlayer(safeLocations.getFirst());
-    scheduleTimingMinigameShow();
+    walkingSound.stop(walkingSoundID);
+    logger.debug("Stopped walking sound");
+  }
+
+  private void playMarkerHitSound() {
+    this.hitSoundID = hitSound.play();
+    hitSound.setVolume(this.hitSoundID, hitSoundVolume);
+    logger.debug("Starting hit sound (ID: {}) with volume {}", this.hitSoundID, hitSoundVolume);
+  }
+
+  private void stopMarkerHitSound() {
+    if (hitSound == null) {
+      logger.warn("Attempting to stop hit sound when hitSound variable is null");
+      return;
+    }
+    hitSound.stop(hitSoundID);
+    logger.debug("Stopped hit sound");
+  }
+
+  private void playMarkerMissSound() {
+    this.missSoundID = missSound.play();
+    missSound.setVolume(this.missSoundID, missSoundVolume);
+    logger.debug("Starting miss sound (ID: {}) with volume {}", this.missSoundID, missSoundVolume);
+  }
+
+  private void stopMarkerMissSound() {
+    if (missSound == null) {
+      logger.warn("Attempting to stop miss sound when missSound variable is null");
+      return;
+    }
+    missSound.stop(missSoundID);
+    logger.debug("Stopped miss sound");
+  }
+
+  void playCorrectMarkerSound() {
+    if (this.timingBarLogic.checkHit()) {
+      playMarkerHitSound();
+    } else {
+      playMarkerMissSound();
+    }
+  }
+
+  /* Game Logic */
+  void changeState(State next) {
+    state = next;
+    timeInState = 0f;
+  }
+
+  boolean elapsed(float seconds) {
+    return timeInState >= seconds;
+  }
+
+  private void handleTimingOutcome() {
+    if (this.timingBarLogic.checkHit()) {
+      timingSuccess();
+      if (hasWon) changeState(State.WIN);
+      else startMinigame();
+    } else {
+      timingFailure();
+      changeState(State.LOSS);
+    }
+  }
+
+  private void handlePlaying(float delta) {
+    timingBarLogic.update(delta);
+    if (stopPressed()) {
+      timingBarLogic.stopMarker();
+      playCorrectMarkerSound();
+      changeState(State.HIDE_DELAY);
+    }
   }
 
   public void startMinigame() {
-    logger.info("starting cyclops minigame");
-    scheduleTimingMinigameShow();
+    changeState(State.SHOW_DELAY);
   }
 
   public void stopMinigame() {
-    state = State.STOPPED;
+    changeState(State.STOP);
     timingBarLogic.stopMarker();
-    hideTimingBar();
-    transitionScreen.setVisible(false);
 
-    if (timer != null) timer.clear();
-    if (walkingSound != null) walkingSound.stop();
+    stopMarkerMissSound();
+    stopMarkerHitSound();
+    stopWalkingSound();
   }
 
-  public void gameOver() {
-    ServiceLocator.getGameEndEventHandler().trigger("gameEnd", outcome);
-    state = State.STOPPED;
+  public void restartMinigame() {
+    movePlayer(safeLocations.getFirst());
+    startMinigame();
   }
 
-  void scheduleTimingMinigameShow() {
-    timer.scheduleTask(
-        new Timer.Task() {
-          @Override
-          public void run() {
-            showTimingBar();
-            timingBarLogic.resetMarker();
-            timingBarLogic.startMarker();
-            state = State.PLAYING;
-          }
-        },
-        SHOW_HIDE_DELAY);
+  /* Component Overrides */
+  @Override
+  public void create() {
+    loadSounds();
+
+    this.transitionScreenCover = new BlankTransitionScreenCover();
+    ServiceLocator.getEntityService()
+        .register(new Entity().addComponent(this.transitionScreenCover));
+    this.state = State.STOP;
   }
 
-  void scheduleTimingMinigameHide() {
-    timer.scheduleTask(
-        new Timer.Task() {
-          @Override
-          public void run() {
-            hideTimingBar();
-            scheduleTransitionStart();
-          }
-        },
-        SHOW_HIDE_DELAY);
+  @Override
+  public void update() {
+    float delta = ServiceLocator.getTimeSource().getDeltaTime();
+    timeInState += delta;
+
+    switch (state) {
+      case STOP -> {
+        /* Do Nothing / Wait for External Input */
+      }
+      case WIN -> {
+        /* TODO: Connect to next level / cutscene */
+        logger.info("Player has WON the cyclops minigame");
+        changeState(State.STOP);
+      }
+      case LOSS -> {
+        /* Want to play a scream from cyclops, screen go black and after delay
+         * show player back at start of level
+         */
+        logger.info("Player has LOST the cyclops minigame");
+        changeState(State.STOP);
+      }
+      case SHOW_DELAY -> {
+        if (elapsed(SHOW_HIDE_DELAY)) {
+          timingBarDisplay.setVisible(true);
+          timingBarLogic.resetMarker();
+          timingBarLogic.startMarker();
+          changeState(State.PLAY);
+        }
+      }
+      case PLAY -> handlePlaying(delta);
+      case HIDE_DELAY -> {
+        if (elapsed(SHOW_HIDE_DELAY)) {
+          timingBarDisplay.setVisible(false);
+          changeState(State.PRE_MOVE);
+        }
+      }
+      case PRE_MOVE -> {
+        if (elapsed(TRANSITION_DELAY_GAP)) {
+          transitionScreenCover.setVisible(true);
+          playWalkingSound();
+          changeState(State.MOVING);
+        }
+      }
+      case MOVING -> {
+        if (elapsed(TRANSITION_DELAY)) {
+          transitionScreenCover.setVisible(false);
+          stopWalkingSound();
+          handleTimingOutcome(); /* Changes state itself */
+        }
+      }
+    }
   }
 
-  void scheduleTransitionStart() {
-    timer.scheduleTask(
-        new Timer.Task() {
-          @Override
-          public void run() {
-            onTransitionStart();
-            scheduleTransitionEnd();
-          }
-        },
-        START_TRANSITION_DELAY);
-  }
+  @Override
+  public void dispose() {
+    stopMarkerHitSound();
+    stopMarkerMissSound();
+    stopWalkingSound();
 
-  void scheduleTransitionEnd() {
-    timer.scheduleTask(
-        new Timer.Task() {
-          @Override
-          public void run() {
-            onTransitionEnd();
-
-            if (state == State.PLAYING) {
-              scheduleTimingMinigameShow();
-            }
-          }
-        },
-        END_TRANSITION_DELAY);
-  }
-
-  void scheduleGameOver() {
-    state = State.STOPPED;
-    timer.scheduleTask(
-        new Timer.Task() {
-          @Override
-          public void run() {
-            player.getComponent(PlayerAnimationController.class).playAnimation("death");
-
-            timer.scheduleTask(
-                new Timer.Task() {
-                  @Override
-                  public void run() {
-                    gameOver();
-                  }
-                },
-                SHOW_GAME_OVER_DELAY);
-          }
-        },
-        FADE + 0.2f);
+    super.dispose();
   }
 }

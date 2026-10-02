@@ -31,6 +31,10 @@ public class TimingBarLogic {
     this.changeScoringAreaWidth(scoringAreaWidth);
   }
 
+  public float getMarkerX() {
+    return this.markerX;
+  }
+
   /**
    * Change the width of the scoring area to the given width
    *
