@@ -96,14 +96,7 @@ public class ArrowRenderComponent extends RenderComponent {
 
   private Texture resolveTexture() {
     if (arrowType == ArrowType.GRAPPLE) {
-      if (pixelTexture == null) {
-        Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
-        pixmap.setColor(Color.WHITE);
-        pixmap.fill();
-        pixelTexture = new Texture(pixmap);
-        pixmap.dispose();
-      }
-      return pixelTexture;
+      return resolvePixelTexture();
     }
 
     if (arrowTexture == null && ServiceLocator.getResourceService() != null) {
@@ -115,5 +108,16 @@ public class ArrowRenderComponent extends RenderComponent {
       }
     }
     return arrowTexture;
+  }
+
+  private static Texture resolvePixelTexture() {
+    if (pixelTexture == null) {
+      Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
+      pixmap.setColor(Color.WHITE);
+      pixmap.fill();
+      pixelTexture = new Texture(pixmap);
+      pixmap.dispose();
+    }
+    return pixelTexture;
   }
 }

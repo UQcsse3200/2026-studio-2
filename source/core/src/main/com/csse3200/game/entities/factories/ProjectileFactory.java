@@ -118,16 +118,6 @@ public class ProjectileFactory {
   }
 
   public static Entity createGrappleArrow(Entity shooter, Vector2 position, Vector2 direction) {
-    return createGrappleArrow(shooter, position, direction, 1f);
-  }
-
-  /**
-   * The grapple arrow never goes through the player's charge-release path, so {@code
-   * speedMultiplier} is unused. This overload exists so {@code BowComponent} can type-check against
-   * {@code ProjectileCreator}.
-   */
-  public static Entity createGrappleArrow(
-      Entity shooter, Vector2 position, Vector2 direction, float speedMultiplier) {
     return createArrow(
         shooter,
         position,
@@ -172,21 +162,22 @@ public class ProjectileFactory {
       Entity shooter, Vector2 position, Vector2 direction) {
     Entity potion =
         createArrow(
+            position,
+            ItemType.PoisonPotion.getDamage(),
+            new ArrowProjectileComponent(
                 shooter,
-                position,
-                direction,
-                ItemType.PoisonPotion.getDamage(),
+                direction.cpy().nor(),
                 POISON_POTION_SPEED,
                 POISON_POTION_RANGE,
                 ArrowType.POTION,
                 ItemType.PoisonPotion.getPoisonDamagePerSecond(),
-                ItemType.PoisonPotion.getPoisonDuration())
-            .addComponent(
-                new PointLightComponent(
-                    ServiceLocator.getLightingService().getEngine().getRayHandler(),
-                    LightingDefaults.RAYS,
-                    new Color(0.20f, 0.05f, 0.25f, 1f),
-                    LightingDefaults.DIST));
+                ItemType.PoisonPotion.getPoisonDuration()),
+            ArrowType.POTION).addComponent(
+            new PointLightComponent(
+                ServiceLocator.getLightingService().getEngine().getRayHandler(),
+                LightingDefaults.RAYS,
+                new Color(0.20f, 0.05f, 0.25f, 1f),
+                LightingDefaults.DIST));
     potion.setScale(POISON_POTION_WIDTH, POISON_POTION_HEIGHT);
     return potion;
   }
@@ -199,35 +190,21 @@ public class ProjectileFactory {
       float speed,
       float range,
       ArrowType arrowType) {
-    return createArrow(shooter, position, direction, damage, speed, range, arrowType, 0f, 0f);
+    return createArrow(
+        position,
+        damage,
+        new ArrowProjectileComponent(shooter, direction.cpy().nor(), speed, range, arrowType),
+        arrowType);
   }
 
   private static Entity createArrow(
-      Entity shooter,
-      Vector2 position,
-      Vector2 direction,
-      int damage,
-      float speed,
-      float range,
-      ArrowType arrowType,
-      float poisonDamagePerSecond,
-      float poisonDuration) {
-    Vector2 normalizedDir = direction.cpy().nor();
-
+      Vector2 position, int damage, ArrowProjectileComponent projectile, ArrowType arrowType) {
     Entity arrow =
         new Entity()
             .addComponent(new PhysicsComponent().setBodyType(BodyType.DynamicBody))
             .addComponent(new HitboxComponent().setLayer(PhysicsLayer.PLAYER_PROJECTILE))
             .addComponent(new CombatStatsComponent(1, damage))
-            .addComponent(
-                new ArrowProjectileComponent(
-                    shooter,
-                    normalizedDir,
-                    speed,
-                    range,
-                    arrowType,
-                    poisonDamagePerSecond,
-                    poisonDuration))
+            .addComponent(projectile)
             .addComponent(new ArrowRenderComponent(arrowType));
 
     arrow.setScale(PLAYER_ARROW_WIDTH, PLAYER_ARROW_HEIGHT);

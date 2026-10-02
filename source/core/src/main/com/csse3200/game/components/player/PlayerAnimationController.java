@@ -14,7 +14,6 @@ public class PlayerAnimationController extends Component {
   private boolean attacking = false;
   private boolean dead = false;
   private boolean deathAnimationFinishedFired = false;
-  private boolean sleep = false;
   private boolean charging = false;
   private boolean drawingIn = false;
   // True for the whole bow sequence (draw -> hold -> shoot). While set, every other animation is
@@ -139,13 +138,7 @@ public class PlayerAnimationController extends Component {
   }
 
   void airDashStart() {
-    if (dead || bowActive) {
-      return;
-    }
-    jumping = false;
-    attacking = false;
-    dashing = true;
-    animator.startAnimation("air_dash");
+    dashStart();
   }
 
   void hurt() {
@@ -169,7 +162,6 @@ public class PlayerAnimationController extends Component {
   }
 
   void sleep() {
-    sleep = true;
     animator.startAnimation("sleep");
   }
 
@@ -223,7 +215,10 @@ public class PlayerAnimationController extends Component {
   }
 
   private void updateAnimation() {
-    String desired = moving ? (sprinting ? "sprint" : "walk") : "idle";
+    String desired = "idle";
+    if (moving) {
+      desired = sprinting ? "sprint" : "walk";
+    }
     if (!desired.equals(animator.getCurrentAnimation())) {
       animator.startAnimation(desired);
     }

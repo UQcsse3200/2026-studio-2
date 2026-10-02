@@ -76,7 +76,10 @@ public class BowComponent extends Component implements PrimaryWeapon {
         this.projectileCreator = ProjectileFactory::createFireArrow;
         break;
       case GRAPPLE:
-        this.projectileCreator = ProjectileFactory::createGrappleArrow;
+        // Grapples always launch at a fixed speed, independent of bow charge.
+        this.projectileCreator =
+            (shooter, position, direction, speedMultiplier) ->
+                ProjectileFactory.createGrappleArrow(shooter, position, direction);
         break;
       case STANDARD:
       default:
