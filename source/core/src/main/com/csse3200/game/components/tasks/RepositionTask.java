@@ -53,6 +53,7 @@ public class RepositionTask extends DefaultTask implements PriorityTask {
 
     if (movementTask.getStatus() != Status.ACTIVE) {
       status = Status.FINISHED;
+      repositionRequired = false;
     }
   }
 

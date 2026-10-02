@@ -7,6 +7,7 @@ import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.csse3200.game.ai.tasks.AITaskComponent;
 import com.csse3200.game.components.BurnStatsComponent;
 import com.csse3200.game.components.CombatStatsComponent;
+import com.csse3200.game.components.EnemyContactDamageComponent;
 import com.csse3200.game.components.EnemyDeathComponent;
 import com.csse3200.game.components.EnemyItemDropComponent;
 import com.csse3200.game.components.PoisonStatsComponent;
@@ -63,9 +64,10 @@ public class EnemyFactory {
     skeletonWarrior.addComponent(new SkeletonAnimationController(target));
     skeletonWarrior.addComponent(animator);
 
+    // Skeleton Warrior has a charged attack (extra range melee with initial delay)
     skeletonWarrior
         .getComponent(AITaskComponent.class)
-        .addTask(new DelayedAttackTask(target, 20, 0.8f, 0.5f));
+        .addTask(new DelayedAttackTask(target, 20, config.attackRange, 0.5f));
 
     return skeletonWarrior;
   }
@@ -149,9 +151,6 @@ public class EnemyFactory {
 
     Vulture.getComponent(AnimationRenderComponent.class).scaleEntity();
 
-    Vulture.getComponent(AITaskComponent.class)
-        .addTask(new DelayedAttackTask(target, 20, 0.8f, 0.5f));
-
     return Vulture;
   }
 
@@ -204,7 +203,7 @@ public class EnemyFactory {
 
     cyclops
         .getComponent(AITaskComponent.class)
-        .addTask(new DelayedAttackTask(target, 20, 0.8f, 0.5f));
+        .addTask(new DelayedAttackTask(target, 20, config.attackRange, 0.5f));
 
     return cyclops;
   }
@@ -231,7 +230,7 @@ public class EnemyFactory {
 
     calypso
         .getComponent(AITaskComponent.class)
-        .addTask(new DelayedAttackTask(target, 20, 0.8f, 0.5f));
+        .addTask(new DelayedAttackTask(target, 20, config.attackRange, 0.5f));
 
     return calypso;
   }
@@ -261,6 +260,7 @@ public class EnemyFactory {
             .addComponent(new ColliderComponent())
             .addComponent(new HitboxComponent().setLayer(PhysicsLayer.NPC))
             .addComponent(new CombatStatsComponent(config.health, config.baseAttack))
+            .addComponent(new EnemyContactDamageComponent(target))
             .addComponent(new EnemyDeathComponent())
             .addComponent(new PoisonStatsComponent())
             .addComponent(new BurnStatsComponent())

@@ -71,7 +71,7 @@
     "speed": 2.5,
     "behaviour": "chase",
     "attackType": "melee",
-    "attackRange": 6.0,
+    "attackRange": 1.0,
 
     "wanderRangeX": 4.0,
     "wanderRangeY": 0.0,
@@ -80,7 +80,7 @@
     "viewDistance": 6.0,
     "maxChaseDistance": 12.5,
     "repositionPriority": 25,
-    "repositionDistance": 5.0,
+    "repositionDistance": 3.0,
     "maxSpeed": 4.5,
     "gravity": false,
 
