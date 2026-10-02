@@ -1,6 +1,5 @@
 package com.csse3200.game.ui;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
@@ -14,11 +13,13 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.Value;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.utils.Align;
+import com.csse3200.game.components.TextBoxComponent;
 import com.csse3200.game.components.maingame.MainGameExitDisplay;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.events.EventHandler;
 import com.csse3200.game.services.ServiceLocator;
-import com.csse3200.game.ui.dialogue.TypewriterEffect;
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,12 +31,16 @@ public class GameEndDisplay extends UIComponent {
   private static final float BUTTON_WIDTH = 200f;
   private static final float BUTTON_HEIGHT = 70f;
 
-  private static final float MESSAGE_SPEED = 21f;
+  private static final float MESSAGE_CHARS_PER_SECOND = 21f;
+  /** Fraction of the stage height where the top of the result message sits. */
+  private static final float MESSAGE_Y_FRACTION = 0.68f;
+  /** Fraction of the stage width used as the message wrap width. */
+  private static final float MESSAGE_WIDTH_FRACTION = 0.7f;
+  private static final Color TRANSPARENT = new Color(0f, 0f, 0f, 0f);
 
   // private static NinePatchDrawable cachedBackground;
 
   private GameEndState state;
-  private final TypewriterEffect typewriterEffect;
   private String resultText;
   private final String titleText;
   private boolean visible = false;
@@ -46,19 +51,20 @@ public class GameEndDisplay extends UIComponent {
   private Image background;
   private Table panel;
   private Label titleLabel;
-  private Label messageLabel;
+  private TextBoxComponent messageBox;
   private Entity backdropEntity;
 
   public GameEndDisplay(GameEndState state) {
     logger.info(">>> GameEndDisplay CONSTRUCTOR START with state: {}", state);
     this.state = state;
     this.titleText = state == GameEndState.WIN ? "YOU WIN!" : "GAME OVER!";
-    this.resultText =
-        state == GameEndState.WIN
-            ? "You achieved victory and completed the objective."
-            : "better luck next time bub...";
-    this.typewriterEffect = new TypewriterEffect(MESSAGE_SPEED);
-    this.typewriterEffect.setText(this.resultText);
+    this.resultText = resultTextFor(state);
+  }
+
+  private static String resultTextFor(GameEndState state) {
+    return state == GameEndState.WIN
+        ? "You achieved victory and completed the objective."
+        : "better luck next time bub...";
   }
 
   public GameEndState getState() {
@@ -71,15 +77,8 @@ public class GameEndDisplay extends UIComponent {
     if (titleLabel != null) {
       titleLabel.setText(state == GameEndState.WIN ? "YOU WIN!" : "GAME OVER!");
     }
-    String newResultText =
-        state == GameEndState.WIN
-            ? "You achieved victory and completed the objective."
-            : "better luck next time bub...";
-    this.resultText = newResultText;
+    this.resultText = resultTextFor(state);
     visible = true;
-    if (typewriterEffect != null) {
-      typewriterEffect.setText(this.resultText);
-    }
     if (panel != null) {
       logger.info(
           "Panel is not null, setting visibility to true. Panel size: {} x {}",
@@ -90,6 +89,13 @@ public class GameEndDisplay extends UIComponent {
       showBackdrop();
     } else {
       logger.warn("Panel is NULL in setState()! buildActors() may not have been called.");
+    }
+    // Rebuild after the panel/backdrop are shown: the message box is a standalone stage actor,
+    // so it must be (re)created on top of the fullscreen backdrop. showBackdrop() brings the
+    // backdrop and panel forward, then the fresh box goes above them.
+    rebuildMessageBox();
+    if (messageBox != null) {
+      messageBox.toFront();
     }
     if (entity != null) {
       MainGameExitDisplay exitDisplay = entity.getComponent(MainGameExitDisplay.class);
@@ -150,8 +156,47 @@ public class GameEndDisplay extends UIComponent {
     return resultText;
   }
 
-  public TypewriterEffect getTypewriterEffect() {
-    return typewriterEffect;
+  TextBoxComponent getMessageBox() {
+    return messageBox;
+  }
+
+  /**
+   * Recreates the result message box for the current result text, mirroring how cutscenes rebuild
+   * their textbox per scene. The box reveals characters over time using TextBoxComponent's own
+   * typing effect. Transparent colors keep the panel's existing look (no nested scroll box).
+   */
+  private void rebuildMessageBox() {
+    if (messageBox != null) {
+      messageBox.dismiss();
+      messageBox = null;
+    }
+    if (stage == null) {
+      return;
+    }
+    messageBox =
+        new TextBoxComponent(
+            stage.getWidth() / 2f,
+            stage.getHeight() * MESSAGE_Y_FRACTION,
+            Color.WHITE,
+            TRANSPARENT,
+            TRANSPARENT,
+            MESSAGE_CHARS_PER_SECOND,
+            (int) (stage.getWidth() * MESSAGE_WIDTH_FRACTION),
+            10,
+            3,
+            null,
+            Align.center,
+            List.of(resultText));
+    messageBox.setExternallyControlled(true);
+    messageBox.create();
+  }
+
+  /** Keeps the message box anchored as the stage size changes. */
+  private void positionMessageBox() {
+    if (messageBox == null || stage == null) {
+      return;
+    }
+    messageBox.setPosition(stage.getWidth() / 2f, stage.getHeight() * MESSAGE_Y_FRACTION);
   }
 
   public boolean isVisible() {
@@ -161,6 +206,9 @@ public class GameEndDisplay extends UIComponent {
   /** Hides the game-end panel so gameplay can resume after a checkpoint restart. */
   public void hide() {
     visible = false;
+    if (messageBox != null) {
+      messageBox.dismiss();
+    }
     if (panel != null) {
       panel.setVisible(false);
     }
@@ -239,11 +287,6 @@ public class GameEndDisplay extends UIComponent {
     titleLabel.setFontScale(2f);
     titleLabel.setColor(Color.WHITE);
 
-    messageLabel = new Label("", skin);
-    messageLabel.setWrap(true);
-    messageLabel.setAlignment(1);
-    messageLabel.setColor(Color.WHITE);
-
     Texture restartUpTexture =
         ServiceLocator.getResourceService()
             .getAsset("images/Buttons/restart_up_btn.png", Texture.class);
@@ -300,7 +343,6 @@ public class GameEndDisplay extends UIComponent {
         });
 
     panel.add(titleLabel).pad(padding).row();
-    panel.add(messageLabel).fillX().expandX().pad(padding).row();
     panel.add(restartBtn).width(BUTTON_WIDTH).height(BUTTON_HEIGHT).padBottom(padding).row();
     panel.add(mainMenuBtn).width(BUTTON_WIDTH).height(BUTTON_HEIGHT).padBottom(padding).row();
     panel.add(exitGameBtn).width(BUTTON_WIDTH).height(BUTTON_HEIGHT).padBottom(padding).row();
@@ -316,15 +358,9 @@ public class GameEndDisplay extends UIComponent {
     stage.addActor(root);
     root.invalidateHierarchy();
     root.layout();
-    updateMessageLabel();
-  }
-
-  private void updateMessageLabel() {
-    if (messageLabel == null) {
-      return;
-    }
-    String revealedText = typewriterEffect.getRevealedText();
-    messageLabel.setText(revealedText);
+    // No message box until the game actually ends: the box is a standalone stage actor that
+    // reveals itself on its own draw loop, so creating it here would type the result text over
+    // live gameplay from boot. setState() builds it when the game ends.
   }
 
   @Override
@@ -332,12 +368,14 @@ public class GameEndDisplay extends UIComponent {
     if (panel == null || !visible) {
       return;
     }
-    typewriterEffect.update(Gdx.graphics.getDeltaTime());
-    updateMessageLabel();
+    positionMessageBox();
   }
 
   @Override
   public void dispose() {
+    if (messageBox != null) {
+      messageBox.dismiss();
+    }
     if (panel != null) {
       panel.remove();
     }
