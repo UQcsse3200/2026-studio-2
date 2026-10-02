@@ -5,10 +5,7 @@ import box2dLight.RayHandler;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Disposable;
-import com.csse3200.game.components.BurnStatsComponent;
 import com.csse3200.game.components.Component;
-import com.csse3200.game.components.PoisonStatsComponent;
-import com.csse3200.game.components.SlowStatsComponent;
 import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.services.ServiceLocator;
 

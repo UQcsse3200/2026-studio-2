@@ -1,6 +1,5 @@
 package com.csse3200.game.rendering;
 
-import box2dLight.PointLight;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -49,9 +48,9 @@ public class ParticleEffectsRenderingComponent extends RenderComponent {
     slowStats = entity.getComponent(SlowStatsComponent.class);
     poisonStats = entity.getComponent(PoisonStatsComponent.class);
     try {
-        pointLightComponent = entity.getComponent(PointLightComponent.class);
+      pointLightComponent = entity.getComponent(PointLightComponent.class);
     } catch (Exception e) {
-        pointLightComponent = null;
+      pointLightComponent = null;
     }
   }
 
@@ -66,9 +65,9 @@ public class ParticleEffectsRenderingComponent extends RenderComponent {
     boolean slowed = slowStats != null && slowStats.isSlowed();
     boolean poisoned = poisonStats != null && poisonStats.isPoisoned();
     if (!burning && !slowed && !poisoned) {
-        if (pointLightComponent != null) {
-            pointLightComponent.setColor(Color.CLEAR);
-        }
+      if (pointLightComponent != null) {
+        pointLightComponent.setColor(Color.CLEAR);
+      }
       return;
     }
 
@@ -101,9 +100,9 @@ public class ParticleEffectsRenderingComponent extends RenderComponent {
    */
   private void drawEffect(
       Vector2 centre, float baseSize, float seconds, Color base, Color mid, Color tip) {
-      if (pointLightComponent != null) {
-          pointLightComponent.setColor(base);
-      }
+    if (pointLightComponent != null) {
+      pointLightComponent.setColor(base);
+    }
     for (int i = 0; i < pixelCount; i++) {
       float hash = MathUtils.random((float) 11.0 + i * 17.3f);
       float sway = MathUtils.sin(seconds * (1.6f + hash) + i) * baseSize * 0.08f;
@@ -144,9 +143,9 @@ public class ParticleEffectsRenderingComponent extends RenderComponent {
 
   @Override
   public void dispose() {
-      if (pointLightComponent != null){
-          pointLightComponent.dispose();
-      }
+    if (pointLightComponent != null) {
+      pointLightComponent.dispose();
+    }
     shapeRenderer.dispose();
     super.dispose();
   }

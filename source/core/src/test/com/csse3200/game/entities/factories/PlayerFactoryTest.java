@@ -109,8 +109,9 @@ class PlayerFactoryTest {
 
     assertNotNull(player.getComponent(AnimationRenderComponent.class));
     org.junit.jupiter.api.Assertions.assertNull(player.getComponent(PlayerActions.class));
-    }
-    @Test
+  }
+
+  @Test
   void shouldApplyConfiguredHealthDamageAndInvulnerabilityToCreatedPlayer() {
     PlayerConfig config = FileLoader.readClass(PlayerConfig.class, "configs/player.json");
     CombatStatsComponent stats =
@@ -128,12 +129,13 @@ class PlayerFactoryTest {
     assertEquals(config.health - 2, stats.getHealth());
   }
 
-    @Test
-    void shouldCreateFullPlayerWithBowComponent() {
-        Entity player = PlayerFactory.createPlayer();
+  @Test
+  void shouldCreateFullPlayerWithBowComponent() {
+    Entity player = PlayerFactory.createPlayer();
 
-        assertNotNull(player.getComponent(BowComponent.class));
-    }
+    assertNotNull(player.getComponent(BowComponent.class));
+  }
+
   @Test
   void shouldCreateDisplayPlayerWithoutMovementWeaponsOrGrapple() {
     Entity display = PlayerFactory.createPlayerDisplay();
@@ -149,4 +151,5 @@ class PlayerFactoryTest {
         "death", display.getComponent(AnimationRenderComponent.class).getCurrentAnimation());
     assertEquals(0.75f, display.getScale().x, 0.001f);
     assertEquals(1.5f, display.getScale().y, 0.001f);
-}}
+  }
+}

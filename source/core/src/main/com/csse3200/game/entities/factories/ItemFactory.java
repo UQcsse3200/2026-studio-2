@@ -35,15 +35,19 @@ public class ItemFactory {
    * @return item entity
    */
   public static Entity createItem(Item item) {
-      Color itemColour = new Color(1, 1, 1, 0.5f);
+    Color itemColour = new Color(1, 1, 1, 0.5f);
     Entity itemEntity =
         new Entity()
             .addComponent(new TextureRenderComponent(item.getItemType().getTexturePath()))
             .addComponent(new PhysicsComponent().setBodyType(BodyType.StaticBody))
             .addComponent(new HitboxComponent().setLayer(PhysicsLayer.DEFAULT))
-            .addComponent(new ItemComponent(item)).addComponent(new PointLightComponent(
-                ServiceLocator.getLightingService().getEngine()
-                    .getRayHandler(), LightingDefaults.RAYS, itemColour, LightingDefaults.DIST));
+            .addComponent(new ItemComponent(item))
+            .addComponent(
+                new PointLightComponent(
+                    ServiceLocator.getLightingService().getEngine().getRayHandler(),
+                    LightingDefaults.RAYS,
+                    itemColour,
+                    LightingDefaults.DIST));
 
     itemEntity.getComponent(TextureRenderComponent.class).scaleEntity();
     itemEntity.scaleHeight(ITEM_HEIGHT);
@@ -149,14 +153,19 @@ public class ItemFactory {
    * @return gold pickup entity
    */
   public static Entity createGold(int amount) {
-      Color goldColour = new Color(255, 215, 0, 0.6f);
+    Color goldColour = new Color(255, 215, 0, 0.6f);
     Entity gold =
         new Entity()
             .addComponent(new TextureRenderComponent(GOLD_TEXTURE))
             .addComponent(new PhysicsComponent().setBodyType(BodyType.StaticBody))
             .addComponent(new HitboxComponent().setLayer(PhysicsLayer.DEFAULT))
-            .addComponent(new GoldPickupComponent(amount)).addComponent(new PointLightComponent(ServiceLocator.getLightingService().getEngine()
-                .getRayHandler(), LightingDefaults.RAYS, goldColour, LightingDefaults.DIST));
+            .addComponent(new GoldPickupComponent(amount))
+            .addComponent(
+                new PointLightComponent(
+                    ServiceLocator.getLightingService().getEngine().getRayHandler(),
+                    LightingDefaults.RAYS,
+                    goldColour,
+                    LightingDefaults.DIST));
 
     gold.getComponent(TextureRenderComponent.class).scaleEntity();
     gold.scaleHeight(ITEM_HEIGHT);

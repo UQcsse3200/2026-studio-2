@@ -162,22 +162,23 @@ public class ProjectileFactory {
       Entity shooter, Vector2 position, Vector2 direction) {
     Entity potion =
         createArrow(
-            position,
-            ItemType.PoisonPotion.getDamage(),
-            new ArrowProjectileComponent(
-                shooter,
-                direction.cpy().nor(),
-                POISON_POTION_SPEED,
-                POISON_POTION_RANGE,
-                ArrowType.POTION,
-                ItemType.PoisonPotion.getPoisonDamagePerSecond(),
-                ItemType.PoisonPotion.getPoisonDuration()),
-            ArrowType.POTION).addComponent(
-            new PointLightComponent(
-                ServiceLocator.getLightingService().getEngine().getRayHandler(),
-                LightingDefaults.RAYS,
-                new Color(0.20f, 0.05f, 0.25f, 1f),
-                LightingDefaults.DIST));
+                position,
+                ItemType.PoisonPotion.getDamage(),
+                new ArrowProjectileComponent(
+                    shooter,
+                    direction.cpy().nor(),
+                    POISON_POTION_SPEED,
+                    POISON_POTION_RANGE,
+                    ArrowType.POTION,
+                    ItemType.PoisonPotion.getPoisonDamagePerSecond(),
+                    ItemType.PoisonPotion.getPoisonDuration()),
+                ArrowType.POTION)
+            .addComponent(
+                new PointLightComponent(
+                    ServiceLocator.getLightingService().getEngine().getRayHandler(),
+                    LightingDefaults.RAYS,
+                    new Color(0.20f, 0.05f, 0.25f, 1f),
+                    LightingDefaults.DIST));
     potion.setScale(POISON_POTION_WIDTH, POISON_POTION_HEIGHT);
     return potion;
   }
