@@ -1,18 +1,32 @@
 package com.csse3200.game.areas;
 
 import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.GridPoint2;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.areas.terrain.TerrainFactory;
 import com.csse3200.game.areas.terrain.TerrainFactory.TerrainType;
+import com.csse3200.game.areas.terrain.configs.PlatformConfig;
 import com.csse3200.game.areas.terrain.configs.levelconfigs.Level1Config;
 import com.csse3200.game.components.CameraComponent;
+import com.csse3200.game.components.Component;
 import com.csse3200.game.components.gamearea.GameAreaDisplay;
+import com.csse3200.game.components.level.DesertHazardRecoveryComponent;
+import com.csse3200.game.components.level.RoomDoorComponent;
+import com.csse3200.game.components.level.RoomDoorDisplay;
+import com.csse3200.game.components.npc.MerchantComponent;
+import com.csse3200.game.components.npc.MerchantDisplay;
 import com.csse3200.game.components.player.KeyboardPlayerInputComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.EnemyFactory;
+import com.csse3200.game.entities.factories.ObstacleFactory;
 import com.csse3200.game.entities.factories.PlayerFactory;
+import com.csse3200.game.rendering.AnimationRenderComponent;
 import com.csse3200.game.rendering.BackgroundRenderComponent;
+import com.csse3200.game.rendering.CaveEntranceRenderComponent;
+import com.csse3200.game.rendering.TextureRenderComponent;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import org.slf4j.Logger;
@@ -38,24 +52,19 @@ public class Level1GameArea extends GameArea {
     new GridPoint2(10, 2), new GridPoint2(20, 2), new GridPoint2(35, 2)
   };
 
-  private static final GridPoint2[] skeletonWarriorSpawnLocations =
-    new GridPoint2[] {
-      new GridPoint2(1, 16),
+  // Encounters are activated nearby so sentries do not wander away before the player arrives.
+  private static final GridPoint2[] skeletonWarriorSpawnLocations = {
+    new GridPoint2(21, 5),
+    new GridPoint2(3, 16),
+    new GridPoint2(30, 20),
+    new GridPoint2(37, 22),
+    new GridPoint2(40, 22),
+    new GridPoint2(79, 17),
+    new GridPoint2(82, 17)
   };
-
-  // private static final GridPoint2[] VultureSpawnLocations =
-  //     new GridPoint2[] {
-  //       new GridPoint2(30, 24), new GridPoint2(65, 20),
-  //     };
-
-  private static final GridPoint2[] NecromancerSpawnLocations = new GridPoint2[] {new GridPoint2(23, 17)};
-
-  private static final GridPoint2[] skeletonArcherSpawnLocations =
-    new GridPoint2[] {
-    new GridPoint2(23, 5),
-    // new GridPoint2(57, 10),
-    // new GridPoint2(20, 8),
-    // new GridPoint2(46, 16),
+  private static final GridPoint2[] NecromancerSpawnLocations = {};
+  private static final GridPoint2[] skeletonArcherSpawnLocations = {
+    new GridPoint2(23, 17), new GridPoint2(58, 11)
   };
 
   // // ============ TESTING SPAWN LOCATIONS ================
@@ -105,11 +114,12 @@ public class Level1GameArea extends GameArea {
     "images/terrain/Level_1/sheeps_cave.png",
     "images/terrain/treasure_room.png",
     "images/terrain/npc_room.png",
+    "images/ui/menu_box.png",
+    "images/terrain/Level_1/Level_1_door.png",
     "images/terrain/normal_cave.png",
     "images/terrain/Level_1/Level_1_tile.png",
     "images/terrain/Level_1/Level_1_platform.png",
     "images/terrain/Level_1/Level_1_Spike.png",
-
 
     // Enemy textures
     "images/enemies/skeleton_warrior.png",
@@ -123,6 +133,8 @@ public class Level1GameArea extends GameArea {
 
   private static final String[] forestTextureAtlases = {
     "images/player/player.atlas",
+    "images/npc/merchant.atlas",
+    "images/terrain/Level_1/sheep.atlas",
     "images/terrain/Level_1/Level_1_checkpoint.atlas",
     "images/enemies/skeleton_archer.atlas",
     "images/enemies/skeleton_warrior.atlas",
@@ -167,7 +179,13 @@ public class Level1GameArea extends GameArea {
     //// spawnWinCondition();
     spawnSkeletonArcher();
     spawnSkeletonWarrior();
-    //spawnVulture();
+    spawnWhenApproaching(
+        new GridPoint2(74, 9),
+        () -> spawnEntityAt(EnemyFactory.createVulture(player), new GridPoint2(74, 9), true, true));
+    spawnSideRooms();
+    Entity exit = new Entity().addComponent(new CaveEntranceRenderComponent());
+    exit.setScale(3f, 4f);
+    spawnEntityAt(exit, new GridPoint2(87, 17), false, false);
 
     // Test enemy functionalitys
     // spawnTestSkeletonWarrior();
@@ -175,7 +193,7 @@ public class Level1GameArea extends GameArea {
     // spawnTestVulture();
     // spawnTestNecromancer();
 
-    spawnNecromancer();
+    // spawnNecromancer();
 
     // spawnTestWinCondition(); // Temporary test win condition near player spawn for quick testing
 
@@ -262,6 +280,7 @@ public class Level1GameArea extends GameArea {
 
   private Entity spawnPlayer() {
     Entity newPlayer = PlayerFactory.createPlayer();
+    newPlayer.addComponent(new DesertHazardRecoveryComponent());
     newPlayer.getEvents().addListener("grappleRequested", this::checkSuccessfulGrapple);
 
     input = newPlayer.getComponent(KeyboardPlayerInputComponent.class);
@@ -279,8 +298,10 @@ public class Level1GameArea extends GameArea {
 
   private void spawnSkeletonWarrior() {
     for (GridPoint2 spawnLocation : skeletonWarriorSpawnLocations) {
-      Entity enemy = EnemyFactory.createSkeletonWarrior(player);
-     spawnEntityAt(enemy, spawnLocation, true, true);
+      spawnWhenApproaching(
+          spawnLocation,
+          () ->
+              spawnEntityAt(EnemyFactory.createSkeletonWarrior(player), spawnLocation, true, true));
     }
   }
 
@@ -293,8 +314,10 @@ public class Level1GameArea extends GameArea {
 
   private void spawnSkeletonArcher() {
     for (GridPoint2 spawnLocation : skeletonArcherSpawnLocations) {
-      Entity enemy = EnemyFactory.createSkeletonArcher(player);
-      spawnEntityAt(enemy, spawnLocation, true, true);
+      spawnWhenApproaching(
+          spawnLocation,
+          () ->
+              spawnEntityAt(EnemyFactory.createSkeletonArcher(player), spawnLocation, true, true));
     }
   }
 
@@ -336,6 +359,122 @@ public class Level1GameArea extends GameArea {
 
   // ======== ^^^^^ ============
 
+  private void spawnWhenApproaching(GridPoint2 location, Runnable spawn) {
+    spawnEntity(
+        new Entity()
+            .addComponent(
+                new Component() {
+                  private boolean spawned;
+
+                  @Override
+                  public void update() {
+                    if (!spawned
+                        && Math.abs(player.getPosition().x - location.x) < 9
+                        && Math.abs(player.getPosition().y - location.y) < 3.5f) {
+                      spawned = true;
+                      spawn.run();
+                    }
+                  }
+                }));
+  }
+
+  /** Optional rooms leave every platform, pickup and checkpoint on the original route intact. */
+  private void spawnSideRooms() {
+    spawnRoom(110, "images/terrain/npc_room.png");
+    spawnRoom(140, "images/terrain/normal_cave.png");
+    Rectangle mainBounds = new Rectangle(0, 0, worldBounds.x, worldBounds.y);
+    // Only one entrance on the main map: a reverse climb onto the original roof.
+    spawnDoor(
+        3,
+        23,
+        "Enter the hidden refuge",
+        new Vector2(115, 2.1f),
+        new Rectangle(110, 0, 20, 11.25f));
+    spawnDoor(112, 2, "Return to the desert", new Vector2(6, 23.1f), mainBounds);
+    // The Easter egg is a second discovery inside the refuge, not another main-route door.
+    Entity alcove =
+        ObstacleFactory.createPlatform(
+            new PlatformConfig(
+                new GridPoint2(125, 4), 4, 1, 0, "images/terrain/Level_1/Level_1_platform.png"));
+    alcove.setScale(4, 1);
+    alcove.setPosition(125, 4);
+    spawnEntity(alcove);
+    spawnDoor(
+        127,
+        5,
+        "Explore the quiet cave",
+        new Vector2(145, 2.1f),
+        new Rectangle(140, 0, 20, 11.25f));
+    spawnDoor(
+        142, 2, "Return to the refuge", new Vector2(125, 5.1f), new Rectangle(110, 0, 20, 11.25f));
+
+    AnimationRenderComponent animator =
+        new AnimationRenderComponent(
+            ServiceLocator.getResourceService()
+                .getAsset("images/npc/merchant.atlas", TextureAtlas.class));
+    animator.addAnimation("idle", 0.65f, Animation.PlayMode.LOOP);
+    Entity merchant =
+        new Entity()
+            .addComponent(animator)
+            .addComponent(new MerchantComponent(player))
+            .addComponent(new MerchantDisplay());
+    animator.scaleEntity();
+    merchant.scaleHeight(2.05f);
+    animator.startAnimation("idle");
+    merchant.setPosition(123, 2);
+    spawnEntity(merchant);
+    for (int i = 0; i < 3; i++) {
+      AnimationRenderComponent sheepAnimator =
+          new AnimationRenderComponent(
+              ServiceLocator.getResourceService()
+                  .getAsset("images/terrain/Level_1/sheep.atlas", TextureAtlas.class));
+      sheepAnimator.addAnimation("idle", 0.5f + i * 0.12f, Animation.PlayMode.LOOP);
+      Entity sheep = new Entity().addComponent(sheepAnimator);
+      sheepAnimator.scaleEntity();
+      sheep.scaleWidth(1.7f);
+      sheepAnimator.startAnimation("idle");
+      sheep.setPosition(150 + i * 2.5f, 2);
+      spawnEntity(sheep);
+    }
+  }
+
+  private void spawnDoor(float x, float y, String label, Vector2 destination, Rectangle bounds) {
+    Entity door =
+        new Entity()
+            .addComponent(new CaveEntranceRenderComponent())
+            .addComponent(new RoomDoorComponent(player, camera, destination, bounds, label))
+            .addComponent(new RoomDoorDisplay());
+    door.setScale(2f, 2.67f);
+    door.setPosition(x, y);
+    spawnEntity(door);
+  }
+
+  private void spawnRoom(float x, String texture) {
+    Entity room =
+        new Entity()
+            .addComponent(
+                new TextureRenderComponent(texture) {
+                  @Override
+                  public float getZIndex() {
+                    return -200f;
+                  }
+                });
+    room.setScale(20, 11.25f);
+    room.setPosition(x, 0.2f);
+    spawnEntity(room);
+    Entity floor = ObstacleFactory.createWall(20, 2);
+    floor.setPosition(x, 0);
+    spawnEntity(floor);
+    for (float wallX : new float[] {x, x + 19.5f}) {
+      Entity wall = ObstacleFactory.createWall(0.5f, 11.25f);
+      wall.setPosition(wallX, 0);
+      spawnEntity(wall);
+    }
+    Entity ceiling = ObstacleFactory.createWall(20, 1);
+    ceiling.setPosition(x, 11.25f);
+    spawnEntity(ceiling);
+  }
+
   /** Plays the background music. */
   private void playMusic() {
 
@@ -375,6 +514,8 @@ public class Level1GameArea extends GameArea {
   /** Dispose of the game area. */
   @Override
   public void dispose() {
+    player.getComponent(DesertHazardRecoveryComponent.class).setEnabled(false);
+    player.getEvents().trigger("grappleRelease");
     super.dispose();
     ServiceLocator.getResourceService().getAsset(backgroundMusic, Music.class).stop();
     this.unloadAssets();

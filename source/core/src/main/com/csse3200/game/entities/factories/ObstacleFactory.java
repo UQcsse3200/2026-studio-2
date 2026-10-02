@@ -16,7 +16,6 @@ import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.physics.components.PhysicsMovementComponent;
 import com.csse3200.game.rendering.*;
-import com.csse3200.game.rendering.GrappleSideRenderComponent;
 import com.csse3200.game.rendering.TextureRenderComponent;
 import com.csse3200.game.rendering.TiledRenderComponent;
 import com.csse3200.game.services.ServiceLocator;
@@ -278,7 +277,7 @@ public class ObstacleFactory {
             .addComponent(collider)
             .addComponent(new LevelTriggerComponent(nextLevelName));
 
-    trigger.getComponent(ColliderComponent.class).setAsBox(new Vector2(2f, 16f));
+    trigger.getComponent(ColliderComponent.class).setAsBox(new Vector2(2f, 3f));
 
     return trigger;
   }

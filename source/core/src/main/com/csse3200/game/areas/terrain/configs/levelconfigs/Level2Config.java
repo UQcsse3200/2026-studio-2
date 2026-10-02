@@ -23,7 +23,9 @@ public class Level2Config extends LevelConfig {
     crumblingPlatformTFP = "images/backgrounds/Platform_level-2.png";
     triggerablePlatformTFP = "images/backgrounds/Platform_level-2.png";
     ledgesTFP = "images/backgrounds/Platform_level-2.png";
-    groundTFP = "images/terrain/tile-level2.png";
+    groundTFP = "images/backgrounds/Ground_level-2.png";
+    spikeTFP = "images/terrain/Level_1/Level_1_Spike.png";
+    checkpointAtlas = "images/terrain/Level_1/Level_1_checkpoint.atlas";
 
     playerSpawn = new GridPoint2(0, 42);
     winConditionSpawn = new GridPoint2(33, 8);

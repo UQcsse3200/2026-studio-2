@@ -28,7 +28,9 @@ public class Level2GameArea extends GameArea {
     "images/backgrounds/Background-2.png",
     "images/backgrounds/Platform_level-2.png",
 
-    // Level 2 ground tile
+    // Assets referenced by Level2Config (the old tile-level2/grass atlas files no longer exist).
+    "images/backgrounds/Ground_level-2.png",
+    "images/terrain/Level_1/Level_1_Spike.png",
 
     // Transparent texture used for the physics-only floor
     "images/ui/transparent.png",
@@ -48,7 +50,7 @@ public class Level2GameArea extends GameArea {
   };
 
   private static final String[] level2TexturesAtlas = {
-    "images/terrain_iso_grass.atlas", "images/ui/in_level_button.atlas"
+    "images/terrain/Level_1/Level_1_checkpoint.atlas", "images/ui/in_level_button.atlas"
   };
 
   private static final String[] level2Sounds = {"sounds/Impact4.ogg"};

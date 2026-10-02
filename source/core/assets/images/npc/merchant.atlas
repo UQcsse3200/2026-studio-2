@@ -1,0 +1,26 @@
+merchant-player-style.png
+size: 1774, 887
+format: RGBA8888
+filter: Nearest, Nearest
+repeat: none
+default
+  rotate: false
+  xy: 310, 50
+  size: 450, 790
+  orig: 450, 790
+  offset: 0, 0
+  index: -1
+idle
+  rotate: false
+  xy: 310, 50
+  size: 450, 790
+  orig: 450, 790
+  offset: 0, 0
+  index: 0
+idle
+  rotate: false
+  xy: 1055, 50
+  size: 450, 790
+  orig: 450, 790
+  offset: 0, 0
+  index: 1
