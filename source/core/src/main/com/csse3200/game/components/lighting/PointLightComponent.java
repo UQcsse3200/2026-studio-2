@@ -28,16 +28,6 @@ public class PointLightComponent extends Component implements Disposable {
   // Movement
   private final Vector2 velocity = new Vector2(0f, 0f);
 
-  private static final Color fireBaseColour = new Color(0.55f, 0.05f, 0.02f, 1f);
-
-  private static final Color iceBaseColour = new Color(0.05f, 0.25f, 0.65f, 1f);
-
-  private static final Color poisonBaseColour = new Color(0.20f, 0.05f, 0.25f, 1f);
-
-  private BurnStatsComponent burnStats;
-  private SlowStatsComponent slowStats;
-  private PoisonStatsComponent poisonStats;
-
   /**
    * The CircleLightComponent must be registered to the same rayHandler that is being rendered. All
    * light objects must be attached to the rayHandler.
@@ -58,33 +48,15 @@ public class PointLightComponent extends Component implements Disposable {
     circleLight.setXray(false);
 
     short categoryBits = -1;
-    short maskBits = (short) ~PhysicsLayer.GROUND;
+    short maskBits = (short) ~PhysicsLayer.DEFAULT;
     short groupIndex = 0;
     circleLight.setContactFilter(categoryBits, groupIndex, maskBits);
-
-    burnStats = entity.getComponent(BurnStatsComponent.class);
-    slowStats = entity.getComponent(SlowStatsComponent.class);
-    poisonStats = entity.getComponent(PoisonStatsComponent.class);
   }
 
   public void update() {
     if (circleLight == null) return;
     if (circleLight.isActive() != isActive) {
       circleLight.setActive(isActive);
-    }
-
-    boolean burning = burnStats != null && burnStats.isBurning();
-    boolean slowed = slowStats != null && slowStats.isSlowed();
-    boolean poisoned = poisonStats != null && poisonStats.isPoisoned();
-
-    if (burning) {
-      setColor(fireBaseColour);
-    }
-    if (slowed) {
-      setColor(iceBaseColour);
-    }
-    if (poisoned) {
-      setColor(poisonBaseColour);
     }
 
     // get the amount of time passed
