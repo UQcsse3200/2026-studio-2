@@ -4,6 +4,7 @@ import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
@@ -34,6 +35,8 @@ public class GameEndDisplay extends UIComponent {
   private static final float MESSAGE_CHARS_PER_SECOND = 21f;
   /** Fraction of the stage height where the top of the result message sits. */
   private static final float MESSAGE_Y_FRACTION = 0.68f;
+  /** Gap in pixels kept between the top of the restart button and the message above it. */
+  private static final float MESSAGE_BUTTON_GAP = 12f;
   /** Fraction of the stage width used as the message wrap width. */
   private static final float MESSAGE_WIDTH_FRACTION = 0.7f;
   private static final Color TRANSPARENT = new Color(0f, 0f, 0f, 0f);
@@ -52,6 +55,7 @@ public class GameEndDisplay extends UIComponent {
   private Table panel;
   private Label titleLabel;
   private TextBoxComponent messageBox;
+  private ImageButton restartBtn;
   private Entity backdropEntity;
 
   public GameEndDisplay(GameEndState state) {
@@ -63,8 +67,8 @@ public class GameEndDisplay extends UIComponent {
 
   private static String resultTextFor(GameEndState state) {
     return state == GameEndState.WIN
-        ? "You achieved victory and completed the objective."
-        : "better luck next time bub...";
+        ? "You are getting closer to home, but the journey is not over yet..."
+        : "What would Penelepe say...";
   }
 
   public GameEndState getState() {
@@ -191,9 +195,20 @@ public class GameEndDisplay extends UIComponent {
     messageBox.create();
   }
 
-  /** Keeps the message box anchored as the stage size changes. */
+  /**
+   * Keeps the message box anchored in the panel's message row, just above the restart button.
+   * Tracking the button (rather than a fixed stage fraction) keeps the text clear of the title
+   * on any resolution or with any message length.
+   */
   private void positionMessageBox() {
     if (messageBox == null || stage == null) {
+      return;
+    }
+    if (restartBtn != null && restartBtn.getStage() != null) {
+      Vector2 buttonTopCenter =
+          restartBtn.localToStageCoordinates(
+              new Vector2(restartBtn.getWidth() / 2f, restartBtn.getHeight()));
+      messageBox.setPosition(buttonTopCenter.x, buttonTopCenter.y + MESSAGE_BUTTON_GAP);
       return;
     }
     messageBox.setPosition(stage.getWidth() / 2f, stage.getHeight() * MESSAGE_Y_FRACTION);
@@ -309,7 +324,7 @@ public class GameEndDisplay extends UIComponent {
     ImageButton.ImageButtonStyle restartButtonStyle = new ImageButton.ImageButtonStyle();
     restartButtonStyle.up = new TextureRegionDrawable(restartUpTexture);
     restartButtonStyle.down = new TextureRegionDrawable(restartDownTexture);
-    ImageButton restartBtn = new ImageButton(restartButtonStyle);
+    restartBtn = new ImageButton(restartButtonStyle);
     restartBtn.addListener(
         new ChangeListener() {
           @Override

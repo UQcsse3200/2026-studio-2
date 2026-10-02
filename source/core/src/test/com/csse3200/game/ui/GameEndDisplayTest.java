@@ -55,7 +55,7 @@ class GameEndDisplayTest {
 
     assertEquals(GameEndState.WIN, display.getState());
     assertEquals("YOU WIN!", display.getTitleText());
-    assertTrue(display.getResultText().contains("victory"));
+    assertTrue(display.getResultText().contains("closer to home"));
   }
 
   @Test
@@ -64,7 +64,7 @@ class GameEndDisplayTest {
 
     assertEquals(GameEndState.LOSE, display.getState());
     assertEquals("GAME OVER!", display.getTitleText());
-    assertTrue(display.getResultText().contains("luck"));
+    assertTrue(display.getResultText().contains("Penelepe"));
   }
 
   @Test
