@@ -182,6 +182,23 @@ public class ColliderComponent extends Component {
   }
 
   /**
+   * Exclude layers from collision detection, preserving all other filter settings. May be called
+   * before or after the fixture is created.
+   *
+   * @param layers layers this collider should pass through
+   * @return self
+   */
+  public ColliderComponent excludeCollisionLayers(short layers) {
+    fixtureDef.filter.maskBits &= ~layers;
+    if (fixture != null) {
+      Filter filter = fixture.getFilterData();
+      filter.maskBits &= ~layers;
+      fixture.setFilterData(filter);
+    }
+    return this;
+  }
+
+  /**
    * Set the collider layer, used in collision logic
    *
    * @param layerMask Bitmask of {@link PhysicsLayer} this collider belongs to
