@@ -60,12 +60,17 @@ public class GdxGame extends Game {
    * @param screenType screen type
    */
   public void setScreen(ScreenType screenType) {
+    setScreen(screenType, ScreenType.MINIGAME_SELECT);
+  }
+
+  /** Sets a screen while preserving the screen to return to when supported. */
+  public void setScreen(ScreenType screenType, ScreenType returnScreen) {
     logger.info("Setting game screen to {}", screenType);
     Screen currentScreen = getScreen();
     if (currentScreen != null) {
       currentScreen.dispose();
     }
-    setScreen(createScreen(screenType));
+    setScreen(createScreen(screenType, returnScreen));
   }
 
   /**
@@ -142,6 +147,10 @@ public class GdxGame extends Game {
    * @return new screen
    */
   public Screen createScreen(ScreenType screenType) {
+    return createScreen(screenType, ScreenType.MINIGAME_SELECT);
+  }
+
+  public Screen createScreen(ScreenType screenType, ScreenType returnScreen) {
     switch (screenType) {
       case MAIN_MENU:
         return new MainMenuScreen(this);
@@ -166,7 +175,7 @@ public class GdxGame extends Game {
       case MINIGAME_SPIN_THE_WHEEL:
         return new SpinTheWheelScreen(this);
       case MINIGAME_BLACKJACK:
-        return new BlackjackScreen(this);
+        return new BlackjackScreen(this, returnScreen);
       default:
         return null;
     }

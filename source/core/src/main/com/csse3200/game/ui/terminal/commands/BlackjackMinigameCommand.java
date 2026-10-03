@@ -10,9 +10,15 @@ public class BlackjackMinigameCommand implements Command {
   private static final Logger logger = LoggerFactory.getLogger(BlackjackMinigameCommand.class);
 
   private final GdxGame game;
+  private final GdxGame.ScreenType returnScreen;
 
   public BlackjackMinigameCommand(GdxGame game) {
+    this(game, GdxGame.ScreenType.MINIGAME_SELECT);
+  }
+
+  public BlackjackMinigameCommand(GdxGame game, GdxGame.ScreenType returnScreen) {
     this.game = game;
+    this.returnScreen = returnScreen;
   }
 
   @Override
@@ -23,7 +29,7 @@ public class BlackjackMinigameCommand implements Command {
     }
 
     logger.info("Loading Blackjack minigame");
-    game.setScreen(GdxGame.ScreenType.MINIGAME_BLACKJACK);
+    game.setScreen(GdxGame.ScreenType.MINIGAME_BLACKJACK, returnScreen);
     return true;
   }
 }

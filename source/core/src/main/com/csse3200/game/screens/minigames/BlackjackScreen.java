@@ -14,9 +14,15 @@ import com.csse3200.game.services.ServiceLocator;
 /** Screen for the Blackjack minigame. */
 public class BlackjackScreen extends MinigameScreen {
   private static final String BLACKJACK_MUSIC = "sounds/minigames/blackjack/blackjack-bgm.mp3";
+  private final GdxGame.ScreenType returnScreen;
 
   public BlackjackScreen(GdxGame game) {
+    this(game, GdxGame.ScreenType.MINIGAME_SELECT);
+  }
+
+  public BlackjackScreen(GdxGame game, GdxGame.ScreenType returnScreen) {
     super(game);
+    this.returnScreen = returnScreen;
   }
 
   @Override
@@ -67,7 +73,7 @@ public class BlackjackScreen extends MinigameScreen {
 
     return new Entity()
         .addComponent(new BlackjackDisplay(blackjack, null, this::setSoundEnabled))
-        .addComponent(new BlackjackActions(game))
+        .addComponent(new BlackjackActions(game, returnScreen))
         .addComponent(new InputDecorator(stage, 10));
   }
 }
