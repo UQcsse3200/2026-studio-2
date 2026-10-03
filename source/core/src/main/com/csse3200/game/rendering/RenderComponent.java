@@ -3,7 +3,6 @@ package com.csse3200.game.rendering;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.Disposable;
 import com.csse3200.game.components.Component;
-import com.csse3200.game.lighting.LightingEngine;
 import com.csse3200.game.services.ServiceLocator;
 
 /**
@@ -38,14 +37,6 @@ public abstract class RenderComponent extends Component implements Renderable, D
     @Override
     public int getLayer() {
         return DEFAULT_LAYER;
-    }
-
-    public float getDarkness() {
-        return this.darkness;
-    }
-
-    public float getLightning() {
-        return this.lightning;
     }
 
     @Override
