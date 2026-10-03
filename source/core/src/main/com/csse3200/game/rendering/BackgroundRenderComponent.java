@@ -323,7 +323,8 @@ public class BackgroundRenderComponent extends RenderComponent {
 
         // gap between raindrops, works best if gap * int = 1, where int is any positive integer
         float gap = 0.5f;
-        // random vertical offset applied to each rain drop in range -verticalOffset to verticalOffset
+        // random vertical offset applied to each rain drop in range -verticalOffset to
+        // verticalOffset
         float verticalOffset = 0.05f;
         float cameraWidth = (float) (int) camera.getCamera().viewportWidth + 4;
         float cameraHeight = (float) (int) camera.getCamera().viewportHeight + 6;

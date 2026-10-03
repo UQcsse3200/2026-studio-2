@@ -120,9 +120,12 @@ public class Level3GameArea extends GameArea {
         15f,
         new Vector2(0f, 3.5f),
         new Vector2(0f, 0f),
-        false,
+        RepeatMode.NONE,
         1f,
-        1f);
+        1f,
+        false,
+        0,
+        -1);
 
     Entity background = new Entity().addComponent(backgroundComponent);
     background.setPosition(backgroundPos);
