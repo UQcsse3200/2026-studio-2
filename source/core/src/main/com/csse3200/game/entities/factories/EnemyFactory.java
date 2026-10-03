@@ -13,6 +13,7 @@ import com.csse3200.game.components.PoisonStatsComponent;
 import com.csse3200.game.components.SlowStatsComponent;
 import com.csse3200.game.components.npc.SkeletonAnimationController;
 import com.csse3200.game.components.tasks.ChaseTask;
+import com.csse3200.game.components.tasks.FlyingChaseTask;
 import com.csse3200.game.components.tasks.DelayedAttackTask;
 import com.csse3200.game.components.tasks.RangedAttackTask;
 import com.csse3200.game.components.tasks.SummonTask;
@@ -249,14 +250,13 @@ public class EnemyFactory {
   private static Entity createEnemy(
       Entity target, EnemyConfig config, float viewDistance, float maxChaseDistance) {
     AITaskComponent aiComponent =
-        new AITaskComponent()
-            .addTask(
-                // Adding the values for wander task from the enemy's config file
-                new WanderTask(
-                    new Vector2(config.wanderRangeX, config.wanderRangeY), config.wanderWaitTime))
-            .addTask(
-                // Adding the values for chase task from the enemy's config file
-                new ChaseTask(target, config.chasePriority, viewDistance, maxChaseDistance));
+        new AITaskComponent().addTask(new WanderTask(new Vector2(config.wanderRangeX, config.wanderRangeY), config.wanderWaitTime));
+
+        if (config.behaviour.equals("flying")) {
+          aiComponent.addTask(new FlyingChaseTask(target, config.chasePriority, viewDistance, maxChaseDistance));
+        } else {
+          aiComponent.addTask(new ChaseTask(target, config.chasePriority, viewDistance, maxChaseDistance));
+        }
 
     // If the enemy is a range type, add a range task.
     if (config.attackType.equals("range")) {

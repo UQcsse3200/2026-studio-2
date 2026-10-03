@@ -12,7 +12,7 @@ import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.physics.components.PhysicsMovementComponent;
 
 /** Chases a target entity until they get too far away or line of sight is lost */
-public class ChaseTask extends DefaultTask implements PriorityTask {
+public class FlyingChaseTask extends DefaultTask implements PriorityTask {
   private final Entity target;
   private final int priority;
   private final float viewDistance;
@@ -30,7 +30,7 @@ public class ChaseTask extends DefaultTask implements PriorityTask {
    * @param viewDistance Maximum distance from the entity at which chasing can start.
    * @param maxChaseDistance Maximum distance from the entity while chasing before giving up.
    */
-  public ChaseTask(Entity target, int priority, float viewDistance, float maxChaseDistance) {
+  public FlyingChaseTask(Entity target, int priority, float viewDistance, float maxChaseDistance) {
     this.target = target;
     this.priority = priority;
     this.viewDistance = viewDistance;
@@ -42,8 +42,6 @@ public class ChaseTask extends DefaultTask implements PriorityTask {
   @Override
   public void start() {
     super.start();
-
-    edgeDetector = new EdgeDetectTask(0.3f);
 
     movementComponent =
             owner.getEntity().getComponent(PhysicsMovementComponent.class);
@@ -57,21 +55,6 @@ public class ChaseTask extends DefaultTask implements PriorityTask {
 
   @Override
   public void update() {
-    Entity enemy = owner.getEntity();
-
-    float direction;
-
-    if (target.getPosition().x >= enemy.getPosition().x) {
-      direction = 1f;
-    } else {
-      direction = -1f;
-    }
-
-    if (!edgeDetector.isGroundAhead(enemy, direction)) {
-      movementComponent.setMoving(false);
-      return;
-    }
-
     movementTask.setTarget(target.getPosition());
     movementComponent.setMoving(true);
     movementTask.update();
