@@ -6,10 +6,10 @@ import com.csse3200.game.ai.tasks.PriorityTask;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.physics.PhysicsEngine;
 import com.csse3200.game.physics.PhysicsLayer;
+import com.csse3200.game.physics.components.PhysicsMovementComponent;
 import com.csse3200.game.physics.raycast.RaycastHit;
 import com.csse3200.game.rendering.DebugRenderer;
 import com.csse3200.game.services.ServiceLocator;
-import com.csse3200.game.physics.components.PhysicsMovementComponent;
 
 /** Chases a target entity until they get too far away or line of sight is lost */
 public class FlyingChaseTask extends DefaultTask implements PriorityTask {
@@ -43,8 +43,7 @@ public class FlyingChaseTask extends DefaultTask implements PriorityTask {
   public void start() {
     super.start();
 
-    movementComponent =
-            owner.getEntity().getComponent(PhysicsMovementComponent.class);
+    movementComponent = owner.getEntity().getComponent(PhysicsMovementComponent.class);
 
     movementTask = new MovementTask(target.getPosition());
     movementTask.create(owner);

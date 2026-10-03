@@ -9,32 +9,32 @@ import com.csse3200.game.rendering.DebugRenderer;
 import com.csse3200.game.services.ServiceLocator;
 
 public class EdgeDetectTask {
-    private final float forwardDistance;
-    private final PhysicsEngine physics;
-    private final DebugRenderer debugRenderer;
-    private final RaycastHit hit = new RaycastHit();
+  private final float forwardDistance;
+  private final PhysicsEngine physics;
+  private final DebugRenderer debugRenderer;
+  private final RaycastHit hit = new RaycastHit();
 
-    public EdgeDetectTask(float forwardDistance) {
-        this.forwardDistance = forwardDistance;
+  public EdgeDetectTask(float forwardDistance) {
+    this.forwardDistance = forwardDistance;
 
-        physics = ServiceLocator.getPhysicsService().getPhysics();
-        debugRenderer = ServiceLocator.getRenderService().getDebug();
+    physics = ServiceLocator.getPhysicsService().getPhysics();
+    debugRenderer = ServiceLocator.getRenderService().getDebug();
+  }
+
+  public boolean isGroundAhead(Entity enemy, float direction) {
+
+    Vector2 enemyPos = enemy.getCenterPosition().cpy();
+
+    enemyPos.x += direction * forwardDistance;
+    enemyPos.y = enemy.getPosition().y + 0.1f;
+
+    Vector2 end = enemyPos.cpy().add(0f, -1f);
+
+    boolean isGround = physics.raycast(enemyPos, end, PhysicsLayer.GROUND, hit);
+
+    if (isGround) {
+      return true;
     }
-
-    public boolean isGroundAhead(Entity enemy, float direction) {
-
-        Vector2 enemyPos = enemy.getCenterPosition().cpy();
-
-        enemyPos.x += direction * forwardDistance;
-        enemyPos.y = enemy.getPosition().y + 0.1f;
-
-        Vector2 end = enemyPos.cpy().add(0f, -1f);
-
-        boolean isGround = physics.raycast(enemyPos, end, PhysicsLayer.GROUND, hit);
-
-        if (isGround) {
-            return true;
-        }
-        return false;
-    }
+    return false;
+  }
 }

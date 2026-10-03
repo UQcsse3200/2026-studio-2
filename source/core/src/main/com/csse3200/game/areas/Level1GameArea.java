@@ -214,7 +214,7 @@ public class Level1GameArea extends GameArea {
     spawnSkeletonWarrior();
 
     // Test enemy functionalitys
-     spawnTestSkeletonWarrior();
+    spawnTestSkeletonWarrior();
     // spawnTestSkeletonArcher();
     // spawnTestVulture();
     // spawnTestNecromancer();
