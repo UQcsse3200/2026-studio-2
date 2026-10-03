@@ -6,6 +6,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.areas.terrain.TerrainFactory;
 import com.csse3200.game.areas.terrain.TerrainFactory.TerrainType;
 import com.csse3200.game.areas.terrain.configs.PlatformConfig;
+import com.csse3200.game.components.ButtonSound;
 import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.components.inventory.InventoryComponent;
 import com.csse3200.game.components.item.ItemLabelDisplay;
@@ -159,6 +160,7 @@ public class SandboxGameArea extends GameArea {
     resourceService.loadTextures(sandboxTextures);
     resourceService.loadTextureAtlases(SANDBOX_ATLASES);
     resourceService.loadSounds(SANDBOX_SOUNDS);
+    ButtonSound.load(resourceService);
     resourceService.loadAll();
   }
 
@@ -325,5 +327,6 @@ public class SandboxGameArea extends GameArea {
     resourceService.unloadAssets(sandboxTextures);
     resourceService.unloadAssets(SANDBOX_ATLASES);
     resourceService.unloadAssets(SANDBOX_SOUNDS);
+    ButtonSound.unload(resourceService);
   }
 }

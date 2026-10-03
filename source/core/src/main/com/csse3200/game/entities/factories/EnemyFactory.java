@@ -105,8 +105,7 @@ public class EnemyFactory {
    */
   public static Entity createPassiveSkeletonWarrior() {
     Entity skeletonWarrior = createPassiveEnemy(configs.skeletonWarrior);
-    skeletonWarrior.addComponent(
-        new TextureRenderComponent("images/enemies/skeleton_warrior.png"));
+    skeletonWarrior.addComponent(new TextureRenderComponent("images/enemies/skeleton_warrior.png"));
     skeletonWarrior.getComponent(TextureRenderComponent.class).scaleEntity();
     PhysicsUtils.setScaledCollider(skeletonWarrior, 1.2f, 0.7f);
     return skeletonWarrior;

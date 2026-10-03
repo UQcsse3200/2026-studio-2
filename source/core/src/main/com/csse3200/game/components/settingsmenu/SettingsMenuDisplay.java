@@ -61,7 +61,8 @@ public class SettingsMenuDisplay extends UIComponent {
                 .getAsset("images/backgrounds/main_menu_bg_2.png", Texture.class));
     Image menuBox =
         new Image(
-            ServiceLocator.getResourceService().getAsset("images/ui/settings_box.png", Texture.class));
+            ServiceLocator.getResourceService()
+                .getAsset("images/ui/settings_box.png", Texture.class));
 
     // Oversized slightly so the shake below never reveals an edge/gap.
     float overscan = 1.03f;
@@ -215,8 +216,7 @@ public class SettingsMenuDisplay extends UIComponent {
           @Override
           public void changed(ChangeEvent changeEvent, Actor actor) {
             logger.debug("Exit button clicked");
-            ButtonSound.playClick();
-            exitMenu();
+            ButtonSound.playClickThen(SettingsMenuDisplay.this::exitMenu);
           }
         });
 

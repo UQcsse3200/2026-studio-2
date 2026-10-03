@@ -30,8 +30,8 @@ public class CameraComponent extends Component {
   }
 
   /**
-   * Defines the playable room/level bounds, in world units, so the camera won't show outside
-   * them. Call once the level's dimensions are known (e.g. after terrain is spawned).
+   * Defines the playable room/level bounds, in world units, so the camera won't show outside them.
+   * Call once the level's dimensions are known (e.g. after terrain is spawned).
    */
   public void setRoomBounds(float minX, float minY, float maxX, float maxY) {
     lookahead().setRoomBounds(minX, minY, maxX, maxY);
@@ -60,7 +60,8 @@ public class CameraComponent extends Component {
   private CaveCameraController lookahead() {
     if (lookahead == null) {
       lookahead =
-          new CaveCameraController((OrthographicCamera) camera, camera.viewportWidth, camera.viewportHeight);
+          new CaveCameraController(
+              (OrthographicCamera) camera, camera.viewportWidth, camera.viewportHeight);
     }
     return lookahead;
   }

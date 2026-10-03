@@ -14,6 +14,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.csse3200.game.components.ButtonSound;
 import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.services.ServiceLocator;
@@ -74,6 +75,7 @@ public class MonsterSpawnerDisplay extends UIComponent {
         new ClickListener() {
           @Override
           public void clicked(InputEvent event, float x, float y) {
+            ButtonSound.playClick();
             openPanel();
           }
         });
@@ -122,6 +124,7 @@ public class MonsterSpawnerDisplay extends UIComponent {
         new ClickListener() {
           @Override
           public void clicked(InputEvent event, float x, float y) {
+            ButtonSound.playClick();
             closePanel();
           }
         });
@@ -145,6 +148,9 @@ public class MonsterSpawnerDisplay extends UIComponent {
         new ClickListener() {
           @Override
           public void clicked(InputEvent event, float x, float y) {
+            if (!spawnButton.isDisabled()) {
+              ButtonSound.playClick();
+            }
             spawnSelectedEnemy();
           }
         });
@@ -186,6 +192,7 @@ public class MonsterSpawnerDisplay extends UIComponent {
         new ClickListener() {
           @Override
           public void clicked(InputEvent event, float x, float y) {
+            ButtonSound.playClick();
             selectEnemy(enemyType, card);
           }
         });
