@@ -1,5 +1,6 @@
 package com.csse3200.game.components.maingame;
 
+import com.badlogic.gdx.audio.Music;
 import com.csse3200.game.GdxGame;
 import com.csse3200.game.areas.GameArea;
 import com.csse3200.game.entities.Entity;
@@ -70,5 +71,14 @@ public class PauseMenuOverlay {
     ServiceLocator.getEntityService().scheduleRemoval(overlay);
     overlay = null;
     ServiceLocator.getEntityService().setPaused(false);
+    try {
+      Music mainMenu =
+          ServiceLocator.getResourceService().getAsset("sounds/Main_menu_sound.mp3", Music.class);
+      mainMenu.stop();
+      Music gameplay =
+          ServiceLocator.getResourceService().getAsset("sounds/gameplay_bg.ogg", Music.class);
+      gameplay.play();
+    } catch (Exception ignored) {
+    }
   }
 }

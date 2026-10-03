@@ -130,17 +130,6 @@ public class PauseMenuDisplay extends UIComponent {
           public void changed(ChangeEvent changeEvent, Actor actor) {
             if (ServiceLocator.getEntityService().getPaused()) {
               ButtonSound.playClick();
-              try {
-                Music mainMenu =
-                    ServiceLocator.getResourceService()
-                        .getAsset("sounds/Main_menu_sound.mp3", Music.class);
-                mainMenu.stop();
-                Music gameplay =
-                    ServiceLocator.getResourceService()
-                        .getAsset("sounds/gameplay_bg.ogg", Music.class);
-                gameplay.play();
-              } catch (Exception ignored) {
-              }
               entity.getEvents().trigger("togglePause");
               // area.getInput().unpause();
             }
@@ -170,8 +159,7 @@ public class PauseMenuDisplay extends UIComponent {
           @Override
           public void changed(ChangeEvent changeEvent, Actor actor) {
             if (ServiceLocator.getEntityService().getPaused()) {
-              ButtonSound.playClick();
-              game.exit();
+              ButtonSound.playClickThen(() -> game.setScreen(GdxGame.ScreenType.MAIN_MENU));
             }
           }
         });
@@ -180,12 +168,14 @@ public class PauseMenuDisplay extends UIComponent {
         new ChangeListener() {
           @Override
           public void changed(ChangeEvent changeEvent, Actor actor) {
+            ButtonSound.playClick();
             Image controlsGraphic = new Image(controlsGraphicTexture);
             ImageButton controlsBackBtn = new ImageButton(exitButtonStyle);
             controlsBackBtn.addListener(
                 new ChangeListener() {
                   @Override
                   public void changed(ChangeEvent changeEvent, Actor actor) {
+                    ButtonSound.playClick();
                     controlsGraphicTable.remove();
                   }
                 });

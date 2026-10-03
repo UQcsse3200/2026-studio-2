@@ -215,8 +215,7 @@ public class SettingsMenuDisplay extends UIComponent {
           @Override
           public void changed(ChangeEvent changeEvent, Actor actor) {
             logger.debug("Exit button clicked");
-            ButtonSound.playClick();
-            exitMenu();
+            ButtonSound.playClickThen(SettingsMenuDisplay.this::exitMenu);
           }
         });
 
