@@ -2,9 +2,11 @@ package com.csse3200.game.components.level;
 
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.components.Component;
+import com.csse3200.game.components.EnemyDeathComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Supplier;
 
 public class SpawnerComponent extends Component {
@@ -17,6 +19,10 @@ public class SpawnerComponent extends Component {
   private int spawnCounter;
   private boolean active;
   private ACTIVATION_MODE mode;
+  private String[] ids; // any activation ids to trigger when the spawner is finished spawning
+
+  private boolean spawnsComplete = false;
+  private List<Integer> entityIds;
 
   /**
    * @param spawnableEntities all viable entities that can be spawned by this component. the
@@ -39,6 +45,17 @@ public class SpawnerComponent extends Component {
     this.maxSpawns = maxSpawns;
     this.active = active;
     this.mode = mode;
+    entityIds = new ArrayList<>();
+  }
+
+  /**
+   * Sets ids for this component
+   *
+   * @param ids strings to trigger upon defeating all enemies that are to be spawned by this
+   *     component
+   */
+  public void setIds(String[] ids) {
+    this.ids = ids;
   }
 
   @Override
@@ -49,6 +66,8 @@ public class SpawnerComponent extends Component {
 
   @Override
   public void update() {
+    tryActivateMapComponents();
+
     if (!active || spawnInterval == -1 || (maxSpawns != -1 && spawnCounter >= maxSpawns)) {
       return;
     }
@@ -78,6 +97,12 @@ public class SpawnerComponent extends Component {
     Supplier<Entity> child = spawnableEntities.get(randIndex);
     Entity childEntity = child.get();
 
+    // if an enemy, we need to track to listen for its death
+    if (childEntity.getComponent(EnemyDeathComponent.class) != null) {
+      childEntity.getEvents().addListener("enemyDied", this::enemyDied);
+      entityIds.add(entity.getId());
+    }
+
     // set the spawned child's position to the same position as this entity's position
     // to do this properly, we need to spawn it in the middle of the parent entity by figuring out
     // the offset from the bottom left of the child to the center of the parent
@@ -88,6 +113,12 @@ public class SpawnerComponent extends Component {
 
     entity.getEvents().trigger("spawnEntity", childEntity);
     spawnCounter++;
+
+    // once spawning is finished, flag spawns complete to wait to notify any map components
+    // dependent on this spawner being beaten
+    if (maxSpawns != -1 && spawnCounter >= maxSpawns) {
+      spawnsComplete = true;
+    }
   }
 
   /**
@@ -105,6 +136,27 @@ public class SpawnerComponent extends Component {
         break;
       default:
         break;
+    }
+  }
+
+  /**
+   * Handles the event trigger where an enemy spawned by this spawner dies
+   *
+   * @param entity the entity object that is dead
+   */
+  private void enemyDied(Entity entity) {
+    entityIds.remove(entity.getId());
+  }
+
+  /**
+   * When the spawner has spawned all available enemies, and they've all triggered their death
+   * event, we can activate any ids that need to be activated
+   */
+  private void tryActivateMapComponents() {
+    if (spawnsComplete && entityIds.isEmpty()) {
+      for (String id : ids) {
+        entity.getEvents().trigger("activatedMapComponent", id);
+      }
     }
   }
 }

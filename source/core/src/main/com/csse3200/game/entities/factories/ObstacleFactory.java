@@ -470,13 +470,15 @@ public class ObstacleFactory {
 
   public static Entity createEnemySpawnerEntity(EnemySpawnerConfig config) {
     SpawnerConfig sData = config.spawnData;
+    SpawnerComponent spawnerComp =
+        new SpawnerComponent(
+            sData.spawns, sData.spawnInterval, sData.maxSpawns, sData.active, sData.mode);
+    spawnerComp.setIds(config.completionIds);
 
     Entity spawner =
         new Entity()
             .addComponent(new PhysicsComponent().setBodyType(BodyType.StaticBody))
-            .addComponent(
-                new SpawnerComponent(
-                    sData.spawns, sData.spawnInterval, sData.maxSpawns, sData.active, sData.mode))
+            .addComponent(spawnerComp)
             .addComponent(new ActivatableComponent(sData.active, config.ids));
 
     return spawner;
