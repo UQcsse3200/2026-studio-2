@@ -97,6 +97,9 @@ public class Level1GameArea extends GameArea {
     new GridPoint2(9, 5), new GridPoint2(15, 7), new GridPoint2(20, 8)
   };
 
+  /** Centre of the stepping-stone platform at (31, 2) */
+  public static final GridPoint2 WHEEL_TOKEN_SPAWN = new GridPoint2(32, 3);
+
   public static final int STANDARD_ARROW_QUANTITY = 5;
   public static final int FIRE_ARROW_QUANTITY = 5;
   public static final int COLD_ARROW_QUANTITY = 5;
@@ -173,6 +176,7 @@ public class Level1GameArea extends GameArea {
     "images/speed_potion.png",
     "images/poison_potion.png",
     ItemFactory.GOLD_TEXTURE,
+    ItemFactory.WHEEL_TOKEN_TEXTURE,
     "images/cold_arrow.png",
     "images/necromancer_projectile.png",
   };
@@ -229,6 +233,7 @@ public class Level1GameArea extends GameArea {
     player = spawnPlayer();
     spawnShopkeeper();
     spawnGold();
+    spawnWheelToken();
     spawnSkeletonArcher();
     spawnSkeletonWarrior();
     spawnForeground();
@@ -535,6 +540,12 @@ public class Level1GameArea extends GameArea {
     for (GridPoint2 goldSpawn : GOLD_SPAWNS) {
       spawnEntityAt(ItemFactory.createGold(), goldSpawn, true, false);
     }
+  }
+
+  private void spawnWheelToken() {
+    Entity token = ItemFactory.createWheelToken();
+    spawnEntityAt(token, WHEEL_TOKEN_SPAWN, true, false);
+    token.setPosition(token.getPosition().add(0f, 0.3f));
   }
 
   /*

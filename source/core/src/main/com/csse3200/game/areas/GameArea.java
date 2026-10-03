@@ -2,6 +2,7 @@ package com.csse3200.game.areas;
 
 import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
 import com.csse3200.game.areas.terrain.TerrainComponent;
 import com.csse3200.game.areas.terrain.configs.LevelConfig;
@@ -68,8 +69,12 @@ public abstract class GameArea implements Disposable {
       areaEntities.remove(entity);
     }
 
+    // Skip collected pickups, as they're already disposed and disposing twice crashes physics
+    Array<Entity> registered = ServiceLocator.getEntityService().getEntities();
     for (Entity entity : areaEntities) {
-      entity.dispose();
+      if (registered.contains(entity, true)) {
+        entity.dispose();
+      }
     }
 
     // clear all references

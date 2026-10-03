@@ -113,9 +113,6 @@ public class PlayerFactory {
    * @return entity
    */
   public static Entity createPlayerDisplay() {
-    InputComponent inputComponent =
-        ServiceLocator.getInputService().getInputFactory().createForPlayer();
-
     AnimationRenderComponent animator =
         new AnimationRenderComponent(
             ServiceLocator.getResourceService()
