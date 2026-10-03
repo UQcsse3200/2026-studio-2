@@ -33,6 +33,7 @@ public class LevelConfig {
   protected Map<GridPoint2, EnemyConfig> enemies;
   protected Map<GridPoint2, Item> items;
   protected CheckpointConfig[] checkpoints;
+  protected EnemySpawnerConfig[] enemySpawners;
 
   protected GridPoint2 playerSpawn;
   protected GridPoint2 nextLevelTriggerSpawn;
@@ -65,6 +66,7 @@ public class LevelConfig {
     createLevelTrigger();
     createItems();
     createCheckpoints();
+    createSpawners();
 
     return entities;
   }
@@ -299,6 +301,18 @@ public class LevelConfig {
       checkpoint.setPosition(pos.x, pos.y - 1.3f);
 
       entities.add(new SpawnData(c.getPosition(), checkpoint));
+    }
+  }
+
+  /** Creates all spawners in the level and adds them to the entities for the game area to spawn */
+  private void createSpawners() {
+    if (enemySpawners == null) {
+      return;
+    }
+
+    for (EnemySpawnerConfig c : enemySpawners) {
+      Entity spawner = ObstacleFactory.createEnemySpawnerEntity(c);
+      entities.add(new SpawnData(c.position, spawner));
     }
   }
 }
