@@ -57,18 +57,18 @@ public class RangedAttackTask extends DefaultTask implements PriorityTask {
   }
 
   /**
-  * Creates a ranged attack task with support for a Calypso projectile.
-  *
-  * @param target target entity to attack
-  * @param priority task priority while target is in range
-  * @param attackRange maximum distance at which the enemy can fire
-  * @param cooldown seconds between attacks
-  * @param damage projectile damage
-  * @param projectileSpeed projectile movement speed
-  * @param projectileLifetime maximum projectile lifetime in seconds
-  * @param useNecromancerProjectile whether to use the necromancer projectile
-  * @param useCalypsoProjectile whether to use the Calypso projectile
-  */
+   * Creates a ranged attack task with support for a Calypso projectile.
+   *
+   * @param target target entity to attack
+   * @param priority task priority while target is in range
+   * @param attackRange maximum distance at which the enemy can fire
+   * @param cooldown seconds between attacks
+   * @param damage projectile damage
+   * @param projectileSpeed projectile movement speed
+   * @param projectileLifetime maximum projectile lifetime in seconds
+   * @param useNecromancerProjectile whether to use the necromancer projectile
+   * @param useCalypsoProjectile whether to use the Calypso projectile
+   */
   public RangedAttackTask(
       Entity target,
       int priority,
@@ -132,16 +132,16 @@ public class RangedAttackTask extends DefaultTask implements PriorityTask {
 
     if (useCalypsoProjectile) {
       projectile =
-        ProjectileFact.createCalypsoProjectile(
-            targetCenter, damage, projectileSpeed, projectileLifetime);
+          ProjectileFact.createCalypsoProjectile(
+              targetCenter, damage, projectileSpeed, projectileLifetime);
     } else if (useNecromancerProjectile) {
       projectile =
-        ProjectileFact.createNecromancerProjectile(
-            targetCenter, damage, projectileSpeed, projectileLifetime);
+          ProjectileFact.createNecromancerProjectile(
+              targetCenter, damage, projectileSpeed, projectileLifetime);
     } else {
       projectile =
-        ProjectileFact.createSkeletonArcherProjectile(
-            targetCenter, damage, projectileSpeed, projectileLifetime);
+          ProjectileFact.createSkeletonArcherProjectile(
+              targetCenter, damage, projectileSpeed, projectileLifetime);
     }
     // setPosition() uses the bottom-left corner, so offset by half the
     // projectile size to place its centre at spawnCenter.

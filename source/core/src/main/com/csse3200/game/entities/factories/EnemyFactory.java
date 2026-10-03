@@ -275,17 +275,9 @@ public class EnemyFactory {
     } else if (config.attackType.equals("calypso")) {
       // Standard projectile attack. Other Calypso attacks are added separately.
       aiComponent.addTask(
-        new RangedAttackTask(
-            target,
-            20,
-            config.attackRange,
-            2f,
-            config.baseAttack,
-            4.5f,
-            5f,
-            false,
-            true));
-      }
+          new RangedAttackTask(
+              target, 20, config.attackRange, 2f, config.baseAttack, 4.5f, 5f, false, true));
+    }
 
     Entity enemy =
         new Entity()

@@ -73,21 +73,19 @@ public class ProjectileFact {
     return projectile;
   }
 
-
   /**
-  * Creates a projectile used by Calypso during the first phase of the boss fight.
-  *
-  * @param targetPosition position the projectile travels towards
-  * @param damage damage dealt when the projectile hits the player
-  * @param speed projectile movement speed
-  * @param lifetime maximum projectile lifetime in seconds
-  * @return Calypso projectile entity
-  */
+   * Creates a projectile used by Calypso during the first phase of the boss fight.
+   *
+   * @param targetPosition position the projectile travels towards
+   * @param damage damage dealt when the projectile hits the player
+   * @param speed projectile movement speed
+   * @param lifetime maximum projectile lifetime in seconds
+   * @return Calypso projectile entity
+   */
   public static Entity createCalypsoProjectile(
       Vector2 targetPosition, int damage, float speed, float lifetime) {
 
-    PhysicsMovementComponent movement =
-        new PhysicsMovementComponent(new Vector2(speed, speed));
+    PhysicsMovementComponent movement = new PhysicsMovementComponent(new Vector2(speed, speed));
     movement.setTarget(targetPosition);
 
     Entity projectile =
