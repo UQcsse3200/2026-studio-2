@@ -14,6 +14,8 @@ import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.UIComponent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.csse3200.game.components.inventory.InventorySlotStyle;
+import com.badlogic.gdx.graphics.Color;
 
 /**
  * Shop page overlay opened by interacting with a shopkeeper NPC.
@@ -30,6 +32,11 @@ public class ShopDisplay extends UIComponent {
   private Label goldLabel;
   private Label statusLabel;
   private boolean open;
+
+  private final Label.LabelStyle white = new Label.LabelStyle(skin.get(Label.LabelStyle.class));
+  private final Label.LabelStyle whiteLarge = new Label.LabelStyle(skin.get("large", Label.LabelStyle.class));
+
+  private final TextButton.TextButtonStyle darkStyle = new TextButton.TextButtonStyle(skin.get(TextButton.TextButtonStyle.class));
 
   @Override
   public void create() {
@@ -49,15 +56,17 @@ public class ShopDisplay extends UIComponent {
     table.setVisible(false);
 
     Table panel = new Table();
-    panel.setBackground(skin.getDrawable("window-c"));
+    panel.setBackground(InventorySlotStyle.getDarkerBox());
     panel.pad(30f);
 
-    Label title = new Label("Shop", skin, "title");
-    goldLabel = new Label(goldText(), skin);
+    whiteLarge.fontColor = Color.WHITE;
+    Label title = new Label("Shop", whiteLarge);
+    goldLabel = new Label(goldText(), white);
     listingsTable = new Table();
-    statusLabel = new Label("", skin);
+    statusLabel = new Label("", white);
 
-    TextButton closeBtn = new TextButton("Close", skin);
+    white.fontColor = Color.WHITE;
+    TextButton closeBtn = new TextButton("Close", darkStyle);
     closeBtn.addListener(
         new ChangeListener() {
           @Override
@@ -69,11 +78,11 @@ public class ShopDisplay extends UIComponent {
 
     panel.add(title);
     panel.row();
-    panel.add(goldLabel).padTop(10f);
+    //panel.add(goldLabel).padTop(10f);
     panel.row();
     panel.add(listingsTable).padTop(20f);
     panel.row();
-    panel.add(statusLabel).padTop(16f);
+    //panel.add(statusLabel).padTop(16f);
     panel.row();
     panel.add(closeBtn).padTop(24f);
 
@@ -138,6 +147,12 @@ public class ShopDisplay extends UIComponent {
     listingsTable.clearChildren();
     ShopComponent shop = entity.getComponent(ShopComponent.class);
 
+    darkStyle.up = InventorySlotStyle.getDarkerBox();
+    darkStyle.down = InventorySlotStyle.getSelectedBox();
+    darkStyle.over = InventorySlotStyle.getNormalBox();      // optional hover feedback
+    darkStyle.disabled = InventorySlotStyle.getDarkerBox();  // see below
+    darkStyle.fontColor = Color.WHITE;
+
     for (ShopListing listing : ShopCatalog.getListings()) {
       listingsTable.add(createListingRow(listing, shop)).growX().padBottom(8f);
       listingsTable.row();
@@ -146,7 +161,7 @@ public class ShopDisplay extends UIComponent {
 
   private Table createListingRow(ShopListing listing, ShopComponent shop) {
     Table row = new Table();
-    row.setBackground(skin.getDrawable("button-c"));
+    row.setBackground(InventorySlotStyle.getNormalBox());
     row.pad(8f);
 
     Texture texture = getItemTexture(listing.getItemType());
@@ -154,11 +169,13 @@ public class ShopDisplay extends UIComponent {
       row.add(new Image(texture)).size(ICON_SIZE, ICON_SIZE).padRight(12f);
     }
 
-    row.add(new Label(listing.getItemType().getDisplayName(), skin)).width(180f).left();
-    row.add(new Label("x" + listing.getQuantity(), skin)).width(50f);
-    row.add(new Label(listing.getPrice() + "g", skin)).width(60f).padRight(12f);
+    white.fontColor = Color.WHITE;
 
-    TextButton buyBtn = new TextButton("Buy", skin);
+    row.add(new Label(listing.getItemType().getDisplayName(), white)).width(180f).left();
+    row.add(new Label("x" + listing.getQuantity(), white)).width(50f);
+    row.add(new Label(listing.getPrice() + "g", white)).width(60f).padRight(12f);
+
+    TextButton buyBtn = new TextButton("Buy", darkStyle); 
     buyBtn.setDisabled(shop == null || !shop.canBuy(listing));
     buyBtn.addListener(
         new ChangeListener() {
