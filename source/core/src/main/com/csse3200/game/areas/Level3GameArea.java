@@ -11,6 +11,7 @@ import com.csse3200.game.components.level.RisingWaterComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.ObstacleFactory;
 import com.csse3200.game.rendering.BackgroundRenderComponent;
+import com.csse3200.game.rendering.ForegroundRenderComponent;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import org.slf4j.Logger;
@@ -33,6 +34,14 @@ public class Level3GameArea extends GameArea {
     "images/Background-2.png",
     "images/Platform_level-3.png",
     "images/Platform-crumbling-level-3.png",
+    "images/parallax/level_1_background.png",
+    "images/parallax/level_1_furthest.png",
+    "images/parallax/level_1_clouds.png",
+    "images/parallax/lightning_1.png",
+    "images/parallax/lightning_2.png",
+    "images/parallax/lightning_3.png",
+    "images/parallax/lightning_4.png",
+    "images/parallax/rain_small.png",
 
     // Level 3 ground tile
     "images/tile-level3.png",
@@ -100,26 +109,56 @@ public class Level3GameArea extends GameArea {
   public void create() {
     loadAssets();
 
-    spawnBackground();
     spawnTerrain();
+    spawnBackground();
+
     spawnConfigEntities();
     spawnRisingWater();
+    spawnForeground();
     player.setPosition(new Vector2(config.getPlayerSpawn().x, config.getPlayerSpawn().y));
   }
 
-  /** Creates the Level 2 background. */
-  private void spawnBackground() {
-    final Vector2 backgroundPos = new Vector2(-15f, -10f);
+  private void spawnForeground() {
+    final Vector2 foregroundPos = new Vector2(-10f, -10f);
+    ForegroundRenderComponent foregroundComponent =
+        new ForegroundRenderComponent(camera, foregroundPos, worldBounds);
+    foregroundComponent.addLayer(
+        "images/parallax/rain_small.png", // 0.2,0.4 for xxl
+        new Vector2(0f, 0f),
+        0.1f,
+        0.2f,
+        new Vector2(0f, 0f),
+        new Vector2(2f, -2f),
+        RepeatMode.CHAOTIC,
+        1f,
+        0.4f,
+        false,
+        0,
+        -1);
 
+    // Create the background entity.
+    Entity foreground = new Entity().addComponent(foregroundComponent);
+
+    // Position the background in the game world.
+    foreground.setPosition(foregroundPos);
+
+    spawnEntity(foreground);
+  }
+
+  /** Creates the Level 3 background. */
+  private void spawnBackground() {
+    final Vector2 backgroundPos = new Vector2(-10f, -10f);
     BackgroundRenderComponent backgroundComponent =
         new BackgroundRenderComponent(camera, backgroundPos, worldBounds);
+
+    // Complete original background image
     backgroundComponent.addLayer(
-        "images/Background-2.png",
-        new Vector2(0.10f, 0f),
+        "images/parallax/level_1_background.png",
+        new Vector2(0.1f, 0f), // Parallax factor
         30f,
-        15f,
-        new Vector2(0f, 3.5f),
-        new Vector2(0f, 0f),
+        12f,
+        new Vector2(0f, 4.25f), // Positional offset
+        new Vector2(0f, 0f), // Independent velocity
         RepeatMode.NONE,
         1f,
         1f,
@@ -127,8 +166,102 @@ public class Level3GameArea extends GameArea {
         0,
         -1);
 
+    // Furthest clouds image
+    backgroundComponent.addLayer(
+        "images/parallax/level_1_clouds.png",
+        new Vector2(0.1f, 0f), // Parallax factor
+        30f,
+        4f,
+        new Vector2(-3f, 9f), // Positional offset
+        new Vector2(-0.06f, 0f), // Independent velocity
+        RepeatMode.HORIZONTAL,
+        1f,
+        1f,
+        false,
+        0,
+        -1);
+
+    // Second-furthest clouds image
+    backgroundComponent.addLayer(
+        "images/parallax/level_1_clouds.png",
+        new Vector2(0.1f, 0f), // Parallax factor
+        30f,
+        15f,
+        new Vector2(25f, 7.5f), // Positional offset
+        new Vector2(0.12f, 0f), // Independent velocity
+        RepeatMode.HORIZONTAL,
+        1f,
+        1f,
+        false,
+        0,
+        -1);
+
+    // Lightning image 1
+    backgroundComponent.addLayer(
+        "images/parallax/lightning_1.png",
+        new Vector2(0f, 0f),
+        2f,
+        7f,
+        new Vector2(15f, 9.5f),
+        new Vector2(0f, 0f),
+        RepeatMode.NONE,
+        1f,
+        0f,
+        true,
+        0,
+        0);
+
+    // Lightning image 2
+    backgroundComponent.addLayer(
+        "images/parallax/lightning_2.png",
+        new Vector2(0f, 0f),
+        2f,
+        7f,
+        new Vector2(6f, 9.5f),
+        new Vector2(0f, 0f),
+        RepeatMode.NONE,
+        1f,
+        0f,
+        true,
+        0,
+        1);
+
+    // Furthest mountains image
+    backgroundComponent.addLayer(
+        "images/parallax/level_1_furthest.png",
+        new Vector2(0.06f, 0f), // Parallax factor 0.12
+        30f,
+        7f,
+        new Vector2(5f, 6.5f), // Positional offset
+        new Vector2(0f, 0f), // Independent velocity
+        RepeatMode.HORIZONTAL,
+        1f,
+        0.6f,
+        false,
+        0,
+        -1);
+
+    // Second-furthest mountains image
+    backgroundComponent.addLayer(
+        "images/parallax/level_1_furthest.png",
+        new Vector2(0.11f, 0f), // Parallax factor 0.12
+        30f,
+        10f,
+        new Vector2(0f, 5f), // Positional offset
+        new Vector2(0f, 0f), // Independent velocity
+        RepeatMode.HORIZONTAL,
+        1f,
+        1f,
+        false,
+        0,
+        -1);
+
+    // Create the background entity.
     Entity background = new Entity().addComponent(backgroundComponent);
+
+    // Position the background in the game world.
     background.setPosition(backgroundPos);
+
     spawnEntity(background);
   }
 
