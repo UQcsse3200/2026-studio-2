@@ -65,7 +65,7 @@
     "health": 20,
     "baseAttack": 2,
     "speed": 2.5,
-    "behaviour": "chase",
+    "behaviour": "flying",
     "attackType": "melee",
     "attackRange": 6.0,
 
