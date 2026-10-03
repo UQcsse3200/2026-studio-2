@@ -30,7 +30,7 @@ class RoomDoorComponentTest {
     ServiceLocator.registerEntityService(entities);
     door =
         new RoomDoorComponent(
-            player, camera, new Vector2(115, 2.1f), new Rectangle(110, 0, 20, 11.25f), "Merchant");
+            player, camera, new Vector2(115, 2.1f), new Rectangle(110, 0, 20, 11.25f), "Refuge");
     Entity doorway = new Entity().addComponent(door);
     doorway.setPosition(16, 5);
     doorway.setScale(2.5f, 3.34f);

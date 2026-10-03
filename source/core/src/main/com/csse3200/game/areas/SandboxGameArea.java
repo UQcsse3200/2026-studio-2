@@ -64,6 +64,7 @@ public class SandboxGameArea extends GameArea {
       "images/health/PixelArt_HeartBack.png";
   private static final String PLAYER_DAMAGED_HEART_TEXTURE = "images/health/Damaged_heart.png";
   private static final String PLAYER_LAST_HEALTH_TEXTURE = "images/health/Last_Health.png";
+  private static final String PLAYER_GOLD_COIN_TEXTURE = "images/items/gold_coin.png";
   private static final String EXIT_BUTTON_TEXTURE = "images/Buttons/exit_up_btn.png";
   private static final String EXIT_BUTTON_DOWN_TEXTURE = "images/Buttons/exit_down_btn.png";
   private static final String SKELETON_WARRIOR_TEXTURE = "images/enemies/skeleton_warrior.png";
@@ -135,6 +136,11 @@ public class SandboxGameArea extends GameArea {
                 PLAYER_HEALTH_BAR_BACKGROUND_TEXTURE,
                 PLAYER_DAMAGED_HEART_TEXTURE,
                 PLAYER_LAST_HEALTH_TEXTURE,
+                PLAYER_GOLD_COIN_TEXTURE,
+                "images/projectiles/arrow.png",
+                "images/projectiles/fire_arrow.png",
+                "images/projectiles/ice_arrow.png",
+                "images/projectiles/poison_arrow.png",
                 EXIT_BUTTON_TEXTURE,
                 EXIT_BUTTON_DOWN_TEXTURE,
                 SKELETON_WARRIOR_TEXTURE,

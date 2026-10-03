@@ -40,7 +40,7 @@ public class Level1Config extends LevelConfig {
           new PlatformConfig(new GridPoint2(14, 9), 3, 1, 0, platformTFP),
           // new PlatformConfig(new GridPoint2(9, 13), 3, 1, 0, platformTFP),
 
-          // Optional reverse climb to the concealed merchant entrance on the original roof.
+          // Optional reverse climb to the concealed refuge entrance on the original roof.
           new PlatformConfig(new GridPoint2(19, 20), 3, 1, 2, platformTFP),
           // Approach step for the spike crossing; the three original upper platforms remain.
           new PlatformConfig(new GridPoint2(53, 20), 3, 1, 2, platformTFP),

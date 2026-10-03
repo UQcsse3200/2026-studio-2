@@ -2,6 +2,7 @@ package com.csse3200.game.components.itemdictionary;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -9,9 +10,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.utils.Align;
 import com.csse3200.game.components.item.ItemType;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.UIComponent;
+import com.csse3200.game.components.inventory.InventorySlotStyle;
 
 /**
  * Displays the player's item dictionary.
@@ -26,6 +29,9 @@ public class ItemDictionaryDisplay extends UIComponent {
   }
 
   private static final int GRID_COLUMNS = 5;
+  private final Label.LabelStyle white = new Label.LabelStyle(skin.get(Label.LabelStyle.class));
+  private final Label.LabelStyle whiteLarge = new Label.LabelStyle(skin.get("large", Label.LabelStyle.class));
+
 
   private Table table;
   private Table contentTable;
@@ -46,7 +52,7 @@ public class ItemDictionaryDisplay extends UIComponent {
     table.setVisible(false);
 
     contentTable = new Table();
-    contentTable.setBackground(skin.getDrawable("button-c"));
+    contentTable.setBackground(InventorySlotStyle.getDarkerBox());
     contentTable.pad(25f);
 
     entity.getEvents().addListener("itemDictionaryChanged", this::refresh);
@@ -66,7 +72,8 @@ public class ItemDictionaryDisplay extends UIComponent {
 
     contentTable.clear();
 
-    Label title = new Label("Item Dictionary", skin, "large");
+    whiteLarge.fontColor = Color.WHITE;
+    Label title = new Label("ITEM DICTIONARY", whiteLarge);
 
     contentTable.add(title).colspan(GRID_COLUMNS).padBottom(20f);
 
@@ -95,7 +102,7 @@ public class ItemDictionaryDisplay extends UIComponent {
    */
   private Table createDictionarySlot(ItemType itemType) {
     Table slot = new Table();
-    slot.setBackground(skin.getDrawable("button-c"));
+    slot.setBackground(InventorySlotStyle.getNormalBox());
 
     boolean discovered = dictionary != null && dictionary.isDiscovered(itemType);
 
@@ -162,7 +169,7 @@ public class ItemDictionaryDisplay extends UIComponent {
 
     contentTable.clear();
 
-    Label title = new Label(itemType.getDisplayName(), skin, "large");
+    Label title = new Label(itemType.getDisplayName(), whiteLarge);
 
     contentTable.add(title).padBottom(20f);
     contentTable.row();
@@ -171,9 +178,12 @@ public class ItemDictionaryDisplay extends UIComponent {
 
     contentTable.row();
 
-    Label description = new Label(itemType.getDescription(), skin);
+    white.fontColor = Color.WHITE;
+    Label description = new Label(itemType.getDescription(), white);
+    
 
     description.setWrap(true);
+    description.setAlignment(Align.center);
 
     contentTable.add(description).width(350f).left().padTop(15f).padBottom(20f);
 
@@ -183,7 +193,7 @@ public class ItemDictionaryDisplay extends UIComponent {
 
     contentTable.row();
 
-    Label back = new Label("< Back", skin);
+    Label back = new Label("< Back", white);
 
     back.addListener(
         new ClickListener() {
@@ -223,53 +233,53 @@ public class ItemDictionaryDisplay extends UIComponent {
   private void addItemStats(ItemType itemType) {
     Table statsTable = new Table();
 
-    statsTable.setBackground(skin.getDrawable("button-c"));
+    statsTable.setBackground(InventorySlotStyle.getNormalBox());
     statsTable.pad(15f);
 
     if (itemType.getDamage() > 0) {
-      statsTable.add(new Label("Damage: " + itemType.getDamage(), skin)).left();
+      statsTable.add(new Label("Damage: " + itemType.getDamage(), white)).left();
 
       statsTable.row();
     }
 
     if (itemType.getRange() > 0f) {
-      statsTable.add(new Label("Range: " + itemType.getRange(), skin)).left();
+      statsTable.add(new Label("Range: " + itemType.getRange(), white)).left();
 
       statsTable.row();
     }
 
     if (itemType.getCooldown() > 0f) {
-      statsTable.add(new Label("Cooldown: " + itemType.getCooldown(), skin)).left();
+      statsTable.add(new Label("Cooldown: " + itemType.getCooldown(), white)).left();
 
       statsTable.row();
     }
 
     if (itemType.getHealAmount() > 0) {
-      statsTable.add(new Label("Heal: " + itemType.getHealAmount(), skin)).left();
+      statsTable.add(new Label("Heal: " + itemType.getHealAmount(), white)).left();
 
       statsTable.row();
     }
 
     if (itemType.getBurnDamagePerSecond() > 0f) {
-      statsTable.add(new Label("Burn Damage: " + itemType.getBurnDamagePerSecond(), skin)).left();
+      statsTable.add(new Label("Burn Damage: " + itemType.getBurnDamagePerSecond(), white)).left();
 
       statsTable.row();
     }
 
     if (itemType.getBurnTime() > 0f) {
-      statsTable.add(new Label("Burn Time: " + itemType.getBurnTime(), skin)).left();
+      statsTable.add(new Label("Burn Time: " + itemType.getBurnTime(), white)).left();
 
       statsTable.row();
     }
 
     if (itemType.getSlowSpeed() > 0f) {
-      statsTable.add(new Label("Slow Speed: " + itemType.getSlowSpeed(), skin)).left();
+      statsTable.add(new Label("Slow Speed: " + itemType.getSlowSpeed(), white)).left();
 
       statsTable.row();
     }
 
     if (itemType.getSlowTime() > 0f) {
-      statsTable.add(new Label("Slow Time: " + itemType.getSlowTime(), skin)).left();
+      statsTable.add(new Label("Slow Time: " + itemType.getSlowTime(), white)).left();
 
       statsTable.row();
     }

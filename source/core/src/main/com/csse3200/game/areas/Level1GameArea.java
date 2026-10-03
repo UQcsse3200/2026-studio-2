@@ -16,8 +16,6 @@ import com.csse3200.game.components.gamearea.GameAreaDisplay;
 import com.csse3200.game.components.level.DesertHazardRecoveryComponent;
 import com.csse3200.game.components.level.RoomDoorComponent;
 import com.csse3200.game.components.level.RoomDoorDisplay;
-import com.csse3200.game.components.npc.MerchantComponent;
-import com.csse3200.game.components.npc.MerchantDisplay;
 import com.csse3200.game.components.player.KeyboardPlayerInputComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.EnemyFactory;
@@ -140,7 +138,6 @@ public class Level1GameArea extends GameArea {
 
   private static final String[] forestTextureAtlases = {
     "images/player/player.atlas",
-    "images/npc/merchant.atlas",
     "images/terrain/Level_1/sheep.atlas",
     "images/terrain/Level_1/Level_1_checkpoint.atlas",
     "images/enemies/skeleton_archer.atlas",
@@ -428,21 +425,6 @@ public class Level1GameArea extends GameArea {
     spawnDoor(
         142, 2, "Return to the refuge", new Vector2(125, 5.1f), new Rectangle(110, 0, 20, 11.25f));
 
-    AnimationRenderComponent animator =
-        new AnimationRenderComponent(
-            ServiceLocator.getResourceService()
-                .getAsset("images/npc/merchant.atlas", TextureAtlas.class));
-    animator.addAnimation("idle", 0.65f, Animation.PlayMode.LOOP);
-    Entity merchant =
-        new Entity()
-            .addComponent(animator)
-            .addComponent(new MerchantComponent(player))
-            .addComponent(new MerchantDisplay());
-    animator.scaleEntity();
-    merchant.scaleHeight(2.05f);
-    animator.startAnimation("idle");
-    merchant.setPosition(123, 2);
-    spawnEntity(merchant);
     for (int i = 0; i < 3; i++) {
       AnimationRenderComponent sheepAnimator =
           new AnimationRenderComponent(
