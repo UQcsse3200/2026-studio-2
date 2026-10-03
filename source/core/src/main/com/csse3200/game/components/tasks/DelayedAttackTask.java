@@ -39,6 +39,8 @@ public class DelayedAttackTask extends DefaultTask implements PriorityTask {
             .getComponent(CombatStatsComponent.class)
             .hit(this.owner.getEntity().getComponent(CombatStatsComponent.class));
         attackStartTime = currentTime;
+
+        owner.getEntity().getEvents().trigger("hitPlayer");
       }
     }
   }

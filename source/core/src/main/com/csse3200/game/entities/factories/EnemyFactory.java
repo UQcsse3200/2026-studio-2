@@ -9,6 +9,7 @@ import com.csse3200.game.components.BurnStatsComponent;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.EnemyDeathComponent;
 import com.csse3200.game.components.EnemyItemDropComponent;
+import com.csse3200.game.components.EnemyTeleportComponent;
 import com.csse3200.game.components.PoisonStatsComponent;
 import com.csse3200.game.components.SlowStatsComponent;
 import com.csse3200.game.components.npc.SkeletonAnimationController;
@@ -31,6 +32,7 @@ import com.csse3200.game.rendering.AnimationRenderComponent;
 import com.csse3200.game.rendering.EnemyHealthRenderComponent;
 import com.csse3200.game.rendering.TextureRenderComponent;
 import com.csse3200.game.services.ServiceLocator;
+import java.util.List;
 
 /**
  * Factory to create enemy entities.
@@ -214,7 +216,7 @@ public class EnemyFactory {
    * @param target entity the enemy will chase and attack
    * @return cyclops entity
    */
-  public static Entity createCalypso(Entity target) {
+  public static Entity createCalypso(Entity target, List<Vector2> tpPositions) {
     EnemyConfig config = configs.calypso;
     Entity calypso = createEnemy(target, config);
 
@@ -227,10 +229,11 @@ public class EnemyFactory {
 
     calypso.addComponent(new SkeletonAnimationController(target));
     calypso.addComponent(animator);
+    calypso.addComponent(new EnemyTeleportComponent(tpPositions, 500L, 10000L));
 
     calypso
         .getComponent(AITaskComponent.class)
-        .addTask(new DelayedAttackTask(target, 20, 0.8f, 0.5f));
+        .addTask(new DelayedAttackTask(target, 20, 1.5f, 0.5f));
 
     return calypso;
   }
