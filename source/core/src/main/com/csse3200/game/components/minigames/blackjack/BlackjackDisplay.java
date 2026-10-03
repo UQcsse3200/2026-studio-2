@@ -5,9 +5,11 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.NinePatch;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
@@ -16,6 +18,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
+import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.csse3200.game.components.ButtonSound;
 import com.csse3200.game.components.inventory.InventoryComponent;
@@ -28,6 +31,7 @@ public class BlackjackDisplay extends UIComponent {
   private static final float Z_INDEX = 2f;
   private static final float CARD_WIDTH = 100f;
   private static final float CARD_HEIGHT = 145f;
+  private static final float MAX_HAND_WIDTH = 700f;
   private static final float DEAL_DURATION = 0.3f;
   private static final float DEAL_GAP = 0.15f;
   private static final String CARD_PATH = "images/minigames/blackjack/";
@@ -48,17 +52,22 @@ public class BlackjackDisplay extends UIComponent {
 
   private Table table;
   private Image deckImage;
+  private Group deckGroup;
   private Table dealerCards;
   private Table playerCards;
   private Table resultOverlay;
+  private ImageButton newRoundButton;
   private ImageButton hitButton;
   private ImageButton standButton;
+  private ImageButton backButton;
 
   private Label dealerTotalLabel;
   private Label playerTotalLabel;
   private Label balanceLabel;
   private Label resultLabel;
+  private Label statusLabel;
   private boolean dealInProgress;
+  private boolean revealDealerCard;
 
   public BlackjackDisplay(Blackjack blackjack) {
     this(blackjack, null, null, null);
@@ -111,29 +120,20 @@ public class BlackjackDisplay extends UIComponent {
     playerTotalLabel = new Label("", skin);
     balanceLabel = new Label("", skin);
     resultLabel = new Label("", skin);
+    statusLabel = new Label("PLACE BET", skin);
 
     dealerCards = new Table();
     playerCards = new Table();
 
-    ImageButton newRoundButton =
+    newRoundButton =
         createImageButton(
             "images/Buttons/newRound_up_btn.png", "images/Buttons/newRound_down_btn.png");
     hitButton =
         createImageButton("images/Buttons/hit_up_btn.png", "images/Buttons/hit_down_btn.png");
     standButton =
         createImageButton("images/Buttons/stand_up_btn.png", "images/Buttons/stand_down_btn.png");
-    Texture backUpTexture =
-        ServiceLocator.getResourceService()
-            .getAsset("images/Buttons/back_up_btn.png", Texture.class);
-    Texture backDownTexture =
-        ServiceLocator.getResourceService()
-            .getAsset("images/Buttons/back_down_btn.png", Texture.class);
-
-    ImageButton.ImageButtonStyle backButtonStyle = new ImageButton.ImageButtonStyle();
-    backButtonStyle.up = new TextureRegionDrawable(backUpTexture);
-    backButtonStyle.down = new TextureRegionDrawable(backDownTexture);
-
-    ImageButton backButton = new ImageButton(backButtonStyle);
+    backButton =
+        createImageButton("images/Buttons/back_up_btn.png", "images/Buttons/back_down_btn.png");
 
     TextButton soundButton = new TextButton("SOUND: ON", skin);
 
@@ -168,7 +168,6 @@ public class BlackjackDisplay extends UIComponent {
               rewardGranted = false;
               resultSoundPlayed = false;
               blackjack.startNewRound();
-              playSound(CARD_DEAL_SOUND);
               playResultSoundIfNeeded();
               grantWinReward();
               animateInitialDeal();
@@ -185,10 +184,9 @@ public class BlackjackDisplay extends UIComponent {
             if (blackjack.isRoundInProgress() && !blackjack.isRoundOver()) {
               int playerCardsBefore = blackjack.getPlayerHand().size();
               blackjack.hit();
-              playSound(CARD_DEAL_SOUND);
               playResultSoundIfNeeded();
               grantWinReward();
-              animateNewCard(playerCards, playerCardsBefore);
+              animateNewCards(playerCards, playerCardsBefore);
             }
           }
         });
@@ -203,14 +201,11 @@ public class BlackjackDisplay extends UIComponent {
               int dealerCardsBefore = blackjack.getDealerHand().size();
 
               blackjack.stand();
-
-              if (blackjack.getDealerHand().size() > dealerCardsBefore) {
-                playSound(CARD_DEAL_SOUND);
-              }
+              revealDealerCard = true;
 
               playResultSoundIfNeeded();
               grantWinReward();
-              animateNewCard(dealerCards, dealerCardsBefore);
+              animateNewCards(dealerCards, dealerCardsBefore);
             }
           }
         });
@@ -237,8 +232,21 @@ public class BlackjackDisplay extends UIComponent {
     dealerRegion.add(dealerTotalLabel).padTop(4f);
 
     Table centerRegion = new Table();
+    deckGroup = new Group();
+    deckGroup.setSize(CARD_WIDTH + 12f, CARD_HEIGHT + 8f);
+    Image deckBack = createCardBackImage();
+    Image deckMiddle = createCardBackImage();
     deckImage = createCardBackImage();
-    centerRegion.add(deckImage).size(CARD_WIDTH, CARD_HEIGHT);
+    deckBack.setSize(CARD_WIDTH, CARD_HEIGHT);
+    deckMiddle.setSize(CARD_WIDTH, CARD_HEIGHT);
+    deckImage.setSize(CARD_WIDTH, CARD_HEIGHT);
+    deckBack.setPosition(0f, 6f);
+    deckMiddle.setPosition(4f, 3f);
+    deckImage.setPosition(8f, 0f);
+    deckGroup.addActor(deckBack);
+    deckGroup.addActor(deckMiddle);
+    deckGroup.addActor(deckImage);
+    centerRegion.add(deckGroup).size(CARD_WIDTH + 12f, CARD_HEIGHT + 8f);
 
     Table playerRegion = new Table();
     playerRegion.add(playerLabel).padBottom(4f);
@@ -248,6 +256,7 @@ public class BlackjackDisplay extends UIComponent {
     playerRegion.add(playerTotalLabel);
 
     Table status = new Table();
+    status.add(statusLabel).padRight(30f);
     status.add(resultLabel).padRight(30f);
     status.add(balanceLabel);
 
@@ -362,20 +371,48 @@ public class BlackjackDisplay extends UIComponent {
     }
 
     boolean showResult = blackjack.isRoundOver();
-    resultOverlay.setVisible(showResult && !dealInProgress);
+    boolean showOverlay = showResult && !dealInProgress;
+    if (showOverlay && !resultOverlay.isVisible()) {
+      resultOverlay.getColor().a = 0f;
+      resultOverlay.setVisible(true);
+      resultOverlay.addAction(Actions.fadeIn(0.25f));
+    } else if (!showOverlay) {
+      resultOverlay.setVisible(false);
+      resultOverlay.getColor().a = 1f;
+    }
 
     if (hitButton != null) {
-      hitButton.setDisabled(showResult || dealInProgress);
+      boolean disabled = !blackjack.isRoundInProgress() || showResult || dealInProgress;
+      hitButton.setDisabled(disabled);
       hitButton.setTouchable(
-          showResult || dealInProgress
+          disabled
+              ? com.badlogic.gdx.scenes.scene2d.Touchable.disabled
+              : com.badlogic.gdx.scenes.scene2d.Touchable.enabled);
+    }
+
+    if (newRoundButton != null) {
+      boolean disabled = blackjack.isRoundInProgress() || dealInProgress;
+      newRoundButton.setDisabled(disabled);
+      newRoundButton.setTouchable(
+          disabled
               ? com.badlogic.gdx.scenes.scene2d.Touchable.disabled
               : com.badlogic.gdx.scenes.scene2d.Touchable.enabled);
     }
 
     if (standButton != null) {
-      standButton.setDisabled(showResult || dealInProgress);
+      boolean disabled = !blackjack.isRoundInProgress() || showResult || dealInProgress;
+      standButton.setDisabled(disabled);
       standButton.setTouchable(
-          showResult || dealInProgress
+          disabled
+              ? com.badlogic.gdx.scenes.scene2d.Touchable.disabled
+              : com.badlogic.gdx.scenes.scene2d.Touchable.enabled);
+    }
+
+    if (backButton != null) {
+      boolean disabled = blackjack.isRoundInProgress() || dealInProgress;
+      backButton.setDisabled(disabled);
+      backButton.setTouchable(
+          disabled
               ? com.badlogic.gdx.scenes.scene2d.Touchable.disabled
               : com.badlogic.gdx.scenes.scene2d.Touchable.enabled);
     }
@@ -410,8 +447,15 @@ public class BlackjackDisplay extends UIComponent {
     ImageButton.ImageButtonStyle style = new ImageButton.ImageButtonStyle();
     style.up = new TextureRegionDrawable(upTexture);
     style.down = new TextureRegionDrawable(downTexture);
+    style.disabled = createDisabledDrawable(upTexture);
 
     return new ImageButton(style);
+  }
+
+  private SpriteDrawable createDisabledDrawable(Texture texture) {
+    Sprite sprite = new Sprite(texture);
+    sprite.setColor(0.45f, 0.45f, 0.45f, 0.75f);
+    return new SpriteDrawable(sprite);
   }
 
   private void refresh() {
@@ -424,6 +468,9 @@ public class BlackjackDisplay extends UIComponent {
     dealerCards.clearChildren();
     playerCards.clearChildren();
 
+    float dealerCardWidth = cardWidthForHand(blackjack.getDealerHand().size());
+    float playerCardWidth = cardWidthForHand(blackjack.getPlayerHand().size());
+
     int dealerIndex = 0;
 
     for (Blackjack.Card card : blackjack.getDealerHand()) {
@@ -435,13 +482,13 @@ public class BlackjackDisplay extends UIComponent {
         cardImage = createCardImage(card);
       }
 
-      dealerCards.add(cardImage).size(CARD_WIDTH, CARD_HEIGHT).pad(5f);
+      dealerCards.add(cardImage).width(dealerCardWidth).height(CARD_HEIGHT).pad(5f);
 
       dealerIndex++;
     }
 
     for (Blackjack.Card card : blackjack.getPlayerHand()) {
-      playerCards.add(createCardImage(card)).size(CARD_WIDTH, CARD_HEIGHT).pad(5f);
+      playerCards.add(createCardImage(card)).width(playerCardWidth).height(CARD_HEIGHT).pad(5f);
     }
 
     if (blackjack.getDealerHand().isEmpty()) {
@@ -463,6 +510,16 @@ public class BlackjackDisplay extends UIComponent {
   }
 
   private void refreshLabels() {
+    if (dealInProgress) {
+      statusLabel.setText("DEALING");
+    } else if (blackjack.isRoundOver()) {
+      statusLabel.setText("ROUND OVER");
+    } else if (blackjack.isRoundInProgress()) {
+      statusLabel.setText("YOUR TURN");
+    } else {
+      statusLabel.setText("PLACE BET");
+    }
+
     if (blackjack.getDealerHand().isEmpty()) {
       dealerTotalLabel.setText("Dealer total: -");
     } else if (blackjack.isRoundInProgress() && !blackjack.isRoundOver()) {
@@ -483,6 +540,7 @@ public class BlackjackDisplay extends UIComponent {
     dealInProgress = true;
     renderHands();
     table.validate();
+    refreshLabels();
 
     animateCards(playerCards, 0, 0, false);
     animateCards(dealerCards, 0, 1, false);
@@ -491,12 +549,36 @@ public class BlackjackDisplay extends UIComponent {
     updateResultOverlay();
   }
 
-  private void animateNewCard(Table hand, int index) {
+  private void animateNewCards(Table hand, int index) {
     dealInProgress = true;
     renderHands();
     table.validate();
-    animateCards(hand, index, 0, true);
+    refreshLabels();
+
+    boolean revealingDealer = hand == dealerCards && revealDealerCard;
+    if (revealingDealer) {
+      Image revealedCard = (Image) dealerCards.getChildren().get(0);
+      revealedCard.getColor().a = 0f;
+    }
+
+    int cardsToAnimate = hand.getChildren().size - index;
+    if (cardsToAnimate <= 0) {
+      finishDeal();
+      return;
+    }
+
+    for (int cardIndex = index; cardIndex < hand.getChildren().size; cardIndex++) {
+      boolean completesDeal = cardIndex == hand.getChildren().size - 1;
+      animateCards(hand, cardIndex, cardIndex - index, completesDeal);
+    }
     updateResultOverlay();
+  }
+
+  private float cardWidthForHand(int cardCount) {
+    if (cardCount == 0) {
+      return CARD_WIDTH;
+    }
+    return Math.min(CARD_WIDTH, MAX_HAND_WIDTH / cardCount);
   }
 
   private void animateCards(Table hand, int index, int sequenceIndex, boolean completesDeal) {
@@ -512,10 +594,13 @@ public class BlackjackDisplay extends UIComponent {
     Vector2 deckPosition = deckImage.localToStageCoordinates(new Vector2(0f, 0f));
     Vector2 start = hand.stageToLocalCoordinates(deckPosition);
     card.setPosition(start.x, start.y);
+    card.getColor().a = 0f;
     card.addAction(
         Actions.sequence(
             Actions.delay(sequenceIndex * (DEAL_DURATION + DEAL_GAP)),
-            Actions.moveTo(target.x, target.y, DEAL_DURATION),
+            Actions.run(() -> playSound(CARD_DEAL_SOUND)),
+            Actions.parallel(
+                Actions.moveTo(target.x, target.y, DEAL_DURATION), Actions.fadeIn(DEAL_DURATION)),
             Actions.run(
                 () -> {
                   if (completesDeal) {
@@ -525,6 +610,13 @@ public class BlackjackDisplay extends UIComponent {
   }
 
   private void finishDeal() {
+    if (revealDealerCard) {
+      revealDealerCard = false;
+      Image revealedCard = (Image) dealerCards.getChildren().get(0);
+      revealedCard.addAction(
+          Actions.sequence(Actions.fadeIn(DEAL_DURATION), Actions.run(this::finishDeal)));
+      return;
+    }
     dealInProgress = false;
     refreshLabels();
     updateResultOverlay();
