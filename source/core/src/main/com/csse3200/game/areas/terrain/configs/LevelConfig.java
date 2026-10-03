@@ -24,6 +24,7 @@ public class LevelConfig {
   protected String ledgesTFP;
   protected String groundTFP;
   protected String spikeTFP;
+
   /** Optional atlas with "unlit" and "lit" regions for this level's checkpoints. */
   protected String checkpointAtlas;
 
@@ -206,7 +207,9 @@ public class LevelConfig {
     for (SpikeClusterConfig s : spikes) {
       for (int i = s.xMin; i <= s.xMax; i++) {
         for (int j = s.yMin; j <= s.yMax; j++) {
-          Entity spike = ObstacleFactory.createSpike(s, spikeTFP != null ? spikeTFP : "images/terrain/spike_tile.png");
+          Entity spike =
+              ObstacleFactory.createSpike(
+                  s, spikeTFP != null ? spikeTFP : "images/terrain/spike_tile.png");
           entities.add(new SpawnData(new GridPoint2(i, j), spike));
         }
       }

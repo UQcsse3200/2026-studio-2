@@ -180,11 +180,7 @@ public class Level1GameScreen extends ScreenAdapter {
     blackjackOverlay = new BlackjackOverlay(player, minigameOverlayManager);
 
     if (cheats) {
-      level1GameArea
-          .getPlayer()
-          .getComponent(PhysicsComponent.class)
-          .getBody()
-          .setGravityScale(0);
+      level1GameArea.getPlayer().getComponent(PhysicsComponent.class).getBody().setGravityScale(0);
       level1GameArea.getPlayer().getComponent(KeyboardPlayerInputComponent.class).toggleCheats();
     }
   }

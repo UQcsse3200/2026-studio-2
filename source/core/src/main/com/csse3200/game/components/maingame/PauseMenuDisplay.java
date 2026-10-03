@@ -122,7 +122,8 @@ public class PauseMenuDisplay extends UIComponent {
     ImageButton controlsBtn = new ImageButton(controlsButtonStyle);
 
     Texture controlsGraphicTexture =
-        ServiceLocator.getResourceService().getAsset("images/ui/controls_graphic.png", Texture.class);
+        ServiceLocator.getResourceService()
+            .getAsset("images/ui/controls_graphic.png", Texture.class);
 
     resumeBtn.addListener(
         new ChangeListener() {

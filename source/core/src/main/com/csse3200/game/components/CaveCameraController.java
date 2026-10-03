@@ -4,9 +4,9 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.MathUtils;
 
 /**
- * Lookahead camera controller used by {@link CameraComponent}. Eases the camera ahead of the
- * target in its facing direction, and (once room bounds are known) clamps it so it never shows
- * outside the playable area.
+ * Lookahead camera controller used by {@link CameraComponent}. Eases the camera ahead of the target
+ * in its facing direction, and (once room bounds are known) clamps it so it never shows outside the
+ * playable area.
  */
 public class CaveCameraController {
 
@@ -35,7 +35,8 @@ public class CaveCameraController {
   private float minCameraY;
   private float maxCameraY;
 
-  public CaveCameraController(OrthographicCamera camera, float viewportWidth, float viewportHeight) {
+  public CaveCameraController(
+      OrthographicCamera camera, float viewportWidth, float viewportHeight) {
     this.camera = camera;
     this.viewportWidth = viewportWidth;
     this.viewportHeight = viewportHeight;
@@ -55,9 +56,7 @@ public class CaveCameraController {
     roomBoundsSet = false;
   }
 
-  /**
-   * Updates the viewport size this controller clamps against, e.g. after a window resize.
-   */
+  /** Updates the viewport size this controller clamps against, e.g. after a window resize. */
   public void setViewportSize(float viewportWidth, float viewportHeight) {
     this.viewportWidth = viewportWidth;
     this.viewportHeight = viewportHeight;
@@ -74,8 +73,8 @@ public class CaveCameraController {
   }
 
   /**
-   * Call once when the player spawns/enters a room, so the very first
-   * frame already has them biased toward the left edge instead of centered.
+   * Call once when the player spawns/enters a room, so the very first frame already has them biased
+   * toward the left edge instead of centered.
    */
   public void snapToSpawn(float playerX, float playerY, boolean facingRight) {
     currentOffsetX = facingRight ? lookaheadDistance : -lookaheadDistance;
@@ -90,10 +89,7 @@ public class CaveCameraController {
     camera.update();
   }
 
-  /**
-   * Call every frame in update/render, passing the target's position
-   * and facing direction.
-   */
+  /** Call every frame in update/render, passing the target's position and facing direction. */
   public void update(float delta, float playerX, float playerY, boolean facingRight) {
     float targetOffset = facingRight ? lookaheadDistance : -lookaheadDistance;
 

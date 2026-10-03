@@ -52,8 +52,7 @@ public class PauseButtonDisplay extends UIComponent {
 
     boolean pauseArt = hasPauseImages();
     Texture up =
-        ServiceLocator.getResourceService()
-            .getAsset(pauseArt ? PAUSE_UP : EXIT_UP, Texture.class);
+        ServiceLocator.getResourceService().getAsset(pauseArt ? PAUSE_UP : EXIT_UP, Texture.class);
     Texture down =
         ServiceLocator.getResourceService()
             .getAsset(pauseArt ? PAUSE_DOWN : EXIT_DOWN, Texture.class);

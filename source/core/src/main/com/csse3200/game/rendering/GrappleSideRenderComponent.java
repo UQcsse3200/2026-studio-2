@@ -22,8 +22,7 @@ public class GrappleSideRenderComponent extends RenderComponent {
     super.create();
     grappleComponent = entity.getComponent(PlatformGrappleComponent.class);
 
-    Texture texture =
-        ServiceLocator.getResourceService().getAsset(GRAPPLE_TEXTURE, Texture.class);
+    Texture texture = ServiceLocator.getResourceService().getAsset(GRAPPLE_TEXTURE, Texture.class);
     texture.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
     textureRegion = new TextureRegion(texture);
   }
@@ -66,7 +65,8 @@ public class GrappleSideRenderComponent extends RenderComponent {
    * @param mirror flips the art horizontally, used so the left and right edges face each other
    *     instead of both facing the same way
    */
-  private void drawVerticalStrip(SpriteBatch batch, float x, float y, float length, boolean mirror) {
+  private void drawVerticalStrip(
+      SpriteBatch batch, float x, float y, float length, boolean mirror) {
     textureRegion.setU(0f);
     textureRegion.setV(0f);
     textureRegion.setU2(1f);
@@ -81,10 +81,11 @@ public class GrappleSideRenderComponent extends RenderComponent {
    * Draws the grapple texture tiled along a horizontal strip, rotated from its native vertical
    * orientation so it reads correctly running along a top/bottom edge instead of a side edge.
    *
-   * @param rotation +90 for the top edge, -90 for the bottom edge, so the two face away from
-   *     each other correctly
+   * @param rotation +90 for the top edge, -90 for the bottom edge, so the two face away from each
+   *     other correctly
    */
-  private void drawHorizontalStrip(SpriteBatch batch, float x, float y, float length, float rotation) {
+  private void drawHorizontalStrip(
+      SpriteBatch batch, float x, float y, float length, float rotation) {
     textureRegion.setU(0f);
     textureRegion.setV(0f);
     textureRegion.setU2(1f);

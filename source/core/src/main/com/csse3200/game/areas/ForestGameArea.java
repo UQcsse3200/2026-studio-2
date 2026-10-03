@@ -47,9 +47,7 @@ public class ForestGameArea extends GameArea {
     "images/projectiles/cold_arrow.png",
     "scroll_bg.png"
   };
-  private static final String[] forestTextureAtlases = {
-    "images/player/player.atlas"
-  };
+  private static final String[] forestTextureAtlases = {"images/player/player.atlas"};
   private static final String[] forestSounds = {"sounds/Impact4.ogg"};
   private static final String backgroundMusic = "sounds/BGM_03_mp3.mp3";
   private static final String[] forestMusic = {backgroundMusic};

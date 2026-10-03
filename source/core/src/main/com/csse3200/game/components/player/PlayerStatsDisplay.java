@@ -19,7 +19,8 @@ import java.util.Locale;
 /** A UI component that displays the player's health as a row of hearts. */
 public class PlayerStatsDisplay extends UIComponent {
   private static final String HEART_TEXTURE = "images/health/red_heart.png";
-  private static final String HEALTH_BAR_BACKGROUND_TEXTURE = "images/health/PixelArt_HeartBack.png";
+  private static final String HEALTH_BAR_BACKGROUND_TEXTURE =
+      "images/health/PixelArt_HeartBack.png";
   private static final String DAMAGED_HEART_TEXTURE = "images/health/Damaged_heart.png";
   private static final String LAST_HEALTH_TEXTURE = "images/health/Last_Health.png";
 
