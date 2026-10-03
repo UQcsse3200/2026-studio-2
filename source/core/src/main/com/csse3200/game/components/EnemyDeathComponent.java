@@ -15,6 +15,7 @@ public class EnemyDeathComponent extends Component {
 
     // Handle enemy death
     if (enemyHealth <= 0) {
+      entity.getEvents().trigger("enemyDied", entity);
       ServiceLocator.getEntityService().scheduleRemoval(entity);
     }
   }
