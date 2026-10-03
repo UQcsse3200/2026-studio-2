@@ -28,16 +28,11 @@ public class CheckpointComponent extends Component {
     if (collected) {
       return;
     }
-
     this.collected = true;
-
-    Entity litTorch =
-        new Entity().addComponent(new TextureRenderComponent("images/checkpoint_lit.png"));
-
-    litTorch.setScale(1f, 1.5f);
-    litTorch.setPosition(position.x, position.y);
-
-    ServiceLocator.getEntityService().register(litTorch);
+    entity.getEvents().trigger("checkpointActivated", position);
+    this.getEntity()
+        .getComponent(TextureRenderComponent.class)
+        .replaceTexture("images/checkpoint_lit.png");
   }
 
   public void deactivate() {

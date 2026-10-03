@@ -8,12 +8,9 @@ import com.csse3200.game.areas.terrain.configs.LevelConfig;
 import com.csse3200.game.areas.terrain.configs.SpawnData;
 import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.components.item.ItemComponent;
-import com.csse3200.game.components.level.ActivatableComponent;
-import com.csse3200.game.components.level.CheckpointComponent;
-import com.csse3200.game.components.level.LevelTriggerComponent;
-import com.csse3200.game.components.level.PlatformGrappleComponent;
-import com.csse3200.game.components.level.TriggerButtonComponent;
+import com.csse3200.game.components.level.*;
 import com.csse3200.game.components.player.KeyboardPlayerInputComponent;
+import com.csse3200.game.components.player.PlayerInteractionComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.ArrayList;
@@ -54,11 +51,16 @@ public abstract class GameArea implements Disposable {
 
   /** Dispose of all internal entities in the area */
   public void dispose() {
+    ItemComponent itemComponent;
     areaEntities.remove(player);
     ArrayList<Entity> items = new ArrayList<Entity>();
     for (Entity entity : areaEntities) {
-      if (entity.getComponent(ItemComponent.class) != null) {
-        items.add(entity);
+      itemComponent = entity.getComponent(ItemComponent.class);
+      if (itemComponent != null) {
+        if (player
+            .getComponent(PlayerInteractionComponent.class)
+            .getInventory()
+            .hasItem(itemComponent.getItem().getItemType())) items.add(entity);
       }
     }
 
@@ -126,6 +128,20 @@ public abstract class GameArea implements Disposable {
       if (trigger != null) {
         entity.getEvents().addListener("activateByKey", this::onButtonActivated);
       }
+    }
+
+    CheckpointComponent checkpoint = entity.getComponent(CheckpointComponent.class);
+    if (checkpoint != null) {
+      entity.getEvents().addListener("checkpointActivated", this::onCheckpointActivated);
+    }
+
+    SlipperyPlatformComponent slipperyPlatform =
+        entity.getComponent(SlipperyPlatformComponent.class);
+    if (slipperyPlatform != null) {
+      entity
+          .getEvents()
+          .addListener("grappleTimeExceeded", () -> player.getEvents().trigger("grappleRelease"));
+      player.getEvents().addListener("grappleRelease", () -> slipperyPlatform.setGrappled(false));
     }
 
     LevelTriggerComponent trigger = entity.getComponent(LevelTriggerComponent.class);
@@ -205,11 +221,6 @@ public abstract class GameArea implements Disposable {
     return terrain;
   }
 
-  public enum BackgroundType {
-    INDEPENDENT,
-    DEPENDENT
-  }
-
   /**
    * Public method for grapples to check the end of the raycast position hits a valid side of a
    * platform to confirm a successful grapple location was hit
@@ -245,6 +256,14 @@ public abstract class GameArea implements Disposable {
     }
   }
 
+  /** Represents functionality that all game areas should use when a checkpoint is encountered */
+  protected void onCheckpointActivated(GridPoint2 position) {
+    // currently no functionality is required by all game areas, however, this method is required
+    // here as it allows the checkpoint system to bind to the current game area's respective
+    // onCheckpointActivated method. For any level specific behaviour for checkpoint activation,
+    // such as level 3's rising water saving, that game area should override this method
+  }
+
   /** Public method to respawn the player at the last collected checkpoint upon an event trigger. */
   public void respawn() {
     ArrayList<CheckpointComponent> checkpoints = config.getCheckpoints();
@@ -261,7 +280,9 @@ public abstract class GameArea implements Disposable {
     }
     float x = respawnPoint.x;
     float y = respawnPoint.y;
-    player.setPosition(x, y);
+
+    RespawnComponent respawn = player.getComponent(RespawnComponent.class);
+    respawn.queueRespawn(new Vector2(x, y));
   }
 
   public KeyboardPlayerInputComponent getInput() {

@@ -1,5 +1,6 @@
 package com.csse3200.game.rendering;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -50,6 +51,9 @@ public class DynamicTextureRenderComponent extends RenderComponent {
     Vector2 position = entity.getPosition();
     Vector2 scale = entity.getScale();
     rotation = rotateComponent != null ? rotateComponent.getRotation() : 0f;
+    Color prevColor = batch.getColor().cpy();
+    float light = getDarkness();
+    batch.setColor(light, light, light, 1f);
     batch.draw(
         textureRegion,
         position.x,
@@ -61,5 +65,6 @@ public class DynamicTextureRenderComponent extends RenderComponent {
         1f,
         1f,
         rotation);
+    batch.setColor(prevColor);
   }
 }

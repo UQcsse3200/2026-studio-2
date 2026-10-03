@@ -39,6 +39,10 @@ public class PlayerInteractionComponent extends Component {
     entity.getEvents().addListener("closeShop", this::onShopClosed);
   }
 
+  public InventoryComponent getInventory() {
+    return inventory;
+  }
+
   /**
    * Interacts with the nearest shopkeeper, gold coin, or item. Pressing interact again while the
    * shop is open closes it.
