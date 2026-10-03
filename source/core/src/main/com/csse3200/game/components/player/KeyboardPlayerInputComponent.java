@@ -150,6 +150,9 @@ public class KeyboardPlayerInputComponent extends InputComponent {
       case Keys.ESCAPE:
         entity.getEvents().trigger("togglePause");
         return true;
+      case Keys.M:
+        entity.getEvents().trigger("toggleMap");
+        return true;
       default:
         return false;
     }

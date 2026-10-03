@@ -24,8 +24,11 @@ public class Level2GameArea extends GameArea {
   /** Textures used by the level 2 game area. */
   private static final String[] level2Textures = {
     "images/scroll_bg.png",
+
     // Level 2 background
     "images/Background-2.png",
+    "images/parallax/Clouds-birds.png",
+    "images/parallax/Mountains-layer.png",
     "images/Platform_level-2.png",
 
     // Level 2 ground tile
@@ -57,6 +60,7 @@ public class Level2GameArea extends GameArea {
     "images/spiky_ball_trap.png",
     "images/checkpoint_lit.png",
     "images/checkpoint_unlit.png",
+
     // Enemy textures
     "images/skeleton_warrior.png",
     "images/skeleton_archer.png",
@@ -93,31 +97,66 @@ public class Level2GameArea extends GameArea {
   public void create() {
     loadAssets();
 
-    // Spawn the Level 2 background before the terrain.
-    spawnBackground();
     spawnTerrain();
+    spawnBackground();
     spawnConfigEntities();
+
     // player = spawnPlayer();
     // spawnEntityAt(player, config.getPlayerSpawn(), true, true);
     player.setPosition(new Vector2(config.getPlayerSpawn().x, config.getPlayerSpawn().y));
   }
 
-  /** Creates the Level 2 background. */
+  /** Creates the Level 2 parallax background. */
   private void spawnBackground() {
     final Vector2 backgroundPos = new Vector2(-15f, -10f);
 
     BackgroundRenderComponent backgroundComponent =
         new BackgroundRenderComponent(camera, backgroundPos, worldBounds);
+
+    // Main background
     backgroundComponent.addLayer(
         "images/Background-2.png",
-        new Vector2(0.10f, 0f),
+        new Vector2(0.30f, 0f),
         30f,
         15f,
         new Vector2(0f, 3.5f),
         new Vector2(0f, 0f),
-        false,
+        RepeatMode.NONE,
         1f,
-        1f);
+        1f,
+        false,
+        0,
+        -1);
+
+    // Mountains layer
+    backgroundComponent.addLayer(
+        "images/parallax/Mountains-layer.png",
+        new Vector2(0.18f, 0f),
+        30f,
+        15f,
+        new Vector2(0f, 3.5f),
+        new Vector2(0f, 0f),
+        RepeatMode.NONE,
+        1f,
+        1f,
+        false,
+        0,
+        -1);
+
+    // Clouds and birds layer
+    backgroundComponent.addLayer(
+        "images/parallax/Clouds-birds.png",
+        new Vector2(0f, 0f),
+        30f,
+        7f,
+        new Vector2(0f, 10f),
+        new Vector2(-0.12f, 0f),
+        RepeatMode.HORIZONTAL,
+        1f,
+        1f,
+        false,
+        0,
+        -1);
 
     Entity background = new Entity().addComponent(backgroundComponent);
     background.setPosition(backgroundPos);

@@ -8,7 +8,9 @@ import com.csse3200.game.areas.terrain.TerrainFactory.TerrainType;
 import com.csse3200.game.areas.terrain.configs.levelconfigs.Level1Config;
 import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.components.gamearea.GameAreaDisplay;
+import com.csse3200.game.components.inventory.InventoryBarDisplay;
 import com.csse3200.game.components.player.KeyboardPlayerInputComponent;
+import com.csse3200.game.components.player.PlayerStatsDisplay;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.EnemyFactory;
 import com.csse3200.game.entities.factories.ItemFactory;
@@ -16,6 +18,7 @@ import com.csse3200.game.entities.factories.NPCFactory;
 import com.csse3200.game.entities.factories.ObstacleFactory;
 import com.csse3200.game.entities.factories.PlayerFactory;
 import com.csse3200.game.rendering.BackgroundRenderComponent;
+import com.csse3200.game.rendering.ForegroundRenderComponent;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.utils.math.GridPoint2Utils;
@@ -143,6 +146,16 @@ public class Level1GameArea extends GameArea {
     "images/parallax/level_1_background.png",
     "images/parallax/level_1_clouds.png",
     "images/parallax/level_1_furthest.png",
+    "images/parallax/white_box.png",
+    "images/parallax/lightning_1.png",
+    "images/parallax/lightning_2.png",
+    "images/parallax/lightning_3.png",
+    "images/parallax/lightning_4.png",
+    "images/parallax/rain_small.png",
+    "images/parallax/rain_medium.png",
+    "images/parallax/rain_large.png",
+    "images/parallax/rain_xl.png",
+    "images/parallax/rain_xxl.png",
 
     // Enemy textures
     "images/skeleton_warrior.png",
@@ -183,6 +196,12 @@ public class Level1GameArea extends GameArea {
 
   private final TerrainFactory terrainFactory;
   private final CameraComponent camera;
+  private BackgroundRenderComponent backgroundComponent;
+  private ForegroundRenderComponent foregroundComponent;
+  private boolean mapToggled = false;
+  private float viewportWidth;
+  private float viewportHeight;
+  private Vector2 resizeScale;
 
   /**
    * Initialise this Level1GameArea using the provided TerrainFactory and CameraComponent.
@@ -212,6 +231,7 @@ public class Level1GameArea extends GameArea {
     spawnGold();
     spawnSkeletonArcher();
     spawnSkeletonWarrior();
+    spawnForeground();
 
     // Test enemy functionalitys
     // spawnTestSkeletonWarrior();
@@ -243,6 +263,48 @@ public class Level1GameArea extends GameArea {
     spawnEntity(ui);
   }
 
+  private void spawnForeground() {
+    final Vector2 foregroundPos = new Vector2(-10f, -10f);
+    foregroundComponent = new ForegroundRenderComponent(camera, foregroundPos, worldBounds);
+
+    // Lightning strike flash layer
+    /*
+    foregroundComponent.addLayer(
+            "images/parallax/white_box.png",
+            new Vector2(0f, 0f), // Parallax factor
+            30f,
+            12f,
+            new Vector2(0f, 4.25f), // Positional offset
+            new Vector2(0f, 0f), // Independent velocity
+            RepeatMode.NONE,
+            1f,
+            0f,
+            true);
+
+     */
+    foregroundComponent.addLayer(
+        "images/parallax/rain_small.png", // 0.2,0.4 for xxl
+        new Vector2(0f, 0f),
+        0.1f,
+        0.2f,
+        new Vector2(0f, 0f),
+        new Vector2(2f, -2f),
+        RepeatMode.CHAOTIC,
+        1f,
+        0.4f,
+        false,
+        0,
+        -1);
+
+    // Create the background entity.
+    Entity foreground = new Entity().addComponent(foregroundComponent);
+
+    // Position the background in the game world.
+    foreground.setPosition(foregroundPos);
+
+    spawnEntity(foreground);
+  }
+
   /**
    * ============================================================ CURRENT ACTIVE BACKGROUND
    * ============================================================
@@ -260,8 +322,7 @@ public class Level1GameArea extends GameArea {
    */
   private void spawnBackground() {
     final Vector2 backgroundPos = new Vector2(-10f, -10f);
-    BackgroundRenderComponent backgroundComponent =
-        new BackgroundRenderComponent(camera, backgroundPos, worldBounds);
+    backgroundComponent = new BackgroundRenderComponent(camera, backgroundPos, worldBounds);
 
     // Complete original background image
     backgroundComponent.addLayer(
@@ -271,9 +332,12 @@ public class Level1GameArea extends GameArea {
         12f,
         new Vector2(0f, 4.25f), // Positional offset
         new Vector2(0f, 0f), // Independent velocity
-        false,
+        RepeatMode.NONE,
         1f,
-        1f);
+        1f,
+        false,
+        0,
+        -1);
 
     // Furthest clouds image
     backgroundComponent.addLayer(
@@ -283,9 +347,12 @@ public class Level1GameArea extends GameArea {
         4f,
         new Vector2(-3f, 9f), // Positional offset
         new Vector2(-0.06f, 0f), // Independent velocity
-        true,
+        RepeatMode.HORIZONTAL,
         1f,
-        1f);
+        1f,
+        false,
+        0,
+        -1);
 
     // Second-furthest clouds image
     backgroundComponent.addLayer(
@@ -295,9 +362,42 @@ public class Level1GameArea extends GameArea {
         15f,
         new Vector2(25f, 7.5f), // Positional offset
         new Vector2(0.12f, 0f), // Independent velocity
-        true,
+        RepeatMode.HORIZONTAL,
         1f,
-        1f);
+        1f,
+        false,
+        0,
+        -1);
+
+    // Lightning image 1
+    backgroundComponent.addLayer(
+        "images/parallax/lightning_1.png",
+        new Vector2(0f, 0f),
+        2f,
+        7f,
+        new Vector2(15f, 9.5f),
+        new Vector2(0f, 0f),
+        RepeatMode.NONE,
+        1f,
+        0f,
+        true,
+        0,
+        0);
+
+    // Lightning image 2
+    backgroundComponent.addLayer(
+        "images/parallax/lightning_2.png",
+        new Vector2(0f, 0f),
+        2f,
+        7f,
+        new Vector2(6f, 9.5f),
+        new Vector2(0f, 0f),
+        RepeatMode.NONE,
+        1f,
+        0f,
+        true,
+        0,
+        1);
 
     // Furthest mountains image
     backgroundComponent.addLayer(
@@ -307,9 +407,12 @@ public class Level1GameArea extends GameArea {
         7f,
         new Vector2(5f, 6.5f), // Positional offset
         new Vector2(0f, 0f), // Independent velocity
-        true,
+        RepeatMode.HORIZONTAL,
         1f,
-        0.6f);
+        0.6f,
+        false,
+        0,
+        -1);
 
     // Second-furthest mountains image
     backgroundComponent.addLayer(
@@ -319,9 +422,12 @@ public class Level1GameArea extends GameArea {
         10f,
         new Vector2(0f, 5f), // Positional offset
         new Vector2(0f, 0f), // Independent velocity
-        true,
+        RepeatMode.HORIZONTAL,
         1f,
-        1f);
+        1f,
+        false,
+        0,
+        -1);
 
     // Create the background entity.
     Entity background = new Entity().addComponent(backgroundComponent);
@@ -330,6 +436,35 @@ public class Level1GameArea extends GameArea {
     background.setPosition(backgroundPos);
 
     spawnEntity(background);
+  }
+
+  private void toggleMap() {
+    if (!mapToggled) {
+      int worldBoundX = (int) worldBounds.x;
+      int worldBoundY = (int) worldBounds.y;
+      viewportWidth = camera.getCamera().viewportWidth;
+      viewportHeight = camera.getCamera().viewportHeight;
+
+      cameraComponent.resize(worldBoundX, worldBoundY, worldBoundX + 10);
+      Entity camera = new Entity();
+      camera.setPosition(worldBounds.x / 2, worldBounds.y / 2);
+      cameraComponent.setTarget(camera);
+
+      float scaleX = worldBoundX / viewportWidth;
+      float scaleY = worldBoundY / viewportHeight;
+      resizeScale = new Vector2(scaleX, scaleY);
+
+      backgroundComponent.scaleEntity(resizeScale, worldBounds, true);
+      player.getComponent(InventoryBarDisplay.class).hideBar();
+      player.getComponent(PlayerStatsDisplay.class).hide();
+    } else {
+      cameraComponent.resize((int) viewportWidth, (int) viewportHeight, viewportWidth);
+      cameraComponent.setTarget(player);
+      backgroundComponent.scaleEntity(resizeScale, worldBounds, false);
+      player.getComponent(InventoryBarDisplay.class).showBar();
+      player.getComponent(PlayerStatsDisplay.class).show();
+    }
+    mapToggled = !mapToggled;
   }
 
   private void spawnTerrain() {
@@ -376,6 +511,7 @@ public class Level1GameArea extends GameArea {
   private Entity spawnPlayer() {
     Entity newPlayer = PlayerFactory.createPlayer();
     newPlayer.getEvents().addListener("grappleRequested", this::checkSuccessfulGrapple);
+    newPlayer.getEvents().addListener("toggleMap", this::toggleMap);
 
     input = newPlayer.getComponent(KeyboardPlayerInputComponent.class);
     if (input != null) {

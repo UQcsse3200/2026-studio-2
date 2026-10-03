@@ -16,15 +16,23 @@ class ActivatableComponentTest {
   void testValidIds() {
     ActivatableComponent activatable1 = new ActivatableComponent(true, new String[] {"test"});
     assertFalse(activatable1.isActive());
+    assertTrue(activatable1.activatable);
 
     ActivatableComponent activatable2 = new ActivatableComponent(false, new String[] {"test"});
     assertFalse(activatable2.isActive());
+    assertTrue(activatable2.activatable);
 
     ActivatableComponent activatable3 = new ActivatableComponent(true, new String[] {});
     assertTrue(activatable3.isActive());
+    assertFalse(activatable3.activatable);
 
     ActivatableComponent activatable4 = new ActivatableComponent(false, new String[] {});
     assertFalse(activatable4.isActive());
+    assertFalse(activatable4.activatable);
+
+    ActivatableComponent activatable5 = new ActivatableComponent(new String[] {"test"});
+    assertFalse(activatable5.isActive());
+    assertTrue(activatable5.activatable);
   }
 
   @Test

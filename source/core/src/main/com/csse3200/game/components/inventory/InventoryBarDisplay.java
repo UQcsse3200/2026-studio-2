@@ -76,14 +76,14 @@ public class InventoryBarDisplay extends UIComponent {
   }
 
   /** Hides the quick bar while the backpack is open. */
-  private void hideBar() {
+  public void hideBar() {
     if (table != null) {
       table.setVisible(false);
     }
   }
 
   /** Displays the quick bar after the backpack is closed. */
-  private void showBar() {
+  public void showBar() {
     if (table != null) {
       table.setVisible(true);
     }

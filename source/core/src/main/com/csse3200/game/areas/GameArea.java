@@ -263,6 +263,13 @@ public abstract class GameArea implements Disposable {
     // onCheckpointActivated method. For any level specific behaviour for checkpoint activation,
     // such as level 3's rising water saving, that game area should override this method
   }
+  
+  /** Layer repeat behaviour for background layers */
+  public enum RepeatMode {
+    NONE,
+    HORIZONTAL,
+    CHAOTIC
+  }
 
   /** Public method to respawn the player at the last collected checkpoint upon an event trigger. */
   public void respawn() {
