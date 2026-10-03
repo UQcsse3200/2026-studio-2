@@ -105,7 +105,7 @@ public class ObstacleFactory {
     } else if (grappleSides != 0) {
       texturePath = "images/terrain/hook_platform.png";
     } else {
-      texturePath = "images/terrain/platform.png";
+      texturePath = "images/terrain/Others/platform.png";
     }
 
     Entity platform =

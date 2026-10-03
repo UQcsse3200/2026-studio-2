@@ -1,5 +1,7 @@
 package com.csse3200.game.components.player;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Group;
@@ -9,6 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.csse3200.game.components.CombatStatsComponent;
+import com.csse3200.game.components.inventory.InventoryComponent;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.UIComponent;
@@ -22,6 +25,8 @@ public class PlayerStatsDisplay extends UIComponent {
   private static final String HEALTH_BAR_BACKGROUND_TEXTURE = "images/health/PixelArt_HeartBack.png";
   private static final String DAMAGED_HEART_TEXTURE = "images/health/Damaged_heart.png";
   private static final String LAST_HEALTH_TEXTURE = "images/health/Last_Health.png";
+  private static final String GOLD_COIN_TEXTURE = "images/gold_coin.png";
+  private static final float GOLD_FONT_SCALE = 1.8f;
 
   private static final float HEART_SIDE_LENGTH = 35f;
   private static final float HEART_SIDE_HEIGHT = 35f;
@@ -49,6 +54,10 @@ public class PlayerStatsDisplay extends UIComponent {
   private Label speedLabel;
   private Image background;
   private boolean showStatText;
+  private Table goldTable;
+  private Label goldLabel;
+
+  private Color goldColor = new Color(0.0f, 0.47f, 0.47f, 1.0f);
 
   /** Configures the optional sandbox readouts before this component is created. */
   public void setShowStatText(boolean showStatText) {
@@ -100,6 +109,29 @@ public class PlayerStatsDisplay extends UIComponent {
       speedLabel.setName(SPEED_LABEL_NAME);
       root.add(speedLabel).left();
     }
+
+    goldTable = new Table();
+    InventoryComponent inventory = entity.getComponent(InventoryComponent.class);
+    if (inventory != null) {
+      goldLabel = new Label("" + inventory.getGold(), skin);
+      //goldLabel.getStyle().fontColor = goldColor;
+      goldLabel.setFontScale(GOLD_FONT_SCALE);
+      goldTable.add(goldLabel).left().padLeft(20f);
+
+      goldTable
+          .add(
+              new Image(
+                  ServiceLocator.getResourceService().getAsset(GOLD_COIN_TEXTURE, Texture.class)))
+          .size(40f, 40f)
+          .right()
+          .padRight(5f);
+      
+      entity
+          .getEvents()
+          .addListener("goldChanged", () -> goldLabel.setText("" + inventory.getGold()));
+    }
+
+    root.add(goldTable).left();
 
     stage.addActor(root);
   }
@@ -207,6 +239,7 @@ public class PlayerStatsDisplay extends UIComponent {
                   heart.setColor(1f, 1f, 1f, 1f);
                 })));
   }
+
 
   @Override
   public void dispose() {

@@ -25,7 +25,7 @@ public class CyclopsMinigameArea extends GameArea {
     "images/backgrounds/black_roof.png",
     "images/health/purple_heart.png",
     "images/ui/transparent.png",
-    "images/terrain/platform.png",
+    "images/terrain/Others/platform.png",
     "images/ui/transparent.png",
     "images/Greek Statues Pack I/Brute.png",
     "images/backgrounds/CyclopsMinigameFloor.png",

@@ -101,16 +101,17 @@ public class Level1GameArea extends GameArea {
     "images/health/red_heart.png",
     "images/health/PixelArt_HeartBack.png",
     "images/ui/transparent.png",
+    "images/gold_coin.png",
     "images/backgrounds/level_1_bg.png",
     "images/backgrounds/level_1_idea.png",
-    "images/terrain/closed_door.png",
-    "images/terrain/open_door.png",
+    "images/terrain/Others/closed_door.png",
+    "images/terrain/Others/open_door.png",
     "images/terrain/Level_1/sheeps_cave.png",
-    "images/terrain/treasure_room.png",
-    "images/terrain/npc_room.png",
+    "images/terrain/Others/treasure_room.png",
+    "images/terrain/Others/npc_room.png",
     "images/ui/menu_box.png",
     "images/terrain/Level_1/Level_1_door.png",
-    "images/terrain/normal_cave.png",
+    "images/terrain/Others/normal_cave.png",
     "images/terrain/Level_1/Level_1_tile.png",
     "images/terrain/Level_1/Level_1_platform.png",
     "images/terrain/Level_1/Level_1_Spike.png",
@@ -396,8 +397,8 @@ public class Level1GameArea extends GameArea {
 
   /** Optional rooms leave every platform, pickup and checkpoint on the original route intact. */
   private void spawnSideRooms() {
-    spawnRoom(110, "images/terrain/npc_room.png");
-    spawnRoom(140, "images/terrain/normal_cave.png");
+    spawnRoom(110, "images/terrain/Others/npc_room.png");
+    spawnRoom(140, "images/terrain/Others/normal_cave.png");
     Rectangle mainBounds = new Rectangle(0, 0, worldBounds.x, worldBounds.y);
     // Only one entrance on the main map: a reverse climb onto the original roof.
     spawnDoor(

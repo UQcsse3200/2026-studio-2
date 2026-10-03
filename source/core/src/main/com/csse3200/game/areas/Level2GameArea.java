@@ -29,11 +29,13 @@ public class Level2GameArea extends GameArea {
     "images/backgrounds/Platform_level-2.png",
 
     // Assets referenced by Level2Config (the old tile-level2/grass atlas files no longer exist).
-    "images/backgrounds/Ground_level-2.png",
-    "images/terrain/Level_1/Level_1_Spike.png",
+    "images/terrain/Level_2/level_2_tile.png",
+    "images/terrain/Level_2/level_2_platform.png",
+    "images/terrain/Level_2/level_2_spikes.png",
 
     // Transparent texture used for the physics-only floor
     "images/ui/transparent.png",
+    "images/gold_coin.png",
 
     // Existing game textures
     "images/backgrounds/black_roof.png",

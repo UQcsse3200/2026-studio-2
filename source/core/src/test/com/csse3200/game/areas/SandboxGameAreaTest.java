@@ -10,12 +10,12 @@ class SandboxGameAreaTest {
   void shouldPreloadHookPlatformTextureForGrapplePlatforms() {
     assertTrue(
         Arrays.asList(SandboxGameArea.getSandboxTextures())
-            .contains("images/terrain/platform.png"));
+            .contains("images/terrain/Others/platform.png"));
   }
 
   @Test
   void shouldPreloadTutorialFloorTextureForSandboxGround() {
-    assertPreloadsTexture("images/terrain/platform.png");
+    assertPreloadsTexture("images/terrain/Others/platform.png");
   }
 
   @Test

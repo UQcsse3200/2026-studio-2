@@ -57,8 +57,8 @@ public class SandboxGameArea extends GameArea {
   private static final float MONSTER_SPAWNER_NPC_HEIGHT = 1.5f;
   private static final float SANDBOX_ACTIVE_CHASE_DISTANCE = 20f;
   private static final String TRANSPARENT_TEXTURE = "images/ui/transparent.png";
-  private static final String FLOOR_TEXTURE = "images/terrain/platform.png";
-  private static final String HOOK_PLATFORM_TEXTURE = "images/terrain/platform.png";
+  private static final String FLOOR_TEXTURE = "images/terrain/Others/platform.png";
+  private static final String HOOK_PLATFORM_TEXTURE = "images/terrain/Others/platform.png";
   private static final String PLAYER_HEART_TEXTURE = "images/health/red_heart.png";
   private static final String PLAYER_HEALTH_BAR_BACKGROUND_TEXTURE =
       "images/health/PixelArt_HeartBack.png";
