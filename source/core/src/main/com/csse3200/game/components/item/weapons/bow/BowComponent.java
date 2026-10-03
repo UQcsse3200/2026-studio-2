@@ -4,9 +4,11 @@ import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.components.Component;
 import com.csse3200.game.components.item.weapons.PrimaryWeapon;
+import com.csse3200.game.components.projectile.ArrowProjectileComponent;
 import com.csse3200.game.components.projectile.ArrowType;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.ProjectileFactory;
+import com.csse3200.game.physics.PhysicsEngine;
 import com.csse3200.game.services.ServiceLocator;
 
 /** Ranged attack behaviour that fires player arrow variants (Standard, Ice, Fire, Grapple). */
@@ -125,17 +127,61 @@ public class BowComponent extends Component implements PrimaryWeapon {
     if (!isCharging) {
       return;
     }
+    // Read the multiplier while still charging; it reports the minimum once the draw is cleared.
+    float speedMultiplier = getChargeSpeedMultiplier();
     isCharging = false;
-
-    long now = ServiceLocator.getTimeSource().getTime();
-    float elapsedSeconds = Math.min(MAX_CHARGE_SECONDS, (now - chargeStartTimeMs) / 1000f);
-    float chargeFraction = elapsedSeconds / MAX_CHARGE_SECONDS;
-    float speedMultiplier =
-        MIN_CHARGE_SPEED_FACTOR + (1.5f - MIN_CHARGE_SPEED_FACTOR) * chargeFraction;
 
     if (fire(direction, speedMultiplier)) {
       cooldownTimer = BOW_COOLDOWN;
     }
+  }
+
+  /**
+   * @return true while a shot is being drawn and has not yet been released or cancelled
+   */
+  public boolean isCharging() {
+    return isCharging;
+  }
+
+  /**
+   * Returns the speed multiplier a shot released right now would get, scaled linearly by how long
+   * the draw has been held (from {@link #MIN_CHARGE_SPEED_FACTOR} at 0s up to full at {@link
+   * #MAX_CHARGE_SECONDS}). Returns the minimum factor when nothing is charging.
+   */
+  public float getChargeSpeedMultiplier() {
+    float elapsedSeconds = 0f;
+    if (isCharging) {
+      long now = ServiceLocator.getTimeSource().getTime();
+      elapsedSeconds = Math.min(MAX_CHARGE_SECONDS, (now - chargeStartTimeMs) / 1000f);
+    }
+    float chargeFraction = elapsedSeconds / MAX_CHARGE_SECONDS;
+    return MIN_CHARGE_SPEED_FACTOR + (1.5f - MIN_CHARGE_SPEED_FACTOR) * chargeFraction;
+  }
+
+  /**
+   * @return the launch speed a shot released right now would have, in world units per second
+   */
+  public float getLaunchSpeed() {
+    return ProjectileFactory.getBaseSpeed(currentArrowType) * getChargeSpeedMultiplier();
+  }
+
+  /**
+   * @return the y acceleration the current arrow type experiences in flight
+   */
+  public float getArrowGravityY() {
+    return currentArrowType == ArrowType.GRAPPLE
+        ? 0f
+        : PhysicsEngine.GRAVITY_Y * ArrowProjectileComponent.ARC_GRAVITY_SCALE;
+  }
+
+  /**
+   * Returns where an arrow shot in the given direction appears, just in front of the shooter.
+   *
+   * @param direction aim direction (does not need to be normalised)
+   * @return world spawn position
+   */
+  public Vector2 getSpawnPosition(Vector2 direction) {
+    return entity.getCenterPosition().mulAdd(direction.cpy().nor(), entity.getScale().x * 0.8f);
   }
 
   /**
@@ -157,8 +203,7 @@ public class BowComponent extends Component implements PrimaryWeapon {
     }
 
     Vector2 normalizedDirection = direction.cpy().nor();
-    Vector2 spawnPosition =
-        entity.getCenterPosition().mulAdd(normalizedDirection, entity.getScale().x * 0.8f);
+    Vector2 spawnPosition = getSpawnPosition(normalizedDirection);
 
     Entity projectile =
         projectileCreator.create(entity, spawnPosition, normalizedDirection, speedMultiplier);

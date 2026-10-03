@@ -53,6 +53,13 @@ public class KeyboardPlayerInputComponent extends InputComponent {
   }
 
   /**
+   * @return the camera used for aiming, or null if none has been set yet
+   */
+  public CameraComponent getCameraComponent() {
+    return cameraComponent;
+  }
+
+  /**
    * Triggers player events on specific keycodes.
    *
    * @return whether the input was processed
