@@ -8,11 +8,7 @@ import com.csse3200.game.areas.terrain.configs.LevelConfig;
 import com.csse3200.game.areas.terrain.configs.SpawnData;
 import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.components.item.ItemComponent;
-import com.csse3200.game.components.level.ActivatableComponent;
-import com.csse3200.game.components.level.CheckpointComponent;
-import com.csse3200.game.components.level.LevelTriggerComponent;
-import com.csse3200.game.components.level.PlatformGrappleComponent;
-import com.csse3200.game.components.level.TriggerButtonComponent;
+import com.csse3200.game.components.level.*;
 import com.csse3200.game.components.player.KeyboardPlayerInputComponent;
 import com.csse3200.game.components.player.PlayerInteractionComponent;
 import com.csse3200.game.entities.Entity;
@@ -134,6 +130,20 @@ public abstract class GameArea implements Disposable {
       }
     }
 
+    CheckpointComponent checkpoint = entity.getComponent(CheckpointComponent.class);
+    if (checkpoint != null) {
+      entity.getEvents().addListener("checkpointActivated", this::onCheckpointActivated);
+    }
+
+    SlipperyPlatformComponent slipperyPlatform =
+        entity.getComponent(SlipperyPlatformComponent.class);
+    if (slipperyPlatform != null) {
+      entity
+          .getEvents()
+          .addListener("grappleTimeExceeded", () -> player.getEvents().trigger("grappleRelease"));
+      player.getEvents().addListener("grappleRelease", () -> slipperyPlatform.setGrappled(false));
+    }
+
     LevelTriggerComponent trigger = entity.getComponent(LevelTriggerComponent.class);
     if (trigger != null) {
       levelChanger = entity;
@@ -246,6 +256,14 @@ public abstract class GameArea implements Disposable {
     }
   }
 
+  /** Represents functionality that all game areas should use when a checkpoint is encountered */
+  protected void onCheckpointActivated(GridPoint2 position) {
+    // currently no functionality is required by all game areas, however, this method is required
+    // here as it allows the checkpoint system to bind to the current game area's respective
+    // onCheckpointActivated method. For any level specific behaviour for checkpoint activation,
+    // such as level 3's rising water saving, that game area should override this method
+  }
+  
   /** Layer repeat behaviour for background layers */
   public enum RepeatMode {
     NONE,
@@ -269,7 +287,9 @@ public abstract class GameArea implements Disposable {
     }
     float x = respawnPoint.x;
     float y = respawnPoint.y;
-    player.setPosition(x, y);
+
+    RespawnComponent respawn = player.getComponent(RespawnComponent.class);
+    respawn.queueRespawn(new Vector2(x, y));
   }
 
   public KeyboardPlayerInputComponent getInput() {

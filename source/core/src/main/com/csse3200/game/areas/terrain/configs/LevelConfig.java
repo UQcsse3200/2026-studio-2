@@ -23,6 +23,7 @@ public class LevelConfig {
   protected MovingPlatformConfig[] movingPlatforms;
   protected CrumblingPlatformConfig[] crumblingPlatforms;
   protected TriggerablePlatformConfig[] triggerablePlatforms;
+  protected SlipperyPlatformConfig[] slipperyPlatforms;
   protected PlatformConfig[] ledges;
   protected SpikeClusterConfig[] spikes;
   protected SpikyBallTrapConfig[] ballTraps;
@@ -32,6 +33,7 @@ public class LevelConfig {
   protected Map<GridPoint2, EnemyConfig> enemies;
   protected Map<GridPoint2, Item> items;
   protected CheckpointConfig[] checkpoints;
+  protected EnemySpawnerConfig[] enemySpawners;
 
   protected GridPoint2 playerSpawn;
   protected GridPoint2 nextLevelTriggerSpawn;
@@ -55,6 +57,7 @@ public class LevelConfig {
     createMovingPlatforms();
     createCrumblingPlatforms();
     createTriggerablePlatforms();
+    createSlipperyPlatforms();
     createLedges();
     createSpikes();
     createTraps();
@@ -63,6 +66,7 @@ public class LevelConfig {
     createLevelTrigger();
     createItems();
     createCheckpoints();
+    createSpawners();
 
     return entities;
   }
@@ -149,6 +153,22 @@ public class LevelConfig {
       Entity triggerablePlatform = ObstacleFactory.createTriggerablePlatform(t);
       triggerablePlatform.setScale(t.width, t.height);
       entities.add(new SpawnData(t.position, triggerablePlatform));
+    }
+  }
+
+  /**
+   * Creates all slippery platforms for this level and adds them to the entities Map for the level
+   * to spawn
+   */
+  private void createSlipperyPlatforms() {
+    if (slipperyPlatforms == null) {
+      return;
+    }
+
+    for (SlipperyPlatformConfig s : slipperyPlatforms) {
+      Entity slipperyPlatform = ObstacleFactory.createSlipperyPlatform(s);
+      slipperyPlatform.setScale(s.width, s.height);
+      entities.add(new SpawnData(s.position, slipperyPlatform));
     }
   }
 
@@ -281,6 +301,18 @@ public class LevelConfig {
       checkpoint.setPosition(pos.x, pos.y - 1.3f);
 
       entities.add(new SpawnData(c.getPosition(), checkpoint));
+    }
+  }
+
+  /** Creates all spawners in the level and adds them to the entities for the game area to spawn */
+  private void createSpawners() {
+    if (enemySpawners == null) {
+      return;
+    }
+
+    for (EnemySpawnerConfig c : enemySpawners) {
+      Entity spawner = ObstacleFactory.createEnemySpawnerEntity(c);
+      entities.add(new SpawnData(c.position, spawner));
     }
   }
 }

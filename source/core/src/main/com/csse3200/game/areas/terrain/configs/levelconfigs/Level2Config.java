@@ -27,6 +27,7 @@ public class Level2Config extends LevelConfig {
 
     playerSpawn = new GridPoint2(0, 42);
     winConditionSpawn = new GridPoint2(33, 8);
+    nextLevelName = "level3";
 
     platforms =
         new PlatformConfig[] {

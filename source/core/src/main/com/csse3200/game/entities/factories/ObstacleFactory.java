@@ -240,6 +240,22 @@ public class ObstacleFactory {
     return button;
   }
 
+  public static Entity createSlipperyPlatform(SlipperyPlatformConfig config) {
+    Entity platform =
+        new Entity()
+            .addComponent(new DynamicTextureRenderComponent(config.textureFilepath))
+            .addComponent(new PhysicsComponent())
+            .addComponent(new ColliderComponent().setLayer(PhysicsLayer.OBSTACLE))
+            .addComponent(new PlatformGrappleComponent(config.grappleSides))
+            .addComponent(
+                new SlipperyPlatformComponent(
+                    config.getSlipperiness(), config.getMaxGrappleTime()));
+
+    platform.getComponent(PhysicsComponent.class).setBodyType(BodyType.StaticBody);
+
+    return platform;
+  }
+
   /**
    * Creates a win condition entity.
    *
@@ -432,6 +448,40 @@ public class ObstacleFactory {
     spikyBall.getComponent(PhysicsComponent.class).getBody().setGravityScale(0f);
 
     return spikyBall;
+  }
+
+  public static Entity createRisingWaterEntity(float speed, float initialHeight) {
+    Entity waterHitbox =
+        new Entity()
+            .addComponent(new PhysicsComponent().setBodyType(BodyType.KinematicBody))
+            .addComponent(new HitboxComponent().setLayer(PhysicsLayer.OBSTACLE));
+
+    // ensure the hitbox always tries to collide with the player
+    waterHitbox.getComponent(PhysicsComponent.class).getBody().setSleepingAllowed(false);
+
+    Entity water =
+        new Entity()
+            .addComponent(new TiledRenderComponent("images/water tile.png", 1f))
+            .addComponent(new PhysicsComponent().setBodyType(BodyType.KinematicBody))
+            .addComponent(new RisingWaterComponent(speed, initialHeight, waterHitbox));
+
+    return water;
+  }
+
+  public static Entity createEnemySpawnerEntity(EnemySpawnerConfig config) {
+    SpawnerConfig sData = config.spawnData;
+    SpawnerComponent spawnerComp =
+        new SpawnerComponent(
+            sData.spawns, sData.spawnInterval, sData.maxSpawns, sData.active, sData.mode);
+    spawnerComp.setIds(config.completionIds);
+
+    Entity spawner =
+        new Entity()
+            .addComponent(new PhysicsComponent().setBodyType(BodyType.StaticBody))
+            .addComponent(spawnerComp)
+            .addComponent(new ActivatableComponent(sData.active, config.ids));
+
+    return spawner;
   }
 
   private ObstacleFactory() {
