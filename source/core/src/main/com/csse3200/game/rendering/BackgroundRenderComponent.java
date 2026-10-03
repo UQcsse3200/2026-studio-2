@@ -307,7 +307,7 @@ public class BackgroundRenderComponent extends RenderComponent {
         */
 
         /// TODO
-        /// make gap a customiseable variable on layer instantiation
+        /// make gap a customisable variable on layer instantiation
         /// make rotation a variable of addLayer
         /// make system that can transition to heavier storms
         /// add lightning/rain sounds for light/medium/heavy
