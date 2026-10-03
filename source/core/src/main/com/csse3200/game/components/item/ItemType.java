@@ -59,7 +59,7 @@ public enum ItemType {
       5,
       "Ice Arrow",
       "Slows enemies for 5 seconds.",
-      "images/projectiles/cold_arrow.png",
+      "images/projectiles/ice_arrow.png",
       8,
       16f,
       0f,
@@ -78,20 +78,20 @@ public enum ItemType {
       6,
       "Great Sword",
       "A heavy sword with high damage.",
-      "images/sword.png",
+      "images/items/sword.png",
       20,
       5f,
       0f,
       0,
       false),
 
-  Spear(7, "Spear", "A long spear with extended range.", "images/spear.png", 12, 8f, 0f, 0, false),
+  Spear(7, "Spear", "A long spear with extended range.", "images/items/spear.png", 12, 8f, 0f, 0, false),
 
   SpeedPotion(
       8,
       "Speed Potion",
       "Increases movement speed by 70% for 3 seconds.",
-      "images/speed_potion.png",
+      "images/items/speed_potion.png",
       0,
       0f,
       0f,
@@ -110,7 +110,7 @@ public enum ItemType {
       9,
       "Poison Potion",
       "Throws a poison flask that applies poison damage over time.",
-      "images/poison_potion.png",
+      "images/items/poison_potion.png",
       0,
       0f,
       0f,
@@ -228,8 +228,8 @@ public enum ItemType {
 
   public String getProjectileTexturePath() {
     return switch (this) {
-      case FIRE_ARROW -> "images/fireArr_animation.png";
-      case ICE_ARROW -> "images/coldArr_animation.png";
+      case FIRE_ARROW -> "images/projectiles/fireArr_animation.png";
+      case ICE_ARROW -> "images/projectiles/coldArr_animation.png";
       default -> "images/projectiles/arrow.png";
     };
   }

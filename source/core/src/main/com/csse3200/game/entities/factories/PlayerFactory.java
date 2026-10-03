@@ -95,6 +95,7 @@ public class PlayerFactory {
             .addComponent(new ItemUseComponent())
             .addComponent(inputComponent)
             .addComponent(new PlayerStatsDisplay())
+            .addComponent(new ArrowWheelDisplay())
             .addComponent(new GrappleComponent())
             .addComponent(new GrappleRenderComponent())
             .addComponent(new PlayerAnimationController())

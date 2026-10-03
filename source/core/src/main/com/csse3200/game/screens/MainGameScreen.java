@@ -168,7 +168,7 @@ public class MainGameScreen extends ScreenAdapter {
                 "images/health/PixelArt_HeartBack.png",
                 "images/health/Damaged_heart.png",
                 "images/health/Last_Health.png",
-                "images/gold_coin.png",
+                "images/items/gold_coin.png",
                 "images/ui/scroll_bg.png",
                 "images/Buttons/continue_up_btn.png",
                 "images/Buttons/continue_down_btn.png",

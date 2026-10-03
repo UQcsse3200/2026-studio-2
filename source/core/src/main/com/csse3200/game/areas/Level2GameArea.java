@@ -35,7 +35,7 @@ public class Level2GameArea extends GameArea {
 
     // Transparent texture used for the physics-only floor
     "images/ui/transparent.png",
-    "images/gold_coin.png",
+    "images/items/gold_coin.png",
 
     // Existing game textures
     "images/backgrounds/black_roof.png",
@@ -46,9 +46,12 @@ public class Level2GameArea extends GameArea {
     "images/enemies/skeleton_warrior.png",
     "images/enemies/skeleton_archer.png",
     "images/projectiles/arrow.png",
+    "images/projectiles/fireArr_animation.png",
+    "images/projectiles/coldArr_animation.png",
     "images/projectiles/rope_arrow.png",
     "images/projectiles/fire_arrow.png",
-    "images/projectiles/cold_arrow.png"
+    "images/projectiles/ice_arrow.png",
+    "images/projectiles/poison_arrow.png",
   };
 
   private static final String[] level2TexturesAtlas = {

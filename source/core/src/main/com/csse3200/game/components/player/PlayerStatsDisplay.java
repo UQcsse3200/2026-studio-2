@@ -25,7 +25,7 @@ public class PlayerStatsDisplay extends UIComponent {
   private static final String HEALTH_BAR_BACKGROUND_TEXTURE = "images/health/PixelArt_HeartBack.png";
   private static final String DAMAGED_HEART_TEXTURE = "images/health/Damaged_heart.png";
   private static final String LAST_HEALTH_TEXTURE = "images/health/Last_Health.png";
-  private static final String GOLD_COIN_TEXTURE = "images/gold_coin.png";
+  private static final String GOLD_COIN_TEXTURE = "images/items/gold_coin.png";
   private static final float GOLD_FONT_SCALE = 1.8f;
 
   private static final float HEART_SIDE_LENGTH = 35f;

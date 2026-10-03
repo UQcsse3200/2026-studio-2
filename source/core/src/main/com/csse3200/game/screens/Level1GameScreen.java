@@ -334,7 +334,7 @@ public class Level1GameScreen extends ScreenAdapter {
                 "images/Buttons/exit_down_btn.png",
                 "images/projectiles/rope_arrow.png",
                 "images/projectiles/fire_arrow.png",
-                "images/projectiles/cold_arrow.png",
+                "images/projectiles/ice_arrow.png",
                 "images/backgrounds/main_menu_bg_2.png",
                 "images/ui/settings_box.png"));
     paths.addAll(List.of(PauseButtonDisplay.extraTextures()));

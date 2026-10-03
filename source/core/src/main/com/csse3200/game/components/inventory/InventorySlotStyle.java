@@ -10,7 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
  * Shared rounded-box slot background used by the inventory bar and backpack, so both draw slots
  * with the same style instead of relying on an image.
  */
-final class InventorySlotStyle {
+public final class InventorySlotStyle {
 
   private static final int CORNER_RADIUS = 10;
   private static final int BORDER_THICKNESS = 3;
@@ -28,14 +28,14 @@ final class InventorySlotStyle {
 
   private InventorySlotStyle() {}
 
-  static NinePatchDrawable getNormalBox() {
+  public static NinePatchDrawable getNormalBox() {
     if (cachedNormalBox == null) {
       cachedNormalBox = buildRoundedBoxDrawable(NORMAL_BORDER_COLOR);
     }
     return cachedNormalBox;
   }
 
-  static NinePatchDrawable getSelectedBox() {
+  public static NinePatchDrawable getSelectedBox() {
     if (cachedSelectedBox == null) {
       cachedSelectedBox = buildRoundedBoxDrawable(SELECTED_BORDER_COLOR);
     }

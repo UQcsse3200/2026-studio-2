@@ -20,7 +20,7 @@ import com.csse3200.game.rendering.TextureRenderComponent;
 /** Factory to create item entities that sit in the world for the player to find or pick up. */
 public class ItemFactory {
   private static final float ITEM_HEIGHT = 0.85f;
-  public static final String GOLD_TEXTURE = "images/gold_coin.png";
+  public static final String GOLD_TEXTURE = "images/items/gold_coin.png";
 
   /**
    * Creates a world entity for an item using the texture from its {@code ItemType}.

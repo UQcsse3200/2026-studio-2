@@ -79,8 +79,9 @@ public class Level1GameArea extends GameArea {
   public static final GridPoint2 ROPE_ARROW_SPAWN = new GridPoint2(2, 3);
   public static final GridPoint2 STANDARD_ARROW_SPAWN = new GridPoint2(4, 3);
   public static final GridPoint2 FIRE_ARROW_SPAWN = new GridPoint2(6, 3);
-  public static final GridPoint2 COLD_ARROW_SPAWN = new GridPoint2(8, 5);
-  public static final GridPoint2 HEALTH_POTION_SPAWN = new GridPoint2(10, 5);
+  public static final GridPoint2 ICE_ARROW_SPAWN = new GridPoint2(8, 5);
+  public static final GridPoint2 POISON_ARROW_SPAWN = new GridPoint2(10, 5);
+  public static final GridPoint2 HEALTH_POTION_SPAWN = new GridPoint2(12, 5);
 
   /** Sit on top of the 1-tile-tall floating platforms (skip the first, which has the shop). */
   public static final GridPoint2[] GOLD_SPAWNS = {
@@ -89,7 +90,8 @@ public class Level1GameArea extends GameArea {
 
   public static final int STANDARD_ARROW_QUANTITY = 5;
   public static final int FIRE_ARROW_QUANTITY = 5;
-  public static final int COLD_ARROW_QUANTITY = 5;
+  public static final int ICE_ARROW_QUANTITY = 5;
+  public static final int POISON_ARROW_QUANTITY = 5;
   public static final int HEALTH_POTION_QUANTITY = 3;
 
   private Vector2 worldBounds;
@@ -101,7 +103,7 @@ public class Level1GameArea extends GameArea {
     "images/health/red_heart.png",
     "images/health/PixelArt_HeartBack.png",
     "images/ui/transparent.png",
-    "images/gold_coin.png",
+    "images/items/gold_coin.png",
     "images/backgrounds/level_1_bg.png",
     "images/backgrounds/level_1_idea.png",
     "images/terrain/Others/closed_door.png",
@@ -123,15 +125,16 @@ public class Level1GameArea extends GameArea {
     "images/projectiles/arrow.png",
     "images/projectiles/rope_arrow.png",
     "images/projectiles/fire_arrow.png",
-    "images/fireArr_animation.png",
-    "images/coldArr_animation.png",
-    "images/sword.png",
-    "images/spear.png",
+    "images/projectiles/fireArr_animation.png",
+    "images/projectiles/coldArr_animation.png",
+    "images/items/sword.png",
+    "images/items/spear.png",
     "images/health/heart_potion.png",
-    "images/speed_potion.png",
-    "images/poison_potion.png",
+    "images/items/speed_potion.png",
+    "images/items/poison_potion.png",
     ItemFactory.GOLD_TEXTURE,
-    "images/projectiles/cold_arrow.png",
+    "images/projectiles/ice_arrow.png",
+    "images/projectiles/poison_arrow.png",
     "images/projectiles/necromancer_projectile.png",
   };
 
