@@ -8,8 +8,10 @@ import com.csse3200.game.areas.terrain.TerrainFactory;
 import com.csse3200.game.areas.terrain.configs.levelconfigs.Level3Config;
 import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.components.level.RisingWaterComponent;
+import com.csse3200.game.components.player.PlayerActions;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.ObstacleFactory;
+import com.csse3200.game.physics.BodyUserData;
 import com.csse3200.game.rendering.*;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
@@ -320,6 +322,14 @@ public class Level3GameArea extends GameArea {
   }
 
   private void waterCollided(Fixture me, Fixture other) {
+    // Only emit signals if the other colliding body is the player
+    BodyUserData data = (BodyUserData) other.getBody().getUserData();
+    if (data == null
+            || data.entity == null
+            || data.entity.getComponent(PlayerActions.class) == null) {
+      return;
+    }
+
     water
         .getEvents()
         .trigger("setHeight", water.getComponent(RisingWaterComponent.class).getStoredHeight());
