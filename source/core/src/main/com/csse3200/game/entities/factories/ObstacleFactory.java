@@ -519,7 +519,7 @@ public class ObstacleFactory {
   /**
    * Creates a trigger entity that when collided with, emits signals to all ids
    *
-   * @param ids an array of strings to emit signals for when collided with
+   * @param c the config file to specify settings for this trigger
    * @return a collider trigger Entity object to register with the entity service
    */
   public static Entity createTriggerEntity(TriggerConfig c) {
