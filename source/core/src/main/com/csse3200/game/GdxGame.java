@@ -34,7 +34,7 @@ public class GdxGame extends Game {
 
   // a check for if the intro cutscene has been triggered, once per game session, to prevent the
   // cutscene from being triggered multiple times.
-  private boolean introStarted = false;
+  private boolean introStarted = true;
 
   @Override
   public void create() {
@@ -44,8 +44,7 @@ public class GdxGame extends Game {
     // Sets background to light yellow
     Gdx.gl.glClearColor(248f / 255f, 249 / 255f, 178 / 255f, 1);
 
-    setScreen(ScreenType.LEVEL_3_GAME);
-    // setScreen(ScreenType.MAIN_MENU);
+    setScreen(ScreenType.MAIN_MENU);
   }
 
   /** Loads the game's settings. */

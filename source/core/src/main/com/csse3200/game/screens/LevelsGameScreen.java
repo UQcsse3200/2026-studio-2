@@ -62,6 +62,7 @@ public class LevelsGameScreen extends ScreenAdapter {
   private boolean levelSwapQueued = false;
   private GameArea currentGameArea;
   private GameArea nextGameArea;
+  private String level = "level1";
 
   private final GdxGame game;
   private final Renderer renderer;
@@ -257,6 +258,17 @@ public class LevelsGameScreen extends ScreenAdapter {
         player.getComponent(PhysicsComponent.class).getBody().setGravityScale(gravity);
         player.getComponent(KeyboardPlayerInputComponent.class).toggleCheats();
       }
+    }
+
+    if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
+      if (level.equals("level1")) {
+        level = "level2";
+      } else if (level.equals("level2")) {
+        level = "level3";
+      } else if (level.equals("level3")) {
+        level = "none";
+      }
+      queueAreaSwap(level);
     }
 
     physicsEngine.update();
