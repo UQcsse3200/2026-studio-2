@@ -9,12 +9,20 @@ import com.csse3200.game.physics.BodyUserData;
 import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.physics.raycast.RaycastHit;
 import com.csse3200.game.services.ServiceLocator;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
-/** Close-range attack that damages the first enemy directly in front of the entity. */
+/** Close-range melee attack that sweeps an arc in front of the entity. */
 public class MeleeComponent extends Component implements PrimaryWeapon {
 
-  private static final float RANGE = 1f;
+  private static final float RANGE = 1.25f;
   private static final float SWORD_COOLDOWN = 0.3f;
+
+  /** Total width of the swing in degrees, centred on the attack direction. */
+  private static final float SWEEP_ARC_DEGREES = 120f;
+
+  /** Rays fanned across the arc. More rays means fewer gaps at long range. */
+  private static final int SWEEP_RAY_COUNT = 13;
 
   private float cooldownTimer = 0f;
 
@@ -39,34 +47,46 @@ public class MeleeComponent extends Component implements PrimaryWeapon {
 
     cooldownTimer = SWORD_COOLDOWN;
 
-    // Cast a short ray out from the entity and stop at the first NPC it touches
     Vector2 origin = entity.getCenterPosition();
-    Vector2 reach = origin.cpy().mulAdd(direction.cpy().nor(), RANGE);
-    RaycastHit hit = new RaycastHit();
+    Vector2 forward = direction.cpy().nor();
+    Set<Entity> targets = new LinkedHashSet<>();
 
-    if (!ServiceLocator.getPhysicsService()
-        .getPhysics()
-        .raycast(origin, reach, PhysicsLayer.NPC, hit)) {
-      return;
-    }
+    // Fan rays across the arc and collect each distinct NPC they touch
+    for (int i = 0; i < SWEEP_RAY_COUNT; i++) {
+      float t = SWEEP_RAY_COUNT == 1 ? 0.5f : (float) i / (SWEEP_RAY_COUNT - 1);
+      float angle = (t - 0.5f) * SWEEP_ARC_DEGREES;
+      Vector2 reach = origin.cpy().mulAdd(forward.cpy().rotateDeg(angle), RANGE);
 
-    Object userData = hit.fixture.getBody().getUserData();
-    if (!(userData instanceof BodyUserData)) {
-      return;
-    }
-
-    Entity target = ((BodyUserData) userData).entity;
-    if (target == null) {
-      return;
+      Entity target = raycastForNpc(origin, reach);
+      if (target != null) {
+        targets.add(target);
+      }
     }
 
     // Damage comes from the entity's own combat stats
-    CombatStatsComponent stats = target.getComponent(CombatStatsComponent.class);
-    if (stats != null) {
-      stats.hit(entity.getComponent(CombatStatsComponent.class));
+    CombatStatsComponent attackerStats = entity.getComponent(CombatStatsComponent.class);
+    for (Entity target : targets) {
+      CombatStatsComponent stats = target.getComponent(CombatStatsComponent.class);
+      if (stats != null) {
+        stats.hit(attackerStats);
+      }
     }
 
-    entity.getEvents().trigger("attackAnimation", direction.cpy().nor());
+    entity.getEvents().trigger("attackAnimation", forward);
+  }
+
+  /** Returns the NPC entity hit by a ray from start to end, or null if nothing was hit. */
+  private Entity raycastForNpc(Vector2 start, Vector2 end) {
+    RaycastHit hit = new RaycastHit();
+    if (!ServiceLocator.getPhysicsService().getPhysics().raycast(start, end, PhysicsLayer.NPC, hit)
+            || hit.fixture == null) {
+      return null;
+    }
+    Object userData = hit.fixture.getBody().getUserData();
+    if (!(userData instanceof BodyUserData)) {
+      return null;
+    }
+    return ((BodyUserData) userData).entity;
   }
 
   @Override
