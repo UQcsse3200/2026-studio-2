@@ -271,17 +271,17 @@ class ArrowWheelComponentTest {
   void shouldAnnounceTheTypeItFallsBackTo() {
     InventoryComponent inventory = givePlayerAnInventory();
     inventory.addItem(ItemType.FIRE_ARROW, 1);
+    inventory.addItem(ItemType.ICE_ARROW, 3);
     wheel.open();
     wheel.highlightFromPointer(TOWARDS_FIRE);
     wheel.close();
-    inventory.removeItem(ItemType.FIRE_ARROW, 1);
-    inventory.addItem(ItemType.ICE_ARROW, 3);
     AtomicReference<ArrowType> announced = new AtomicReference<>();
     player.getEvents().addListener("arrowSelected", (ArrowType type) -> announced.set(type));
 
-    wheel.selectNextAvailable();
+    inventory.removeItem(ItemType.FIRE_ARROW, 1);
 
     assertEquals(ArrowType.ICE, announced.get());
+    assertEquals(ArrowType.ICE, wheel.getSelected());
   }
 
   @Test
@@ -293,7 +293,7 @@ class ArrowWheelComponentTest {
   }
 
   @Test
-  void shouldFallBackWhenToldTheSelectedArrowRanOut() {
+  void shouldFallBackWhenTheInventorySelectionChanges() {
     InventoryComponent inventory = givePlayerAnInventory();
     inventory.addItem(ItemType.FIRE_ARROW, 1);
     wheel.open();
@@ -302,7 +302,7 @@ class ArrowWheelComponentTest {
     inventory.removeItem(ItemType.FIRE_ARROW, 1);
     inventory.addItem(ItemType.STANDARD_ARROW, 5);
 
-    player.getEvents().trigger("arrowEmpty");
+    player.getEvents().trigger("inventorySelectionChanged");
 
     assertEquals(ArrowType.STANDARD, wheel.getSelected());
   }

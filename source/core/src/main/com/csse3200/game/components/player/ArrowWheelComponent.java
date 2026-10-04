@@ -31,7 +31,7 @@ public class ArrowWheelComponent extends Component {
     entity.getEvents().addListener("closeArrowWheel", this::close);
     entity.getEvents().addListener("arrowWheelPointerMoved", this::highlightFromPointer);
     entity.getEvents().addListener("bowEquipped", this::setBowEquipped);
-    entity.getEvents().addListener("arrowEmpty", this::selectNextAvailable);
+    entity.getEvents().addListener("inventorySelectionChanged", this::selectNextAvailable);
   }
 
   /** Returns whether the wheel should currently be drawn. */
@@ -123,8 +123,12 @@ public class ArrowWheelComponent extends Component {
   }
 
   /**
-   * Switches to an arrow type the player still has, for when the selected one runs out. Keeps the
-   * current type if it is still available, and leaves it alone if nothing else can be fired.
+   * Switches to an arrow type the player still has, for when the selected one runs out. The
+   * inventory empties the slot and moves the selection on by itself, but it can land on a potion,
+   * which leaves the wheel showing an arrow the player can no longer fire.
+   *
+   * <p>Keeps the current type while it is still available, and leaves it alone if the player has no
+   * arrows at all.
    *
    * @return the type now selected, or null if the player has no arrows at all
    */
