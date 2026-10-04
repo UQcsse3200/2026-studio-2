@@ -242,4 +242,68 @@ class ArrowWheelComponentTest {
     player.create();
     return inventory;
   }
+
+  @Test
+  void shouldKeepTheSelectedTypeWhileThePlayerStillHasIt() {
+    InventoryComponent inventory = givePlayerAnInventory();
+    inventory.addItem(ItemType.STANDARD_ARROW, 5);
+
+    assertEquals(ArrowType.STANDARD, wheel.selectNextAvailable());
+    assertEquals(ArrowType.STANDARD, wheel.getSelected());
+  }
+
+  @Test
+  void shouldSwitchToAnArrowThePlayerStillHasWhenTheSelectedOneRunsOut() {
+    InventoryComponent inventory = givePlayerAnInventory();
+    inventory.addItem(ItemType.FIRE_ARROW, 1);
+    wheel.open();
+    wheel.highlightFromPointer(TOWARDS_FIRE);
+    wheel.close();
+    inventory.removeItem(ItemType.FIRE_ARROW, 1);
+    inventory.addItem(ItemType.STANDARD_ARROW, 5);
+
+    assertEquals(ArrowType.STANDARD, wheel.selectNextAvailable());
+    assertEquals(ArrowType.STANDARD, wheel.getSelected());
+    assertEquals(ItemType.STANDARD_ARROW, inventory.getSelectedItem());
+  }
+
+  @Test
+  void shouldAnnounceTheTypeItFallsBackTo() {
+    InventoryComponent inventory = givePlayerAnInventory();
+    inventory.addItem(ItemType.FIRE_ARROW, 1);
+    wheel.open();
+    wheel.highlightFromPointer(TOWARDS_FIRE);
+    wheel.close();
+    inventory.removeItem(ItemType.FIRE_ARROW, 1);
+    inventory.addItem(ItemType.ICE_ARROW, 3);
+    AtomicReference<ArrowType> announced = new AtomicReference<>();
+    player.getEvents().addListener("arrowSelected", (ArrowType type) -> announced.set(type));
+
+    wheel.selectNextAvailable();
+
+    assertEquals(ArrowType.ICE, announced.get());
+  }
+
+  @Test
+  void shouldLeaveTheSelectionAloneWhenThePlayerHasNoArrowsAtAll() {
+    givePlayerAnInventory();
+
+    assertNull(wheel.selectNextAvailable());
+    assertEquals(ArrowType.STANDARD, wheel.getSelected());
+  }
+
+  @Test
+  void shouldFallBackWhenToldTheSelectedArrowRanOut() {
+    InventoryComponent inventory = givePlayerAnInventory();
+    inventory.addItem(ItemType.FIRE_ARROW, 1);
+    wheel.open();
+    wheel.highlightFromPointer(TOWARDS_FIRE);
+    wheel.close();
+    inventory.removeItem(ItemType.FIRE_ARROW, 1);
+    inventory.addItem(ItemType.STANDARD_ARROW, 5);
+
+    player.getEvents().trigger("arrowEmpty");
+
+    assertEquals(ArrowType.STANDARD, wheel.getSelected());
+  }
 }
