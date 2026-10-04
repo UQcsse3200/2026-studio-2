@@ -133,9 +133,6 @@ public class BackgroundRenderComponent extends RenderComponent {
             flash,
             rotation,
             lightningOrder));
-    // if (repeat == RepeatMode.CHAOTIC) {
-    //  generateRainPositions();
-    // }
   }
 
   /** Scale is controlled individually for each layer. */
@@ -144,7 +141,6 @@ public class BackgroundRenderComponent extends RenderComponent {
       if (up) {
         if (level.equals("level2")) {
           layer.position.x -= worldBounds.x / 2;
-          // layer.position.y -= (factor.y * worldBounds.y / 8 * 1.5f);
           layer.position.y -= factor.y * layer.height / 1.4f;
           layer.width *= factor.x;
           layer.height *= factor.y * 1.15f;
@@ -198,9 +194,6 @@ public class BackgroundRenderComponent extends RenderComponent {
       if (backgroundLight > 0.125f) {
         backgroundLight -=
             ServiceLocator.getTimeSource().getDeltaTime() / 500f; // 10x more than RenderComponent
-        // backgroundLight = 1f - (ServiceLocator.getTimeSource().getTime() / 60000f); // 50000,
-        // 40000
-        // backgroundLight = 1; //
       }
       light = getDarkness();
       // if lightning currently striking
@@ -283,9 +276,7 @@ public class BackgroundRenderComponent extends RenderComponent {
 
       layerX = layerPos.x;
       layerY = layerPos.y;
-      // batch.setColor(0.5f, 0.5f, 0.5f, layer.transparency); Night mode
       Color prevColor = batch.getColor().cpy();
-      // time = getDarkness();
       if (layer.flash) {
         batch.setColor(1, 1, 1, layer.transparency);
       } else {
@@ -324,26 +315,16 @@ public class BackgroundRenderComponent extends RenderComponent {
           newRightDrawPosX += layer.width;
         }
       } else if (layer.repeat == RepeatMode.CHAOTIC) {
-        /*
-        for (Vector2 pos : rainPositions) {
-          batch.draw(layer.texture, pos.x, pos.y, layer.width, layer.height);
-        }
-        */
 
         /// TODO
         /// make gap a customisable variable on layer instantiation
         /// make rotation a variable of addLayer
-        /// make system that can transition to heavier storms
         /// add lightning/rain sounds for light/medium/heavy
-        /// add random lightning generation (1 time slots for each lightning so 4 total)
-
-        /// want to have light/medium/heavy
+        /// add random lightning generation
+        /// want to have light/medium/heavy intensities
         /// light will have lightning 1-2, medium will have 2-3, heavy will have 3-4
         /// light could have less frequent lightning, medium more, heavy much more
         /// light could have chill vertical rain, medium longer more horizontal, heavy even more
-
-        // so with heavier rain i will use longer rain
-        // will need to custom make its size, gap, speed, angle
 
         // gap between raindrops, works best if gap * int = 1, where int is any positive integer
         float gap = 0.5f;
