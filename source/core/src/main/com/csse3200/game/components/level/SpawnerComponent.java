@@ -22,6 +22,7 @@ public class SpawnerComponent extends Component {
   private String[] ids; // any activation ids to trigger when the spawner is finished spawning
 
   private boolean spawnsComplete = false;
+  private boolean triggeredIds = false;
   private List<Integer> entityIds;
 
   /**
@@ -99,8 +100,8 @@ public class SpawnerComponent extends Component {
 
     // if an enemy, we need to track to listen for its death
     if (childEntity.getComponent(EnemyDeathComponent.class) != null) {
+      childEntity.getEvents().addListener("updatedId", this::addEnemyTracking);
       childEntity.getEvents().addListener("enemyDied", this::enemyDied);
-      entityIds.add(entity.getId());
     }
 
     // set the spawned child's position to the same position as this entity's position
@@ -139,6 +140,10 @@ public class SpawnerComponent extends Component {
     }
   }
 
+  private void addEnemyTracking(int id) {
+    entityIds.add(id);
+  }
+
   /**
    * Handles the event trigger where an enemy spawned by this spawner dies
    *
@@ -153,10 +158,11 @@ public class SpawnerComponent extends Component {
    * event, we can activate any ids that need to be activated
    */
   private void tryActivateMapComponents() {
-    if (spawnsComplete && entityIds.isEmpty()) {
+    if (spawnsComplete && entityIds.isEmpty() && !triggeredIds) {
       for (String id : ids) {
-        entity.getEvents().trigger("activatedMapComponent", id);
+        entity.getEvents().trigger("activateByKey", id);
       }
+      triggeredIds = true;
     }
   }
 }
