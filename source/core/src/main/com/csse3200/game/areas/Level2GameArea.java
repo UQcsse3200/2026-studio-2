@@ -30,6 +30,7 @@ public class Level2GameArea extends GameArea {
     "images/parallax/Clouds-birds.png",
     "images/parallax/Mountains-layer.png",
     "images/Platform_level-2.png",
+    "images/parallax/level_2_clouds.png",
 
     // Level 2 ground tile
     "images/tile-level2.png",
@@ -115,11 +116,11 @@ public class Level2GameArea extends GameArea {
     // Main background
     backgroundComponent.addLayer(
         "images/Background-2.png",
-        new Vector2(0.30f, 0f),
-        32f,
-        17f,
-        new Vector2(0f, 1.5f),
-        new Vector2(0f, 0f),
+        new Vector2(0.1f, 0f), // Parallax factor
+        31f,
+        12f,
+        new Vector2(0f, 4.3f), // Positional offset
+        new Vector2(0f, 0f), // Independent velocity
         RepeatMode.NONE,
         1f,
         1f,
@@ -128,12 +129,13 @@ public class Level2GameArea extends GameArea {
         -1);
 
     // Mountains layer
+    /*
     backgroundComponent.addLayer(
         "images/parallax/Mountains-layer.png",
-        new Vector2(0.18f, 0f),
+        new Vector2(0.125f, 0f),
         30f,
-        15f,
-        new Vector2(0f, 3.5f),
+        6f,
+        new Vector2(0f, 7f),
         new Vector2(0f, 0f),
         RepeatMode.NONE,
         1f,
@@ -141,14 +143,15 @@ public class Level2GameArea extends GameArea {
         false,
         0,
         -1);
+    */
 
     // Clouds and birds layer
     backgroundComponent.addLayer(
-        "images/parallax/Clouds-birds.png",
-        new Vector2(0f, 0f),
-        30f,
-        7f,
-        new Vector2(0f, 10f),
+        "images/parallax/level_2_clouds.png",
+        new Vector2(0.1f, 0f),
+        20f,
+        5f,
+        new Vector2(10f, 10f),
         new Vector2(-0.12f, 0f),
         RepeatMode.HORIZONTAL,
         1f,
@@ -209,7 +212,7 @@ public class Level2GameArea extends GameArea {
 
   @Override
   public void toggleLevelMap() {
-    toggleMap(worldBounds, camera, backgroundComponent);
+    toggleMap(worldBounds, camera, backgroundComponent, "level2");
   }
 
   /** Dispose of the game area. */

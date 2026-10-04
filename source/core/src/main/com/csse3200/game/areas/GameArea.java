@@ -329,7 +329,8 @@ public abstract class GameArea implements Disposable {
   public void toggleMap(
       Vector2 worldBounds,
       CameraComponent cameraComponent,
-      BackgroundRenderComponent backgroundComponent) {
+      BackgroundRenderComponent backgroundComponent,
+      String level) {
     if (!mapToggled) {
       int worldBoundX = (int) worldBounds.x;
       int worldBoundY = (int) worldBounds.y;
@@ -345,13 +346,13 @@ public abstract class GameArea implements Disposable {
       float scaleY = worldBoundY / viewportHeight;
       resizeScale = new Vector2(scaleX, scaleY);
 
-      backgroundComponent.scaleEntity(resizeScale, worldBounds, true);
+      backgroundComponent.scaleEntity(resizeScale, worldBounds, true, level);
       player.getComponent(InventoryBarDisplay.class).hideBar();
       player.getComponent(PlayerStatsDisplay.class).hide();
     } else {
       cameraComponent.resize((int) viewportWidth, (int) viewportHeight, viewportWidth);
       cameraComponent.setTarget(player);
-      backgroundComponent.scaleEntity(resizeScale, worldBounds, false);
+      backgroundComponent.scaleEntity(resizeScale, worldBounds, false, level);
       player.getComponent(InventoryBarDisplay.class).showBar();
       player.getComponent(PlayerStatsDisplay.class).show();
     }

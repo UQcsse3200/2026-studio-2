@@ -139,25 +139,40 @@ public class BackgroundRenderComponent extends RenderComponent {
   }
 
   /** Scale is controlled individually for each layer. */
-  public void scaleEntity(Vector2 factor, Vector2 worldBounds, boolean up) {
-    // Layer sizes are defined when they are added.
+  public void scaleEntity(Vector2 factor, Vector2 worldBounds, boolean up, String level) {
     for (ParallaxLayer layer : layers) {
       if (up) {
-        layer.width *= factor.x;
-        layer.height *= factor.y;
+        if (level.equals("level2")) {
+          layer.position.x -= worldBounds.x / 2;
+          // layer.position.y -= (factor.y * worldBounds.y / 8 * 1.5f);
+          layer.position.y -= factor.y * layer.height / 1.4f;
+          layer.width *= factor.x;
+          layer.height *= factor.y * 1.15f;
+        } else {
+          layer.position.x -= worldBounds.x / 2;
+          layer.position.y -= worldBounds.y / 2 + factor.y; // factor is a glue-on fix
+          layer.width *= factor.x;
+          layer.height *= factor.y;
+        }
         layer.offset.x *= factor.x;
         layer.offset.y *= factor.y;
-        layer.position.x -= worldBounds.x / 2;
-        layer.position.y -= worldBounds.y / 2 + factor.y; // factor is a glue-on fix
         layer.velocity.x *= factor.x;
         layer.velocity.y *= factor.y;
       } else {
-        layer.width /= factor.x;
-        layer.height /= factor.y;
+        if (level.equals("level2")) {
+          layer.position.x += worldBounds.x / 2;
+          // layer.height already multiplied by factor.y, negate 1.1 multiplied before
+          layer.position.y += layer.height / 1.4f / 1.15f;
+          layer.width /= factor.x;
+          layer.height /= factor.y * 1.15f;
+        } else {
+          layer.position.x += worldBounds.x / 2;
+          layer.position.y += worldBounds.y / 2 + factor.y; // factor is a glue-on fix
+          layer.width /= factor.x;
+          layer.height /= factor.y;
+        }
         layer.offset.x /= factor.x;
         layer.offset.y /= factor.y;
-        layer.position.x += worldBounds.x / 2;
-        layer.position.y += worldBounds.y / 2 + factor.y; // factor is a glue-on fix
         layer.velocity.x /= factor.x;
         layer.velocity.y /= factor.y;
       }
