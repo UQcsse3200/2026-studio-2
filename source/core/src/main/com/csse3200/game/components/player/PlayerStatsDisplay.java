@@ -1,6 +1,5 @@
 package com.csse3200.game.components.player;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -60,7 +59,11 @@ public class PlayerStatsDisplay extends UIComponent {
 
   private Color goldColor = new Color(0.0f, 0.47f, 0.47f, 1.0f);
 
-  /** Configures the optional sandbox readouts before this component is created. */
+  /**
+   * Sets whether to show the health and speed text labels above the health bar.
+   *
+   * @param showStatText true to show the labels, false to hide them
+   */
   public void setShowStatText(boolean showStatText) {
     this.showStatText = showStatText;
   }
@@ -115,7 +118,7 @@ public class PlayerStatsDisplay extends UIComponent {
     InventoryComponent inventory = entity.getComponent(InventoryComponent.class);
     if (inventory != null) {
       goldLabel = new Label("" + inventory.getGold(), skin);
-      //goldLabel.getStyle().fontColor = goldColor;
+      // goldLabel.getStyle().fontColor = goldColor;
       goldLabel.setFontScale(GOLD_FONT_SCALE);
       goldTable.add(goldLabel).left().padLeft(20f);
 
@@ -126,7 +129,7 @@ public class PlayerStatsDisplay extends UIComponent {
           .size(40f, 40f)
           .right()
           .padRight(5f);
-      
+
       entity
           .getEvents()
           .addListener("goldChanged", () -> goldLabel.setText("" + inventory.getGold()));
@@ -181,6 +184,11 @@ public class PlayerStatsDisplay extends UIComponent {
     updateHealthBarBackground(heartsRemaining);
   }
 
+  /**
+   * Grows the number of heart images to the desired count, adding new heart images as needed.
+   *
+   * @param desiredCount the desired number of heart images
+   */
   private void growHeartsTo(int desiredCount) {
     while (heartImages.size() < desiredCount) {
       int index = heartImages.size();
@@ -192,6 +200,11 @@ public class PlayerStatsDisplay extends UIComponent {
     }
   }
 
+  /**
+   * Updates the health bar background based on the number of hearts remaining.
+   *
+   * @param heartsRemaining the number of hearts remaining
+   */
   private void updateHealthBarBackground(int heartsRemaining) {
     Texture newBackground;
     float startX;
@@ -219,6 +232,12 @@ public class PlayerStatsDisplay extends UIComponent {
     positionHearts(startX, startY);
   }
 
+  /**
+   * Positions the heart images in a row, starting from the specified coordinates.
+   *
+   * @param startX the x-coordinate to start positioning hearts
+   * @param startY the y-coordinate to start positioning hearts
+   */
   private void positionHearts(float startX, float startY) {
     for (int i = 0; i < heartImages.size(); i++) {
       Image heart = heartImages.get(i);
@@ -226,6 +245,11 @@ public class PlayerStatsDisplay extends UIComponent {
     }
   }
 
+  /**
+   * Makes a heart flicker and then hides it. Used when the player loses health.
+   *
+   * @param heart the heart image to flicker and hide
+   */
   private void flickerAndHide(Image heart) {
     heart.clearActions();
     heart.addAction(
@@ -240,7 +264,6 @@ public class PlayerStatsDisplay extends UIComponent {
                   heart.setColor(1f, 1f, 1f, 1f);
                 })));
   }
-
 
   @Override
   public void dispose() {

@@ -85,7 +85,16 @@ public enum ItemType {
       0,
       false),
 
-  Spear(7, "Spear", "A long spear with extended range.", "images/items/spear.png", 12, 8f, 0f, 0, false),
+  Spear(
+      7,
+      "Spear",
+      "A long spear with extended range.",
+      "images/items/spear.png",
+      12,
+      8f,
+      0f,
+      0,
+      false),
 
   SpeedPotion(
       8,

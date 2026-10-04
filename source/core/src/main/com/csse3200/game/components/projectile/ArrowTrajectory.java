@@ -20,8 +20,7 @@ public final class ArrowTrajectory {
       Vector2 start, Vector2 velocity, float gravityY, float step, Vector2[] out) {
     for (int i = 0; i < out.length; i++) {
       float t = (i + 1) * step;
-      out[i].set(
-          start.x + velocity.x * t, start.y + velocity.y * t + 0.5f * gravityY * t * t);
+      out[i].set(start.x + velocity.x * t, start.y + velocity.y * t + 0.5f * gravityY * t * t);
     }
   }
 }

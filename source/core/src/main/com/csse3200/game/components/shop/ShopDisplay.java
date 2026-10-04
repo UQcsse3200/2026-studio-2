@@ -1,5 +1,6 @@
 package com.csse3200.game.components.shop;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -9,13 +10,12 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.csse3200.game.components.inventory.InventoryComponent;
+import com.csse3200.game.components.inventory.InventorySlotStyle;
 import com.csse3200.game.components.item.ItemType;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.UIComponent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.csse3200.game.components.inventory.InventorySlotStyle;
-import com.badlogic.gdx.graphics.Color;
 
 /**
  * Shop page overlay opened by interacting with a shopkeeper NPC.
@@ -34,9 +34,11 @@ public class ShopDisplay extends UIComponent {
   private boolean open;
 
   private final Label.LabelStyle white = new Label.LabelStyle(skin.get(Label.LabelStyle.class));
-  private final Label.LabelStyle whiteLarge = new Label.LabelStyle(skin.get("large", Label.LabelStyle.class));
+  private final Label.LabelStyle whiteLarge =
+      new Label.LabelStyle(skin.get("large", Label.LabelStyle.class));
 
-  private final TextButton.TextButtonStyle darkStyle = new TextButton.TextButtonStyle(skin.get(TextButton.TextButtonStyle.class));
+  private final TextButton.TextButtonStyle darkStyle =
+      new TextButton.TextButtonStyle(skin.get(TextButton.TextButtonStyle.class));
 
   @Override
   public void create() {
@@ -78,11 +80,11 @@ public class ShopDisplay extends UIComponent {
 
     panel.add(title);
     panel.row();
-    //panel.add(goldLabel).padTop(10f);
+    // panel.add(goldLabel).padTop(10f);
     panel.row();
     panel.add(listingsTable).padTop(20f);
     panel.row();
-    //panel.add(statusLabel).padTop(16f);
+    // panel.add(statusLabel).padTop(16f);
     panel.row();
     panel.add(closeBtn).padTop(24f);
 
@@ -149,8 +151,8 @@ public class ShopDisplay extends UIComponent {
 
     darkStyle.up = InventorySlotStyle.getDarkerBox();
     darkStyle.down = InventorySlotStyle.getSelectedBox();
-    darkStyle.over = InventorySlotStyle.getNormalBox();      // optional hover feedback
-    darkStyle.disabled = InventorySlotStyle.getDarkerBox();  // see below
+    darkStyle.over = InventorySlotStyle.getNormalBox(); // optional hover feedback
+    darkStyle.disabled = InventorySlotStyle.getDarkerBox(); // see below
     darkStyle.fontColor = Color.WHITE;
 
     for (ShopListing listing : ShopCatalog.getListings()) {
@@ -175,7 +177,7 @@ public class ShopDisplay extends UIComponent {
     row.add(new Label("x" + listing.getQuantity(), white)).width(50f);
     row.add(new Label(listing.getPrice() + "g", white)).width(60f).padRight(12f);
 
-    TextButton buyBtn = new TextButton("Buy", darkStyle); 
+    TextButton buyBtn = new TextButton("Buy", darkStyle);
     buyBtn.setDisabled(shop == null || !shop.canBuy(listing));
     buyBtn.addListener(
         new ChangeListener() {

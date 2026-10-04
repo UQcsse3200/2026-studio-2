@@ -11,10 +11,10 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
+import com.csse3200.game.components.inventory.InventorySlotStyle;
 import com.csse3200.game.components.item.ItemType;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.UIComponent;
-import com.csse3200.game.components.inventory.InventorySlotStyle;
 
 /**
  * Displays the player's item dictionary.
@@ -30,8 +30,8 @@ public class ItemDictionaryDisplay extends UIComponent {
 
   private static final int GRID_COLUMNS = 5;
   private final Label.LabelStyle white = new Label.LabelStyle(skin.get(Label.LabelStyle.class));
-  private final Label.LabelStyle whiteLarge = new Label.LabelStyle(skin.get("large", Label.LabelStyle.class));
-
+  private final Label.LabelStyle whiteLarge =
+      new Label.LabelStyle(skin.get("large", Label.LabelStyle.class));
 
   private Table table;
   private Table contentTable;
@@ -180,7 +180,6 @@ public class ItemDictionaryDisplay extends UIComponent {
 
     white.fontColor = Color.WHITE;
     Label description = new Label(itemType.getDescription(), white);
-    
 
     description.setWrap(true);
     description.setAlignment(Align.center);

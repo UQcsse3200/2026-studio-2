@@ -19,6 +19,7 @@ public class PhysicsEngine implements Disposable {
   private static final Logger logger = LoggerFactory.getLogger(PhysicsEngine.class);
   private static final float MAX_UPDATE_TIME = 0.25f;
   private static final float PHYSICS_TIMESTEP = 0.016f;
+
   /** World gravity along y. Public so projectile previews can use the same value as the engine. */
   public static final float GRAVITY_Y = -50f;
 

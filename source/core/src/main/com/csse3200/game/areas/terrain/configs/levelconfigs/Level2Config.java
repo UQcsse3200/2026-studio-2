@@ -176,7 +176,7 @@ public class Level2Config extends LevelConfig {
 
     spikes =
         new SpikeClusterConfig[] {
-          //new SpikeClusterConfig(0, 11, 37, 37, 0f, false), // SC1
+          // new SpikeClusterConfig(0, 11, 37, 37, 0f, false), // SC1
           new SpikeClusterConfig(19, 21, 29, 29, 0f, false), // SC2
           new SpikeClusterConfig(4, 6, 29, 29, 0f, false), // SC3
           new SpikeClusterConfig(0, 2, 12, 12, 0f, true), // SC4

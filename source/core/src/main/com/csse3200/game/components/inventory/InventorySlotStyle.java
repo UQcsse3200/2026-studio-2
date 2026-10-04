@@ -17,7 +17,8 @@ public final class InventorySlotStyle {
 
   /** Dark green/teal matching the health bar's backing art. */
   private static final Color FILL_COLOR = new Color(43 / 255f, 61 / 255f, 62 / 255f, 1f);
-private static final Color DARKER_FILL_COLOR = new Color(24 / 255f, 35 / 255f, 36 / 255f, 1f);
+
+  private static final Color DARKER_FILL_COLOR = new Color(24 / 255f, 35 / 255f, 36 / 255f, 1f);
 
   private static final Color NORMAL_BORDER_COLOR = new Color(18 / 255f, 26 / 255f, 26 / 255f, 1f);
 
