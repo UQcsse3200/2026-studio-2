@@ -385,6 +385,8 @@ public class BackgroundRenderComponent extends RenderComponent {
         int lengthY = rainOffsets.size();
         int lengthX = rainOffsets.getFirst().size();
 
+        batch.setColor(0.65f, 0.65f, 0.65f, layer.transparency);
+
         int randomOffsetX;
         int randomOffsetY = 0;
         currentY = startY;
@@ -411,7 +413,7 @@ public class BackgroundRenderComponent extends RenderComponent {
               batch.draw(
                   layer.texture,
                   drawPosX,
-                  drawPosY + rainOffsets.get(randomOffsetY).get(randomOffsetX),
+                  drawPosY,
                   layer.width / 2,
                   layer.height / 2,
                   layer.width,
@@ -429,7 +431,7 @@ public class BackgroundRenderComponent extends RenderComponent {
               batch.draw(
                   layer.texture,
                   drawPosX + (gap / 2),
-                  drawPosY + rainOffsets.get(randomOffsetY).get(randomOffsetX),
+                  drawPosY,
                   layer.width / 2,
                   layer.height / 2,
                   layer.width,

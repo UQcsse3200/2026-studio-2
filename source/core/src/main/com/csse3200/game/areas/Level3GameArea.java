@@ -130,17 +130,23 @@ public class Level3GameArea extends GameArea {
     for (Entity entity : ServiceLocator.getEntityService().getEntities()) {
       if (entity.getComponent(AnimationRenderComponent.class) != null) {
         entity.getComponent(AnimationRenderComponent.class).toggleWeather();
-      } else if (entity.getComponent(BackgroundRenderComponent.class) != null) {
+      }
+      if (entity.getComponent(BackgroundRenderComponent.class) != null) {
         entity.getComponent(BackgroundRenderComponent.class).toggleWeather();
-      } else if (entity.getComponent(DynamicTextureRenderComponent.class) != null) {
+      }
+      if (entity.getComponent(DynamicTextureRenderComponent.class) != null) {
         entity.getComponent(DynamicTextureRenderComponent.class).toggleWeather();
-      } else if (entity.getComponent(RotatableAnimationRenderComponent.class) != null) {
+      }
+      if (entity.getComponent(RotatableAnimationRenderComponent.class) != null) {
         entity.getComponent(RotatableAnimationRenderComponent.class).toggleWeather();
-      } else if (entity.getComponent(TextureRenderComponent.class) != null) {
+      }
+      if (entity.getComponent(TextureRenderComponent.class) != null) {
         entity.getComponent(TextureRenderComponent.class).toggleWeather();
-      } else if (entity.getComponent(TiledRenderComponent.class) != null) {
+      }
+      if (entity.getComponent(TiledRenderComponent.class) != null) {
         entity.getComponent(TiledRenderComponent.class).toggleWeather();
-      } else if (entity.getComponent(GrappleSideRenderComponent.class) != null) {
+      }
+      if (entity.getComponent(GrappleSideRenderComponent.class) != null) {
         entity.getComponent(GrappleSideRenderComponent.class).toggleWeather();
       }
     }
