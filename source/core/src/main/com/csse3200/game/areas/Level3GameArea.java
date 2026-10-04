@@ -325,8 +325,8 @@ public class Level3GameArea extends GameArea {
     // Only emit signals if the other colliding body is the player
     BodyUserData data = (BodyUserData) other.getBody().getUserData();
     if (data == null
-            || data.entity == null
-            || data.entity.getComponent(PlayerActions.class) == null) {
+        || data.entity == null
+        || data.entity.getComponent(PlayerActions.class) == null) {
       return;
     }
 
