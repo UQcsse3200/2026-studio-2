@@ -20,7 +20,7 @@ public class CyclopsMinigameActions extends Component {
 
   /** Swaps back to the Main Menu screen. */
   private void onExit() {
-    logger.info("Returning to minigame select menu");
-    game.setScreen(GdxGame.ScreenType.MINIGAME_SELECT);
+    logger.info("Returning to main menu");
+    game.setScreen(GdxGame.ScreenType.MAIN_MENU);
   }
 }

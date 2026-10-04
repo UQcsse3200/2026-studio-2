@@ -76,7 +76,7 @@ public class TimingBarDisplay extends UIComponent {
 
     Image scoringZone = new Image(blankRegion);
     scoringZone.setColor(SCORING_COLOR);
-    scoringZone.setSize(logic.scoringAreaSize * BAR_WIDTH, BAR_HEIGHT);
+    scoringZone.setSize(logic.getScoringAreaSize() * BAR_WIDTH, BAR_HEIGHT);
     scoringZone.setPosition(BAR_WIDTH / 2 - scoringZone.getWidth() / 2, 0);
     group.addActor(scoringZone);
 
