@@ -162,16 +162,14 @@ class PlayerMovementRegressionTest {
   }
 
   @Test
-  void shouldRejectDashWhilePausedThenAllowItAfterResume() {
-    player.getEvents().trigger("togglePaused");
+  void shouldRejectDashWhileAlreadyDashingUntilBurstEnds() {
     player.getEvents().trigger("dash");
-    assertEquals(2.5f, body.getGravityScale());
-    assertEquals(0f, body.getLinearVelocity().x);
+    advance(0.05f);
 
-    player.getEvents().trigger("togglePaused");
     player.getEvents().trigger("dash");
+
     assertEquals(0f, body.getGravityScale());
-    assertTrue(body.getLinearVelocity().x > 0f);
+    assertEquals(14f, body.getLinearVelocity().x, 0.001f);
   }
 
   @Test
@@ -299,17 +297,17 @@ class PlayerMovementRegressionTest {
   }
 
   @Test
-  void shouldStopGroundMovementWhilePausedAndResumeOnNewInput() {
+  void shouldStopGroundMovementWhenWalkStopsAndResumeOnNewInput() {
     setGrounded(true);
     advance(0f);
     player.getEvents().trigger("walk", new Vector2(1f, 0f));
     advance(0f);
     assertEquals(5f, body.getLinearVelocity().x, 0.001f);
-    player.getEvents().trigger("togglePaused");
-    player.getEvents().trigger("walk", new Vector2(-1f, 0f));
+
+    player.getEvents().trigger("walkStop");
     advance(0f);
     assertEquals(0f, body.getLinearVelocity().x, 0.001f);
-    player.getEvents().trigger("togglePaused");
+
     player.getEvents().trigger("walk", new Vector2(-1f, 0f));
     advance(0f);
     assertEquals(-5f, body.getLinearVelocity().x, 0.001f);

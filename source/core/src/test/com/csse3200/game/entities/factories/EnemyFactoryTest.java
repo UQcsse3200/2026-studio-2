@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.when;
 
 import com.badlogic.gdx.graphics.Texture;
@@ -13,12 +14,16 @@ import com.badlogic.gdx.utils.Array;
 import com.csse3200.game.ai.tasks.AITaskComponent;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.EnemyDeathComponent;
+import com.csse3200.game.components.lighting.PointLightComponent;
 import com.csse3200.game.components.npc.SkeletonAnimationController;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.EnemyConfig;
 import com.csse3200.game.extensions.GameExtension;
+import com.csse3200.game.lighting.LightingEngine;
+import com.csse3200.game.lighting.LightingService;
 import com.csse3200.game.physics.PhysicsService;
 import com.csse3200.game.rendering.AnimationRenderComponent;
+import com.csse3200.game.rendering.ParticleEffectsRenderingComponent;
 import com.csse3200.game.rendering.RenderService;
 import com.csse3200.game.rendering.TextureRenderComponent;
 import com.csse3200.game.services.ResourceService;
@@ -26,6 +31,7 @@ import com.csse3200.game.services.ServiceLocator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.MockedConstruction;
 import org.mockito.Mockito;
 
 @ExtendWith(GameExtension.class)
@@ -37,6 +43,12 @@ class EnemyFactoryTest {
     Mockito.when(renderService.getDebug())
         .thenReturn(Mockito.mock(com.csse3200.game.rendering.DebugRenderer.class));
     ServiceLocator.registerRenderService(renderService);
+
+    LightingEngine lightingEngine = mock(LightingEngine.class);
+    when(lightingEngine.getRayHandler()).thenReturn(mock(box2dLight.RayHandler.class));
+    LightingService lightingService = mock(LightingService.class);
+    when(lightingService.getEngine()).thenReturn(lightingEngine);
+    ServiceLocator.registerLightingService(lightingService);
 
     Texture texture = mock(Texture.class);
     when(texture.getWidth()).thenReturn(1);
@@ -61,11 +73,16 @@ class EnemyFactoryTest {
     config.health = 40;
     config.baseAttack = 8;
 
-    Entity enemy = EnemyFactory.createEnemy(new Entity(), config);
+    try (MockedConstruction<PointLightComponent> lights =
+            mockConstruction(PointLightComponent.class);
+        MockedConstruction<ParticleEffectsRenderingComponent> particles =
+            mockConstruction(ParticleEffectsRenderingComponent.class)) {
+      Entity enemy = EnemyFactory.createEnemy(new Entity(), config);
 
-    assertNotNull(enemy.getComponent(CombatStatsComponent.class));
-    assertNotNull(enemy.getComponent(EnemyDeathComponent.class));
-    assertNotNull(enemy.getComponent(AITaskComponent.class));
+      assertNotNull(enemy.getComponent(CombatStatsComponent.class));
+      assertNotNull(enemy.getComponent(EnemyDeathComponent.class));
+      assertNotNull(enemy.getComponent(AITaskComponent.class));
+    }
   }
 
   @Test
@@ -75,57 +92,92 @@ class EnemyFactoryTest {
     config.baseAttack = 6;
     config.attackType = "range";
 
-    Entity enemy = EnemyFactory.createEnemy(new Entity(), config);
+    try (MockedConstruction<PointLightComponent> lights =
+            mockConstruction(PointLightComponent.class);
+        MockedConstruction<ParticleEffectsRenderingComponent> particles =
+            mockConstruction(ParticleEffectsRenderingComponent.class)) {
+      Entity enemy = EnemyFactory.createEnemy(new Entity(), config);
 
-    assertNotNull(enemy.getComponent(CombatStatsComponent.class));
-    assertNotNull(enemy.getComponent(AITaskComponent.class));
+      assertNotNull(enemy.getComponent(CombatStatsComponent.class));
+      assertNotNull(enemy.getComponent(AITaskComponent.class));
+    }
   }
 
   @Test
   void shouldCreateSkeletonWarriorWithSkeletonAnimationController() {
-    Entity warrior = EnemyFactory.createSkeletonWarrior(new Entity());
+    try (MockedConstruction<PointLightComponent> lights =
+            mockConstruction(PointLightComponent.class);
+        MockedConstruction<ParticleEffectsRenderingComponent> particles =
+            mockConstruction(ParticleEffectsRenderingComponent.class)) {
+      Entity warrior = EnemyFactory.createSkeletonWarrior(new Entity());
 
-    assertNotNull(warrior.getComponent(SkeletonAnimationController.class));
-    assertNotNull(warrior.getComponent(AnimationRenderComponent.class));
+      assertNotNull(warrior.getComponent(SkeletonAnimationController.class));
+      assertNotNull(warrior.getComponent(AnimationRenderComponent.class));
+    }
   }
 
   @Test
   void shouldCreateSkeletonArcherWithSkeletonAnimationController() {
-    Entity archer = EnemyFactory.createSkeletonArcher(new Entity());
+    try (MockedConstruction<PointLightComponent> lights =
+            mockConstruction(PointLightComponent.class);
+        MockedConstruction<ParticleEffectsRenderingComponent> particles =
+            mockConstruction(ParticleEffectsRenderingComponent.class)) {
+      Entity archer = EnemyFactory.createSkeletonArcher(new Entity());
 
-    assertNotNull(archer.getComponent(SkeletonAnimationController.class));
-    assertNotNull(archer.getComponent(AnimationRenderComponent.class));
+      assertNotNull(archer.getComponent(SkeletonAnimationController.class));
+      assertNotNull(archer.getComponent(AnimationRenderComponent.class));
+    }
   }
 
   @Test
   void shouldCreateVultureWithSkeletonAnimationController() {
-    Entity vulture = EnemyFactory.createVulture(new Entity());
+    try (MockedConstruction<PointLightComponent> lights =
+            mockConstruction(PointLightComponent.class);
+        MockedConstruction<ParticleEffectsRenderingComponent> particles =
+            mockConstruction(ParticleEffectsRenderingComponent.class)) {
+      Entity vulture = EnemyFactory.createVulture(new Entity());
 
-    assertNotNull(vulture.getComponent(SkeletonAnimationController.class));
-    assertNotNull(vulture.getComponent(AnimationRenderComponent.class));
+      assertNotNull(vulture.getComponent(SkeletonAnimationController.class));
+      assertNotNull(vulture.getComponent(AnimationRenderComponent.class));
+    }
   }
 
   @Test
   void shouldCreateNecromancerWithSkeletonAnimationController() {
-    Entity necromancer = EnemyFactory.createNecromancer(new Entity());
+    try (MockedConstruction<PointLightComponent> lights =
+            mockConstruction(PointLightComponent.class);
+        MockedConstruction<ParticleEffectsRenderingComponent> particles =
+            mockConstruction(ParticleEffectsRenderingComponent.class)) {
+      Entity necromancer = EnemyFactory.createNecromancer(new Entity());
 
-    assertNotNull(necromancer.getComponent(SkeletonAnimationController.class));
-    assertNotNull(necromancer.getComponent(AnimationRenderComponent.class));
+      assertNotNull(necromancer.getComponent(SkeletonAnimationController.class));
+      assertNotNull(necromancer.getComponent(AnimationRenderComponent.class));
+    }
   }
 
   @Test
   void shouldCreatePassiveSkeletonWarriorWithStaticTexture() {
-    Entity warrior = EnemyFactory.createPassiveSkeletonWarrior();
+    try (MockedConstruction<PointLightComponent> lights =
+            mockConstruction(PointLightComponent.class);
+        MockedConstruction<ParticleEffectsRenderingComponent> particles =
+            mockConstruction(ParticleEffectsRenderingComponent.class)) {
+      Entity warrior = EnemyFactory.createPassiveSkeletonWarrior();
 
-    assertNotNull(warrior.getComponent(TextureRenderComponent.class));
-    assertNotNull(warrior.getComponent(CombatStatsComponent.class));
+      assertNotNull(warrior.getComponent(TextureRenderComponent.class));
+      assertNotNull(warrior.getComponent(CombatStatsComponent.class));
+    }
   }
 
   @Test
   void shouldCreatePassiveSkeletonArcherWithStaticTexture() {
-    Entity archer = EnemyFactory.createPassiveSkeletonArcher();
+    try (MockedConstruction<PointLightComponent> lights =
+            mockConstruction(PointLightComponent.class);
+        MockedConstruction<ParticleEffectsRenderingComponent> particles =
+            mockConstruction(ParticleEffectsRenderingComponent.class)) {
+      Entity archer = EnemyFactory.createPassiveSkeletonArcher();
 
-    assertNotNull(archer.getComponent(TextureRenderComponent.class));
-    assertNotNull(archer.getComponent(CombatStatsComponent.class));
+      assertNotNull(archer.getComponent(TextureRenderComponent.class));
+      assertNotNull(archer.getComponent(CombatStatsComponent.class));
+    }
   }
 }

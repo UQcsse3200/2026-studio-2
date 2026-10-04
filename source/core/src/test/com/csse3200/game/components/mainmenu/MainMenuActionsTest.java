@@ -38,10 +38,10 @@ class MainMenuActionsTest {
   }
 
   @Test
-  void shouldOpenMinigameSelection() {
+  void shouldLeaveMinigameSelectionUnchangedUntilImplemented() {
     ui.getEvents().trigger("Minigames");
 
-    verify(game).setScreen(GdxGame.ScreenType.MINIGAME_SELECT);
+    verifyNoInteractions(game);
   }
 
   @Test
