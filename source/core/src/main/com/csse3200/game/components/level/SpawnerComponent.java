@@ -145,7 +145,7 @@ public class SpawnerComponent extends Component {
    * @param entity the entity object that is dead
    */
   private void enemyDied(Entity entity) {
-    entityIds.remove(entity.getId());
+    entityIds.remove((Integer) entity.getId());
   }
 
   /**

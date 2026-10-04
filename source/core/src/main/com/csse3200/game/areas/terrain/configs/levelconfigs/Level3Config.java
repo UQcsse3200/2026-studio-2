@@ -7,14 +7,19 @@ import com.csse3200.game.areas.terrain.configs.*;
 // import com.csse3200.game.components.item.weapons.StandardArr;
 import com.csse3200.game.components.item.*;
 import com.csse3200.game.components.item.weapons.bow.arrow.*;
+import com.csse3200.game.components.level.SpawnerComponent;
+import com.csse3200.game.entities.Entity;
+import com.csse3200.game.entities.factories.EnemyFactory;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class Level3Config extends LevelConfig {
   GridPoint2 risingWaterSpawn;
   float risingWaterSpeed;
 
-  public Level3Config() {
+  public Level3Config(Entity player) {
     // Textures
     // TFP = Texture File Path
     platformTFP = "images/Platform_level-3.png";
@@ -31,15 +36,15 @@ public class Level3Config extends LevelConfig {
 
     platforms =
         new PlatformConfig[] {
-          // new PlatformConfig(new GridPoint2(9, 5), 3, 1, 0, platformTFP), // P1
+          new PlatformConfig(new GridPoint2(9, 5), 3, 1, 0, platformTFP), // P1
           new PlatformConfig(new GridPoint2(13, 7), 3, 1, 0, platformTFP), // P2
           new PlatformConfig(new GridPoint2(6, 10), 3, 1, 11, platformTFP), // P3
           new PlatformConfig(new GridPoint2(17, 10), 3, 1, 0, platformTFP), // P4
           new PlatformConfig(new GridPoint2(12, 12), 3, 1, 0, platformTFP), // P5
           new PlatformConfig(new GridPoint2(16, 15), 3, 1, 0, platformTFP), // P6
           new PlatformConfig(new GridPoint2(6, 18), 3, 1, 0, platformTFP), // P7
-          new PlatformConfig(new GridPoint2(12, 20), 3, 1, 0, platformTFP), // SP1 TODO
-          new PlatformConfig(new GridPoint2(3, 21), 3, 1, 0, platformTFP), // P10
+          new PlatformConfig(new GridPoint2(3, 21), 3, 1, 3, platformTFP), // P10
+
           // arena 2
           new PlatformConfig(new GridPoint2(10, 37), 3, 1, 0, platformTFP), // P11
           new PlatformConfig(new GridPoint2(16, 37), 3, 1, 0, platformTFP), // P12
@@ -48,9 +53,9 @@ public class Level3Config extends LevelConfig {
 
     floors =
         new PlatformConfig[] {
-          new PlatformConfig(new GridPoint2(20, 19), 1, 3, 1, groundTFP), // P9
-          new PlatformConfig(new GridPoint2(0, 27), 12, 1, 3, groundTFP), // P9
-          new PlatformConfig(new GridPoint2(15, 27), 12, 1, 3, groundTFP), // P9
+          new PlatformConfig(new GridPoint2(20, 19), 1, 3, 8, groundTFP), // P9
+          new PlatformConfig(new GridPoint2(0, 27), 12, 1, 3, groundTFP), // G1
+          new PlatformConfig(new GridPoint2(15, 27), 12, 1, 9, groundTFP), // G2
         };
 
     movingPlatforms =
@@ -59,13 +64,13 @@ public class Level3Config extends LevelConfig {
               new GridPoint2(3, 12),
               1,
               3,
-              1,
+              2,
               movingPlatformTFP,
               new Vector2(3, 12),
               new Vector2(3, 19),
               new Vector2(0, 3),
-              new String[] {}), // MP1
-          new MovingPlatformConfig( // MP1
+              new String[] {}),
+          new MovingPlatformConfig( // MP2
               new GridPoint2(12, 24),
               3,
               1,
@@ -74,7 +79,7 @@ public class Level3Config extends LevelConfig {
               new Vector2(12, 24),
               new Vector2(19, 24),
               new Vector2(3, 0),
-              new String[] {}), // MP1
+              new String[] {}),
           new MovingPlatformConfig( // MP3
               new GridPoint2(13, 40),
               3,
@@ -84,20 +89,27 @@ public class Level3Config extends LevelConfig {
               new Vector2(13, 40),
               new Vector2(20, 40),
               new Vector2(3, 0),
-              new String[] {}), // MP3
+              new String[] {}),
         };
 
     triggerablePlatforms =
         new TriggerablePlatformConfig[] {
-          // new TriggerablePlatformConfig(new GridPoint2(12, 27),3,1,2,triggerablePlatformTFP,new
-          // String[] {}, true), // TP1 todo uncomment
+          new TriggerablePlatformConfig(
+              new GridPoint2(12, 27),
+              3,
+              1,
+              0,
+              triggerablePlatformTFP,
+              new String[] {"enemyArena1"},
+              false), // TP1
         };
 
     ledges =
         new PlatformConfig[] {
-          new PlatformConfig(new GridPoint2(9, 30), 3, 1, 0, ledgesTFP), // L1
-          new PlatformConfig(new GridPoint2(20, 29), 3, 1, 0, ledgesTFP), // L1
+          new PlatformConfig(new GridPoint2(9, 30), 3, 1, 0, ledgesTFP), // L2
+          new PlatformConfig(new GridPoint2(20, 30), 3, 1, 0, ledgesTFP), // L1
         };
+
     // triggerButtons =
     //     new TriggerButtonConfig[] {
     //       new TriggerButtonConfig(
@@ -140,7 +152,46 @@ public class Level3Config extends LevelConfig {
 
     slipperyPlatforms =
         new SlipperyPlatformConfig[] {
-          new SlipperyPlatformConfig(new GridPoint2(9, 5), 3, 1, 0, platformTFP, 5f, 0.2f), // P1
+          new SlipperyPlatformConfig(new GridPoint2(12, 20), 3, 1, 0, platformTFP, 3f, 0.2f), // SP1
+        };
+
+    // contains spawner data for the enemy spawners
+    SpawnerConfig[] spawnerConfig = {
+      new SpawnerConfig(
+          new ArrayList<>(
+              List.of(
+                  () -> EnemyFactory.createVulture(player),
+                  () -> EnemyFactory.createSkeletonWarrior(player))),
+          4f,
+          4,
+          SpawnerComponent.ACTIVATION_MODE.NORMAL,
+          false),
+      new SpawnerConfig(
+          new ArrayList<>(List.of(() -> EnemyFactory.createNecromancer(player))),
+          12f,
+          2,
+          SpawnerComponent.ACTIVATION_MODE.NORMAL,
+          false),
+    };
+
+    enemySpawners =
+        new EnemySpawnerConfig[] {
+          new EnemySpawnerConfig(
+              new GridPoint2(3, 29),
+              spawnerConfig[0],
+              new String[] {"enemyArena1"},
+              new String[] {"enemyArena1Complete"}),
+          new EnemySpawnerConfig(
+              new GridPoint2(24, 29),
+              spawnerConfig[1],
+              new String[] {"enemyArena1"},
+              new String[] {"enemyArena1Complete"})
+        };
+
+    mapTriggers =
+        new TriggerConfig[] {
+          new TriggerConfig(
+              new GridPoint2(12, 29), new Vector2(3f, 1f), new String[] {"enemyArena1"}, true),
         };
   }
 

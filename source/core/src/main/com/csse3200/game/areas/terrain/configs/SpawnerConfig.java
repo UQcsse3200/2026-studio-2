@@ -22,6 +22,6 @@ public class SpawnerConfig {
     this.spawnInterval = interval;
     this.maxSpawns = maxSpawns;
     this.mode = mode;
-    this.active = true;
+    this.active = active;
   }
 }
