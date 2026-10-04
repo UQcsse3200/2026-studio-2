@@ -225,8 +225,8 @@ public class LevelsGameScreen extends ScreenAdapter {
   private void performLevelSwap() {
     logger.info("Swapping level to new game area");
 
-    currentGameArea.dispose();
     nextGameArea.create();
+    currentGameArea.dispose();
     currentGameArea = nextGameArea;
     nextGameArea = null;
 
