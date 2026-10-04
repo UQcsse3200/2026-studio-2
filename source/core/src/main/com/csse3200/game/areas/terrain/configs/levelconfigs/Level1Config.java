@@ -124,9 +124,10 @@ public class Level1Config extends LevelConfig {
     bounds =
         new PlatformConfig[] {
           new PlatformConfig(new GridPoint2(40, 0), 50, 1, 0, groundTFP), // bottom
-          new PlatformConfig(new GridPoint2(0, 27), 90, 1, 0, groundTFP), // top  // Use 27 not 24
-          new PlatformConfig(new GridPoint2(0, 0), 1, 25, 0, groundTFP), // left  // Use 25 not 22
-          new PlatformConfig(new GridPoint2(90, 0), 1, 25, 0, groundTFP) // right // Use 25 not 22
+          // new PlatformConfig(new GridPoint2(0, 27), 90, 1, 0, groundTFP), // top  // Use 27 not
+          // 24
+          new PlatformConfig(new GridPoint2(0, 0), 1, 22, 0, groundTFP), // left  // Use 25 not 22
+          new PlatformConfig(new GridPoint2(90, 0), 1, 14, 0, groundTFP) // right // Use 25 not 22
         };
 
     floors =

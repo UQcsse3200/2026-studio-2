@@ -134,6 +134,8 @@ public class Level2Config extends LevelConfig {
               false), // TP2
         };
 
+    bounds = new PlatformConfig[] {new PlatformConfig(new GridPoint2(-1, -5), 1, 55, 0, groundTFP)};
+
     floors =
         new PlatformConfig[] {
           new PlatformConfig(new GridPoint2(0, 35), 13, 2, 3, groundTFP), // G1
