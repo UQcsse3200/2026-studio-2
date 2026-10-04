@@ -79,11 +79,17 @@ public class Level3GameArea extends GameArea {
     "images/arrow.png",
     "images/rope_arrow.png",
     "images/fire_arrow.png",
-    "images/cold_arrow.png"
+    "images/cold_arrow.png",
+    "images/necromancer_projectile.png",
   };
 
   private static final String[] level3TexturesAtlas = {
-    "images/terrain_iso_grass.atlas", "images/in_level_button.atlas"
+    "images/terrain_iso_grass.atlas",
+    "images/in_level_button.atlas",
+    "images/skeleton_archer.atlas",
+    "images/skeleton_warrior.atlas",
+    "images/necromancer.atlas",
+    "images/vulture.atlas",
   };
 
   private static final String[] level3Sounds = {"sounds/Impact4.ogg"};
@@ -98,7 +104,7 @@ public class Level3GameArea extends GameArea {
   public Level3GameArea(TerrainFactory terrainFactory, CameraComponent camera, Entity player) {
     super(camera);
 
-    config = new Level3Config();
+    config = new Level3Config(player);
 
     this.terrainFactory = terrainFactory;
     this.camera = camera;
