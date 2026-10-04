@@ -403,6 +403,13 @@ public class ObstacleFactory {
     return spike;
   }
 
+  /**
+   * Creates a spiky ball trap that determines the shoot direction for its children spiky balls
+   * based on rotation
+   *
+   * @param config the SpikyBallTrapConfig file that sets settings for this instance of the trap
+   * @return a spiky ball trap entity ready to be registered
+   */
   public static Entity createSpikyBallTrap(SpikyBallTrapConfig config) {
     // calculate which direction this trap's balls should move based on the rotation configured
     float rotation = config.getRotation();
@@ -432,6 +439,12 @@ public class ObstacleFactory {
     return trap;
   }
 
+  /**
+   * Creates a child spiky ball to be emitted from a spiky ball trap entity
+   *
+   * @param moveDirection the direction to move the ball in
+   * @return a child spiky ball entity that handles its own movement
+   */
   public static Entity createSpikyBall(Vector2 moveDirection) {
     Entity spikyBall =
         new Entity()
@@ -450,6 +463,18 @@ public class ObstacleFactory {
     return spikyBall;
   }
 
+  /**
+   * Creates two entities - the water itself that contains the visual aspect and handles all the
+   * movement, and the hitbox for the water. They are required to be two separate entities as the
+   * way water grows (scaling the entity) does not scale the hitbox, meaning the hitbox desyncs from
+   * the top of the water.
+   *
+   * @param speed the default speed the water should rise at when spawning
+   * @param initialHeight the initial height of the water when spawning into the level
+   * @return the water entity with the hitbox attached to it in the RisingWaterComponent ready to be
+   *     registered. Note: the RisingWaterComponent handles the registration of the hitbox entity,
+   *     so only the returned entity from this method requires registration
+   */
   public static Entity createRisingWaterEntity(float speed, float initialHeight) {
     Entity waterHitbox =
         new Entity()
@@ -468,6 +493,13 @@ public class ObstacleFactory {
     return water;
   }
 
+  /**
+   * Creates an entity capable of spawning enemies in the level
+   *
+   * @param config the EnemySpawnerConfig that determines what enemies should be spawned and how
+   *     often etc.
+   * @return the created spawner entity ready to be registered in the level
+   */
   public static Entity createEnemySpawnerEntity(EnemySpawnerConfig config) {
     SpawnerConfig sData = config.spawnData;
     SpawnerComponent spawnerComp =
@@ -482,6 +514,25 @@ public class ObstacleFactory {
             .addComponent(new ActivatableComponent(sData.active, config.ids));
 
     return spawner;
+  }
+
+  /**
+   * Creates a trigger entity that when collided with, emits signals to all ids
+   *
+   * @param ids an array of strings to emit signals for when collided with
+   * @return a collider trigger Entity object to register with the entity service
+   */
+  public static Entity createTriggerEntity(TriggerConfig c) {
+    ColliderComponent collider = new ColliderComponent();
+    collider.setLayer(PhysicsLayer.NPC);
+    collider.setSensor(true);
+
+    Entity trigger =
+        new Entity()
+            .addComponent(collider)
+            .addComponent(new TriggerComponent(c.ids, c.oneTimeActivation));
+
+    return trigger;
   }
 
   private ObstacleFactory() {
