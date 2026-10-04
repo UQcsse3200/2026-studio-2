@@ -43,19 +43,23 @@ public class Level3Config extends LevelConfig {
           new PlatformConfig(new GridPoint2(12, 12), 3, 1, 0, platformTFP), // P5
           new PlatformConfig(new GridPoint2(16, 15), 3, 1, 0, platformTFP), // P6
           new PlatformConfig(new GridPoint2(6, 18), 3, 1, 0, platformTFP), // P7
+          new PlatformConfig(new GridPoint2(20, 19), 1, 3, 8, groundTFP), // P9
           new PlatformConfig(new GridPoint2(3, 21), 3, 1, 3, platformTFP), // P10
 
           // arena 2
-          new PlatformConfig(new GridPoint2(10, 37), 3, 1, 0, platformTFP), // P11
-          new PlatformConfig(new GridPoint2(16, 37), 3, 1, 0, platformTFP), // P12
-          new PlatformConfig(new GridPoint2(5, 40), 3, 1, 0, platformTFP), // P13
+          new PlatformConfig(new GridPoint2(9, 36), 3, 1, 0, platformTFP), // P11
+          new PlatformConfig(new GridPoint2(15, 36), 3, 1, 0, platformTFP), // P12
+          new PlatformConfig(new GridPoint2(6, 39), 3, 1, 0, platformTFP), // P13
+          new PlatformConfig(new GridPoint2(12, 42), 3, 1, 8, platformTFP), // P14
+          new PlatformConfig(new GridPoint2(16, 45), 3, 1, 0, platformTFP), // P15
         };
 
     floors =
         new PlatformConfig[] {
-          new PlatformConfig(new GridPoint2(20, 19), 1, 3, 8, groundTFP), // P9
           new PlatformConfig(new GridPoint2(0, 27), 12, 1, 3, groundTFP), // G1
           new PlatformConfig(new GridPoint2(15, 27), 12, 1, 9, groundTFP), // G2
+          new PlatformConfig(new GridPoint2(0, 58), 12, 1, 3, groundTFP), // G3
+          new PlatformConfig(new GridPoint2(15, 58), 12, 1, 9, groundTFP),
         };
 
     movingPlatforms =
@@ -81,15 +85,25 @@ public class Level3Config extends LevelConfig {
               new Vector2(3, 0),
               new String[] {}),
           new MovingPlatformConfig( // MP3
-              new GridPoint2(13, 40),
+              new GridPoint2(12, 39),
               3,
               1,
               0,
               movingPlatformTFP,
-              new Vector2(13, 40),
-              new Vector2(20, 40),
+              new Vector2(10, 39),
+              new Vector2(17, 39),
               new Vector2(3, 0),
               new String[] {}),
+          new MovingPlatformConfig(
+              new GridPoint2(20, 42),
+              3,
+              1,
+              0,
+              movingPlatformTFP,
+              new Vector2(20, 38),
+              new Vector2(20, 45),
+              new Vector2(0, 4),
+              new String[] {})
         };
 
     triggerablePlatforms =
@@ -102,20 +116,54 @@ public class Level3Config extends LevelConfig {
               triggerablePlatformTFP,
               new String[] {"enemyArena1"},
               false), // TP1
+          new TriggerablePlatformConfig(
+              new GridPoint2(3, 33),
+              6,
+              1,
+              0,
+              triggerablePlatformTFP,
+              new String[] {"enemyArena1Complete"},
+              false), // TP2
+          new TriggerablePlatformConfig(
+              new GridPoint2(12, 33),
+              3,
+              1,
+              0,
+              triggerablePlatformTFP,
+              new String[] {"enemyArena1Complete"},
+              false), // TP3
+          new TriggerablePlatformConfig(
+              new GridPoint2(18, 33),
+              6,
+              1,
+              0,
+              triggerablePlatformTFP,
+              new String[] {"enemyArena1Complete"},
+              false), // TP4
+          new TriggerablePlatformConfig(
+              new GridPoint2(12, 58),
+              3,
+              1,
+              0,
+              triggerablePlatformTFP,
+              new String[] {"tp5", "enemyArena2"},
+              true) // TP5
         };
 
     ledges =
         new PlatformConfig[] {
-          new PlatformConfig(new GridPoint2(9, 30), 3, 1, 0, ledgesTFP), // L2
           new PlatformConfig(new GridPoint2(20, 30), 3, 1, 0, ledgesTFP), // L1
+          new PlatformConfig(new GridPoint2(9, 30), 3, 1, 0, ledgesTFP), // L2
+          new PlatformConfig(new GridPoint2(7, 48), 3, 1, 0, ledgesTFP), // L3
+          new PlatformConfig(new GridPoint2(12, 51), 3, 1, 0, ledgesTFP), // L4
+          new PlatformConfig(new GridPoint2(12, 55), 3, 1, 0, ledgesTFP), // new ledge not in design
         };
 
-    // triggerButtons =
-    //     new TriggerButtonConfig[] {
-    //       new TriggerButtonConfig(
-    //           new GridPoint2(25, 42), 180f, false, new String[] {"triggerWheelSpinPlatform"}), //
-    // B1
-    //     };
+    triggerButtons =
+        new TriggerButtonConfig[] {
+          new TriggerButtonConfig(new GridPoint2(8, 57), 180f, false, new String[] {"tp5"}), // B1
+          new TriggerButtonConfig(new GridPoint2(18, 57), 180f, false, new String[] {"tp5"}), // B2
+        };
 
     items = new HashMap<>(Map.of(new GridPoint2(9, 7), new Arrow(ItemType.ROPE_ARROW, 1)));
 
@@ -123,36 +171,38 @@ public class Level3Config extends LevelConfig {
         new SpikeClusterConfig[] {
           new SpikeClusterConfig(5, 5, 18, 18, 90f, false), // SC1
           new SpikeClusterConfig(9, 9, 18, 18, 270f, false), // SC2
-          new SpikeClusterConfig(13, 15, 41, 41, 0f, true), // mp3
-          new SpikeClusterConfig(12, 12, 40, 40, 90f, true), // mp3
-          new SpikeClusterConfig(16, 16, 40, 40, 270f, true), // mp3
+          new SpikeClusterConfig(12, 14, 40, 40, 0f, true), // mp3
+          new SpikeClusterConfig(11, 11, 39, 39, 90f, true), // mp3
+          new SpikeClusterConfig(15, 15, 39, 39, 270f, true), // mp3
         };
 
-    // ballTraps =
-    //     new SpikyBallTrapConfig[] {
-    //       new SpikyBallTrapConfig(
-    //           new GridPoint2(7, 19),
-    //           180f,
-    //           new String[] {},
-    //           1.25f,
-    //           true,
-    //           SpawnerComponent.ACTIVATION_MODE.TOGGLE), // SBT1
-    //     };
+    ballTraps =
+        new SpikyBallTrapConfig[] {
+          new SpikyBallTrapConfig(
+              new GridPoint2(27, 47),
+              90f,
+              new String[] {},
+              3.5f,
+              true,
+              SpawnerComponent.ACTIVATION_MODE.TOGGLE), // SBT1
+        };
 
     checkpoints =
         new CheckpointConfig[] {
           new CheckpointConfig(new GridPoint2(10, 6)), new CheckpointConfig(new GridPoint2(13, 21)),
         };
 
-    // crumblingPlatforms =
-    //     new CrumblingPlatformConfig[] {
-    //       new CrumblingPlatformConfig(
-    //           new GridPoint2(16, 8), 3, 1, 0, crumblingPlatformTFP, 1.25f, 0.75f, 3f), // CP1
-    //     };
+    crumblingPlatforms =
+        new CrumblingPlatformConfig[] {
+          new CrumblingPlatformConfig(
+              new GridPoint2(18, 53), 3, 1, 1, crumblingPlatformTFP, 4f, 1.5f, 6.5f), // CP1
+        };
 
     slipperyPlatforms =
         new SlipperyPlatformConfig[] {
           new SlipperyPlatformConfig(new GridPoint2(12, 20), 3, 1, 0, platformTFP, 3f, 0.2f), // SP1
+          new SlipperyPlatformConfig(new GridPoint2(7, 45), 3, 1, 11, platformTFP, 5f, 0.1f), // P16
+          new SlipperyPlatformConfig(new GridPoint2(7, 53), 3, 1, 1, platformTFP, 2f, 0.1f) // SP2
         };
 
     // contains spawner data for the enemy spawners
@@ -192,6 +242,8 @@ public class Level3Config extends LevelConfig {
         new TriggerConfig[] {
           new TriggerConfig(
               new GridPoint2(12, 29), new Vector2(3f, 1f), new String[] {"enemyArena1"}, true),
+          new TriggerConfig(
+              new GridPoint2(12, 60), new Vector2(3f, 1f), new String[] {"enemyArena2"}, true),
         };
   }
 
