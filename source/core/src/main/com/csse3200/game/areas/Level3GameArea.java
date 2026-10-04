@@ -162,12 +162,12 @@ public class Level3GameArea extends GameArea {
         0.1f,
         0.2f,
         new Vector2(0f, 0f),
-        new Vector2(2f, -2f),
+        new Vector2(1.5f, -2f),
         RepeatMode.CHAOTIC,
         1f,
         0.4f,
         false,
-        0,
+        15,
         -1);
 
     // Create the background entity.
