@@ -4,10 +4,12 @@ import com.badlogic.gdx.physics.box2d.Fixture;
 import com.csse3200.game.components.Component;
 import com.csse3200.game.components.player.PlayerActions;
 import com.csse3200.game.physics.BodyUserData;
+import com.csse3200.game.physics.components.ColliderComponent;
 
 public class TriggerComponent extends Component {
   String[] ids;
   boolean oneTimeActivation;
+  boolean activated;
 
   public TriggerComponent(String[] ids, boolean oneTimeActivation) {
     this.ids = ids;
@@ -30,6 +32,10 @@ public class TriggerComponent extends Component {
    * @param other the fixture that hit this entity
    */
   private void onCollisionStart(Fixture me, Fixture other) {
+    if (oneTimeActivation && activated) {
+      return;
+    }
+
     // Only emit signals if the other colliding body is the player
     BodyUserData data = (BodyUserData) other.getBody().getUserData();
     if (data == null
@@ -40,13 +46,14 @@ public class TriggerComponent extends Component {
 
     if (ids != null) {
       for (String id : ids) {
-        entity.getEvents().trigger("activatedMapComponent", id);
+        entity.getEvents().trigger("activateByKey", id);
       }
     }
 
     // disable the entity from triggering on future collisions
     if (oneTimeActivation) {
-      entity.setEnabled(false);
+      entity.getComponent(ColliderComponent.class).setEnabled(false);
+      activated = true;
     }
   }
 }
