@@ -529,6 +529,7 @@ public class ObstacleFactory {
 
     Entity trigger =
         new Entity()
+            .addComponent(new PhysicsComponent().setBodyType(BodyType.StaticBody))
             .addComponent(collider)
             .addComponent(new TriggerComponent(c.ids, c.oneTimeActivation));
 
