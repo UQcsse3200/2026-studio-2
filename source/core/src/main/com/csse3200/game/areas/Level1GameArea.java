@@ -236,7 +236,6 @@ public class Level1GameArea extends GameArea {
     spawnWheelToken();
     spawnSkeletonArcher();
     spawnSkeletonWarrior();
-    spawnForeground();
 
     // Test enemy functionalitys
     // spawnTestSkeletonWarrior();
@@ -266,48 +265,6 @@ public class Level1GameArea extends GameArea {
     Entity ui = new Entity();
     ui.addComponent(new GameAreaDisplay("Level1"));
     spawnEntity(ui);
-  }
-
-  private void spawnForeground() {
-    final Vector2 foregroundPos = new Vector2(-10f, -10f);
-    foregroundComponent = new ForegroundRenderComponent(camera, foregroundPos, worldBounds);
-
-    // Lightning strike flash layer
-    /*
-    foregroundComponent.addLayer(
-            "images/parallax/white_box.png",
-            new Vector2(0f, 0f), // Parallax factor
-            30f,
-            12f,
-            new Vector2(0f, 4.25f), // Positional offset
-            new Vector2(0f, 0f), // Independent velocity
-            RepeatMode.NONE,
-            1f,
-            0f,
-            true);
-
-     */
-    foregroundComponent.addLayer(
-        "images/parallax/rain_small.png", // 0.2,0.4 for xxl
-        new Vector2(0f, 0f),
-        0.1f,
-        0.2f,
-        new Vector2(0f, 0f),
-        new Vector2(2f, -2f),
-        RepeatMode.CHAOTIC,
-        1f,
-        0.4f,
-        false,
-        0,
-        -1);
-
-    // Create the background entity.
-    Entity foreground = new Entity().addComponent(foregroundComponent);
-
-    // Position the background in the game world.
-    foreground.setPosition(foregroundPos);
-
-    spawnEntity(foreground);
   }
 
   /**
