@@ -135,6 +135,11 @@ public abstract class GameArea implements Disposable {
       }
     }
 
+    TriggerComponent trigger = entity.getComponent(TriggerComponent.class);
+    if (trigger != null) {
+      entity.getEvents().addListener("activateByKey", this::onButtonActivated);
+    }
+
     CheckpointComponent checkpoint = entity.getComponent(CheckpointComponent.class);
     if (checkpoint != null) {
       entity.getEvents().addListener("checkpointActivated", this::onCheckpointActivated);
@@ -149,8 +154,8 @@ public abstract class GameArea implements Disposable {
       player.getEvents().addListener("grappleRelease", () -> slipperyPlatform.setGrappled(false));
     }
 
-    LevelTriggerComponent trigger = entity.getComponent(LevelTriggerComponent.class);
-    if (trigger != null) {
+    LevelTriggerComponent levelTrigger = entity.getComponent(LevelTriggerComponent.class);
+    if (levelTrigger != null) {
       levelChanger = entity;
     }
 
