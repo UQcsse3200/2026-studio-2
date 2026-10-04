@@ -62,6 +62,8 @@ public class PlayerFactory {
     animator.addAnimation("bow_draw", 0.08f, PlayMode.NORMAL, 72f, 23f);
     animator.addAnimation("bow_hold", 0.1f, PlayMode.LOOP, 72f, 24f);
     animator.addAnimation("bow_shoot", 0.05f, PlayMode.NORMAL, 71f, 23f);
+    animator.addAnimation("instrument_draw", 0.08f, PlayMode.NORMAL, 78.4f, 37.5f);
+    animator.addAnimation("instrument_hold", 0.1f, PlayMode.LOOP, 78.4f, 37.5f);
 
     Entity player =
         new Entity()
