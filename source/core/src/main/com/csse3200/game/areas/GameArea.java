@@ -8,6 +8,7 @@ import com.csse3200.game.areas.terrain.TerrainComponent;
 import com.csse3200.game.areas.terrain.configs.LevelConfig;
 import com.csse3200.game.areas.terrain.configs.SpawnData;
 import com.csse3200.game.components.CameraComponent;
+import com.csse3200.game.components.EnemyDeathComponent;
 import com.csse3200.game.components.inventory.InventoryBarDisplay;
 import com.csse3200.game.components.item.ItemComponent;
 import com.csse3200.game.components.level.*;
@@ -143,11 +144,19 @@ public abstract class GameArea implements Disposable {
       }
     }
 
+    // listen for trigger entity activation events
     TriggerComponent trigger = entity.getComponent(TriggerComponent.class);
     if (trigger != null) {
       entity.getEvents().addListener("activateByKey", this::onButtonActivated);
     }
 
+    // listen for any spawner completion activation events
+    SpawnerComponent spawner = entity.getComponent(SpawnerComponent.class);
+    if (spawner != null) {
+      entity.getEvents().addListener("activateByKey", this::onButtonActivated);
+    }
+
+    // listen for checkpoint activations
     CheckpointComponent checkpoint = entity.getComponent(CheckpointComponent.class);
     if (checkpoint != null) {
       entity.getEvents().addListener("checkpointActivated", this::onCheckpointActivated);
@@ -165,6 +174,11 @@ public abstract class GameArea implements Disposable {
     LevelTriggerComponent levelTrigger = entity.getComponent(LevelTriggerComponent.class);
     if (levelTrigger != null) {
       levelChanger = entity;
+    }
+
+    EnemyDeathComponent enemy = entity.getComponent(EnemyDeathComponent.class);
+    if (enemy != null) {
+      entity.getEvents().trigger("updatedId", entity.getId());
     }
 
     ServiceLocator.getEntityService().register(entity);
