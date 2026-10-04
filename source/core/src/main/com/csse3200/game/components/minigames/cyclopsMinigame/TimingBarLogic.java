@@ -10,18 +10,18 @@ import org.slf4j.LoggerFactory;
 public class TimingBarLogic {
   private static final Logger logger = LoggerFactory.getLogger(TimingBarLogic.class);
 
-  private final float barStart = 0f;
-  private final float barWidth = 1f; // Acts as 100% etc.
+  final float barStart = 0f;
+  final float barWidth = 1f; // Acts as 100% etc.
   private float scoringAreaSize;
 
-  private static final float markerSpeed = 1f;
-  private int direction = 1;
+  static final float markerSpeed = 1f;
+  int direction = 1;
 
   private float markerX = barStart;
-  private float greenStart;
-  private float greenEnd;
+  float greenStart;
+  float greenEnd;
 
-  private boolean isStopped = true;
+  boolean isStopped = true;
 
   /**
    * @param scoringAreaWidth Scoring area width is designed to be a float as a percentage (e.g 0 -
