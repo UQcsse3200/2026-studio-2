@@ -211,7 +211,7 @@ public class KeyboardPlayerInputComponent extends InputComponent {
   }
 
   /**
-   * Left click swings the melee weapon, right click fires the selected arrow. Both aim toward the
+   * Left click swings the melee weapon in the current facing direction, right click fires the selected arrow toward the
    * clicked world position.
    *
    * @return whether the input was processed
@@ -226,13 +226,23 @@ public class KeyboardPlayerInputComponent extends InputComponent {
       return false;
     }
     if (button == Buttons.LEFT) {
-      return triggerAimedEvent("melee", screenX, screenY);
+      return triggerMeleeEvent();
     }
     if (button == Buttons.RIGHT) {
       rightMouseHeld = true;
       return triggerAimedEvent("shoot", screenX, screenY);
     }
     return false;
+  }
+
+  /** Swings the melee weapon in the direction the player is currently facing. */
+  private boolean triggerMeleeEvent() {
+    PlayerActions actions = entity.getComponent(PlayerActions.class);
+    if (actions == null) {
+      return false;
+    }
+    entity.getEvents().trigger("melee", actions.getFacingVector());
+    return true;
   }
 
   /**

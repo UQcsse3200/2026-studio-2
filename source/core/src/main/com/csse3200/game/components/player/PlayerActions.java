@@ -395,6 +395,16 @@ public class PlayerActions extends Component {
     }
   }
 
+  /** @return 1 if the player is facing right, -1 if facing left. */
+  public int getFacingDirection() {
+    return facingDirection;
+  }
+
+  /** @return the unit vector the player is facing, for aiming melee attacks. */
+  public Vector2 getFacingVector() {
+    return new Vector2(facingDirection, 0f);
+  }
+
   public boolean isSpeedPotionActive() {
     GameTime time = ServiceLocator.getTimeSource();
 
