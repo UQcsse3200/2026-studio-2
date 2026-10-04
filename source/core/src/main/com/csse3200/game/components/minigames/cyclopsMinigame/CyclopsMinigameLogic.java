@@ -277,6 +277,12 @@ public class CyclopsMinigameLogic extends Component {
   public void create() {
     loadSounds();
 
+    ServiceLocator.getCyclopsMinigameEventHandler().addListener("start", this::startMinigame);
+    ServiceLocator.getCyclopsMinigameEventHandler().addListener("stop", this::stopMinigame);
+    ServiceLocator.getCyclopsMinigameEventHandler().addListener("restart", this::restartMinigame);
+    ServiceLocator.getCyclopsMinigameEventHandler().addListener("success", this::timingSuccess);
+    ServiceLocator.getCyclopsMinigameEventHandler().addListener("failure", this::timingFailure);
+
     this.transitionScreenCover = new BlankTransitionScreenCover();
     ServiceLocator.getEntityService()
         .register(new Entity().addComponent(this.transitionScreenCover));

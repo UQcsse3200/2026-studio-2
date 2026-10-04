@@ -107,6 +107,7 @@ public class ServiceLocator {
     inputService = null;
     resourceService = null;
     gameEndEventHandler = null;
+    cyclopsMinigameEventHandler = null;
   }
 
   private ServiceLocator() {
