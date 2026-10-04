@@ -8,9 +8,7 @@ import com.csse3200.game.areas.terrain.TerrainFactory.TerrainType;
 import com.csse3200.game.areas.terrain.configs.levelconfigs.Level1Config;
 import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.components.gamearea.GameAreaDisplay;
-import com.csse3200.game.components.inventory.InventoryBarDisplay;
 import com.csse3200.game.components.player.KeyboardPlayerInputComponent;
-import com.csse3200.game.components.player.PlayerStatsDisplay;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.EnemyFactory;
 import com.csse3200.game.entities.factories.ItemFactory;
@@ -18,7 +16,6 @@ import com.csse3200.game.entities.factories.NPCFactory;
 import com.csse3200.game.entities.factories.ObstacleFactory;
 import com.csse3200.game.entities.factories.PlayerFactory;
 import com.csse3200.game.rendering.BackgroundRenderComponent;
-import com.csse3200.game.rendering.ForegroundRenderComponent;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.utils.math.GridPoint2Utils;
@@ -200,12 +197,6 @@ public class Level1GameArea extends GameArea {
 
   private final TerrainFactory terrainFactory;
   private final CameraComponent camera;
-  private BackgroundRenderComponent backgroundComponent;
-  private ForegroundRenderComponent foregroundComponent;
-  private boolean mapToggled = false;
-  private float viewportWidth;
-  private float viewportHeight;
-  private Vector2 resizeScale;
 
   /**
    * Initialise this Level1GameArea using the provided TerrainFactory and CameraComponent.
@@ -400,35 +391,6 @@ public class Level1GameArea extends GameArea {
     spawnEntity(background);
   }
 
-  private void toggleMap() {
-    if (!mapToggled) {
-      int worldBoundX = (int) worldBounds.x;
-      int worldBoundY = (int) worldBounds.y;
-      viewportWidth = camera.getCamera().viewportWidth;
-      viewportHeight = camera.getCamera().viewportHeight;
-
-      cameraComponent.resize(worldBoundX, worldBoundY, worldBoundX + 10);
-      Entity camera = new Entity();
-      camera.setPosition(worldBounds.x / 2, worldBounds.y / 2);
-      cameraComponent.setTarget(camera);
-
-      float scaleX = worldBoundX / viewportWidth;
-      float scaleY = worldBoundY / viewportHeight;
-      resizeScale = new Vector2(scaleX, scaleY);
-
-      backgroundComponent.scaleEntity(resizeScale, worldBounds, true);
-      player.getComponent(InventoryBarDisplay.class).hideBar();
-      player.getComponent(PlayerStatsDisplay.class).hide();
-    } else {
-      cameraComponent.resize((int) viewportWidth, (int) viewportHeight, viewportWidth);
-      cameraComponent.setTarget(player);
-      backgroundComponent.scaleEntity(resizeScale, worldBounds, false);
-      player.getComponent(InventoryBarDisplay.class).showBar();
-      player.getComponent(PlayerStatsDisplay.class).show();
-    }
-    mapToggled = !mapToggled;
-  }
-
   private void spawnTerrain() {
 
     // Background terrain
@@ -473,7 +435,6 @@ public class Level1GameArea extends GameArea {
   private Entity spawnPlayer() {
     Entity newPlayer = PlayerFactory.createPlayer();
     newPlayer.getEvents().addListener("grappleRequested", this::checkSuccessfulGrapple);
-    newPlayer.getEvents().addListener("toggleMap", this::toggleMap);
 
     input = newPlayer.getComponent(KeyboardPlayerInputComponent.class);
     if (input != null) {
@@ -618,6 +579,11 @@ public class Level1GameArea extends GameArea {
     resourceService.unloadAssets(forestTextureAtlases);
     resourceService.unloadAssets(forestSounds);
     resourceService.unloadAssets(forestMusic);
+  }
+
+  @Override
+  public void toggleLevelMap() {
+    toggleMap(worldBounds, camera, backgroundComponent);
   }
 
   /** Dispose of the game area. */

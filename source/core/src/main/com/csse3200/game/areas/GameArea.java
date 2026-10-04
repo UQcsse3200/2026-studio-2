@@ -8,11 +8,14 @@ import com.csse3200.game.areas.terrain.TerrainComponent;
 import com.csse3200.game.areas.terrain.configs.LevelConfig;
 import com.csse3200.game.areas.terrain.configs.SpawnData;
 import com.csse3200.game.components.CameraComponent;
+import com.csse3200.game.components.inventory.InventoryBarDisplay;
 import com.csse3200.game.components.item.ItemComponent;
 import com.csse3200.game.components.level.*;
 import com.csse3200.game.components.player.KeyboardPlayerInputComponent;
 import com.csse3200.game.components.player.PlayerInteractionComponent;
+import com.csse3200.game.components.player.PlayerStatsDisplay;
 import com.csse3200.game.entities.Entity;
+import com.csse3200.game.rendering.BackgroundRenderComponent;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -36,6 +39,11 @@ public abstract class GameArea implements Disposable {
   protected KeyboardPlayerInputComponent input;
   protected Entity levelChanger;
   protected LevelConfig config;
+  protected boolean mapToggled = false;
+  protected float viewportWidth;
+  protected float viewportHeight;
+  protected Vector2 resizeScale;
+  protected BackgroundRenderComponent backgroundComponent;
 
   /**
    * Creates a game area using the provided camera component.
@@ -295,6 +303,40 @@ public abstract class GameArea implements Disposable {
 
     RespawnComponent respawn = player.getComponent(RespawnComponent.class);
     respawn.queueRespawn(new Vector2(x, y));
+  }
+
+  public void toggleLevelMap() {}
+
+  public void toggleMap(
+      Vector2 worldBounds,
+      CameraComponent cameraComponent,
+      BackgroundRenderComponent backgroundComponent) {
+    if (!mapToggled) {
+      int worldBoundX = (int) worldBounds.x;
+      int worldBoundY = (int) worldBounds.y;
+      viewportWidth = cameraComponent.getCamera().viewportWidth;
+      viewportHeight = cameraComponent.getCamera().viewportHeight;
+
+      cameraComponent.resize(worldBoundX, worldBoundY, worldBoundX + 10);
+      Entity camera = new Entity();
+      camera.setPosition(worldBounds.x / 2, worldBounds.y / 2);
+      cameraComponent.setTarget(camera);
+
+      float scaleX = worldBoundX / viewportWidth;
+      float scaleY = worldBoundY / viewportHeight;
+      resizeScale = new Vector2(scaleX, scaleY);
+
+      backgroundComponent.scaleEntity(resizeScale, worldBounds, true);
+      player.getComponent(InventoryBarDisplay.class).hideBar();
+      player.getComponent(PlayerStatsDisplay.class).hide();
+    } else {
+      cameraComponent.resize((int) viewportWidth, (int) viewportHeight, viewportWidth);
+      cameraComponent.setTarget(player);
+      backgroundComponent.scaleEntity(resizeScale, worldBounds, false);
+      player.getComponent(InventoryBarDisplay.class).showBar();
+      player.getComponent(PlayerStatsDisplay.class).show();
+    }
+    mapToggled = !mapToggled;
   }
 
   public KeyboardPlayerInputComponent getInput() {

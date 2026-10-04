@@ -110,16 +110,15 @@ public class Level2GameArea extends GameArea {
   private void spawnBackground() {
     final Vector2 backgroundPos = new Vector2(-15f, -10f);
 
-    BackgroundRenderComponent backgroundComponent =
-        new BackgroundRenderComponent(camera, backgroundPos, worldBounds);
+    backgroundComponent = new BackgroundRenderComponent(camera, backgroundPos, worldBounds);
 
     // Main background
     backgroundComponent.addLayer(
         "images/Background-2.png",
         new Vector2(0.30f, 0f),
-        30f,
-        15f,
-        new Vector2(0f, 3.5f),
+        32f,
+        17f,
+        new Vector2(0f, 1.5f),
         new Vector2(0f, 0f),
         RepeatMode.NONE,
         1f,
@@ -169,7 +168,8 @@ public class Level2GameArea extends GameArea {
     spawnEntity(new Entity().addComponent(terrain));
     float tileSize = terrain.getTileSize();
     GridPoint2 tileBounds = terrain.getMapBounds(0);
-    worldBounds = new Vector2(tileBounds.x * tileSize, tileBounds.y * tileSize);
+    // worldBounds = new Vector2(tileBounds.x * tileSize, tileBounds.y * tileSize);
+    worldBounds = new Vector2(50f, 45f);
   }
 
   /** Plays the background music. */
@@ -205,6 +205,11 @@ public class Level2GameArea extends GameArea {
     resourceService.unloadAssets(level2TexturesAtlas);
     resourceService.unloadAssets(level2Sounds);
     resourceService.unloadAssets(level2Music);
+  }
+
+  @Override
+  public void toggleLevelMap() {
+    toggleMap(worldBounds, camera, backgroundComponent);
   }
 
   /** Dispose of the game area. */

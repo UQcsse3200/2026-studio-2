@@ -168,15 +168,14 @@ public class Level3GameArea extends GameArea {
   /** Creates the Level 3 background. */
   private void spawnBackground() {
     final Vector2 backgroundPos = new Vector2(-10f, -10f);
-    BackgroundRenderComponent backgroundComponent =
-        new BackgroundRenderComponent(camera, backgroundPos, worldBounds);
+    backgroundComponent = new BackgroundRenderComponent(camera, backgroundPos, worldBounds);
 
     // Complete original background image
     backgroundComponent.addLayer(
         "images/parallax/level_1_background.png",
         new Vector2(0.1f, 0f), // Parallax factor
         30f,
-        12f,
+        13f,
         new Vector2(0f, 4.25f), // Positional offset
         new Vector2(0f, 0f), // Independent velocity
         RepeatMode.NONE,
@@ -267,7 +266,7 @@ public class Level3GameArea extends GameArea {
         new Vector2(0.11f, 0f), // Parallax factor 0.12
         30f,
         10f,
-        new Vector2(0f, 5f), // Positional offset
+        new Vector2(-5f, 5f), // Positional offset
         new Vector2(0f, 0f), // Independent velocity
         RepeatMode.HORIZONTAL,
         1f,
@@ -291,7 +290,8 @@ public class Level3GameArea extends GameArea {
     spawnEntity(new Entity().addComponent(terrain));
     float tileSize = terrain.getTileSize();
     GridPoint2 tileBounds = terrain.getMapBounds(0);
-    worldBounds = new Vector2(tileBounds.x * tileSize, tileBounds.y * tileSize);
+    // worldBounds = new Vector2(tileBounds.x * tileSize, tileBounds.y * tileSize);
+    worldBounds = new Vector2(90f, 90f);
   }
 
   private void spawnRisingWater() {
@@ -359,6 +359,11 @@ public class Level3GameArea extends GameArea {
     resourceService.unloadAssets(level3TexturesAtlas);
     resourceService.unloadAssets(level3Sounds);
     resourceService.unloadAssets(level3Music);
+  }
+
+  @Override
+  public void toggleLevelMap() {
+    toggleMap(worldBounds, camera, backgroundComponent);
   }
 
   /** Dispose of the game area. */
