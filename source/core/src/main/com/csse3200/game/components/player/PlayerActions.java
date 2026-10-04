@@ -14,7 +14,7 @@ import com.csse3200.game.services.ServiceLocator;
 
 /** Action component for interacting with the player */
 public class PlayerActions extends Component {
-  private static final float JUMP_FORCE = 22f;
+  private static final float JUMP_FORCE = 23f;
   private static final Vector2 MAX_SPEED = new Vector2(5f, 5f); // Metres per second
   private static final float SPRINT_MULTIPLIER = 1.75f;
   private static final float ROPE_JUMP_MULTIPLIER = 0.7f;

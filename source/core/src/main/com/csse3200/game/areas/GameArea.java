@@ -281,6 +281,10 @@ public abstract class GameArea implements Disposable {
    */
   private void onButtonActivated(String id) {
     ArrayList<Entity> entities = triggerableEntities.get(id);
+    if (entities == null) {
+      return;
+    }
+
     for (Entity entity : entities) {
       ActivatableComponent activate = entity.getComponent(ActivatableComponent.class);
       boolean newActive = !activate.isActive();

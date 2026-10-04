@@ -15,7 +15,7 @@ class ActivatableComponentTest {
   @Test
   void testValidIds() {
     ActivatableComponent activatable1 = new ActivatableComponent(true, new String[] {"test"});
-    assertFalse(activatable1.isActive());
+    assertTrue(activatable1.isActive());
     assertTrue(activatable1.activatable);
 
     ActivatableComponent activatable2 = new ActivatableComponent(false, new String[] {"test"});

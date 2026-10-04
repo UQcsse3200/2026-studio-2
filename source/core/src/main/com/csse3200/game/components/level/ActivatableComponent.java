@@ -31,7 +31,7 @@ public class ActivatableComponent extends Component {
   public ActivatableComponent(boolean active, String[] ids) {
     boolean emptyId = checkId(ids);
 
-    this.active = active && emptyId;
+    this.active = active;
     activatable = !emptyId;
     this.ids = ids;
   }
