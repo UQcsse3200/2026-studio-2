@@ -19,6 +19,7 @@ public class BackgroundRenderComponent extends RenderComponent {
   private final Vector2 worldBounds;
   private float light;
   private float backgroundLight = 1f;
+  private boolean weather;
   private Vector2 lastCameraPos;
   private int flashOrder = 0;
 
@@ -172,45 +173,53 @@ public class BackgroundRenderComponent extends RenderComponent {
     // Since this is called every frame, changing frame rates will change speed
     layer.position.x += layer.velocity.x * ServiceLocator.getTimeSource().getDeltaTime();
     layer.position.y += layer.velocity.y * ServiceLocator.getTimeSource().getDeltaTime();
-    // Prevent black screen after flash
-    if (backgroundLight <= 0.125f) {
-      backgroundLight = 0.125f;
-    }
-    // Keep decrementing light until full night reached
-    if (backgroundLight > 0.125f) {
-      // backgroundTime -= ServiceLocator.getTimeSource().getDeltaTime() / 1000f;
-      backgroundLight = 1f - (ServiceLocator.getTimeSource().getTime() / 60000f); // 50000, 40000
-      // backgroundLight = 1; //
-    }
-    light = getDarkness();
-    // if lightning currently striking
-    if (light == 1f) {
-      // only flash background if it is dark enough, limit how bright it may flash
-      if (backgroundLight < 0.3f) {
-        backgroundLight = 0.3f;
+    weather = getWeather();
+    if (weather) {
+      // Prevent black screen after flash
+      if (backgroundLight <= 0.125f) {
+        backgroundLight = 0.125f;
       }
-    }
-    // Flash layers that flash during lightning
-    if (layer.flash) {
-      float lightning = getLightning();
-      // Get lightning order
-      if (lightning > 5f && lightning < 5.8f) {
-        flashOrder = 0;
-      } else if (lightning > 13f && lightning < 13.3f) {
-        flashOrder = 1;
+      // Keep decrementing light until full night reached
+      if (backgroundLight > 0.125f) {
+        backgroundLight -=
+            ServiceLocator.getTimeSource().getDeltaTime() / 500f; // 10x more than RenderComponent
+        // backgroundLight = 1f - (ServiceLocator.getTimeSource().getTime() / 60000f); // 50000,
+        // 40000
+        // backgroundLight = 1; //
       }
-      // Flash single lightning layer
-      if (layer.lightningOrder == flashOrder) {
-        if (light == 1f) {
-          layer.transparency = 1f;
-        } else {
-          layer.transparency = 0f;
+      light = getDarkness();
+      // if lightning currently striking
+      if (light == 1f) {
+        // only flash background if it is dark enough, limit how bright it may flash
+        if (backgroundLight < 0.3f) {
+          backgroundLight = 0.3f;
         }
       }
-    }
-    // Allow background to get darker than entities
-    if (light > backgroundLight) {
-      light = backgroundLight;
+      // Flash layers that flash during lightning
+      if (layer.flash) {
+        float lightning = getLightning();
+        // Get lightning order
+        if (lightning > 5f && lightning < 5.8f) {
+          flashOrder = 0;
+        } else if (lightning > 13f && lightning < 13.3f) {
+          flashOrder = 1;
+        }
+        // Flash single lightning layer
+        if (layer.lightningOrder == flashOrder) {
+          if (light == 1f) {
+            layer.transparency = 1f;
+          } else {
+            layer.transparency = 0f;
+          }
+        }
+      }
+      // Allow background to get darker than entities
+      if (light > backgroundLight) {
+        light = backgroundLight;
+      }
+    } else { // weather is not on
+      backgroundLight = 1f;
+      light = 1f;
     }
   }
 

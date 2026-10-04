@@ -10,8 +10,7 @@ import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.components.level.RisingWaterComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.ObstacleFactory;
-import com.csse3200.game.rendering.BackgroundRenderComponent;
-import com.csse3200.game.rendering.ForegroundRenderComponent;
+import com.csse3200.game.rendering.*;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import org.slf4j.Logger;
@@ -121,7 +120,28 @@ public class Level3GameArea extends GameArea {
     spawnConfigEntities();
     spawnRisingWater();
     spawnForeground();
+    activateWeather();
     player.setPosition(new Vector2(config.getPlayerSpawn().x, config.getPlayerSpawn().y));
+  }
+
+  private void activateWeather() {
+    for (Entity entity : ServiceLocator.getEntityService().getEntities()) {
+      if (entity.getComponent(AnimationRenderComponent.class) != null) {
+        entity.getComponent(AnimationRenderComponent.class).toggleWeather();
+      } else if (entity.getComponent(BackgroundRenderComponent.class) != null) {
+        entity.getComponent(BackgroundRenderComponent.class).toggleWeather();
+      } else if (entity.getComponent(DynamicTextureRenderComponent.class) != null) {
+        entity.getComponent(DynamicTextureRenderComponent.class).toggleWeather();
+      } else if (entity.getComponent(RotatableAnimationRenderComponent.class) != null) {
+        entity.getComponent(RotatableAnimationRenderComponent.class).toggleWeather();
+      } else if (entity.getComponent(TextureRenderComponent.class) != null) {
+        entity.getComponent(TextureRenderComponent.class).toggleWeather();
+      } else if (entity.getComponent(TiledRenderComponent.class) != null) {
+        entity.getComponent(TiledRenderComponent.class).toggleWeather();
+      } else if (entity.getComponent(GrappleSideRenderComponent.class) != null) {
+        entity.getComponent(GrappleSideRenderComponent.class).toggleWeather();
+      }
+    }
   }
 
   private void spawnForeground() {
