@@ -82,6 +82,7 @@ public class Level3GameArea extends GameArea {
     "images/fire_arrow.png",
     "images/cold_arrow.png",
     "images/necromancer_projectile.png",
+    "images/poison_potion.png",
   };
 
   private static final String[] level3TexturesAtlas = {
