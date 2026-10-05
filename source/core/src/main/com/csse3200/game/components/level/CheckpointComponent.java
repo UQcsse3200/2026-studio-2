@@ -48,11 +48,11 @@ public class CheckpointComponent extends Component {
 
   @Override
   public void create() {
-      try {
-          pointLightComponent = entity.getComponent(PointLightComponent.class);
-      } catch (Exception e) {
-          pointLightComponent = null;
-      }
+    try {
+      pointLightComponent = entity.getComponent(PointLightComponent.class);
+    } catch (Exception e) {
+      pointLightComponent = null;
+    }
   }
 
   /**
