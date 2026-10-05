@@ -375,6 +375,29 @@ class KeyboardPlayerInputComponentTest {
   }
 
   @Test
+  void shouldMeasureThePointerFromTheWheelCentreWhenTheWheelHasBeenPlaced() {
+    Graphics graphics = mock(Graphics.class);
+    when(graphics.getWidth()).thenReturn(800);
+    when(graphics.getHeight()).thenReturn(600);
+    Gdx.graphics = graphics;
+    KeyboardPlayerInputComponent component = new KeyboardPlayerInputComponent();
+    ArrowWheelComponent wheel = new ArrowWheelComponent();
+    Entity player = new Entity().addComponent(component).addComponent(wheel);
+    wheel.create();
+    component.keyDown(Keys.TAB);
+    // Wheel in the bottom-left corner: 150px from the left and 450px from the top.
+    wheel.setScreenCentre(150f, 450f);
+
+    // Directly above the wheel's centre, which is nowhere near the screen centre.
+    component.mouseMoved(150, 350);
+    assertEquals(ArrowType.STANDARD, wheel.getHighlighted());
+
+    // Lower right of the wheel's centre.
+    component.mouseMoved(150 + 80, 450 + 50);
+    assertEquals(ArrowType.FIRE, wheel.getHighlighted());
+  }
+
+  @Test
   void shouldIgnoreGameplayKeysWhileShopIsOpen() {
     ServiceLocator.registerEntityService(new EntityService());
     KeyboardPlayerInputComponent component = new KeyboardPlayerInputComponent();
