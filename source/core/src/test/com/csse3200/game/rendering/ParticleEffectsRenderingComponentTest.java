@@ -39,13 +39,24 @@ class ParticleEffectsRenderingComponentTest {
 
   @Test
   void shouldRegisterAndUnregisterWithRenderService() {
-    try (MockedConstruction<ShapeRenderer> renderers = mockConstruction(ShapeRenderer.class)) {
-      ParticleEffectsRenderingComponent component = new ParticleEffectsRenderingComponent();
-      Entity entity = new Entity().addComponent(component);
+    ServiceLocator.registerTimeSource(gameTime);
+    when(batch.getProjectionMatrix()).thenReturn(new Matrix4());
+    when(gameTime.getTime()).thenReturn(1000L);
 
+    try (MockedConstruction<ShapeRenderer> renderers = mockConstruction(ShapeRenderer.class)) {
+      Entity entity =
+          new Entity()
+              .addComponent(new BurnStatsComponent())
+              .addComponent(new ParticleEffectsRenderingComponent());
       entity.create();
+      entity.getComponent(BurnStatsComponent.class).applyBurn(1f, 5f);
+
+      ParticleEffectsRenderingComponent component =
+          entity.getComponent(ParticleEffectsRenderingComponent.class);
+      component.render(batch);
       component.dispose();
 
+      assertEquals(1, renderers.constructed().size());
       verify(renderService).register(component);
       verify(renderService).unregister(component);
       verify(renderers.constructed().get(0)).dispose();
