@@ -22,12 +22,12 @@ public class Level3Config extends LevelConfig {
   public Level3Config(Entity player) {
     // Textures
     // TFP = Texture File Path
-    platformTFP = "images/Platform_level-3.png";
-    movingPlatformTFP = "images/Platform_level-3.png";
-    crumblingPlatformTFP = "images/Platform-crumbling-level-3.png";
-    triggerablePlatformTFP = "images/Platform_level-3.png";
-    ledgesTFP = "images/Platform_level-3.png";
-    groundTFP = "images/tile-level3.png";
+    platformTFP = "images/terrain/Level_3/Platform_level-3.png";
+    movingPlatformTFP = "images/terrain/Level_3/Platform_level-3.png";
+    crumblingPlatformTFP = "images/terrain/Level_3/Platform-crumbling-level-3.png";
+    triggerablePlatformTFP = "images/terrain/Level_3/Platform_level-3.png";
+    ledgesTFP = "images/terrain/Level_3/Platform_level-3.png";
+    groundTFP = "images/terrain/Level_3/tile-level3.png";
 
     playerSpawn = new GridPoint2(9, 6);
     winConditionSpawn = new GridPoint2(33, 8);

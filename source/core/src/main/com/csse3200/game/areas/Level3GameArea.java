@@ -31,11 +31,11 @@ public class Level3GameArea extends GameArea {
 
   /** Textures used by the level 2 game area. */
   private static final String[] level3Textures = {
-    "images/scroll_bg.png",
+    "images/ui/scroll_bg.png",
     // Level 3 background
-    "images/Background-2.png",
-    "images/Platform_level-3.png",
-    "images/Platform-crumbling-level-3.png",
+    //"images/Background-2.png",
+    "images/terrain/Level_3/Platform_level-3.png",
+    "images/terrain/Level_3/Platform-crumbling-level-3.png",
     "images/parallax/level_1_background.png",
     "images/parallax/level_1_furthest.png",
     "images/parallax/level_1_clouds.png",
@@ -46,13 +46,14 @@ public class Level3GameArea extends GameArea {
     "images/parallax/rain_small.png",
 
     // Level 3 ground tile
-    "images/tile-level3.png",
-    "images/water tile.png",
+    "images/terrain/Level_3/tile-level3.png",
+    "images/terrain/Level_3/water tile.png",
 
     // Transparent texture used for the physics-only floor
-    "images/transparent.png",
+    "images/ui/transparent.png",
 
     // Existing game textures
+          /*
     "images/black_roof.png",
     "images/purple_heart.png",
     "images/DevGridTile.png",
@@ -71,8 +72,10 @@ public class Level3GameArea extends GameArea {
     "images/iso_grass_1.png",
     "images/iso_grass_2.png",
     "images/iso_grass_3.png",
-    "images/spiky_ball.png",
-    "images/spiky_ball_trap.png",
+     */
+          "images/terrain/Level_1/Level_1_Spike.png",
+    "images/traps/spiky_ball.png",
+    "images/traps/spiky_ball_trap.png",
     "images/checkpoint_lit.png",
     "images/checkpoint_unlit.png",
     ItemFactory.WHEEL_TOKEN_TEXTURE,
@@ -90,11 +93,12 @@ public class Level3GameArea extends GameArea {
 
   private static final String[] level3TexturesAtlas = {
     "images/terrain_iso_grass.atlas",
-    "images/in_level_button.atlas",
-    "images/skeleton_archer.atlas",
-    "images/skeleton_warrior.atlas",
-    "images/necromancer.atlas",
-    "images/vulture.atlas",
+    "images/enemies/skeleton_archer.atlas",
+    "images/enemies/skeleton_warrior.atlas",
+    "images/enemies/necromancer.atlas",
+    "images/enemies/vulture.atlas",
+          "images/terrain/Level_1/Level_1_checkpoint.atlas",
+          "images/ui/in_level_button.atlas"
   };
 
   private static final String[] level3Sounds = {"sounds/Impact4.ogg"};

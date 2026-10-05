@@ -455,7 +455,7 @@ public class ObstacleFactory {
 
     Entity water =
         new Entity()
-            .addComponent(new TiledRenderComponent("images/water tile.png", 1f))
+            .addComponent(new TiledRenderComponent("images/terrain/Level_3/water tile.png", 1f))
             .addComponent(new PhysicsComponent().setBodyType(BodyType.KinematicBody))
             .addComponent(new ActivatableComponent(true, new String[] {"waterStop", "waterStart"}))
             .addComponent(new RisingWaterComponent(speed, initialHeight, waterHitbox));
