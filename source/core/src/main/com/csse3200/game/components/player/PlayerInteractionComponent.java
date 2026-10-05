@@ -7,6 +7,7 @@ import com.csse3200.game.components.item.GoldPickupComponent;
 import com.csse3200.game.components.item.Item;
 import com.csse3200.game.components.item.ItemComponent;
 import com.csse3200.game.components.item.ItemType;
+import com.csse3200.game.components.item.WheelTokenPickupComponent;
 import com.csse3200.game.components.npc.ShopNpcComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.ItemFactory;
@@ -40,8 +41,8 @@ public class PlayerInteractionComponent extends Component {
   }
 
   /**
-   * Interacts with the nearest shopkeeper, gold coin, or item. Pressing interact again while the
-   * shop is open closes it.
+   * Interacts with the nearest shopkeeper, gold coin, wheel token, or item. Pressing interact again
+   * while the shop is open closes it.
    *
    * @return true if a shop was opened or closed, or an item was picked up
    */
@@ -60,7 +61,8 @@ public class PlayerInteractionComponent extends Component {
 
     Entity gold = findNearestGold();
     Entity item = findNearestItem();
-    Entity target = nearer(gold, item);
+    Entity token = findNearestWheelToken();
+    Entity target = nearer(nearer(gold, item), token);
     if (target == null) {
       logger.debug("No interactable entity in range of {}", entity);
       entity.getEvents().trigger("interactionFailed");
@@ -68,6 +70,9 @@ public class PlayerInteractionComponent extends Component {
     }
     if (target.getComponent(GoldPickupComponent.class) != null) {
       return pickupGold(target);
+    }
+    if (target.getComponent(WheelTokenPickupComponent.class) != null) {
+      return pickupWheelToken(target);
     }
     return pickup(target);
   }
@@ -136,6 +141,26 @@ public class PlayerInteractionComponent extends Component {
     inventory.addGold(amount);
     goldEntity.dispose();
     entity.getEvents().trigger("goldPickedUp", amount);
+    return true;
+  }
+
+  /**
+   * Collects a wheel token, removing it from the world. The screen opens Spin the Wheel in
+   * response.
+   *
+   * @param tokenEntity wheel token entity
+   * @return true if the token was collected
+   */
+  boolean pickupWheelToken(Entity tokenEntity) {
+    if (tokenEntity == null
+        || !isInRange(tokenEntity)
+        || tokenEntity.getComponent(WheelTokenPickupComponent.class) == null) {
+      entity.getEvents().trigger("interactionFailed");
+      return false;
+    }
+
+    tokenEntity.dispose();
+    entity.getEvents().trigger("wheelTokenPickedUp");
     return true;
   }
 
@@ -232,6 +257,15 @@ public class PlayerInteractionComponent extends Component {
    */
   Entity findNearestGold() {
     return findNearest(GoldPickupComponent.class);
+  }
+
+  /**
+   * Finds the nearest wheel token within interaction range.
+   *
+   * @return nearest wheel token, or null if none are in range
+   */
+  Entity findNearestWheelToken() {
+    return findNearest(WheelTokenPickupComponent.class);
   }
 
   private Entity nearer(Entity first, Entity second) {

@@ -98,6 +98,10 @@ public class ArrowProjectileComponent extends Component {
 
   /** Lets a fired arrow pass through the player instead of shoving them. */
   private void ignorePlayerCollisions(Body body) {
+    // Entity component creation order is unspecified: the hitbox may not have a fixture yet.
+    if (hitboxComponent != null) {
+      hitboxComponent.excludeCollisionLayers(PhysicsLayer.PLAYER);
+    }
     for (Fixture fixture : body.getFixtureList()) {
       Filter filter = fixture.getFilterData();
       filter.maskBits &= ~PhysicsLayer.PLAYER;
@@ -152,8 +156,8 @@ public class ArrowProjectileComponent extends Component {
     }
 
     Object userData = other.getBody().getUserData();
-    if (userData instanceof BodyUserData) {
-      Entity hitEntity = ((BodyUserData) userData).entity;
+    if (userData instanceof BodyUserData bodyUserData) {
+      Entity hitEntity = bodyUserData.entity;
       if (hitEntity != null && hitEntity == shooter) {
         return;
       }

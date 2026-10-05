@@ -56,10 +56,11 @@ public abstract class GameArea implements Disposable {
   public void dispose() {
     // Only the player carries state between areas. World pickups belong to this area.
     areaEntities.remove(player);
-    Array<Entity> registeredEntities = ServiceLocator.getEntityService().getEntities();
+
+    // Skip collected pickups, as they're already disposed and disposing twice crashes physics
+    Array<Entity> registered = ServiceLocator.getEntityService().getEntities();
     for (Entity entity : areaEntities) {
-      // Collected pickups have already disposed their components and unregistered themselves.
-      if (registeredEntities.contains(entity, true)) {
+      if (registered.contains(entity, true)) {
         entity.dispose();
       }
     }

@@ -16,6 +16,7 @@ import com.csse3200.game.components.item.GoldPickupComponent;
 import com.csse3200.game.components.item.Item;
 import com.csse3200.game.components.item.ItemComponent;
 import com.csse3200.game.components.item.ItemType;
+import com.csse3200.game.components.item.WheelTokenPickupComponent;
 import com.csse3200.game.components.item.weapons.bow.arrow.Arrow;
 import com.csse3200.game.components.npc.ShopNpcComponent;
 import com.csse3200.game.entities.Entity;
@@ -318,6 +319,21 @@ class PlayerInteractionComponentTest {
   }
 
   @Test
+  void shouldPickUpWheelTokenAndAskForTheWheel() {
+    Entity player = createPlayer(new InventoryComponent(0));
+    spawnWheelToken(new Vector2(0.5f, 0f));
+
+    boolean[] picked = {false};
+    player.getEvents().addListener("wheelTokenPickedUp", () -> picked[0] = true);
+
+    PlayerInteractionComponent interaction = player.getComponent(PlayerInteractionComponent.class);
+
+    assertTrue(interaction.interact());
+    assertTrue(picked[0]);
+    assertNull(interaction.findNearestWheelToken());
+  }
+
+  @Test
   void shouldPreferShopNpcOverGold() {
     Entity player = createPlayer(new InventoryComponent(0));
     spawnGold(new Vector2(0.5f, 0f));
@@ -371,5 +387,16 @@ class PlayerInteractionComponentTest {
     gold.setPosition(position);
     ServiceLocator.getEntityService().register(gold);
     return gold;
+  }
+
+  Entity spawnWheelToken(Vector2 position) {
+    Entity token =
+        new Entity()
+            .addComponent(new PhysicsComponent())
+            .addComponent(new HitboxComponent())
+            .addComponent(new WheelTokenPickupComponent());
+    token.setPosition(position);
+    ServiceLocator.getEntityService().register(token);
+    return token;
   }
 }
