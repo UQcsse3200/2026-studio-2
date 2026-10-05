@@ -46,7 +46,7 @@ loadScripts(document, 'script');</script>
 <li>
 <p>Detail:</p>
 <ul>
-<li>Field</li>
+<li><a href="#field-detail">Field</a></li>
 <li><a href="#constructor-detail">Constr</a></li>
 <li><a href="#method-detail">Method</a></li>
 </ul>
@@ -64,7 +64,7 @@ loadScripts(document, 'script');</script>
 </ul>
 <ul class="sub-nav-list">
 <li>Detail:&nbsp;</li>
-<li>Field&nbsp;|&nbsp;</li>
+<li><a href="#field-detail">Field</a>&nbsp;|&nbsp;</li>
 <li><a href="#constructor-detail">Constr</a>&nbsp;|&nbsp;</li>
 <li><a href="#method-detail">Method</a></li>
 </ul>
@@ -100,6 +100,20 @@ loadScripts(document, 'script');</script>
 <li>
 <section class="field-summary" id="field-summary">
 <h2>Field Summary</h2>
+<div class="caption"><span>Fields</span></div>
+<div class="summary-table three-column-summary">
+<div class="table-header col-first">Modifier and Type</div>
+<div class="table-header col-second">Field</div>
+<div class="table-header col-last">Description</div>
+<div class="col-first even-row-color"><code>static final float</code></div>
+<div class="col-second even-row-color"><code><a href="#ATLAS_HEIGHT" class="member-name-link">ATLAS_HEIGHT</a></code></div>
+<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><code>static final float</code></div>
+<div class="col-second odd-row-color"><code><a href="#ATLAS_WIDTH" class="member-name-link">ATLAS_WIDTH</a></code></div>
+<div class="col-last odd-row-color">
+<div class="block">World size of an atlas-based checkpoint (each frame is 709 x 890, about 4:5).</div>
+</div>
+</div>
 <div class="inherited-list">
 <h3 id="fields-inherited-from-class-com.csse3200.game.components.Component">Fields inherited from class&nbsp;com.csse3200.game.components.<a href="../Component.html" title="class in com.csse3200.game.components">Component</a></h3>
 <code><a href="../Component.html#enabled">enabled</a>, <a href="../Component.html#entity">entity</a></code></div>
@@ -117,6 +131,12 @@ loadScripts(document, 'script');</script>
  com.badlogic.gdx.math.GridPoint2&nbsp;position)</code></div>
 <div class="col-last even-row-color">
 <div class="block">Constructor for a new CheckpointComponent</div>
+</div>
+<div class="col-constructor-name odd-row-color"><code><a href="#%3Cinit%3E(boolean,com.badlogic.gdx.math.GridPoint2,java.lang.String)" class="member-name-link">CheckpointComponent</a><wbr>(boolean&nbsp;collected,
+ com.badlogic.gdx.math.GridPoint2&nbsp;position,
+ <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;atlas)</code></div>
+<div class="col-last odd-row-color">
+<div class="block">Constructor for a checkpoint with a level-specific animated design.</div>
 </div>
 </div>
 </section>
@@ -145,8 +165,14 @@ loadScripts(document, 'script');</script>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isActive()" class="member-name-link">isActive</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#update()" class="member-name-link">update</a>()</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setTorch(com.csse3200.game.entities.Entity)" class="member-name-link">setTorch</a><wbr>(<a href="../../entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;torch)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Gives this checkpoint the statue entity that represents it, so activating the checkpoint can
+ switch that same entity to its lit frame rather than drawing a second entity over the top.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#update()" class="member-name-link">update</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Check if player position comes in range of checkpoint position.</div>
 </div>
 </div>
@@ -164,6 +190,43 @@ loadScripts(document, 'script');</script>
 </section>
 <section class="details">
 <ul class="details-list">
+<!-- ============ FIELD DETAIL =========== -->
+<li>
+<section class="field-details" id="field-detail">
+<h2>Field Details</h2>
+<ul class="member-list">
+<li>
+<section class="detail" id="ATLAS_WIDTH">
+<h3>ATLAS_WIDTH</h3>
+<div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type">float</span>&nbsp;<span class="element-name">ATLAS_WIDTH</span></div>
+<div class="block">World size of an atlas-based checkpoint (each frame is 709 x 890, about 4:5).</div>
+<dl class="notes">
+<dt>See Also:</dt>
+<dd>
+<ul class="tag-list">
+<li><a href="../../../../../constant-values.html#com.csse3200.game.components.level.CheckpointComponent.ATLAS_WIDTH">Constant Field Values</a></li>
+</ul>
+</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="ATLAS_HEIGHT">
+<h3>ATLAS_HEIGHT</h3>
+<div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type">float</span>&nbsp;<span class="element-name">ATLAS_HEIGHT</span></div>
+<dl class="notes">
+<dt>See Also:</dt>
+<dd>
+<ul class="tag-list">
+<li><a href="../../../../../constant-values.html#com.csse3200.game.components.level.CheckpointComponent.ATLAS_HEIGHT">Constant Field Values</a></li>
+</ul>
+</dd>
+</dl>
+</section>
+</li>
+</ul>
+</section>
+</li>
 <!-- ========= CONSTRUCTOR DETAIL ======== -->
 <li>
 <section class="constructor-details" id="constructor-detail">
@@ -182,6 +245,21 @@ loadScripts(document, 'script');</script>
 </dl>
 </section>
 </li>
+<li>
+<section class="detail" id="&lt;init&gt;(boolean,com.badlogic.gdx.math.GridPoint2,java.lang.String)">
+<h3>CheckpointComponent</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">CheckpointComponent</span><wbr><span class="parameters">(boolean&nbsp;collected,
+ com.badlogic.gdx.math.GridPoint2&nbsp;position,
+ <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;atlas)</span></div>
+<div class="block">Constructor for a checkpoint with a level-specific animated design.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>collected</code> - if the checkpoint has been collected or not</dd>
+<dd><code>position</code> - the position of the checkpoint</dd>
+<dd><code>atlas</code> - atlas with "unlit" and "lit" regions, or null to use the default textures</dd>
+</dl>
+</section>
+</li>
 </ul>
 </section>
 </li>
@@ -190,6 +268,18 @@ loadScripts(document, 'script');</script>
 <section class="method-details" id="method-detail">
 <h2>Method Details</h2>
 <ul class="member-list">
+<li>
+<section class="detail" id="setTorch(com.csse3200.game.entities.Entity)">
+<h3>setTorch</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setTorch</span><wbr><span class="parameters">(<a href="../../entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;torch)</span></div>
+<div class="block">Gives this checkpoint the statue entity that represents it, so activating the checkpoint can
+ switch that same entity to its lit frame rather than drawing a second entity over the top.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>torch</code> - entity with an <a href="../../rendering/AnimationRenderComponent.html" title="class in com.csse3200.game.rendering"><code>AnimationRenderComponent</code></a> that has "unlit" and "lit"</dd>
+</dl>
+</section>
+</li>
 <li>
 <section class="detail" id="activate()">
 <h3>activate</h3>

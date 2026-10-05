@@ -164,38 +164,58 @@ implements <a href="../PrimaryWeapon.html" title="interface in com.csse3200.game
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Called when the entity is created and registered.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../../../projectile/ArrowType.html" title="enum class in com.csse3200.game.components.projectile">ArrowType</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getArrowType()" class="member-name-link">getArrowType</a>()</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>float</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getArrowGravityY()" class="member-name-link">getArrowGravityY</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../../../projectile/ArrowType.html" title="enum class in com.csse3200.game.components.projectile">ArrowType</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getArrowType()" class="member-name-link">getArrowType</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>float</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getChargeSpeedMultiplier()" class="member-name-link">getChargeSpeedMultiplier</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns the speed multiplier a shot released right now would get, scaled linearly by how long
+ the draw has been held (from <code>MIN_CHARGE_SPEED_FACTOR</code> at 0s up to full at <code>MAX_CHARGE_SECONDS</code>).</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>float</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getCooldownRemaining()" class="member-name-link">getCooldownRemaining</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Gets remaining weapon cooldown time.</div>
 </div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>float</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getLaunchSpeed()" class="member-name-link">getLaunchSpeed</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>com.badlogic.gdx.math.Vector2</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getSpawnPosition(com.badlogic.gdx.math.Vector2)" class="member-name-link">getSpawnPosition</a><wbr>(com.badlogic.gdx.math.Vector2&nbsp;direction)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns where an arrow shot in the given direction appears, just in front of the shooter.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isReady()" class="member-name-link">isReady</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isCharging()" class="member-name-link">isCharging</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isReady()" class="member-name-link">isReady</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Checks whether the weapon is ready to strike or off cooldown.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#releaseCharge(com.badlogic.gdx.math.Vector2)" class="member-name-link">releaseCharge</a><wbr>(com.badlogic.gdx.math.Vector2&nbsp;direction)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#releaseCharge(com.badlogic.gdx.math.Vector2)" class="member-name-link">releaseCharge</a><wbr>(com.badlogic.gdx.math.Vector2&nbsp;direction)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Fires the currently charging shot, if any, with speed scaled linearly by how long it was held
  (from <code>MIN_CHARGE_SPEED_FACTOR</code> at 0s up to full speed at <code>MAX_CHARGE_SECONDS</code>).</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setArrowType(com.csse3200.game.components.projectile.ArrowType)" class="member-name-link">setArrowType</a><wbr>(<a href="../../../projectile/ArrowType.html" title="enum class in com.csse3200.game.components.projectile">ArrowType</a>&nbsp;arrowType)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setArrowType(com.csse3200.game.components.projectile.ArrowType)" class="member-name-link">setArrowType</a><wbr>(<a href="../../../projectile/ArrowType.html" title="enum class in com.csse3200.game.components.projectile">ArrowType</a>&nbsp;arrowType)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Swaps the active arrow type fired by the bow.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#startCharge(com.badlogic.gdx.math.Vector2)" class="member-name-link">startCharge</a><wbr>(com.badlogic.gdx.math.Vector2&nbsp;direction)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#startCharge(com.badlogic.gdx.math.Vector2)" class="member-name-link">startCharge</a><wbr>(com.badlogic.gdx.math.Vector2&nbsp;direction)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Begins charging a shot, e.g.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#update()" class="member-name-link">update</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#update()" class="member-name-link">update</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Called once per frame of the game, and should be used for most component logic.</div>
 </div>
 </div>
@@ -322,6 +342,57 @@ implements <a href="../PrimaryWeapon.html" title="interface in com.csse3200.game
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>direction</code> - Aim direction at release time.</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="isCharging()">
+<h3>isCharging</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">isCharging</span>()</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>true while a shot is being drawn and has not yet been released or cancelled</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="getChargeSpeedMultiplier()">
+<h3>getChargeSpeedMultiplier</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">float</span>&nbsp;<span class="element-name">getChargeSpeedMultiplier</span>()</div>
+<div class="block">Returns the speed multiplier a shot released right now would get, scaled linearly by how long
+ the draw has been held (from <code>MIN_CHARGE_SPEED_FACTOR</code> at 0s up to full at <code>MAX_CHARGE_SECONDS</code>). Returns the minimum factor when nothing is charging.</div>
+</section>
+</li>
+<li>
+<section class="detail" id="getLaunchSpeed()">
+<h3>getLaunchSpeed</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">float</span>&nbsp;<span class="element-name">getLaunchSpeed</span>()</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>the launch speed a shot released right now would have, in world units per second</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="getArrowGravityY()">
+<h3>getArrowGravityY</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">float</span>&nbsp;<span class="element-name">getArrowGravityY</span>()</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>the y acceleration the current arrow type experiences in flight</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="getSpawnPosition(com.badlogic.gdx.math.Vector2)">
+<h3>getSpawnPosition</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">com.badlogic.gdx.math.Vector2</span>&nbsp;<span class="element-name">getSpawnPosition</span><wbr><span class="parameters">(com.badlogic.gdx.math.Vector2&nbsp;direction)</span></div>
+<div class="block">Returns where an arrow shot in the given direction appears, just in front of the shooter.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>direction</code> - aim direction (does not need to be normalised)</dd>
+<dt>Returns:</dt>
+<dd>world spawn position</dd>
 </dl>
 </section>
 </li>
