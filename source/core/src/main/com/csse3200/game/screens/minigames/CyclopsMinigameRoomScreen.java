@@ -1,5 +1,7 @@
 package com.csse3200.game.screens.minigames;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
@@ -95,7 +97,12 @@ public class CyclopsMinigameRoomScreen extends ScreenAdapter {
 
   @Override
   public void render(float delta) {
-    // And update to check for minigame start??
+    if (initalIntro
+        && !textBoxComponent.isDismissed()
+        && Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) {
+      textBoxComponent.advance();
+    }
+
     if (initalIntro && textBoxComponent.isDismissed()) {
       initalIntro = false;
       ServiceLocator.getCyclopsMinigameEventHandler().trigger("start");
@@ -162,7 +169,8 @@ public class CyclopsMinigameRoomScreen extends ScreenAdapter {
             Align.center,
             List.of(
                 "Hmm... there's a cyclops in the way, I'll need to get past...",
-                "...I'll need to \"LEFT_CLICK\" to each of those statues at the right time"));
+                "...I'll need to \"LEFT_CLICK\" to each of those statues at the right time"
+                + " (Left-click or TAB to continue)"));
     textBoxComponent.create();
 
     InputComponent inputComponent =
