@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+import box2dLight.RayHandler;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.GridPoint2;
@@ -15,6 +16,7 @@ import com.csse3200.game.areas.terrain.TerrainComponent;
 import com.csse3200.game.areas.terrain.TerrainFactory;
 import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.components.item.ItemType;
+import com.csse3200.game.components.lighting.PointLightComponent;
 import com.csse3200.game.components.maingame.MainGameActions;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
@@ -38,6 +40,8 @@ class SandboxGameScreenTest {
     SandboxGameScreen screen = null;
     // Only native rendering and terrain construction are replaced; services and entities are real.
     try (var renders = mockStatic(RenderFactory.class);
+        var rayHandlers = mockConstruction(RayHandler.class);
+        var pointLights = mockConstruction(PointLightComponent.class);
         var terrainFactories =
             mockConstruction(
                 TerrainFactory.class,
@@ -63,6 +67,9 @@ class SandboxGameScreenTest {
       screen = new SandboxGameScreen(game);
       EntityService entities = ServiceLocator.getEntityService();
       ResourceService resources = ServiceLocator.getResourceService();
+      assertNotNull(ServiceLocator.getLightingService());
+      assertNotNull(ServiceLocator.getLightingService().getEngine());
+      assertNotNull(ServiceLocator.getLightingService().getEngine().getRayHandler());
       assertFalse(entities.getEntities().isEmpty());
       assertTrue(stage.getActors().size > 0);
       for (ItemType type : ItemType.values()) {

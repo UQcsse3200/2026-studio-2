@@ -2,16 +2,21 @@ package com.csse3200.game.entities.factories;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockConstruction;
+import static org.mockito.Mockito.when;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.item.weapons.bow.BowComponent;
+import com.csse3200.game.components.lighting.PointLightComponent;
 import com.csse3200.game.components.projectile.ArrowProjectileComponent;
 import com.csse3200.game.components.projectile.ArrowType;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.extensions.GameExtension;
+import com.csse3200.game.lighting.LightingEngine;
+import com.csse3200.game.lighting.LightingService;
 import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.physics.PhysicsService;
 import com.csse3200.game.physics.components.HitboxComponent;
@@ -23,6 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.MockedConstruction;
 
 @ExtendWith(GameExtension.class)
 class PlayerProjectileIntegrationTest {
@@ -36,6 +42,12 @@ class PlayerProjectileIntegrationTest {
     ServiceLocator.registerPhysicsService(physics);
     ServiceLocator.registerEntityService(entities);
     ServiceLocator.registerRenderService(mock(RenderService.class));
+
+    LightingEngine lightingEngine = mock(LightingEngine.class);
+    when(lightingEngine.getRayHandler()).thenReturn(mock(box2dLight.RayHandler.class));
+    LightingService lightingService = mock(LightingService.class);
+    when(lightingService.getEngine()).thenReturn(lightingEngine);
+    ServiceLocator.registerLightingService(lightingService);
   }
 
   @AfterEach
@@ -89,50 +101,59 @@ class PlayerProjectileIntegrationTest {
 
   @Test
   void shouldApplyFireDamageAndOneBurnEvent() {
-    Entity arrow = ProjectileFactory.createFireArrow(Vector2.Zero, Vector2.X);
-    entities.register(arrow);
-    Entity enemy = enemy();
-    List<Vector2> effects = new ArrayList<>();
-    enemy
-        .getEvents()
-        .addListener(
-            "applyBurn",
-            (Float damage, Float duration) -> effects.add(new Vector2(damage, duration)));
-    impact(arrow, enemy);
-    impact(arrow, enemy);
-    assertEquals(25, enemy.getComponent(CombatStatsComponent.class).getHealth());
-    assertEquals(List.of(new Vector2(10f, 5f)), effects);
+    try (MockedConstruction<PointLightComponent> ignored =
+        mockConstruction(PointLightComponent.class)) {
+      Entity arrow = ProjectileFactory.createFireArrow(Vector2.Zero, Vector2.X);
+      entities.register(arrow);
+      Entity enemy = enemy();
+      List<Vector2> effects = new ArrayList<>();
+      enemy
+          .getEvents()
+          .addListener(
+              "applyBurn",
+              (Float damage, Float duration) -> effects.add(new Vector2(damage, duration)));
+      impact(arrow, enemy);
+      impact(arrow, enemy);
+      assertEquals(25, enemy.getComponent(CombatStatsComponent.class).getHealth());
+      assertEquals(List.of(new Vector2(10f, 5f)), effects);
+    }
   }
 
   @Test
   void shouldApplyIceDamageAndOneSlowEvent() {
-    Entity arrow = ProjectileFactory.createIceArrow(Vector2.Zero, Vector2.X);
-    entities.register(arrow);
-    Entity enemy = enemy();
-    List<Vector2> effects = new ArrayList<>();
-    enemy
-        .getEvents()
-        .addListener(
-            "applySlow",
-            (Float factor, Float duration) -> effects.add(new Vector2(factor, duration)));
-    impact(arrow, enemy);
-    impact(arrow, enemy);
-    assertEquals(22, enemy.getComponent(CombatStatsComponent.class).getHealth());
-    assertEquals(List.of(new Vector2(0.5f, 5f)), effects);
+    try (MockedConstruction<PointLightComponent> ignored =
+        mockConstruction(PointLightComponent.class)) {
+      Entity arrow = ProjectileFactory.createIceArrow(Vector2.Zero, Vector2.X);
+      entities.register(arrow);
+      Entity enemy = enemy();
+      List<Vector2> effects = new ArrayList<>();
+      enemy
+          .getEvents()
+          .addListener(
+              "applySlow",
+              (Float factor, Float duration) -> effects.add(new Vector2(factor, duration)));
+      impact(arrow, enemy);
+      impact(arrow, enemy);
+      assertEquals(22, enemy.getComponent(CombatStatsComponent.class).getHealth());
+      assertEquals(List.of(new Vector2(0.5f, 5f)), effects);
+    }
   }
 
   @Test
   void shouldScaleChargedFireAndIceLaunchSpeeds() {
-    Entity fire = ProjectileFactory.createFireArrow(null, Vector2.Zero, Vector2.Y, 1.5f);
-    Entity ice = ProjectileFactory.createIceArrow(null, Vector2.Zero, Vector2.Y, 0.5f);
-    entities.register(fire);
-    entities.register(ice);
-    assertEquals(
-        new Vector2(0f, 27f),
-        fire.getComponent(PhysicsComponent.class).getBody().getLinearVelocity());
-    assertEquals(
-        new Vector2(0f, 8f),
-        ice.getComponent(PhysicsComponent.class).getBody().getLinearVelocity());
+    try (MockedConstruction<PointLightComponent> ignored =
+        mockConstruction(PointLightComponent.class)) {
+      Entity fire = ProjectileFactory.createFireArrow(null, Vector2.Zero, Vector2.Y, 1.5f);
+      Entity ice = ProjectileFactory.createIceArrow(null, Vector2.Zero, Vector2.Y, 0.5f);
+      entities.register(fire);
+      entities.register(ice);
+      assertEquals(
+          new Vector2(0f, 27f),
+          fire.getComponent(PhysicsComponent.class).getBody().getLinearVelocity());
+      assertEquals(
+          new Vector2(0f, 8f),
+          ice.getComponent(PhysicsComponent.class).getBody().getLinearVelocity());
+    }
   }
 
   @Test

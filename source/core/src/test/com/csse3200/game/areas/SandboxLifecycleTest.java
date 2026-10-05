@@ -16,9 +16,12 @@ import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.components.inventory.InventoryComponent;
 import com.csse3200.game.components.item.ItemComponent;
 import com.csse3200.game.components.item.ItemType;
+import com.csse3200.game.components.lighting.PointLightComponent;
 import com.csse3200.game.components.sandbox.SandboxEnemyType;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.input.InputService;
+import com.csse3200.game.lighting.LightingEngine;
+import com.csse3200.game.lighting.LightingService;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
@@ -31,16 +34,23 @@ import java.util.Locale;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedConstruction;
 
 class SandboxLifecycleTest extends UiTestSupport {
   private SandboxGameArea area;
   private ResourceService realResources;
+  private MockedConstruction<PointLightComponent> pointLights;
 
   @BeforeEach
   void createSandbox() {
     ServiceLocator.registerInputService(new InputService());
     realResources = new ResourceService();
     ServiceLocator.registerResourceService(realResources);
+    LightingEngine lightingEngine = mock(LightingEngine.class);
+    when(lightingEngine.getRayHandler()).thenReturn(mock(box2dLight.RayHandler.class));
+    LightingService lightingService = mock(LightingService.class);
+    when(lightingService.getEngine()).thenReturn(lightingEngine);
+    ServiceLocator.registerLightingService(lightingService);
     TerrainFactory factory = mock(TerrainFactory.class);
     TerrainComponent terrain = mock(TerrainComponent.class);
     when(factory.createTerrain(any())).thenReturn(terrain);
@@ -53,6 +63,7 @@ class SandboxLifecycleTest extends UiTestSupport {
               return new Vector2(tile.x, tile.y);
             });
     area = new SandboxGameArea(factory, new CameraComponent());
+    pointLights = mockConstruction(PointLightComponent.class);
     area.create();
   }
 
@@ -64,6 +75,9 @@ class SandboxLifecycleTest extends UiTestSupport {
     entities.dispose();
     if (realResources != null) {
       realResources.dispose();
+    }
+    if (pointLights != null) {
+      pointLights.close();
     }
   }
 
