@@ -171,9 +171,9 @@ public class KeyboardPlayerInputComponent extends InputComponent {
         }
         unpause();
         return true;
-        case Keys.M:
-            entity.getEvents().trigger("toggleMap");
-            return true;
+      case Keys.M:
+        entity.getEvents().trigger("toggleMap");
+        return true;
       default:
         return false;
     }

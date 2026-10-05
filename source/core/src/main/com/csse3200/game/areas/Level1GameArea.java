@@ -69,7 +69,6 @@ public class Level1GameArea extends GameArea {
 
   private static final GridPoint2[] VultureSpawnLocations = new GridPoint2[] {};
 
-
   /** First floating platform is at (4, 2) and is 3 tiles wide; stand on its centre. */
   public static final GridPoint2 SHOPKEEPER_SPAWN = new GridPoint2(5, 3);
 
@@ -86,6 +85,7 @@ public class Level1GameArea extends GameArea {
   };
 
   private static final float WALL_WIDTH = 0.1f;
+
   /** Centre of the stepping-stone platform at (31, 2) */
   public static final GridPoint2 WHEEL_TOKEN_SPAWN = new GridPoint2(32, 3);
 
@@ -117,7 +117,6 @@ public class Level1GameArea extends GameArea {
     "images/terrain/Level_1/Level_1_tile.png",
     "images/terrain/Level_1/Level_1_platform.png",
     "images/terrain/Level_1/Level_1_Spike.png",
-
     "images/black_roof.png",
     "images/purple_heart.png",
     "images/red_heart.png",
@@ -300,7 +299,10 @@ public class Level1GameArea extends GameArea {
         new Vector2(0f, 0f),
         RepeatMode.NONE,
         0.7f,
-        1f, false, 0, -1);
+        1f,
+        false,
+        0,
+        -1);
 
     // Create the background entity.
     Entity background = new Entity().addComponent(backgroundComponent);
@@ -350,7 +352,8 @@ public class Level1GameArea extends GameArea {
       spawnEntityAt(ItemFactory.createGold(), goldSpawn, true, false);
     }
   }
-    /*
+
+  /*
   private void spawnWheelToken() {
     Entity token = ItemFactory.createWheelToken();
     spawnEntityAt(token, WHEEL_TOKEN_SPAWN, true, false);
@@ -565,7 +568,7 @@ public class Level1GameArea extends GameArea {
   /** Dispose of the game area. */
   @Override
   public void dispose() {
-      //MAY CAUSE ISSUE
+    // MAY CAUSE ISSUE
     player.getComponent(DesertHazardRecoveryComponent.class).setEnabled(false);
     player.getEvents().trigger("grappleRelease");
     super.dispose();

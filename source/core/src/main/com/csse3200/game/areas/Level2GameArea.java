@@ -105,7 +105,8 @@ public class Level2GameArea extends GameArea {
     "images/skeleton_warrior.atlas",
     "images/necromancer.atlas",
     "images/vulture.atlas",
-    "images/terrain/Level_1/Level_1_checkpoint.atlas", "images/ui/in_level_button.atlas"
+    "images/terrain/Level_1/Level_1_checkpoint.atlas",
+    "images/ui/in_level_button.atlas"
   };
 
   private static final String[] level2Sounds = {"sounds/Impact4.ogg"};
@@ -155,7 +156,10 @@ public class Level2GameArea extends GameArea {
         new Vector2(0f, 0f),
         RepeatMode.NONE,
         1f,
-        1f, false, 0, -1);
+        1f,
+        false,
+        0,
+        -1);
 
     Entity background = new Entity().addComponent(backgroundComponent);
     background.setPosition(backgroundPos);
