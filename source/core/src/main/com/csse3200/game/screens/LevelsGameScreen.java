@@ -125,10 +125,7 @@ public class LevelsGameScreen extends ScreenAdapter {
     level1GameArea.create();
 
     currentGameArea = level1GameArea;
-    Entity levelChanger = currentGameArea.getLevelChanger();
-    if (levelChanger != null) {
-      levelChanger.getEvents().addListener("triggerNextLevel", this::queueAreaSwap);
-    }
+    registerLevelSwap();
 
     player = level1GameArea.getPlayer();
     player.getEvents().addListener("respawnAtCheckpoint", () -> currentGameArea.respawn());
@@ -194,6 +191,13 @@ public class LevelsGameScreen extends ScreenAdapter {
         () -> ServiceLocator.getGameEndEventHandler().trigger("gameEnd", GameEndState.LOSE));
   }
 
+  private void registerLevelSwap() {
+    Entity levelChanger = currentGameArea.getLevelChanger();
+    if (levelChanger != null) {
+      levelChanger.getEvents().addListener("triggerNextLevel", this::queueAreaSwap);
+    }
+  }
+
   /**
    * When the level changer triggers a level change event, this method receives and creates the
    * requested game area object and queues it to be rendered at the next available frame
@@ -230,6 +234,7 @@ public class LevelsGameScreen extends ScreenAdapter {
     currentGameArea.dispose();
     currentGameArea = nextGameArea;
     nextGameArea = null;
+    registerLevelSwap();
 
     renderer.getCamera().setTarget(currentGameArea.getPlayer());
   }
