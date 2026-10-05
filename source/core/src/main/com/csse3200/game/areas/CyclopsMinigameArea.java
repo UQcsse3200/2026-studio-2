@@ -25,7 +25,6 @@ public class CyclopsMinigameArea extends GameArea {
     "images/black_roof.png",
     "images/purple_heart.png",
     "images/transparent.png",
-    "images/DevGridTile.png",
     "images/Tile_2.png",
     "images/platform.png",
     "images/box_boy_leaf.png",
@@ -95,7 +94,6 @@ public class CyclopsMinigameArea extends GameArea {
     playMusic();
 
     setupTimingMinigame();
-    startTimingMinigame();
   }
 
   /**
@@ -119,10 +117,6 @@ public class CyclopsMinigameArea extends GameArea {
     minigame.addComponent(timingBarDisplay);
     minigame.addComponent(cyclopsMinigameLogic);
     spawnEntity(minigame);
-  }
-
-  private void startTimingMinigame() {
-    cyclopsMinigameLogic.startMinigame();
   }
 
   private void spawnTerrain() {
