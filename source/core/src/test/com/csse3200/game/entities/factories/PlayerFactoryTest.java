@@ -66,7 +66,7 @@ class PlayerFactoryTest {
     when(atlas.findRegions(anyString()))
         .thenAnswer(invocation -> new Array<>(new AtlasRegion[] {region}));
     ResourceService resources = mock(ResourceService.class);
-    when(resources.getAsset("images/player.atlas", TextureAtlas.class)).thenReturn(atlas);
+    when(resources.getAsset("images/player/player.atlas", TextureAtlas.class)).thenReturn(atlas);
     ServiceLocator.registerResourceService(resources);
   }
 

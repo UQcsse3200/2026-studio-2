@@ -3,7 +3,6 @@ package com.csse3200.game.components.sandbox;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
@@ -15,6 +14,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.csse3200.game.components.ButtonSound;
 import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.services.ServiceLocator;
@@ -65,15 +65,17 @@ public class MonsterSpawnerDisplay extends UIComponent {
   }
 
   private void createNpcImage() {
-    TextureAtlas ghostAtlas =
-        ServiceLocator.getResourceService().getAsset("images/ghost.atlas", TextureAtlas.class);
-    npcImage = new Image(ghostAtlas.findRegion("default"));
+    Texture npcTexture =
+        ServiceLocator.getResourceService()
+            .getAsset(SandboxEnemyType.SKELETON_WARRIOR.getTexturePath(), Texture.class);
+    npcImage = new Image(npcTexture);
     npcImage.setTouchable(Touchable.enabled);
     npcImage.setName("sandbox-monster-spawner-npc");
     npcImage.addListener(
         new ClickListener() {
           @Override
           public void clicked(InputEvent event, float x, float y) {
+            ButtonSound.playClick();
             openPanel();
           }
         });
@@ -122,6 +124,7 @@ public class MonsterSpawnerDisplay extends UIComponent {
         new ClickListener() {
           @Override
           public void clicked(InputEvent event, float x, float y) {
+            ButtonSound.playClick();
             closePanel();
           }
         });
@@ -145,6 +148,9 @@ public class MonsterSpawnerDisplay extends UIComponent {
         new ClickListener() {
           @Override
           public void clicked(InputEvent event, float x, float y) {
+            if (!spawnButton.isDisabled()) {
+              ButtonSound.playClick();
+            }
             spawnSelectedEnemy();
           }
         });
@@ -186,6 +192,7 @@ public class MonsterSpawnerDisplay extends UIComponent {
         new ClickListener() {
           @Override
           public void clicked(InputEvent event, float x, float y) {
+            ButtonSound.playClick();
             selectEnemy(enemyType, card);
           }
         });

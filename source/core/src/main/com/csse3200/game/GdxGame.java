@@ -8,7 +8,7 @@ import com.badlogic.gdx.Screen;
 import com.csse3200.game.cutscene.CutsceneLoader;
 import com.csse3200.game.files.UserSettings;
 import com.csse3200.game.screens.CutsceneScreen;
-import com.csse3200.game.screens.LevelsGameScreen;
+import com.csse3200.game.screens.Level1GameScreen;
 import com.csse3200.game.screens.MainGameScreen;
 import com.csse3200.game.screens.MainMenuScreen;
 import com.csse3200.game.screens.SandboxGameScreen;
@@ -93,14 +93,14 @@ public class GdxGame extends Game {
     setScreen(new CutsceneScreen(this, cutscene, destination));
   }
 
-  /** Starts the initial cutscene once per game session, then falls back to the tutorial level. */
+  /** Starts the initial cutscene once per game session, then falls back to level 1. */
   public void startInitialCutscene() {
     if (introStarted) {
       transitionTo(ScreenType.LEVEL_1_GAME);
       return;
     }
 
-    // logging for if the cutscene is not available, and fallback to tutorial level
+    // logging for if the cutscene is not available, and fallback to level 1
     CutsceneLoader.Result result = new CutsceneLoader().load("cutscene1");
     if (!result.isSuccess()) {
       logger.debug("Initial cutscene unavailable: {}", result.getError());
@@ -148,11 +148,11 @@ public class GdxGame extends Game {
       case MAIN_GAME:
         return new MainGameScreen(this);
       case LEVEL_1_GAME:
-        return new LevelsGameScreen(this);
+        return new Level1GameScreen(this);
       case SANDBOX:
         return new SandboxGameScreen(this);
       case LEVEL_2_GAME:
-        LevelsGameScreen screen = new LevelsGameScreen(this);
+        Level1GameScreen screen = new Level1GameScreen(this);
         screen.queueAreaSwap("level2");
         return screen;
       case SETTINGS:

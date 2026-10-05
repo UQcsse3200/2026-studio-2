@@ -38,13 +38,6 @@ class MainMenuActionsTest {
   }
 
   @Test
-  void shouldLeaveMinigameSelectionUnchangedUntilImplemented() {
-    ui.getEvents().trigger("Minigames");
-
-    verifyNoInteractions(game);
-  }
-
-  @Test
   void shouldOpenSettings() {
     ui.getEvents().trigger("Settings");
 

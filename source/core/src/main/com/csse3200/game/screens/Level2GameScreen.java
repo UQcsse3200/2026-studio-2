@@ -176,13 +176,11 @@ public class Level2GameScreen extends ScreenAdapter {
     List<String> paths =
         new ArrayList<>(
             List.of(
-                "images/heart.png",
-                "images/title_odysseus_logo.png",
-                "images/Health_Bar_Background.png",
-                "images/red_heart.png",
-                "images/PixelArt_HeartBack.png",
-                "images/Damaged_heart.png",
-                "images/Last_Health.png",
+                "images/ui/title_odysseus_logo.png",
+                "images/health/red_heart.png",
+                "images/health/PixelArt_HeartBack.png",
+                "images/health/Damaged_heart.png",
+                "images/health/Last_Health.png",
                 "images/Buttons/continue_up_btn.png",
                 "images/Buttons/continue_down_btn.png",
                 "images/Buttons/settings_up_btn.png",
@@ -191,7 +189,7 @@ public class Level2GameScreen extends ScreenAdapter {
                 "images/Buttons/quit_down_btn.png",
                 "images/Buttons/exit_up_btn.png",
                 "images/Buttons/exit_down_btn.png",
-                "images/rope_arrow.png"));
+                "images/projectiles/rope_arrow.png"));
     paths.addAll(List.of(WheelConfig.TEXTURES));
     return paths.toArray(new String[0]);
   }

@@ -14,6 +14,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.Value;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.csse3200.game.components.ButtonSound;
 import com.csse3200.game.components.maingame.MainGameExitDisplay;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.events.EventHandler;
@@ -56,7 +57,7 @@ public class GameEndDisplay extends UIComponent {
     this.resultText =
         state == GameEndState.WIN
             ? "You achieved victory and completed the objective."
-            : "better luck next time bub...";
+            : "Better luck next time bub...";
     this.typewriterEffect = new TypewriterEffect(MESSAGE_SPEED);
     this.typewriterEffect.setText(this.resultText);
   }
@@ -74,7 +75,7 @@ public class GameEndDisplay extends UIComponent {
     String newResultText =
         state == GameEndState.WIN
             ? "You achieved victory and completed the objective."
-            : "better luck next time bub...";
+            : "Better luck next time bub...";
     this.resultText = newResultText;
     visible = true;
     if (typewriterEffect != null) {
@@ -182,7 +183,7 @@ public class GameEndDisplay extends UIComponent {
 
     stack = new Stack();
     Texture backgroundTexture =
-        ServiceLocator.getResourceService().getAsset("images/scroll_bg.png", Texture.class);
+        ServiceLocator.getResourceService().getAsset("images/ui/scroll_bg.png", Texture.class);
 
     backgroundTable = new Table();
     background = new Image(backgroundTexture);
@@ -191,7 +192,7 @@ public class GameEndDisplay extends UIComponent {
     panel = new Table();
     panel.setVisible(visible);
     // panel.setBackground(getBackgroundDrawable());
-    Value padding = Value.percentWidth(0.02f, root);
+    Value padding = Value.percentWidth(0.01f, root);
 
     titleLabel = new Label(titleText, skin);
     titleLabel.setFontScale(2f);
@@ -229,7 +230,7 @@ public class GameEndDisplay extends UIComponent {
         new ChangeListener() {
           @Override
           public void changed(ChangeEvent event, Actor actor) {
-            entity.getEvents().trigger("restart");
+            ButtonSound.playClickThen(() -> entity.getEvents().trigger("restart"));
           }
         });
 
@@ -241,7 +242,7 @@ public class GameEndDisplay extends UIComponent {
         new ChangeListener() {
           @Override
           public void changed(ChangeEvent event, Actor actor) {
-            entity.getEvents().trigger("mainMenu");
+            ButtonSound.playClickThen(() -> entity.getEvents().trigger("mainMenu"));
           }
         });
 
@@ -253,7 +254,7 @@ public class GameEndDisplay extends UIComponent {
         new ChangeListener() {
           @Override
           public void changed(ChangeEvent event, Actor actor) {
-            entity.getEvents().trigger("exitGame");
+            ButtonSound.playClickThen(() -> entity.getEvents().trigger("exitGame"));
           }
         });
 

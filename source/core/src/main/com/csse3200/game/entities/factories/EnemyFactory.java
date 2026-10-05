@@ -59,7 +59,7 @@ public class EnemyFactory {
     AnimationRenderComponent animator =
         new AnimationRenderComponent(
             ServiceLocator.getResourceService()
-                .getAsset("images/skeleton_warrior.atlas", TextureAtlas.class));
+                .getAsset("images/enemies/skeleton_warrior.atlas", TextureAtlas.class));
     animator.addAnimation("walk", 0.15f, Animation.PlayMode.LOOP);
     animator.addAnimation("idle", 0.15f, Animation.PlayMode.LOOP);
 
@@ -86,7 +86,7 @@ public class EnemyFactory {
     AnimationRenderComponent animator =
         new AnimationRenderComponent(
             ServiceLocator.getResourceService()
-                .getAsset("images/skeleton_archer.atlas", TextureAtlas.class));
+                .getAsset("images/enemies/skeleton_archer.atlas", TextureAtlas.class));
     animator.addAnimation("walk", 0.15f, Animation.PlayMode.LOOP);
     animator.addAnimation("idle", 0.15f, Animation.PlayMode.LOOP);
 
@@ -108,7 +108,7 @@ public class EnemyFactory {
    */
   public static Entity createPassiveSkeletonWarrior() {
     Entity skeletonWarrior = createPassiveEnemy(configs.skeletonWarrior);
-    skeletonWarrior.addComponent(new TextureRenderComponent("images/skeleton_warrior.png"));
+    skeletonWarrior.addComponent(new TextureRenderComponent("images/enemies/skeleton_warrior.png"));
     skeletonWarrior.getComponent(TextureRenderComponent.class).scaleEntity();
     PhysicsUtils.setScaledCollider(skeletonWarrior, 1.2f, 0.7f);
     return skeletonWarrior;
@@ -122,7 +122,7 @@ public class EnemyFactory {
    */
   public static Entity createPassiveSkeletonArcher() {
     Entity skeletonArcher = createPassiveEnemy(configs.skeletonArcher);
-    skeletonArcher.addComponent(new TextureRenderComponent("images/skeleton_archer.png"));
+    skeletonArcher.addComponent(new TextureRenderComponent("images/enemies/skeleton_archer.png"));
     skeletonArcher.getComponent(TextureRenderComponent.class).scaleEntity();
     PhysicsUtils.setScaledCollider(skeletonArcher, 1.2f, 0.7f);
     return skeletonArcher;
@@ -141,7 +141,7 @@ public class EnemyFactory {
     AnimationRenderComponent animator =
         new AnimationRenderComponent(
             ServiceLocator.getResourceService()
-                .getAsset("images/vulture.atlas", TextureAtlas.class));
+                .getAsset("images/enemies/vulture.atlas", TextureAtlas.class));
     animator.addAnimation("walk", 0.15f, Animation.PlayMode.LOOP);
     animator.addAnimation("idle", 0.15f, Animation.PlayMode.LOOP);
 
@@ -171,7 +171,7 @@ public class EnemyFactory {
     AnimationRenderComponent animator =
         new AnimationRenderComponent(
             ServiceLocator.getResourceService()
-                .getAsset("images/necromancer.atlas", TextureAtlas.class));
+                .getAsset("images/enemies/necromancer.atlas", TextureAtlas.class));
     animator.addAnimation("walk", 0.15f, Animation.PlayMode.LOOP);
     animator.addAnimation("idle", 0.15f, Animation.PlayMode.LOOP);
 

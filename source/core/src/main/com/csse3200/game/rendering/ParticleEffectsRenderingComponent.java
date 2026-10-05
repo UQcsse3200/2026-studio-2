@@ -37,7 +37,7 @@ public class ParticleEffectsRenderingComponent extends RenderComponent {
   private BurnStatsComponent burnStats;
   private SlowStatsComponent slowStats;
   private PoisonStatsComponent poisonStats;
-  private final ShapeRenderer shapeRenderer = new ShapeRenderer();
+  private ShapeRenderer shapeRenderer;
   private final Color workingColour = new Color();
   private PointLightComponent pointLightComponent;
 
@@ -75,6 +75,10 @@ public class ParticleEffectsRenderingComponent extends RenderComponent {
     Vector2 scale = entity.getScale();
     float baseSize = Math.max(scale.x / 4, scale.y / 4);
     float seconds = time.getTime() / 1000f;
+
+    if (shapeRenderer == null) {
+      shapeRenderer = new ShapeRenderer();
+    }
 
     batch.end();
     shapeRenderer.setProjectionMatrix(batch.getProjectionMatrix());
@@ -146,7 +150,9 @@ public class ParticleEffectsRenderingComponent extends RenderComponent {
     if (pointLightComponent != null) {
       pointLightComponent.dispose();
     }
-    shapeRenderer.dispose();
+    if (shapeRenderer != null) {
+      shapeRenderer.dispose();
+    }
     super.dispose();
   }
 }

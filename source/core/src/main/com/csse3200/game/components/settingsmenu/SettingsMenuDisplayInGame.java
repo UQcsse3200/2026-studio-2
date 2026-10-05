@@ -66,10 +66,11 @@ public class SettingsMenuDisplayInGame extends UIComponent {
     background =
         new Image(
             ServiceLocator.getResourceService()
-                .getAsset("images/main_menu_bg_2.png", Texture.class));
+                .getAsset("images/backgrounds/main_menu_bg_2.png", Texture.class));
     Image menuBox =
         new Image(
-            ServiceLocator.getResourceService().getAsset("images/settings_box.png", Texture.class));
+            ServiceLocator.getResourceService()
+                .getAsset("images/ui/settings_box.png", Texture.class));
 
     // Oversized slightly so the shake below never reveals an edge/gap.
     float overscan = 1.03f;

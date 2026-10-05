@@ -18,12 +18,14 @@ public class Level2Config extends LevelConfig {
   public Level2Config() {
     // Textures
     // TFP = Texture File Path
-    platformTFP = "images/Platform_level-2.png";
-    movingPlatformTFP = "images/Platform_level-2.png";
-    crumblingPlatformTFP = "images/Platform_level-2.png";
-    triggerablePlatformTFP = "images/Platform_level-2.png";
-    ledgesTFP = "images/Platform_level-2.png";
-    groundTFP = "images/tile-level2.png";
+    platformTFP = "images/terrain/Level_2/level_2_platform.png";
+    movingPlatformTFP = "images/terrain/Level_2/level_2_platform.png";
+    crumblingPlatformTFP = "images/terrain/Level_2/level_2_platform.png";
+    triggerablePlatformTFP = "images/terrain/Level_2/level_2_platform.png";
+    ledgesTFP = "images/terrain/Level_2/level_2_platform.png";
+    groundTFP = "images/terrain/Level_2/level_2_tile.png";
+    spikeTFP = "images/terrain/Level_2/level_2_spikes.png";
+    checkpointAtlas = "images/terrain/Level_1/Level_1_checkpoint.atlas";
 
     playerSpawn = new GridPoint2(0, 42);
     winConditionSpawn = new GridPoint2(33, 8);
@@ -31,6 +33,9 @@ public class Level2Config extends LevelConfig {
     platforms =
         new PlatformConfig[] {
           new PlatformConfig(new GridPoint2(0, 40), 3, 1, 3, platformTFP), // P1
+          new PlatformConfig(new GridPoint2(11, 25), 3, 1, 3, platformTFP),
+          new PlatformConfig(new GridPoint2(14, 28), 3, 1, 3, platformTFP),
+          new PlatformConfig(new GridPoint2(17, 31), 3, 1, 3, platformTFP),
           new PlatformConfig(new GridPoint2(8, 40), 3, 1, 9, platformTFP), // P2
           new PlatformConfig(new GridPoint2(17, 39), 3, 1, 11, platformTFP), // P3
           new PlatformConfig(new GridPoint2(0, 28), 2, 1, 2, platformTFP), // P4
@@ -171,7 +176,7 @@ public class Level2Config extends LevelConfig {
 
     spikes =
         new SpikeClusterConfig[] {
-          new SpikeClusterConfig(0, 11, 37, 37, 0f, false), // SC1
+          // new SpikeClusterConfig(0, 11, 37, 37, 0f, false), // SC1
           new SpikeClusterConfig(19, 21, 29, 29, 0f, false), // SC2
           new SpikeClusterConfig(4, 6, 29, 29, 0f, false), // SC3
           new SpikeClusterConfig(0, 2, 12, 12, 0f, true), // SC4
