@@ -3,6 +3,7 @@ package com.csse3200.game.services;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.events.EventHandler;
 import com.csse3200.game.input.InputService;
+import com.csse3200.game.lighting.LightingService;
 import com.csse3200.game.physics.PhysicsService;
 import com.csse3200.game.rendering.RenderService;
 import org.slf4j.Logger;
@@ -26,6 +27,7 @@ public class ServiceLocator {
   private static ResourceService resourceService;
   private static EventHandler gameEndEventHandler;
   private static EventHandler cyclopsMinigameEventHandler;
+  private static LightingService lightingService;
 
   public static EntityService getEntityService() {
     return entityService;
@@ -57,6 +59,15 @@ public class ServiceLocator {
 
   public static EventHandler getCyclopsMinigameEventHandler() {
     return cyclopsMinigameEventHandler;
+  }
+
+  public static LightingService getLightingService() {
+    return lightingService;
+  }
+
+  public static void registerLightingService(LightingService service) {
+    logger.debug("Registering lighting service {}", service);
+    lightingService = service;
   }
 
   public static void registerGameEndEventHandler(EventHandler eventHandler) {
@@ -108,6 +119,7 @@ public class ServiceLocator {
     resourceService = null;
     gameEndEventHandler = null;
     cyclopsMinigameEventHandler = null;
+    lightingService = null;
   }
 
   private ServiceLocator() {

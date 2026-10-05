@@ -114,12 +114,14 @@ public class InventoryComponent extends Component {
   }
 
   /**
-   * Adds to the player's gold. The amount added can be negative.
+   * Adds to the player's gold. Negative amounts deduct gold; the result stays between zero and
+   * Integer.MAX_VALUE.
    *
    * @param gold gold to add
    */
   public void addGold(int gold) {
-    setGold(this.gold + gold);
+    long total = (long) this.gold + gold;
+    setGold((int) Math.max(0L, Math.min(Integer.MAX_VALUE, total)));
   }
 
   // ---------

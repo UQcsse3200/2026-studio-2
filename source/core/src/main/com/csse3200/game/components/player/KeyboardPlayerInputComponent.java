@@ -11,6 +11,7 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.input.InputComponent;
 import com.csse3200.game.physics.components.PhysicsComponent;
+import com.csse3200.game.services.ServiceLocator;
 
 /** Input handler for player keyboard and mouse controls. */
 public class KeyboardPlayerInputComponent extends InputComponent {
@@ -50,6 +51,13 @@ public class KeyboardPlayerInputComponent extends InputComponent {
    */
   public void setCameraComponent(CameraComponent cameraComponent) {
     this.cameraComponent = cameraComponent;
+  }
+
+  /**
+   * @return the camera used for aiming, or null if none has been set yet
+   */
+  public CameraComponent getCameraComponent() {
+    return cameraComponent;
   }
 
   /**
@@ -98,22 +106,32 @@ public class KeyboardPlayerInputComponent extends InputComponent {
       case Keys.W:
         entity.getEvents().trigger("grappleClimbStart");
         keysHeld[UP] = true;
-        triggerWalkEvent();
+        if (!ServiceLocator.getEntityService().getPaused()) {
+          triggerWalkEvent();
+        }
         return true;
       case Keys.A, Keys.LEFT:
         keysHeld[LEFT] = true;
-        triggerWalkEvent();
+        if (!ServiceLocator.getEntityService().getPaused()) {
+          triggerWalkEvent();
+        }
         return true;
       case Keys.D, Keys.RIGHT:
         keysHeld[RIGHT] = true;
-        triggerWalkEvent();
+        if (!ServiceLocator.getEntityService().getPaused()) {
+          triggerWalkEvent();
+        }
         return true;
       case Keys.SPACE:
-        triggerJumpEvent();
+        if (!ServiceLocator.getEntityService().getPaused()) {
+          triggerJumpEvent();
+        }
         return true;
       case Keys.SHIFT_LEFT, Keys.SHIFT_RIGHT:
-        sprintHeld = true;
-        triggerSprintEvent();
+        if (!ServiceLocator.getEntityService().getPaused()) {
+          sprintHeld = true;
+          triggerSprintEvent();
+        }
         return true;
       case Keys.E:
         triggerAttackOrItemUse();
@@ -140,13 +158,21 @@ public class KeyboardPlayerInputComponent extends InputComponent {
         entity.getEvents().trigger("grappleDescendStart");
         entity.getEvents().trigger("updateLedgeDrop", true);
         keysHeld[DOWN] = true;
-        triggerWalkEvent();
+        if (!ServiceLocator.getEntityService().getPaused()) {
+          triggerWalkEvent();
+        }
         return true;
       case Keys.TAB:
         entity.getEvents().trigger("openArrowWheel");
         return true;
       case Keys.ESCAPE:
-        entity.getEvents().trigger("togglePause");
+        if (!ServiceLocator.getEntityService().getSettingsOpen()) {
+          entity.getEvents().trigger("togglePause");
+        }
+        unpause();
+        return true;
+      case Keys.M:
+        entity.getEvents().trigger("toggleMap");
         return true;
       default:
         return false;
@@ -225,9 +251,6 @@ public class KeyboardPlayerInputComponent extends InputComponent {
     if (dead || isArrowWheelOpen()) {
       return false;
     }
-    if (button == Buttons.LEFT) {
-      return triggerAimedEvent("melee", screenX, screenY);
-    }
     if (button == Buttons.RIGHT) {
       rightMouseHeld = true;
       return triggerAimedEvent("shoot", screenX, screenY);
@@ -261,11 +284,6 @@ public class KeyboardPlayerInputComponent extends InputComponent {
   public boolean touchUp(int screenX, int screenY, int pointer, int button) {
     if (dead) {
       return isShopOpen();
-    }
-
-    if (button == Buttons.LEFT) {
-      entity.getEvents().trigger("stopMelee");
-      return true;
     }
 
     if (button == Buttons.RIGHT) {

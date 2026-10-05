@@ -12,6 +12,7 @@ import com.csse3200.game.components.level.LedgeComponent;
 import com.csse3200.game.components.player.KeyboardPlayerInputComponent;
 import com.csse3200.game.components.player.PlayerActions;
 import com.csse3200.game.entities.Entity;
+import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.input.InputService;
 import com.csse3200.game.physics.components.ColliderComponent;
@@ -39,6 +40,8 @@ class PlayerLedgeDropIntegrationTest {
     ServiceLocator.registerPhysicsService(new PhysicsService(engine));
     ServiceLocator.registerTimeSource(mock(GameTime.class));
     ServiceLocator.registerInputService(mock(InputService.class));
+    // The keyboard input checks the pause state before acting on movement keys.
+    ServiceLocator.registerEntityService(mock(EntityService.class));
     input = new KeyboardPlayerInputComponent();
     actions = new PlayerActions();
     Entity player =
