@@ -107,6 +107,43 @@ public class ProjectileFact {
     return projectile;
   }
 
+  /**
+   * Creates a large projectile used by Calypso as a special attack.
+   *
+   * @param targetPosition position the projectile travels towards
+   * @param damage damage dealt when the projectile hits the player
+   * @param speed projectile movement speed
+   * @param lifetime maximum projectile lifetime in seconds
+   * @return large Calypso projectile entity
+   */
+  public static Entity createCalypsoLargeProjectile(
+      Vector2 targetPosition, int damage, float speed, float lifetime) {
+
+    PhysicsMovementComponent movement = new PhysicsMovementComponent(new Vector2(speed, speed));
+    movement.setTarget(targetPosition);
+
+    Entity projectile =
+        new Entity()
+            .addComponent(new PhysicsComponent())
+            .addComponent(movement)
+            .addComponent(new HitboxComponent().setLayer(PhysicsLayer.NPC))
+            .addComponent(new CombatStatsComponent(1, damage))
+            .addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER))
+            .addComponent(new ProjectileComponent(lifetime))
+            .addComponent(new ColliderComponent())
+            // Temporary asset until a dedicated Calypso projectile sprite is available.
+            .addComponent(new TextureRenderComponent("images/necromancer_projectile.png"));
+
+    projectile.getComponent(TextureRenderComponent.class).scaleEntity();
+
+    // Larger than Calypso's standard projectile.
+    projectile.setScale(projectile.getScale().scl(1.6f));
+
+    PhysicsUtils.setScaledCollider(projectile, 0.7f, 0.7f);
+
+    return projectile;
+  }
+
   private ProjectileFact() {
     throw new IllegalStateException("Instantiating static util class");
   }

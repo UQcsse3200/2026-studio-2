@@ -14,6 +14,7 @@ import com.csse3200.game.components.PoisonStatsComponent;
 import com.csse3200.game.components.SlowStatsComponent;
 import com.csse3200.game.components.TouchAttackComponent;
 import com.csse3200.game.components.npc.SkeletonAnimationController;
+import com.csse3200.game.components.tasks.CalypsoLargeProjectileTask;
 import com.csse3200.game.components.tasks.ChaseTask;
 import com.csse3200.game.components.tasks.DelayedAttackTask;
 import com.csse3200.game.components.tasks.FlyingChaseTask;
@@ -310,12 +311,16 @@ public class EnemyFactory {
     } else if (config.attackType.equals("cyclops")) {
       // add melee sweep attack and throwing boulder range attack
     } else if (config.attackType.equals("calypso")) {
-      // Standard projectile attack. Other Calypso attacks are added separately.
+      // Standard projectile attack.
       aiComponent.addTask(
           new RangedAttackTask(
               target, 20, config.attackRange, 2f, config.baseAttack, 4.5f, 5f, false, true));
-    }
 
+      // Large projectile special attack.
+      aiComponent.addTask(
+          new CalypsoLargeProjectileTask(
+              target, 25, config.attackRange, 6f, config.baseAttack * 2, 3.5f, 6f));
+    }
     return enemy;
   }
 
