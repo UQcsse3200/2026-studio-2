@@ -23,7 +23,8 @@ final class MacDockIcon {
 
   /**
    * Sets the Dock icon from an image in the assets folder. Does nothing on other platforms, and
-   * never fails the game if the icon cannot be set. Call from the main thread once the window exists.
+   * never fails the game if the icon cannot be set. Call from the main thread once the window
+   * exists.
    *
    * @param internalPath libGDX internal path of a PNG, for example "images/ui/icon.png"
    */
