@@ -66,6 +66,7 @@ public class CyclopsMinigameArea extends GameArea {
 
   private static final GridPoint2 MAP_SIZE = new GridPoint2(40, 30);
   private static final int NUM_STATUES = 3;
+  static final float STATUE_DEPTH_OFFSET = 0.01f;
   private int statueYLevel;
   private GridPoint2 winLocation;
   private ArrayList<GridPoint2> statueLocations;
@@ -154,6 +155,7 @@ public class CyclopsMinigameArea extends GameArea {
       Entity statue = ObstacleFactory.createStatue();
       statue.setScale(new Vector2(3, 6));
       spawnEntityAt(statue, new GridPoint2(x, statueYLevel), true, false);
+      statue.setPosition(statue.getPosition().cpy().add(0, STATUE_DEPTH_OFFSET));
       logger.info(
           "Spawned statue {} at: {}",
           i,
