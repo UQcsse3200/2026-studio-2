@@ -52,13 +52,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The game screen containing level 1.
+ * The game screen containing the main game levels.
  *
  * <p>Details on libGDX screens: https://happycoding.io/tutorials/libgdx/game-screens
  */
-public class Level1GameScreen extends ScreenAdapter {
+public class LevelsGameScreen extends ScreenAdapter {
 
-  private static final Logger logger = LoggerFactory.getLogger(Level1GameScreen.class);
+  private static final Logger logger = LoggerFactory.getLogger(LevelsGameScreen.class);
 
   private static final String[] mainGameTextures = createTextures();
   private static final String[] mainGameAtlas = createAtlas();
@@ -87,7 +87,7 @@ public class Level1GameScreen extends ScreenAdapter {
   private final Level1GameArea level1GameArea;
   private boolean cheats = false;
 
-  public Level1GameScreen(GdxGame game) {
+  public LevelsGameScreen(GdxGame game) {
     this.game = game;
 
     logger.debug("Initialising main game screen services");

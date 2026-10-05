@@ -227,34 +227,23 @@ public class Level1GameArea extends GameArea {
   }
 
   /**
-   * ============================================================ CURRENT ACTIVE BACKGROUND
-   * ============================================================
+   * Level 1 background.
    *
-   * <p>Uses the complete original_background.png as ONE layer.
+   * <p>One copy of level_1_idea.png (1672 x 940) that drifts slowly with the camera like a distant
+   * backdrop. More layers (such as drifting clouds) can be added with addLayer and move
+   * independently of this one.
    *
-   * <p>The camera and parallax factor are passed to the BackgroundRenderComponent so that the
-   * background moves more slowly than the foreground when the camera moves. The image is 1024 x
-   * 572, so when its width is 60 world units, the matching height is approximately 33.52.
-   *
-   * <p>Parallax factor = 0.30
-   *
-   * <p>This means the background moves at 30% of the camera movement relative to the world, giving
-   * the subtle effect you originally wanted.
+   * <p>A layer's world position is x = backgroundPos.x + offset.x + cameraX * (1 - parallax.x) and
+   * y = backgroundPos.y + offset.y + cameraY * distance. With the base layer's values (parallax x
+   * 0.15, distance 0.7) the image covers the view for camera positions of roughly x 5..95 and y
+   * 3..25, i.e. the whole 90 x 27 level.
    */
   private void spawnBackground() {
     final Vector2 backgroundPos = new Vector2(-10f, -10f);
     BackgroundRenderComponent backgroundComponent =
         new BackgroundRenderComponent(camera, backgroundPos, worldBounds);
 
-    // Level-wide background: a single copy of level_1_idea.png (1672 x 940, ~1.78 aspect ratio)
-    // that drifts slowly with the camera like a distant backdrop, so one image always fills the
-    // screen and nothing has to be repeated. The layer's world position is
-    //   x = backgroundPos.x + offset.x + cameraX * (1 - parallaxFactor.x)
-    //   y = backgroundPos.y + offset.y + cameraY * distance
-    // With the values below (parallax x 0.15, distance 0.7) the image covers the view for camera
-    // positions of roughly x 5..95 and y 3..25, i.e. the whole 90 x 27 level. Making the image
-    // smaller looks further away, but needs a smaller parallax x / larger distance to keep
-    // covering the screen; making it larger is always safe.
+    // Base layer: the whole scene.
     backgroundComponent.addLayer(
         "images/backgrounds/level_1_idea.png",
         new Vector2(0.15f, 0f),
@@ -285,7 +274,6 @@ public class Level1GameArea extends GameArea {
     float tileSize = terrain.getTileSize();
     GridPoint2 tileBounds = terrain.getMapBounds(0);
     worldBounds = new Vector2(tileBounds.x * tileSize, tileBounds.y * tileSize);
-    camera.setRoomBounds(0f, 0f, worldBounds.x, worldBounds.y);
   }
 
   private Entity spawnPlayer() {

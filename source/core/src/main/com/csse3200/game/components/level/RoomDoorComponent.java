@@ -50,7 +50,6 @@ public class RoomDoorComponent extends InputComponent {
       physics.getBody().setLinearVelocity(0, 0);
       physics.getBody().setAwake(true);
     }
-    camera.setRoomBounds(bounds.x, bounds.y, bounds.x + bounds.width, bounds.y + bounds.height);
     camera.setTarget(player);
     return true;
   }

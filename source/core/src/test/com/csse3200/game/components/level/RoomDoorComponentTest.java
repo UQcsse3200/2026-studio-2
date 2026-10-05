@@ -47,7 +47,6 @@ class RoomDoorComponentTest {
     assertEquals(new Vector2(16, 5), player.getPosition());
     assertTrue(door.keyDown(Input.Keys.F));
     assertEquals(new Vector2(115, 2.1f), player.getPosition());
-    verify(camera).setRoomBounds(110, 0, 130, 11.25f);
     verify(camera).setTarget(player);
     assertFalse(door.keyDown(Input.Keys.F));
   }

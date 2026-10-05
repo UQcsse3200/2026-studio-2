@@ -80,9 +80,6 @@ public class Level2GameArea extends GameArea {
   public void create() {
     loadAssets();
 
-    // The camera is shared with the previous level, so drop its room bounds before spawning.
-    camera.clearRoomBounds();
-
     // Spawn the Level 2 background before the terrain.
     spawnBackground();
     spawnTerrain();
