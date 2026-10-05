@@ -33,7 +33,7 @@ public class Level3GameArea extends GameArea {
   private static final String[] level3Textures = {
     "images/ui/scroll_bg.png",
     // Level 3 background
-    //"images/Background-2.png",
+    // "images/Background-2.png",
     "images/terrain/Level_3/Platform_level-3.png",
     "images/terrain/Level_3/Platform-crumbling-level-3.png",
     "images/parallax/level_1_background.png",
@@ -53,7 +53,7 @@ public class Level3GameArea extends GameArea {
     "images/ui/transparent.png",
 
     // Existing game textures
-          /*
+    /*
     "images/black_roof.png",
     "images/purple_heart.png",
     "images/DevGridTile.png",
@@ -73,7 +73,7 @@ public class Level3GameArea extends GameArea {
     "images/iso_grass_2.png",
     "images/iso_grass_3.png",
      */
-          "images/terrain/Level_1/Level_1_Spike.png",
+    "images/terrain/Level_1/Level_1_Spike.png",
     "images/traps/spiky_ball.png",
     "images/traps/spiky_ball_trap.png",
     "images/checkpoint_lit.png",
@@ -97,8 +97,8 @@ public class Level3GameArea extends GameArea {
     "images/enemies/skeleton_warrior.atlas",
     "images/enemies/necromancer.atlas",
     "images/enemies/vulture.atlas",
-          "images/terrain/Level_1/Level_1_checkpoint.atlas",
-          "images/ui/in_level_button.atlas"
+    "images/terrain/Level_1/Level_1_checkpoint.atlas",
+    "images/ui/in_level_button.atlas"
   };
 
   private static final String[] level3Sounds = {"sounds/Impact4.ogg"};
