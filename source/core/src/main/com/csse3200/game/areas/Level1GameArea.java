@@ -285,7 +285,6 @@ public class Level1GameArea extends GameArea {
     float tileSize = terrain.getTileSize();
     GridPoint2 tileBounds = terrain.getMapBounds(0);
     worldBounds = new Vector2(tileBounds.x * tileSize, tileBounds.y * tileSize);
-    camera.setRoomBounds(0f, 0f, worldBounds.x, worldBounds.y);
   }
 
   private Entity spawnPlayer() {
