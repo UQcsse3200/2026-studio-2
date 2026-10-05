@@ -67,7 +67,7 @@ public class EnemyFactory {
 
     skeletonWarrior
         .getComponent(AITaskComponent.class)
-        .addTask(new DelayedAttackTask(target, 20, 0.8f, 0.5f));
+        .addTask(new DelayedAttackTask(target, 20, config.attackRange, 0.5f));
 
     return skeletonWarrior;
   }

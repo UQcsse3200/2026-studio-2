@@ -43,7 +43,7 @@ public class DelayedAttackTask extends DefaultTask implements PriorityTask {
 
     // end attack after duration
     if (isAttacking
-            && currentTime >= attackStartTime + attackDelay * 1000 + attackDuration * 1000) {
+        && currentTime >= attackStartTime + attackDelay * 1000 + attackDuration * 1000) {
       isAttacking = false;
       attackStartTime = currentTime;
     }
@@ -71,7 +71,7 @@ public class DelayedAttackTask extends DefaultTask implements PriorityTask {
 
   @Override
   public int getPriority() {
-    float distance = owner.getEntity().getPosition().dst(target.getPosition());
+    float distance = owner.getEntity().getCenterPosition().dst(target.getCenterPosition());
 
     if (distance < attackRange || isAttacking) {
       return priority;
