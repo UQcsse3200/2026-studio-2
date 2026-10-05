@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
@@ -107,47 +106,22 @@ class ArrowRenderBehaviourTest {
   }
 
   @Test
-  void shouldCreateAndShareGrapplePixelTextureAndRestoreBatchColour() throws Exception {
-    var cache = ArrowRenderComponent.class.getDeclaredField("pixelTexture");
-    cache.setAccessible(true);
-    Object previous = cache.get(null);
-    cache.set(null, null);
-    try (var pixmaps = mockConstruction(Pixmap.class);
-        var textures =
-            mockConstruction(
-                Texture.class,
-                (texture, context) -> {
-                  assertSame(pixmaps.constructed().getFirst(), context.arguments().getFirst());
-                  when(texture.getWidth()).thenReturn(1);
-                  when(texture.getHeight()).thenReturn(1);
-                })) {
-      ArrowRenderComponent first = new ArrowRenderComponent(ArrowType.GRAPPLE).setRenderSize(2f);
-      Entity entity = new Entity().addComponent(first);
-      entity.setPosition(0f, 0f);
-      entity.setScale(2f, 2f);
-      first.render(batch);
-      ArrowRenderComponent second = new ArrowRenderComponent(ArrowType.GRAPPLE).setRenderSize(2f);
-      new Entity().addComponent(second).setScale(2f, 2f);
-      second.render(batch);
+  void shouldDrawTheGrappleArrowWithTheArrowSpriteInsteadOfAPlainBox() {
+    Texture texture = mock(Texture.class);
+    when(texture.getWidth()).thenReturn(26);
+    when(texture.getHeight()).thenReturn(26);
+    when(resources.getAsset("images/arrow.png", Texture.class)).thenReturn(texture);
+    ArrowRenderComponent renderer = new ArrowRenderComponent(ArrowType.GRAPPLE).setRenderSize(2f);
+    Entity entity = new Entity().addComponent(renderer);
+    entity.setPosition(0f, 0f);
+    entity.setScale(2f, 2f);
 
-      assertEquals(1, pixmaps.constructed().size());
-      assertEquals(1, textures.constructed().size());
-      Pixmap pixmap = pixmaps.constructed().getFirst();
-      verify(pixmap).setColor(Color.WHITE);
-      verify(pixmap).fill();
-      verify(pixmap).dispose();
-      Texture texture = textures.constructed().getFirst();
-      var drawing = inOrder(batch);
-      for (int frame = 0; frame < 2; frame++) {
-        drawing.verify(batch).setColor(Color.LIGHT_GRAY);
-        drawing
-            .verify(batch)
-            .draw(texture, 0f, 0.75f, 1f, 0.25f, 2f, 0.5f, 1f, 1f, 0f, 0, 0, 1, 1, false, false);
-        drawing.verify(batch).setColor(Color.WHITE);
-      }
-      verifyNoInteractions(resources);
-    } finally {
-      cache.set(null, previous);
-    }
+    renderer.render(batch);
+
+    // It used to be a one-pixel texture stretched into a light-grey box. Now it's the arrow sprite,
+    // untinted, sized like any other arrow.
+    verify(batch).setColor(Color.WHITE);
+    verify(batch, never()).setColor(Color.LIGHT_GRAY);
+    verify(batch).draw(texture, 0f, 0f, 1f, 1f, 2f, 2f, 1f, 1f, 0f, 0, 0, 26, 26, false, false);
   }
 }

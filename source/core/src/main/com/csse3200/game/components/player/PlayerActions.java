@@ -73,11 +73,6 @@ public class PlayerActions extends Component {
     isGrounded = checkGrounded();
     checkJumpWindup();
 
-    // The grapple is a hold action: let go of right click and the rope drops
-    if (isGrappling() && !isRightMouseHeld()) {
-      grapple.release();
-    }
-
     if (isGrounded && !wasGrounded) {
       airDashUsed = false;
       dashCooldownRemaining = 0f;
@@ -161,11 +156,6 @@ public class PlayerActions extends Component {
       Body body = physicsComponent.getBody();
       body.applyLinearImpulse(new Vector2(0, JUMP_FORCE), body.getWorldCenter(), true);
     }
-  }
-
-  private boolean isRightMouseHeld() {
-    KeyboardPlayerInputComponent input = entity.getComponent(KeyboardPlayerInputComponent.class);
-    return input != null && input.isRightMouseHeld();
   }
 
   private void updateSpeed() {

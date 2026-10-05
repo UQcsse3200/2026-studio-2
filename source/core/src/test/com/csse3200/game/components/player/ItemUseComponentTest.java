@@ -157,6 +157,107 @@ class ItemUseComponentTest {
   }
 
   @Test
+  void shouldStartGrappleDrawOnShootEventWithoutUsingTheBowChargeFlow() {
+    Entity player = createPlayer();
+    InventoryComponent inventory = player.getComponent(InventoryComponent.class);
+    inventory.addItem(ItemType.ROPE_ARROW, 1);
+
+    int[] drawStarts = {0};
+    int[] chargeStarts = {0};
+    int[] grappleFires = {0};
+    player.getEvents().addListener("grappleDrawStart", (Vector2 ignored) -> drawStarts[0]++);
+    player.getEvents().addListener("chargeStart", (Vector2 ignored) -> chargeStarts[0]++);
+    player.getEvents().addListener("grappleFire", (Vector2 ignored) -> grappleFires[0]++);
+
+    player.getEvents().trigger("shoot", new Vector2(1f, 0f));
+
+    // The rope arrow starts charging on its own dedicated event now, not the bow's shared
+    // "chargeStart"/"chargeRelease" hold-and-release events, and not the old instant "grappleFire".
+    assertEquals(1, drawStarts[0]);
+    assertEquals(0, chargeStarts[0]);
+    assertEquals(0, grappleFires[0]);
+    assertEquals(1, inventory.getItemCount(ItemType.ROPE_ARROW));
+  }
+
+  @Test
+  void shouldReleaseGrappleDrawOnStopShootWithoutUsingTheBowChargeFlow() {
+    Entity player = createPlayer();
+    InventoryComponent inventory = player.getComponent(InventoryComponent.class);
+    inventory.addItem(ItemType.ROPE_ARROW, 1);
+
+    int[] drawReleases = {0};
+    player.getEvents().addListener("grappleDrawRelease", (Vector2 ignored) -> drawReleases[0]++);
+
+    player.getEvents().trigger("stopShoot");
+
+    assertEquals(1, drawReleases[0]);
+  }
+
+  @Test
+  void shouldRejectARopeArrowShotWithNoAimInsteadOfStartingTheDraw() {
+    Entity player = createPlayer();
+    InventoryComponent inventory = player.getComponent(InventoryComponent.class);
+    inventory.addItem(ItemType.ROPE_ARROW, 1);
+
+    AtomicReference<ItemType> failed = new AtomicReference<>();
+    AtomicInteger drawStarts = new AtomicInteger();
+    AtomicInteger used = new AtomicInteger();
+    player.getEvents().addListener("itemUseFailed", (ItemType type) -> failed.set(type));
+    player
+        .getEvents()
+        .addListener("grappleDrawStart", (Vector2 ignored) -> drawStarts.incrementAndGet());
+    player.getEvents().addListener("itemUsed", (ItemType ignored) -> used.incrementAndGet());
+
+    player.getEvents().trigger("shoot", Vector2.Zero.cpy());
+
+    assertEquals(ItemType.ROPE_ARROW, failed.get());
+    assertEquals(0, drawStarts.get());
+    assertEquals(0, used.get());
+  }
+
+  @Test
+  void shouldDrawTheRopeArrowWithoutLockingInABowArrowTypeOrSpendingAmmo() {
+    Entity player = createPlayer();
+    InventoryComponent inventory = player.getComponent(InventoryComponent.class);
+    inventory.addItem(ItemType.ROPE_ARROW, 1);
+
+    AtomicInteger bowTypeChanges = new AtomicInteger();
+    AtomicReference<ItemType> used = new AtomicReference<>();
+    player
+        .getEvents()
+        .addListener("setArrowType", (ArrowType ignored) -> bowTypeChanges.incrementAndGet());
+    player.getEvents().addListener("itemUsed", (ItemType type) -> used.set(type));
+
+    player.getEvents().trigger("shoot", new Vector2(1f, 0f));
+
+    // GrappleComponent, not the bow, fires this arrow, so the bow's type must be left alone.
+    assertEquals(0, bowTypeChanges.get());
+    assertEquals(ItemType.ROPE_ARROW, used.get());
+    assertEquals(1, inventory.getItemCount(ItemType.ROPE_ARROW));
+  }
+
+  @Test
+  void shouldStillReleaseTheGrappleDrawWhenAnotherArrowIsSelectedByReleaseTime() {
+    Entity player = createPlayer();
+    InventoryComponent inventory = player.getComponent(InventoryComponent.class);
+    inventory.addItem(ItemType.STANDARD_ARROW, 1);
+
+    AtomicInteger drawReleases = new AtomicInteger();
+    AtomicInteger swingReleases = new AtomicInteger();
+    player
+        .getEvents()
+        .addListener("grappleDrawRelease", (Vector2 ignored) -> drawReleases.incrementAndGet());
+    player.getEvents().addListener("grappleRelease", swingReleases::incrementAndGet);
+
+    player.getEvents().trigger("stopShoot");
+
+    // The selection can move on mid-draw (spending the last arrow auto-advances it), so a charge
+    // release is always sent. Only detaching an active swing is tied to the rope arrow being held.
+    assertEquals(1, drawReleases.get());
+    assertEquals(0, swingReleases.get());
+  }
+
+  @Test
   void shouldStartChargeOnShootEventWithoutFiringYet() {
     Entity player = createPlayer();
     InventoryComponent inventory = player.getComponent(InventoryComponent.class);

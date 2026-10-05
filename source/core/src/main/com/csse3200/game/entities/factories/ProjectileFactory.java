@@ -33,6 +33,33 @@ public class ProjectileFactory {
   public static final float POISON_POTION_WIDTH = 0.45f;
   public static final float POISON_POTION_HEIGHT = 0.55f;
 
+  /**
+   * @return the speed an arrow of this type is launched at before any charge multiplier is applied
+   */
+  public static float getArrowSpeed(ArrowType type) {
+    return switch (type) {
+      case ICE -> ICE_ARROW_SPEED;
+      case FIRE -> FIRE_ARROW_SPEED;
+      case GRAPPLE -> GRAPPLE_ARROW_SPEED;
+      case POTION -> POISON_POTION_SPEED;
+      case STANDARD, POISON -> STANDARD_ARROW_SPEED;
+    };
+  }
+
+  /**
+   * @return how far, in a straight line from the shooter, an arrow of this type flies before
+   *     expiring
+   */
+  public static float getArrowRange(ArrowType type) {
+    return switch (type) {
+      case ICE -> ICE_ARROW_RANGE;
+      case FIRE -> FIRE_ARROW_RANGE;
+      case GRAPPLE -> GRAPPLE_ARROW_RANGE;
+      case POTION -> POISON_POTION_RANGE;
+      case STANDARD, POISON -> STANDARD_ARROW_RANGE;
+    };
+  }
+
   public static Entity createPlayerArrow(Vector2 position, Vector2 direction) {
     return createPlayerArrow(null, position, direction);
   }
@@ -102,12 +129,21 @@ public class ProjectileFactory {
   }
 
   public static Entity createGrappleArrow(Entity shooter, Vector2 position, Vector2 direction) {
+    return createGrappleArrow(shooter, position, direction, 1f);
+  }
+
+  /**
+   * Like every other arrow, a charged shot is just launched faster or slower - how far it gets then
+   * falls out of the arc, so the range cap stays the same however hard it was drawn.
+   */
+  public static Entity createGrappleArrow(
+      Entity shooter, Vector2 position, Vector2 direction, float speedMultiplier) {
     return createArrow(
         shooter,
         position,
         direction,
         ItemType.ROPE_ARROW.getDamage(),
-        GRAPPLE_ARROW_SPEED,
+        GRAPPLE_ARROW_SPEED * speedMultiplier,
         GRAPPLE_ARROW_RANGE,
         ArrowType.GRAPPLE);
   }

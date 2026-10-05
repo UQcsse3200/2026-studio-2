@@ -36,6 +36,10 @@ public class PlayerAnimationController extends Component {
     entity.getEvents().addListener("chargeStart", this::drawStart);
     entity.getEvents().addListener("chargeRelease", this::drawRelease);
     entity.getEvents().addListener("chargeCancel", this::drawCancel);
+    // The grapple fires on its own toggle rather than the bow's hold-and-release, so it broadcasts
+    // its own charge events - reusing the same draw/shoot animation clips as the bow.
+    entity.getEvents().addListener("grappleChargeStart", this::drawStart);
+    entity.getEvents().addListener("grappleChargeFire", this::drawRelease);
     entity.getEvents().addListener("sprintEnd", this::sprintStop);
     entity.getEvents().addListener("death", this::death);
     entity.getEvents().addListener("sleep", this::sleep);

@@ -1,6 +1,5 @@
 package com.csse3200.game.components.projectile;
 
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Filter;
@@ -23,7 +22,10 @@ public class ArrowProjectileComponent extends Component {
   private static final Logger logger = LoggerFactory.getLogger(ArrowProjectileComponent.class);
   private static final short TARGET_LAYERS = PhysicsLayer.NPC;
   private static final short TERRAIN = (short) (PhysicsLayer.GROUND | PhysicsLayer.OBSTACLE);
-  private static final float ARC_GRAVITY_SCALE = 0.4f;
+
+  /** How much of the world's gravity every arrow (grapple included) falls under in flight. */
+  public static final float ARC_GRAVITY_SCALE = 0.4f;
+
   private static final float MIN_TRAVEL = 0.5f;
 
   private final Entity shooter;
@@ -86,12 +88,12 @@ public class ArrowProjectileComponent extends Component {
 
     Body body = physicsComponent.getBody();
     body.setFixedRotation(true);
-    body.setGravityScale(arrowType == ArrowType.GRAPPLE ? 0f : ARC_GRAVITY_SCALE);
+    body.setGravityScale(ARC_GRAVITY_SCALE);
     body.setLinearDamping(0f);
     body.setBullet(true);
     body.setLinearVelocity(direction.cpy().scl(speed));
     ignorePlayerCollisions(body);
-    startPosition = body.getPosition().cpy();
+    startPosition = getWorldCenter();
 
     entity.getEvents().addListener("collisionStart", this::onCollisionStart);
   }
@@ -117,14 +119,15 @@ public class ArrowProjectileComponent extends Component {
 
     Body body = physicsComponent.getBody();
     Vector2 origin = rangeOrigin();
-    if (body.getPosition().dst2(origin) >= maximumRange * maximumRange) {
+    Vector2 position = getWorldCenter();
+    if (position.dst2(origin) >= maximumRange * maximumRange) {
       logger.info(
           "{} arrow hit max range: origin={} ({}) arrowPos={} distance={} maxRange={}",
           arrowType,
           origin,
           shooter != null ? "live shooter position" : "spawn point, no shooter given",
-          body.getPosition(),
-          body.getPosition().dst(origin),
+          position,
+          position.dst(origin),
           maximumRange);
       expire();
       return;
@@ -137,13 +140,40 @@ public class ArrowProjectileComponent extends Component {
     return shooter != null ? shooter.getCenterPosition() : startPosition;
   }
 
+  /**
+   * @return where the arrow actually is in the world - the centre of its collision box. This is not
+   *     {@code entity.getCenterPosition()}: the body's origin is the box's corner, so once the
+   *     arrow has turned to face its flight path the two no longer agree.
+   */
+  public Vector2 getWorldCenter() {
+    if (physicsComponent == null || physicsComponent.getBody() == null) {
+      return entity.getCenterPosition();
+    }
+    // Box2D hands back one shared vector that every later call overwrites, so take a copy.
+    return physicsComponent.getBody().getWorldPoint(localCenter()).cpy();
+  }
+
+  /**
+   * The centre of the arrow's collision box in the body's own space (the box starts at the origin).
+   */
+  private Vector2 localCenter() {
+    return entity.getScale().scl(0.5f);
+  }
+
+  /**
+   * Turns the arrow to face the way it's flying. Box2D rotates a body about its origin, which is
+   * the corner of the arrow's box - rotating there swings the box up to ~0.6 units away from the
+   * sprite, so a wall would be hit well before the arrow visibly reached it. Instead, pivot about
+   * the box's own centre: keep the centre where it is and move the origin to suit.
+   */
   private void updateRotation(Body body) {
     Vector2 velocity = body.getLinearVelocity();
     if (velocity.isZero()) {
       return;
     }
-    float angleDeg = velocity.angleDeg();
-    body.setTransform(body.getPosition(), angleDeg * MathUtils.degreesToRadians);
+    float angle = velocity.angleRad();
+    Vector2 origin = getWorldCenter().sub(localCenter().rotateRad(angle));
+    body.setTransform(origin, angle);
   }
 
   private void onCollisionStart(Fixture me, Fixture other) {
@@ -178,7 +208,7 @@ public class ArrowProjectileComponent extends Component {
   }
 
   private boolean hasClearedSpawn() {
-    return physicsComponent.getBody().getPosition().dst2(startPosition) > MIN_TRAVEL * MIN_TRAVEL;
+    return getWorldCenter().dst2(startPosition) > MIN_TRAVEL * MIN_TRAVEL;
   }
 
   private boolean damageTarget(Fixture other) {

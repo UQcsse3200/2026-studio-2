@@ -491,11 +491,13 @@ class PlayerCombatIntegrationTest {
 
   @Test
   @SuppressWarnings("unchecked")
-  void shouldRouteRopeArrowWithoutConsumingItAndReleaseOnMouseUp() {
-    EventListener1<Vector2> grappleFire = mock(EventListener1.class);
+  void shouldChargeRopeArrowOnHoldAndFireOnReleaseWithoutConsumingIt() {
     EventListener0 grappleRelease = mock(EventListener0.class);
-    player.getEvents().addListener("grappleFire", grappleFire);
+    EventListener1<Vector2> grappleDrawStart = mock(EventListener1.class);
+    EventListener1<Vector2> grappleDrawRelease = mock(EventListener1.class);
     player.getEvents().addListener("grappleRelease", grappleRelease);
+    player.getEvents().addListener("grappleDrawStart", grappleDrawStart);
+    player.getEvents().addListener("grappleDrawRelease", grappleDrawRelease);
     inventory.addItem(ItemType.STANDARD_ARROW, 2);
     inventory.addItem(ItemType.ROPE_ARROW, 1);
     input.keyDown(Keys.E);
@@ -505,7 +507,12 @@ class PlayerCombatIntegrationTest {
     assertTrue(input.isRightMouseHeld());
     input.touchUp(40, 60, 0, Buttons.RIGHT);
 
-    verify(grappleFire).handle(new Vector2(3f, 4f));
+    // The rope arrow charges and fires on its own dedicated events now, rather than the bow's
+    // shared hold-and-release "chargeStart"/"chargeRelease" (which would let the two cross-trigger
+    // each other off the same broadcast).
+    verify(grappleDrawStart).handle(new Vector2(3f, 4f));
+    verify(grappleDrawRelease).handle(new Vector2(3f, 4f));
+    verifyNoInteractions(chargeStart);
     verify(grappleRelease).handle();
     assertFalse(input.isRightMouseHeld());
     assertEquals(1, inventory.getItemCount(ItemType.ROPE_ARROW));

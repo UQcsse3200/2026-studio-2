@@ -1,7 +1,6 @@
 package com.csse3200.game.rendering.item;
 
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
@@ -12,8 +11,6 @@ import com.csse3200.game.services.ServiceLocator;
 
 /** Draws a projectile's sprite rotated to face its flight direction. */
 public class ArrowRenderComponent extends RenderComponent {
-  private static Texture pixelTexture;
-
   private final ArrowType arrowType;
   private Float renderSize;
   private ArrowProjectileComponent projectile;
@@ -56,10 +53,7 @@ public class ArrowRenderComponent extends RenderComponent {
     float width = scale.x;
     float height = scale.y;
     if (renderSize != null) {
-      if (arrowType == ArrowType.GRAPPLE) {
-        width = renderSize;
-        height = renderSize * 0.25f;
-      } else if (texture.getWidth() >= texture.getHeight()) {
+      if (texture.getWidth() >= texture.getHeight()) {
         width = renderSize;
         height = renderSize * texture.getHeight() / texture.getWidth();
       } else {
@@ -68,12 +62,11 @@ public class ArrowRenderComponent extends RenderComponent {
       }
     }
 
-    Vector2 center = entity.getCenterPosition();
+    Vector2 center = projectile != null ? projectile.getWorldCenter() : entity.getCenterPosition();
     float x = center.x - width / 2f;
     float y = center.y - height / 2f;
 
-    boolean grapple = arrowType == ArrowType.GRAPPLE;
-    batch.setColor(grapple ? Color.LIGHT_GRAY : Color.WHITE);
+    batch.setColor(Color.WHITE);
     batch.draw(
         texture,
         x,
@@ -91,14 +84,9 @@ public class ArrowRenderComponent extends RenderComponent {
         texture.getHeight(),
         false,
         false);
-    batch.setColor(Color.WHITE);
   }
 
   private Texture resolveTexture() {
-    if (arrowType == ArrowType.GRAPPLE) {
-      return resolvePixelTexture();
-    }
-
     if (arrowTexture == null && ServiceLocator.getResourceService() != null) {
       try {
         arrowTexture =
@@ -108,16 +96,5 @@ public class ArrowRenderComponent extends RenderComponent {
       }
     }
     return arrowTexture;
-  }
-
-  private static Texture resolvePixelTexture() {
-    if (pixelTexture == null) {
-      Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
-      pixmap.setColor(Color.WHITE);
-      pixmap.fill();
-      pixelTexture = new Texture(pixmap);
-      pixmap.dispose();
-    }
-    return pixelTexture;
   }
 }

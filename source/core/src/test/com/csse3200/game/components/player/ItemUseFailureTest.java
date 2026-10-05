@@ -120,19 +120,22 @@ class ItemUseFailureTest {
   }
 
   @Test
-  void shouldFireGrappleEvenWhenReleaseSoundCannotLoad() {
+  void shouldStartGrappleDrawWithoutDependingOnTheReleaseSound() {
     select(ItemType.ROPE_ARROW);
     ResourceService resources = mock(ResourceService.class);
     when(resources.getAsset(eq("sounds/Arrow_release.wav"), any()))
         .thenThrow(new IllegalStateException("Audio unavailable"));
     ServiceLocator.registerResourceService(resources);
     use.create();
-    List<Vector2> shots = new ArrayList<>();
-    player.getEvents().<Vector2>addListener("grappleFire", shots::add);
+    List<Vector2> draws = new ArrayList<>();
+    player.getEvents().<Vector2>addListener("grappleDrawStart", draws::add);
     use.shootSelectedArrow(Vector2.X.cpy());
-    assertEquals(List.of(Vector2.X), shots);
+    // The rope arrow is drawn like a bow, and its release sound now plays when the arrow actually
+    // leaves (in GrappleComponent), so starting the draw never touches the audio at all.
+    assertEquals(List.of(Vector2.X), draws);
     assertEquals(List.of(ItemType.ROPE_ARROW), used);
     assertTrue(failed.isEmpty());
+    verify(resources, never()).getAsset(eq("sounds/Arrow_release.wav"), any());
     verify(inventory, never()).removeItem(any(), anyInt());
   }
 }

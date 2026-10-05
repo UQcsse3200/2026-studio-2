@@ -26,6 +26,8 @@ import com.csse3200.game.physics.components.ColliderComponent;
 import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.rendering.AnimationRenderComponent;
+import com.csse3200.game.rendering.item.BowIndicatorRenderComponent;
+import com.csse3200.game.rendering.item.GrappleIndicatorRenderComponent;
 import com.csse3200.game.rendering.item.GrappleRenderComponent;
 import com.csse3200.game.rendering.item.MeleeRenderComponent;
 import com.csse3200.game.services.ServiceLocator;
@@ -92,6 +94,8 @@ public class PlayerFactory {
             .addComponent(new PlayerStatsDisplay())
             .addComponent(new GrappleComponent())
             .addComponent(new GrappleRenderComponent())
+            .addComponent(new GrappleIndicatorRenderComponent())
+            .addComponent(new BowIndicatorRenderComponent())
             .addComponent(new PlayerAnimationController())
             .addComponent(new MeleeRenderComponent())
             .addComponent(new RespawnComponent());

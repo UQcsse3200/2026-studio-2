@@ -9,10 +9,11 @@ import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.RayCastCallback;
 import com.badlogic.gdx.physics.box2d.Shape;
 import com.badlogic.gdx.physics.box2d.World;
-import com.badlogic.gdx.physics.box2d.joints.DistanceJoint;
-import com.badlogic.gdx.physics.box2d.joints.DistanceJointDef;
+import com.badlogic.gdx.physics.box2d.joints.RopeJoint;
+import com.badlogic.gdx.physics.box2d.joints.RopeJointDef;
 import com.badlogic.gdx.utils.Array;
 import com.csse3200.game.components.Component;
+import com.csse3200.game.components.item.weapons.bow.BowCharge;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.ProjectileFactory;
 import com.csse3200.game.physics.PhysicsLayer;
@@ -24,12 +25,19 @@ import java.util.List;
 /** Fires a grapple arrow, then swings from wherever it lands. */
 public class GrappleComponent extends Component {
 
+  /** How far in front of the player's centre, in player widths, a fired arrow spawns. */
+  public static final float SPAWN_OFFSET = 0.6f;
+
   private static final float GRAPPLE_COOLDOWN = 2f;
   private static final float SWING_FORCE = 7f;
   private static final float MAX_SWING_SPEED = 7f;
   private static final float SWING_DAMPING = 0.5f;
   private static final float CLIMB_SPEED = 3f;
   private static final float MIN_PLAYER_SEGMENT_LENGTH = 1f;
+
+  // Below this the swing arc is nearly vertical (player level with the anchor), so left/right can't
+  // pick a side from where the push points and it falls back to a fixed convention instead.
+  private static final float MIN_TANGENT_X = 0.05f;
 
   /** Keeps the rendered rope just outside the collider instead of clipping through its corner. */
   private static final float ROPE_RADIUS = 0.025f;
@@ -40,7 +48,7 @@ public class GrappleComponent extends Component {
   private static final int MAX_ROPE_CONTACTS = 16;
 
   private PhysicsComponent physicsComponent;
-  private DistanceJoint ropeJoint;
+  private RopeJoint ropeJoint;
   private Body originalAnchorBody;
   private Vector2 originalAnchorLocal;
   private float totalRopeLength;
@@ -52,6 +60,8 @@ public class GrappleComponent extends Component {
   private float cooldownRemaining = 0f;
   private boolean climbing;
   private boolean descending;
+  private boolean charging;
+  private long chargeStartTimeMs;
   // Whatever linearDamping the body had right before swinging, restored on release so a grapple
   // cycle never permanently changes the player's drag (and therefore jump height/speed).
   private float preSwingLinearDamping;
@@ -60,19 +70,111 @@ public class GrappleComponent extends Component {
   private Body pendingAnchorBody;
   private Vector2 pendingAnchorPoint;
 
+  // The arrow currently in flight, if any - tracked so a respawn can cancel it before it can land
+  // and attach a rope back to wherever the player died.
+  private Entity pendingArrow;
+
   // Reused when checking the joint is still alive, to avoid allocating every frame
   private final Array<Joint> liveJoints = new Array<>();
 
   @Override
   public void create() {
     physicsComponent = entity.getComponent(PhysicsComponent.class);
-    entity.getEvents().addListener("grappleFire", this::fire);
+    entity.getEvents().addListener("grappleFire", (Vector2 direction) -> fire(direction));
     entity.getEvents().addListener("grappleRelease", this::release);
     entity.getEvents().addListener("grappleSwing", this::swing);
     entity.getEvents().addListener("grappleClimbStart", this::startClimbing);
     entity.getEvents().addListener("grappleClimbStop", this::stopClimbing);
     entity.getEvents().addListener("grappleDescendStart", this::startDescending);
     entity.getEvents().addListener("grappleDescendStop", this::stopDescending);
+    entity.getEvents().addListener("grappleDrawStart", this::startCharge);
+    entity.getEvents().addListener("grappleDrawRelease", this::releaseCharge);
+    entity.getEvents().addListener("chargeCancel", this::cancelCharge);
+    entity.getEvents().addListener("death", this::cancelCharge);
+    entity.getEvents().addListener("respawnAtCheckpoint", this::resetOnRespawn);
+  }
+
+  /**
+   * Begins charging a grapple shot on shoot-button-down, mirroring the bow's own hold-to-draw.
+   * Deliberately its own event, separate from the bow's "chargeStart"/"chargeRelease", so the two
+   * weapons never cross-trigger each other off the same shared broadcast. No-ops (and fires no
+   * animation event) if already attached, already charging, or still on cooldown from the last
+   * shot.
+   *
+   * @param direction Aim direction at the moment charging started.
+   */
+  public void startCharge(Vector2 direction) {
+    if (direction == null || direction.isZero() || isAttached() || isOnCooldown() || charging) {
+      return;
+    }
+    charging = true;
+    chargeStartTimeMs = ServiceLocator.getTimeSource().getTime();
+    // Only fires once the charge is actually accepted, so no draw animation plays for a press that
+    // did nothing - e.g. while the grapple is still on cooldown.
+    entity.getEvents().trigger("grappleChargeStart", direction);
+  }
+
+  /**
+   * Fires the currently charging shot, if any, on shoot-button-release, with launch speed scaled by
+   * how long it was held exactly as the bow's is (see {@link BowCharge}) - a tap barely lobs it, a
+   * full draw flings it far. No-ops if nothing was charging.
+   *
+   * @param direction Aim direction at release time.
+   */
+  public void releaseCharge(Vector2 direction) {
+    if (!charging) {
+      return;
+    }
+    float speedMultiplier = currentSpeedMultiplier();
+    charging = false;
+    entity.getEvents().trigger("grappleChargeFire", direction);
+    fire(direction, speedMultiplier);
+  }
+
+  /**
+   * Cancels an in-progress charge without firing, e.g. if the player dies mid-draw or a UI overlay
+   * steals the mouse-up.
+   */
+  private void cancelCharge() {
+    charging = false;
+  }
+
+  /**
+   * @return the speed multiplier a release right now would fire with, or 1 when not charging - used
+   *     by the aim preview to show exactly where the current charge would land, and by {@link
+   *     #releaseCharge} to scale the actual shot
+   */
+  public float currentSpeedMultiplier() {
+    if (!charging) {
+      return 1f;
+    }
+    long now = ServiceLocator.getTimeSource().getTime();
+    return BowCharge.speedMultiplier(now - chargeStartTimeMs);
+  }
+
+  /**
+   * @return true while a shot is being charged, i.e. between the shoot button going down and coming
+   *     back up
+   */
+  public boolean isCharging() {
+    return charging;
+  }
+
+  /**
+   * Clears every bit of grapple state on respawn - otherwise an arrow fired right before falling
+   * can still land and attach a rope back to wherever you died, well after you've been teleported
+   * to the checkpoint.
+   */
+  private void resetOnRespawn() {
+    release();
+    cancelCharge();
+    pendingAnchorBody = null;
+    pendingAnchorPoint = null;
+    if (pendingArrow != null && ServiceLocator.getEntityService() != null) {
+      ServiceLocator.getEntityService().scheduleRemoval(pendingArrow);
+    }
+    pendingArrow = null;
+    cooldownRemaining = 0f;
   }
 
   @Override
@@ -112,8 +214,18 @@ public class GrappleComponent extends Component {
     physicsComponent.getBody().setLinearDamping(preSwingLinearDamping);
   }
 
-  /** Launches a grapple arrow, unless one is in flight, attached, or still on cooldown. */
+  /** Launches a normal-speed grapple arrow, unless one is in flight, attached, or on cooldown. */
   public void fire(Vector2 direction) {
+    fire(direction, 1f);
+  }
+
+  /**
+   * Launches a grapple arrow, unless one is in flight, attached, or still on cooldown.
+   *
+   * @param speedMultiplier scales the arrow's launch speed - 1 for a normal shot, lower for one
+   *     released early out of a charge, higher for a fully drawn one
+   */
+  public void fire(Vector2 direction, float speedMultiplier) {
     if (direction == null || direction.isZero() || cooldownRemaining > 0f || isAttached()) {
       return;
     }
@@ -126,12 +238,13 @@ public class GrappleComponent extends Component {
     }
 
     Vector2 aim = direction.cpy().nor();
-    Vector2 spawn = entity.getCenterPosition().mulAdd(aim, entity.getScale().x * 0.6f);
+    Vector2 spawn = entity.getCenterPosition().mulAdd(aim, entity.getScale().x * SPAWN_OFFSET);
 
     // Pass 'entity' so the grapple arrow ignores player collisions
-    Entity arrow = ProjectileFactory.createGrappleArrow(entity, spawn, aim);
+    Entity arrow = ProjectileFactory.createGrappleArrow(entity, spawn, aim, speedMultiplier);
     arrow.addComponent(new GrappleArrowComponent(entity));
     ServiceLocator.getEntityService().register(arrow);
+    pendingArrow = arrow;
 
     // Only set on a successful shot, so spamming the button doesn't extend the wait
     cooldownRemaining = GRAPPLE_COOLDOWN;
@@ -145,11 +258,17 @@ public class GrappleComponent extends Component {
    * @param point where the arrow struck, in world coordinates
    */
   public void attachTo(Body anchorBody, Vector2 point) {
+    // The arrow that got us here has already scheduled its own removal
+    pendingArrow = null;
     if (isAttached() || pendingAnchorBody != null) {
       return;
     }
     pendingAnchorBody = anchorBody;
     pendingAnchorPoint = point.cpy();
+    // Once the grapple actually activates, the cooldown no longer applies - you should be free to
+    // detach and fire straight back off to chain swings. The cooldown only exists to stop the shot
+    // itself being spammed for free while it's still missing.
+    cooldownRemaining = 0f;
   }
 
   private void createJoint(Body anchorBody, Vector2 point) {
@@ -166,7 +285,7 @@ public class GrappleComponent extends Component {
   private void createJointAt(Body anchorBody, Vector2 point, float length) {
     Body playerBody = physicsComponent.getBody();
 
-    DistanceJointDef def = new DistanceJointDef();
+    RopeJointDef def = new RopeJointDef();
     def.bodyA = anchorBody;
     def.bodyB = playerBody;
 
@@ -176,14 +295,14 @@ public class GrappleComponent extends Component {
     // Pivot from the player's centre of mass so the pendulum hangs evenly
     def.localAnchorB.set(playerBody.getLocalCenter());
 
-    // Fixed length keeps the player on the arc so momentum carries to the other side
-    def.length = Math.max(length, MIN_JOINT_LENGTH);
-    def.frequencyHz = 0f; // 0 = rigid rod, raise for a springier rope
-    def.dampingRatio = 0f;
+    // A rope only caps how far away the player can get, so momentum still carries them round the
+    // anchor when it's taut. It goes slack once they're closer - unlike a rigid rod, which would
+    // hold them at this exact distance and swing them in an arc even when the anchor is below.
+    def.maxLength = Math.max(length, MIN_JOINT_LENGTH);
     def.collideConnected = true;
 
     ropeJoint =
-        (DistanceJoint) ServiceLocator.getPhysicsService().getPhysics().getWorld().createJoint(def);
+        (RopeJoint) ServiceLocator.getPhysicsService().getPhysics().getWorld().createJoint(def);
 
     // Stop the player spinning and bleed the swing off over time.
     playerBody.setFixedRotation(true);
@@ -207,7 +326,7 @@ public class GrappleComponent extends Component {
       rebuildJointForPath();
     } else if (!ropeContacts.isEmpty()) {
       // Moving contacts change the length consumed above the active pivot every frame.
-      ropeJoint.setLength(Math.max(remainingRopeLength(anchor), MIN_JOINT_LENGTH));
+      ropeJoint.setMaxLength(Math.max(remainingRopeLength(anchor), MIN_JOINT_LENGTH));
     }
   }
 
@@ -467,8 +586,14 @@ public class GrappleComponent extends Component {
     // Vector from the anchor out to the player (live, so it tracks a moving anchor)
     Vector2 r = entity.getCenterPosition().sub(ropeJoint.getAnchorA());
 
-    // Rotate 90 degrees one way or the other depending on which key is held
-    Vector2 tangent = direction > 0 ? new Vector2(-r.y, r.x).nor() : new Vector2(r.y, -r.x).nor();
+    // Push along the arc, towards whichever side the key points. A fixed 90 degree turn of r would
+    // point the wrong way once the player is above the anchor, shoving them against the key.
+    Vector2 tangent = new Vector2(-r.y, r.x).nor();
+    boolean pointsTheWrongWay =
+        Math.abs(tangent.x) > MIN_TANGENT_X ? tangent.x * direction < 0 : direction < 0;
+    if (pointsTheWrongWay) {
+      tangent.scl(-1f);
+    }
 
     body.applyForceToCenter(tangent.scl(SWING_FORCE * body.getMass()), true);
   }
@@ -529,11 +654,19 @@ public class GrappleComponent extends Component {
   private void setTotalRopeLength(float requestedLength, float fixedLength) {
     float minimumLength = Math.min(initialRopeLength, fixedLength + MIN_PLAYER_SEGMENT_LENGTH);
     totalRopeLength = Math.clamp(requestedLength, minimumLength, initialRopeLength);
-    ropeJoint.setLength(Math.max(totalRopeLength - fixedLength, MIN_JOINT_LENGTH));
+    ropeJoint.setMaxLength(Math.max(totalRopeLength - fixedLength, MIN_JOINT_LENGTH));
   }
 
   public boolean isAttached() {
     return ropeJoint != null;
+  }
+
+  /**
+   * @return true from the moment a shot is fired until its cooldown ends, covering the arrow's
+   *     flight - used to hide the aim preview the instant you actually shoot
+   */
+  public boolean isOnCooldown() {
+    return cooldownRemaining > 0f;
   }
 
   /**

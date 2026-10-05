@@ -1,6 +1,5 @@
 package com.csse3200.game.components.player;
 
-import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.Component;
@@ -43,10 +42,12 @@ public class ItemUseComponent extends Component {
    * Starts using the selected arrow item on shoot-button-down. Consumables are ignored here so
    * holding or clicking the shoot button never accidentally drinks a potion.
    *
-   * <p>The rope arrow still fires instantly (unchanged). Other arrows lock in their type and spend
-   * their ammo immediately, same as before, but no longer fire right away - the shot is now held as
-   * a charge and only actually fires when {@link #stopShootSelectedArrow()} releases it, with power
-   * scaling based on how long the button was held.
+   * <p>Every arrow, including the rope arrow, is held as a charge and only actually fires when
+   * {@link #stopShootSelectedArrow()} releases the button, with power (and for the grapple, reach)
+   * scaling based on how long it was held. The rope arrow fires on its own dedicated event rather
+   * than the bow's "chargeStart"/"chargeRelease", so the two weapons never cross-trigger each other
+   * off the same shared broadcast, and doesn't spend ammo or lock in a bow arrow type, since
+   * GrappleComponent, not BowComponent, is what actually fires it.
    *
    * @param direction Input direction from mouse aim or controller
    */
@@ -59,23 +60,20 @@ public class ItemUseComponent extends Component {
       return;
     }
 
+    if (direction == null || direction.isZero()) {
+      entity.getEvents().trigger(ITEM_USE_FAILED, selected);
+      return;
+    }
+
     if (selected == ItemType.ROPE_ARROW) {
-      useSelectedItem();
-      logger.debug("Arrow sound should play now");
-      try {
-        Sound arrowSound =
-            ServiceLocator.getResourceService().getAsset("sounds/Arrow_release.wav", Sound.class);
-        arrowSound.play(0.4f);
-      } catch (Exception e) {
-        // Audio is optional; a missing asset must not prevent the grapple action.
-        logger.debug("Unable to play grapple release sound", e);
-      }
+      entity.getEvents().trigger(ITEM_USED, selected);
+      entity.getEvents().trigger("grappleDrawStart", direction);
       return;
     }
 
     // Reject before reserving ammo. Readiness also covers a bow that already has a paid arrow
     // charging, so repeat clicks and the alternate attack input cannot consume another arrow.
-    if (direction == null || direction.isZero() || !isPrimaryWeaponReady()) {
+    if (!isPrimaryWeaponReady()) {
       entity.getEvents().trigger(ITEM_USE_FAILED, selected);
       return;
     }
@@ -89,13 +87,15 @@ public class ItemUseComponent extends Component {
   }
 
   /**
-   * Releases the grapple and any charging shot when the shoot button comes back up.
+   * Detaches an active swing and releases any charging shot - bow or grapple - when the shoot
+   * button comes back up.
    *
-   * <p>Both are signalled unconditionally rather than picking one based on the current selection:
-   * spending the last arrow in a slot auto-advances the inventory to the next occupied slot, so the
-   * item selected on release is not necessarily the one that started the draw. GrappleComponent
-   * ignores a release when no rope is attached, and BowComponent ignores one when nothing is
-   * charging, so signalling both is safe and guarantees a charge can never be left hanging.
+   * <p>All three events are signalled unconditionally rather than picking one based on the current
+   * selection: spending the last arrow in a slot auto-advances the inventory to the next occupied
+   * slot, so the item selected on release is not necessarily the one that started the draw.
+   * GrappleComponent ignores a release when no rope is attached and a charge release when it isn't
+   * charging, and BowComponent ignores a release when nothing is charging, so signalling all three
+   * is safe and guarantees a charge can never be left hanging.
    */
   void stopShootSelectedArrow() {
     if (inventory == null) {
@@ -104,6 +104,7 @@ public class ItemUseComponent extends Component {
     if (inventory.getSelectedItem() == ItemType.ROPE_ARROW) {
       entity.getEvents().trigger("grappleRelease");
     }
+    entity.getEvents().trigger("grappleDrawRelease", getAimDirection());
     entity.getEvents().trigger("chargeRelease", getAimDirection());
   }
 

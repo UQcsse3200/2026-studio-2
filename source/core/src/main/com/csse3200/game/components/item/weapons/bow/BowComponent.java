@@ -14,10 +14,9 @@ public class BowComponent extends Component implements PrimaryWeapon {
 
   private static final String ATTACK_SOUND = "sounds/Impact4.ogg";
   private static final float BOW_COOLDOWN = 0.4f;
-  private static final float MAX_CHARGE_SECONDS = 1.5f;
-  // Fraction of full speed a shot has at zero charge - keeps a tap-release shot weak/short-range
-  // rather than firing at full power or not firing at all.
-  private static final float MIN_CHARGE_SPEED_FACTOR = 0.3f;
+
+  /** How far in front of the player's centre, in player widths, a fired arrow spawns. */
+  public static final float SPAWN_OFFSET = 0.8f;
 
   @FunctionalInterface
   public interface ProjectileCreator {
@@ -76,10 +75,7 @@ public class BowComponent extends Component implements PrimaryWeapon {
         this.projectileCreator = ProjectileFactory::createFireArrow;
         break;
       case GRAPPLE:
-        // Grapples always launch at a fixed speed, independent of bow charge.
-        this.projectileCreator =
-            (shooter, position, direction, speedMultiplier) ->
-                ProjectileFactory.createGrappleArrow(shooter, position, direction);
+        this.projectileCreator = ProjectileFactory::createGrappleArrow;
         break;
       case STANDARD:
       default:
@@ -118,9 +114,8 @@ public class BowComponent extends Component implements PrimaryWeapon {
   }
 
   /**
-   * Fires the currently charging shot, if any, with speed scaled linearly by how long it was held
-   * (from {@link #MIN_CHARGE_SPEED_FACTOR} at 0s up to full speed at {@link #MAX_CHARGE_SECONDS}).
-   * No-ops if nothing was charging.
+   * Fires the currently charging shot, if any, with speed scaled by how long it was held (see
+   * {@link BowCharge}). No-ops if nothing was charging.
    *
    * @param direction Aim direction at release time.
    */
@@ -128,17 +123,32 @@ public class BowComponent extends Component implements PrimaryWeapon {
     if (!isCharging) {
       return;
     }
+    float speedMultiplier = currentSpeedMultiplier();
     isCharging = false;
-
-    long now = ServiceLocator.getTimeSource().getTime();
-    float elapsedSeconds = Math.min(MAX_CHARGE_SECONDS, (now - chargeStartTimeMs) / 1000f);
-    float chargeFraction = elapsedSeconds / MAX_CHARGE_SECONDS;
-    float speedMultiplier =
-        MIN_CHARGE_SPEED_FACTOR + (1.5f - MIN_CHARGE_SPEED_FACTOR) * chargeFraction;
 
     if (fire(direction, speedMultiplier)) {
       cooldownTimer = BOW_COOLDOWN;
     }
+  }
+
+  /**
+   * @return the speed multiplier a release right now would fire with, or 1 when not charging - used
+   *     by the aim preview to show exactly where the current draw would land
+   */
+  public float currentSpeedMultiplier() {
+    if (!isCharging) {
+      return 1f;
+    }
+    long now = ServiceLocator.getTimeSource().getTime();
+    return BowCharge.speedMultiplier(now - chargeStartTimeMs);
+  }
+
+  /**
+   * @return true while a shot is being drawn, i.e. between the shoot button going down and coming
+   *     back up
+   */
+  public boolean isCharging() {
+    return isCharging;
   }
 
   /**
@@ -161,7 +171,7 @@ public class BowComponent extends Component implements PrimaryWeapon {
 
     Vector2 normalizedDirection = direction.cpy().nor();
     Vector2 spawnPosition =
-        entity.getCenterPosition().mulAdd(normalizedDirection, entity.getScale().x * 0.8f);
+        entity.getCenterPosition().mulAdd(normalizedDirection, entity.getScale().x * SPAWN_OFFSET);
 
     Entity projectile =
         projectileCreator.create(entity, spawnPosition, normalizedDirection, speedMultiplier);
