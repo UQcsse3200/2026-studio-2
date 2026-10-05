@@ -105,9 +105,8 @@ public class Level1GameArea extends GameArea {
     "images/health/PixelArt_HeartBack.png",
     "images/ui/transparent.png",
     "images/backgrounds/level_1_bg.png",
-    "images/parallax/level_1_background.png",
+    "images/backgrounds/level_1_idea.png",
     "images/parallax/level_1_clouds.png",
-    "images/parallax/level_1_furthest.png",
     "images/terrain/Others/closed_door.png",
     "images/terrain/Others/open_door.png",
     "images/terrain/Level_1/sheeps_cave.png",
@@ -229,86 +228,57 @@ public class Level1GameArea extends GameArea {
   }
 
   /**
-   * ============================================================ CURRENT ACTIVE BACKGROUND
-   * ============================================================
+   * Level 1 background, built from independent layers.
    *
-   * <p>Uses the complete original_background.png as ONE layer.
+   * <p>The base layer is one copy of level_1_idea.png (1672 x 940) that drifts slowly with the
+   * camera like a distant backdrop. Two transparent cloud layers drift across the sky on top of it
+   * at their own speeds, so each layer moves independently of the others.
    *
-   * <p>The camera and parallax factor are passed to the BackgroundRenderComponent so that the
-   * background moves more slowly than the foreground when the camera moves. The image is 1024 x
-   * 572, so when its width is 60 world units, the matching height is approximately 33.52.
-   *
-   * <p>Parallax factor = 0.30
-   *
-   * <p>This means the background moves at 30% of the camera movement relative to the world, giving
-   * the subtle effect you originally wanted.
+   * <p>A layer's world position is x = backgroundPos.x + offset.x + cameraX * (1 - parallax.x) and
+   * y = backgroundPos.y + offset.y + cameraY * distance. With the base layer's values (parallax x
+   * 0.15, distance 0.7) the image covers the view for camera positions of roughly x 5..95 and y
+   * 3..25, i.e. the whole 90 x 27 level.
    */
   private void spawnBackground() {
     final Vector2 backgroundPos = new Vector2(-10f, -10f);
     BackgroundRenderComponent backgroundComponent =
         new BackgroundRenderComponent(camera, backgroundPos, worldBounds);
 
-    // Complete original background image
+    // Base layer: the whole scene.
     backgroundComponent.addLayer(
-        "images/parallax/level_1_background.png",
-        new Vector2(0.1f, 0f), // Parallax factor
-        30f,
-        12f,
-        new Vector2(0f, 4.25f), // Positional offset
+        "images/backgrounds/level_1_idea.png",
+        new Vector2(0.15f, 0f),
+        36f,
+        20.2f,
+        new Vector2(0f, 5f),
         BackgroundType.DEPENDENT,
-        new Vector2(0f, 0f), // Independent velocity
+        new Vector2(0f, 0f),
         false,
-        1f,
+        0.7f,
         1f);
 
-    // Complete clouds image
+    // Slow, narrow cloud band.
     backgroundComponent.addLayer(
         "images/parallax/level_1_clouds.png",
-        new Vector2(0.1f, 0f), // Parallax factor
+        new Vector2(0.1f, 0f),
         30f,
         4f,
-        new Vector2(0f, 10f), // Positional offset
+        new Vector2(0f, 10f),
         BackgroundType.DEPENDENT,
-        new Vector2(0.1f, 0f), // Independent velocity
+        new Vector2(0.1f, 0f),
         true,
         1f,
         1f);
 
-    // Complete mountains image
+    // Larger, faster cloud layer.
     backgroundComponent.addLayer(
         "images/parallax/level_1_clouds.png",
-        new Vector2(0.1f, 0f), // Parallax factor
+        new Vector2(0.1f, 0f),
         30f,
         15f,
-        new Vector2(25f, 7.5f), // Positional offset
+        new Vector2(25f, 7.5f),
         BackgroundType.DEPENDENT,
-        new Vector2(0.2f, 0f), // Independent velocity
-        true,
-        1f,
-        1f);
-
-    // Complete furthest mountains image
-    backgroundComponent.addLayer(
-        "images/parallax/level_1_furthest.png",
-        new Vector2(0.06f, 0f), // Parallax factor 0.12
-        30f,
-        7f,
-        new Vector2(5f, 6.5f), // Positional offset
-        BackgroundType.DEPENDENT,
-        new Vector2(0f, 0f), // Independent velocity
-        true,
-        1f,
-        0.5f);
-
-    // Complete second-furthest mountains image
-    backgroundComponent.addLayer(
-        "images/parallax/level_1_furthest.png",
-        new Vector2(0.11f, 0f), // Parallax factor 0.12
-        30f,
-        10f,
-        new Vector2(0f, 5f), // Positional offset
-        BackgroundType.DEPENDENT,
-        new Vector2(0f, 0f), // Independent velocity
+        new Vector2(0.2f, 0f),
         true,
         1f,
         1f);
