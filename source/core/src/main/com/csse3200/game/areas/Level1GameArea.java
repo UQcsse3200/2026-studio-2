@@ -19,6 +19,7 @@ import com.csse3200.game.rendering.BackgroundRenderComponent;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.utils.math.GridPoint2Utils;
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -216,8 +217,9 @@ public class Level1GameArea extends GameArea {
     // Test enemy functionalitys
     spawnTestSkeletonWarrior();
     // spawnTestSkeletonArcher();
-    // spawnTestVulture();
+    spawnTestVulture();
     // spawnTestNecromancer();
+    spawnTestCalypso();
 
     // spawnVulture();
     // spawnNecromancer();
@@ -474,6 +476,16 @@ public class Level1GameArea extends GameArea {
   private void spawnTestVulture() {
     for (GridPoint2 spawnLocation : VultureTestSpawnLocations) {
       Entity enemy = EnemyFactory.createVulture(player);
+      spawnEntityAt(enemy, spawnLocation, true, true);
+    }
+  }
+
+  List<Vector2> testCalypsoTpPositions =
+      List.of(new Vector2(5f, 3f), new Vector2(10f, 7f), new Vector2(15f, 2f));
+
+  private void spawnTestCalypso() {
+    for (GridPoint2 spawnLocation : testSpawnLocations) {
+      Entity enemy = EnemyFactory.createCalypso(player, testCalypsoTpPositions);
       spawnEntityAt(enemy, spawnLocation, true, true);
     }
   }
