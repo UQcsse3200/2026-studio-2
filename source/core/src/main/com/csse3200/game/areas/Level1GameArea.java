@@ -27,21 +27,6 @@ public class Level1GameArea extends GameArea {
   private static final Logger logger = LoggerFactory.getLogger(Level1GameArea.class);
   private KeyboardPlayerInputComponent input;
 
-  /*
-  private static final PlatformConfig[] floors = {
-    // borders
-    new PlatformConfig(new GridPoint2(0, 0), 100, 1, 0),
-    new PlatformConfig(new GridPoint2(0, 22), 50, 5, 0),
-    new PlatformConfig(new GridPoint2(50, 25), 40, 5, 1),
-    new PlatformConfig(new GridPoint2(0, 0), 1, 30, 1),
-    new PlatformConfig(new GridPoint2(90, 0), 1, 30, 1),
-  };
-  */
-
-  private static final GridPoint2[] spikes = {
-    new GridPoint2(10, 2), new GridPoint2(20, 2), new GridPoint2(35, 2)
-  };
-
   private static final GridPoint2[] skeletonWarriorSpawnLocations =
       new GridPoint2[] {
         new GridPoint2(45, 17),
@@ -76,31 +61,13 @@ public class Level1GameArea extends GameArea {
         new GridPoint2(6, 4),
       };
 
-  // ======== ^^^^^^^^^^ ============================
-
-  public static final GridPoint2 PLAYER_SPAWN = new GridPoint2(1, 4);
-
   /** First floating platform is at (4, 2) and is 3 tiles wide; stand on its centre. */
   public static final GridPoint2 SHOPKEEPER_SPAWN = new GridPoint2(5, 3);
-
-  public static final GridPoint2 ROPE_ARROW_SPAWN = new GridPoint2(2, 3);
-  public static final GridPoint2 STANDARD_ARROW_SPAWN = new GridPoint2(4, 3);
-  public static final GridPoint2 FIRE_ARROW_SPAWN = new GridPoint2(6, 3);
-  public static final GridPoint2 COLD_ARROW_SPAWN = new GridPoint2(8, 5);
-  public static final GridPoint2 HEALTH_POTION_SPAWN = new GridPoint2(10, 5);
 
   /** Sit on top of the 1-tile-tall floating platforms (skip the first, which has the shop). */
   public static final GridPoint2[] GOLD_SPAWNS = {
     new GridPoint2(9, 5), new GridPoint2(15, 7), new GridPoint2(20, 8)
   };
-
-  /** Centre of the stepping-stone platform at (31, 2) */
-  public static final GridPoint2 WHEEL_TOKEN_SPAWN = new GridPoint2(32, 3);
-
-  public static final int STANDARD_ARROW_QUANTITY = 5;
-  public static final int FIRE_ARROW_QUANTITY = 5;
-  public static final int COLD_ARROW_QUANTITY = 5;
-  public static final int HEALTH_POTION_QUANTITY = 3;
 
   private static final float WALL_WIDTH = 0.1f;
   private Vector2 worldBounds;
@@ -224,7 +191,6 @@ public class Level1GameArea extends GameArea {
     player = spawnPlayer();
     spawnShopkeeper();
     spawnGold();
-    spawnWheelToken();
     spawnSkeletonArcher();
     spawnSkeletonWarrior();
 
@@ -458,12 +424,6 @@ public class Level1GameArea extends GameArea {
     for (GridPoint2 goldSpawn : GOLD_SPAWNS) {
       spawnEntityAt(ItemFactory.createGold(), goldSpawn, true, false);
     }
-  }
-
-  private void spawnWheelToken() {
-    Entity token = ItemFactory.createWheelToken();
-    spawnEntityAt(token, WHEEL_TOKEN_SPAWN, true, false);
-    token.setPosition(token.getPosition().add(0f, 0.3f));
   }
 
   /*

@@ -180,5 +180,7 @@ public class Level1Config extends LevelConfig {
           new CheckpointConfig(new GridPoint2(54, 1)),
           new CheckpointConfig(new GridPoint2(73, 1)),
         };
+
+    wheelSpinSpawns = new GridPoint2[] {new GridPoint2(32, 3)};
   }
 }

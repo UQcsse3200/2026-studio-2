@@ -16,6 +16,7 @@ import com.csse3200.game.components.player.KeyboardPlayerInputComponent;
 import com.csse3200.game.components.player.PlayerInteractionComponent;
 import com.csse3200.game.components.player.PlayerStatsDisplay;
 import com.csse3200.game.entities.Entity;
+import com.csse3200.game.entities.factories.ItemFactory;
 import com.csse3200.game.rendering.BackgroundRenderComponent;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.ArrayList;
@@ -218,6 +219,16 @@ public abstract class GameArea implements Disposable {
     for (SpawnData data : entities) {
       spawnEntityAt(data.entity, data.pos, false, false);
     }
+
+    for (GridPoint2 spawn : config.getWheelSpinSpawns()) {
+      spawnWheelToken(spawn);
+    }
+  }
+
+  private void spawnWheelToken(GridPoint2 spawn) {
+    Entity token = ItemFactory.createWheelToken();
+    spawnEntityAt(token, spawn, true, false);
+    token.setPosition(token.getPosition().add(0f, 0.3f));
   }
 
   /**

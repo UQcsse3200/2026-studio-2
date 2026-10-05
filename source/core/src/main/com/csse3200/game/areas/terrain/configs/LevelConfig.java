@@ -40,6 +40,7 @@ public class LevelConfig {
   protected GridPoint2 nextLevelTriggerSpawn;
   protected String nextLevelName;
   protected GridPoint2 winConditionSpawn;
+  protected GridPoint2[] wheelSpinSpawns;
 
   protected ArrayList<SpawnData> entities = new ArrayList<>();
 
@@ -93,6 +94,10 @@ public class LevelConfig {
       checkpointComponents.add(c.getEntity().getComponent(CheckpointComponent.class));
     }
     return checkpointComponents;
+  }
+
+  public GridPoint2[] getWheelSpinSpawns() {
+    return wheelSpinSpawns;
   }
 
   /**
