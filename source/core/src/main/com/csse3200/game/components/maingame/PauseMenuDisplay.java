@@ -12,6 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.csse3200.game.GdxGame;
 import com.csse3200.game.areas.GameArea;
 import com.csse3200.game.components.ButtonSound;
+import com.csse3200.game.components.settingsmenu.SettingsMenuDisplayInGame;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.UIComponent;
@@ -121,7 +122,8 @@ public class PauseMenuDisplay extends UIComponent {
     ImageButton controlsBtn = new ImageButton(controlsButtonStyle);
 
     Texture controlsGraphicTexture =
-        ServiceLocator.getResourceService().getAsset("images/controls_graphic.png", Texture.class);
+        ServiceLocator.getResourceService()
+            .getAsset("images/ui/controls_graphic.png", Texture.class);
 
     resumeBtn.addListener(
         new ChangeListener() {
@@ -129,19 +131,8 @@ public class PauseMenuDisplay extends UIComponent {
           public void changed(ChangeEvent changeEvent, Actor actor) {
             if (ServiceLocator.getEntityService().getPaused()) {
               ButtonSound.playClick();
-              try {
-                Music mainMenu =
-                    ServiceLocator.getResourceService()
-                        .getAsset("sounds/Main_menu_sound.mp3", Music.class);
-                mainMenu.stop();
-                Music gameplay =
-                    ServiceLocator.getResourceService()
-                        .getAsset("sounds/gameplay_bg.ogg", Music.class);
-                gameplay.play();
-              } catch (Exception e) {
-              }
               entity.getEvents().trigger("togglePause");
-              area.getInput().unpause();
+              // area.getInput().unpause();
             }
           }
         });
@@ -153,8 +144,12 @@ public class PauseMenuDisplay extends UIComponent {
             if (ServiceLocator.getEntityService().getPaused()) {
               ButtonSound.playClickThen(
                   () -> {
-                    entity.getEvents().trigger("settingsFromPause");
-                    game.setScreen(GdxGame.ScreenType.SETTINGS_FROM_PAUSE);
+                    ServiceLocator.getEntityService().setSettingsOpen(true);
+                    Entity ui = new Entity();
+                    SettingsMenuDisplayInGame settings =
+                        new SettingsMenuDisplayInGame(game, ui::dispose);
+                    ui.addComponent(settings);
+                    ServiceLocator.getEntityService().register(ui);
                   });
             }
           }
@@ -165,8 +160,7 @@ public class PauseMenuDisplay extends UIComponent {
           @Override
           public void changed(ChangeEvent changeEvent, Actor actor) {
             if (ServiceLocator.getEntityService().getPaused()) {
-              ButtonSound.playClick();
-              game.exit();
+              ButtonSound.playClickThen(() -> game.setScreen(GdxGame.ScreenType.MAIN_MENU));
             }
           }
         });
@@ -175,12 +169,14 @@ public class PauseMenuDisplay extends UIComponent {
         new ChangeListener() {
           @Override
           public void changed(ChangeEvent changeEvent, Actor actor) {
+            ButtonSound.playClick();
             Image controlsGraphic = new Image(controlsGraphicTexture);
             ImageButton controlsBackBtn = new ImageButton(exitButtonStyle);
             controlsBackBtn.addListener(
                 new ChangeListener() {
                   @Override
                   public void changed(ChangeEvent changeEvent, Actor actor) {
+                    ButtonSound.playClick();
                     controlsGraphicTable.remove();
                   }
                 });
@@ -196,7 +192,7 @@ public class PauseMenuDisplay extends UIComponent {
     Image title =
         new Image(
             ServiceLocator.getResourceService()
-                .getAsset("images/title_odysseus_logo.png", Texture.class));
+                .getAsset("images/ui/title_odysseus_logo.png", Texture.class));
     table.add(title).width(350f).height(122f).padTop(-35f);
     table.row();
     table.add(resumeBtn).width(200f).height(70f).padTop(30f);

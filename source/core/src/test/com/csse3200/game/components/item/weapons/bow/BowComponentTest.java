@@ -187,23 +187,23 @@ class BowComponentTest {
     AtomicReference<Float> speedMultiplierRef = new AtomicReference<>();
     BowComponent component = createChargeComponent(speedMultiplierRef);
 
-    // Not drawing: nothing to preview, and a release would be a normal full-speed shot.
+    // Not drawing: nothing to preview, and the multiplier just reports the weakest a shot can be.
     assertFalse(component.isCharging());
-    assertEquals(1f, component.currentSpeedMultiplier());
+    assertEquals(MIN_CHARGE_SPEED_FACTOR, component.getChargeSpeedMultiplier(), 1e-5f);
 
     // Start at t=0, then read the live multiplier at the start, halfway, and past full draw.
     when(gameTime.getTime()).thenReturn(0L, 0L, MAX_CHARGE_MS / 2, MAX_CHARGE_MS * 4);
     component.startCharge(new Vector2(1f, 0f));
     assertTrue(component.isCharging());
-    assertEquals(MIN_CHARGE_SPEED_FACTOR, component.currentSpeedMultiplier(), 1e-5f);
+    assertEquals(MIN_CHARGE_SPEED_FACTOR, component.getChargeSpeedMultiplier(), 1e-5f);
     float halfway =
         MIN_CHARGE_SPEED_FACTOR + (MAX_CHARGE_SPEED_FACTOR - MIN_CHARGE_SPEED_FACTOR) * 0.5f;
-    assertEquals(halfway, component.currentSpeedMultiplier(), 1e-5f);
-    assertEquals(MAX_CHARGE_SPEED_FACTOR, component.currentSpeedMultiplier(), 1e-5f);
+    assertEquals(halfway, component.getChargeSpeedMultiplier(), 1e-5f);
+    assertEquals(MAX_CHARGE_SPEED_FACTOR, component.getChargeSpeedMultiplier(), 1e-5f);
 
     component.releaseCharge(new Vector2(1f, 0f));
     assertFalse(component.isCharging());
-    assertEquals(1f, component.currentSpeedMultiplier());
+    assertEquals(MIN_CHARGE_SPEED_FACTOR, component.getChargeSpeedMultiplier(), 1e-5f);
   }
 
   @Test

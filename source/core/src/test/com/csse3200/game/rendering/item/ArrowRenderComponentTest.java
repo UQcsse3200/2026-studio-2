@@ -42,7 +42,8 @@ class ArrowRenderComponentTest {
     Texture texture = mock(Texture.class);
     when(texture.getWidth()).thenReturn(width);
     when(texture.getHeight()).thenReturn(height);
-    when(resourceService.getAsset("images/arrow.png", Texture.class)).thenReturn(texture);
+    when(resourceService.getAsset(ArrowType.STANDARD.getTexturePath(), Texture.class))
+        .thenReturn(texture);
     return texture;
   }
 
@@ -169,7 +170,7 @@ class ArrowRenderComponentTest {
 
   @Test
   void shouldDrawNothingWhenTheSpriteCannotBeLoaded() {
-    when(resourceService.getAsset("images/arrow.png", Texture.class))
+    when(resourceService.getAsset(ArrowType.STANDARD.getTexturePath(), Texture.class))
         .thenThrow(new RuntimeException("not loaded"));
     Entity arrow = new Entity().addComponent(new ArrowRenderComponent(ArrowType.STANDARD));
 
@@ -225,7 +226,7 @@ class ArrowRenderComponentTest {
 
   @Test
   void shouldDrawNothingForAGrappleArrowWhenTheSpriteCannotBeLoaded() {
-    when(resourceService.getAsset("images/arrow.png", Texture.class))
+    when(resourceService.getAsset(ArrowType.STANDARD.getTexturePath(), Texture.class))
         .thenThrow(new RuntimeException("not loaded"));
     Entity arrow = new Entity().addComponent(new ArrowRenderComponent(ArrowType.GRAPPLE));
 

@@ -19,6 +19,8 @@ import com.csse3200.game.components.projectile.ArrowType;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.extensions.GameExtension;
+import com.csse3200.game.lighting.LightingEngine;
+import com.csse3200.game.lighting.LightingService;
 import com.csse3200.game.physics.PhysicsService;
 import com.csse3200.game.services.GameTime;
 import com.csse3200.game.services.ServiceLocator;
@@ -37,6 +39,12 @@ class ItemUseComponentTest {
     time = mock(GameTime.class);
     when(time.getTime()).thenReturn(0L);
     ServiceLocator.registerTimeSource(time);
+
+    LightingEngine lightingEngine = mock(LightingEngine.class);
+    when(lightingEngine.getRayHandler()).thenReturn(mock(box2dLight.RayHandler.class));
+    LightingService lightingService = mock(LightingService.class);
+    when(lightingService.getEngine()).thenReturn(lightingEngine);
+    ServiceLocator.registerLightingService(lightingService);
   }
 
   @Test
@@ -237,7 +245,7 @@ class ItemUseComponentTest {
   }
 
   @Test
-  void shouldStillReleaseTheGrappleDrawWhenAnotherArrowIsSelectedByReleaseTime() {
+  void shouldSendBothGrappleReleasesWhateverArrowIsSelectedByReleaseTime() {
     Entity player = createPlayer();
     InventoryComponent inventory = player.getComponent(InventoryComponent.class);
     inventory.addItem(ItemType.STANDARD_ARROW, 1);
@@ -251,10 +259,10 @@ class ItemUseComponentTest {
 
     player.getEvents().trigger("stopShoot");
 
-    // The selection can move on mid-draw (spending the last arrow auto-advances it), so a charge
-    // release is always sent. Only detaching an active swing is tied to the rope arrow being held.
+    // The selection can move on mid-draw (spending the last arrow auto-advances it), so neither a
+    // charge release nor a swing release may depend on the rope arrow still being selected.
     assertEquals(1, drawReleases.get());
-    assertEquals(0, swingReleases.get());
+    assertEquals(1, swingReleases.get());
   }
 
   @Test
@@ -343,7 +351,7 @@ class ItemUseComponentTest {
   }
 
   @Test
-  void shouldNotReleaseGrappleOnStopShootForOtherArrows() {
+  void shouldSignalGrappleReleaseEvenWhenAnotherArrowIsSelected() {
     Entity player = createPlayer();
     InventoryComponent inventory = player.getComponent(InventoryComponent.class);
     inventory.addItem(ItemType.STANDARD_ARROW, 1);
@@ -353,7 +361,35 @@ class ItemUseComponentTest {
 
     player.getEvents().trigger("stopShoot");
 
-    assertEquals(0, released.get());
+    assertEquals(1, released.get());
+  }
+
+  @Test
+  void shouldReleaseGrappleAfterSwitchingAwayFromTheFiredRopeArrow() {
+    Entity player = createPlayer();
+    InventoryComponent inventory = player.getComponent(InventoryComponent.class);
+    inventory.addItem(ItemType.ROPE_ARROW, 1);
+    inventory.addItem(ItemType.STANDARD_ARROW, 3);
+    AtomicInteger drawn = new AtomicInteger();
+    AtomicInteger drawReleased = new AtomicInteger();
+    AtomicInteger released = new AtomicInteger();
+    player
+        .getEvents()
+        .addListener("grappleDrawStart", (Vector2 ignored) -> drawn.incrementAndGet());
+    player
+        .getEvents()
+        .addListener("grappleDrawRelease", (Vector2 ignored) -> drawReleased.incrementAndGet());
+    player.getEvents().addListener("grappleRelease", released::incrementAndGet);
+    player.getEvents().trigger("shoot", new Vector2(1f, 0f));
+    inventory.selectSlot(1);
+    player.getEvents().trigger("stopShoot");
+    // Pressing starts the draw (the arrow now leaves on release), and letting go still reaches the
+    // grapple even though a different arrow is selected by then.
+    assertEquals(1, drawn.get());
+    assertEquals(1, drawReleased.get());
+    assertEquals(1, released.get());
+    assertEquals(1, inventory.getItemCount(ItemType.ROPE_ARROW));
+    assertEquals(3, inventory.getItemCount(ItemType.STANDARD_ARROW));
   }
 
   @Test
@@ -364,16 +400,6 @@ class ItemUseComponentTest {
   @Test
   void shouldFireIceArrowThroughBowAndConsumeAmmo() {
     assertArrowUsesBowType(ItemType.ICE_ARROW, ArrowType.ICE);
-  }
-
-  @Test
-  void shouldUseSwordThroughMeleeAttackEvent() {
-    assertMeleeItemUsesDamageAndRange(ItemType.Sword);
-  }
-
-  @Test
-  void shouldUseSpearThroughMeleeAttackEvent() {
-    assertMeleeItemUsesDamageAndRange(ItemType.Spear);
   }
 
   @Test
@@ -444,30 +470,6 @@ class ItemUseComponentTest {
     assertEquals(expectedArrowType, bowType.get());
     assertEquals(1, shots.get());
     assertEquals(1, inventory.getItemCount(itemType));
-  }
-
-  private void assertMeleeItemUsesDamageAndRange(ItemType itemType) {
-    Entity player = createPlayer();
-    InventoryComponent inventory = player.getComponent(InventoryComponent.class);
-    inventory.addItem(itemType, 1);
-
-    AtomicReference<Vector2> direction = new AtomicReference<>();
-    AtomicInteger damage = new AtomicInteger();
-    AtomicReference<Float> range = new AtomicReference<>();
-    player
-        .getEvents()
-        .addListener(
-            "meleeAttack",
-            (Vector2 aim, Integer itemDamage, Float itemRange) -> {
-              direction.set(aim);
-              damage.set(itemDamage);
-              range.set(itemRange);
-            });
-
-    assertTrue(player.getComponent(ItemUseComponent.class).useSelectedItem());
-    assertFalse(direction.get().isZero());
-    assertEquals(itemType.getDamage(), damage.get());
-    assertEquals(itemType.getRange(), range.get(), 0.001f);
   }
 
   @Test

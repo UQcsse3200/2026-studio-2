@@ -108,9 +108,7 @@ class ItemUseFailureTest {
     use.create();
     // Inventory may change between selection validation and the action's own availability check.
     for (ItemType item :
-        new ItemType[] {
-          ItemType.STANDARD_ARROW, ItemType.Sword, ItemType.SpeedPotion, ItemType.PoisonPotion
-        }) {
+        new ItemType[] {ItemType.STANDARD_ARROW, ItemType.SpeedPotion, ItemType.PoisonPotion}) {
       select(item);
       when(inventory.hasItem(item)).thenReturn(true, false);
       failed.clear();

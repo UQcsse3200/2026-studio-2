@@ -21,7 +21,9 @@ public class ArrowProjectileComponent extends Component {
 
   private static final Logger logger = LoggerFactory.getLogger(ArrowProjectileComponent.class);
   private static final short TARGET_LAYERS = PhysicsLayer.NPC;
-  private static final short TERRAIN = (short) (PhysicsLayer.GROUND | PhysicsLayer.OBSTACLE);
+
+  /** Layers an arrow stops against. Public so aiming previews can stop at the same surfaces. */
+  public static final short TERRAIN = (short) (PhysicsLayer.GROUND | PhysicsLayer.OBSTACLE);
 
   /** How much of the world's gravity every arrow (grapple included) falls under in flight. */
   public static final float ARC_GRAVITY_SCALE = 0.4f;

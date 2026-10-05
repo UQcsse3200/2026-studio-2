@@ -34,7 +34,7 @@ class ArrowRenderBehaviourTest {
     Texture texture = mock(Texture.class);
     when(texture.getWidth()).thenReturn(width);
     when(texture.getHeight()).thenReturn(height);
-    when(resources.getAsset("images/arrow.png", Texture.class)).thenReturn(texture);
+    when(resources.getAsset("images/projectiles/arrow.png", Texture.class)).thenReturn(texture);
     return texture;
   }
 
@@ -76,7 +76,7 @@ class ArrowRenderBehaviourTest {
   @Test
   void shouldRetryTextureAfterTemporaryLoadFailure() {
     Texture texture = texture(100, 100);
-    when(resources.getAsset("images/arrow.png", Texture.class))
+    when(resources.getAsset("images/projectiles/arrow.png", Texture.class))
         .thenThrow(new IllegalStateException("Asset not loaded yet"))
         .thenReturn(texture);
     ArrowRenderComponent renderer = renderer(null, null);
@@ -92,7 +92,7 @@ class ArrowRenderBehaviourTest {
     ArrowRenderComponent renderer = renderer(null, null);
     renderer.render(batch);
     renderer.render(batch);
-    verify(resources, times(1)).getAsset("images/arrow.png", Texture.class);
+    verify(resources, times(1)).getAsset("images/projectiles/arrow.png", Texture.class);
     verify(batch, times(2))
         .draw(texture, 0f, 0f, 1f, 1f, 2f, 2f, 1f, 1f, 0f, 0, 0, 100, 100, false, false);
   }
@@ -110,7 +110,7 @@ class ArrowRenderBehaviourTest {
     Texture texture = mock(Texture.class);
     when(texture.getWidth()).thenReturn(26);
     when(texture.getHeight()).thenReturn(26);
-    when(resources.getAsset("images/arrow.png", Texture.class)).thenReturn(texture);
+    when(resources.getAsset(ArrowType.GRAPPLE.getTexturePath(), Texture.class)).thenReturn(texture);
     ArrowRenderComponent renderer = new ArrowRenderComponent(ArrowType.GRAPPLE).setRenderSize(2f);
     Entity entity = new Entity().addComponent(renderer);
     entity.setPosition(0f, 0f);
