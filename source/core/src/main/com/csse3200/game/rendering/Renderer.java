@@ -7,6 +7,7 @@ import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.csse3200.game.GdxGame;
 import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.services.ServiceLocator;
 import org.slf4j.Logger;
@@ -95,6 +96,7 @@ public class Renderer implements Disposable {
   public void render() {
     Matrix4 projMatrix = camera.getProjectionMatrix();
     batch.setProjectionMatrix(projMatrix);
+    GdxGame.applyDefaultClearColor();
     Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
     // The stage shares this batch and may leave its color/alpha tinted (e.g. a fading UI

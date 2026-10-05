@@ -29,12 +29,10 @@ class ShopCatalogTest {
     assertEquals(8, ShopCatalog.getListing(ItemType.HEALTH_POTION).getPrice());
     assertEquals(12, ShopCatalog.getListing(ItemType.SpeedPotion).getPrice());
     assertEquals(12, ShopCatalog.getListing(ItemType.PoisonPotion).getPrice());
-    assertEquals(25, ShopCatalog.getListing(ItemType.Sword).getPrice());
-    assertEquals(20, ShopCatalog.getListing(ItemType.Spear).getPrice());
   }
 
   @Test
-  void shouldSellEveryItemExceptRopeArrow() {
+  void shouldSellEveryItemExceptRopeArrowAndMeleeWeapons() {
     for (ItemType type : ItemType.values()) {
       if (type == ItemType.ROPE_ARROW) {
         assertNull(ShopCatalog.getListing(type));

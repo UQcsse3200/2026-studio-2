@@ -127,8 +127,6 @@ public class Level1GameArea extends GameArea {
     "images/projectiles/fire_arrow.png",
     "images/projectiles/fireArr_animation.png",
     "images/projectiles/coldArr_animation.png",
-    "images/items/sword.png",
-    "images/items/spear.png",
     "images/health/heart_potion.png",
     "images/items/speed_potion.png",
     "images/items/poison_potion.png",
@@ -287,6 +285,7 @@ public class Level1GameArea extends GameArea {
       input.setCameraComponent(cameraComponent);
     }
     spawnEntityAt(newPlayer, config.getPlayerSpawn(), true, true);
+    PlayerFactory.giveStartingLoadout(newPlayer);
 
     System.out.println("player spawned");
     System.out.println(input);

@@ -3,10 +3,6 @@ package com.csse3200.game.areas.terrain.configs.levelconfigs;
 import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.areas.terrain.configs.*;
-import com.csse3200.game.components.item.ItemType;
-import com.csse3200.game.components.item.consumables.HealthPotion;
-import com.csse3200.game.components.item.weapons.bow.arrow.Arrow;
-import java.util.HashMap;
 
 public class Level1Config extends LevelConfig {
 
@@ -109,21 +105,7 @@ public class Level1Config extends LevelConfig {
           new PlatformConfig(new GridPoint2(78, 0), 13, 17, 0, groundTFP),
         };
 
-    // Main-route supplies reward traversal; elemental bundles require optional climbs.
-    items = new HashMap<>();
-    items.put(new GridPoint2(9, 5), new Arrow(ItemType.STANDARD_ARROW, 5));
-    items.put(new GridPoint2(10, 5), new HealthPotion(1));
-    items.put(new GridPoint2(28, 2), new Arrow(ItemType.ROPE_ARROW, 1));
-    items.put(new GridPoint2(5, 16), new Arrow(ItemType.STANDARD_ARROW, 5));
-    items.put(new GridPoint2(22, 17), new HealthPotion(1));
-    items.put(new GridPoint2(30, 20), new Arrow(ItemType.STANDARD_ARROW, 5));
-    items.put(new GridPoint2(46, 22), new HealthPotion(1));
-    items.put(new GridPoint2(54, 17), new Arrow(ItemType.STANDARD_ARROW, 5));
-    items.put(new GridPoint2(58, 11), new HealthPotion(1));
-    items.put(new GridPoint2(74, 1), new Arrow(ItemType.STANDARD_ARROW, 10));
-    items.put(new GridPoint2(78, 17), new HealthPotion(1));
-    items.put(new GridPoint2(15, 23), new Arrow(ItemType.FIRE_ARROW, 5));
-    items.put(new GridPoint2(62, 24), new Arrow(ItemType.ICE_ARROW, 5));
+    // The rope arrow starts in the player's inventory instead of the world.
 
     // Both are earned after a substantial climb/combat section, not grouped at the start.
     checkpoints =

@@ -10,6 +10,7 @@ import com.csse3200.game.areas.ForestGameArea;
 import com.csse3200.game.areas.terrain.TerrainFactory;
 import com.csse3200.game.components.ButtonSound;
 import com.csse3200.game.components.gamearea.PerformanceDisplay;
+import com.csse3200.game.components.item.ItemAssets;
 import com.csse3200.game.components.maingame.MainGameActions;
 import com.csse3200.game.components.maingame.MainGameExitDisplay;
 import com.csse3200.game.components.maingame.PauseMenuOverlay;
@@ -186,6 +187,7 @@ public class MainGameScreen extends ScreenAdapter {
                 "images/Buttons/x_up_btn.png",
                 "images/Buttons/x_down_btn.png"));
 
+    paths.addAll(List.of(ItemAssets.getTextures()));
     paths.addAll(List.of(WheelConfig.TEXTURES));
     paths.addAll(List.of(BlackjackConfig.TEXTURES));
     return paths.toArray(new String[0]);

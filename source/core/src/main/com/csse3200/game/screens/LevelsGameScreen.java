@@ -13,7 +13,7 @@ import com.csse3200.game.areas.terrain.TerrainFactory;
 import com.csse3200.game.components.ButtonSound;
 import com.csse3200.game.components.gamearea.CoordinateDisplay;
 import com.csse3200.game.components.gamearea.PerformanceDisplay;
-import com.csse3200.game.components.item.ItemType;
+import com.csse3200.game.components.item.ItemAssets;
 import com.csse3200.game.components.maingame.MainGameActions;
 import com.csse3200.game.components.maingame.PauseButtonDisplay;
 import com.csse3200.game.components.maingame.PauseMenuOverlay;
@@ -340,14 +340,11 @@ public class LevelsGameScreen extends ScreenAdapter {
     // disposed textures as black boxes in the next level.
     paths.add(ItemFactory.GOLD_TEXTURE);
     paths.add("images/projectiles/poison_arrow.png");
-    for (ItemType itemType : ItemType.values()) {
-      paths.add(itemType.getTexturePath());
-      paths.add(itemType.getProjectileTexturePath());
-    }
     paths.addAll(List.of(PauseButtonDisplay.extraTextures()));
     paths.addAll(List.of(WheelConfig.TEXTURES));
     paths.addAll(List.of(BlackjackConfig.TEXTURES));
-    return paths.toArray(new String[0]);
+    paths.addAll(List.of(ItemAssets.getTextures()));
+    return paths.stream().distinct().toArray(String[]::new);
   }
 
   /**

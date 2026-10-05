@@ -137,21 +137,6 @@ class PlayerAnimationTransitionsTest {
   }
 
   @Test
-  void shouldFaceMeleeAimAndResumeLocomotionOnlyAfterCompletion() {
-    player.getEvents().trigger("melee", new Vector2(-1f, 0f));
-    assertTrue(animator.isFlipX());
-    player.getEvents().trigger("sprint");
-    player.getEvents().trigger("walk", new Vector2(-1f, 0f));
-    assertEquals("melee", animator.getCurrentAnimation());
-    finishClip();
-    assertEquals("sprint", animator.getCurrentAnimation());
-    player.getEvents().trigger("melee", Vector2.X);
-    assertFalse(animator.isFlipX());
-    player.getEvents().trigger("melee", Vector2.Y);
-    assertFalse(animator.isFlipX());
-  }
-
-  @Test
   void shouldCancelBowBackToSprintAndAllowNextJump() {
     player.getEvents().trigger("walk", Vector2.X);
     player.getEvents().trigger("sprint");
