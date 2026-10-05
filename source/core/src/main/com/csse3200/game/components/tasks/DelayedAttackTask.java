@@ -43,16 +43,23 @@ public class DelayedAttackTask extends DefaultTask implements PriorityTask {
 
     // end attack after duration
     if (isAttacking
-        && currentTime >= attackStartTime + attackDelay * 1000 + attackDuration * 1000) {
-      stop();
+            && currentTime >= attackStartTime + attackDelay * 1000 + attackDuration * 1000) {
+      isAttacking = false;
+      attackStartTime = currentTime;
     }
   }
 
   private void createAttack() {
-    Vector2 size = new Vector2(attackRange * 2, 1);
-    Vector2 position = owner.getEntity().getCenterPosition();
+    Vector2 size = new Vector2(attackRange, 1);
 
-    attack = AttackFactory.createNewAttack(size, position, 1, 1f);
+    Vector2 enemyPosition = owner.getEntity().getCenterPosition();
+    float enemyWidth = owner.getEntity().getScale().x;
+    float direction = target.getCenterPosition().sub(enemyPosition).x < 0 ? -1f : 1f;
+    float offsetX = direction * (enemyWidth + size.x) / 2;
+
+    Vector2 attackPosition = enemyPosition.add(offsetX, 0);
+
+    attack = AttackFactory.createNewAttack(size, attackPosition, 1, 1f);
     ServiceLocator.getEntityService().register(attack);
   }
 
