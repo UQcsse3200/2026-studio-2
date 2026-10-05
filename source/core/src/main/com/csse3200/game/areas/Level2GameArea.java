@@ -31,15 +31,12 @@ public class Level2GameArea extends GameArea {
   /** Textures used by the level 2 game area. */
   private static final String[] level2Textures = {
     "images/ui/scroll_bg.png",
-    "images/scroll_bg.png",
 
     // Level 2 background
     "images/backgrounds/Background-2.png",
     "images/backgrounds/Platform_level-2.png",
-    "images/Background-2.png",
     "images/parallax/Clouds-birds.png",
     "images/parallax/Mountains-layer.png",
-    "images/Platform_level-2.png",
     "images/parallax/level_2_clouds.png",
 
     // Assets referenced by Level2Config (the old tile-level2/grass atlas files no longer exist).
@@ -55,28 +52,6 @@ public class Level2GameArea extends GameArea {
     "images/health/purple_heart.png",
     "images/traps/spiky_ball.png",
     "images/traps/spiky_ball_trap.png",
-    "images/black_roof.png",
-    "images/purple_heart.png",
-    "images/DevGridTile.png",
-    "images/Tile_2.png",
-    "images/box_boy_leaf.png",
-    "images/spike.png",
-    "images/tree.png",
-    "images/ghost_king.png",
-    "images/ghost_1.png",
-    "images/grass_1.png",
-    "images/grass_2.png",
-    "images/grass_3.png",
-    "images/hex_grass_1.png",
-    "images/hex_grass_2.png",
-    "images/hex_grass_3.png",
-    "images/iso_grass_1.png",
-    "images/iso_grass_2.png",
-    "images/iso_grass_3.png",
-    "images/spiky_ball.png",
-    "images/spiky_ball_trap.png",
-    "images/checkpoint_lit.png",
-    "images/checkpoint_unlit.png",
     ItemFactory.WHEEL_TOKEN_TEXTURE,
 
     // Enemy textures
@@ -89,24 +64,16 @@ public class Level2GameArea extends GameArea {
     "images/projectiles/fire_arrow.png",
     "images/projectiles/ice_arrow.png",
     "images/projectiles/poison_arrow.png",
-    "images/skeleton_warrior.png",
-    "images/skeleton_archer.png",
-    "images/arrow.png",
-    "images/rope_arrow.png",
-    "images/fire_arrow.png",
-    "images/cold_arrow.png",
-    "images/necromancer_projectile.png",
+    "images/projectiles/necromancer_projectile.png",
   };
 
   private static final String[] level2TexturesAtlas = {
-    "images/terrain_iso_grass.atlas",
-    "images/in_level_button.atlas",
-    "images/skeleton_archer.atlas",
-    "images/skeleton_warrior.atlas",
-    "images/necromancer.atlas",
-    "images/vulture.atlas",
-    "images/terrain/Level_1/Level_1_checkpoint.atlas",
-    "images/ui/in_level_button.atlas"
+    "images/ui/in_level_button.atlas",
+    "images/enemies/skeleton_archer.atlas",
+    "images/enemies/skeleton_warrior.atlas",
+    "images/enemies/necromancer.atlas",
+    "images/enemies/vulture.atlas",
+    "images/terrain/Level_1/Level_1_checkpoint.atlas"
   };
 
   private static final String[] level2Sounds = {"sounds/Impact4.ogg"};

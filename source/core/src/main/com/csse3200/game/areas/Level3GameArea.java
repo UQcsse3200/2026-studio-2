@@ -33,7 +33,6 @@ public class Level3GameArea extends GameArea {
   private static final String[] level3Textures = {
     "images/ui/scroll_bg.png",
     // Level 3 background
-    // "images/Background-2.png",
     "images/terrain/Level_3/Platform_level-3.png",
     "images/terrain/Level_3/Platform-crumbling-level-3.png",
     "images/parallax/level_1_background.png",
@@ -53,46 +52,23 @@ public class Level3GameArea extends GameArea {
     "images/ui/transparent.png",
 
     // Existing game textures
-    /*
-    "images/black_roof.png",
-    "images/purple_heart.png",
-    "images/DevGridTile.png",
-    "images/Tile_2.png",
-    "images/box_boy_leaf.png",
-    "images/spike.png",
-    "images/tree.png",
-    "images/ghost_king.png",
-    "images/ghost_1.png",
-    "images/grass_1.png",
-    "images/grass_2.png",
-    "images/grass_3.png",
-    "images/hex_grass_1.png",
-    "images/hex_grass_2.png",
-    "images/hex_grass_3.png",
-    "images/iso_grass_1.png",
-    "images/iso_grass_2.png",
-    "images/iso_grass_3.png",
-     */
     "images/terrain/Level_1/Level_1_Spike.png",
     "images/traps/spiky_ball.png",
     "images/traps/spiky_ball_trap.png",
-    "images/checkpoint_lit.png",
-    "images/checkpoint_unlit.png",
     ItemFactory.WHEEL_TOKEN_TEXTURE,
 
     // Enemy textures
-    "images/skeleton_warrior.png",
-    "images/skeleton_archer.png",
-    "images/arrow.png",
-    "images/rope_arrow.png",
-    "images/fire_arrow.png",
-    "images/cold_arrow.png",
-    "images/necromancer_projectile.png",
-    "images/poison_potion.png",
+    "images/enemies/skeleton_warrior.png",
+    "images/enemies/skeleton_archer.png",
+    "images/projectiles/arrow.png",
+    "images/projectiles/rope_arrow.png",
+    "images/projectiles/fire_arrow.png",
+    "images/projectiles/ice_arrow.png",
+    "images/projectiles/necromancer_projectile.png",
+    "images/items/poison_potion.png",
   };
 
   private static final String[] level3TexturesAtlas = {
-    "images/terrain_iso_grass.atlas",
     "images/enemies/skeleton_archer.atlas",
     "images/enemies/skeleton_warrior.atlas",
     "images/enemies/necromancer.atlas",
