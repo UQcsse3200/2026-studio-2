@@ -16,6 +16,8 @@ public class EnemyConfig extends BaseEntityConfig {
   public int chasePriority;
   public float viewDistance;
   public float maxChaseDistance;
+  public int repositionPriority;
+  public float repositionDistance;
   public float maxSpeed;
 
   // if the enemy obey gravity

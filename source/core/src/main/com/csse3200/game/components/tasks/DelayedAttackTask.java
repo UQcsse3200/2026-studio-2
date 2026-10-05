@@ -25,6 +25,8 @@ public class DelayedAttackTask extends DefaultTask implements PriorityTask {
   public void start() {
     super.start();
     this.attackStartTime = ServiceLocator.getTimeSource().getTime();
+
+    //  !! SPRINT 4 CHARGED ATTACK ANIMATION START
   }
 
   @Override
@@ -38,6 +40,8 @@ public class DelayedAttackTask extends DefaultTask implements PriorityTask {
         target
             .getComponent(CombatStatsComponent.class)
             .hit(this.owner.getEntity().getComponent(CombatStatsComponent.class));
+
+        owner.getEntity().getEvents().trigger("hitPlayer");
         attackStartTime = currentTime;
 
         owner.getEntity().getEvents().trigger("hitPlayer");
