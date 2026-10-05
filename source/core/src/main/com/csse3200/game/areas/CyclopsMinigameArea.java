@@ -55,7 +55,6 @@ public class CyclopsMinigameArea extends GameArea {
   private GridPoint2 winLocation;
   private ArrayList<GridPoint2> statueLocations;
   private ArrayList<GridPoint2> statueGapLocations;
-  private CyclopsMinigameLogic cyclopsMinigameLogic;
 
   private CutsceneInputComponent input;
   private TextBoxComponent textBox;
@@ -92,8 +91,7 @@ public class CyclopsMinigameArea extends GameArea {
     /* Timing Minigame Components */
     TimingBarLogic timingBarLogic = new TimingBarLogic(20f);
     TimingBarDisplay timingBarDisplay = new TimingBarDisplay(timingBarLogic);
-    cyclopsMinigameLogic =
-        new CyclopsMinigameLogic(timingBarLogic, timingBarDisplay, terrain, player);
+    CyclopsMinigameLogic cyclopsMinigameLogic = new CyclopsMinigameLogic(timingBarLogic, timingBarDisplay, terrain, player);
     cyclopsMinigameLogic.setWinLocation(winLocation);
     cyclopsMinigameLogic.setSafeLocations(statueLocations);
     cyclopsMinigameLogic.setLossLocations(statueGapLocations);
