@@ -95,15 +95,6 @@ public class RisingWaterComponent extends Component {
         new Vector2(hitbox.getPosition().x, hitbox.getPosition().y + heightIncrease));
   }
 
-  @Override
-  public void dispose() {
-    super.dispose();
-
-    if (hitbox != null) {
-      hitbox.dispose();
-    }
-  }
-
   /**
    * Uses the y coordinate of the checkpoint encountered and the current top position of the water
    * to determine against the lenience of water levels what height the water should reset to when
