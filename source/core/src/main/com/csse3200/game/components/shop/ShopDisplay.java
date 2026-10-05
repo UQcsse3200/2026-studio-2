@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
  * <p>Shows catalog items, current gold, and buy buttons. Purchases are handled by ShopComponent.
  */
 public class ShopDisplay extends UIComponent {
+  private final InventorySlotStyle slotStyle = new InventorySlotStyle();
   private static final Logger logger = LoggerFactory.getLogger(ShopDisplay.class);
   private static final float Z_INDEX = 3f;
   private static final float ICON_SIZE = 40f;
@@ -32,6 +33,7 @@ public class ShopDisplay extends UIComponent {
   private Label goldLabel;
   private Label statusLabel;
   private boolean open;
+  private boolean dirty;
 
   private final Label.LabelStyle white = new Label.LabelStyle(skin.get(Label.LabelStyle.class));
   private final Label.LabelStyle whiteLarge =
@@ -58,7 +60,7 @@ public class ShopDisplay extends UIComponent {
     table.setVisible(false);
 
     Table panel = new Table();
-    panel.setBackground(InventorySlotStyle.getDarkerBox());
+    panel.setBackground(slotStyle.getDarkerBox());
     panel.pad(30f);
 
     whiteLarge.fontColor = Color.WHITE;
@@ -80,11 +82,11 @@ public class ShopDisplay extends UIComponent {
 
     panel.add(title);
     panel.row();
-    // panel.add(goldLabel).padTop(10f);
+    panel.add(goldLabel).padTop(10f);
     panel.row();
     panel.add(listingsTable).padTop(20f);
     panel.row();
-    // panel.add(statusLabel).padTop(16f);
+    panel.add(statusLabel).padTop(16f);
     panel.row();
     panel.add(closeBtn).padTop(24f);
 
@@ -126,21 +128,22 @@ public class ShopDisplay extends UIComponent {
 
   private void onItemPurchased(ItemType itemType) {
     statusLabel.setText("Purchased " + itemType.getDisplayName() + ".");
-    refresh();
+    dirty = true;
   }
 
   private void onPurchaseFailed(String reason) {
     statusLabel.setText(reason);
-    refresh();
+    dirty = true;
   }
 
   private void refreshIfOpen() {
     if (open) {
-      refresh();
+      dirty = true;
     }
   }
 
   private void refresh() {
+    dirty = false;
     goldLabel.setText(goldText());
     refreshListings();
   }
@@ -149,10 +152,10 @@ public class ShopDisplay extends UIComponent {
     listingsTable.clearChildren();
     ShopComponent shop = entity.getComponent(ShopComponent.class);
 
-    darkStyle.up = InventorySlotStyle.getDarkerBox();
-    darkStyle.down = InventorySlotStyle.getSelectedBox();
-    darkStyle.over = InventorySlotStyle.getNormalBox(); // optional hover feedback
-    darkStyle.disabled = InventorySlotStyle.getDarkerBox(); // see below
+    darkStyle.up = slotStyle.getDarkerBox();
+    darkStyle.down = slotStyle.getSelectedBox();
+    darkStyle.over = slotStyle.getNormalBox(); // optional hover feedback
+    darkStyle.disabled = slotStyle.getDarkerBox(); // see below
     darkStyle.fontColor = Color.WHITE;
 
     for (ShopListing listing : ShopCatalog.getListings()) {
@@ -163,7 +166,7 @@ public class ShopDisplay extends UIComponent {
 
   private Table createListingRow(ShopListing listing, ShopComponent shop) {
     Table row = new Table();
-    row.setBackground(InventorySlotStyle.getNormalBox());
+    row.setBackground(slotStyle.getNormalBox());
     row.pad(8f);
 
     Texture texture = getItemTexture(listing.getItemType());
@@ -215,7 +218,10 @@ public class ShopDisplay extends UIComponent {
 
   @Override
   public void draw(SpriteBatch batch) {
-    // draw is handled by the stage
+    // Render callbacks still run while gameplay is paused by this overlay.
+    if (open && dirty) {
+      refresh();
+    }
   }
 
   @Override
@@ -228,6 +234,7 @@ public class ShopDisplay extends UIComponent {
     if (table != null) {
       table.remove();
     }
+    slotStyle.dispose();
     super.dispose();
   }
 }

@@ -9,10 +9,12 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
 import com.badlogic.gdx.utils.Array;
 import com.csse3200.game.components.CombatStatsComponent;
+import com.csse3200.game.components.inventory.InventoryComponent;
+import com.csse3200.game.components.item.ItemType;
 import com.csse3200.game.components.item.weapons.WeaponComponent;
 import com.csse3200.game.components.item.weapons.bow.BowComponent;
 import com.csse3200.game.components.item.weapons.bow.grapple.GrappleComponent;
-import com.csse3200.game.components.item.weapons.melee.MeleeComponent;
+import com.csse3200.game.components.itemdictionary.ItemDictionaryComponent;
 import com.csse3200.game.components.player.PlayerActions;
 import com.csse3200.game.components.player.PlayerAnimationController;
 import com.csse3200.game.entities.Entity;
@@ -71,7 +73,6 @@ class PlayerFactoryTest {
     BowComponent bow = player.getComponent(BowComponent.class);
     assertNotNull(bow);
     assertSame(bow, player.getComponent(WeaponComponent.class).getPrimaryWeapon());
-    assertNotNull(player.getComponent(MeleeComponent.class));
     assertNotNull(player.getComponent(GrappleComponent.class));
     assertNotNull(player.getComponent(PlayerActions.class));
     AnimationRenderComponent animator = player.getComponent(AnimationRenderComponent.class);
@@ -83,7 +84,6 @@ class PlayerFactoryTest {
           "jump",
           "hurt",
           "death",
-          "melee",
           "air_dash",
           "bow_draw",
           "bow_hold",
@@ -127,7 +127,6 @@ class PlayerFactoryTest {
     assertNull(display.getComponent(PlayerActions.class));
     assertNull(display.getComponent(BowComponent.class));
     assertNull(display.getComponent(WeaponComponent.class));
-    assertNull(display.getComponent(MeleeComponent.class));
     assertNull(display.getComponent(GrappleComponent.class));
     PlayerAnimationController controller = display.getComponent(PlayerAnimationController.class);
     controller.create();
@@ -136,5 +135,27 @@ class PlayerFactoryTest {
         "death", display.getComponent(AnimationRenderComponent.class).getCurrentAnimation());
     assertEquals(0.75f, display.getScale().x, 0.001f);
     assertEquals(1.5f, display.getScale().y, 0.001f);
+  }
+
+  @Test
+  void giveStartingLoadoutAddsRopeArrow() {
+    Entity player =
+        new Entity()
+            .addComponent(new InventoryComponent(50))
+            .addComponent(new ItemDictionaryComponent());
+    player.create();
+
+    PlayerFactory.giveStartingLoadout(player);
+
+    InventoryComponent inventory = player.getComponent(InventoryComponent.class);
+    assertEquals(1, inventory.getItemCount(ItemType.ROPE_ARROW));
+
+    ItemDictionaryComponent dictionary = player.getComponent(ItemDictionaryComponent.class);
+    assertTrue(dictionary.isDiscovered(ItemType.ROPE_ARROW));
+  }
+
+  @Test
+  void giveStartingLoadoutIgnoresNullPlayer() {
+    assertDoesNotThrow(() -> PlayerFactory.giveStartingLoadout(null));
   }
 }

@@ -136,8 +136,6 @@ class PlayerInputStateTest {
     assertTrue(input.touchUp(10, 10, 0, Buttons.RIGHT));
     assertFalse(input.isRightMouseHeld());
     assertEquals(List.of("stopShoot"), events);
-    assertTrue(input.touchUp(10, 10, 0, Buttons.LEFT));
-    assertEquals(List.of("stopShoot", "stopMelee"), events);
   }
 
   @Test
