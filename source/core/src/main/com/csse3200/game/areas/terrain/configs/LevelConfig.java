@@ -1,5 +1,7 @@
 package com.csse3200.game.areas.terrain.configs;
 
+import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.GridPoint2;
 import com.csse3200.game.components.item.Item;
 import com.csse3200.game.components.level.CheckpointComponent;
@@ -7,17 +9,23 @@ import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.EnemyConfig;
 import com.csse3200.game.entities.factories.ItemFactory;
 import com.csse3200.game.entities.factories.ObstacleFactory;
-import com.csse3200.game.rendering.TextureRenderComponent;
+import com.csse3200.game.rendering.AnimationRenderComponent;
+import com.csse3200.game.services.ServiceLocator;
 import java.util.ArrayList;
 import java.util.Map;
 
 public class LevelConfig {
   protected String platformTFP;
+  protected String mossyPlatformTFP;
   protected String movingPlatformTFP;
   protected String crumblingPlatformTFP;
   protected String triggerablePlatformTFP;
   protected String ledgesTFP;
   protected String groundTFP;
+  protected String spikeTFP;
+
+  /** Optional atlas with "unlit" and "lit" regions for this level's checkpoints. */
+  protected String checkpointAtlas;
 
   protected PlatformConfig[] platforms;
   protected MovingPlatformConfig[] movingPlatforms;
@@ -83,6 +91,9 @@ public class LevelConfig {
    */
   public ArrayList<CheckpointComponent> getCheckpoints() {
     ArrayList<CheckpointComponent> checkpointComponents = new ArrayList<>();
+    if (checkpoints == null) {
+      return checkpointComponents;
+    }
     for (CheckpointConfig c : checkpoints) {
       checkpointComponents.add(c.getEntity().getComponent(CheckpointComponent.class));
     }
@@ -195,7 +206,9 @@ public class LevelConfig {
     for (SpikeClusterConfig s : spikes) {
       for (int i = s.xMin; i <= s.xMax; i++) {
         for (int j = s.yMin; j <= s.yMax; j++) {
-          Entity spike = ObstacleFactory.createSpike(s);
+          Entity spike =
+              ObstacleFactory.createSpike(
+                  s, spikeTFP != null ? spikeTFP : "images/terrain/Level_1/Level_1_Spike.png");
           entities.add(new SpawnData(new GridPoint2(i, j), spike));
         }
       }
@@ -271,15 +284,26 @@ public class LevelConfig {
 
     for (CheckpointConfig c : checkpoints) {
       Entity checkpoint = new Entity();
-      checkpoint.addComponent(new CheckpointComponent(false, c.getPosition()));
+      checkpoint.addComponent(new CheckpointComponent(false, c.getPosition(), checkpointAtlas));
 
       c.setEntity(checkpoint);
       entities.add(new SpawnData(c.getPosition(), checkpoint));
 
-      Entity torch =
-          new Entity().addComponent(new TextureRenderComponent("images/checkpoint_unlit.png"));
+      // The torch art comes from the checkpoint atlas. Without one the checkpoint still works but
+      // has nothing to draw.
+      if (checkpointAtlas == null) {
+        continue;
+      }
 
-      torch.setScale(1f, 1.5f);
+      AnimationRenderComponent animator =
+          new AnimationRenderComponent(
+              ServiceLocator.getResourceService().getAsset(checkpointAtlas, TextureAtlas.class));
+      animator.addAnimation("unlit", 0.2f, Animation.PlayMode.LOOP);
+      animator.addAnimation("lit", 0.2f, Animation.PlayMode.LOOP);
+      Entity torch = new Entity().addComponent(animator);
+      animator.startAnimation("unlit");
+      torch.setScale(CheckpointComponent.ATLAS_WIDTH, CheckpointComponent.ATLAS_HEIGHT);
+      checkpoint.getComponent(CheckpointComponent.class).setTorch(torch);
 
       GridPoint2 pos = c.getPosition();
       torch.setPosition(pos.x, pos.y - 1.3f);

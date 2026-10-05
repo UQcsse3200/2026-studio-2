@@ -11,9 +11,11 @@ import com.csse3200.game.areas.Level1GameArea;
 import com.csse3200.game.areas.Level2GameArea;
 import com.csse3200.game.areas.terrain.TerrainFactory;
 import com.csse3200.game.components.ButtonSound;
+import com.csse3200.game.components.gamearea.CoordinateDisplay;
 import com.csse3200.game.components.gamearea.PerformanceDisplay;
+import com.csse3200.game.components.item.ItemType;
 import com.csse3200.game.components.maingame.MainGameActions;
-import com.csse3200.game.components.maingame.MainGameExitDisplay;
+import com.csse3200.game.components.maingame.PauseButtonDisplay;
 import com.csse3200.game.components.maingame.PauseMenuOverlay;
 import com.csse3200.game.components.minigames.MinigameOverlayManager;
 import com.csse3200.game.components.minigames.blackjack.BlackjackConfig;
@@ -23,6 +25,7 @@ import com.csse3200.game.components.minigames.spinthewheel.WheelConfig;
 import com.csse3200.game.components.player.KeyboardPlayerInputComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
+import com.csse3200.game.entities.factories.ItemFactory;
 import com.csse3200.game.entities.factories.RenderFactory;
 import com.csse3200.game.events.EventHandler;
 import com.csse3200.game.input.InputComponent;
@@ -115,9 +118,7 @@ public class LevelsGameScreen extends ScreenAdapter {
 
     // Pass the same camera to the Level1GameArea so that
     // the parallax background can follow camera movement.
-    this.level1GameArea = new Level1GameArea(terrainFactory, renderer.getCamera());
-
-    Level1GameArea level1GameArea = new Level1GameArea(terrainFactory, renderer.getCamera());
+    level1GameArea = new Level1GameArea(terrainFactory, renderer.getCamera());
     level1GameArea.create();
 
     currentGameArea = level1GameArea;
@@ -239,8 +240,15 @@ public class LevelsGameScreen extends ScreenAdapter {
       levelSwapQueued = false;
     }
 
-    if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
+    if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)
+        && !ServiceLocator.getEntityService().getSettingsOpen()) {
       pauseOverlay.request();
+    }
+
+    // F3 toggles debug mode: physics outlines plus player and mouse coordinates
+    if (Gdx.input.isKeyJustPressed(Input.Keys.F3)) {
+      var debug = ServiceLocator.getRenderService().getDebug();
+      debug.setActive(!debug.getActive());
     }
 
     if (Gdx.input.isKeyJustPressed(Input.Keys.L)) {
@@ -294,13 +302,13 @@ public class LevelsGameScreen extends ScreenAdapter {
     List<String> paths =
         new ArrayList<>(
             List.of(
-                "images/heart.png",
-                "images/title_odysseus_logo.png",
-                "images/Health_Bar_Background.png",
-                "images/red_heart.png",
-                "images/PixelArt_HeartBack.png",
-                "images/Damaged_heart.png",
-                "images/Last_Health.png",
+                "images/ui/title_odysseus_logo.png",
+                "images/health/red_heart.png",
+                "images/health/PixelArt_HeartBack.png",
+                "images/health/Damaged_heart.png",
+                "images/health/Last_Health.png",
+                "images/Buttons/apply_up_btn.png",
+                "images/Buttons/apply_down_btn.png",
                 "images/Buttons/continue_up_btn.png",
                 "images/Buttons/continue_down_btn.png",
                 "images/Buttons/settings_up_btn.png",
@@ -311,7 +319,7 @@ public class LevelsGameScreen extends ScreenAdapter {
                 "images/Buttons/exit_down_btn.png",
                 "images/Buttons/control_up_btn.png",
                 "images/Buttons/control_down_btn.png",
-                "images/controls_graphic.png",
+                "images/ui/controls_graphic.png",
                 "images/Buttons/restart_up_btn.png",
                 "images/Buttons/restart_down_btn.png",
                 "images/Buttons/main_menu_up_btn.png",
@@ -320,11 +328,23 @@ public class LevelsGameScreen extends ScreenAdapter {
                 "images/Buttons/exit_game_down_btn.png",
                 "images/Buttons/back_up_btn.png",
                 "images/Buttons/back_down_btn.png",
-                "images/scroll_bg.png",
+                "images/ui/scroll_bg.png",
                 "images/Buttons/exit_down_btn.png",
-                "images/rope_arrow.png",
-                "images/fire_arrow.png",
-                "images/cold_arrow.png"));
+                "images/projectiles/rope_arrow.png",
+                "images/projectiles/fire_arrow.png",
+                "images/projectiles/ice_arrow.png",
+                "images/backgrounds/main_menu_bg_2.png",
+                "images/ui/settings_box.png"));
+    // The player's HUD (gold coin, arrow wheel and inventory icons) keeps these textures across
+    // level swaps. If a game area owned them, unloading that area would leave the HUD drawing
+    // disposed textures as black boxes in the next level.
+    paths.add(ItemFactory.GOLD_TEXTURE);
+    paths.add("images/projectiles/poison_arrow.png");
+    for (ItemType itemType : ItemType.values()) {
+      paths.add(itemType.getTexturePath());
+      paths.add(itemType.getProjectileTexturePath());
+    }
+    paths.addAll(List.of(PauseButtonDisplay.extraTextures()));
     paths.addAll(List.of(WheelConfig.TEXTURES));
     paths.addAll(List.of(BlackjackConfig.TEXTURES));
     return paths.toArray(new String[0]);
@@ -336,7 +356,7 @@ public class LevelsGameScreen extends ScreenAdapter {
    * @return every atlas the levels need
    */
   private static String[] createAtlas() {
-    List<String> paths = new ArrayList<>(List.of("images/player.atlas"));
+    List<String> paths = new ArrayList<>(List.of("images/player/player.atlas"));
     return paths.toArray(new String[0]);
   }
 
@@ -388,8 +408,9 @@ public class LevelsGameScreen extends ScreenAdapter {
 
     ui.addComponent(new InputDecorator(stage, 10))
         .addComponent(new PerformanceDisplay())
+        .addComponent(new CoordinateDisplay(renderer.getCamera()))
         .addComponent(new MainGameActions(this.game))
-        .addComponent(new MainGameExitDisplay())
+        .addComponent(new PauseButtonDisplay(() -> pauseOverlay.request()))
         .addComponent(
             new GameEndDisplay(GameEndState.LOSE)) // Add GameEndDisplay component to the UI entity
         .addComponent(new GameEndActions(this.game))

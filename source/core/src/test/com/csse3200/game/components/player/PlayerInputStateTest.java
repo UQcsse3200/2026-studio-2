@@ -12,6 +12,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.entities.Entity;
+import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.input.InputService;
 import com.csse3200.game.services.ServiceLocator;
@@ -33,6 +34,7 @@ class PlayerInputStateTest {
     originalInput = Gdx.input;
     Gdx.input = mock(Input.class);
     ServiceLocator.registerInputService(mock(InputService.class));
+    ServiceLocator.registerEntityService(mock(EntityService.class));
     input = new KeyboardPlayerInputComponent();
     player = new Entity().addComponent(input);
     Camera camera = mock(Camera.class);
