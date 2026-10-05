@@ -288,4 +288,24 @@ class TextBoxComponentTest {
     assertEquals(100f, table.getX(), 0.01f);
     assertEquals(200f, table.getY(), 0.01f);
   }
+
+  @Test
+  void setPositionWithBottomAlignShouldPinBottomEdge() {
+    TextBoxComponent component = makeComponent(List.of("Some text"), 100f);
+    when(mockGraphics.getDeltaTime()).thenReturn(1f); // fully reveal so pack() gives height
+    when(mockInput.isKeyJustPressed(Keys.TAB)).thenReturn(false);
+
+    component.create();
+    invokeDraw(component);
+    component.setPosition(
+        100f, 200f, com.badlogic.gdx.utils.Align.bottom);
+    invokeDraw(component); // draw() must keep the stored alignment, not reset to top
+
+    int posAlign = getField(component, "posAlign");
+    assertEquals(com.badlogic.gdx.utils.Align.bottom, posAlign);
+    Table table = getField(component, "table");
+    assertTrue(table.getHeight() > 0f);
+    // Bottom edge pinned at y: with top alignment this would sit a full height lower.
+    assertEquals(200f, table.getY(), 0.01f);
+  }
 }

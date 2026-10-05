@@ -36,7 +36,9 @@ public class GameEndDisplay extends UIComponent {
   /** Fraction of the stage height where the top of the result message sits. */
   private static final float MESSAGE_Y_FRACTION = 0.68f;
   /** Gap in pixels kept between the top of the restart button and the message above it. */
-  private static final float MESSAGE_BUTTON_GAP = 12f;
+  private static final float MESSAGE_BUTTON_GAP = 24f;
+  /** Breathing room in pixels between the title and the buttons below it. */
+  private static final float TITLE_BUTTON_SPACING = 90f;
   /** Fraction of the stage width used as the message wrap width. */
   private static final float MESSAGE_WIDTH_FRACTION = 0.7f;
   private static final Color TRANSPARENT = new Color(0f, 0f, 0f, 0f);
@@ -79,7 +81,7 @@ public class GameEndDisplay extends UIComponent {
     logger.info("GameEndDisplay.setState() called with state: {}", state);
     this.state = state;
     if (titleLabel != null) {
-      titleLabel.setText(state == GameEndState.WIN ? "YOU WIN!" : "GAME OVER!");
+      titleLabel.setText(state == GameEndState.WIN ? "Victory!" : "Defeat!");
     }
     this.resultText = resultTextFor(state);
     visible = true;
@@ -181,7 +183,7 @@ public class GameEndDisplay extends UIComponent {
         new TextBoxComponent(
             stage.getWidth() / 2f,
             stage.getHeight() * MESSAGE_Y_FRACTION,
-            Color.WHITE,
+            Color.BLACK,
             TRANSPARENT,
             TRANSPARENT,
             MESSAGE_CHARS_PER_SECOND,
@@ -197,8 +199,9 @@ public class GameEndDisplay extends UIComponent {
 
   /**
    * Keeps the message box anchored in the panel's message row, just above the restart button.
-   * Tracking the button (rather than a fixed stage fraction) keeps the text clear of the title
-   * on any resolution or with any message length.
+   * Tracking the button (rather than a fixed stage fraction) keeps the text clear of the title and
+   * buttons on any resolution or with any message length. The box's bottom edge is pinned above
+   * the button so taller (wrapped) messages grow upward, never over the buttons.
    */
   private void positionMessageBox() {
     if (messageBox == null || stage == null) {
@@ -208,7 +211,7 @@ public class GameEndDisplay extends UIComponent {
       Vector2 buttonTopCenter =
           restartBtn.localToStageCoordinates(
               new Vector2(restartBtn.getWidth() / 2f, restartBtn.getHeight()));
-      messageBox.setPosition(buttonTopCenter.x, buttonTopCenter.y + MESSAGE_BUTTON_GAP);
+      messageBox.setPosition(buttonTopCenter.x, buttonTopCenter.y + MESSAGE_BUTTON_GAP, Align.bottom);
       return;
     }
     messageBox.setPosition(stage.getWidth() / 2f, stage.getHeight() * MESSAGE_Y_FRACTION);
@@ -357,7 +360,7 @@ public class GameEndDisplay extends UIComponent {
           }
         });
 
-    panel.add(titleLabel).pad(padding).row();
+    panel.add(titleLabel).pad(padding).padBottom(TITLE_BUTTON_SPACING).row();
     panel.add(restartBtn).width(BUTTON_WIDTH).height(BUTTON_HEIGHT).padBottom(padding).row();
     panel.add(mainMenuBtn).width(BUTTON_WIDTH).height(BUTTON_HEIGHT).padBottom(padding).row();
     panel.add(exitGameBtn).width(BUTTON_WIDTH).height(BUTTON_HEIGHT).padBottom(padding).row();

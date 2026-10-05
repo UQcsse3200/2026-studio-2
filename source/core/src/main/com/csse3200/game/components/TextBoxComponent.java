@@ -24,6 +24,7 @@ public class TextBoxComponent extends UIComponent {
 
   private float posX;
   private float posY;
+  private int posAlign = Align.top;
   private final Color textColor;
   private final Color backgroundColour;
   private final Color borderColour;
@@ -148,10 +149,19 @@ public class TextBoxComponent extends UIComponent {
 
   /** Repositions the textbox table, e.g. to track a responsive layout each frame. */
   public void setPosition(float x, float y) {
+    setPosition(x, y, Align.top);
+  }
+
+  /**
+   * Repositions the textbox table with an explicit alignment so it pins the
+   * box's bottom edge above another entity. The alignment survives redraws.
+   */
+  public void setPosition(float x, float y, int align) {
     posX = x;
     posY = y;
+    posAlign = align;
     if (table != null) {
-      table.setPosition(x, y, Align.top);
+      table.setPosition(x, y, align);
     }
   }
 
@@ -364,8 +374,8 @@ public class TextBoxComponent extends UIComponent {
       y = (worldPos.y / 20f) * screenHeight + 18f;
     }
 
-    // alignment = 2 for top to bottom effect
-    table.setPosition(x, y, 2);
+    // Position with the stored alignment (top by default, see setPosition).
+    table.setPosition(x, y, posAlign);
     table.setVisible(true);
     label.setVisible(true);
   }
