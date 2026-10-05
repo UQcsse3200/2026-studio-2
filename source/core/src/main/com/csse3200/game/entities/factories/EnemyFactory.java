@@ -299,13 +299,27 @@ public class EnemyFactory {
     if (config.attackType.equals("range")) {
       aiComponent.addTask(
           new RangedAttackTask(
-              target, 20, config.attackRange, 2f, config.baseAttack, 4.5f, 5f, false));
+              target,
+              20,
+              config.attackRange,
+              2f,
+              config.baseAttack,
+              4.5f,
+              5f,
+              false)); // FATAL ERROR
       // If the enemy is a summon type, add summon + range task
     } else if (config.attackType.equals("summon")) {
       aiComponent
           .addTask(
               new RangedAttackTask(
-                  target, 20, config.attackRange, 2f, config.baseAttack, 4.5f, 5f, true))
+                  target,
+                  20,
+                  config.attackRange,
+                  2f,
+                  config.baseAttack,
+                  4.5f,
+                  5f,
+                  true)) // FATAL ERROR
           .addTask(new SummonTask(target, 30, config.attackRange, 5f));
     } else if (config.attackType.equals("cyclops")) {
       // add melee sweep attack and throwing boulder range attack

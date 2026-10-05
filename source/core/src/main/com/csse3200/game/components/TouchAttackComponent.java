@@ -23,6 +23,7 @@ public class TouchAttackComponent extends Component {
   private float knockbackForce = 0f;
   private CombatStatsComponent combatStats;
   private HitboxComponent hitboxComponent;
+  private boolean hitPlayer = false;
 
   // Behaviour to ensure continuous collision is punished (not only at start)
   private float touchTimer = 0f;
@@ -59,6 +60,11 @@ public class TouchAttackComponent extends Component {
 
   @Override
   public void update() {
+    if (hitPlayer) {
+      entity.getEvents().trigger("hitPlayer");
+      hitPlayer = false;
+    }
+
     if (targetFixture == null) {
       touchTimer = 0f;
       return;
@@ -101,21 +107,21 @@ public class TouchAttackComponent extends Component {
   }
 
   private void attack(Fixture other) {
-    // Try to attack target.
     Entity target = ((BodyUserData) other.getBody().getUserData()).entity;
     CombatStatsComponent targetStats = target.getComponent(CombatStatsComponent.class);
-    if (targetStats != null) {
-      targetStats.hit(combatStats);
-      entity.getEvents().trigger("hitPlayer");
-    }
-
-    // Apply knockback
     PhysicsComponent physicsComponent = target.getComponent(PhysicsComponent.class);
-    if (physicsComponent != null && knockbackForce > 0f) {
-      Body targetBody = physicsComponent.getBody();
-      Vector2 direction = target.getCenterPosition().sub(entity.getCenterPosition());
-      Vector2 impulse = direction.setLength(knockbackForce);
-      targetBody.applyLinearImpulse(impulse, targetBody.getWorldCenter(), true);
+
+    if (targetStats != null) {
+      // Apply knockback
+      if (physicsComponent != null && knockbackForce > 0f) {
+        Body targetBody = physicsComponent.getBody();
+        Vector2 direction = target.getCenterPosition().sub(entity.getCenterPosition());
+        Vector2 impulse = direction.setLength(knockbackForce);
+        targetBody.applyLinearImpulse(impulse, targetBody.getWorldCenter(), true);
+      }
+      // Try to attack target.
+      targetStats.hit(combatStats);
+      hitPlayer = true;
     }
   }
 }

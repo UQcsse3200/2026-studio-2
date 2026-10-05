@@ -65,10 +65,10 @@ public class EnemyTeleportComponent extends Component {
   }
 
   private void damagedTeleport(int health) {
-    prevHealth = health;
     if (health >= prevHealth) {
       return;
     }
+    prevHealth = health;
 
     long currentTime = ServiceLocator.getTimeSource().getTime();
     damagedTpTime = currentTime + damagedTpDelay;
