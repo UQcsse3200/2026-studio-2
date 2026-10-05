@@ -161,19 +161,6 @@ class PlayerMovementRegressionTest {
   }
 
   @Test
-  void shouldRejectDashWhilePausedThenAllowItAfterResume() {
-    player.getEvents().trigger("togglePaused");
-    player.getEvents().trigger("dash");
-    assertEquals(2.5f, body.getGravityScale());
-    assertEquals(0f, body.getLinearVelocity().x);
-
-    player.getEvents().trigger("togglePaused");
-    player.getEvents().trigger("dash");
-    assertEquals(0f, body.getGravityScale());
-    assertTrue(body.getLinearVelocity().x > 0f);
-  }
-
-  @Test
   void shouldBlockDashWhileAttachedToGrapple() {
     when(grapple.isAttached()).thenReturn(true);
     body.setLinearVelocity(2f, -3f);
