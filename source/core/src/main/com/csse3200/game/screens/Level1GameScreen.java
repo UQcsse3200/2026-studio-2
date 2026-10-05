@@ -13,6 +13,7 @@ import com.csse3200.game.areas.terrain.TerrainFactory;
 import com.csse3200.game.components.ButtonSound;
 import com.csse3200.game.components.gamearea.CoordinateDisplay;
 import com.csse3200.game.components.gamearea.PerformanceDisplay;
+import com.csse3200.game.components.item.ItemType;
 import com.csse3200.game.components.maingame.MainGameActions;
 import com.csse3200.game.components.maingame.PauseButtonDisplay;
 import com.csse3200.game.components.maingame.PauseMenuOverlay;
@@ -24,6 +25,7 @@ import com.csse3200.game.components.minigames.spinthewheel.WheelConfig;
 import com.csse3200.game.components.player.KeyboardPlayerInputComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
+import com.csse3200.game.entities.factories.ItemFactory;
 import com.csse3200.game.entities.factories.RenderFactory;
 import com.csse3200.game.events.EventHandler;
 import com.csse3200.game.input.InputComponent;
@@ -333,6 +335,15 @@ public class Level1GameScreen extends ScreenAdapter {
                 "images/projectiles/ice_arrow.png",
                 "images/backgrounds/main_menu_bg_2.png",
                 "images/ui/settings_box.png"));
+    // The player's HUD (gold coin, arrow wheel and inventory icons) keeps these textures across
+    // level swaps. If a game area owned them, unloading that area would leave the HUD drawing
+    // disposed textures as black boxes in the next level.
+    paths.add(ItemFactory.GOLD_TEXTURE);
+    paths.add("images/projectiles/poison_arrow.png");
+    for (ItemType itemType : ItemType.values()) {
+      paths.add(itemType.getTexturePath());
+      paths.add(itemType.getProjectileTexturePath());
+    }
     paths.addAll(List.of(PauseButtonDisplay.extraTextures()));
     paths.addAll(List.of(WheelConfig.TEXTURES));
     paths.addAll(List.of(BlackjackConfig.TEXTURES));

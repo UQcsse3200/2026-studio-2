@@ -68,7 +68,8 @@ public class ObstacleFactory {
      */
     if ("images/terrain/Level_2/level_2_tile.png".equals(config.textureFilepath)) {
 
-      platform.addComponent(new TiledRenderComponent("images/terrain/Level_2/level_2_tile.png", 0.75f));
+      platform.addComponent(
+          new TiledRenderComponent("images/terrain/Level_2/level_2_tile.png", 0.75f));
 
     } else {
 

@@ -35,7 +35,6 @@ public class Level2GameArea extends GameArea {
 
     // Transparent texture used for the physics-only floor
     "images/ui/transparent.png",
-    "images/items/gold_coin.png",
 
     // Existing game textures
     "images/backgrounds/black_roof.png",
