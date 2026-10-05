@@ -9,6 +9,7 @@ import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.areas.terrain.TerrainComponent;
+import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.events.EventHandler;
@@ -300,6 +301,48 @@ public class CyclopsMinigameLogicTest {
     assertEquals(CyclopsMinigameLogic.State.MOVING, minigameLogic.state);
     verify(player, never()).setPosition(any(Vector2.class));
     verify(events, never()).trigger("hurt");
+  }
+
+  private CombatStatsComponent givePlayerHealth(int health) {
+    CombatStatsComponent stats = new CombatStatsComponent(health, 1);
+    when(player.getComponent(CombatStatsComponent.class)).thenReturn(stats);
+    return stats;
+  }
+
+  @Test
+  void missReducesHealthByMissDamage() {
+    minigameLogic.setSafeLocations(List.of(new GridPoint2(1, 0)));
+    minigameLogic.setLossLocations(List.of(new GridPoint2(2, 0)));
+    CombatStatsComponent stats = givePlayerHealth(10);
+
+    runMove(false);
+
+    assertEquals(10 - CyclopsMinigameLogic.MISS_DAMAGE, stats.getHealth());
+  }
+
+  @Test
+  void deathStopsMinigameInsteadOfRestarting() {
+    GridPoint2 start = new GridPoint2(1, 0);
+    minigameLogic.setSafeLocations(List.of(start));
+    minigameLogic.setLossLocations(List.of(new GridPoint2(2, 0)));
+    givePlayerHealth(CyclopsMinigameLogic.MISS_DAMAGE);
+
+    runMove(false);
+    minigameLogic.update();
+
+    assertEquals(CyclopsMinigameLogic.State.STOP, minigameLogic.state);
+    verify(minigameLogic.transitionScreenCover, never()).setVisible(true);
+  }
+
+  @Test
+  void hitDoesNotChangeHealth() {
+    minigameLogic.setSafeLocations(List.of(new GridPoint2(1, 0), new GridPoint2(2, 0)));
+    minigameLogic.setWinLocation(new GridPoint2(3, 0));
+    CombatStatsComponent stats = givePlayerHealth(10);
+
+    runMove(true);
+
+    assertEquals(10, stats.getHealth());
   }
 
   @Test

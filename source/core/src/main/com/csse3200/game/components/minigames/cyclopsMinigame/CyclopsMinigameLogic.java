@@ -6,6 +6,7 @@ import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.areas.terrain.TerrainComponent;
+import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.Component;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.services.ServiceLocator;
@@ -40,6 +41,7 @@ public class CyclopsMinigameLogic extends Component {
   static final float TRANSITION_DELAY_GAP = 0.2f;
   static final float TRANSITION_DELAY = 0.8f;
   static final float LOSS_DISPLAY_DELAY = 1.0f;
+  static final int MISS_DAMAGE = 2;
 
   /* Components */
   private final TimingBarLogic timingBarLogic;
@@ -234,8 +236,17 @@ public class CyclopsMinigameLogic extends Component {
       else startMinigame();
     } else {
       playerEntity.getEvents().trigger(playerLossAnimation);
+      CombatStatsComponent combatStats = playerEntity.getComponent(CombatStatsComponent.class);
+      if (combatStats != null) {
+        combatStats.addHealth(-MISS_DAMAGE);
+      }
       changeState(State.LOSS);
     }
+  }
+
+  private boolean playerIsDead() {
+    CombatStatsComponent combatStats = playerEntity.getComponent(CombatStatsComponent.class);
+    return combatStats != null && combatStats.isDead();
   }
 
   private void handlePlaying(float delta) {
@@ -323,9 +334,15 @@ public class CyclopsMinigameLogic extends Component {
       }
       case LOSS -> {
         if (elapsed(LOSS_DISPLAY_DELAY)) {
-          logger.info("Player has LOST the cyclops minigame");
-          transitionScreenCover.setVisible(true);
-          changeState(State.LOSS_TRANSITION);
+          if (playerIsDead()) {
+            logger.info("Player has DIED in the cyclops minigame");
+            // TODO: decide what happens after death (exit to the level or a game-over screen)
+            changeState(State.STOP);
+          } else {
+            logger.info("Player has LOST the cyclops minigame");
+            transitionScreenCover.setVisible(true);
+            changeState(State.LOSS_TRANSITION);
+          }
         }
       }
       case LOSS_TRANSITION -> {
