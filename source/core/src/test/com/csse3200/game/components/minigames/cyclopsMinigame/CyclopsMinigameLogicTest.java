@@ -50,6 +50,7 @@ public class CyclopsMinigameLogicTest {
 
     ServiceLocator.registerResourceService(new ResourceService());
     ServiceLocator.registerEntityService(new EntityService());
+    ServiceLocator.registerCyclopsMinigameEventHandler(new EventHandler());
 
     gameTime = mock(GameTime.class);
     ServiceLocator.registerTimeSource(gameTime);
@@ -217,6 +218,88 @@ public class CyclopsMinigameLogicTest {
     verify(events).trigger("walkStop");
     verify(player).setPosition(nextPos);
     verify(minigameLogic.walkingSound).play();
+  }
+
+  @Test
+  void timingFailureRunsToGapAndEntersLossSequence() {
+    GridPoint2 start = new GridPoint2(1, 0);
+    GridPoint2 loss = new GridPoint2(2, 0);
+    minigameLogic.setSafeLocations(List.of(start));
+    minigameLogic.setLossLocations(List.of(loss));
+
+    Vector2 lossPos = new Vector2(300, 0);
+    when(terrainComponent.tileToWorldPosition(loss)).thenReturn(lossPos);
+    when(gameTime.getDeltaTime()).thenReturn(10f);
+
+    minigameLogic.changeState(CyclopsMinigameLogic.State.PLAY);
+    minigameLogic.timingFailure();
+    assertEquals(CyclopsMinigameLogic.State.MOVING, minigameLogic.state);
+    verify(timingBarDisplay).setVisible(false);
+
+    minigameLogic.update();
+    verify(player).setPosition(lossPos);
+    verify(events).trigger("hurt");
+    assertEquals(CyclopsMinigameLogic.State.LOSS, minigameLogic.state);
+  }
+
+  @Test
+  void timingSuccessRunsToNextStatue() {
+    GridPoint2 start = new GridPoint2(1, 0);
+    GridPoint2 next = new GridPoint2(2, 0);
+    GridPoint2 win = new GridPoint2(3, 0);
+    minigameLogic.setSafeLocations(List.of(start, next));
+    minigameLogic.setWinLocation(win);
+
+    Vector2 nextPos = new Vector2(200, 0);
+    when(terrainComponent.tileToWorldPosition(next)).thenReturn(nextPos);
+    when(gameTime.getDeltaTime()).thenReturn(10f);
+
+    minigameLogic.changeState(CyclopsMinigameLogic.State.PLAY);
+    minigameLogic.timingSuccess();
+    assertEquals(CyclopsMinigameLogic.State.MOVING, minigameLogic.state);
+    verify(timingBarDisplay).setVisible(false);
+
+    minigameLogic.update();
+    verify(player).setPosition(nextPos);
+    verify(events, never()).trigger("hurt");
+    assertEquals(CyclopsMinigameLogic.State.SHOW_DELAY, minigameLogic.state);
+  }
+
+  @Test
+  void debugOutcomesAfterWinDoNotCrash() {
+    GridPoint2 start = new GridPoint2(1, 0);
+    GridPoint2 loss = new GridPoint2(2, 0);
+    GridPoint2 win = new GridPoint2(3, 0);
+    minigameLogic.setSafeLocations(List.of(start));
+    minigameLogic.setLossLocations(List.of(loss));
+    minigameLogic.setWinLocation(win);
+
+    runMove(true);
+    minigameLogic.update();
+    assertEquals(CyclopsMinigameLogic.State.STOP, minigameLogic.state);
+
+    assertDoesNotThrow(
+        () -> {
+          minigameLogic.timingFailure();
+          minigameLogic.timingSuccess();
+        });
+    assertEquals(CyclopsMinigameLogic.State.STOP, minigameLogic.state);
+  }
+
+  @Test
+  void debugOutcomesMidRunAreIgnored() {
+    GridPoint2 start = new GridPoint2(1, 0);
+    GridPoint2 next = new GridPoint2(2, 0);
+    minigameLogic.setSafeLocations(List.of(start, next));
+    minigameLogic.setLossLocations(List.of(next));
+
+    minigameLogic.changeState(CyclopsMinigameLogic.State.MOVING);
+    minigameLogic.timingFailure();
+    minigameLogic.timingSuccess();
+
+    assertEquals(CyclopsMinigameLogic.State.MOVING, minigameLogic.state);
+    verify(player, never()).setPosition(any(Vector2.class));
+    verify(events, never()).trigger("hurt");
   }
 
   @Test

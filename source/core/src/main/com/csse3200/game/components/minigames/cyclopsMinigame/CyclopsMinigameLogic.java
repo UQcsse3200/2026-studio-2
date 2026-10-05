@@ -134,9 +134,9 @@ public class CyclopsMinigameLogic extends Component {
 
   GridPoint2 advanceToNextLocation(boolean success) {
     if (!success) {
-      return lossLocations.get(this.currentSafeLocation);
+      return lossLocations.get(Math.min(this.currentSafeLocation, lossLocations.size() - 1));
     }
-    this.currentSafeLocation++;
+    this.currentSafeLocation = Math.min(this.currentSafeLocation + 1, safeLocations.size());
     if (!areNextSafeLocations()) {
       hasWon = true;
       return this.winLocation;
@@ -219,8 +219,8 @@ public class CyclopsMinigameLogic extends Component {
     return timeInState >= seconds;
   }
 
-  private void beginRun() {
-    runSuccess = timingBarLogic.checkHit();
+  private void beginRun(boolean success) {
+    runSuccess = success;
     runStart = playerEntity.getPosition().cpy();
     runTarget = terrainComponent.tileToWorldPosition(advanceToNextLocation(runSuccess));
     playWalkingSound();
@@ -245,6 +245,30 @@ public class CyclopsMinigameLogic extends Component {
       playCorrectMarkerSound();
       changeState(State.HIDE_DELAY);
     }
+  }
+
+  private boolean canForceOutcome(String outcome) {
+    if (state == State.PLAY) {
+      return true;
+    }
+    logger.info("Ignoring forced {} outcome while in state {}", outcome, state);
+    return false;
+  }
+
+  void timingSuccess() {
+    if (!canForceOutcome("success")) return;
+    timingBarLogic.stopMarker();
+    timingBarDisplay.setVisible(false);
+    beginRun(true);
+    changeState(State.MOVING);
+  }
+
+  void timingFailure() {
+    if (!canForceOutcome("failure")) return;
+    timingBarLogic.stopMarker();
+    timingBarDisplay.setVisible(false);
+    beginRun(false);
+    changeState(State.MOVING);
   }
 
   public void startMinigame() {
@@ -327,7 +351,7 @@ public class CyclopsMinigameLogic extends Component {
       }
       case PRE_MOVE -> {
         if (elapsed(TRANSITION_DELAY_GAP)) {
-          beginRun();
+          beginRun(timingBarLogic.checkHit());
           changeState(State.MOVING);
         }
       }
