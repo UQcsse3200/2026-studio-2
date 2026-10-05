@@ -10,9 +10,16 @@ import static org.mockito.Mockito.when;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.Filter;
+import com.badlogic.gdx.physics.box2d.Fixture;
+import com.badlogic.gdx.physics.box2d.Joint;
+import com.badlogic.gdx.physics.box2d.PolygonShape;
+import com.badlogic.gdx.physics.box2d.joints.DistanceJoint;
+import com.badlogic.gdx.utils.Array;
 import com.csse3200.game.components.item.weapons.bow.grapple.GrappleComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.extensions.GameExtension;
+import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.physics.PhysicsService;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.services.GameTime;
@@ -162,6 +169,53 @@ class GrappleComponentTest {
 
     assertFalse(grapple.isAttached());
     assertEquals(ORIGINAL_DAMPING, physicsComponent.getBody().getLinearDamping());
+  }
+
+  @Test
+  void shouldRebuildJointAtOriginalAnchorAfterUnwrappingLastContact() {
+    Entity player = createAttachedPlayer();
+    GrappleComponent grapple = player.getComponent(GrappleComponent.class);
+    Body playerBody = player.getComponent(PhysicsComponent.class).getBody();
+    playerBody.setTransform(0f, -5f, 0f);
+    Body anchor = createAnchorBody();
+    anchor.setTransform(10f, 3f, 0f);
+    Vector2 anchorPoint = new Vector2(10f, 3f);
+    grapple.attachTo(anchor, anchorPoint);
+    grapple.update();
+    float initialLength = grapple.getRopeLength();
+
+    BodyDef obstacleDef = new BodyDef();
+    obstacleDef.position.set(5f, 0f);
+    Body obstacle = physicsService.getPhysics().createBody(obstacleDef);
+    PolygonShape shape = new PolygonShape();
+    shape.setAsBox(1f, 2f);
+    Fixture fixture = obstacle.createFixture(shape, 0f);
+    shape.dispose();
+    Filter filter = fixture.getFilterData();
+    filter.categoryBits = PhysicsLayer.SOLID;
+    fixture.setFilterData(filter);
+
+    // The shorter player-to-anchor distance leaves room for bends around the obstacle.
+    playerBody.setTransform(0f, 0f, 0f);
+    grapple.update();
+    assertTrue(grapple.getRopePath().size() > 2);
+    Array<Joint> joints = new Array<>();
+    physicsService.getPhysics().getWorld().getJoints(joints);
+    assertEquals(1, joints.size);
+    assertEquals(obstacle, joints.first().getBodyA());
+
+    // Crossing above the obstacle removes the final bend and restores the original pivot.
+    playerBody.setTransform(0f, 5f, 0f);
+    grapple.update();
+    assertTrue(grapple.isAttached());
+    assertEquals(2, grapple.getRopePath().size());
+    assertTrue(anchorPoint.epsilonEquals(grapple.getAnchorPoint(), 0.001f));
+    assertEquals(initialLength, grapple.getRopeLength(), 0.001f);
+    joints.clear();
+    physicsService.getPhysics().getWorld().getJoints(joints);
+    assertEquals(1, joints.size);
+    assertEquals(anchor, joints.first().getBodyA());
+    assertEquals(initialLength, ((DistanceJoint) joints.first()).getLength(), 0.001f);
   }
 
   @Test

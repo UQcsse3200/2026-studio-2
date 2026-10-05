@@ -5,6 +5,7 @@ import com.csse3200.game.components.item.GoldPickupComponent;
 import com.csse3200.game.components.item.Item;
 import com.csse3200.game.components.item.ItemComponent;
 import com.csse3200.game.components.item.ItemType;
+import com.csse3200.game.components.item.WheelTokenPickupComponent;
 import com.csse3200.game.components.item.consumables.HealthPotion;
 import com.csse3200.game.components.item.consumables.PoisonPotion;
 import com.csse3200.game.components.item.consumables.SpeedPotion;
@@ -21,6 +22,7 @@ import com.csse3200.game.rendering.TextureRenderComponent;
 public class ItemFactory {
   private static final float ITEM_HEIGHT = 0.85f;
   public static final String GOLD_TEXTURE = "images/items/gold_coin.png";
+  public static final String WHEEL_TOKEN_TEXTURE = "images/minigames/spinthewheel/wheel-token.png";
 
   /**
    * Creates a world entity for an item using the texture from its {@code ItemType}.
@@ -150,6 +152,24 @@ public class ItemFactory {
     gold.getComponent(TextureRenderComponent.class).scaleEntity();
     gold.scaleHeight(ITEM_HEIGHT);
     return gold;
+  }
+
+  /**
+   * Creates a world wheel token, which opens Spin the Wheel when collected.
+   *
+   * @return wheel token pickup entity
+   */
+  public static Entity createWheelToken() {
+    Entity token =
+        new Entity()
+            .addComponent(new TextureRenderComponent(WHEEL_TOKEN_TEXTURE))
+            .addComponent(new PhysicsComponent().setBodyType(BodyType.StaticBody))
+            .addComponent(new HitboxComponent().setLayer(PhysicsLayer.DEFAULT))
+            .addComponent(new WheelTokenPickupComponent());
+
+    token.getComponent(TextureRenderComponent.class).scaleEntity();
+    token.scaleHeight(ITEM_HEIGHT);
+    return token;
   }
 
   private ItemFactory() {

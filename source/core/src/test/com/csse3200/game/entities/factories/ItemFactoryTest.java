@@ -2,6 +2,7 @@ package com.csse3200.game.entities.factories;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -12,6 +13,7 @@ import com.csse3200.game.components.item.GoldPickupComponent;
 import com.csse3200.game.components.item.Item;
 import com.csse3200.game.components.item.ItemComponent;
 import com.csse3200.game.components.item.ItemType;
+import com.csse3200.game.components.item.WheelTokenPickupComponent;
 import com.csse3200.game.components.item.consumables.HealthPotion;
 import com.csse3200.game.components.item.consumables.PoisonPotion;
 import com.csse3200.game.components.item.consumables.SpeedPotion;
@@ -84,6 +86,13 @@ class ItemFactoryTest {
 
     assertEquals(ItemType.ICE_ARROW, item.getItemType());
     assertEquals(2, item.getQuantity());
+  }
+
+  @Test
+  void shouldCreateWheelTokenPickup() {
+    Entity entity = ItemFactory.createWheelToken();
+
+    assertNotNull(entity.getComponent(WheelTokenPickupComponent.class));
   }
 
   private static void assertItemMapping(ItemType type, Class<? extends Item> expectedClass) {

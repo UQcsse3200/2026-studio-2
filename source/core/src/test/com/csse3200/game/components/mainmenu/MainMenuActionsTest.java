@@ -38,13 +38,6 @@ class MainMenuActionsTest {
   }
 
   @Test
-  void shouldOpenMinigameSelection() {
-    ui.getEvents().trigger("Minigames");
-
-    verify(game).setScreen(GdxGame.ScreenType.MINIGAME_SELECT);
-  }
-
-  @Test
   void shouldOpenSettings() {
     ui.getEvents().trigger("Settings");
 

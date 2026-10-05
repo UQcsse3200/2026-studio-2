@@ -106,6 +106,7 @@ public class Level2GameScreen extends ScreenAdapter {
 
     player.getEvents().addListener("death", this::onPlayerDeath);
     wheelOverlay = new SpinTheWheelOverlay(WheelConfig.ITEMS, player);
+    player.getEvents().addListener("spinTheWheel", wheelOverlay::request);
 
     if (cheats) {
       level2.getPlayer().getComponent(PhysicsComponent.class).getBody().setGravityScale(0);
@@ -124,6 +125,7 @@ public class Level2GameScreen extends ScreenAdapter {
     physicsEngine.update();
     ServiceLocator.getEntityService().update();
     renderer.render();
+    wheelOverlay.afterRender();
   }
 
   @Override
