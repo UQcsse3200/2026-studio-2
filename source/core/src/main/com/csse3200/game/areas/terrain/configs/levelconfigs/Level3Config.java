@@ -389,37 +389,46 @@ public class Level3Config extends LevelConfig {
               new GridPoint2(3, 29),
               spawnerConfig[0],
               new String[] {"enemyArena1"},
-              new String[] {"enemyArena1Complete"}), // ES1
+              new String[] {"enemyArena1Complete", "waterStart"}), // ES1
           new EnemySpawnerConfig(
               new GridPoint2(24, 29),
               spawnerConfig[1],
               new String[] {"enemyArena1"},
-              new String[] {"enemyArena1Complete"}), // ES2
+              new String[] {"enemyArena1Complete", "waterStart"}), // ES2
           new EnemySpawnerConfig(
               new GridPoint2(13, 60),
               spawnerConfig[2],
               new String[] {"enemyArena2"},
-              new String[] {"enemyArena2Complete"}), // ES3
+              new String[] {"enemyArena2Complete", "waterStart"}), // ES3
           new EnemySpawnerConfig(
               new GridPoint2(3, 63),
               spawnerConfig[3],
               new String[] {"enemyArena2"},
-              new String[] {"enemyArena2Complete"}), // ES4
+              new String[] {"enemyArena2Complete", "waterStart"}), // ES4
           new EnemySpawnerConfig(
               new GridPoint2(23, 63),
               spawnerConfig[3],
               new String[] {"enemyArena2"},
-              new String[] {"enemyArena2Complete"}), // ES5
+              new String[] {"enemyArena2Complete", "waterStart"}), // ES5
         };
 
     mapTriggers =
         new TriggerConfig[] {
           new TriggerConfig(
-              new GridPoint2(12, 29), new Vector2(3f, 1f), new String[] {"enemyArena1"}, true),
+              new GridPoint2(12, 29),
+              new Vector2(3f, 1f),
+              new String[] {"enemyArena1", "waterStop"},
+              true),
           new TriggerConfig(
-              new GridPoint2(12, 60), new Vector2(3f, 1f), new String[] {"enemyArena2"}, true),
+              new GridPoint2(12, 60),
+              new Vector2(3f, 1f),
+              new String[] {"enemyArena2", "waterStop"},
+              true),
           new TriggerConfig(
-              new GridPoint2(12, 99), new Vector2(3f, 1f), new String[] {"bossArena"}, true)
+              new GridPoint2(12, 99),
+              new Vector2(3f, 1f),
+              new String[] {"bossArena", "waterStop"},
+              true)
         };
 
     checkpoints =

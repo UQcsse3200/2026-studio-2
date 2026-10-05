@@ -10,6 +10,7 @@ public class RisingWaterComponent extends Component {
   float CHECKPOINT_LENIENCE = 7f;
   float storedHeight;
 
+  float initialSpeed;
   float speed;
   float initialHeight;
   float currentHeight;
@@ -25,6 +26,7 @@ public class RisingWaterComponent extends Component {
    * @param initialHeight what y level the water should start rising from
    */
   public RisingWaterComponent(float speed, float initialHeight, Entity hitbox) {
+    this.initialSpeed = speed;
     this.speed = speed;
     this.initialHeight = initialHeight;
     currentHeight = initialHeight;
@@ -73,6 +75,7 @@ public class RisingWaterComponent extends Component {
     entity.getEvents().addListener("changeSpeed", this::setSpeed);
     entity.getEvents().addListener("setHeight", this::setCurrentHeight);
     entity.getEvents().addListener("checkpointEncountered", this::captureValues);
+    entity.getEvents().addListener("activatedMapComponent", this::toggleActivation);
   }
 
   @Override
@@ -131,5 +134,13 @@ public class RisingWaterComponent extends Component {
     // store the initial height if the lenient height is calculated below the starting height
     // otherwise accept the lenient height
     storedHeight = Math.max(initialHeight, lenientHeight);
+  }
+
+  private void toggleActivation(boolean newState) {
+    if (newState) {
+      setSpeed(initialSpeed);
+    } else {
+      setSpeed(0);
+    }
   }
 }
