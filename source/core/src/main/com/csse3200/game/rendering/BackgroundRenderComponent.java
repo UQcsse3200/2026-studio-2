@@ -17,8 +17,6 @@ public class BackgroundRenderComponent extends RenderComponent {
 
   private final Vector2 backgroundPos;
   private final Vector2 worldBounds;
-  private float light;
-  private float backgroundLight = 1f;
   private boolean weather;
   private Vector2 lastCameraPos;
   private int flashOrder = 0;
@@ -196,23 +194,6 @@ public class BackgroundRenderComponent extends RenderComponent {
     layer.position.y += layer.velocity.y * ServiceLocator.getTimeSource().getDeltaTime();
     weather = getWeather();
     if (weather) {
-      // Prevent black screen after flash
-      if (backgroundLight <= 0.125f) {
-        backgroundLight = 0.125f;
-      }
-      // Keep decrementing light until full night reached
-      if (backgroundLight > 0.125f) {
-        backgroundLight -=
-            ServiceLocator.getTimeSource().getDeltaTime() / 500f; // 10x more than RenderComponent
-      }
-      light = getDarkness();
-      // if lightning currently striking
-      if (light == 1f) {
-        // only flash background if it is dark enough, limit how bright it may flash
-        if (backgroundLight < 0.3f) {
-          backgroundLight = 0.3f;
-        }
-      }
       // Flash layers that flash during lightning
       if (layer.flash) {
         float lightning = getLightning();
@@ -224,20 +205,13 @@ public class BackgroundRenderComponent extends RenderComponent {
         }
         // Flash single lightning layer
         if (layer.lightningOrder == flashOrder) {
-          if (light == 1f) {
+          if (darkness == 1f) {
             layer.transparency = 1f;
           } else {
             layer.transparency = 0f;
           }
         }
       }
-      // Allow background to get darker than entities
-      if (light > backgroundLight) {
-        light = backgroundLight;
-      }
-    } else { // weather is not on
-      backgroundLight = 1f;
-      light = 1f;
     }
   }
 
@@ -288,9 +262,10 @@ public class BackgroundRenderComponent extends RenderComponent {
       layerY = layerPos.y;
       Color prevColor = batch.getColor().cpy();
       if (layer.flash) {
-        batch.setColor(1, 1, 1, layer.transparency);
+        batch.setColor(
+            1, 1, 1, layer.transparency); // setting 0,0,0 gives black lightning looks sick
       } else {
-        batch.setColor(light, light, light, layer.transparency);
+        batch.setColor(backgroundLight, backgroundLight, backgroundLight, layer.transparency);
       }
 
       batch.draw(layer.texture, layerX, layerY, layer.width, layer.height);
@@ -300,7 +275,7 @@ public class BackgroundRenderComponent extends RenderComponent {
       if (layer.flash) {
         batch.setColor(1, 1, 1, layer.transparency);
       } else {
-        batch.setColor(light, light, light, layer.transparency);
+        batch.setColor(backgroundLight, backgroundLight, backgroundLight, layer.transparency);
       }
       if (layer.repeat == RepeatMode.HORIZONTAL) {
         float newLeftDrawPosX = layerX - layer.width;

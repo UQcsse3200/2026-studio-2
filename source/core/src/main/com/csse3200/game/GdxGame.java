@@ -34,7 +34,7 @@ public class GdxGame extends Game {
 
   // a check for if the intro cutscene has been triggered, once per game session, to prevent the
   // cutscene from being triggered multiple times.
-  private boolean introStarted = false;
+  private boolean introStarted = true;
 
   @Override
   public void create() {
