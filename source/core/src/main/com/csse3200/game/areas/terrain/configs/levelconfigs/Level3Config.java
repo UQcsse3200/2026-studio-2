@@ -445,6 +445,8 @@ public class Level3Config extends LevelConfig {
                 new GridPoint2(19, 54), new Arrow(ItemType.ICE_ARROW, 20),
                 new GridPoint2(25, 85), new Arrow(ItemType.STANDARD_ARROW, 30),
                 new GridPoint2(23, 95), new HealthPotion(10)));
+
+    wheelSpinSpawns = new GridPoint2[] {new GridPoint2(20, 22)};
   }
 
   /**

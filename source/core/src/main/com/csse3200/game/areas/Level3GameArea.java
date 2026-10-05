@@ -10,6 +10,7 @@ import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.components.level.RisingWaterComponent;
 import com.csse3200.game.components.player.PlayerActions;
 import com.csse3200.game.entities.Entity;
+import com.csse3200.game.entities.factories.ItemFactory;
 import com.csse3200.game.entities.factories.ObstacleFactory;
 import com.csse3200.game.physics.BodyUserData;
 import com.csse3200.game.rendering.*;
@@ -74,6 +75,8 @@ public class Level3GameArea extends GameArea {
     "images/spiky_ball_trap.png",
     "images/checkpoint_lit.png",
     "images/checkpoint_unlit.png",
+    ItemFactory.WHEEL_TOKEN_TEXTURE,
+
     // Enemy textures
     "images/skeleton_warrior.png",
     "images/skeleton_archer.png",
