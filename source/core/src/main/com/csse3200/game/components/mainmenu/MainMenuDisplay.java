@@ -36,7 +36,8 @@ public class MainMenuDisplay extends UIComponent {
     float pad = screenHeight * 0.02f;
     Image background =
         new Image(
-            ServiceLocator.getResourceService().getAsset("images/main_menu_bg.png", Texture.class));
+            ServiceLocator.getResourceService()
+                .getAsset("images/backgrounds/main_menu_bg.png", Texture.class));
 
     // Oversized slightly so the shake below never reveals an edge/gap.
     float overscan = 1.03f;
@@ -60,7 +61,7 @@ public class MainMenuDisplay extends UIComponent {
     Image title =
         new Image(
             ServiceLocator.getResourceService()
-                .getAsset("images/title_odysseus_logo.png", Texture.class));
+                .getAsset("images/ui/title_odysseus_logo.png", Texture.class));
 
     Texture playUpTexture =
         ServiceLocator.getResourceService()
@@ -88,6 +89,19 @@ public class MainMenuDisplay extends UIComponent {
 
     ImageButton continueButton = new ImageButton(continueButtonStyle);
 
+    Texture sandBoxgamesUpTexture =
+        ServiceLocator.getResourceService()
+            .getAsset("images/Buttons/sandBox_up_btn.png", Texture.class);
+    Texture sandBoxgamesDownTexture =
+        ServiceLocator.getResourceService()
+            .getAsset("images/Buttons/sandBox_down.png", Texture.class);
+
+    ImageButton.ImageButtonStyle sandBoxgamesButtonStyle = new ImageButton.ImageButtonStyle();
+    sandBoxgamesButtonStyle.up = new TextureRegionDrawable(sandBoxgamesUpTexture);
+    sandBoxgamesButtonStyle.down = new TextureRegionDrawable(sandBoxgamesDownTexture);
+
+    ImageButton sandBoxgamesButton = new ImageButton(sandBoxgamesButtonStyle);
+
     Texture settingsUpTexture =
         ServiceLocator.getResourceService()
             .getAsset("images/Buttons/settings_up_btn.png", Texture.class);
@@ -113,18 +127,6 @@ public class MainMenuDisplay extends UIComponent {
     exitButtonStyle.down = new TextureRegionDrawable(quitDownTexture);
 
     ImageButton exitButton = new ImageButton(exitButtonStyle);
-    Texture sandboxUpTexture =
-        ServiceLocator.getResourceService()
-            .getAsset("images/Buttons/sandbox_up_btn.png", Texture.class);
-    Texture sandboxDownTexture =
-        ServiceLocator.getResourceService()
-            .getAsset("images/Buttons/sandbox_down_btn.png", Texture.class);
-
-    ImageButton.ImageButtonStyle sandboxButtonStyle = new ImageButton.ImageButtonStyle();
-    sandboxButtonStyle.up = new TextureRegionDrawable(sandboxUpTexture);
-    sandboxButtonStyle.down = new TextureRegionDrawable(sandboxDownTexture);
-
-    ImageButton sandboxButton = new ImageButton(sandboxButtonStyle);
 
     // Triggers an event when the button is pressed
     // ImageButton automatically swaps to the "down" drawable while pressed and back to "up" on
@@ -147,7 +149,7 @@ public class MainMenuDisplay extends UIComponent {
           }
         });
 
-    sandboxButton.addListener(
+    sandBoxgamesButton.addListener(
         new ChangeListener() {
           @Override
           public void changed(ChangeEvent changeEvent, Actor actor) {
@@ -183,9 +185,11 @@ public class MainMenuDisplay extends UIComponent {
     leftColumn.row();
     leftColumn.add(continueButton).width(buttonWidth).height(buttonHeight).padTop(pad);
 
-    // Right column: Settings.
+    // Right column: Sandbox, Exit.
     Table rightColumn = new Table();
-    rightColumn.add(settingsButton).width(buttonWidth).height(buttonHeight);
+    rightColumn.add(sandBoxgamesButton).width(buttonWidth).height(buttonHeight);
+    rightColumn.row();
+    rightColumn.add(settingsButton).width(buttonWidth).height(buttonHeight).padTop(pad);
 
     // Left and right columns sit together as one centered pair, with a fixed gap between them
     // instead of being pushed out to the screen edges.
@@ -199,7 +203,6 @@ public class MainMenuDisplay extends UIComponent {
     table.row();
     table.add(columnPair).center().padTop(screenHeight * 0.02f);
     table.row();
-    table.add(sandboxButton).center().width(buttonWidth).height(buttonHeight).padTop(pad);
     table.row();
     table
         .add(exitButton)

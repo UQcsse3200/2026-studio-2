@@ -54,7 +54,7 @@ public class ArrowWheelComponent extends Component {
    * been locked, or if the player has an inventory but no arrows of that type in it.
    */
   public boolean isAvailable(ArrowType type) {
-    if (type == null || !available.contains(type)) {
+    if (type == null || !isWheelType(type) || !available.contains(type)) {
       return false;
     }
     if (inventory == null) {
@@ -64,9 +64,19 @@ public class ArrowWheelComponent extends Component {
     return arrowItem != null && inventory.hasItem(arrowItem);
   }
 
+  /** Only types displayed on the wheel may be selected or unlocked. */
+  private static boolean isWheelType(ArrowType type) {
+    for (ArrowType wheelType : ArrowType.getWheelTypes()) {
+      if (wheelType == type) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   /** Locks or unlocks an arrow type. A locked type is drawn but cannot be selected. */
   public void setAvailable(ArrowType type, boolean unlocked) {
-    if (type == null) {
+    if (type == null || !isWheelType(type)) {
       return;
     }
     if (unlocked) {

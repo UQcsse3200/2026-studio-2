@@ -37,7 +37,7 @@ class ItemDictionaryDisplayTest extends UiTestSupport {
     display.showDictionary();
     Table content = field(display, "contentTable", Table.class);
     click(content.getChildren().get(ItemType.FIRE_ARROW.ordinal() + 1));
-    assertTrue(labels(content).contains("Item Dictionary"));
+    assertTrue(labels(content).contains("ITEM DICTIONARY"));
     when(resources.containsAsset(ItemType.FIRE_ARROW.getTexturePath(), Texture.class))
         .thenReturn(false);
     dictionary.unlockItem(ItemType.FIRE_ARROW);

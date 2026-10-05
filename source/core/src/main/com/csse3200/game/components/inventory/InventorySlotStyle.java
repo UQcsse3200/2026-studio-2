@@ -11,13 +11,15 @@ import com.badlogic.gdx.utils.Disposable;
  * Shared rounded-box slot background used by the inventory bar and backpack, so both draw slots
  * with the same style instead of relying on an image.
  */
-final class InventorySlotStyle implements Disposable {
+public final class InventorySlotStyle implements Disposable {
 
   private static final int CORNER_RADIUS = 10;
   private static final int BORDER_THICKNESS = 3;
 
   /** Dark green/teal matching the health bar's backing art. */
   private static final Color FILL_COLOR = new Color(43 / 255f, 61 / 255f, 62 / 255f, 1f);
+
+  private static final Color DARKER_FILL_COLOR = new Color(24 / 255f, 35 / 255f, 36 / 255f, 1f);
 
   private static final Color NORMAL_BORDER_COLOR = new Color(18 / 255f, 26 / 255f, 26 / 255f, 1f);
 
@@ -26,26 +28,39 @@ final class InventorySlotStyle implements Disposable {
 
   private NinePatchDrawable cachedNormalBox;
   private NinePatchDrawable cachedSelectedBox;
+  private NinePatchDrawable cachedDarkerBox;
 
-  InventorySlotStyle() {}
+  public InventorySlotStyle() {}
 
-  NinePatchDrawable getNormalBox() {
+  public NinePatchDrawable getNormalBox() {
     if (cachedNormalBox == null) {
       cachedNormalBox = buildRoundedBoxDrawable(NORMAL_BORDER_COLOR);
     }
     return cachedNormalBox;
   }
 
-  NinePatchDrawable getSelectedBox() {
+  public NinePatchDrawable getSelectedBox() {
     if (cachedSelectedBox == null) {
       cachedSelectedBox = buildRoundedBoxDrawable(SELECTED_BORDER_COLOR);
     }
     return cachedSelectedBox;
   }
 
+  /** Returns a separately cached dark background for overlay panels. */
+  public NinePatchDrawable getDarkerBox() {
+    if (cachedDarkerBox == null) {
+      cachedDarkerBox = buildDarkerRoundedBoxDrawable(SELECTED_BORDER_COLOR);
+    }
+    return cachedDarkerBox;
+  }
+
   /** Each display owns its generated textures and releases them when its actors are removed. */
   @Override
   public void dispose() {
+    if (cachedDarkerBox != null) {
+      cachedDarkerBox.getPatch().getTexture().dispose();
+      cachedDarkerBox = null;
+    }
     if (cachedNormalBox != null) {
       cachedNormalBox.getPatch().getTexture().dispose();
       cachedNormalBox = null;
@@ -92,6 +107,53 @@ final class InventorySlotStyle implements Disposable {
                   || y < BORDER_THICKNESS
                   || y >= size - BORDER_THICKNESS;
           pixmap.drawPixel(x, y, Color.rgba8888(onBorder ? borderColor : FILL_COLOR));
+        }
+      }
+    }
+
+    Texture texture = new Texture(pixmap);
+    pixmap.dispose();
+
+    NinePatch patch = new NinePatch(texture, r, r, r, r);
+    return new NinePatchDrawable(patch);
+  }
+
+  /**
+   * Builds a rounded-rectangle NinePatch: a solid fill with a border, rounded corners, that can be
+   * stretched to any slot size without distorting the corners.
+   *
+   * @param borderColor the border colour to draw
+   * @return the built drawable
+   */
+  private static NinePatchDrawable buildDarkerRoundedBoxDrawable(Color borderColor) {
+    int r = CORNER_RADIUS;
+    int size = r * 2 + 2; // corners plus a 2px stretchable sliver in the middle
+
+    Pixmap pixmap = new Pixmap(size, size, Pixmap.Format.RGBA8888);
+
+    for (int y = 0; y < size; y++) {
+      for (int x = 0; x < size; x++) {
+        boolean inCornerBox = (x < r || x >= size - r) && (y < r || y >= size - r);
+
+        if (inCornerBox) {
+          float cx = x < r ? r : size - r - 1;
+          float cy = y < r ? r : size - r - 1;
+          double dist = Math.hypot(x - cx, y - cy);
+
+          if (dist > r) {
+            pixmap.drawPixel(x, y, Color.rgba8888(0f, 0f, 0f, 0f));
+          } else if (dist > r - BORDER_THICKNESS) {
+            pixmap.drawPixel(x, y, Color.rgba8888(borderColor));
+          } else {
+            pixmap.drawPixel(x, y, Color.rgba8888(DARKER_FILL_COLOR));
+          }
+        } else {
+          boolean onBorder =
+              x < BORDER_THICKNESS
+                  || x >= size - BORDER_THICKNESS
+                  || y < BORDER_THICKNESS
+                  || y >= size - BORDER_THICKNESS;
+          pixmap.drawPixel(x, y, Color.rgba8888(onBorder ? borderColor : DARKER_FILL_COLOR));
         }
       }
     }

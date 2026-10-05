@@ -215,13 +215,22 @@ class ArrowWheelComponentTest {
 
   @Test
   void shouldLockAndUnlockTypes() {
-    assertTrue(wheel.isAvailable(ArrowType.POISON));
+    assertTrue(wheel.isAvailable(ArrowType.FIRE));
 
-    wheel.setAvailable(ArrowType.POISON, false);
-    assertFalse(wheel.isAvailable(ArrowType.POISON));
+    wheel.setAvailable(ArrowType.FIRE, false);
+    assertFalse(wheel.isAvailable(ArrowType.FIRE));
 
-    wheel.setAvailable(ArrowType.POISON, true);
-    assertTrue(wheel.isAvailable(ArrowType.POISON));
+    wheel.setAvailable(ArrowType.FIRE, true);
+    assertTrue(wheel.isAvailable(ArrowType.FIRE));
+  }
+
+  @Test
+  void shouldRejectNonWheelTypesEvenWhenUnlockedWithoutInventory() {
+    for (ArrowType type : new ArrowType[] {ArrowType.POISON, ArrowType.POTION}) {
+      assertFalse(wheel.isAvailable(type));
+      wheel.setAvailable(type, true);
+      assertFalse(wheel.isAvailable(type));
+    }
   }
 
   @Test

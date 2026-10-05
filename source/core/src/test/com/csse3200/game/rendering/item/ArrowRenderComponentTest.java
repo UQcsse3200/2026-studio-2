@@ -24,7 +24,7 @@ class ArrowRenderComponentTest {
     when(texture.getHeight()).thenReturn(100);
 
     ResourceService resourceService = mock(ResourceService.class);
-    when(resourceService.getAsset("images/items/arrows/arrow.png", Texture.class))
+    when(resourceService.getAsset("images/projectiles/arrow.png", Texture.class))
         .thenReturn(texture);
     ServiceLocator.registerResourceService(resourceService);
 

@@ -281,6 +281,8 @@ public class AnimationRenderComponent extends RenderComponent {
 
   @Override
   public void dispose() {
+    // Atlases belong to ResourceService and are shared by all entities of the same type.
+    // Disposing one enemy must not invalidate the textures used by surviving/new enemies.
     super.dispose();
   }
 }

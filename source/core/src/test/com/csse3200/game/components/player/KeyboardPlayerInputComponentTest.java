@@ -212,6 +212,37 @@ class KeyboardPlayerInputComponentTest {
   }
 
   @Test
+  void shouldIgnoreMovementJumpAndSprintKeysWhilePausedAndAllowThemAfterResume() {
+    KeyboardPlayerInputComponent component = new KeyboardPlayerInputComponent();
+    Entity player = new Entity().addComponent(component);
+    AtomicInteger walks = new AtomicInteger();
+    AtomicInteger jumps = new AtomicInteger();
+    AtomicInteger sprints = new AtomicInteger();
+    player.getEvents().addListener("walk", (Vector2 direction) -> walks.incrementAndGet());
+    player.getEvents().addListener("jump", jumps::incrementAndGet);
+    player.getEvents().addListener("sprint", sprints::incrementAndGet);
+
+    when(entityService.getPaused()).thenReturn(true);
+    component.keyDown(Keys.A);
+    component.keyDown(Keys.SPACE);
+    component.keyDown(Keys.SHIFT_LEFT);
+    assertEquals(0, walks.get());
+    assertEquals(0, jumps.get());
+    assertEquals(0, sprints.get());
+
+    // Release the paused presses so they don't cancel the walk direction after resuming.
+    component.keyUp(Keys.A);
+    component.keyUp(Keys.SHIFT_LEFT);
+    when(entityService.getPaused()).thenReturn(false);
+    component.keyDown(Keys.D);
+    component.keyDown(Keys.SPACE);
+    component.keyDown(Keys.SHIFT_LEFT);
+    assertEquals(1, walks.get());
+    assertEquals(1, jumps.get());
+    assertEquals(1, sprints.get());
+  }
+
+  @Test
   void shouldStartAndStopGrappleClimbWithW() {
     KeyboardPlayerInputComponent component = new KeyboardPlayerInputComponent();
     Entity player = new Entity().addComponent(component);

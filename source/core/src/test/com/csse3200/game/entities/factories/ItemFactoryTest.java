@@ -70,6 +70,21 @@ class ItemFactoryTest {
   }
 
   @Test
+  void shouldCreateGoldPickupWithCustomAmount() {
+    Entity entity = ItemFactory.createGold(25);
+
+    assertEquals(25, entity.getComponent(GoldPickupComponent.class).getAmount());
+  }
+
+  @Test
+  void shouldSupportColdArrowCatalogAlias() {
+    Item item = ItemFactory.createItem("coldArrow", 2).getComponent(ItemComponent.class).getItem();
+
+    assertEquals(ItemType.ICE_ARROW, item.getItemType());
+    assertEquals(2, item.getQuantity());
+  }
+
+  @Test
   void shouldCreateWheelTokenPickup() {
     Entity entity = ItemFactory.createWheelToken();
 

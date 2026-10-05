@@ -6,6 +6,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.csse3200.game.areas.Level1GameArea;
+import com.csse3200.game.areas.Level2GameArea;
+import com.csse3200.game.components.item.ItemAssets;
 import com.csse3200.game.components.item.ItemType;
 import com.csse3200.game.components.projectile.ArrowType;
 import com.csse3200.game.extensions.GameExtension;
@@ -29,13 +31,19 @@ class ItemAssetLifecycleTest {
 
   @Test
   void shouldKeepLevelTwoItemTexturesLoadedAfterAreaUnload() throws Exception {
-    assertItemTexturesSurviveAreaUnload(Level2GameScreen.class);
+    assertItemTexturesSurviveAreaUnload(LevelsGameScreen.class, Level2GameArea.class);
   }
 
   private void assertItemTexturesSurviveAreaUnload(Class<?> screen) throws Exception {
+    assertItemTexturesSurviveAreaUnload(screen, Level1GameArea.class);
+  }
+
+  private void assertItemTexturesSurviveAreaUnload(Class<?> screen, Class<?> area)
+      throws Exception {
     ResourceService resources = new ResourceService();
     String[] screenTextures = itemTextures(screen, "mainGameTextures");
-    String[] areaTextures = itemTextures(Level1GameArea.class, "forestTextures");
+    String[] areaTextures =
+        itemTextures(area, area == Level2GameArea.class ? "level2Textures" : "forestTextures");
     try {
       resources.loadTextures(screenTextures);
       resources.loadAll();
@@ -54,7 +62,7 @@ class ItemAssetLifecycleTest {
           resources.getAsset("images/items/effects/fire_status_effect.png", Texture.class));
       assertNotNull(
           resources.getAsset("images/items/effects/ice_status_effect.png", Texture.class));
-      assertNotNull(resources.getAsset("images/items/currency/gold_coin.png", Texture.class));
+      assertNotNull(resources.getAsset("images/items/gold_coin.png", Texture.class));
     } finally {
       resources.dispose();
     }
@@ -75,7 +83,7 @@ class ItemAssetLifecycleTest {
     Field field = owner.getDeclaredField(fieldName);
     field.setAccessible(true);
     return Arrays.stream((String[]) field.get(null))
-        .filter(path -> path.startsWith("images/items/"))
+        .filter(path -> Arrays.asList(ItemAssets.getTextures()).contains(path))
         .toArray(String[]::new);
   }
 }

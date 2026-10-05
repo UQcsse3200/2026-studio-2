@@ -2,7 +2,10 @@ package com.csse3200.game.entities.factories;
 
 import com.badlogic.gdx.graphics.g2d.Animation.PlayMode;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.csse3200.game.components.BurnStatsComponent;
 import com.csse3200.game.components.CombatStatsComponent;
+import com.csse3200.game.components.PoisonStatsComponent;
+import com.csse3200.game.components.SlowStatsComponent;
 import com.csse3200.game.components.inventory.BackpackDisplay;
 import com.csse3200.game.components.inventory.InventoryBarDisplay;
 import com.csse3200.game.components.inventory.InventoryComponent;
@@ -26,6 +29,7 @@ import com.csse3200.game.physics.components.ColliderComponent;
 import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.rendering.AnimationRenderComponent;
+import com.csse3200.game.rendering.ParticleEffectsRenderingComponent;
 import com.csse3200.game.rendering.item.GrappleRenderComponent;
 import com.csse3200.game.services.ServiceLocator;
 
@@ -47,7 +51,7 @@ public class PlayerFactory {
     AnimationRenderComponent animator =
         new AnimationRenderComponent(
             ServiceLocator.getResourceService()
-                .getAsset("images/player.atlas", TextureAtlas.class));
+                .getAsset("images/player/player.atlas", TextureAtlas.class));
     animator.addAnimation("idle", 0.2f, PlayMode.LOOP);
     animator.addAnimation("walk", 0.1f, PlayMode.LOOP);
     animator.addAnimation("sprint", 0.125f, PlayMode.LOOP);
@@ -87,10 +91,15 @@ public class PlayerFactory {
             .addComponent(new ItemUseComponent())
             .addComponent(inputComponent)
             .addComponent(new PlayerStatsDisplay())
+            .addComponent(new ArrowTrajectoryDisplay())
             .addComponent(new GrappleComponent())
             .addComponent(new GrappleRenderComponent())
             .addComponent(new PlayerAnimationController())
-            .addComponent(new RespawnComponent());
+            .addComponent(new RespawnComponent())
+            .addComponent(new PoisonStatsComponent())
+            .addComponent(new BurnStatsComponent())
+            .addComponent(new SlowStatsComponent())
+            .addComponent(new ParticleEffectsRenderingComponent());
 
     player.getComponent(ColliderComponent.class).setDensity(1.5f);
     player.getComponent(AnimationRenderComponent.class).scaleEntity();
@@ -139,7 +148,7 @@ public class PlayerFactory {
     AnimationRenderComponent animator =
         new AnimationRenderComponent(
             ServiceLocator.getResourceService()
-                .getAsset("images/player.atlas", TextureAtlas.class));
+                .getAsset("images/player/player.atlas", TextureAtlas.class));
     animator.addAnimation("idle", 0.15f, PlayMode.LOOP);
     animator.addAnimation("walk", 0.1f, PlayMode.LOOP);
     animator.addAnimation("sprint", 0.1f, PlayMode.LOOP);

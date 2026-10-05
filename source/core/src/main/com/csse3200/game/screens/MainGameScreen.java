@@ -108,7 +108,8 @@ public class MainGameScreen extends ScreenAdapter {
 
   @Override
   public void render(float delta) {
-    if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
+    if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)
+        && !ServiceLocator.getEntityService().getSettingsOpen()) {
       pauseOverlay.request();
     }
     if (Gdx.input.isKeyJustPressed(Input.Keys.L)) {
@@ -162,15 +163,13 @@ public class MainGameScreen extends ScreenAdapter {
     List<String> paths =
         new ArrayList<>(
             List.of(
-                "images/purple_heart.png",
-                "images/title_odysseus_logo.png",
-                "images/box_boy_title.png",
-                "images/Health_Bar_Background.png",
-                "images/items/consumables/red_heart.png",
-                "images/PixelArt_HeartBack.png",
-                "images/Damaged_heart.png",
-                "images/Last_Health.png",
-                "images/scroll_bg.png",
+                "images/ui/title_odysseus_logo.png",
+                "images/health/red_heart.png",
+                "images/health/PixelArt_HeartBack.png",
+                "images/health/Damaged_heart.png",
+                "images/health/Last_Health.png",
+                "images/items/gold_coin.png",
+                "images/ui/scroll_bg.png",
                 "images/Buttons/continue_up_btn.png",
                 "images/Buttons/continue_down_btn.png",
                 "images/Buttons/settings_up_btn.png",
@@ -184,7 +183,10 @@ public class MainGameScreen extends ScreenAdapter {
                 "images/Buttons/main_menu_up_btn.png",
                 "images/Buttons/main_menu_down_btn.png",
                 "images/Buttons/exit_game_up_btn.png",
-                "images/Buttons/exit_game_down_btn.png"));
+                "images/Buttons/exit_game_down_btn.png",
+                "images/Buttons/x_up_btn.png",
+                "images/Buttons/x_down_btn.png"));
+
     paths.addAll(List.of(ItemAssets.getTextures()));
     paths.addAll(List.of(WheelConfig.TEXTURES));
     paths.addAll(List.of(BlackjackConfig.TEXTURES));

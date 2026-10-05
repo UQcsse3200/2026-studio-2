@@ -56,8 +56,8 @@ class ArrowTypeTest {
 
   @Test
   void shouldUseSpecialProjectileTexturesForElementalArrows() {
-    assertEquals("images/items/arrows/fireArr_animation.png", ArrowType.FIRE.getTexturePath());
-    assertEquals("images/items/arrows/coldArr_animation.png", ArrowType.ICE.getTexturePath());
-    assertEquals("images/items/consumables/poison_potion.png", ArrowType.POTION.getTexturePath());
+    assertEquals("images/projectiles/fireArr_animation.png", ArrowType.FIRE.getTexturePath());
+    assertEquals("images/projectiles/coldArr_animation.png", ArrowType.ICE.getTexturePath());
+    assertEquals("images/items/poison_potion.png", ArrowType.POTION.getTexturePath());
   }
 }

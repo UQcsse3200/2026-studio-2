@@ -104,14 +104,14 @@ public class GdxGame extends Game {
     setScreen(new CutsceneScreen(this, cutscene, destination));
   }
 
-  /** Starts the initial cutscene once per game session, then falls back to the tutorial level. */
+  /** Starts the initial cutscene once per game session, then falls back to level 1. */
   public void startInitialCutscene() {
     if (introStarted) {
       transitionTo(ScreenType.LEVEL_1_GAME);
       return;
     }
 
-    // logging for if the cutscene is not available, and fallback to tutorial level
+    // logging for if the cutscene is not available, and fallback to level 1
     CutsceneLoader.Result result = new CutsceneLoader().load("cutscene1");
     if (!result.isSuccess()) {
       logger.debug("Initial cutscene unavailable: {}", result.getError());

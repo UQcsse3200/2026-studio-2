@@ -11,7 +11,7 @@ public enum ItemType {
       1,
       "Standard Arrow",
       "A basic arrow used as ammunition.",
-      "images/items/arrows/arrow.png",
+      "images/projectiles/arrow.png",
       10,
       15f,
       0.3f,
@@ -21,7 +21,7 @@ public enum ItemType {
       2,
       "Rope Arrow",
       "An arrow used for grappling.",
-      "images/items/arrows/rope_arrow.png",
+      "images/projectiles/rope_arrow.png",
       0,
       15f,
       5f,
@@ -31,7 +31,7 @@ public enum ItemType {
       3,
       "Health Potion",
       "Restores a small amount of health.",
-      "images/items/consumables/red_heart.png",
+      "images/health/heart_potion.png",
       0,
       0f,
       0f,
@@ -41,7 +41,7 @@ public enum ItemType {
       4,
       "Fire Arrow",
       "Deals 5 direct damage and burns enemies for 10 damage per second for 5 seconds.",
-      "images/items/arrows/fire_arrow.png",
+      "images/projectiles/fire_arrow.png",
       5,
       16f,
       0.3f,
@@ -59,7 +59,7 @@ public enum ItemType {
       5,
       "Ice Arrow",
       "Slows enemies for 5 seconds.",
-      "images/items/arrows/cold_arrow.png",
+      "images/projectiles/ice_arrow.png",
       8,
       16f,
       0.3f,
@@ -78,7 +78,7 @@ public enum ItemType {
       8,
       "Speed Potion",
       "Increases movement speed by 70% for 3 seconds.",
-      "images/items/consumables/speed_potion.png",
+      "images/items/speed_potion.png",
       0,
       0f,
       0f,
@@ -97,7 +97,7 @@ public enum ItemType {
       9,
       "Poison Potion",
       "Throws a poison flask that applies poison damage over time.",
-      "images/items/consumables/poison_potion.png",
+      "images/items/poison_potion.png",
       0,
       0f,
       0f,
@@ -215,9 +215,9 @@ public enum ItemType {
 
   public String getProjectileTexturePath() {
     return switch (this) {
-      case FIRE_ARROW -> "images/items/arrows/fireArr_animation.png";
-      case ICE_ARROW -> "images/items/arrows/coldArr_animation.png";
-      default -> "images/items/arrows/arrow.png";
+      case FIRE_ARROW -> "images/projectiles/fireArr_animation.png";
+      case ICE_ARROW -> "images/projectiles/coldArr_animation.png";
+      default -> "images/projectiles/arrow.png";
     };
   }
 

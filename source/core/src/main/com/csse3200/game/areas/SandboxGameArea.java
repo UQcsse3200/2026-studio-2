@@ -6,6 +6,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.areas.terrain.TerrainFactory;
 import com.csse3200.game.areas.terrain.TerrainFactory.TerrainType;
 import com.csse3200.game.areas.terrain.configs.PlatformConfig;
+import com.csse3200.game.components.ButtonSound;
 import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.components.inventory.InventoryComponent;
 import com.csse3200.game.components.item.ItemLabelDisplay;
@@ -56,23 +57,23 @@ public class SandboxGameArea extends GameArea {
   private static final float MONSTER_SPAWNER_NPC_WIDTH = 1.16f;
   private static final float MONSTER_SPAWNER_NPC_HEIGHT = 1.5f;
   private static final float SANDBOX_ACTIVE_CHASE_DISTANCE = 20f;
-  private static final String TRANSPARENT_TEXTURE = "images/transparent.png";
-  private static final String FLOOR_TEXTURE = "images/Tile_2.png";
-  private static final String HOOK_PLATFORM_TEXTURE = "images/hook_platform.png";
-  private static final String PLAYER_HEART_TEXTURE = "images/items/consumables/red_heart.png";
+  private static final String TRANSPARENT_TEXTURE = "images/ui/transparent.png";
+  private static final String FLOOR_TEXTURE = "images/terrain/Others/platform.png";
+  private static final String HOOK_PLATFORM_TEXTURE = "images/terrain/Others/platform.png";
+  private static final String PLAYER_HEART_TEXTURE = "images/health/red_heart.png";
   private static final String PLAYER_HEALTH_BAR_BACKGROUND_TEXTURE =
-      "images/PixelArt_HeartBack.png";
-  private static final String PLAYER_DAMAGED_HEART_TEXTURE = "images/Damaged_heart.png";
-  private static final String PLAYER_LAST_HEALTH_TEXTURE = "images/Last_Health.png";
+      "images/health/PixelArt_HeartBack.png";
+  private static final String PLAYER_DAMAGED_HEART_TEXTURE = "images/health/Damaged_heart.png";
+  private static final String PLAYER_LAST_HEALTH_TEXTURE = "images/health/Last_Health.png";
+  private static final String PLAYER_GOLD_COIN_TEXTURE = "images/items/gold_coin.png";
   private static final String EXIT_BUTTON_TEXTURE = "images/Buttons/exit_up_btn.png";
   private static final String EXIT_BUTTON_DOWN_TEXTURE = "images/Buttons/exit_down_btn.png";
-  private static final String SKELETON_WARRIOR_TEXTURE = "images/skeleton_warrior.png";
-  private static final String SKELETON_ARCHER_TEXTURE = "images/skeleton_archer.png";
+  private static final String SKELETON_WARRIOR_TEXTURE = "images/enemies/skeleton_warrior.png";
+  private static final String SKELETON_ARCHER_TEXTURE = "images/enemies/skeleton_archer.png";
   private static final String[] SANDBOX_ATLASES = {
-    "images/player.atlas",
-    "images/ghost.atlas",
-    "images/skeleton_warrior.atlas",
-    "images/skeleton_archer.atlas"
+    "images/player/player.atlas",
+    "images/enemies/skeleton_warrior.atlas",
+    "images/enemies/skeleton_archer.atlas"
   };
   private static final String[] SANDBOX_SOUNDS = {"sounds/Impact4.ogg"};
   private static final String FIRE_STATUS_TEXTURE = "images/items/effects/fire_status_effect.png";
@@ -138,6 +139,11 @@ public class SandboxGameArea extends GameArea {
                 PLAYER_HEALTH_BAR_BACKGROUND_TEXTURE,
                 PLAYER_DAMAGED_HEART_TEXTURE,
                 PLAYER_LAST_HEALTH_TEXTURE,
+                PLAYER_GOLD_COIN_TEXTURE,
+                "images/projectiles/arrow.png",
+                "images/projectiles/fire_arrow.png",
+                "images/projectiles/ice_arrow.png",
+                "images/projectiles/poison_arrow.png",
                 EXIT_BUTTON_TEXTURE,
                 EXIT_BUTTON_DOWN_TEXTURE,
                 SKELETON_WARRIOR_TEXTURE,
@@ -158,6 +164,7 @@ public class SandboxGameArea extends GameArea {
     resourceService.loadTextures(sandboxTextures);
     resourceService.loadTextureAtlases(SANDBOX_ATLASES);
     resourceService.loadSounds(SANDBOX_SOUNDS);
+    ButtonSound.load(resourceService);
     resourceService.loadAll();
   }
 
@@ -324,5 +331,6 @@ public class SandboxGameArea extends GameArea {
     resourceService.unloadAssets(sandboxTextures);
     resourceService.unloadAssets(SANDBOX_ATLASES);
     resourceService.unloadAssets(SANDBOX_SOUNDS);
+    ButtonSound.unload(resourceService);
   }
 }

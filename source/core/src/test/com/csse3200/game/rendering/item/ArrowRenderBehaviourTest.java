@@ -35,7 +35,7 @@ class ArrowRenderBehaviourTest {
     Texture texture = mock(Texture.class);
     when(texture.getWidth()).thenReturn(width);
     when(texture.getHeight()).thenReturn(height);
-    when(resources.getAsset("images/items/arrows/arrow.png", Texture.class)).thenReturn(texture);
+    when(resources.getAsset("images/projectiles/arrow.png", Texture.class)).thenReturn(texture);
     return texture;
   }
 
@@ -77,7 +77,7 @@ class ArrowRenderBehaviourTest {
   @Test
   void shouldRetryTextureAfterTemporaryLoadFailure() {
     Texture texture = texture(100, 100);
-    when(resources.getAsset("images/items/arrows/arrow.png", Texture.class))
+    when(resources.getAsset("images/projectiles/arrow.png", Texture.class))
         .thenThrow(new IllegalStateException("Asset not loaded yet"))
         .thenReturn(texture);
     ArrowRenderComponent renderer = renderer(null, null);
@@ -93,7 +93,7 @@ class ArrowRenderBehaviourTest {
     ArrowRenderComponent renderer = renderer(null, null);
     renderer.render(batch);
     renderer.render(batch);
-    verify(resources, times(1)).getAsset("images/items/arrows/arrow.png", Texture.class);
+    verify(resources, times(1)).getAsset("images/projectiles/arrow.png", Texture.class);
     verify(batch, times(2))
         .draw(texture, 0f, 0f, 1f, 1f, 2f, 2f, 1f, 1f, 0f, 0, 0, 100, 100, false, false);
   }
