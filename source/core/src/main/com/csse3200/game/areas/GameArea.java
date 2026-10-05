@@ -220,8 +220,10 @@ public abstract class GameArea implements Disposable {
       spawnEntityAt(data.entity, data.pos, false, false);
     }
 
-    for (GridPoint2 spawn : config.getWheelSpinSpawns()) {
-      spawnWheelToken(spawn);
+    if (config.getWheelSpinSpawns() != null) {
+      for (GridPoint2 spawn : config.getWheelSpinSpawns()) {
+        spawnWheelToken(spawn);
+      }
     }
   }
 
