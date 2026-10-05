@@ -7,6 +7,7 @@ import com.csse3200.game.areas.terrain.TerrainFactory;
 import com.csse3200.game.areas.terrain.configs.levelconfigs.Level2Config;
 import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.entities.Entity;
+import com.csse3200.game.entities.factories.ItemFactory;
 import com.csse3200.game.rendering.BackgroundRenderComponent;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
@@ -61,6 +62,7 @@ public class Level2GameArea extends GameArea {
     "images/spiky_ball_trap.png",
     "images/checkpoint_lit.png",
     "images/checkpoint_unlit.png",
+    ItemFactory.WHEEL_TOKEN_TEXTURE,
 
     // Enemy textures
     "images/skeleton_warrior.png",
@@ -68,11 +70,17 @@ public class Level2GameArea extends GameArea {
     "images/arrow.png",
     "images/rope_arrow.png",
     "images/fire_arrow.png",
-    "images/cold_arrow.png"
+    "images/cold_arrow.png",
+    "images/necromancer_projectile.png",
   };
 
   private static final String[] level2TexturesAtlas = {
-    "images/terrain_iso_grass.atlas", "images/in_level_button.atlas"
+    "images/terrain_iso_grass.atlas",
+    "images/in_level_button.atlas",
+    "images/skeleton_archer.atlas",
+    "images/skeleton_warrior.atlas",
+    "images/necromancer.atlas",
+    "images/vulture.atlas",
   };
 
   private static final String[] level2Sounds = {"sounds/Impact4.ogg"};
@@ -87,7 +95,7 @@ public class Level2GameArea extends GameArea {
   public Level2GameArea(TerrainFactory terrainFactory, CameraComponent camera, Entity player) {
     super(camera);
 
-    config = new Level2Config();
+    config = new Level2Config(player);
 
     this.terrainFactory = terrainFactory;
     this.camera = camera;
