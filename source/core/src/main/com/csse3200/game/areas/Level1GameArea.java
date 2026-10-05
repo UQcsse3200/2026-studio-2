@@ -106,7 +106,6 @@ public class Level1GameArea extends GameArea {
     "images/ui/transparent.png",
     "images/backgrounds/level_1_bg.png",
     "images/backgrounds/level_1_idea.png",
-    "images/parallax/level_1_clouds.png",
     "images/terrain/Others/closed_door.png",
     "images/terrain/Others/open_door.png",
     "images/terrain/Level_1/sheeps_cave.png",
@@ -228,11 +227,11 @@ public class Level1GameArea extends GameArea {
   }
 
   /**
-   * Level 1 background, built from independent layers.
+   * Level 1 background.
    *
-   * <p>The base layer is one copy of level_1_idea.png (1672 x 940) that drifts slowly with the
-   * camera like a distant backdrop. Two transparent cloud layers drift across the sky on top of it
-   * at their own speeds, so each layer moves independently of the others.
+   * <p>One copy of level_1_idea.png (1672 x 940) that drifts slowly with the camera like a distant
+   * backdrop. More layers (such as drifting clouds) can be added with addLayer and move
+   * independently of this one.
    *
    * <p>A layer's world position is x = backgroundPos.x + offset.x + cameraX * (1 - parallax.x) and
    * y = backgroundPos.y + offset.y + cameraY * distance. With the base layer's values (parallax x
@@ -255,32 +254,6 @@ public class Level1GameArea extends GameArea {
         new Vector2(0f, 0f),
         false,
         0.7f,
-        1f);
-
-    // Slow, narrow cloud band.
-    backgroundComponent.addLayer(
-        "images/parallax/level_1_clouds.png",
-        new Vector2(0.1f, 0f),
-        30f,
-        4f,
-        new Vector2(0f, 10f),
-        BackgroundType.DEPENDENT,
-        new Vector2(0.1f, 0f),
-        true,
-        1f,
-        1f);
-
-    // Larger, faster cloud layer.
-    backgroundComponent.addLayer(
-        "images/parallax/level_1_clouds.png",
-        new Vector2(0.1f, 0f),
-        30f,
-        15f,
-        new Vector2(25f, 7.5f),
-        BackgroundType.DEPENDENT,
-        new Vector2(0.2f, 0f),
-        true,
-        1f,
         1f);
 
     // Create the background entity.
