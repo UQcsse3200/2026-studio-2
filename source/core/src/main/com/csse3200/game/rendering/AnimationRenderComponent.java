@@ -276,7 +276,6 @@ public class AnimationRenderComponent extends RenderComponent {
     }
     // Color prevColor = batch.getColor().cpy();
     float light = getDarkness();
-    batch.setColor(light, light, light, 1f);
     batch.draw(region.getTexture(), drawX, drawY, width, height, u, v, u2, v2);
     // batch.setColor(prevColor);
     batch.setColor(Color.WHITE);

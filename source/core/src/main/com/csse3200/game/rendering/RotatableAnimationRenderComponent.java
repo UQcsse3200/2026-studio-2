@@ -52,7 +52,6 @@ public class RotatableAnimationRenderComponent extends AnimationRenderComponent 
 
     float light = getDarkness();
     Color prevColor = batch.getColor().cpy();
-    batch.setColor(light, light, light, 1f);
     batch.draw(
         renderRegion, pos.x, pos.y, width / 2f, height / 2f, width, height, 1f, 1f, rotation);
     batch.setColor(prevColor);

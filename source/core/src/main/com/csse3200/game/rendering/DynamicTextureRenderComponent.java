@@ -53,7 +53,6 @@ public class DynamicTextureRenderComponent extends RenderComponent {
     rotation = rotateComponent != null ? rotateComponent.getRotation() : 0f;
     Color prevColor = batch.getColor().cpy();
     float light = getDarkness();
-    batch.setColor(light, light, light, 1f);
     batch.draw(
         textureRegion,
         position.x,
