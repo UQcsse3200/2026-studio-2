@@ -310,7 +310,10 @@ public class EnemyFactory {
     } else if (config.attackType.equals("cyclops")) {
       // add melee sweep attack and throwing boulder range attack
     } else if (config.attackType.equals("calypso")) {
-      // add wide aoe range attack + standard range + teleportation
+      // Standard projectile attack. Other Calypso attacks are added separately.
+      aiComponent.addTask(
+          new RangedAttackTask(
+              target, 20, config.attackRange, 2f, config.baseAttack, 4.5f, 5f, false, true));
     }
 
     return enemy;
