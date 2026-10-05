@@ -7,6 +7,7 @@ import com.csse3200.game.areas.terrain.TerrainFactory;
 import com.csse3200.game.areas.terrain.configs.levelconfigs.Level2Config;
 import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.entities.Entity;
+import com.csse3200.game.entities.factories.EnemyFactory;
 import com.csse3200.game.entities.factories.ItemFactory;
 import com.csse3200.game.rendering.BackgroundRenderComponent;
 import com.csse3200.game.services.ResourceService;
@@ -21,6 +22,11 @@ public class Level2GameArea extends GameArea {
   private static final float WALL_WIDTH = 0.1f;
 
   private Vector2 worldBounds;
+
+  private static final GridPoint2[] skeletonWarriorSpawnLocations =
+      new GridPoint2[] {
+        new GridPoint2(6, 23), new GridPoint2(11, 23), new GridPoint2(17, 23),
+      };
 
   /** Textures used by the level 2 game area. */
   private static final String[] level2Textures = {
@@ -109,9 +115,8 @@ public class Level2GameArea extends GameArea {
     spawnTerrain();
     spawnBackground();
     spawnConfigEntities();
+    spawnSkeletonWarrior();
 
-    // player = spawnPlayer();
-    // spawnEntityAt(player, config.getPlayerSpawn(), true, true);
     player.setPosition(new Vector2(config.getPlayerSpawn().x, config.getPlayerSpawn().y));
   }
 
@@ -181,6 +186,13 @@ public class Level2GameArea extends GameArea {
     GridPoint2 tileBounds = terrain.getMapBounds(0);
     // worldBounds = new Vector2(tileBounds.x * tileSize, tileBounds.y * tileSize);
     worldBounds = new Vector2(50f, 45f);
+  }
+
+  private void spawnSkeletonWarrior() {
+    for (GridPoint2 spawnLocation : skeletonWarriorSpawnLocations) {
+      Entity enemy = EnemyFactory.createSkeletonWarrior(player);
+      spawnEntityAt(enemy, spawnLocation, true, true);
+    }
   }
 
   /** Plays the background music. */
