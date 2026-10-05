@@ -105,7 +105,9 @@ public class Level1GameArea extends GameArea {
     "images/health/PixelArt_HeartBack.png",
     "images/ui/transparent.png",
     "images/backgrounds/level_1_bg.png",
-    "images/backgrounds/level_1_idea.png",
+    "images/parallax/level_1_background.png",
+    "images/parallax/level_1_clouds.png",
+    "images/parallax/level_1_furthest.png",
     "images/terrain/Others/closed_door.png",
     "images/terrain/Others/open_door.png",
     "images/terrain/Level_1/sheeps_cave.png",
@@ -246,25 +248,69 @@ public class Level1GameArea extends GameArea {
     BackgroundRenderComponent backgroundComponent =
         new BackgroundRenderComponent(camera, backgroundPos, worldBounds);
 
-    // Level-wide background: a single copy of level_1_idea.png (1672 x 940, ~1.78 aspect ratio)
-    // that drifts slowly with the camera like a distant backdrop, so one image always fills the
-    // screen and nothing has to be repeated. The layer's world position is
-    //   x = backgroundPos.x + offset.x + cameraX * (1 - parallaxFactor.x)
-    //   y = backgroundPos.y + offset.y + cameraY * distance
-    // With the values below (parallax x 0.15, distance 0.7) the image covers the view for camera
-    // positions of roughly x 5..95 and y 3..25, i.e. the whole 90 x 27 level. Making the image
-    // smaller looks further away, but needs a smaller parallax x / larger distance to keep
-    // covering the screen; making it larger is always safe.
+    // Complete original background image
     backgroundComponent.addLayer(
-        "images/backgrounds/level_1_idea.png",
-        new Vector2(0.15f, 0f),
-        36f,
-        20.2f,
-        new Vector2(0f, 5f),
+        "images/parallax/level_1_background.png",
+        new Vector2(0.1f, 0f), // Parallax factor
+        30f,
+        12f,
+        new Vector2(0f, 4.25f), // Positional offset
         BackgroundType.DEPENDENT,
-        new Vector2(0f, 0f),
+        new Vector2(0f, 0f), // Independent velocity
         false,
-        0.7f,
+        1f,
+        1f);
+
+    // Complete clouds image
+    backgroundComponent.addLayer(
+        "images/parallax/level_1_clouds.png",
+        new Vector2(0.1f, 0f), // Parallax factor
+        30f,
+        4f,
+        new Vector2(0f, 10f), // Positional offset
+        BackgroundType.DEPENDENT,
+        new Vector2(0.1f, 0f), // Independent velocity
+        true,
+        1f,
+        1f);
+
+    // Complete mountains image
+    backgroundComponent.addLayer(
+        "images/parallax/level_1_clouds.png",
+        new Vector2(0.1f, 0f), // Parallax factor
+        30f,
+        15f,
+        new Vector2(25f, 7.5f), // Positional offset
+        BackgroundType.DEPENDENT,
+        new Vector2(0.2f, 0f), // Independent velocity
+        true,
+        1f,
+        1f);
+
+    // Complete furthest mountains image
+    backgroundComponent.addLayer(
+        "images/parallax/level_1_furthest.png",
+        new Vector2(0.06f, 0f), // Parallax factor 0.12
+        30f,
+        7f,
+        new Vector2(5f, 6.5f), // Positional offset
+        BackgroundType.DEPENDENT,
+        new Vector2(0f, 0f), // Independent velocity
+        true,
+        1f,
+        0.5f);
+
+    // Complete second-furthest mountains image
+    backgroundComponent.addLayer(
+        "images/parallax/level_1_furthest.png",
+        new Vector2(0.11f, 0f), // Parallax factor 0.12
+        30f,
+        10f,
+        new Vector2(0f, 5f), // Positional offset
+        BackgroundType.DEPENDENT,
+        new Vector2(0f, 0f), // Independent velocity
+        true,
+        1f,
         1f);
 
     // Create the background entity.
