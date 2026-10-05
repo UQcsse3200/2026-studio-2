@@ -11,6 +11,10 @@ import com.csse3200.game.services.ServiceLocator;
  */
 public abstract class RenderComponent extends Component implements Renderable, Disposable {
   private static final int DEFAULT_LAYER = 1;
+  public float darkness = 1f;
+  public float lightning = 0f;
+  private boolean weather = false;
+  private float beforeFlash = 1f;
 
   @Override
   public void create() {
@@ -35,6 +39,51 @@ public abstract class RenderComponent extends Component implements Renderable, D
   @Override
   public int getLayer() {
     return DEFAULT_LAYER;
+  }
+
+  public float getDarkness() {
+    return this.darkness;
+  }
+
+  public float getLightning() {
+    return this.lightning;
+  }
+
+  public void toggleWeather() {
+    weather = !weather;
+  }
+
+  public boolean getWeather() {
+    return weather;
+  }
+
+  @Override
+  public void update() {
+    if (weather) {
+      if (ServiceLocator.getTimeSource() != null) {
+        darkness = beforeFlash;
+        // Prevent black items after flash
+        if (darkness <= 0.25f) {
+          darkness = 0.25f;
+        }
+        if (darkness > 0.25f) {
+          darkness -= ServiceLocator.getTimeSource().getDeltaTime() / 50f;
+          // darkness = 1 - (ServiceLocator.getTimeSource().getTime() / 60000f); // 50000, 40000
+          // darkness = 1; //
+        }
+        lightning += ServiceLocator.getTimeSource().getDeltaTime();
+        lightning %= 20; // 40
+        if (lightning > 5f && lightning < 5.5f) {
+          darkness = 1f;
+        } else if (lightning > 5.7f && lightning < 5.8f) {
+          darkness = 1f;
+        } else if (lightning > 13f && lightning < 13.3f) {
+          darkness = 1f;
+        } else {
+          beforeFlash = darkness;
+        }
+      }
+    }
   }
 
   @Override

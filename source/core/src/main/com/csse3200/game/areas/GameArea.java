@@ -8,13 +8,14 @@ import com.csse3200.game.areas.terrain.TerrainComponent;
 import com.csse3200.game.areas.terrain.configs.LevelConfig;
 import com.csse3200.game.areas.terrain.configs.SpawnData;
 import com.csse3200.game.components.CameraComponent;
-import com.csse3200.game.components.level.ActivatableComponent;
-import com.csse3200.game.components.level.CheckpointComponent;
-import com.csse3200.game.components.level.LevelTriggerComponent;
-import com.csse3200.game.components.level.PlatformGrappleComponent;
-import com.csse3200.game.components.level.TriggerButtonComponent;
+import com.csse3200.game.components.EnemyDeathComponent;
+import com.csse3200.game.components.inventory.InventoryBarDisplay;
+import com.csse3200.game.components.level.*;
 import com.csse3200.game.components.player.KeyboardPlayerInputComponent;
+import com.csse3200.game.components.player.PlayerStatsDisplay;
 import com.csse3200.game.entities.Entity;
+import com.csse3200.game.entities.factories.ItemFactory;
+import com.csse3200.game.rendering.BackgroundRenderComponent;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -38,6 +39,11 @@ public abstract class GameArea implements Disposable {
   protected KeyboardPlayerInputComponent input;
   protected Entity levelChanger;
   protected LevelConfig config;
+  protected boolean mapToggled = false;
+  protected float viewportWidth;
+  protected float viewportHeight;
+  protected Vector2 resizeScale;
+  protected BackgroundRenderComponent backgroundComponent;
 
   /**
    * Creates a game area using the provided camera component.
@@ -123,9 +129,41 @@ public abstract class GameArea implements Disposable {
       }
     }
 
-    LevelTriggerComponent trigger = entity.getComponent(LevelTriggerComponent.class);
+    // listen for trigger entity activation events
+    TriggerComponent trigger = entity.getComponent(TriggerComponent.class);
     if (trigger != null) {
+      entity.getEvents().addListener("activateByKey", this::onButtonActivated);
+    }
+
+    // listen for any spawner completion activation events
+    SpawnerComponent spawner = entity.getComponent(SpawnerComponent.class);
+    if (spawner != null) {
+      entity.getEvents().addListener("activateByKey", this::onButtonActivated);
+    }
+
+    // listen for checkpoint activations
+    CheckpointComponent checkpoint = entity.getComponent(CheckpointComponent.class);
+    if (checkpoint != null) {
+      entity.getEvents().addListener("checkpointActivated", this::onCheckpointActivated);
+    }
+
+    SlipperyPlatformComponent slipperyPlatform =
+        entity.getComponent(SlipperyPlatformComponent.class);
+    if (slipperyPlatform != null) {
+      entity
+          .getEvents()
+          .addListener("grappleTimeExceeded", () -> player.getEvents().trigger("grappleRelease"));
+      player.getEvents().addListener("grappleRelease", () -> slipperyPlatform.setGrappled(false));
+    }
+
+    LevelTriggerComponent levelTrigger = entity.getComponent(LevelTriggerComponent.class);
+    if (levelTrigger != null) {
       levelChanger = entity;
+    }
+
+    EnemyDeathComponent enemy = entity.getComponent(EnemyDeathComponent.class);
+    if (enemy != null) {
+      entity.getEvents().trigger("updatedId", entity.getId());
     }
 
     ServiceLocator.getEntityService().register(entity);
@@ -165,6 +203,18 @@ public abstract class GameArea implements Disposable {
     for (SpawnData data : entities) {
       spawnEntityAt(data.entity, data.pos, false, false);
     }
+
+    if (config.getWheelSpinSpawns() != null) {
+      for (GridPoint2 spawn : config.getWheelSpinSpawns()) {
+        spawnWheelToken(spawn);
+      }
+    }
+  }
+
+  private void spawnWheelToken(GridPoint2 spawn) {
+    Entity token = ItemFactory.createWheelToken();
+    spawnEntityAt(token, spawn, true, false);
+    token.setPosition(token.getPosition().add(0f, 0.3f));
   }
 
   /**
@@ -200,11 +250,6 @@ public abstract class GameArea implements Disposable {
     return terrain;
   }
 
-  public enum BackgroundType {
-    INDEPENDENT,
-    DEPENDENT
-  }
-
   /**
    * Public method for grapples to check the end of the raycast position hits a valid side of a
    * platform to confirm a successful grapple location was hit
@@ -233,11 +278,30 @@ public abstract class GameArea implements Disposable {
    */
   private void onButtonActivated(String id) {
     ArrayList<Entity> entities = triggerableEntities.get(id);
+    if (entities == null) {
+      return;
+    }
+
     for (Entity entity : entities) {
       ActivatableComponent activate = entity.getComponent(ActivatableComponent.class);
       boolean newActive = !activate.isActive();
       activate.setActive(newActive);
     }
+  }
+
+  /** Represents functionality that all game areas should use when a checkpoint is encountered */
+  protected void onCheckpointActivated(GridPoint2 position) {
+    // currently no functionality is required by all game areas, however, this method is required
+    // here as it allows the checkpoint system to bind to the current game area's respective
+    // onCheckpointActivated method. For any level specific behaviour for checkpoint activation,
+    // such as level 3's rising water saving, that game area should override this method
+  }
+
+  /** Layer repeat behaviour for background layers */
+  public enum RepeatMode {
+    NONE,
+    HORIZONTAL,
+    CHAOTIC
   }
 
   /** Public method to respawn the player at the last collected checkpoint upon an event trigger. */
@@ -256,7 +320,44 @@ public abstract class GameArea implements Disposable {
     }
     float x = respawnPoint.x;
     float y = respawnPoint.y;
-    player.setPosition(x, y);
+
+    RespawnComponent respawn = player.getComponent(RespawnComponent.class);
+    respawn.queueRespawn(new Vector2(x, y));
+  }
+
+  public void toggleLevelMap() {}
+
+  public void toggleMap(
+      Vector2 worldBounds,
+      CameraComponent cameraComponent,
+      BackgroundRenderComponent backgroundComponent,
+      String level) {
+    if (!mapToggled) {
+      int worldBoundX = (int) worldBounds.x;
+      int worldBoundY = (int) worldBounds.y;
+      viewportWidth = cameraComponent.getCamera().viewportWidth;
+      viewportHeight = cameraComponent.getCamera().viewportHeight;
+
+      cameraComponent.resize(worldBoundX, worldBoundY, worldBoundX + 10);
+      Entity camera = new Entity();
+      camera.setPosition(worldBounds.x / 2, worldBounds.y / 2);
+      cameraComponent.setTarget(camera);
+
+      float scaleX = worldBoundX / viewportWidth;
+      float scaleY = worldBoundY / viewportHeight;
+      resizeScale = new Vector2(scaleX, scaleY);
+
+      backgroundComponent.scaleEntity(resizeScale, worldBounds, true, level);
+      player.getComponent(InventoryBarDisplay.class).hideBar();
+      player.getComponent(PlayerStatsDisplay.class).hide();
+    } else {
+      cameraComponent.resize((int) viewportWidth, (int) viewportHeight, viewportWidth);
+      cameraComponent.setTarget(player);
+      backgroundComponent.scaleEntity(resizeScale, worldBounds, false, level);
+      player.getComponent(InventoryBarDisplay.class).showBar();
+      player.getComponent(PlayerStatsDisplay.class).show();
+    }
+    mapToggled = !mapToggled;
   }
 
   public KeyboardPlayerInputComponent getInput() {

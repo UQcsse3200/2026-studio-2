@@ -9,6 +9,7 @@ import com.csse3200.game.GdxGame;
 import com.csse3200.game.areas.GameArea;
 import com.csse3200.game.areas.Level1GameArea;
 import com.csse3200.game.areas.Level2GameArea;
+import com.csse3200.game.areas.Level3GameArea;
 import com.csse3200.game.areas.terrain.TerrainFactory;
 import com.csse3200.game.components.ButtonSound;
 import com.csse3200.game.components.gamearea.CoordinateDisplay;
@@ -64,6 +65,7 @@ public class LevelsGameScreen extends ScreenAdapter {
   private boolean levelSwapQueued = false;
   private GameArea currentGameArea;
   private GameArea nextGameArea;
+  private String level = "level1";
 
   private final GdxGame game;
   private final Renderer renderer;
@@ -83,6 +85,7 @@ public class LevelsGameScreen extends ScreenAdapter {
   };
   private final Level1GameArea level1GameArea;
   private boolean cheats = false;
+  private float gravity;
 
   public LevelsGameScreen(GdxGame game) {
     this.game = game;
@@ -129,6 +132,7 @@ public class LevelsGameScreen extends ScreenAdapter {
 
     player = level1GameArea.getPlayer();
     player.getEvents().addListener("respawnAtCheckpoint", () -> currentGameArea.respawn());
+    player.getEvents().addListener("toggleMap", () -> currentGameArea.toggleLevelMap());
 
     player
         .getEvents()
@@ -182,11 +186,6 @@ public class LevelsGameScreen extends ScreenAdapter {
 
     minigameOverlayManager = new MinigameOverlayManager();
     blackjackOverlay = new BlackjackOverlay(player, minigameOverlayManager);
-
-    if (cheats) {
-      level1GameArea.getPlayer().getComponent(PhysicsComponent.class).getBody().setGravityScale(0);
-      level1GameArea.getPlayer().getComponent(KeyboardPlayerInputComponent.class).toggleCheats();
-    }
   }
 
   private void onPlayerDeath() {
@@ -211,6 +210,9 @@ public class LevelsGameScreen extends ScreenAdapter {
       case "level2":
         nextGameArea = new Level2GameArea(terrainFactory, renderer.getCamera(), player);
         break;
+      case "level3":
+        nextGameArea = new Level3GameArea(terrainFactory, renderer.getCamera(), player);
+        break;
       default:
         return;
     }
@@ -224,8 +226,8 @@ public class LevelsGameScreen extends ScreenAdapter {
   private void performLevelSwap() {
     logger.info("Swapping level to new game area");
 
-    currentGameArea.dispose();
     nextGameArea.create();
+    currentGameArea.dispose();
     currentGameArea = nextGameArea;
     nextGameArea = null;
 
@@ -253,6 +255,29 @@ public class LevelsGameScreen extends ScreenAdapter {
 
     if (Gdx.input.isKeyJustPressed(Input.Keys.L)) {
       blackjackOverlay.request();
+    }
+
+    if (Gdx.input.isKeyJustPressed(Input.Keys.BACKSPACE)) {
+      cheats = !cheats;
+      if (cheats) {
+        gravity = player.getComponent(PhysicsComponent.class).getBody().getGravityScale();
+        player.getComponent(PhysicsComponent.class).getBody().setGravityScale(0);
+        player.getComponent(KeyboardPlayerInputComponent.class).toggleCheats();
+      } else {
+        player.getComponent(PhysicsComponent.class).getBody().setGravityScale(gravity);
+        player.getComponent(KeyboardPlayerInputComponent.class).toggleCheats();
+      }
+    }
+
+    if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
+      if (level.equals("level1")) {
+        level = "level2";
+      } else if (level.equals("level2")) {
+        level = "level3";
+      } else if (level.equals("level3")) {
+        level = "none";
+      }
+      queueAreaSwap(level);
     }
 
     physicsEngine.update();

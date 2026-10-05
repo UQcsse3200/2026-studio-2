@@ -8,7 +8,7 @@ import com.csse3200.game.services.ServiceLocator;
 
 /** Render a static texture. */
 public class TextureRenderComponent extends RenderComponent {
-  private final Texture texture;
+  private Texture texture;
 
   private float rotation = 0f;
 
@@ -33,6 +33,11 @@ public class TextureRenderComponent extends RenderComponent {
     this.texture = texture;
   }
 
+  public void replaceTexture(String texturePath) {
+    Texture newTexture = ServiceLocator.getResourceService().getAsset(texturePath, Texture.class);
+    this.texture = newTexture;
+  }
+
   /**
    * Tints the texture when drawn. White (the default) leaves it unchanged.
    *
@@ -55,6 +60,8 @@ public class TextureRenderComponent extends RenderComponent {
     Vector2 scale = entity.getScale();
     Color previous = batch.getColor().cpy();
     batch.setColor(tint);
+    float light = getDarkness();
+    batch.setColor(light, light, light, 1f);
     batch.draw(
         texture,
         position.x,

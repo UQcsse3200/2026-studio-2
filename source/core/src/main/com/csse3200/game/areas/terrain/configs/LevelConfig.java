@@ -31,6 +31,7 @@ public class LevelConfig {
   protected MovingPlatformConfig[] movingPlatforms;
   protected CrumblingPlatformConfig[] crumblingPlatforms;
   protected TriggerablePlatformConfig[] triggerablePlatforms;
+  protected SlipperyPlatformConfig[] slipperyPlatforms;
   protected PlatformConfig[] ledges;
   protected SpikeClusterConfig[] spikes;
   protected SpikyBallTrapConfig[] ballTraps;
@@ -40,11 +41,14 @@ public class LevelConfig {
   protected Map<GridPoint2, EnemyConfig> enemies;
   protected Map<GridPoint2, Item> items;
   protected CheckpointConfig[] checkpoints;
+  protected EnemySpawnerConfig[] enemySpawners;
+  protected TriggerConfig[] mapTriggers;
 
   protected GridPoint2 playerSpawn;
   protected GridPoint2 nextLevelTriggerSpawn;
   protected String nextLevelName;
   protected GridPoint2 winConditionSpawn;
+  protected GridPoint2[] wheelSpinSpawns;
 
   protected ArrayList<SpawnData> entities = new ArrayList<>();
 
@@ -63,6 +67,7 @@ public class LevelConfig {
     createMovingPlatforms();
     createCrumblingPlatforms();
     createTriggerablePlatforms();
+    createSlipperyPlatforms();
     createLedges();
     createSpikes();
     createTraps();
@@ -71,6 +76,8 @@ public class LevelConfig {
     createLevelTrigger();
     createItems();
     createCheckpoints();
+    createSpawners();
+    createTriggers();
 
     return entities;
   }
@@ -98,6 +105,10 @@ public class LevelConfig {
       checkpointComponents.add(c.getEntity().getComponent(CheckpointComponent.class));
     }
     return checkpointComponents;
+  }
+
+  public GridPoint2[] getWheelSpinSpawns() {
+    return wheelSpinSpawns;
   }
 
   /**
@@ -163,6 +174,22 @@ public class LevelConfig {
     }
   }
 
+  /**
+   * Creates all slippery platforms for this level and adds them to the entities Map for the level
+   * to spawn
+   */
+  private void createSlipperyPlatforms() {
+    if (slipperyPlatforms == null) {
+      return;
+    }
+
+    for (SlipperyPlatformConfig s : slipperyPlatforms) {
+      Entity slipperyPlatform = ObstacleFactory.createSlipperyPlatform(s);
+      slipperyPlatform.setScale(s.width, s.height);
+      entities.add(new SpawnData(s.position, slipperyPlatform));
+    }
+  }
+
   private void createLedges() {
     if (ledges == null) {
       return;
@@ -203,6 +230,7 @@ public class LevelConfig {
       return;
     }
 
+    // CLEAN THIS UP
     for (SpikeClusterConfig s : spikes) {
       for (int i = s.xMin; i <= s.xMax; i++) {
         for (int j = s.yMin; j <= s.yMax; j++) {
@@ -284,7 +312,9 @@ public class LevelConfig {
 
     for (CheckpointConfig c : checkpoints) {
       Entity checkpoint = new Entity();
+      checkpoint.addComponent(new CheckpointComponent(false, c.getPosition()));
       checkpoint.addComponent(new CheckpointComponent(false, c.getPosition(), checkpointAtlas));
+      checkpoint.setScale(1f, 1.5f);
 
       c.setEntity(checkpoint);
       entities.add(new SpawnData(c.getPosition(), checkpoint));
@@ -306,9 +336,34 @@ public class LevelConfig {
       checkpoint.getComponent(CheckpointComponent.class).setTorch(torch);
 
       GridPoint2 pos = c.getPosition();
-      torch.setPosition(pos.x, pos.y - 1.3f);
+      checkpoint.setPosition(pos.x, pos.y - 1.3f);
 
-      entities.add(new SpawnData(c.getPosition(), torch));
+      entities.add(new SpawnData(c.getPosition(), checkpoint));
+    }
+  }
+
+  /** Creates all spawners in the level and adds them to the entities for the game area to spawn */
+  private void createSpawners() {
+    if (enemySpawners == null) {
+      return;
+    }
+
+    for (EnemySpawnerConfig c : enemySpawners) {
+      Entity spawner = ObstacleFactory.createEnemySpawnerEntity(c);
+      entities.add(new SpawnData(c.position, spawner));
+    }
+  }
+
+  /** Creates all map triggers and scales them to their correct size for the game area to spawn */
+  private void createTriggers() {
+    if (mapTriggers == null) {
+      return;
+    }
+
+    for (TriggerConfig c : mapTriggers) {
+      Entity trigger = ObstacleFactory.createTriggerEntity(c);
+      trigger.setScale(c.scale);
+      entities.add(new SpawnData(c.position, trigger));
     }
   }
 }

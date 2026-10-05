@@ -170,6 +170,10 @@ public class KeyboardPlayerInputComponent extends InputComponent {
           entity.getEvents().trigger("togglePause");
         }
         unpause();
+        return true;
+      case Keys.M:
+        entity.getEvents().trigger("toggleMap");
+        return true;
       default:
         return false;
     }

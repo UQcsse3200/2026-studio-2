@@ -39,7 +39,7 @@ public class AttachableMapComponent extends Component {
    * valid entity it can attach to. If it finds one, it stores references. Will only be performed
    * once!
    */
-  private void discoverParent() {
+  void discoverParent() {
     if (attemptedDiscovery) {
       return;
     }
@@ -79,7 +79,7 @@ public class AttachableMapComponent extends Component {
    * Applies the same transformations that have been applied to the found parent entity to this
    * entity using the calculated offset from the parent.
    */
-  private void moveWithParent() {
+  void moveWithParent() {
     // if we have a valid parent, and it exists in the level, we update its position every frame
     // so it moves with the parent, appearing attached
     if (parent != null) {

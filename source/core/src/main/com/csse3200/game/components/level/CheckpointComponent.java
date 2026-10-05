@@ -57,8 +57,8 @@ public class CheckpointComponent extends Component {
     if (collected) {
       return;
     }
-
     this.collected = true;
+    entity.getEvents().trigger("checkpointActivated", position);
 
     if (torchAnimator != null) {
       // Swap the existing statue to its lit frame so the unlit frame isn't left behind it.

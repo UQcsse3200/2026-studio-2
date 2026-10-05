@@ -14,6 +14,7 @@ public class Level1Config extends LevelConfig {
     spikeTFP = "images/terrain/Level_1/Level_1_Spike.png";
     checkpointAtlas = "images/terrain/Level_1/Level_1_checkpoint.atlas";
 
+    // TEMP
     playerSpawn = new GridPoint2(1, 4);
     nextLevelTriggerSpawn = new GridPoint2(88, 18);
     nextLevelName = "level2";
@@ -68,9 +69,9 @@ public class Level1Config extends LevelConfig {
     bounds =
         new PlatformConfig[] {
           new PlatformConfig(new GridPoint2(40, 0), 50, 1, 0, groundTFP), // bottom
-          new PlatformConfig(new GridPoint2(0, 27), 90, 1, 0, groundTFP), // top
-          new PlatformConfig(new GridPoint2(0, 0), 1, 25, 0, groundTFP), // left
-          new PlatformConfig(new GridPoint2(90, 0), 1, 25, 0, groundTFP) // right
+          // new PlatformConfig(new GridPoint2(0, 27), 90, 1, 0, groundTFP), // top
+          new PlatformConfig(new GridPoint2(0, 0), 1, 22, 0, groundTFP), // left
+          new PlatformConfig(new GridPoint2(90, 0), 1, 14, 0, groundTFP) // right
         };
 
     floors =
@@ -113,6 +114,8 @@ public class Level1Config extends LevelConfig {
           new CheckpointConfig(new GridPoint2(47, 22)),
           new CheckpointConfig(new GridPoint2(85, 17)),
         };
+
+    wheelSpinSpawns = new GridPoint2[] {new GridPoint2(32, 3)};
   }
 
   private MovingPlatformConfig moving(

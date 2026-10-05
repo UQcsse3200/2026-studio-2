@@ -7,6 +7,8 @@ import com.csse3200.game.areas.terrain.TerrainFactory;
 import com.csse3200.game.areas.terrain.configs.levelconfigs.Level2Config;
 import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.entities.Entity;
+import com.csse3200.game.entities.factories.EnemyFactory;
+import com.csse3200.game.entities.factories.ItemFactory;
 import com.csse3200.game.rendering.BackgroundRenderComponent;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
@@ -21,12 +23,21 @@ public class Level2GameArea extends GameArea {
 
   private Vector2 worldBounds;
 
+  private static final GridPoint2[] skeletonWarriorSpawnLocations =
+      new GridPoint2[] {
+        new GridPoint2(6, 23), new GridPoint2(11, 23), new GridPoint2(17, 23),
+      };
+
   /** Textures used by the level 2 game area. */
   private static final String[] level2Textures = {
     "images/ui/scroll_bg.png",
+
     // Level 2 background
     "images/backgrounds/Background-2.png",
     "images/backgrounds/Platform_level-2.png",
+    "images/parallax/Clouds-birds.png",
+    "images/parallax/Mountains-layer.png",
+    "images/parallax/level_2_clouds.png",
 
     // Assets referenced by Level2Config (the old tile-level2/grass atlas files no longer exist).
     "images/terrain/Level_2/level_2_tile.png",
@@ -41,6 +52,8 @@ public class Level2GameArea extends GameArea {
     "images/health/purple_heart.png",
     "images/traps/spiky_ball.png",
     "images/traps/spiky_ball_trap.png",
+    ItemFactory.WHEEL_TOKEN_TEXTURE,
+
     // Enemy textures
     "images/enemies/skeleton_warrior.png",
     "images/enemies/skeleton_archer.png",
@@ -51,10 +64,16 @@ public class Level2GameArea extends GameArea {
     "images/projectiles/fire_arrow.png",
     "images/projectiles/ice_arrow.png",
     "images/projectiles/poison_arrow.png",
+    "images/projectiles/necromancer_projectile.png",
   };
 
   private static final String[] level2TexturesAtlas = {
-    "images/terrain/Level_1/Level_1_checkpoint.atlas", "images/ui/in_level_button.atlas"
+    "images/ui/in_level_button.atlas",
+    "images/enemies/skeleton_archer.atlas",
+    "images/enemies/skeleton_warrior.atlas",
+    "images/enemies/necromancer.atlas",
+    "images/enemies/vulture.atlas",
+    "images/terrain/Level_1/Level_1_checkpoint.atlas"
   };
 
   private static final String[] level2Sounds = {"sounds/Impact4.ogg"};
@@ -69,7 +88,7 @@ public class Level2GameArea extends GameArea {
   public Level2GameArea(TerrainFactory terrainFactory, CameraComponent camera, Entity player) {
     super(camera);
 
-    config = new Level2Config();
+    config = new Level2Config(player);
 
     this.terrainFactory = terrainFactory;
     this.camera = camera;
@@ -80,32 +99,34 @@ public class Level2GameArea extends GameArea {
   public void create() {
     loadAssets();
 
-    // Spawn the Level 2 background before the terrain.
-    spawnBackground();
     spawnTerrain();
+    spawnBackground();
     spawnConfigEntities();
-    // player = spawnPlayer();
-    // spawnEntityAt(player, config.getPlayerSpawn(), true, true);
+    spawnSkeletonWarrior();
+
     player.setPosition(new Vector2(config.getPlayerSpawn().x, config.getPlayerSpawn().y));
   }
 
-  /** Creates the Level 2 background. */
+  /** Creates the Level 2 parallax background. */
   private void spawnBackground() {
     final Vector2 backgroundPos = new Vector2(-15f, -10f);
 
-    BackgroundRenderComponent backgroundComponent =
-        new BackgroundRenderComponent(camera, backgroundPos, worldBounds);
+    backgroundComponent = new BackgroundRenderComponent(camera, backgroundPos, worldBounds);
+
+    // Main background
     backgroundComponent.addLayer(
         "images/backgrounds/Background-2.png",
         new Vector2(0.10f, 0f),
         30f,
         15f,
         new Vector2(0f, 3.5f),
-        BackgroundType.DEPENDENT,
         new Vector2(0f, 0f),
-        false,
+        RepeatMode.NONE,
         1f,
-        1f);
+        1f,
+        false,
+        0,
+        -1);
 
     Entity background = new Entity().addComponent(backgroundComponent);
     background.setPosition(backgroundPos);
@@ -118,7 +139,15 @@ public class Level2GameArea extends GameArea {
     spawnEntity(new Entity().addComponent(terrain));
     float tileSize = terrain.getTileSize();
     GridPoint2 tileBounds = terrain.getMapBounds(0);
-    worldBounds = new Vector2(tileBounds.x * tileSize, tileBounds.y * tileSize);
+    // worldBounds = new Vector2(tileBounds.x * tileSize, tileBounds.y * tileSize);
+    worldBounds = new Vector2(50f, 45f);
+  }
+
+  private void spawnSkeletonWarrior() {
+    for (GridPoint2 spawnLocation : skeletonWarriorSpawnLocations) {
+      Entity enemy = EnemyFactory.createSkeletonWarrior(player);
+      spawnEntityAt(enemy, spawnLocation, true, true);
+    }
   }
 
   /** Plays the background music. */
@@ -154,6 +183,11 @@ public class Level2GameArea extends GameArea {
     resourceService.unloadAssets(level2TexturesAtlas);
     resourceService.unloadAssets(level2Sounds);
     resourceService.unloadAssets(level2Music);
+  }
+
+  @Override
+  public void toggleLevelMap() {
+    toggleMap(worldBounds, camera, backgroundComponent, "level2");
   }
 
   /** Dispose of the game area. */
