@@ -90,7 +90,7 @@ loadScripts(document, 'script');</script>
 <section class="class-description" id="class-description">
 <dl class="notes">
 <dt>Direct Known Subclasses:</dt>
-<dd><code><a href="levelconfigs/Level1Config.html" title="class in com.csse3200.game.areas.terrain.configs.levelconfigs">Level1Config</a></code>, <code><a href="levelconfigs/Level2Config.html" title="class in com.csse3200.game.areas.terrain.configs.levelconfigs">Level2Config</a></code></dd>
+<dd><code><a href="levelconfigs/Level1Config.html" title="class in com.csse3200.game.areas.terrain.configs.levelconfigs">Level1Config</a></code>, <code><a href="levelconfigs/Level2Config.html" title="class in com.csse3200.game.areas.terrain.configs.levelconfigs">Level2Config</a></code>, <code><a href="levelconfigs/Level3Config.html" title="class in com.csse3200.game.areas.terrain.configs.levelconfigs">Level3Config</a></code></dd>
 </dl>
 <hr>
 <div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">LevelConfig</span>
@@ -130,23 +130,29 @@ loadScripts(document, 'script');</script>
 <div class="col-first even-row-color"><code>protected <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a><wbr>&lt;com.badlogic.gdx.math.GridPoint2,<wbr><a href="../../../entities/configs/EnemyConfig.html" title="class in com.csse3200.game.entities.configs">EnemyConfig</a>&gt;</code></div>
 <div class="col-second even-row-color"><code><a href="#enemies" class="member-name-link">enemies</a></code></div>
 <div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><code>protected <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/ArrayList.html" title="class or interface in java.util" class="external-link">ArrayList</a><wbr>&lt;<a href="SpawnData.html" title="class in com.csse3200.game.areas.terrain.configs">SpawnData</a>&gt;</code></div>
-<div class="col-second odd-row-color"><code><a href="#entities" class="member-name-link">entities</a></code></div>
+<div class="col-first odd-row-color"><code>protected <a href="EnemySpawnerConfig.html" title="class in com.csse3200.game.areas.terrain.configs">EnemySpawnerConfig</a>[]</code></div>
+<div class="col-second odd-row-color"><code><a href="#enemySpawners" class="member-name-link">enemySpawners</a></code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
-<div class="col-first even-row-color"><code>protected <a href="PlatformConfig.html" title="class in com.csse3200.game.areas.terrain.configs">PlatformConfig</a>[]</code></div>
-<div class="col-second even-row-color"><code><a href="#floors" class="member-name-link">floors</a></code></div>
-<div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><code>protected <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
-<div class="col-second odd-row-color"><code><a href="#groundTFP" class="member-name-link">groundTFP</a></code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
-<div class="col-first even-row-color"><code>protected <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a><wbr>&lt;com.badlogic.gdx.math.GridPoint2,<wbr><a href="../../../components/item/Item.html" title="class in com.csse3200.game.components.item">Item</a>&gt;</code></div>
-<div class="col-second even-row-color"><code><a href="#items" class="member-name-link">items</a></code></div>
+<div class="col-first even-row-color"><code>protected <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/ArrayList.html" title="class or interface in java.util" class="external-link">ArrayList</a><wbr>&lt;<a href="SpawnData.html" title="class in com.csse3200.game.areas.terrain.configs">SpawnData</a>&gt;</code></div>
+<div class="col-second even-row-color"><code><a href="#entities" class="member-name-link">entities</a></code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code>protected <a href="PlatformConfig.html" title="class in com.csse3200.game.areas.terrain.configs">PlatformConfig</a>[]</code></div>
-<div class="col-second odd-row-color"><code><a href="#ledges" class="member-name-link">ledges</a></code></div>
+<div class="col-second odd-row-color"><code><a href="#floors" class="member-name-link">floors</a></code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code>protected <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
-<div class="col-second even-row-color"><code><a href="#ledgesTFP" class="member-name-link">ledgesTFP</a></code></div>
+<div class="col-second even-row-color"><code><a href="#groundTFP" class="member-name-link">groundTFP</a></code></div>
+<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><code>protected <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a><wbr>&lt;com.badlogic.gdx.math.GridPoint2,<wbr><a href="../../../components/item/Item.html" title="class in com.csse3200.game.components.item">Item</a>&gt;</code></div>
+<div class="col-second odd-row-color"><code><a href="#items" class="member-name-link">items</a></code></div>
+<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><code>protected <a href="PlatformConfig.html" title="class in com.csse3200.game.areas.terrain.configs">PlatformConfig</a>[]</code></div>
+<div class="col-second even-row-color"><code><a href="#ledges" class="member-name-link">ledges</a></code></div>
+<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><code>protected <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second odd-row-color"><code><a href="#ledgesTFP" class="member-name-link">ledgesTFP</a></code></div>
+<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><code>protected <a href="TriggerConfig.html" title="class in com.csse3200.game.areas.terrain.configs">TriggerConfig</a>[]</code></div>
+<div class="col-second even-row-color"><code><a href="#mapTriggers" class="member-name-link">mapTriggers</a></code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code>protected <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
 <div class="col-second odd-row-color"><code><a href="#mossyPlatformTFP" class="member-name-link">mossyPlatformTFP</a></code></div>
@@ -172,20 +178,26 @@ loadScripts(document, 'script');</script>
 <div class="col-first even-row-color"><code>protected com.badlogic.gdx.math.GridPoint2</code></div>
 <div class="col-second even-row-color"><code><a href="#playerSpawn" class="member-name-link">playerSpawn</a></code></div>
 <div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><code>protected <a href="SpikeClusterConfig.html" title="class in com.csse3200.game.areas.terrain.configs">SpikeClusterConfig</a>[]</code></div>
-<div class="col-second odd-row-color"><code><a href="#spikes" class="member-name-link">spikes</a></code></div>
+<div class="col-first odd-row-color"><code>protected <a href="SlipperyPlatformConfig.html" title="class in com.csse3200.game.areas.terrain.configs">SlipperyPlatformConfig</a>[]</code></div>
+<div class="col-second odd-row-color"><code><a href="#slipperyPlatforms" class="member-name-link">slipperyPlatforms</a></code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
-<div class="col-first even-row-color"><code>protected <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
-<div class="col-second even-row-color"><code><a href="#spikeTFP" class="member-name-link">spikeTFP</a></code></div>
+<div class="col-first even-row-color"><code>protected <a href="SpikeClusterConfig.html" title="class in com.csse3200.game.areas.terrain.configs">SpikeClusterConfig</a>[]</code></div>
+<div class="col-second even-row-color"><code><a href="#spikes" class="member-name-link">spikes</a></code></div>
 <div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><code>protected <a href="TriggerablePlatformConfig.html" title="class in com.csse3200.game.areas.terrain.configs">TriggerablePlatformConfig</a>[]</code></div>
-<div class="col-second odd-row-color"><code><a href="#triggerablePlatforms" class="member-name-link">triggerablePlatforms</a></code></div>
+<div class="col-first odd-row-color"><code>protected <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second odd-row-color"><code><a href="#spikeTFP" class="member-name-link">spikeTFP</a></code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
-<div class="col-first even-row-color"><code>protected <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
-<div class="col-second even-row-color"><code><a href="#triggerablePlatformTFP" class="member-name-link">triggerablePlatformTFP</a></code></div>
+<div class="col-first even-row-color"><code>protected <a href="TriggerablePlatformConfig.html" title="class in com.csse3200.game.areas.terrain.configs">TriggerablePlatformConfig</a>[]</code></div>
+<div class="col-second even-row-color"><code><a href="#triggerablePlatforms" class="member-name-link">triggerablePlatforms</a></code></div>
 <div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><code>protected <a href="TriggerButtonConfig.html" title="class in com.csse3200.game.areas.terrain.configs">TriggerButtonConfig</a>[]</code></div>
-<div class="col-second odd-row-color"><code><a href="#triggerButtons" class="member-name-link">triggerButtons</a></code></div>
+<div class="col-first odd-row-color"><code>protected <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second odd-row-color"><code><a href="#triggerablePlatformTFP" class="member-name-link">triggerablePlatformTFP</a></code></div>
+<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><code>protected <a href="TriggerButtonConfig.html" title="class in com.csse3200.game.areas.terrain.configs">TriggerButtonConfig</a>[]</code></div>
+<div class="col-second even-row-color"><code><a href="#triggerButtons" class="member-name-link">triggerButtons</a></code></div>
+<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><code>protected com.badlogic.gdx.math.GridPoint2[]</code></div>
+<div class="col-second odd-row-color"><code><a href="#wheelSpinSpawns" class="member-name-link">wheelSpinSpawns</a></code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code>protected com.badlogic.gdx.math.GridPoint2</code></div>
 <div class="col-second even-row-color"><code><a href="#winConditionSpawn" class="member-name-link">winConditionSpawn</a></code></div>
@@ -233,6 +245,9 @@ loadScripts(document, 'script');</script>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Public getter for the player spawn for a level config</div>
 </div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>com.badlogic.gdx.math.GridPoint2[]</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getWheelSpinSpawns()" class="member-name-link">getWheelSpinSpawns</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 </div>
 </div>
 </div>
@@ -330,6 +345,12 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li>
+<section class="detail" id="slipperyPlatforms">
+<h3>slipperyPlatforms</h3>
+<div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type"><a href="SlipperyPlatformConfig.html" title="class in com.csse3200.game.areas.terrain.configs">SlipperyPlatformConfig</a>[]</span>&nbsp;<span class="element-name">slipperyPlatforms</span></div>
+</section>
+</li>
+<li>
 <section class="detail" id="ledges">
 <h3>ledges</h3>
 <div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type"><a href="PlatformConfig.html" title="class in com.csse3200.game.areas.terrain.configs">PlatformConfig</a>[]</span>&nbsp;<span class="element-name">ledges</span></div>
@@ -384,6 +405,18 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li>
+<section class="detail" id="enemySpawners">
+<h3>enemySpawners</h3>
+<div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type"><a href="EnemySpawnerConfig.html" title="class in com.csse3200.game.areas.terrain.configs">EnemySpawnerConfig</a>[]</span>&nbsp;<span class="element-name">enemySpawners</span></div>
+</section>
+</li>
+<li>
+<section class="detail" id="mapTriggers">
+<h3>mapTriggers</h3>
+<div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type"><a href="TriggerConfig.html" title="class in com.csse3200.game.areas.terrain.configs">TriggerConfig</a>[]</span>&nbsp;<span class="element-name">mapTriggers</span></div>
+</section>
+</li>
+<li>
 <section class="detail" id="playerSpawn">
 <h3>playerSpawn</h3>
 <div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type">com.badlogic.gdx.math.GridPoint2</span>&nbsp;<span class="element-name">playerSpawn</span></div>
@@ -405,6 +438,12 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="winConditionSpawn">
 <h3>winConditionSpawn</h3>
 <div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type">com.badlogic.gdx.math.GridPoint2</span>&nbsp;<span class="element-name">winConditionSpawn</span></div>
+</section>
+</li>
+<li>
+<section class="detail" id="wheelSpinSpawns">
+<h3>wheelSpinSpawns</h3>
+<div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type">com.badlogic.gdx.math.GridPoint2[]</span>&nbsp;<span class="element-name">wheelSpinSpawns</span></div>
 </section>
 </li>
 <li>
@@ -468,6 +507,12 @@ loadScripts(document, 'script');</script>
 <dt>Returns:</dt>
 <dd>an ArrayList of the CheckpointComponents of a level</dd>
 </dl>
+</section>
+</li>
+<li>
+<section class="detail" id="getWheelSpinSpawns()">
+<h3>getWheelSpinSpawns</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">com.badlogic.gdx.math.GridPoint2[]</span>&nbsp;<span class="element-name">getWheelSpinSpawns</span>()</div>
 </section>
 </li>
 </ul>
