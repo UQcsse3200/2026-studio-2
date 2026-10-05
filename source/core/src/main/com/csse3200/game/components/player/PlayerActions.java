@@ -37,7 +37,6 @@ public class PlayerActions extends Component {
   private boolean moving = false;
   private boolean isGrounded = false;
   private boolean isSprinting = false;
-  private boolean paused = false;
   private boolean isDashing = false;
   private float dashTimeRemaining = 0f;
   private float dashCooldownRemaining = 0f;
@@ -54,6 +53,15 @@ public class PlayerActions extends Component {
   private float decelerationTraction = 1f;
   private float traction = 1f;
 
+  /**
+   * The direction the player is currently facing.
+   *
+   * @return 1 if facing right, -1 if facing left
+   */
+  public int getFacingDirection() {
+    return facingDirection;
+  }
+
   @Override
   public void create() {
     physicsComponent = entity.getComponent(PhysicsComponent.class);
@@ -66,7 +74,6 @@ public class PlayerActions extends Component {
     entity.getEvents().addListener("dash", this::dash);
     entity.getEvents().addListener("hurt", this::onHurtInterruptDash);
     entity.getEvents().addListener("updateLedgeDrop", this::setLedgeDropping);
-    entity.getEvents().addListener("togglePaused", this::togglePause);
     entity.getEvents().addListener("speedPotionUsed", this::applySpeedPotion);
     entity.getEvents().addListener("death", this::die);
   }
@@ -224,10 +231,6 @@ public class PlayerActions extends Component {
     return grounded;
   }
 
-  void togglePause() {
-    paused = !paused;
-  }
-
   /** Stops the player permanently reacting to input once they've died. */
   void die() {
     dead = true;
@@ -246,16 +249,12 @@ public class PlayerActions extends Component {
     if (dead) {
       return;
     }
-    if (paused) {
-      stopWalking();
-    } else {
-      traction = 1f;
-      this.walkDirection = direction;
-      if (direction.x != 0) {
-        facingDirection = direction.x > 0 ? 1 : -1;
-      }
-      moving = true;
+    traction = 1f;
+    this.walkDirection = direction;
+    if (direction.x != 0) {
+      facingDirection = direction.x > 0 ? 1 : -1;
     }
+    moving = true;
   }
 
   /** Stops the player from walking. */
@@ -343,7 +342,7 @@ public class PlayerActions extends Component {
   }
 
   void dash() {
-    if (isDashing || dashCooldownRemaining > 0f || paused) {
+    if (isDashing || dashCooldownRemaining > 0f) {
       return;
     }
     if (isGrappling()) {

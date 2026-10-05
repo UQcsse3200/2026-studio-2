@@ -16,7 +16,7 @@ public enum ArrowType {
   public static final float DEADZONE_RADIUS = 40f;
 
   private static final float DEADZONE_RADIUS_SQ = DEADZONE_RADIUS * DEADZONE_RADIUS;
-  private static final ArrowType[] WHEEL_TYPES = {STANDARD, FIRE, ICE, POISON};
+  public static final ArrowType[] WHEEL_TYPES = {STANDARD, FIRE, ICE, POISON};
 
   private final String label;
   private final Color tintColor;
@@ -32,10 +32,10 @@ public enum ArrowType {
 
   public String getTexturePath() {
     return switch (this) {
-      case FIRE -> "images/fireArr_animation.png";
-      case ICE -> "images/coldArr_animation.png";
-      case POTION -> "images/poison_potion.png";
-      default -> "images/arrow.png";
+      case FIRE -> "images/projectiles/fireArr_animation.png";
+      case ICE -> "images/projectiles/coldArr_animation.png";
+      case POTION -> "images/items/poison_potion.png";
+      default -> "images/projectiles/arrow.png";
     };
   }
 

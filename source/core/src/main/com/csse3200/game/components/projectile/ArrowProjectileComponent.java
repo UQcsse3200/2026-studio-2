@@ -22,8 +22,13 @@ public class ArrowProjectileComponent extends Component {
 
   private static final Logger logger = LoggerFactory.getLogger(ArrowProjectileComponent.class);
   private static final short TARGET_LAYERS = PhysicsLayer.NPC;
-  private static final short TERRAIN = (short) (PhysicsLayer.GROUND | PhysicsLayer.OBSTACLE);
-  private static final float ARC_GRAVITY_SCALE = 0.4f;
+
+  /** Layers an arrow stops against. Public so aiming previews can stop at the same surfaces. */
+  public static final short TERRAIN = (short) (PhysicsLayer.GROUND | PhysicsLayer.OBSTACLE);
+
+  /** Fraction of world gravity applied to a flying arrow. */
+  public static final float ARC_GRAVITY_SCALE = 0.4f;
+
   private static final float MIN_TRAVEL = 0.5f;
 
   private final Entity shooter;

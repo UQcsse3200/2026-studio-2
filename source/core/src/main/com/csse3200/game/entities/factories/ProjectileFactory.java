@@ -53,6 +53,22 @@ public class ProjectileFactory {
     return createPoisonArrow(null, position, direction);
   }
 
+  /**
+   * Returns the launch speed of an arrow type before any charge multiplier is applied.
+   *
+   * @param arrowType the arrow type
+   * @return base speed in world units per second
+   */
+  public static float getBaseSpeed(ArrowType arrowType) {
+    return switch (arrowType) {
+      case ICE -> ICE_ARROW_SPEED;
+      case FIRE -> FIRE_ARROW_SPEED;
+      case GRAPPLE -> GRAPPLE_ARROW_SPEED;
+      case POTION -> POISON_POTION_SPEED;
+      default -> STANDARD_ARROW_SPEED;
+    };
+  }
+
   public static Entity createPlayerArrow(Entity shooter, Vector2 position, Vector2 direction) {
     return createPlayerArrow(shooter, position, direction, 1f);
   }

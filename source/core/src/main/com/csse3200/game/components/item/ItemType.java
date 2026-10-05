@@ -11,7 +11,7 @@ public enum ItemType {
       1,
       "Standard Arrow",
       "A basic arrow used as ammunition.",
-      "images/arrow.png",
+      "images/projectiles/arrow.png",
       10,
       15f,
       0f,
@@ -21,7 +21,7 @@ public enum ItemType {
       2,
       "Rope Arrow",
       "An arrow used for grappling.",
-      "images/rope_arrow.png",
+      "images/projectiles/rope_arrow.png",
       0,
       15f,
       5f,
@@ -31,7 +31,7 @@ public enum ItemType {
       3,
       "Health Potion",
       "Restores a small amount of health.",
-      "images/red_heart.png",
+      "images/health/heart_potion.png",
       0,
       0f,
       0f,
@@ -41,7 +41,7 @@ public enum ItemType {
       4,
       "Fire Arrow",
       "Deals 5 direct damage and burns enemies for 10 damage per second for 5 seconds.",
-      "images/fire_arrow.png",
+      "images/projectiles/fire_arrow.png",
       5,
       16f,
       0f,
@@ -59,7 +59,7 @@ public enum ItemType {
       5,
       "Ice Arrow",
       "Slows enemies for 5 seconds.",
-      "images/cold_arrow.png",
+      "images/projectiles/ice_arrow.png",
       8,
       16f,
       0f,
@@ -78,20 +78,29 @@ public enum ItemType {
       6,
       "Great Sword",
       "A heavy sword with high damage.",
-      "images/sword.png",
+      "images/items/sword.png",
       20,
       5f,
       0f,
       0,
       false),
 
-  Spear(7, "Spear", "A long spear with extended range.", "images/spear.png", 12, 8f, 0f, 0, false),
+  Spear(
+      7,
+      "Spear",
+      "A long spear with extended range.",
+      "images/items/spear.png",
+      12,
+      8f,
+      0f,
+      0,
+      false),
 
   SpeedPotion(
       8,
       "Speed Potion",
       "Increases movement speed by 70% for 3 seconds.",
-      "images/speed_potion.png",
+      "images/items/speed_potion.png",
       0,
       0f,
       0f,
@@ -110,7 +119,7 @@ public enum ItemType {
       9,
       "Poison Potion",
       "Throws a poison flask that applies poison damage over time.",
-      "images/poison_potion.png",
+      "images/items/poison_potion.png",
       0,
       0f,
       0f,
@@ -228,9 +237,9 @@ public enum ItemType {
 
   public String getProjectileTexturePath() {
     return switch (this) {
-      case FIRE_ARROW -> "images/fireArr_animation.png";
-      case ICE_ARROW -> "images/coldArr_animation.png";
-      default -> "images/arrow.png";
+      case FIRE_ARROW -> "images/projectiles/fireArr_animation.png";
+      case ICE_ARROW -> "images/projectiles/coldArr_animation.png";
+      default -> "images/projectiles/arrow.png";
     };
   }
 

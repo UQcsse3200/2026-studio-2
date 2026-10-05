@@ -127,7 +127,7 @@ public class CrumblingPlatformComponent extends PlatformGrappleComponent {
     DynamicTextureRenderComponent renderComponent =
         entity.getComponent(DynamicTextureRenderComponent.class);
     platformTexture = renderComponent.getTexture();
-    renderComponent.setTexture("images/transparent.png");
+    renderComponent.setTexture("images/ui/transparent.png");
   }
 
   /** Restores the platform after the respawn timer finishes. */

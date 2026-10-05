@@ -1,3 +1,4 @@
+
 package com.csse3200.game.rendering;
 
 import com.badlogic.gdx.graphics.Color;

@@ -30,22 +30,31 @@ public class Level2GameArea extends GameArea {
 
   /** Textures used by the level 2 game area. */
   private static final String[] level2Textures = {
+    "images/ui/scroll_bg.png",
     "images/scroll_bg.png",
 
     // Level 2 background
+    "images/backgrounds/Background-2.png",
+    "images/backgrounds/Platform_level-2.png",
     "images/Background-2.png",
     "images/parallax/Clouds-birds.png",
     "images/parallax/Mountains-layer.png",
     "images/Platform_level-2.png",
     "images/parallax/level_2_clouds.png",
 
-    // Level 2 ground tile
-    "images/tile-level2.png",
+    // Assets referenced by Level2Config (the old tile-level2/grass atlas files no longer exist).
+    "images/terrain/Level_2/level_2_tile.png",
+    "images/terrain/Level_2/level_2_platform.png",
+    "images/terrain/Level_2/level_2_spikes.png",
 
     // Transparent texture used for the physics-only floor
-    "images/transparent.png",
+    "images/ui/transparent.png",
 
     // Existing game textures
+    "images/backgrounds/black_roof.png",
+    "images/health/purple_heart.png",
+    "images/traps/spiky_ball.png",
+    "images/traps/spiky_ball_trap.png",
     "images/black_roof.png",
     "images/purple_heart.png",
     "images/DevGridTile.png",
@@ -71,6 +80,15 @@ public class Level2GameArea extends GameArea {
     ItemFactory.WHEEL_TOKEN_TEXTURE,
 
     // Enemy textures
+    "images/enemies/skeleton_warrior.png",
+    "images/enemies/skeleton_archer.png",
+    "images/projectiles/arrow.png",
+    "images/projectiles/fireArr_animation.png",
+    "images/projectiles/coldArr_animation.png",
+    "images/projectiles/rope_arrow.png",
+    "images/projectiles/fire_arrow.png",
+    "images/projectiles/ice_arrow.png",
+    "images/projectiles/poison_arrow.png",
     "images/skeleton_warrior.png",
     "images/skeleton_archer.png",
     "images/arrow.png",
@@ -87,6 +105,7 @@ public class Level2GameArea extends GameArea {
     "images/skeleton_warrior.atlas",
     "images/necromancer.atlas",
     "images/vulture.atlas",
+    "images/terrain/Level_1/Level_1_checkpoint.atlas", "images/ui/in_level_button.atlas"
   };
 
   private static final String[] level2Sounds = {"sounds/Impact4.ogg"};
@@ -128,50 +147,15 @@ public class Level2GameArea extends GameArea {
 
     // Main background
     backgroundComponent.addLayer(
-        "images/Background-2.png",
-        new Vector2(0.1f, 0f), // Parallax factor
-        31f,
-        12f,
-        new Vector2(0f, 4.3f), // Positional offset
-        new Vector2(0f, 0f), // Independent velocity
-        RepeatMode.NONE,
-        1f,
-        1f,
-        false,
-        0,
-        -1);
-
-    // Mountains layer
-    /*
-    backgroundComponent.addLayer(
-        "images/parallax/Mountains-layer.png",
-        new Vector2(0.125f, 0f),
+        "images/backgrounds/Background-2.png",
+        new Vector2(0.10f, 0f),
         30f,
-        6f,
-        new Vector2(0f, 7f),
+        15f,
+        new Vector2(0f, 3.5f),
         new Vector2(0f, 0f),
         RepeatMode.NONE,
         1f,
-        1f,
-        false,
-        0,
-        -1);
-    */
-
-    // Clouds and birds layer
-    backgroundComponent.addLayer(
-        "images/parallax/level_2_clouds.png",
-        new Vector2(0.1f, 0f),
-        20f,
-        5f,
-        new Vector2(10f, 10f),
-        new Vector2(-0.12f, 0f),
-        RepeatMode.HORIZONTAL,
-        1f,
-        1f,
-        false,
-        0,
-        -1);
+        1f, false, 0, -1);
 
     Entity background = new Entity().addComponent(backgroundComponent);
     background.setPosition(backgroundPos);
