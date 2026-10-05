@@ -10,7 +10,6 @@ import com.csse3200.game.entities.configs.EnemyConfig;
 import com.csse3200.game.entities.factories.ItemFactory;
 import com.csse3200.game.entities.factories.ObstacleFactory;
 import com.csse3200.game.rendering.AnimationRenderComponent;
-import com.csse3200.game.rendering.TextureRenderComponent;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.ArrayList;
 import java.util.Map;
@@ -209,7 +208,7 @@ public class LevelConfig {
         for (int j = s.yMin; j <= s.yMax; j++) {
           Entity spike =
               ObstacleFactory.createSpike(
-                  s, spikeTFP != null ? spikeTFP : "images/terrain/spike_tile.png");
+                  s, spikeTFP != null ? spikeTFP : "images/terrain/Level_1/Level_1_Spike.png");
           entities.add(new SpawnData(new GridPoint2(i, j), spike));
         }
       }
@@ -290,23 +289,21 @@ public class LevelConfig {
       c.setEntity(checkpoint);
       entities.add(new SpawnData(c.getPosition(), checkpoint));
 
-      Entity torch;
-      if (checkpointAtlas != null) {
-        AnimationRenderComponent animator =
-            new AnimationRenderComponent(
-                ServiceLocator.getResourceService().getAsset(checkpointAtlas, TextureAtlas.class));
-        animator.addAnimation("unlit", 0.2f, Animation.PlayMode.LOOP);
-        animator.addAnimation("lit", 0.2f, Animation.PlayMode.LOOP);
-        torch = new Entity().addComponent(animator);
-        animator.startAnimation("unlit");
-        torch.setScale(CheckpointComponent.ATLAS_WIDTH, CheckpointComponent.ATLAS_HEIGHT);
-        checkpoint.getComponent(CheckpointComponent.class).setTorch(torch);
-      } else {
-        torch =
-            new Entity()
-                .addComponent(new TextureRenderComponent("images/terrain/checkpoint_unlit.png"));
-        torch.setScale(1f, 1.5f);
+      // The torch art comes from the checkpoint atlas. Without one the checkpoint still works but
+      // has nothing to draw.
+      if (checkpointAtlas == null) {
+        continue;
       }
+
+      AnimationRenderComponent animator =
+          new AnimationRenderComponent(
+              ServiceLocator.getResourceService().getAsset(checkpointAtlas, TextureAtlas.class));
+      animator.addAnimation("unlit", 0.2f, Animation.PlayMode.LOOP);
+      animator.addAnimation("lit", 0.2f, Animation.PlayMode.LOOP);
+      Entity torch = new Entity().addComponent(animator);
+      animator.startAnimation("unlit");
+      torch.setScale(CheckpointComponent.ATLAS_WIDTH, CheckpointComponent.ATLAS_HEIGHT);
+      checkpoint.getComponent(CheckpointComponent.class).setTorch(torch);
 
       GridPoint2 pos = c.getPosition();
       torch.setPosition(pos.x, pos.y - 1.3f);

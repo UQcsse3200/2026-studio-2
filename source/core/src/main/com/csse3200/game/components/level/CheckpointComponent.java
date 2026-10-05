@@ -5,7 +5,6 @@ import com.csse3200.game.components.Component;
 import com.csse3200.game.components.player.PlayerActions;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.rendering.AnimationRenderComponent;
-import com.csse3200.game.rendering.TextureRenderComponent;
 import com.csse3200.game.services.ServiceLocator;
 
 public class CheckpointComponent extends Component {
@@ -61,18 +60,10 @@ public class CheckpointComponent extends Component {
 
     this.collected = true;
 
-    if (atlas != null && torchAnimator != null) {
+    if (torchAnimator != null) {
       // Swap the existing statue to its lit frame so the unlit frame isn't left behind it.
       torchAnimator.startAnimation("lit");
-      return;
     }
-
-    Entity litTorch =
-        new Entity().addComponent(new TextureRenderComponent("images/terrain/checkpoint_lit.png"));
-    litTorch.setScale(1f, 1.5f);
-    litTorch.setPosition(position.x, position.y);
-
-    ServiceLocator.getEntityService().register(litTorch);
   }
 
   public void deactivate() {

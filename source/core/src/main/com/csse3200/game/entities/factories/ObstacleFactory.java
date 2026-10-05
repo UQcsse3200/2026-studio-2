@@ -66,9 +66,9 @@ public class ObstacleFactory {
      * Use the tiled renderer only for the Level 2 ground texture.
      * All normal platforms continue to use TextureRenderComponent.
      */
-    if ("images/terrain/tile-level2.png".equals(config.textureFilepath)) {
+    if ("images/terrain/Level_2/level_2_tile.png".equals(config.textureFilepath)) {
 
-      platform.addComponent(new TiledRenderComponent("images/terrain/tile-level2.png", 0.75f));
+      platform.addComponent(new TiledRenderComponent("images/terrain/Level_2/level_2_tile.png", 0.75f));
 
     } else {
 
@@ -82,45 +82,6 @@ public class ObstacleFactory {
 
     return platform;
   }
-
-  /*
-  public static Entity createPlatform(int grappleSides) {
-    return createPlatform(grappleSides, false);
-  }
-  */
-
-  /**
-   * Creates a platform entity.
-   *
-   * @param grappleSides sides the platform can be grappled from
-   * @param tall use the tall platform art instead of stretching the default wide plank onto a
-   *     tall/square shape
-   * @return platform entity
-   */
-  /*
-  public static Entity createPlatform(int grappleSides, boolean tall) {
-    String texturePath;
-    if (tall) {
-      texturePath = "images/terrain/tall_platform.png";
-    } else if (grappleSides != 0) {
-      texturePath = "images/terrain/hook_platform.png";
-    } else {
-      texturePath = "images/terrain/Others/platform.png";
-    }
-
-    Entity platform =
-        new Entity()
-            .addComponent(new TextureRenderComponent(texturePath))
-            .addComponent(new PhysicsComponent())
-            .addComponent(new ColliderComponent().setLayer(PhysicsLayer.GROUND))
-            .addComponent(new PlatformGrappleComponent(grappleSides))
-            .addComponent(new GrappleSideRenderComponent());
-
-    platform.getComponent(PhysicsComponent.class).setBodyType(BodyType.StaticBody);
-
-    return platform;
-  }
-  */
 
   /**
    * Creates a normal moving platform.
@@ -357,7 +318,7 @@ public class ObstacleFactory {
    * @return spike entity
    */
   public static Entity createSpike(SpikeClusterConfig config) {
-    return createSpike(config, "images/terrain/spike_tile.png");
+    return createSpike(config, "images/terrain/Level_1/Level_1_Spike.png");
   }
 
   /**

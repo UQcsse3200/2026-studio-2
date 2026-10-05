@@ -120,7 +120,7 @@ class ObstacleFactoryTest {
   void shouldCreateLevelTwoPlatformWithTiledRenderer() {
     Entity platform =
         ObstacleFactory.createPlatform(
-            new PlatformConfig(new GridPoint2(1, 2), 3, 1, 0, "images/terrain/tile-level2.png"));
+            new PlatformConfig(new GridPoint2(1, 2), 3, 1, 0, "images/terrain/Level_2/level_2_tile.png"));
 
     assertNotNull(platform.getComponent(TiledRenderComponent.class));
   }
