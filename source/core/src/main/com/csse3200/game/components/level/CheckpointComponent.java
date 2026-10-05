@@ -1,7 +1,9 @@
 package com.csse3200.game.components.level;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.GridPoint2;
 import com.csse3200.game.components.Component;
+import com.csse3200.game.components.lighting.PointLightComponent;
 import com.csse3200.game.components.player.PlayerActions;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.rendering.AnimationRenderComponent;
@@ -14,6 +16,7 @@ public class CheckpointComponent extends Component {
   private Entity player = null;
   private final String atlas;
   private AnimationRenderComponent torchAnimator;
+  private PointLightComponent pointLightComponent;
 
   /** World size of an atlas-based checkpoint (each frame is 709 x 890, about 4:5). */
   public static final float ATLAS_WIDTH = 1.6f;
@@ -43,6 +46,15 @@ public class CheckpointComponent extends Component {
     this.atlas = atlas;
   }
 
+  @Override
+  public void create() {
+      try {
+          pointLightComponent = entity.getComponent(PointLightComponent.class);
+      } catch (Exception e) {
+          pointLightComponent = null;
+      }
+  }
+
   /**
    * Gives this checkpoint the statue entity that represents it, so activating the checkpoint can
    * switch that same entity to its lit frame rather than drawing a second entity over the top.
@@ -64,9 +76,15 @@ public class CheckpointComponent extends Component {
       // Swap the existing statue to its lit frame so the unlit frame isn't left behind it.
       torchAnimator.startAnimation("lit");
     }
+    if (pointLightComponent != null) {
+      pointLightComponent.setColor(new Color(0.55f, 0.05f, 0.02f, 1f));
+    }
   }
 
   public void deactivate() {
+    if (pointLightComponent != null) {
+      pointLightComponent.setColor(Color.CLEAR);
+    }
     this.collected = false;
   }
 

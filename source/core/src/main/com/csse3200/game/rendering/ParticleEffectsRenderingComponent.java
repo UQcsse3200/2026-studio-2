@@ -9,6 +9,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.components.BurnStatsComponent;
 import com.csse3200.game.components.PoisonStatsComponent;
 import com.csse3200.game.components.SlowStatsComponent;
+import com.csse3200.game.components.lighting.PointLightComponent;
 import com.csse3200.game.services.GameTime;
 import com.csse3200.game.services.ServiceLocator;
 
@@ -38,6 +39,7 @@ public class ParticleEffectsRenderingComponent extends RenderComponent {
   private PoisonStatsComponent poisonStats;
   private ShapeRenderer shapeRenderer;
   private final Color workingColour = new Color();
+  private PointLightComponent pointLightComponent;
 
   @Override
   public void create() {
@@ -45,6 +47,11 @@ public class ParticleEffectsRenderingComponent extends RenderComponent {
     burnStats = entity.getComponent(BurnStatsComponent.class);
     slowStats = entity.getComponent(SlowStatsComponent.class);
     poisonStats = entity.getComponent(PoisonStatsComponent.class);
+    try {
+      pointLightComponent = entity.getComponent(PointLightComponent.class);
+    } catch (Exception e) {
+      pointLightComponent = null;
+    }
   }
 
   @Override
@@ -58,6 +65,9 @@ public class ParticleEffectsRenderingComponent extends RenderComponent {
     boolean slowed = slowStats != null && slowStats.isSlowed();
     boolean poisoned = poisonStats != null && poisonStats.isPoisoned();
     if (!burning && !slowed && !poisoned) {
+      if (pointLightComponent != null) {
+        pointLightComponent.setColor(Color.CLEAR);
+      }
       return;
     }
 
@@ -94,6 +104,9 @@ public class ParticleEffectsRenderingComponent extends RenderComponent {
    */
   private void drawEffect(
       Vector2 centre, float baseSize, float seconds, Color base, Color mid, Color tip) {
+    if (pointLightComponent != null) {
+      pointLightComponent.setColor(base);
+    }
     for (int i = 0; i < pixelCount; i++) {
       float hash = MathUtils.random((float) 11.0 + i * 17.3f);
       float sway = MathUtils.sin(seconds * (1.6f + hash) + i) * baseSize * 0.08f;
@@ -134,6 +147,9 @@ public class ParticleEffectsRenderingComponent extends RenderComponent {
 
   @Override
   public void dispose() {
+    if (pointLightComponent != null) {
+      pointLightComponent.dispose();
+    }
     if (shapeRenderer != null) {
       shapeRenderer.dispose();
     }

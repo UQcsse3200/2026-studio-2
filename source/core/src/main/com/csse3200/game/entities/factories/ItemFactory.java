@@ -1,5 +1,6 @@
 package com.csse3200.game.entities.factories;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.csse3200.game.components.item.GoldPickupComponent;
 import com.csse3200.game.components.item.Item;
@@ -10,11 +11,14 @@ import com.csse3200.game.components.item.consumables.HealthPotion;
 import com.csse3200.game.components.item.consumables.PoisonPotion;
 import com.csse3200.game.components.item.consumables.SpeedPotion;
 import com.csse3200.game.components.item.weapons.bow.arrow.Arrow;
+import com.csse3200.game.components.lighting.PointLightComponent;
 import com.csse3200.game.entities.Entity;
+import com.csse3200.game.lighting.LightingDefaults;
 import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.rendering.TextureRenderComponent;
+import com.csse3200.game.services.ServiceLocator;
 
 /** Factory to create item entities that sit in the world for the player to find or pick up. */
 public class ItemFactory {
@@ -29,12 +33,19 @@ public class ItemFactory {
    * @return item entity
    */
   public static Entity createItem(Item item) {
+    Color itemColour = new Color(1, 1, 1, 0.5f);
     Entity itemEntity =
         new Entity()
             .addComponent(new TextureRenderComponent(item.getItemType().getTexturePath()))
             .addComponent(new PhysicsComponent().setBodyType(BodyType.StaticBody))
             .addComponent(new HitboxComponent().setLayer(PhysicsLayer.DEFAULT))
-            .addComponent(new ItemComponent(item));
+            .addComponent(new ItemComponent(item))
+            .addComponent(
+                new PointLightComponent(
+                    ServiceLocator.getLightingService().getEngine().getRayHandler(),
+                    LightingDefaults.RAYS,
+                    itemColour,
+                    LightingDefaults.DIST));
 
     itemEntity.getComponent(TextureRenderComponent.class).scaleEntity();
     itemEntity.scaleHeight(ITEM_HEIGHT);
@@ -128,12 +139,19 @@ public class ItemFactory {
    * @return gold pickup entity
    */
   public static Entity createGold(int amount) {
+    Color goldColour = new Color(255, 215, 0, 0.6f);
     Entity gold =
         new Entity()
             .addComponent(new TextureRenderComponent(GOLD_TEXTURE))
             .addComponent(new PhysicsComponent().setBodyType(BodyType.StaticBody))
             .addComponent(new HitboxComponent().setLayer(PhysicsLayer.DEFAULT))
-            .addComponent(new GoldPickupComponent(amount));
+            .addComponent(new GoldPickupComponent(amount))
+            .addComponent(
+                new PointLightComponent(
+                    ServiceLocator.getLightingService().getEngine().getRayHandler(),
+                    LightingDefaults.RAYS,
+                    goldColour,
+                    LightingDefaults.DIST));
 
     gold.getComponent(TextureRenderComponent.class).scaleEntity();
     gold.scaleHeight(ITEM_HEIGHT);

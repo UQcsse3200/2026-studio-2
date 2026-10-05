@@ -82,6 +82,7 @@ public abstract class RenderComponent extends Component implements Renderable, D
         } else {
           beforeFlash = darkness;
         }
+        ServiceLocator.getLightingService().getEngine().setAmbientLight(darkness);
       }
     }
   }
