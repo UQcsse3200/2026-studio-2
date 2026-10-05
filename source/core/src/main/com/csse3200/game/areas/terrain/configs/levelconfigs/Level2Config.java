@@ -174,10 +174,10 @@ public class Level2Config extends LevelConfig {
         new PlatformConfig[] {
           new PlatformConfig(new GridPoint2(29, 15), 3, 1, 0, ledgesTFP), // L1
           new PlatformConfig(new GridPoint2(42, 21), 7, 1, 0, ledgesTFP), // L2
-                new PlatformConfig(new GridPoint2(23, 19), 4, 1, 0, ledgesTFP),
-                new PlatformConfig(new GridPoint2(33, 19), 4, 1, 0, ledgesTFP),
-                new PlatformConfig(new GridPoint2(29, 22), 3, 1, 0, ledgesTFP),
-                new PlatformConfig(new GridPoint2(25, 31), 3, 1, 0, ledgesTFP),
+          new PlatformConfig(new GridPoint2(23, 19), 4, 1, 0, ledgesTFP),
+          new PlatformConfig(new GridPoint2(33, 19), 4, 1, 0, ledgesTFP),
+          new PlatformConfig(new GridPoint2(29, 22), 3, 1, 0, ledgesTFP),
+          new PlatformConfig(new GridPoint2(25, 31), 3, 1, 0, ledgesTFP),
         };
 
     spikes =
