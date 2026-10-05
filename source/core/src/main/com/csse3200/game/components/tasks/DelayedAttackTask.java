@@ -18,6 +18,10 @@ public class DelayedAttackTask extends DefaultTask implements PriorityTask {
   private boolean isAttacking = false;
   private float attackDuration = 1;
 
+  public DelayedAttackTask(Entity target, int priority, float attackRange) {
+    this(target, priority, attackRange, 0);
+  }
+
   public DelayedAttackTask(Entity target, int priority, float attackRange, float attackDelay) {
     this.target = target;
     this.priority = priority;
