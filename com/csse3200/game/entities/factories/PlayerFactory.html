@@ -116,6 +116,11 @@ loadScripts(document, 'script');</script>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Create a player display entity.</div>
 </div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#giveStartingLoadout(com.csse3200.game.entities.Entity)" class="member-name-link">giveStartingLoadout</a><wbr>(<a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;player)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Puts a rope arrow into the player's inventory.</div>
+</div>
 </div>
 </div>
 </div>
@@ -141,6 +146,20 @@ loadScripts(document, 'script');</script>
 <dl class="notes">
 <dt>Returns:</dt>
 <dd>entity</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="giveStartingLoadout(com.csse3200.game.entities.Entity)">
+<h3>giveStartingLoadout</h3>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">giveStartingLoadout</span><wbr><span class="parameters">(<a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;player)</span></div>
+<div class="block">Puts a rope arrow into the player's inventory.
+
+ <p>Call this after the player entity has been created so inventory UI can refresh. Sandbox
+ should not use this; it keeps world pickups instead.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>player</code> - player entity with an inventory</dd>
 </dl>
 </section>
 </li>

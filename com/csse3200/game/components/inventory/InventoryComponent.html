@@ -405,7 +405,8 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="addGold(int)">
 <h3>addGold</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">addGold</span><wbr><span class="parameters">(int&nbsp;gold)</span></div>
-<div class="block">Adds to the player's gold. The amount added can be negative.</div>
+<div class="block">Adds to the player's gold. Negative amounts deduct gold; the result stays between zero and
+ Integer.MAX_VALUE.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>gold</code> - gold to add</dd>
