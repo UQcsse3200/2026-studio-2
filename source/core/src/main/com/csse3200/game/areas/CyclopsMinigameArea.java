@@ -32,8 +32,7 @@ public class CyclopsMinigameArea extends GameArea {
   private static final int CAVE_FLOOR_GROUND_ROWS = 35;
   private static final float FLOOR_SCREEN_FRACTION = 0.2f;
 
-  private static final String CAVE_FLOOR_TEXTURE =
-      "images/minigames/Cyclops/CyclopsCaveFloor.png";
+  private static final String CAVE_FLOOR_TEXTURE = "images/minigames/Cyclops/CyclopsCaveFloor.png";
   static final String CAVE_FORMATION_1 = "images/minigames/Cyclops/cave_formation_1.png";
   static final String CAVE_FORMATION_2 = "images/minigames/Cyclops/cave_formation_2.png";
   static final String CAVE_FORMATION_3 = "images/minigames/Cyclops/cave_formation_3.png";
@@ -234,14 +233,22 @@ public class CyclopsMinigameArea extends GameArea {
         ServiceLocator.getResourceService().getAsset(CAVE_FORMATION_1, Texture.class);
     float worldPerPixel = formationHeight / formationImage.getHeight();
     float tileWidth = floorImage.getWidth() * worldPerPixel;
-    float tileHeight = CAVE_FLOOR_GROUND_ROWS * worldPerPixel;
-    float viewHeight = cameraComponent.getCamera().viewportHeight;
-    float depth = FLOOR_SCREEN_FRACTION * viewHeight + tileHeight;
+    float stripHeight = CAVE_FLOOR_GROUND_ROWS * worldPerPixel;
+    TextureRegion darkestRow =
+        new TextureRegion(
+            floorImage,
+            0,
+            CAVE_FLOOR_GROUND_TOP_ROW + CAVE_FLOOR_GROUND_ROWS - 1,
+            floorImage.getWidth(),
+            1);
+    float depth = 2f * cameraComponent.getCamera().viewportHeight;
     Entity floor =
         new Entity()
             .addComponent(
-                new CyclopsFloorRenderComponent(ground, tileWidth, tileHeight, roomWidth, depth));
-    floor.setPosition(0f, floorY);
+                new CyclopsFloorRenderComponent(
+                    ground, darkestRow, tileWidth, stripHeight, roomWidth, depth));
+    // Two texture pixels above the feet, so the ground overlaps them and nothing shows between.
+    floor.setPosition(0f, floorY + STATUE_DEPTH_OFFSET + 2f * worldPerPixel);
     spawnEntity(floor);
 
     spawnEntityAt(

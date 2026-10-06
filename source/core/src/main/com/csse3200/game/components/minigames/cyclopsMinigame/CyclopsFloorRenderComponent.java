@@ -6,21 +6,29 @@ import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.rendering.RenderComponent;
 
 /**
- * Tiles a texture region across the room below the entity's position, which is the top-left of
- * the floor. Drawn on the lowest render layer so it sits beneath everything else.
+ * Draws the floor's ground strip once, repeated horizontally across the room below the entity's
+ * position (its top-left), then fills the rest of the way down with a one-pixel-high region of the
+ * same texture. Drawn on the lowest render layer so it sits beneath everything else.
  */
 public class CyclopsFloorRenderComponent extends RenderComponent {
-  private final TextureRegion region;
+  private final TextureRegion strip;
+  private final TextureRegion fill;
   private final float tileWidth;
-  private final float tileHeight;
+  private final float stripHeight;
   private final float roomWidth;
   private final float depth;
 
   public CyclopsFloorRenderComponent(
-      TextureRegion region, float tileWidth, float tileHeight, float roomWidth, float depth) {
-    this.region = region;
+      TextureRegion strip,
+      TextureRegion fill,
+      float tileWidth,
+      float stripHeight,
+      float roomWidth,
+      float depth) {
+    this.strip = strip;
+    this.fill = fill;
     this.tileWidth = tileWidth;
-    this.tileHeight = tileHeight;
+    this.stripHeight = stripHeight;
     this.roomWidth = roomWidth;
     this.depth = depth;
   }
@@ -33,10 +41,11 @@ public class CyclopsFloorRenderComponent extends RenderComponent {
   @Override
   protected void draw(SpriteBatch batch) {
     Vector2 top = entity.getPosition();
-    for (float y = top.y - tileHeight; y > top.y - depth; y -= tileHeight) {
-      for (float x = top.x; x < top.x + roomWidth; x += tileWidth) {
-        batch.draw(region, x, y, tileWidth, tileHeight);
-      }
+    float stripBottom = top.y - stripHeight;
+    for (float x = top.x; x < top.x + roomWidth; x += tileWidth) {
+      batch.draw(strip, x, stripBottom, tileWidth, stripHeight);
     }
+    float fillBottom = top.y - depth;
+    batch.draw(fill, top.x, fillBottom, roomWidth, stripBottom - fillBottom);
   }
 }
