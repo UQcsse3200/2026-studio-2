@@ -133,15 +133,6 @@ public class LevelsGameScreen extends ScreenAdapter {
     level1GameArea.create();
 
     currentGameArea = level1GameArea;
-    Entity levelChanger = currentGameArea.getLevelChanger();
-    if (levelChanger != null) {
-      levelChanger.getEvents().addListener("triggerNextLevel", this::queueAreaSwap);
-      levelChanger
-          .getEvents()
-          .addListener(
-              "triggerNextLevel",
-              (String level) -> SoundEffects.play("sounds/level_complete.wav", 0.5f));
-    }
     registerLevelSwap();
 
     player = level1GameArea.getPlayer();
@@ -170,6 +161,11 @@ public class LevelsGameScreen extends ScreenAdapter {
     Entity levelChanger = currentGameArea.getLevelChanger();
     if (levelChanger != null) {
       levelChanger.getEvents().addListener("triggerNextLevel", this::queueAreaSwap);
+      levelChanger
+          .getEvents()
+          .addListener(
+              "triggerNextLevel",
+              (String level) -> SoundEffects.play("sounds/level_complete.wav", 0.5f));
     }
   }
 
@@ -258,6 +254,8 @@ public class LevelsGameScreen extends ScreenAdapter {
       } else if (level.equals("level2")) {
         level = "level3";
       } else if (level.equals("level3")) {
+        level = "boss";
+      } else if (level.equals("boss")) {
         level = "none";
       }
       queueAreaSwap(level);
