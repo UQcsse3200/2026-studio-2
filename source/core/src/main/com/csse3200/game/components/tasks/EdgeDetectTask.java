@@ -16,14 +16,13 @@ public class EdgeDetectTask {
 
   public EdgeDetectTask(float forwardDistance) {
     this.forwardDistance = forwardDistance;
-
     physics = ServiceLocator.getPhysicsService().getPhysics();
-    debugRenderer = ServiceLocator.getRenderService().getDebug();
   }
 
   public boolean isGroundAhead(Entity enemy, float direction) {
     Vector2 start = enemy.getPosition().cpy();
 
+    // line 25 - 30 is assisted with artificial intelligence
     if (direction > 0) {
       start.x += enemy.getScale().x + forwardDistance;
     } else {
@@ -34,6 +33,7 @@ public class EdgeDetectTask {
 
     Vector2 end = start.cpy().add(0f, -2f);
 
+    // check if ground ahead is safe
     if (physics.raycast(start, end, PhysicsLayer.GROUND, hit)) {
       return true;
     }
