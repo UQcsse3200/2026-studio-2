@@ -16,7 +16,7 @@ import com.csse3200.game.components.SlowStatsComponent;
 import com.csse3200.game.components.TouchAttackComponent;
 import com.csse3200.game.components.lighting.PointLightComponent;
 import com.csse3200.game.components.npc.ChaseSoundComponent;
-import com.csse3200.game.components.npc.SkeletonAnimationController;
+
 // import com.csse3200.game.components.npc.SkeletonAnimationController;
 import com.csse3200.game.components.npc.EnemyAnimationController;
 import com.csse3200.game.components.tasks.ChaseTask;
@@ -118,10 +118,9 @@ public class EnemyFactory {
     SkeletonArcher
         // .addComponent(new CombatStatsComponent(config.health, config.baseAttack))
         .addComponent(animator)
-        .addComponent(new SkeletonAnimationController(target))
+                .addComponent(new EnemyAnimationController(target))
         .addComponent(new ChaseSoundComponent("sounds/evil cyber laugh.wav", 0.15f));
-        .addComponent(new EnemyAnimationController(target));
-
+    
     SkeletonArcher.getComponent(AnimationRenderComponent.class).scaleEntity();
 
     return SkeletonArcher;
