@@ -36,6 +36,20 @@ public class GrappleArrowComponent extends Component {
     entity.getEvents().addListener("collisionStart", this::onCollision);
   }
 
+  @Override
+  public void dispose() {
+    cancel();
+    GrappleComponent grapple = shooter.getComponent(GrappleComponent.class);
+    if (grapple != null) {
+      grapple.onArrowRemoved(entity);
+    }
+  }
+
+  /** Prevents a cancelled shot from attaching during a remaining contact callback. */
+  void cancel() {
+    spent = true;
+  }
+
   private void onCollision(Fixture me, Fixture other) {
     if (spent) {
       return;

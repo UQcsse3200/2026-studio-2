@@ -26,13 +26,13 @@ public class GrappleRenderComponent extends RenderComponent {
   }
 
   /**
-   * Draws the grapple rope line if the grapple is currently attached to a target surface.
+   * Draws the grapple rope during arrow flight and after attachment to a target surface.
    *
    * @param batch Active SpriteBatch used by the main render pipeline
    */
   @Override
   protected void draw(SpriteBatch batch) {
-    if (grapple == null || !grapple.isAttached()) {
+    if (grapple == null) {
       return;
     }
     List<Vector2> ropePath = grapple.getRopePath();

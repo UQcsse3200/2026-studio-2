@@ -14,6 +14,7 @@ import com.badlogic.gdx.physics.box2d.joints.RopeJointDef;
 import com.badlogic.gdx.utils.Array;
 import com.csse3200.game.components.Component;
 import com.csse3200.game.components.item.weapons.bow.BowCharge;
+import com.csse3200.game.components.projectile.ArrowProjectileComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.ProjectileFactory;
 import com.csse3200.game.physics.PhysicsLayer;
@@ -168,12 +169,6 @@ public class GrappleComponent extends Component {
   private void resetOnRespawn() {
     release();
     cancelCharge();
-    pendingAnchorBody = null;
-    pendingAnchorPoint = null;
-    if (pendingArrow != null && ServiceLocator.getEntityService() != null) {
-      ServiceLocator.getEntityService().scheduleRemoval(pendingArrow);
-    }
-    pendingArrow = null;
     cooldownRemaining = 0f;
   }
 
@@ -193,6 +188,9 @@ public class GrappleComponent extends Component {
       createJoint(pendingAnchorBody, pendingAnchorPoint);
       pendingAnchorBody = null;
       pendingAnchorPoint = null;
+    }
+    if (pendingArrow != null) {
+      updateFlightRope(arrowPoint());
     }
     updateRopeLength();
   }
@@ -214,19 +212,23 @@ public class GrappleComponent extends Component {
     physicsComponent.getBody().setLinearDamping(preSwingLinearDamping);
   }
 
-  /** Launches a normal-speed grapple arrow, unless one is in flight, attached, or on cooldown. */
+  /** Launches a normal-speed grapple arrow unless attached or on cooldown. */
   public void fire(Vector2 direction) {
     fire(direction, 1f);
   }
 
   /**
-   * Launches a grapple arrow, unless one is in flight, attached, or still on cooldown.
+   * Launches a grapple arrow unless attached or still on cooldown. Replaces a previous missed shot.
    *
    * @param speedMultiplier scales the arrow's launch speed - 1 for a normal shot, lower for one
    *     released early out of a charge, higher for a fully drawn one
    */
   public void fire(Vector2 direction, float speedMultiplier) {
-    if (direction == null || direction.isZero() || cooldownRemaining > 0f || isAttached()) {
+    if (direction == null
+        || direction.isZero()
+        || cooldownRemaining > 0f
+        || isAttached()
+        || pendingAnchorBody != null) {
       return;
     }
     try {
@@ -243,6 +245,9 @@ public class GrappleComponent extends Component {
     // Pass 'entity' so the grapple arrow ignores player collisions
     Entity arrow = ProjectileFactory.createGrappleArrow(entity, spawn, aim, speedMultiplier);
     arrow.addComponent(new GrappleArrowComponent(entity));
+    // A previous missed shot may still be flying after its cooldown. Retire it before replacing
+    // the rope endpoint, so its later collision or disposal cannot affect this shot.
+    cancelFlight();
     ServiceLocator.getEntityService().register(arrow);
     pendingArrow = arrow;
 
@@ -258,11 +263,15 @@ public class GrappleComponent extends Component {
    * @param point where the arrow struck, in world coordinates
    */
   public void attachTo(Body anchorBody, Vector2 point) {
-    // The arrow that got us here has already scheduled its own removal
-    pendingArrow = null;
     if (isAttached() || pendingAnchorBody != null) {
       return;
     }
+    // Capture the final segment before the arrow is removed. Raycasts are safe during a physics
+    // contact callback; joint creation is deferred until the world is unlocked.
+    if (pendingArrow != null) {
+      updateFlightRope(point);
+    }
+    pendingArrow = null;
     pendingAnchorBody = anchorBody;
     pendingAnchorPoint = point.cpy();
     // Once the grapple actually activates, the cooldown no longer applies - you should be free to
@@ -277,9 +286,48 @@ public class GrappleComponent extends Component {
     preSwingLinearDamping = physicsComponent.getBody().getLinearDamping();
     originalAnchorBody = anchorBody;
     originalAnchorLocal = anchorBody.getLocalPoint(point).cpy();
-    totalRopeLength = physicsComponent.getBody().getWorldCenter().dst(point);
+    Vector2 pivot = activeContact() == null ? point : activeContact().getWorldPoint();
+    totalRopeLength =
+        fixedPathLength(point, ropeContacts)
+            + pivot.dst(physicsComponent.getBody().getWorldCenter());
     initialRopeLength = totalRopeLength;
-    createJointAt(anchorBody, point, totalRopeLength);
+    rebuildJointForPath();
+  }
+
+  private Vector2 arrowPoint() {
+    ArrowProjectileComponent projectile = pendingArrow.getComponent(ArrowProjectileComponent.class);
+    return projectile == null ? pendingArrow.getCenterPosition() : projectile.getWorldCenter();
+  }
+
+  /** Pays out rope freely while retaining bends formed by the arrow's path around terrain. */
+  private void updateFlightRope(Vector2 point) {
+    World world = ServiceLocator.getPhysicsService().getPhysics().getWorld();
+    Vector2 player = physicsComponent.getBody().getWorldCenter().cpy();
+    removeUnwrappedContacts(world, point, player);
+    insertMissingContacts(world, point, player);
+  }
+
+  /** Drops only the rope belonging to this arrow, including when it misses or expires. */
+  void onArrowRemoved(Entity arrow) {
+    if (pendingArrow == arrow) {
+      pendingArrow = null;
+      ropeContacts.clear();
+    }
+  }
+
+  private void cancelFlight() {
+    Entity arrow = pendingArrow;
+    pendingArrow = null;
+    if (arrow != null) {
+      GrappleArrowComponent grappleArrow = arrow.getComponent(GrappleArrowComponent.class);
+      if (grappleArrow != null) {
+        grappleArrow.cancel();
+      }
+      if (ServiceLocator.getEntityService() != null) {
+        ServiceLocator.getEntityService().scheduleRemoval(arrow);
+      }
+    }
+    ropeContacts.clear();
   }
 
   private void createJointAt(Body anchorBody, Vector2 point, float length) {
@@ -350,8 +398,11 @@ public class GrappleComponent extends Component {
         Vector2 before = i == 0 ? anchor : ropeContacts.get(i - 1).getWorldPoint();
         Vector2 after =
             i == ropeContacts.size() - 1 ? player : ropeContacts.get(i + 1).getWorldPoint();
-        if (contact.hasCrossedSide(before, after)
-            && findObstruction(world, before, after) == null) {
+        // A crossed bend may still be blocked by another segment or obstacle. Remember the
+        // unwrap attempt until its bypass clears, even if the endpoints cross back meanwhile.
+        // Retain the winding guard: a clear chord alone could cut through a wrap around a diamond.
+        contact.unwrapPending |= contact.hasCrossedSide(before, after);
+        if (contact.unwrapPending && findObstruction(world, before, after) == null) {
           ropeContacts.remove(i);
           removed = true;
           break;
@@ -396,7 +447,8 @@ public class GrappleComponent extends Component {
     }
     ropeContacts.add(
         index, new RopeContact(obstruction.fixture, point, sideOf(before, after, point)));
-    if (fixedPathLength(anchor, ropeContacts) > totalRopeLength - MIN_JOINT_LENGTH) {
+    if (pendingArrow == null
+        && fixedPathLength(anchor, ropeContacts) > totalRopeLength - MIN_JOINT_LENGTH) {
       // This bend would consume more rope than exists and leave no valid player constraint.
       ropeContacts.remove(index);
       return false;
@@ -550,12 +602,13 @@ public class GrappleComponent extends Component {
 
   /** Detaches the rope, restoring free movement. Momentum carries over. */
   public void release() {
-    if (!isAttached()) {
-      return;
+    pendingAnchorBody = null;
+    pendingAnchorPoint = null;
+    cancelFlight();
+    if (isAttached()) {
+      ServiceLocator.getPhysicsService().getPhysics().getWorld().destroyJoint(ropeJoint);
+      forgetJoint();
     }
-
-    ServiceLocator.getPhysicsService().getPhysics().getWorld().destroyJoint(ropeJoint);
-    forgetJoint();
   }
 
   @Override
@@ -563,6 +616,9 @@ public class GrappleComponent extends Component {
     // The physics world disposes its own joints on teardown, and destroying the player body
     // takes this joint with it, so just drop the reference.
     ropeJoint = null;
+    pendingAnchorBody = null;
+    pendingAnchorPoint = null;
+    cancelFlight();
   }
 
   /**
@@ -698,21 +754,22 @@ public class GrappleComponent extends Component {
   }
 
   /**
-   * @return ordered world-space points used to draw the taut rope, from player to arrow anchor.
+   * @return ordered world-space points from player to the flying arrow or terrain anchor.
    */
   public List<Vector2> getRopePath() {
     List<Vector2> points = new ArrayList<>(3);
-    if (!isAttached()) {
+    Vector2 anchor =
+        pendingArrow != null
+            ? arrowPoint()
+            : pendingAnchorPoint != null ? pendingAnchorPoint.cpy() : getOriginalAnchorPoint();
+    if (anchor == null) {
       return points;
     }
     points.add(physicsComponent.getBody().getWorldCenter().cpy());
     for (int i = ropeContacts.size() - 1; i >= 0; i--) {
       points.add(ropeContacts.get(i).getWorldPoint());
     }
-    Vector2 anchor = getOriginalAnchorPoint();
-    if (anchor != null) {
-      points.add(anchor);
-    }
+    points.add(anchor);
     return points;
   }
 
@@ -721,6 +778,7 @@ public class GrappleComponent extends Component {
     private final Body body;
     private final Vector2 localPoint;
     private final int initialSide;
+    private boolean unwrapPending;
 
     RopeContact(Fixture fixture, Vector2 worldPoint, int initialSide) {
       this.fixture = fixture;
