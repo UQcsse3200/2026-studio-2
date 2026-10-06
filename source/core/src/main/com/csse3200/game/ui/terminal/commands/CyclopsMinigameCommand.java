@@ -36,7 +36,7 @@ public class CyclopsMinigameCommand implements Command {
               if (!result.isSuccess()) {
                 logger.debug("Could not start cutscene '{}': {}", "cutscene3", result.getError());
               } else {
-                game.startCutscene(result.getCutscene(), GdxGame.ScreenType.LEVEL_2_GAME);
+                game.startCutscene(result.getCutscene(), GdxGame.ScreenType.CYCLOPS_MINIGAME);
               }
             });
   }
