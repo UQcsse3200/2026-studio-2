@@ -124,6 +124,7 @@ public class ChaseTask extends DefaultTask implements PriorityTask {
       debugRenderer.drawLine(from, hit.point);
       return false;
     }
+
     debugRenderer.drawLine(from, to);
     return true;
   }

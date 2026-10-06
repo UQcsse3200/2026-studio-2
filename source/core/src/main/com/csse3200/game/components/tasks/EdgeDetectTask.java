@@ -22,19 +22,26 @@ public class EdgeDetectTask {
   }
 
   public boolean isGroundAhead(Entity enemy, float direction) {
+    Vector2 start = enemy.getPosition().cpy();
 
-    Vector2 enemyPos = enemy.getCenterPosition().cpy();
+    if (direction > 0) {
+      start.x += enemy.getScale().x + forwardDistance;
+    } else {
+      start.x -= forwardDistance;
+    }
 
-    enemyPos.x += direction * forwardDistance;
-    enemyPos.y = enemy.getPosition().y + 0.1f;
+    start.y += 0.5f;
 
-    Vector2 end = enemyPos.cpy().add(0f, -1f);
+    Vector2 end = start.cpy().add(0f, -2f);
 
-    boolean isGround = physics.raycast(enemyPos, end, PhysicsLayer.GROUND, hit);
-
-    if (isGround) {
+    if (physics.raycast(start, end, PhysicsLayer.GROUND, hit)) {
       return true;
     }
+
+    if (physics.raycast(start, end, PhysicsLayer.OBSTACLE, hit)) {
+      return true;
+    }
+
     return false;
   }
 }

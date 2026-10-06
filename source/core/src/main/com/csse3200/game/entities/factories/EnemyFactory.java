@@ -14,7 +14,6 @@ import com.csse3200.game.components.PoisonStatsComponent;
 import com.csse3200.game.components.SlowStatsComponent;
 import com.csse3200.game.components.TouchAttackComponent;
 import com.csse3200.game.components.npc.EnemyAnimationController;
-import com.csse3200.game.components.tasks.SweepAttackTask;
 import com.csse3200.game.components.tasks.ChaseTask;
 import com.csse3200.game.components.tasks.DelayedAttackTask;
 import com.csse3200.game.components.tasks.FlyingChaseTask;
@@ -22,6 +21,7 @@ import com.csse3200.game.components.tasks.FlyingRepositionTask;
 import com.csse3200.game.components.tasks.RangedAttackTask;
 import com.csse3200.game.components.tasks.RepositionTask;
 import com.csse3200.game.components.tasks.SummonTask;
+import com.csse3200.game.components.tasks.SweepAttackTask;
 import com.csse3200.game.components.tasks.WanderTask;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.EnemyConfig;
@@ -53,8 +53,8 @@ public class EnemyFactory {
   private static final float CALYPSO_IDLE_FRAME_TIME = 0.15f;
   private static final float CALYPSO_WALK_FRAME_TIME = 0.15f;
   private static final float CALYPSO_WIDTH = 1f;
-  private static final int   CALYPSO_SWEEP_HIT_FRAME = 2;
-  private static final int   CALYPSO_SWEEP_PRIORITY = 22;
+  private static final int CALYPSO_SWEEP_HIT_FRAME = 2;
+  private static final int CALYPSO_SWEEP_PRIORITY = 22;
   private static final float CALYPSO_SWEEP_RANGE = 1.0f;
   private static final float CALYPSO_SWEEP_HEIGHT = 1.5f;
   private static final float CALYPSO_SWEEP_COOLDOWN = 1.5f;
@@ -237,7 +237,7 @@ public class EnemyFactory {
     Entity calypso = createEnemy(target, config);
 
     TextureAtlas atlas =
-            ServiceLocator.getResourceService().getAsset("images/calypso.atlas", TextureAtlas.class);
+        ServiceLocator.getResourceService().getAsset("images/calypso.atlas", TextureAtlas.class);
     AnimationRenderComponent animator = new AnimationRenderComponent(atlas);
     animator.addAnimation("idle", CALYPSO_IDLE_FRAME_TIME, Animation.PlayMode.LOOP);
     animator.addAnimation("walk", CALYPSO_WALK_FRAME_TIME, Animation.PlayMode.LOOP);
@@ -245,15 +245,15 @@ public class EnemyFactory {
     int sweepFrames = atlas.findRegions("sweep").size;
     float sweepFrameTime = sweepFrames > 0 ? CALYPSO_SWEEP_DURATION / sweepFrames : 0f;
     animator.addAnimation(
-            "sweep",
-            sweepFrameTime,
-            Animation.PlayMode.NORMAL,
-            CALYPSO_SWEEP_ANCHOR_X,
-            CALYPSO_SWEEP_ANCHOR_Y);
+        "sweep",
+        sweepFrameTime,
+        Animation.PlayMode.NORMAL,
+        CALYPSO_SWEEP_ANCHOR_X,
+        CALYPSO_SWEEP_ANCHOR_Y);
     float sweepWindUp =
-            sweepFrames > 0
-                    ? Math.min(CALYPSO_SWEEP_HIT_FRAME, sweepFrames - 1) * sweepFrameTime
-                    : CALYPSO_SWEEP_DURATION / 2f;
+        sweepFrames > 0
+            ? Math.min(CALYPSO_SWEEP_HIT_FRAME, sweepFrames - 1) * sweepFrameTime
+            : CALYPSO_SWEEP_DURATION / 2f;
 
     calypso.addComponent(new EnemyAnimationController(target));
     calypso.addComponent(animator);
@@ -272,16 +272,16 @@ public class EnemyFactory {
     // Telegraphed melee sweep: triggers "attackStart" (plays the sweep animation) and "hitPlayer"
     // when it connects (EnemyTeleportComponent / RepositionTask react to that).
     calypso
-            .getComponent(AITaskComponent.class)
-            .addTask(
-                    new SweepAttackTask(
-                            target,
-                            CALYPSO_SWEEP_PRIORITY,
-                            sweepRange,
-                            CALYPSO_SWEEP_HEIGHT,
-                            sweepWindUp,
-                            CALYPSO_SWEEP_DURATION,
-                            CALYPSO_SWEEP_COOLDOWN));
+        .getComponent(AITaskComponent.class)
+        .addTask(
+            new SweepAttackTask(
+                target,
+                CALYPSO_SWEEP_PRIORITY,
+                sweepRange,
+                CALYPSO_SWEEP_HEIGHT,
+                sweepWindUp,
+                CALYPSO_SWEEP_DURATION,
+                CALYPSO_SWEEP_COOLDOWN));
 
     return calypso;
   }
