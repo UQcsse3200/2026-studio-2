@@ -90,7 +90,7 @@ public class Level3GameArea extends GameArea {
   public Level3GameArea(TerrainFactory terrainFactory, CameraComponent camera, Entity player) {
     super(camera);
 
-    config = new BossArenaConfig();
+    config = new Level3Config();
 
     this.terrainFactory = terrainFactory;
     this.camera = camera;
