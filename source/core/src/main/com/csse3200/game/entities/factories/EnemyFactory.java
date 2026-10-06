@@ -327,10 +327,9 @@ public class EnemyFactory {
         new WanderTask(
             new Vector2(config.wanderRangeX, config.wanderRangeY), config.wanderWaitTime));
     if (config.attackType.equals("calypso")) {
-        aiComponent
-          .addTask(new ChaseTask(target, config.chasePriority, viewDistance, maxChaseDistance));
-    }
-            else if (config.behaviour.equals("flying")) {
+      aiComponent.addTask(
+          new ChaseTask(target, config.chasePriority, viewDistance, maxChaseDistance));
+    } else if (config.behaviour.equals("flying")) {
       aiComponent
           .addTask(
               new FlyingChaseTask(target, config.chasePriority, viewDistance, maxChaseDistance))
@@ -348,14 +347,7 @@ public class EnemyFactory {
     if (config.attackType.equals("range")) {
       aiComponent.addTask(
           new RangedAttackTask(
-              target,
-              20,
-              config.attackRange,
-              2f,
-              config.baseAttack,
-              4.5f,
-              5f,
-              config.attackType));
+              target, 20, config.attackRange, 2f, config.baseAttack, 4.5f, 5f, config.attackType));
       // If the enemy is a summon type, add summon + range task
     } else if (config.attackType.equals("summon")) {
       aiComponent

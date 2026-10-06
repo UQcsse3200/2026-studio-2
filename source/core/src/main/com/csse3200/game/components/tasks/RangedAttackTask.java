@@ -59,7 +59,7 @@ public class RangedAttackTask extends DefaultTask implements PriorityTask {
   @Override
   public void start() {
     super.start();
-    
+
     if (lastAttackTime == 0) {
       lastAttackTime = ServiceLocator.getTimeSource().getTime();
     }
