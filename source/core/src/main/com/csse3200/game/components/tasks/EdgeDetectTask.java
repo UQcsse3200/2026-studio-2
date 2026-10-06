@@ -11,7 +11,6 @@ import com.csse3200.game.services.ServiceLocator;
 public class EdgeDetectTask {
   private final float forwardDistance;
   private final PhysicsEngine physics;
-  private final DebugRenderer debugRenderer;
   private final RaycastHit hit = new RaycastHit();
 
   public EdgeDetectTask(float forwardDistance) {
