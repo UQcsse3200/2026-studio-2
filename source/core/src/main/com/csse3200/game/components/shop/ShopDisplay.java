@@ -86,6 +86,20 @@ public class ShopDisplay extends UIComponent {
     panel.row();
     panel.add(listingsTable).padTop(20f);
     panel.row();
+
+    TextButton blackjackBtn = new TextButton("Play Blackjack", skin);
+    blackjackBtn.addListener(
+        new ChangeListener() {
+          @Override
+          public void changed(ChangeEvent changeEvent, Actor actor) {
+            logger.info("Blackjack button clicked");
+            close();
+            entity.getEvents().trigger("openBlackjack");
+          }
+        });
+
+    panel.add(blackjackBtn).width(220f).padTop(20f);
+    panel.row();
     panel.add(statusLabel).padTop(16f);
     panel.row();
     panel.add(closeBtn).padTop(24f);
@@ -238,3 +252,6 @@ public class ShopDisplay extends UIComponent {
     super.dispose();
   }
 }
+
+
+
