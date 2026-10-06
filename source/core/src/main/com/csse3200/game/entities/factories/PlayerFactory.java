@@ -13,6 +13,7 @@ import com.csse3200.game.components.item.ItemType;
 import com.csse3200.game.components.item.weapons.WeaponComponent;
 import com.csse3200.game.components.item.weapons.bow.BowComponent;
 import com.csse3200.game.components.item.weapons.bow.grapple.GrappleComponent;
+import com.csse3200.game.components.item.weapons.melee.MeleeComponent;
 import com.csse3200.game.components.itemdictionary.ItemDictionaryComponent;
 import com.csse3200.game.components.itemdictionary.ItemDictionaryDisplay;
 import com.csse3200.game.components.level.RespawnComponent;
@@ -30,7 +31,9 @@ import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.rendering.AnimationRenderComponent;
 import com.csse3200.game.rendering.ParticleEffectsRenderingComponent;
+import com.csse3200.game.rendering.item.GrappleHoldRenderComponent;
 import com.csse3200.game.rendering.item.GrappleRenderComponent;
+import com.csse3200.game.rendering.item.MeleeRenderComponent;
 import com.csse3200.game.services.ServiceLocator;
 
 /** Factory to create a player entity. */
@@ -68,6 +71,9 @@ public class PlayerFactory {
     animator.addAnimation("bow_draw", 0.08f, PlayMode.NORMAL, 72f, 23f);
     animator.addAnimation("bow_hold", 0.1f, PlayMode.LOOP, 72f, 24f);
     animator.addAnimation("bow_shoot", 0.05f, PlayMode.NORMAL, 71f, 23f);
+    animator.addAnimation("instrument_draw", 0.11f, PlayMode.NORMAL, 78.4f, 37.5f);
+    animator.addAnimation("instrument_hold", 0.14f, PlayMode.LOOP, 78.4f, 37.5f);
+    animator.addAnimation("melee", MeleeComponent.FRAME_DURATION, PlayMode.NORMAL, 79f, 38f);
 
     Entity player =
         new Entity()
@@ -100,6 +106,9 @@ public class PlayerFactory {
             .addComponent(new GrappleComponent())
             .addComponent(new GrappleRenderComponent())
             .addComponent(new PlayerAnimationController())
+            .addComponent(new GrappleHoldRenderComponent())
+            .addComponent(new MeleeComponent())
+            .addComponent(new MeleeRenderComponent())
             .addComponent(new RespawnComponent())
             .addComponent(new PoisonStatsComponent())
             .addComponent(new BurnStatsComponent())

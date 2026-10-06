@@ -167,13 +167,13 @@ class PlayerInputStateTest {
 
   @Test
   void shouldRejectAimAtPlayerCentreAndMissingCamera() {
-    List<Vector2> attacks = new ArrayList<>();
-    player.getEvents().<Vector2>addListener("melee", attacks::add);
+    List<Vector2> shots = new ArrayList<>();
+    player.getEvents().<Vector2>addListener("shoot", shots::add);
     player.setPosition(-0.5f, -0.5f);
-    assertFalse(input.touchDown(0, 0, 0, Buttons.LEFT));
+    assertFalse(input.touchDown(0, 0, 0, Buttons.RIGHT));
     input.setCameraComponent(null);
-    assertFalse(input.touchDown(10, 10, 0, Buttons.LEFT));
-    assertTrue(attacks.isEmpty());
+    assertFalse(input.touchDown(10, 10, 0, Buttons.RIGHT));
+    assertTrue(shots.isEmpty());
   }
 
   @Test

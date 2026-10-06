@@ -1,10 +1,21 @@
 package com.csse3200.game.components.player;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.components.Component;
 import com.csse3200.game.rendering.AnimationRenderComponent;
+import com.csse3200.game.services.ServiceLocator;
 
 public class PlayerAnimationController extends Component {
+  private static final float INSTRUMENT_VOLUME = 0.3f; // 0.0 is silent, 1.0 is full volume
+  // Must match the frame duration given to "instrument_draw" in PlayerFactory.
+  private static final float INSTRUMENT_FRAME_DURATION = 0.11f;
+  // First frame of instrument_draw where the instrument is clearly out of its hiding place.
+  private static final int INSTRUMENT_OUT_FRAME = 10;
+  // The level's background track, the same one PauseMenuDisplay pauses and resumes.
+  private static final String GAMEPLAY_MUSIC = "sounds/gameplay_bg.ogg";
+
   private AnimationRenderComponent animator;
   private boolean moving = false;
   private boolean sprinting = false;
@@ -21,6 +32,18 @@ public class PlayerAnimationController extends Component {
   // True for the whole bow sequence (draw -> hold -> shoot). While set, every other animation is
   // suppressed so a shot can't be visually interrupted part way through. Death is the exception.
   private boolean bowActive = false;
+  // True from the moment the instrument is picked up until another action interrupts it. While
+  // set, updateAnimation() leaves the animation alone so the hold keeps looping.
+  private boolean instrumentActive = false;
+  private boolean instrumentDrawing = false;
+  // The music waits until the instrument is actually out, so it is queued and started by timer.
+  private boolean instrumentMusicPending = false;
+  private float instrumentDrawTime = 0f;
+  private Music instrumentMusic;
+  // True while the instrument track is playing, so the "stopped" event only fires after a start.
+  private boolean instrumentMusicPlaying = false;
+  // True while the level's background track is paused because the instrument is playing.
+  private boolean gameplayMusicPausedForInstrument = false;
 
   @Override
   public void create() {
@@ -40,6 +63,9 @@ public class PlayerAnimationController extends Component {
     entity.getEvents().addListener("chargeStart", this::drawStart);
     entity.getEvents().addListener("chargeRelease", this::drawRelease);
     entity.getEvents().addListener("chargeCancel", this::drawCancel);
+    entity.getEvents().addListener("instrumentStart", this::instrumentStart);
+    entity.getEvents().addListener("meleeSwing", this::meleeStart);
+    entity.getEvents().addListener("togglePause", this::cancelInstrumentForPause);
     entity.getEvents().addListener("sprintEnd", this::sprintStop);
     entity.getEvents().addListener("death", this::death);
     entity.getEvents().addListener("sleep", this::sleep);
@@ -56,6 +82,13 @@ public class PlayerAnimationController extends Component {
       }
       return;
     }
+    if (instrumentMusicPending && !ServiceLocator.getEntityService().getPaused()) {
+      instrumentDrawTime += ServiceLocator.getTimeSource().getDeltaTime();
+      if (instrumentDrawTime >= INSTRUMENT_FRAME_DURATION * INSTRUMENT_OUT_FRAME) {
+        instrumentMusicPending = false;
+        playInstrumentMusic();
+      }
+    }
     if (hurt && animator.isFinished()) {
       hurt = false;
       updateAnimation();
@@ -66,6 +99,14 @@ public class PlayerAnimationController extends Component {
       // The one-shot draw-back has finished pulling the string - settle into the looping hold.
       drawingIn = false;
       animator.startAnimation("bow_hold");
+    } else if (instrumentDrawing && animator.isFinished()) {
+      // The one-shot pick-up has finished - settle into the looping hold until interrupted.
+      instrumentDrawing = false;
+      animator.startAnimation("instrument_hold");
+      if (instrumentMusicPending) {
+        instrumentMusicPending = false;
+        playInstrumentMusic();
+      }
     } else if (attacking && animator.isFinished()) {
       // Also where bow_shoot lands, which is the end of the bow sequence.
       attacking = false;
@@ -86,6 +127,7 @@ public class PlayerAnimationController extends Component {
     moving = true;
     if (direction.x != 0) {
       animator.setFlipX(direction.x < 0);
+      cancelInstrument();
     }
     if (!jumping && !dashing && !attacking && !landing) {
       updateAnimation();
@@ -106,6 +148,7 @@ public class PlayerAnimationController extends Component {
     if (dead) {
       return;
     }
+    cancelInstrument();
     sprinting = true;
     if (!jumping && !dashing && !attacking && !landing) {
       updateAnimation();
@@ -130,6 +173,7 @@ public class PlayerAnimationController extends Component {
       return;
     }
     landing = false;
+    cancelInstrument();
     jumping = true;
     animator.startAnimation("jump_takeoff");
   }
@@ -199,6 +243,7 @@ public class PlayerAnimationController extends Component {
     if (dead || bowActive) {
       return;
     }
+    cancelInstrument();
     jumping = false;
     attacking = false; // dash cancels the attack
     dashing = true;
@@ -213,6 +258,7 @@ public class PlayerAnimationController extends Component {
     if (dead || bowActive) {
       return;
     }
+    cancelInstrument();
     jumping = false;
     dashing = false;
     attacking = false;
@@ -229,6 +275,7 @@ public class PlayerAnimationController extends Component {
     jumping = false;
     falling = false;
     landing = false;
+    cancelInstrument();
     animator.startAnimation("death");
   }
 
@@ -240,6 +287,7 @@ public class PlayerAnimationController extends Component {
     if (dead) {
       return;
     }
+    cancelInstrument();
     charging = true;
     drawingIn = true;
     attacking = true;
@@ -274,7 +322,109 @@ public class PlayerAnimationController extends Component {
     updateAnimation();
   }
 
+  /**
+   * Plays the melee swing facing the way the swing goes. Skipped during the bow sequence, a dash or
+   * a hurt reaction, which shouldn't be visually interrupted.
+   */
+  void meleeStart(Integer facing) {
+    if (dead || bowActive || dashing || hurt) {
+      return;
+    }
+    cancelInstrument();
+    if (facing != null && facing != 0) {
+      animator.setFlipX(facing < 0);
+    }
+    attacking = true;
+    animator.startAnimation("melee");
+  }
+
+  /** Picks up the instrument and holds it, with music, until another action interrupts it. */
+  void instrumentStart() {
+    if (dead || bowActive || jumping || dashing || hurt || attacking || instrumentActive) {
+      return;
+    }
+    instrumentActive = true;
+    instrumentDrawing = true;
+    instrumentDrawTime = 0f;
+    instrumentMusicPending = true;
+    animator.startAnimation("instrument_draw");
+  }
+
+  /** Marks the instrument as put away. Callers then pick the next animation themselves. */
+  private void cancelInstrument() {
+    instrumentActive = false;
+    instrumentDrawing = false;
+    instrumentMusicPending = false;
+    stopInstrumentMusic();
+  }
+
+  private void playInstrumentMusic() {
+    if (Gdx.audio == null || Gdx.files == null) {
+      return; // no audio device, e.g. in unit tests
+    }
+    if (instrumentMusic == null) {
+      instrumentMusic = Gdx.audio.newMusic(Gdx.files.internal("sounds/instrument_loop.wav"));
+      instrumentMusic.setLooping(true);
+      instrumentMusic.setVolume(INSTRUMENT_VOLUME);
+    }
+    instrumentMusic.play();
+    instrumentMusicPlaying = true;
+    pauseGameplayMusic();
+  }
+
+  private void stopInstrumentMusic() {
+    if (instrumentMusic != null) {
+      instrumentMusic.stop();
+    }
+    if (instrumentMusicPlaying) {
+      instrumentMusicPlaying = false;
+      resumeGameplayMusic();
+    }
+  }
+
+  /** Pauses the level's background track so the instrument music is heard on its own. */
+  private void pauseGameplayMusic() {
+    try {
+      Music gameplay = ServiceLocator.getResourceService().getAsset(GAMEPLAY_MUSIC, Music.class);
+      if (gameplay.isPlaying()) {
+        gameplay.pause();
+        gameplayMusicPausedForInstrument = true;
+      }
+    } catch (Exception e) {
+      // The track isn't loaded in this level, so there is nothing to pause.
+    }
+  }
+
+  /** Resumes the level's background track, but only if the instrument was what paused it. */
+  private void resumeGameplayMusic() {
+    if (!gameplayMusicPausedForInstrument) {
+      return;
+    }
+    gameplayMusicPausedForInstrument = false;
+    try {
+      ServiceLocator.getResourceService().getAsset(GAMEPLAY_MUSIC, Music.class).play();
+    } catch (Exception e) {
+      // The track is no longer loaded, so there is nothing to resume.
+    }
+  }
+
+  /**
+   * Puts the instrument away when the pause menu opens. The pause menu takes over the background
+   * track itself (it pauses it, then plays it again on resume), so this must not resume it.
+   */
+  private void cancelInstrumentForPause() {
+    if (!instrumentActive) {
+      return;
+    }
+    gameplayMusicPausedForInstrument = false;
+    cancelInstrument();
+    updateAnimation();
+  }
+
   private void updateAnimation() {
+    if (instrumentActive) {
+      return;
+    }
     String desired = "idle";
     if (falling) {
       // Still in the air: anything finishing mid-fall resumes the fall rather than idling.
@@ -287,11 +437,27 @@ public class PlayerAnimationController extends Component {
     }
   }
 
+  /** Re-picks the idle, walk or sprint animation, e.g. after the rope pose stops drawing. */
+  public void refreshAnimation() {
+    updateAnimation();
+  }
+
   public void playAnimation(String animationName) {
     animator.startAnimation(animationName);
   }
 
   public AnimationRenderComponent getAnimator() {
     return this.animator;
+  }
+
+  @Override
+  public void dispose() {
+    // Don't leave the level music silent if the instrument was playing when the player is removed.
+    stopInstrumentMusic();
+    if (instrumentMusic != null) {
+      instrumentMusic.dispose();
+      instrumentMusic = null;
+    }
+    super.dispose();
   }
 }

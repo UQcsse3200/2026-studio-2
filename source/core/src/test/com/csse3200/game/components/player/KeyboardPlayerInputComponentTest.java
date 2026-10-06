@@ -112,15 +112,28 @@ class KeyboardPlayerInputComponentTest {
   }
 
   @Test
-  void shouldNotHandleQ() {
+  void shouldTriggerInstrumentOnQ() {
     Entity player = new Entity();
     KeyboardPlayerInputComponent component = aimedComponent(player);
 
-    AtomicInteger events = new AtomicInteger();
-    player.getEvents().addListener("cycleArrow", events::incrementAndGet);
+    AtomicInteger instruments = new AtomicInteger();
+    player.getEvents().addListener("instrumentStart", instruments::incrementAndGet);
 
-    assertFalse(component.keyDown(Keys.Q));
-    assertEquals(0, events.get());
+    assertTrue(component.keyDown(Keys.Q));
+    assertEquals(1, instruments.get());
+  }
+
+  @Test
+  void shouldNotStartInstrumentWhilePaused() {
+    Entity player = new Entity();
+    KeyboardPlayerInputComponent component = aimedComponent(player);
+
+    AtomicInteger instruments = new AtomicInteger();
+    player.getEvents().addListener("instrumentStart", instruments::incrementAndGet);
+
+    when(entityService.getPaused()).thenReturn(true);
+    assertTrue(component.keyDown(Keys.Q));
+    assertEquals(0, instruments.get());
   }
 
   @Test
@@ -481,5 +494,30 @@ class KeyboardPlayerInputComponentTest {
     assertFalse(component.isRightMouseHeld());
     assertEquals(1, cancels.get());
     assertEquals(0, stops.get());
+  }
+
+  @Test
+  void shouldTriggerMeleeOnLeftClick() {
+    KeyboardPlayerInputComponent component = new KeyboardPlayerInputComponent();
+    Entity player = new Entity().addComponent(component);
+    AtomicInteger swings = new AtomicInteger();
+    player.getEvents().addListener("meleeStart", swings::incrementAndGet);
+
+    assertTrue(component.touchDown(4, 2, 0, Buttons.LEFT));
+
+    assertEquals(1, swings.get());
+  }
+
+  @Test
+  void shouldNotStartMeleeWhilePaused() {
+    when(entityService.getPaused()).thenReturn(true);
+    KeyboardPlayerInputComponent component = new KeyboardPlayerInputComponent();
+    Entity player = new Entity().addComponent(component);
+    AtomicInteger swings = new AtomicInteger();
+    player.getEvents().addListener("meleeStart", swings::incrementAndGet);
+
+    assertFalse(component.touchDown(4, 2, 0, Buttons.LEFT));
+
+    assertEquals(0, swings.get());
   }
 }
