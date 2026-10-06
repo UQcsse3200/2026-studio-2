@@ -75,8 +75,8 @@ class PlayerCombatIntegrationTest {
     ServiceLocator.registerTimeSource(time);
     ServiceLocator.registerEntityService(entities);
     ServiceLocator.registerResourceService(resources);
-    when(resources.containsAsset("sounds/Impact4.ogg", Sound.class)).thenReturn(true);
-    when(resources.getAsset("sounds/Impact4.ogg", Sound.class)).thenReturn(sound);
+    when(resources.containsAsset("sounds/shoot.ogg", Sound.class)).thenReturn(true);
+    when(resources.getAsset("sounds/shoot.ogg", Sound.class)).thenReturn(sound);
 
     previousInput = Gdx.input;
     Gdx.input = mock(Input.class);

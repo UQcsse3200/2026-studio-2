@@ -110,13 +110,13 @@ public class GameEndDisplay extends UIComponent {
         Music music =
             ServiceLocator.getResourceService().getAsset("sounds/Win_music.mp3", Music.class);
         music.setLooping(true);
-        music.setVolume(0.2f);
+        music.setVolume(0.13f);
         music.play();
       } else {
         Music music =
             ServiceLocator.getResourceService().getAsset("sounds/Death_music.ogg", Music.class);
         music.setLooping(false);
-        music.setVolume(0.3f);
+        music.setVolume(0.4f);
         music.play();
       }
     } catch (Exception e) {

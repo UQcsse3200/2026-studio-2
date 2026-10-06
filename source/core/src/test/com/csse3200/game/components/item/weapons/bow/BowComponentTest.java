@@ -42,8 +42,8 @@ class BowComponentTest {
     attackSound = mock(Sound.class);
     gameTime = mock(GameTime.class);
 
-    when(resourceService.containsAsset("sounds/Impact4.ogg", Sound.class)).thenReturn(true);
-    when(resourceService.getAsset("sounds/Impact4.ogg", Sound.class)).thenReturn(attackSound);
+    when(resourceService.containsAsset("sounds/shoot.ogg", Sound.class)).thenReturn(true);
+    when(resourceService.getAsset("sounds/shoot.ogg", Sound.class)).thenReturn(attackSound);
 
     ServiceLocator.registerEntityService(entityService);
     ServiceLocator.registerResourceService(resourceService);

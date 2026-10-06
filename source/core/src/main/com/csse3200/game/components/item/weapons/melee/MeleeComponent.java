@@ -1,5 +1,6 @@
 package com.csse3200.game.components.item.weapons.melee;
 
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.Component;
@@ -15,6 +16,7 @@ public class MeleeComponent extends Component implements PrimaryWeapon {
 
   private static final float RANGE = 1f;
   private static final float SWORD_COOLDOWN = 0.3f;
+  private static final String SWORD_SOUND = "sounds/melee sound.wav";
 
   private float cooldownTimer = 0f;
 
@@ -38,6 +40,10 @@ public class MeleeComponent extends Component implements PrimaryWeapon {
     }
 
     cooldownTimer = SWORD_COOLDOWN;
+    if (ServiceLocator.getResourceService() != null
+        && ServiceLocator.getResourceService().containsAsset(SWORD_SOUND, Sound.class)) {
+      ServiceLocator.getResourceService().getAsset(SWORD_SOUND, Sound.class).play(0.15f);
+    }
 
     // Cast a short ray out from the entity and stop at the first NPC it touches
     Vector2 origin = entity.getCenterPosition();

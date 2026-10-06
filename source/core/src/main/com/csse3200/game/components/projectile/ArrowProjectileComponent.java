@@ -1,5 +1,6 @@
 package com.csse3200.game.components.projectile;
 
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -30,6 +31,7 @@ public class ArrowProjectileComponent extends Component {
   public static final float ARC_GRAVITY_SCALE = 0.4f;
 
   private static final float MIN_TRAVEL = 0.5f;
+  private static final String POTION_SMASH_SOUND = "sounds/Bottle Break.wav";
 
   private final Entity shooter;
   private final Vector2 direction;
@@ -241,6 +243,11 @@ public class ArrowProjectileComponent extends Component {
       return;
     }
     spent = true;
+    if (arrowType == ArrowType.POTION
+        && ServiceLocator.getResourceService() != null
+        && ServiceLocator.getResourceService().containsAsset(POTION_SMASH_SOUND, Sound.class)) {
+      ServiceLocator.getResourceService().getAsset(POTION_SMASH_SOUND, Sound.class).play(0.3f);
+    }
     ServiceLocator.getEntityService().scheduleRemoval(entity);
   }
 

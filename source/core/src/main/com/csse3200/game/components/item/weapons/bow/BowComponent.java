@@ -14,7 +14,7 @@ import com.csse3200.game.services.ServiceLocator;
 /** Ranged attack behaviour that fires player arrow variants (Standard, Ice, Fire, Grapple). */
 public class BowComponent extends Component implements PrimaryWeapon {
 
-  private static final String ATTACK_SOUND = "sounds/Impact4.ogg";
+  private static final String ATTACK_SOUND = "sounds/shoot.ogg";
   private static final float BOW_COOLDOWN = 0.4f;
   private static final float MAX_CHARGE_SECONDS = 1.5f;
   // Fraction of full speed a shot has at zero charge - keeps a tap-release shot weak/short-range

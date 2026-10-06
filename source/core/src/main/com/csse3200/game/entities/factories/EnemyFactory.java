@@ -11,6 +11,7 @@ import com.csse3200.game.components.EnemyDeathComponent;
 import com.csse3200.game.components.EnemyItemDropComponent;
 import com.csse3200.game.components.PoisonStatsComponent;
 import com.csse3200.game.components.SlowStatsComponent;
+import com.csse3200.game.components.npc.ChaseSoundComponent;
 import com.csse3200.game.components.npc.SkeletonAnimationController;
 import com.csse3200.game.components.tasks.ChaseTask;
 import com.csse3200.game.components.tasks.DelayedAttackTask;
@@ -62,6 +63,7 @@ public class EnemyFactory {
 
     skeletonWarrior.addComponent(new SkeletonAnimationController(target));
     skeletonWarrior.addComponent(animator);
+    skeletonWarrior.addComponent(new ChaseSoundComponent("sounds/evil cyber laugh.wav", 0.15f));
 
     skeletonWarrior
         .getComponent(AITaskComponent.class)
@@ -90,7 +92,8 @@ public class EnemyFactory {
     SkeletonArcher
         // .addComponent(new CombatStatsComponent(config.health, config.baseAttack))
         .addComponent(animator)
-        .addComponent(new SkeletonAnimationController(target));
+        .addComponent(new SkeletonAnimationController(target))
+        .addComponent(new ChaseSoundComponent("sounds/evil cyber laugh.wav", 0.15f));
 
     SkeletonArcher.getComponent(AnimationRenderComponent.class).scaleEntity();
 
@@ -145,7 +148,8 @@ public class EnemyFactory {
     Vulture
         // .addComponent(new CombatStatsComponent(config.health, config.baseAttack))
         .addComponent(animator)
-        .addComponent(new SkeletonAnimationController(target));
+        .addComponent(new SkeletonAnimationController(target))
+        .addComponent(new ChaseSoundComponent("sounds/osprey.ogg", 0.15f));
 
     Vulture.getComponent(AnimationRenderComponent.class).scaleEntity();
 
