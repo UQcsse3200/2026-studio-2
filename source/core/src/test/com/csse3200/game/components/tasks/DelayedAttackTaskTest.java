@@ -31,7 +31,7 @@ public class DelayedAttackTaskTest {
     Entity target = new Entity().addComponent(new CombatStatsComponent(10, 0));
     target.setPosition(2f, 0f);
 
-    DelayedAttackTask task = new DelayedAttackTask(target, 10, 5, 0);
+    DelayedAttackTask task = new DelayedAttackTask(target, 10, 5, 0, 2, 0f);
     AITaskComponent ai = new AITaskComponent().addTask(task);
 
     Entity entity =

@@ -11,14 +11,15 @@ import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.physics.components.PhysicsComponent;
 
 public class AttackFactory {
-  public static Entity createNewAttack(Vector2 size, Vector2 position, int damage, float duration) {
+  public static Entity createNewAttack(
+      Vector2 size, Vector2 position, int damage, float duration, float knockback) {
 
     Entity attack =
         new Entity()
-            .addComponent(new PhysicsComponent().setBodyType(BodyDef.BodyType.StaticBody))
+            .addComponent(new PhysicsComponent().setBodyType(BodyDef.BodyType.KinematicBody))
             .addComponent(new HitboxComponent().setLayer(PhysicsLayer.NPC).setAsBox(size, position))
             .addComponent(new CombatStatsComponent(1, damage))
-            .addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER))
+            .addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER, knockback))
             .addComponent(new DurationComponent(duration));
 
     return attack;

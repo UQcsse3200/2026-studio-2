@@ -92,7 +92,6 @@ public class TouchAttackComponent extends Component {
 
     targetFixture = other;
     touchTimer = 0f;
-    attack(other);
   }
 
   private void onCollisionEnd(Fixture me, Fixture other) {
