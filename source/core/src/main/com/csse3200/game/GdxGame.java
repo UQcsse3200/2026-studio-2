@@ -41,10 +41,21 @@ public class GdxGame extends Game {
     logger.info("Creating game");
     loadSettings();
 
-    // Sets background to light yellow
-    Gdx.gl.glClearColor(248f / 255f, 249 / 255f, 178 / 255f, 1);
+    applyDefaultClearColor();
 
     setScreen(ScreenType.MAIN_MENU);
+  }
+
+  /**
+   * Restores the default light-yellow clear colour used behind transparent terrain (e.g. Sandbox).
+   *
+   * <p>Cutscenes set a black clear colour while they are on screen; this puts the game colour back.
+   */
+  public static void applyDefaultClearColor() {
+    if (Gdx.gl == null) {
+      return;
+    }
+    Gdx.gl.glClearColor(248f / 255f, 249 / 255f, 178 / 255f, 1);
   }
 
   /** Loads the game's settings. */
@@ -152,9 +163,13 @@ public class GdxGame extends Game {
       case SANDBOX:
         return new SandboxGameScreen(this);
       case LEVEL_2_GAME:
-        LevelsGameScreen screen = new LevelsGameScreen(this);
-        screen.queueAreaSwap("level2");
-        return screen;
+        LevelsGameScreen screen2 = new LevelsGameScreen(this);
+        screen2.queueAreaSwap("level2");
+        return screen2;
+      case LEVEL_3_GAME:
+        LevelsGameScreen screen3 = new LevelsGameScreen(this);
+        screen3.queueAreaSwap("level3");
+        return screen3;
       case SETTINGS:
         return new SettingsScreen(this);
       case SETTINGS_FROM_PAUSE:
@@ -178,6 +193,7 @@ public class GdxGame extends Game {
     LEVEL_1_GAME,
     SANDBOX,
     LEVEL_2_GAME,
+    LEVEL_3_GAME,
     SETTINGS,
     SETTINGS_FROM_PAUSE,
     MINIGAME_SELECT,

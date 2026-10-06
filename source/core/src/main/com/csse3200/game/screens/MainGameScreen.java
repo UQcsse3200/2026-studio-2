@@ -10,6 +10,7 @@ import com.csse3200.game.areas.ForestGameArea;
 import com.csse3200.game.areas.terrain.TerrainFactory;
 import com.csse3200.game.components.ButtonSound;
 import com.csse3200.game.components.gamearea.PerformanceDisplay;
+import com.csse3200.game.components.item.ItemAssets;
 import com.csse3200.game.components.maingame.MainGameActions;
 import com.csse3200.game.components.maingame.MainGameExitDisplay;
 import com.csse3200.game.components.maingame.PauseMenuOverlay;
@@ -25,6 +26,8 @@ import com.csse3200.game.events.EventHandler;
 import com.csse3200.game.input.InputComponent;
 import com.csse3200.game.input.InputDecorator;
 import com.csse3200.game.input.InputService;
+import com.csse3200.game.lighting.LightingEngine;
+import com.csse3200.game.lighting.LightingService;
 import com.csse3200.game.physics.PhysicsEngine;
 import com.csse3200.game.physics.PhysicsService;
 import com.csse3200.game.rendering.RenderService;
@@ -61,6 +64,7 @@ public class MainGameScreen extends ScreenAdapter {
   private final BlackjackOverlay blackjackOverlay;
   private final MinigameOverlayManager minigameOverlayManager;
   private final PauseMenuOverlay pauseOverlay;
+  private final LightingEngine lightingEngine;
 
   public MainGameScreen(GdxGame game) {
     this.game = game;
@@ -82,6 +86,11 @@ public class MainGameScreen extends ScreenAdapter {
     renderer = RenderFactory.createRenderer();
     renderer.getCamera().getEntity().setPosition(CAMERA_POSITION);
     renderer.getDebug().renderPhysicsWorld(physicsEngine.getWorld());
+
+    LightingService lightingService =
+        new LightingService(renderer.getCamera(), physicsEngine.getWorld());
+    ServiceLocator.registerLightingService(lightingService);
+    lightingEngine = lightingService.getEngine();
 
     loadAssets();
     createUI();
@@ -118,6 +127,7 @@ public class MainGameScreen extends ScreenAdapter {
     physicsEngine.update();
     ServiceLocator.getEntityService().update();
     renderer.render();
+    renderer.render(lightingEngine);
     wheelOverlay.afterRender();
     blackjackOverlay.afterRender();
     pauseOverlay.afterRender();
@@ -147,6 +157,7 @@ public class MainGameScreen extends ScreenAdapter {
     unloadAssets();
 
     ServiceLocator.getEntityService().dispose();
+    lightingEngine.dispose();
     ServiceLocator.getRenderService().dispose();
     ServiceLocator.getResourceService().dispose();
 
@@ -186,6 +197,7 @@ public class MainGameScreen extends ScreenAdapter {
                 "images/Buttons/x_up_btn.png",
                 "images/Buttons/x_down_btn.png"));
 
+    paths.addAll(List.of(ItemAssets.getTextures()));
     paths.addAll(List.of(WheelConfig.TEXTURES));
     paths.addAll(List.of(BlackjackConfig.TEXTURES));
     return paths.toArray(new String[0]);

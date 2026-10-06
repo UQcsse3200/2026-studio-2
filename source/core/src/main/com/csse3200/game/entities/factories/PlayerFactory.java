@@ -4,16 +4,15 @@ import com.badlogic.gdx.graphics.g2d.Animation.PlayMode;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.csse3200.game.components.BurnStatsComponent;
 import com.csse3200.game.components.CombatStatsComponent;
-import com.csse3200.game.components.MeleeAttackComponent;
 import com.csse3200.game.components.PoisonStatsComponent;
 import com.csse3200.game.components.SlowStatsComponent;
 import com.csse3200.game.components.inventory.BackpackDisplay;
 import com.csse3200.game.components.inventory.InventoryBarDisplay;
 import com.csse3200.game.components.inventory.InventoryComponent;
+import com.csse3200.game.components.item.ItemType;
 import com.csse3200.game.components.item.weapons.WeaponComponent;
 import com.csse3200.game.components.item.weapons.bow.BowComponent;
 import com.csse3200.game.components.item.weapons.bow.grapple.GrappleComponent;
-import com.csse3200.game.components.item.weapons.melee.MeleeComponent;
 import com.csse3200.game.components.itemdictionary.ItemDictionaryComponent;
 import com.csse3200.game.components.itemdictionary.ItemDictionaryDisplay;
 import com.csse3200.game.components.level.RespawnComponent;
@@ -32,7 +31,6 @@ import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.rendering.AnimationRenderComponent;
 import com.csse3200.game.rendering.ParticleEffectsRenderingComponent;
 import com.csse3200.game.rendering.item.GrappleRenderComponent;
-import com.csse3200.game.rendering.item.MeleeRenderComponent;
 import com.csse3200.game.services.ServiceLocator;
 
 /** Factory to create a player entity. */
@@ -61,7 +59,6 @@ public class PlayerFactory {
     animator.addAnimation("hurt", 0.04f, PlayMode.NORMAL);
     animator.addAnimation("death", 0.1458f, PlayMode.NORMAL);
     animator.addAnimation("sleep", 0.1458f, PlayMode.LOOP);
-    animator.addAnimation("melee", 0.03f, PlayMode.NORMAL, 79f, 38f);
     animator.addAnimation("dash", 0.025f, PlayMode.NORMAL, 134.5f, 39f);
     animator.addAnimation("air_dash", 0.025f, PlayMode.NORMAL, 94f, 39f);
     animator.addAnimation("bow_draw", 0.08f, PlayMode.NORMAL, 72f, 23f);
@@ -80,10 +77,9 @@ public class PlayerFactory {
                 new CombatStatsComponent(
                     stats.health, stats.baseAttack, stats.invulnerabilityDuration))
             .addComponent(bowComponent)
-            // .addComponent(new PoisonBuff())
-            .addComponent(new MeleeAttackComponent())
+            .addComponent(new PoisonBuff())
             .addComponent(new ArrowWheelComponent())
-            .addComponent(new MeleeComponent())
+            .addComponent(new ArrowWheelDisplay())
             .addComponent(new WeaponComponent(bowComponent))
             .addComponent(new InventoryComponent(stats.gold))
             .addComponent(new InventoryBarDisplay())
@@ -96,12 +92,10 @@ public class PlayerFactory {
             .addComponent(new ItemUseComponent())
             .addComponent(inputComponent)
             .addComponent(new PlayerStatsDisplay())
-            .addComponent(new ArrowWheelDisplay())
             .addComponent(new ArrowTrajectoryDisplay())
             .addComponent(new GrappleComponent())
             .addComponent(new GrappleRenderComponent())
             .addComponent(new PlayerAnimationController())
-            .addComponent(new MeleeRenderComponent())
             .addComponent(new RespawnComponent())
             .addComponent(new PoisonStatsComponent())
             .addComponent(new BurnStatsComponent())
@@ -113,6 +107,32 @@ public class PlayerFactory {
     player.scaleWidth(0.6f);
     PhysicsUtils.setScaledCollider(player, 1f, 1f);
     return player;
+  }
+
+  /**
+   * Puts a rope arrow into the player's inventory.
+   *
+   * <p>Call this after the player entity has been created so inventory UI can refresh. Sandbox
+   * should not use this; it keeps world pickups instead.
+   *
+   * @param player player entity with an inventory
+   */
+  public static void giveStartingLoadout(Entity player) {
+    if (player == null) {
+      return;
+    }
+
+    InventoryComponent inventory = player.getComponent(InventoryComponent.class);
+    if (inventory == null) {
+      return;
+    }
+
+    inventory.addItem(ItemType.ROPE_ARROW, 1);
+
+    ItemDictionaryComponent dictionary = player.getComponent(ItemDictionaryComponent.class);
+    if (dictionary != null) {
+      dictionary.unlockItem(ItemType.ROPE_ARROW);
+    }
   }
 
   /**

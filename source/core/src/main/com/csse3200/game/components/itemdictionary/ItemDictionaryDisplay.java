@@ -23,6 +23,8 @@ import com.csse3200.game.ui.UIComponent;
  * be clicked to open a detailed information page. Undiscovered items remain locked.
  */
 public class ItemDictionaryDisplay extends UIComponent {
+  private final InventorySlotStyle slotStyle = new InventorySlotStyle();
+
   private enum DictionaryPage {
     GRID,
     DETAILS
@@ -52,7 +54,7 @@ public class ItemDictionaryDisplay extends UIComponent {
     table.setVisible(false);
 
     contentTable = new Table();
-    contentTable.setBackground(InventorySlotStyle.getDarkerBox());
+    contentTable.setBackground(slotStyle.getDarkerBox());
     contentTable.pad(25f);
 
     entity.getEvents().addListener("itemDictionaryChanged", this::refresh);
@@ -102,7 +104,7 @@ public class ItemDictionaryDisplay extends UIComponent {
    */
   private Table createDictionarySlot(ItemType itemType) {
     Table slot = new Table();
-    slot.setBackground(InventorySlotStyle.getNormalBox());
+    slot.setBackground(slotStyle.getNormalBox());
 
     boolean discovered = dictionary != null && dictionary.isDiscovered(itemType);
 
@@ -232,7 +234,7 @@ public class ItemDictionaryDisplay extends UIComponent {
   private void addItemStats(ItemType itemType) {
     Table statsTable = new Table();
 
-    statsTable.setBackground(InventorySlotStyle.getNormalBox());
+    statsTable.setBackground(slotStyle.getNormalBox());
     statsTable.pad(15f);
 
     if (itemType.getDamage() > 0) {
@@ -283,6 +285,24 @@ public class ItemDictionaryDisplay extends UIComponent {
       statsTable.row();
     }
 
+    if (itemType.getSpeedBoost() > 0f) {
+      statsTable
+          .add(new Label("Speed Boost: " + Math.round(itemType.getSpeedBoost() * 100f) + "%", skin))
+          .left();
+      statsTable.row();
+      statsTable.add(new Label("Duration: " + itemType.getDuration() + "s", skin)).left();
+      statsTable.row();
+    }
+    if (itemType.getPoisonDamagePerSecond() > 0f) {
+      statsTable
+          .add(new Label("Poison Damage: " + itemType.getPoisonDamagePerSecond() + "/s", skin))
+          .left();
+      statsTable.row();
+      statsTable
+          .add(new Label("Poison Duration: " + itemType.getPoisonDuration() + "s", skin))
+          .left();
+      statsTable.row();
+    }
     contentTable.add(statsTable).width(300f);
   }
 
@@ -369,6 +389,7 @@ public class ItemDictionaryDisplay extends UIComponent {
       table.remove();
     }
 
+    slotStyle.dispose();
     super.dispose();
   }
 }

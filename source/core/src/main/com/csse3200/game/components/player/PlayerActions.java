@@ -4,6 +4,8 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.csse3200.game.components.Component;
 import com.csse3200.game.components.item.weapons.bow.grapple.GrappleComponent;
+import com.csse3200.game.components.level.SlipperyPlatformComponent;
+import com.csse3200.game.physics.BodyUserData;
 import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.physics.raycast.RaycastHit;
@@ -12,7 +14,7 @@ import com.csse3200.game.services.ServiceLocator;
 
 /** Action component for interacting with the player */
 public class PlayerActions extends Component {
-  private static final float JUMP_FORCE = 22f;
+  private static final float JUMP_FORCE = 23f;
   private static final Vector2 MAX_SPEED = new Vector2(5f, 5f); // Metres per second
   private static final float SPRINT_MULTIPLIER = 1.75f;
   private static final float ROPE_JUMP_MULTIPLIER = 0.7f;
@@ -48,6 +50,8 @@ public class PlayerActions extends Component {
   public boolean droppingFromLedge = false;
   private boolean dead = false;
   private long jumpImpulseAt = -1; // Timestamp to apply the queued jump impulse, -1 if none queued
+  private float decelerationTraction = 1f;
+  private float traction = 1f;
 
   /**
    * The direction the player is currently facing.
@@ -184,7 +188,7 @@ public class PlayerActions extends Component {
 
     // Reduced control while recovering from a dash; otherwise full control on the ground and
     // weak in the air so swing momentum isn't wiped on landing.
-    float control = isGrounded ? 1f : AIR_CONTROL;
+    float control = isGrounded ? traction : AIR_CONTROL;
     if (dashRecoveryRemaining > 0f) {
       control = DASH_RECOVERY_CONTROL;
     }
@@ -201,9 +205,30 @@ public class PlayerActions extends Component {
     Vector2 rayStart = position.cpy().sub(0, halfHeight);
     Vector2 rayEnd = rayStart.cpy().sub(0, 0.15f);
     RaycastHit hit = new RaycastHit();
-    return ServiceLocator.getPhysicsService()
-        .getPhysics()
-        .raycast(rayStart, rayEnd, PhysicsLayer.SOLID, hit);
+    boolean grounded =
+        ServiceLocator.getPhysicsService()
+            .getPhysics()
+            .raycast(rayStart, rayEnd, PhysicsLayer.SOLID, hit);
+
+    decelerationTraction = 1f;
+    // if we're grounded, we need to check if we're on a slippery platform and update the player's
+    // traction used in the updateSpeed() method accordingly
+    if (grounded && hit.fixture != null) {
+      // get raw data and check if it's user data is a proper BodyUserData
+      Object userData = hit.fixture.getBody().getUserData();
+      if (userData instanceof BodyUserData data) {
+        // check the entity variable is set and access component data
+        if (data.entity != null) {
+          SlipperyPlatformComponent slipperyPlatform =
+              data.entity.getComponent(SlipperyPlatformComponent.class);
+          if (slipperyPlatform != null) {
+            decelerationTraction = slipperyPlatform.getSlipperiness();
+          }
+        }
+      }
+    }
+
+    return grounded;
   }
 
   /** Stops the player permanently reacting to input once they've died. */
@@ -224,6 +249,7 @@ public class PlayerActions extends Component {
     if (dead) {
       return;
     }
+    traction = 1f;
     this.walkDirection = direction;
     if (direction.x != 0) {
       facingDirection = direction.x > 0 ? 1 : -1;
@@ -235,6 +261,7 @@ public class PlayerActions extends Component {
   void stopWalking() {
     this.walkDirection = Vector2.Zero.cpy();
     if (!isDashing && !isGrappling()) {
+      traction = decelerationTraction;
       updateSpeed();
     }
     moving = false;

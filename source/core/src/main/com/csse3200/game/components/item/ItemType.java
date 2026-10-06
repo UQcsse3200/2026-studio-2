@@ -14,7 +14,7 @@ public enum ItemType {
       "images/projectiles/arrow.png",
       10,
       15f,
-      0f,
+      0.3f,
       0,
       true),
   ROPE_ARROW(
@@ -44,7 +44,7 @@ public enum ItemType {
       "images/projectiles/fire_arrow.png",
       5,
       16f,
-      0f,
+      0.3f,
       0,
       true,
       10f,
@@ -62,7 +62,7 @@ public enum ItemType {
       "images/projectiles/ice_arrow.png",
       8,
       16f,
-      0f,
+      0.3f,
       0,
       true,
       0f,
@@ -73,28 +73,6 @@ public enum ItemType {
       0f,
       0f,
       0f),
-
-  Sword(
-      6,
-      "Great Sword",
-      "A heavy sword with high damage.",
-      "images/items/sword.png",
-      20,
-      5f,
-      0f,
-      0,
-      false),
-
-  Spear(
-      7,
-      "Spear",
-      "A long spear with extended range.",
-      "images/items/spear.png",
-      12,
-      8f,
-      0f,
-      0,
-      false),
 
   SpeedPotion(
       8,
@@ -131,8 +109,8 @@ public enum ItemType {
       0f,
       0f,
       0f,
-      5f,
-      5f);
+      3f,
+      3f);
 
   private final int id;
   private final String displayName;
@@ -267,7 +245,7 @@ public enum ItemType {
   public boolean isArrow() {
     return switch (this) {
       case STANDARD_ARROW, ROPE_ARROW, FIRE_ARROW, ICE_ARROW -> true;
-      case HEALTH_POTION, Sword, Spear, SpeedPotion, PoisonPotion -> false;
+      case HEALTH_POTION, SpeedPotion, PoisonPotion -> false;
     };
   }
 

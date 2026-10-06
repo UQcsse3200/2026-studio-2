@@ -9,13 +9,14 @@ import com.csse3200.game.GdxGame;
 import com.csse3200.game.areas.GameArea;
 import com.csse3200.game.areas.Level1GameArea;
 import com.csse3200.game.areas.Level2GameArea;
+import com.csse3200.game.areas.Level3GameArea;
 import com.csse3200.game.areas.terrain.TerrainFactory;
 import com.csse3200.game.components.ButtonSound;
 import com.csse3200.game.components.GameVolume;
 import com.csse3200.game.components.SoundEffects;
 import com.csse3200.game.components.gamearea.CoordinateDisplay;
 import com.csse3200.game.components.gamearea.PerformanceDisplay;
-import com.csse3200.game.components.item.ItemType;
+import com.csse3200.game.components.item.ItemAssets;
 import com.csse3200.game.components.maingame.MainGameActions;
 import com.csse3200.game.components.maingame.PauseButtonDisplay;
 import com.csse3200.game.components.maingame.PauseMenuOverlay;
@@ -33,6 +34,8 @@ import com.csse3200.game.events.EventHandler;
 import com.csse3200.game.input.InputComponent;
 import com.csse3200.game.input.InputDecorator;
 import com.csse3200.game.input.InputService;
+import com.csse3200.game.lighting.LightingEngine;
+import com.csse3200.game.lighting.LightingService;
 import com.csse3200.game.physics.PhysicsEngine;
 import com.csse3200.game.physics.PhysicsService;
 import com.csse3200.game.physics.components.PhysicsComponent;
@@ -66,12 +69,14 @@ public class LevelsGameScreen extends ScreenAdapter {
   private boolean levelSwapQueued = false;
   private GameArea currentGameArea;
   private GameArea nextGameArea;
+  private String level = "level1";
 
   private final GdxGame game;
   private final Renderer renderer;
   private final PhysicsEngine physicsEngine;
   private final SpinTheWheelOverlay wheelOverlay;
   private final PauseMenuOverlay pauseOverlay;
+  private final LightingEngine lightingEngine;
   private final BlackjackOverlay blackjackOverlay;
   private final MinigameOverlayManager minigameOverlayManager;
   private Entity player;
@@ -82,6 +87,7 @@ public class LevelsGameScreen extends ScreenAdapter {
   private static final String[] gameEndMusic = {winMusic, loseMusic, "sounds/Main_menu_sound.mp3"};
   private final Level1GameArea level1GameArea;
   private boolean cheats = false;
+  private float gravity;
 
   public LevelsGameScreen(GdxGame game) {
     this.game = game;
@@ -105,6 +111,11 @@ public class LevelsGameScreen extends ScreenAdapter {
 
     // renderer.getDebug().setActive(true);
     renderer.getDebug().renderPhysicsWorld(physicsEngine.getWorld());
+
+    LightingService lightingService =
+        new LightingService(renderer.getCamera(), physicsEngine.getWorld());
+    ServiceLocator.registerLightingService(lightingService);
+    lightingEngine = lightingService.getEngine();
 
     loadAssets();
     createUI();
@@ -133,6 +144,7 @@ public class LevelsGameScreen extends ScreenAdapter {
 
     player = level1GameArea.getPlayer();
     player.getEvents().addListener("respawnAtCheckpoint", () -> currentGameArea.respawn());
+    player.getEvents().addListener("toggleMap", () -> currentGameArea.toggleLevelMap());
 
     // Follow the player with the camera.
     renderer.getCamera().setTarget(player);
@@ -144,11 +156,6 @@ public class LevelsGameScreen extends ScreenAdapter {
 
     minigameOverlayManager = new MinigameOverlayManager();
     blackjackOverlay = new BlackjackOverlay(player, minigameOverlayManager);
-
-    if (cheats) {
-      level1GameArea.getPlayer().getComponent(PhysicsComponent.class).getBody().setGravityScale(0);
-      level1GameArea.getPlayer().getComponent(KeyboardPlayerInputComponent.class).toggleCheats();
-    }
   }
 
   private void onPlayerDeath() {
@@ -173,6 +180,9 @@ public class LevelsGameScreen extends ScreenAdapter {
       case "level2":
         nextGameArea = new Level2GameArea(terrainFactory, renderer.getCamera(), player);
         break;
+      case "level3":
+        nextGameArea = new Level3GameArea(terrainFactory, renderer.getCamera(), player);
+        break;
       default:
         return;
     }
@@ -186,8 +196,8 @@ public class LevelsGameScreen extends ScreenAdapter {
   private void performLevelSwap() {
     logger.info("Swapping level to new game area");
 
-    currentGameArea.dispose();
     nextGameArea.create();
+    currentGameArea.dispose();
     currentGameArea = nextGameArea;
     nextGameArea = null;
 
@@ -217,9 +227,33 @@ public class LevelsGameScreen extends ScreenAdapter {
       blackjackOverlay.request();
     }
 
+    if (Gdx.input.isKeyJustPressed(Input.Keys.BACKSPACE)) {
+      cheats = !cheats;
+      if (cheats) {
+        gravity = player.getComponent(PhysicsComponent.class).getBody().getGravityScale();
+        player.getComponent(PhysicsComponent.class).getBody().setGravityScale(0);
+        player.getComponent(KeyboardPlayerInputComponent.class).toggleCheats();
+      } else {
+        player.getComponent(PhysicsComponent.class).getBody().setGravityScale(gravity);
+        player.getComponent(KeyboardPlayerInputComponent.class).toggleCheats();
+      }
+    }
+
+    if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
+      if (level.equals("level1")) {
+        level = "level2";
+      } else if (level.equals("level2")) {
+        level = "level3";
+      } else if (level.equals("level3")) {
+        level = "none";
+      }
+      queueAreaSwap(level);
+    }
+
     physicsEngine.update();
     ServiceLocator.getEntityService().update();
     renderer.render();
+    renderer.render(lightingEngine);
     wheelOverlay.afterRender();
     pauseOverlay.afterRender();
     blackjackOverlay.afterRender();
@@ -249,6 +283,7 @@ public class LevelsGameScreen extends ScreenAdapter {
     unloadAssets();
 
     ServiceLocator.getEntityService().dispose();
+    lightingEngine.dispose();
     ServiceLocator.getRenderService().dispose();
     ServiceLocator.getResourceService().dispose();
 
@@ -302,14 +337,11 @@ public class LevelsGameScreen extends ScreenAdapter {
     // disposed textures as black boxes in the next level.
     paths.add(ItemFactory.GOLD_TEXTURE);
     paths.add("images/projectiles/poison_arrow.png");
-    for (ItemType itemType : ItemType.values()) {
-      paths.add(itemType.getTexturePath());
-      paths.add(itemType.getProjectileTexturePath());
-    }
     paths.addAll(List.of(PauseButtonDisplay.extraTextures()));
     paths.addAll(List.of(WheelConfig.TEXTURES));
     paths.addAll(List.of(BlackjackConfig.TEXTURES));
-    return paths.toArray(new String[0]);
+    paths.addAll(List.of(ItemAssets.getTextures()));
+    return paths.stream().distinct().toArray(String[]::new);
   }
 
   /**

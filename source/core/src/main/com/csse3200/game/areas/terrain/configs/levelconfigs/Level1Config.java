@@ -3,10 +3,6 @@ package com.csse3200.game.areas.terrain.configs.levelconfigs;
 import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.areas.terrain.configs.*;
-import com.csse3200.game.components.item.ItemType;
-import com.csse3200.game.components.item.consumables.HealthPotion;
-import com.csse3200.game.components.item.weapons.bow.arrow.Arrow;
-import java.util.HashMap;
 
 public class Level1Config extends LevelConfig {
 
@@ -18,6 +14,7 @@ public class Level1Config extends LevelConfig {
     spikeTFP = "images/terrain/Level_1/Level_1_Spike.png";
     checkpointAtlas = "images/terrain/Level_1/Level_1_checkpoint.atlas";
 
+    // TEMP
     playerSpawn = new GridPoint2(1, 4);
     nextLevelTriggerSpawn = new GridPoint2(88, 18);
     nextLevelName = "level2";
@@ -72,9 +69,9 @@ public class Level1Config extends LevelConfig {
     bounds =
         new PlatformConfig[] {
           new PlatformConfig(new GridPoint2(40, 0), 50, 1, 0, groundTFP), // bottom
-          new PlatformConfig(new GridPoint2(0, 27), 90, 1, 0, groundTFP), // top
-          new PlatformConfig(new GridPoint2(0, 0), 1, 25, 0, groundTFP), // left
-          new PlatformConfig(new GridPoint2(90, 0), 1, 25, 0, groundTFP) // right
+          // new PlatformConfig(new GridPoint2(0, 27), 90, 1, 0, groundTFP), // top
+          new PlatformConfig(new GridPoint2(0, 0), 1, 22, 0, groundTFP), // left
+          new PlatformConfig(new GridPoint2(90, 0), 1, 14, 0, groundTFP) // right
         };
 
     floors =
@@ -109,21 +106,7 @@ public class Level1Config extends LevelConfig {
           new PlatformConfig(new GridPoint2(78, 0), 13, 17, 0, groundTFP),
         };
 
-    // Main-route supplies reward traversal; elemental bundles require optional climbs.
-    items = new HashMap<>();
-    items.put(new GridPoint2(9, 5), new Arrow(ItemType.STANDARD_ARROW, 5));
-    items.put(new GridPoint2(10, 5), new HealthPotion(1));
-    items.put(new GridPoint2(28, 2), new Arrow(ItemType.ROPE_ARROW, 1));
-    items.put(new GridPoint2(5, 16), new Arrow(ItemType.STANDARD_ARROW, 5));
-    items.put(new GridPoint2(22, 17), new HealthPotion(1));
-    items.put(new GridPoint2(30, 20), new Arrow(ItemType.STANDARD_ARROW, 5));
-    items.put(new GridPoint2(46, 22), new HealthPotion(1));
-    items.put(new GridPoint2(54, 17), new Arrow(ItemType.STANDARD_ARROW, 5));
-    items.put(new GridPoint2(58, 11), new HealthPotion(1));
-    items.put(new GridPoint2(74, 1), new Arrow(ItemType.STANDARD_ARROW, 10));
-    items.put(new GridPoint2(78, 17), new HealthPotion(1));
-    items.put(new GridPoint2(15, 23), new Arrow(ItemType.FIRE_ARROW, 5));
-    items.put(new GridPoint2(62, 24), new Arrow(ItemType.ICE_ARROW, 5));
+    // The rope arrow starts in the player's inventory instead of the world.
 
     // Both are earned after a substantial climb/combat section, not grouped at the start.
     checkpoints =
@@ -131,6 +114,8 @@ public class Level1Config extends LevelConfig {
           new CheckpointConfig(new GridPoint2(47, 22)),
           new CheckpointConfig(new GridPoint2(85, 17)),
         };
+
+    wheelSpinSpawns = new GridPoint2[] {new GridPoint2(32, 3)};
   }
 
   private MovingPlatformConfig moving(

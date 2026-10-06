@@ -18,6 +18,7 @@ public class EnemyDeathComponent extends Component {
     if (enemyHealth <= 0 && !dead) {
       dead = true;
       SoundEffects.play("sounds/enemy_Death.wav", 0.4f);
+      entity.getEvents().trigger("enemyDied", entity);
       ServiceLocator.getEntityService().scheduleRemoval(entity);
     }
   }

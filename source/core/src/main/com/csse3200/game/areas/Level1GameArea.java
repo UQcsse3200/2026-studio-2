@@ -68,9 +68,7 @@ public class Level1GameArea extends GameArea {
     new GridPoint2(23, 17), new GridPoint2(58, 11)
   };
 
-  // ======== ^^^^^^^^^^ ============================
-
-  public static final GridPoint2 PLAYER_SPAWN = new GridPoint2(1, 4);
+  private static final GridPoint2[] VultureSpawnLocations = new GridPoint2[] {};
 
   /** First floating platform is at (4, 2) and is 3 tiles wide; stand on its centre. */
   public static final GridPoint2 SHOPKEEPER_SPAWN = new GridPoint2(5, 3);
@@ -86,6 +84,8 @@ public class Level1GameArea extends GameArea {
   public static final GridPoint2[] GOLD_SPAWNS = {
     new GridPoint2(9, 5), new GridPoint2(15, 7), new GridPoint2(20, 8)
   };
+
+  private static final float WALL_WIDTH = 0.1f;
 
   /** Centre of the stepping-stone platform at (31, 2) */
   public static final GridPoint2 WHEEL_TOKEN_SPAWN = new GridPoint2(32, 3);
@@ -119,6 +119,27 @@ public class Level1GameArea extends GameArea {
     "images/terrain/Level_1/Level_1_platform.png",
     "images/terrain/Level_1/Level_1_Spike.png",
 
+    // Parallax background layers
+    "images/parallax/original_background.png",
+    "images/parallax/sky.png",
+    "images/parallax/Clouds.png",
+    "images/parallax/Mountains.png",
+    "images/parallax/ground.png",
+    "images/parallax/Rocks.png",
+    "images/parallax/level_1_background.png",
+    "images/parallax/level_1_clouds.png",
+    "images/parallax/level_1_furthest.png",
+    "images/parallax/white_box.png",
+    "images/parallax/lightning_1.png",
+    "images/parallax/lightning_2.png",
+    "images/parallax/lightning_3.png",
+    "images/parallax/lightning_4.png",
+    "images/parallax/rain_small.png",
+    "images/parallax/rain_medium.png",
+    "images/parallax/rain_large.png",
+    "images/parallax/rain_xl.png",
+    "images/parallax/rain_xxl.png",
+
     // Enemy textures
     "images/enemies/skeleton_warrior.png",
     "images/enemies/skeleton_archer.png",
@@ -128,8 +149,6 @@ public class Level1GameArea extends GameArea {
     "images/projectiles/fire_arrow.png",
     "images/projectiles/fireArr_animation.png",
     "images/projectiles/coldArr_animation.png",
-    "images/items/sword.png",
-    "images/items/spear.png",
     "images/health/heart_potion.png",
     "images/items/speed_potion.png",
     "images/items/poison_potion.png",
@@ -187,7 +206,6 @@ public class Level1GameArea extends GameArea {
     //// spawnWinCondition();
     spawnShopkeeper();
     spawnGold();
-    spawnWheelToken();
     spawnSkeletonArcher();
     spawnSkeletonWarrior();
     spawnWhenApproaching(
@@ -204,6 +222,7 @@ public class Level1GameArea extends GameArea {
     // spawnTestVulture();
     // spawnTestNecromancer();
 
+    // spawnVulture();
     // spawnNecromancer();
 
     // spawnTestWinCondition(); // Temporary test win condition near player spawn for quick testing
@@ -241,8 +260,7 @@ public class Level1GameArea extends GameArea {
    */
   private void spawnBackground() {
     final Vector2 backgroundPos = new Vector2(-10f, -10f);
-    BackgroundRenderComponent backgroundComponent =
-        new BackgroundRenderComponent(camera, backgroundPos, worldBounds);
+    backgroundComponent = new BackgroundRenderComponent(camera, backgroundPos, worldBounds);
 
     // Base layer: the whole scene.
     backgroundComponent.addLayer(
@@ -251,11 +269,13 @@ public class Level1GameArea extends GameArea {
         36f,
         20.2f,
         new Vector2(0f, 5f),
-        BackgroundType.DEPENDENT,
         new Vector2(0f, 0f),
-        false,
+        RepeatMode.NONE,
         0.7f,
-        1f);
+        1f,
+        false,
+        0,
+        -1);
 
     // Create the background entity.
     Entity background = new Entity().addComponent(backgroundComponent);
@@ -288,6 +308,7 @@ public class Level1GameArea extends GameArea {
       input.setCameraComponent(cameraComponent);
     }
     spawnEntityAt(newPlayer, config.getPlayerSpawn(), true, true);
+    PlayerFactory.giveStartingLoadout(newPlayer);
 
     System.out.println("player spawned");
     System.out.println(input);
@@ -306,11 +327,12 @@ public class Level1GameArea extends GameArea {
     }
   }
 
+  /*
   private void spawnWheelToken() {
     Entity token = ItemFactory.createWheelToken();
     spawnEntityAt(token, WHEEL_TOKEN_SPAWN, true, false);
     token.setPosition(token.getPosition().add(0f, 0.3f));
-  }
+  }*/
 
   private void spawnSkeletonWarrior() {
     for (GridPoint2 spawnLocation : skeletonWarriorSpawnLocations) {
@@ -512,9 +534,15 @@ public class Level1GameArea extends GameArea {
     resourceService.unloadAssets(forestMusic);
   }
 
+  @Override
+  public void toggleLevelMap() {
+    toggleMap(worldBounds, camera, backgroundComponent, "level1");
+  }
+
   /** Dispose of the game area. */
   @Override
   public void dispose() {
+    // MAY CAUSE ISSUE
     player.getComponent(DesertHazardRecoveryComponent.class).setEnabled(false);
     player.getEvents().trigger("grappleRelease");
     super.dispose();
