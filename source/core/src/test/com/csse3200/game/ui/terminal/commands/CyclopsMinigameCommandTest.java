@@ -3,10 +3,12 @@ package com.csse3200.game.ui.terminal.commands;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 import com.csse3200.game.GdxGame;
+import com.csse3200.game.cutscene.CutsceneLoader;
 import com.csse3200.game.events.EventHandler;
 import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.services.ServiceLocator;
@@ -39,7 +41,9 @@ class CyclopsMinigameCommandTest {
 
     assertTrue(command.action(new ArrayList<>(List.of("load"))));
 
-    verify(game).setScreen(GdxGame.ScreenType.CYCLOPS_MINIGAME);
+    verify(game)
+        .startCutscene(
+            any(CutsceneLoader.LoadedCutscene.class), GdxGame.ScreenType.CYCLOPS_MINIGAME);
   }
 
   @Test
