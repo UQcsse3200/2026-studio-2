@@ -5,6 +5,7 @@ import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.areas.terrain.TerrainFactory;
 import com.csse3200.game.components.CameraComponent;
+import com.csse3200.game.components.GameVolume;
 import com.csse3200.game.components.TextBoxComponent;
 import com.csse3200.game.components.minigames.cyclopsMinigame.CyclopsMinigameLogic;
 import com.csse3200.game.components.minigames.cyclopsMinigame.TimingBarDisplay;
@@ -22,33 +23,17 @@ import org.slf4j.LoggerFactory;
 public class CyclopsMinigameArea extends GameArea {
   private static final Logger logger = LoggerFactory.getLogger(CyclopsMinigameArea.class);
   private static final String[] cyclopsMinigameTextures = {
-    "images/black_roof.png",
-    "images/purple_heart.png",
-    "images/transparent.png",
-    "images/DevGridTile.png",
-    "images/Tile_2.png",
-    "images/platform.png",
-    "images/box_boy_leaf.png",
-    "images/spike.png",
-    "images/tree.png",
-    "images/ghost_king.png",
-    "images/ghost_1.png",
-    "images/grass_1.png",
-    "images/grass_2.png",
-    "images/grass_3.png",
-    "images/hex_grass_1.png",
-    "images/hex_grass_2.png",
-    "images/hex_grass_3.png",
-    "images/iso_grass_1.png",
-    "images/iso_grass_2.png",
-    "images/iso_grass_3.png",
-    "images/transparent.png",
+    "images/backgrounds/black_roof.png",
+    "images/health/purple_heart.png",
+    "images/ui/transparent.png",
+    "images/terrain/Others/platform.png",
+    "images/ui/transparent.png",
     "images/Greek Statues Pack I/Brute.png",
-    "images/CyclopsMinigameFloor.png",
-    "images/PixelArt_HeartBack.png"
+    "images/backgrounds/CyclopsMinigameFloor.png",
+    "images/health/PixelArt_HeartBack.png"
   };
 
-  private static final String[] cyclopsMinigameTexturesAtlases = {"images/player.atlas"};
+  private static final String[] cyclopsMinigameTexturesAtlases = {"images/player/player.atlas"};
 
   private static final String[] cyclopsMinigameMusic = {
     "sounds/minigames/cyclops/cave_background_noise.mp3"
@@ -188,7 +173,7 @@ public class CyclopsMinigameArea extends GameArea {
         ServiceLocator.getResourceService()
             .getAsset("sounds/minigames/cyclops/cave_background_noise.mp3", Music.class);
     music.setLooping(true);
-    music.setVolume(0.4f);
+    GameVolume.setMusicVolume(music, 0.4f);
     music.play();
   }
 

@@ -110,6 +110,7 @@ project(":core") {
         // libGDX
         api "com.badlogicgames.gdx:gdx:$gdxVersion"
         api "com.badlogicgames.gdx:gdx-box2d:$gdxVersion"
+        api "com.badlogicgames.box2dlights:box2dlights:$box2DLightsVersion"
         api "com.badlogicgames.gdx-controllers:gdx-controllers-core:$gdxControllersVersion"
         api "net.dermetfan.libgdx-utils:libgdx-utils:$gdxUtilsVersion"
         api "net.dermetfan.libgdx-utils:libgdx-utils-box2d:$gdxUtilsVersion"

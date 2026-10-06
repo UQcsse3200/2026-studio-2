@@ -3,6 +3,7 @@ package com.csse3200.game.screens.minigames;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.csse3200.game.GdxGame;
+import com.csse3200.game.components.GameVolume;
 import com.csse3200.game.components.minigames.blackjack.Blackjack;
 import com.csse3200.game.components.minigames.blackjack.BlackjackActions;
 import com.csse3200.game.components.minigames.blackjack.BlackjackConfig;
@@ -27,7 +28,7 @@ public class BlackjackScreen extends MinigameScreen {
 
     Music music = ServiceLocator.getResourceService().getAsset(BLACKJACK_MUSIC, Music.class);
     music.setLooping(true);
-    music.setVolume(0.25f);
+    GameVolume.setMusicVolume(music, 0.25f);
     music.play();
   }
 

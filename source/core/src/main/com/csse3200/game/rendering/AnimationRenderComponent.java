@@ -1,5 +1,6 @@
 package com.csse3200.game.rendering;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Animation.PlayMode;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -273,7 +274,11 @@ public class AnimationRenderComponent extends RenderComponent {
       u = u2;
       u2 = tmp;
     }
+    // Color prevColor = batch.getColor().cpy();
+    float light = getDarkness();
     batch.draw(region.getTexture(), drawX, drawY, width, height, u, v, u2, v2);
+    // batch.setColor(prevColor);
+    batch.setColor(Color.WHITE);
     if (!ServiceLocator.getEntityService().getPaused()) {
       animationPlayTime += timeSource.getDeltaTime();
     }
@@ -281,6 +286,8 @@ public class AnimationRenderComponent extends RenderComponent {
 
   @Override
   public void dispose() {
+    // Atlases belong to ResourceService and are shared by all entities of the same type.
+    // Disposing one enemy must not invalidate the textures used by surviving/new enemies.
     super.dispose();
   }
 }

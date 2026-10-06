@@ -1,16 +1,20 @@
 package com.csse3200.game.entities.factories;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.item.ItemType;
+import com.csse3200.game.components.lighting.PointLightComponent;
 import com.csse3200.game.components.projectile.ArrowProjectileComponent;
 import com.csse3200.game.components.projectile.ArrowType;
 import com.csse3200.game.entities.Entity;
+import com.csse3200.game.lighting.LightingDefaults;
 import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.rendering.item.ArrowRenderComponent;
+import com.csse3200.game.services.ServiceLocator;
 
 /** Factory for player and enemy projectile entities. */
 public class ProjectileFactory {
@@ -53,6 +57,22 @@ public class ProjectileFactory {
     return createPoisonArrow(null, position, direction);
   }
 
+  /**
+   * Returns the launch speed of an arrow type before any charge multiplier is applied.
+   *
+   * @param arrowType the arrow type
+   * @return base speed in world units per second
+   */
+  public static float getBaseSpeed(ArrowType arrowType) {
+    return switch (arrowType) {
+      case ICE -> ICE_ARROW_SPEED;
+      case FIRE -> FIRE_ARROW_SPEED;
+      case GRAPPLE -> GRAPPLE_ARROW_SPEED;
+      case POTION -> POISON_POTION_SPEED;
+      default -> STANDARD_ARROW_SPEED;
+    };
+  }
+
   public static Entity createPlayerArrow(Entity shooter, Vector2 position, Vector2 direction) {
     return createPlayerArrow(shooter, position, direction, 1f);
   }
@@ -76,13 +96,19 @@ public class ProjectileFactory {
   public static Entity createIceArrow(
       Entity shooter, Vector2 position, Vector2 direction, float speedMultiplier) {
     return createArrow(
-        shooter,
-        position,
-        direction,
-        ItemType.ICE_ARROW.getDamage(),
-        ICE_ARROW_SPEED * speedMultiplier,
-        ICE_ARROW_RANGE,
-        ArrowType.ICE);
+            shooter,
+            position,
+            direction,
+            ItemType.ICE_ARROW.getDamage(),
+            ICE_ARROW_SPEED * speedMultiplier,
+            ICE_ARROW_RANGE,
+            ArrowType.ICE)
+        .addComponent(
+            new PointLightComponent(
+                ServiceLocator.getLightingService().getEngine().getRayHandler(),
+                LightingDefaults.RAYS,
+                new Color(0.05f, 0.25f, 0.65f, 1f),
+                LightingDefaults.DIST));
   }
 
   public static Entity createFireArrow(Entity shooter, Vector2 position, Vector2 direction) {
@@ -92,13 +118,19 @@ public class ProjectileFactory {
   public static Entity createFireArrow(
       Entity shooter, Vector2 position, Vector2 direction, float speedMultiplier) {
     return createArrow(
-        shooter,
-        position,
-        direction,
-        ItemType.FIRE_ARROW.getDamage(),
-        FIRE_ARROW_SPEED * speedMultiplier,
-        FIRE_ARROW_RANGE,
-        ArrowType.FIRE);
+            shooter,
+            position,
+            direction,
+            ItemType.FIRE_ARROW.getDamage(),
+            FIRE_ARROW_SPEED * speedMultiplier,
+            FIRE_ARROW_RANGE,
+            ArrowType.FIRE)
+        .addComponent(
+            new PointLightComponent(
+                ServiceLocator.getLightingService().getEngine().getRayHandler(),
+                LightingDefaults.RAYS,
+                new Color(0.55f, 0.05f, 0.02f, 1f),
+                LightingDefaults.DIST));
   }
 
   public static Entity createGrappleArrow(Entity shooter, Vector2 position, Vector2 direction) {
@@ -119,13 +151,19 @@ public class ProjectileFactory {
   public static Entity createPoisonArrow(
       Entity shooter, Vector2 position, Vector2 direction, float speedMultiplier) {
     return createArrow(
-        shooter,
-        position,
-        direction,
-        ItemType.STANDARD_ARROW.getDamage(),
-        STANDARD_ARROW_SPEED * speedMultiplier,
-        STANDARD_ARROW_RANGE,
-        ArrowType.POISON);
+            shooter,
+            position,
+            direction,
+            ItemType.STANDARD_ARROW.getDamage(),
+            STANDARD_ARROW_SPEED * speedMultiplier,
+            STANDARD_ARROW_RANGE,
+            ArrowType.POISON)
+        .addComponent(
+            new PointLightComponent(
+                ServiceLocator.getLightingService().getEngine().getRayHandler(),
+                LightingDefaults.RAYS,
+                new Color(0.20f, 0.05f, 0.25f, 1f),
+                LightingDefaults.DIST));
   }
 
   /**
@@ -140,17 +178,23 @@ public class ProjectileFactory {
       Entity shooter, Vector2 position, Vector2 direction) {
     Entity potion =
         createArrow(
-            position,
-            ItemType.PoisonPotion.getDamage(),
-            new ArrowProjectileComponent(
-                shooter,
-                direction.cpy().nor(),
-                POISON_POTION_SPEED,
-                POISON_POTION_RANGE,
-                ArrowType.POTION,
-                ItemType.PoisonPotion.getPoisonDamagePerSecond(),
-                ItemType.PoisonPotion.getPoisonDuration()),
-            ArrowType.POTION);
+                position,
+                ItemType.PoisonPotion.getDamage(),
+                new ArrowProjectileComponent(
+                    shooter,
+                    direction.cpy().nor(),
+                    POISON_POTION_SPEED,
+                    POISON_POTION_RANGE,
+                    ArrowType.POTION,
+                    ItemType.PoisonPotion.getPoisonDamagePerSecond(),
+                    ItemType.PoisonPotion.getPoisonDuration()),
+                ArrowType.POTION)
+            .addComponent(
+                new PointLightComponent(
+                    ServiceLocator.getLightingService().getEngine().getRayHandler(),
+                    LightingDefaults.RAYS,
+                    new Color(0.20f, 0.05f, 0.25f, 1f),
+                    LightingDefaults.DIST));
     potion.setScale(POISON_POTION_WIDTH, POISON_POTION_HEIGHT);
     return potion;
   }

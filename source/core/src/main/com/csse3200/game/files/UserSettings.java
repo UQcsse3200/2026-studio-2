@@ -2,6 +2,7 @@ package com.csse3200.game.files;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Graphics.DisplayMode;
+import com.csse3200.game.components.GameVolume;
 import com.csse3200.game.files.FileLoader.Location;
 import java.io.File;
 
@@ -46,6 +47,7 @@ public class UserSettings {
    * @param settings Settings to apply
    */
   public static void applySettings(Settings settings) {
+    GameVolume.set(settings.volume);
     Gdx.graphics.setForegroundFPS(settings.fps);
     Gdx.graphics.setVSync(settings.vsync);
 
@@ -86,6 +88,8 @@ public class UserSettings {
     /** ui Scale. Currently unused, but can be implemented. */
     public float uiScale = 1f;
 
+    public float volume = 1f;
+
     public DisplaySettings displayMode = null;
   }
 
@@ -94,6 +98,7 @@ public class UserSettings {
     public int width;
     public int height;
     public int refreshRate;
+    public float brightness;
 
     public DisplaySettings() {}
 

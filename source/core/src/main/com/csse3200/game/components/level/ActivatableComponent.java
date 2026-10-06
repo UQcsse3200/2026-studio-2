@@ -7,7 +7,7 @@ import org.slf4j.LoggerFactory;
 public class ActivatableComponent extends Component {
   private static final Logger logger = LoggerFactory.getLogger(ActivatableComponent.class);
 
-  private final boolean activatable;
+  protected final boolean activatable;
   private boolean active;
   private final String[] ids;
 
@@ -31,7 +31,7 @@ public class ActivatableComponent extends Component {
   public ActivatableComponent(boolean active, String[] ids) {
     boolean emptyId = checkId(ids);
 
-    this.active = active && emptyId;
+    this.active = active;
     activatable = !emptyId;
     this.ids = ids;
   }

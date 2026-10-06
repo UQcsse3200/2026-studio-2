@@ -40,6 +40,10 @@ public class PlayerInteractionComponent extends Component {
     entity.getEvents().addListener("closeShop", this::onShopClosed);
   }
 
+  public InventoryComponent getInventory() {
+    return inventory;
+  }
+
   /**
    * Interacts with the nearest shopkeeper, gold coin, wheel token, or item. Pressing interact again
    * while the shop is open closes it.
@@ -329,8 +333,6 @@ public class PlayerInteractionComponent extends Component {
       case FIRE_ARROW -> ItemFactory.createFireArrow(quantity);
       case ICE_ARROW -> ItemFactory.createIceArrow(quantity);
       case HEALTH_POTION -> ItemFactory.createHealthPotion(quantity);
-      case Sword -> ItemFactory.createSword(quantity);
-      case Spear -> ItemFactory.createSpear(quantity);
       case SpeedPotion -> ItemFactory.createSpeedPotion(quantity);
       case PoisonPotion -> ItemFactory.createPoisonPotion(quantity);
     };

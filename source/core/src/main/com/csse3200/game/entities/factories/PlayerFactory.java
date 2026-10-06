@@ -2,14 +2,17 @@ package com.csse3200.game.entities.factories;
 
 import com.badlogic.gdx.graphics.g2d.Animation.PlayMode;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.csse3200.game.components.BurnStatsComponent;
 import com.csse3200.game.components.CombatStatsComponent;
+import com.csse3200.game.components.PoisonStatsComponent;
+import com.csse3200.game.components.SlowStatsComponent;
 import com.csse3200.game.components.inventory.BackpackDisplay;
 import com.csse3200.game.components.inventory.InventoryBarDisplay;
 import com.csse3200.game.components.inventory.InventoryComponent;
+import com.csse3200.game.components.item.ItemType;
 import com.csse3200.game.components.item.weapons.WeaponComponent;
 import com.csse3200.game.components.item.weapons.bow.BowComponent;
 import com.csse3200.game.components.item.weapons.bow.grapple.GrappleComponent;
-import com.csse3200.game.components.item.weapons.melee.MeleeComponent;
 import com.csse3200.game.components.itemdictionary.ItemDictionaryComponent;
 import com.csse3200.game.components.itemdictionary.ItemDictionaryDisplay;
 import com.csse3200.game.components.level.RespawnComponent;
@@ -26,134 +29,161 @@ import com.csse3200.game.physics.components.ColliderComponent;
 import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.rendering.AnimationRenderComponent;
-import com.csse3200.game.rendering.item.GrappleRenderComponent;
-import com.csse3200.game.rendering.item.MeleeRenderComponent;
-import com.csse3200.game.services.ServiceLocator;
+import com.csse3200.game.rendering.ParticleEffectsRenderingComponent;
 import com.csse3200.game.rendering.item.GrappleHoldRenderComponent;
+import com.csse3200.game.rendering.item.GrappleRenderComponent;
+import com.csse3200.game.services.ServiceLocator;
 
 /** Factory to create a player entity. */
 public class PlayerFactory {
-  private static final PlayerConfig stats =
-      FileLoader.readClass(PlayerConfig.class, "configs/player.json");
+    private static final PlayerConfig stats =
+            FileLoader.readClass(PlayerConfig.class, "configs/player.json");
 
-  /**
-   * Create a player entity.
-   *
-   * @return entity
-   */
-  public static Entity createPlayer() {
-    InputComponent inputComponent =
-        ServiceLocator.getInputService().getInputFactory().createForPlayer();
-    BowComponent bowComponent = new BowComponent();
+    /**
+     * Create a player entity.
+     *
+     * @return entity
+     */
+    public static Entity createPlayer() {
+        InputComponent inputComponent =
+                ServiceLocator.getInputService().getInputFactory().createForPlayer();
+        BowComponent bowComponent = new BowComponent();
 
-    AnimationRenderComponent animator =
-        new AnimationRenderComponent(
-            ServiceLocator.getResourceService()
-                .getAsset("images/player.atlas", TextureAtlas.class));
-    animator.addAnimation("idle", 0.2f, PlayMode.LOOP);
-    animator.addAnimation("walk", 0.1f, PlayMode.LOOP);
-    animator.addAnimation("sprint", 0.125f, PlayMode.LOOP);
-    animator.addAnimation("jump", 0.075f, PlayMode.NORMAL);
-    animator.addAnimation("hurt", 0.04f, PlayMode.NORMAL);
-    animator.addAnimation("death", 0.1458f, PlayMode.NORMAL);
-    animator.addAnimation("sleep", 0.1458f, PlayMode.LOOP);
-    animator.addAnimation("melee", 0.03f, PlayMode.NORMAL, 79f, 38f);
-    animator.addAnimation("dash", 0.025f, PlayMode.NORMAL, 134.5f, 39f);
-    animator.addAnimation("air_dash", 0.025f, PlayMode.NORMAL, 94f, 39f);
-    animator.addAnimation("bow_draw", 0.08f, PlayMode.NORMAL, 72f, 23f);
-    animator.addAnimation("bow_hold", 0.1f, PlayMode.LOOP, 72f, 24f);
-    animator.addAnimation("bow_shoot", 0.05f, PlayMode.NORMAL, 71f, 23f);
-    animator.addAnimation("instrument_draw", 0.08f, PlayMode.NORMAL, 78.4f, 37.5f);
-    animator.addAnimation("instrument_hold", 0.1f, PlayMode.LOOP, 78.4f, 37.5f);
+        AnimationRenderComponent animator =
+                new AnimationRenderComponent(
+                        ServiceLocator.getResourceService()
+                                .getAsset("images/player/player.atlas", TextureAtlas.class));
+        animator.addAnimation("idle", 0.2f, PlayMode.LOOP);
+        animator.addAnimation("walk", 0.1f, PlayMode.LOOP);
+        animator.addAnimation("sprint", 0.125f, PlayMode.LOOP);
+        animator.addAnimation("jump", 0.075f, PlayMode.NORMAL);
+        animator.addAnimation("hurt", 0.04f, PlayMode.NORMAL);
+        animator.addAnimation("death", 0.1458f, PlayMode.NORMAL);
+        animator.addAnimation("sleep", 0.1458f, PlayMode.LOOP);
+        animator.addAnimation("dash", 0.025f, PlayMode.NORMAL, 134.5f, 39f);
+        animator.addAnimation("air_dash", 0.025f, PlayMode.NORMAL, 94f, 39f);
+        animator.addAnimation("bow_draw", 0.08f, PlayMode.NORMAL, 72f, 23f);
+        animator.addAnimation("bow_hold", 0.1f, PlayMode.LOOP, 72f, 24f);
+        animator.addAnimation("bow_shoot", 0.05f, PlayMode.NORMAL, 71f, 23f);
+        animator.addAnimation("instrument_draw", 0.08f, PlayMode.NORMAL, 78.4f, 37.5f);
+        animator.addAnimation("instrument_hold", 0.1f, PlayMode.LOOP, 78.4f, 37.5f);
 
-    Entity player =
-        new Entity()
-            .addComponent(animator)
-            .addComponent(new PhysicsComponent())
-            .addComponent(new ColliderComponent())
-            .addComponent(new HitboxComponent().setLayer(PhysicsLayer.PLAYER))
-            .addComponent(new PlayerActions())
-            .addComponent(
-                new CombatStatsComponent(
-                    stats.health, stats.baseAttack, stats.invulnerabilityDuration))
-            .addComponent(bowComponent)
-            .addComponent(new PoisonBuff())
-            .addComponent(new MeleeAttackComponent())
-            .addComponent(new ArrowWheelComponent())
-            .addComponent(new MeleeComponent())
-            .addComponent(new WeaponComponent(bowComponent))
-            .addComponent(new InventoryComponent(stats.gold))
-            .addComponent(new InventoryBarDisplay())
-            .addComponent(new BackpackDisplay())
-            .addComponent(new ItemDictionaryComponent())
-            .addComponent(new ItemDictionaryDisplay())
-            .addComponent(new PlayerInteractionComponent())
-            .addComponent(new ShopComponent())
-            .addComponent(new ShopDisplay())
-            .addComponent(new ItemUseComponent())
-            .addComponent(inputComponent)
-            .addComponent(new PlayerStatsDisplay())
-            .addComponent(new GrappleComponent())
-            .addComponent(new GrappleRenderComponent())
-            .addComponent(new PlayerAnimationController())
-            .addComponent(new MeleeRenderComponent())
-            .addComponent(new RespawnComponent())
-            .addComponent(new PlayerAnimationController())
-            .addComponent(new GrappleHoldRenderComponent())
-            .addComponent(new MeleeRenderComponent());
+        Entity player =
+                new Entity()
+                        .addComponent(animator)
+                        .addComponent(new PhysicsComponent())
+                        .addComponent(new ColliderComponent())
+                        .addComponent(new HitboxComponent().setLayer(PhysicsLayer.PLAYER))
+                        .addComponent(new PlayerActions())
+                        .addComponent(new PlayerSoundComponent())
+                        .addComponent(
+                                new CombatStatsComponent(
+                                        stats.health, stats.baseAttack, stats.invulnerabilityDuration))
+                        .addComponent(bowComponent)
+                        .addComponent(new PoisonBuff())
+                        .addComponent(new ArrowWheelComponent())
+                        .addComponent(new ArrowWheelDisplay())
+                        .addComponent(new WeaponComponent(bowComponent))
+                        .addComponent(new InventoryComponent(stats.gold))
+                        .addComponent(new InventoryBarDisplay())
+                        .addComponent(new BackpackDisplay())
+                        .addComponent(new ItemDictionaryComponent())
+                        .addComponent(new ItemDictionaryDisplay())
+                        .addComponent(new PlayerInteractionComponent())
+                        .addComponent(new ShopComponent())
+                        .addComponent(new ShopDisplay())
+                        .addComponent(new ItemUseComponent())
+                        .addComponent(inputComponent)
+                        .addComponent(new PlayerStatsDisplay())
+                        .addComponent(new ArrowTrajectoryDisplay())
+                        .addComponent(new GrappleComponent())
+                        .addComponent(new GrappleRenderComponent())
+                        .addComponent(new PlayerAnimationController())
+                        .addComponent(new GrappleHoldRenderComponent())
+                        .addComponent(new RespawnComponent())
+                        .addComponent(new PoisonStatsComponent())
+                        .addComponent(new BurnStatsComponent())
+                        .addComponent(new SlowStatsComponent())
+                        .addComponent(new ParticleEffectsRenderingComponent());
 
-    player.getComponent(ColliderComponent.class).setDensity(1.5f);
-    player.getComponent(AnimationRenderComponent.class).scaleEntity();
-    player.scaleWidth(0.6f);
-    PhysicsUtils.setScaledCollider(player, 1f, 1f);
-    return player;
-  }
+        player.getComponent(ColliderComponent.class).setDensity(1.5f);
+        player.getComponent(AnimationRenderComponent.class).scaleEntity();
+        player.scaleWidth(0.6f);
+        PhysicsUtils.setScaledCollider(player, 1f, 1f);
+        return player;
+    }
 
-  /**
-   * Create a player display entity.
-   *
-   * <p>Takes away specific components from the user that are not needed in particular situations
-   * like minigames and cutscenes.
-   *
-   * <p>Currently removed: - Grappling Components - Player Actions Components - Bow Components
-   *
-   * @return entity
-   */
-  public static Entity createPlayerDisplay() {
-    AnimationRenderComponent animator =
-        new AnimationRenderComponent(
-            ServiceLocator.getResourceService()
-                .getAsset("images/player.atlas", TextureAtlas.class));
-    animator.addAnimation("idle", 0.15f, PlayMode.LOOP);
-    animator.addAnimation("walk", 0.1f, PlayMode.LOOP);
-    animator.addAnimation("sprint", 0.1f, PlayMode.LOOP);
-    animator.addAnimation("jump", 0.05f, PlayMode.NORMAL);
-    animator.addAnimation("hurt", 0.04f, PlayMode.NORMAL);
-    animator.addAnimation("death", 0.1458f, PlayMode.NORMAL);
-    animator.addAnimation("sleep", 0.1458f, PlayMode.LOOP);
+    /**
+     * Puts a rope arrow into the player's inventory.
+     *
+     * <p>Call this after the player entity has been created so inventory UI can refresh. Sandbox
+     * should not use this; it keeps world pickups instead.
+     *
+     * @param player player entity with an inventory
+     */
+    public static void giveStartingLoadout(Entity player) {
+        if (player == null) {
+            return;
+        }
 
-    Entity player =
-        new Entity()
-            .addComponent(animator)
-            .addComponent(new PhysicsComponent())
-            .addComponent(new ColliderComponent())
-            .addComponent(new HitboxComponent().setLayer(PhysicsLayer.PLAYER))
-            .addComponent(
-                new CombatStatsComponent(
-                    stats.health, stats.baseAttack, stats.invulnerabilityDuration))
-            .addComponent(new PlayerStatsDisplay())
-            .addComponent(new PlayerAnimationController())
-            .addComponent(new RespawnComponent());
+        InventoryComponent inventory = player.getComponent(InventoryComponent.class);
+        if (inventory == null) {
+            return;
+        }
 
-    PhysicsUtils.setScaledCollider(player, 0.6f, 0.3f);
-    player.getComponent(ColliderComponent.class).setDensity(1.5f);
-    player.getComponent(AnimationRenderComponent.class).scaleEntity();
-    player.scaleWidth(0.75f);
+        inventory.addItem(ItemType.ROPE_ARROW, 1);
 
-    return player;
-  }
+        ItemDictionaryComponent dictionary = player.getComponent(ItemDictionaryComponent.class);
+        if (dictionary != null) {
+            dictionary.unlockItem(ItemType.ROPE_ARROW);
+        }
+    }
 
-  private PlayerFactory() {
-    throw new IllegalStateException("Instantiating static util class");
-  }
+    /**
+     * Create a player display entity.
+     *
+     * <p>Takes away specific components from the user that are not needed in particular situations
+     * like minigames and cutscenes.
+     *
+     * <p>Currently removed: - Grappling Components - Player Actions Components - Bow Components
+     *
+     * @return entity
+     */
+    public static Entity createPlayerDisplay() {
+        AnimationRenderComponent animator =
+                new AnimationRenderComponent(
+                        ServiceLocator.getResourceService()
+                                .getAsset("images/player/player.atlas", TextureAtlas.class));
+        animator.addAnimation("idle", 0.15f, PlayMode.LOOP);
+        animator.addAnimation("walk", 0.1f, PlayMode.LOOP);
+        animator.addAnimation("sprint", 0.1f, PlayMode.LOOP);
+        animator.addAnimation("jump", 0.05f, PlayMode.NORMAL);
+        animator.addAnimation("hurt", 0.04f, PlayMode.NORMAL);
+        animator.addAnimation("death", 0.1458f, PlayMode.NORMAL);
+        animator.addAnimation("sleep", 0.1458f, PlayMode.LOOP);
+
+        Entity player =
+                new Entity()
+                        .addComponent(animator)
+                        .addComponent(new PhysicsComponent())
+                        .addComponent(new ColliderComponent())
+                        .addComponent(new HitboxComponent().setLayer(PhysicsLayer.PLAYER))
+                        .addComponent(
+                                new CombatStatsComponent(
+                                        stats.health, stats.baseAttack, stats.invulnerabilityDuration))
+                        .addComponent(new PlayerStatsDisplay())
+                        .addComponent(new PlayerAnimationController())
+                        .addComponent(new RespawnComponent());
+
+        PhysicsUtils.setScaledCollider(player, 0.6f, 0.3f);
+        player.getComponent(ColliderComponent.class).setDensity(1.5f);
+        player.getComponent(AnimationRenderComponent.class).scaleEntity();
+        player.scaleWidth(0.75f);
+
+        return player;
+    }
+
+    private PlayerFactory() {
+        throw new IllegalStateException("Instantiating static util class");
+    }
 }
