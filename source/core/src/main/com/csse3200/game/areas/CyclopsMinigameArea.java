@@ -51,6 +51,8 @@ public class CyclopsMinigameArea extends GameArea {
 
   private Entity player;
   private Entity minigame;
+  private Vector2 playerOffset = new Vector2();
+  private static final float PLAYER_SCALE = 1.5f;
 
   static final GridPoint2 MAP_SIZE = new GridPoint2(80, 30);
   static final int NUM_STATUES = 6;
@@ -101,6 +103,7 @@ public class CyclopsMinigameArea extends GameArea {
     cyclopsMinigameLogic.setWinLocation(winLocation);
     cyclopsMinigameLogic.setSafeLocations(statueLocations);
     cyclopsMinigameLogic.setLossLocations(statueGapLocations);
+    cyclopsMinigameLogic.setPlayerOffset(playerOffset);
 
     minigame = new Entity();
     minigame.addComponent(timingBarDisplay);
@@ -190,8 +193,13 @@ public class CyclopsMinigameArea extends GameArea {
    */
   private Entity spawnPlayer() {
     Entity newPlayer = PlayerFactory.createPlayerDisplay();
+    Vector2 baseScale = newPlayer.getScale().cpy();
+    newPlayer.setScale(baseScale.cpy().scl(PLAYER_SCALE));
+    // Growing the sprite moves its centre right, so shift its anchor left to keep it over the tile.
+    playerOffset = new Vector2(-baseScale.x * (PLAYER_SCALE - 1f) / 2f, 0f);
     spawnEntityAt(newPlayer, statueLocations.getFirst(), false, false);
-    newPlayer.setPosition(terrain.tileToWorldPosition(statueLocations.getFirst()));
+    newPlayer.setPosition(
+        terrain.tileToWorldPosition(statueLocations.getFirst()).add(playerOffset));
     return newPlayer;
   }
 

@@ -23,8 +23,7 @@ public class CyclopsCameraFollowComponent extends Component {
   @Override
   public void update() {
     float halfView = camera.viewportWidth / 2f;
-    float x =
-        MathUtils.clamp(target.getCenterPosition().x, halfView, roomWidth - halfView);
+    float x = MathUtils.clamp(target.getCenterPosition().x, halfView, roomWidth - halfView);
     entity.setPosition(new Vector2(x, y));
   }
 }

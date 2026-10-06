@@ -46,6 +46,8 @@ public class CyclopsMinigameLogicTest {
     timingBarLogic = mock(TimingBarLogic.class);
     timingBarDisplay = mock(TimingBarDisplay.class);
     terrainComponent = mock(TerrainComponent.class);
+    when(terrainComponent.tileToWorldPosition(any(GridPoint2.class)))
+        .thenAnswer(invocation -> new Vector2());
     player = mock(Entity.class);
     events = mock(EventHandler.class);
     when(player.getEvents()).thenReturn(events);
@@ -183,6 +185,19 @@ public class CyclopsMinigameLogicTest {
 
     minigameLogic.restartMinigame();
     verify(player).setPosition(startPos);
+  }
+
+  @Test
+  void playerOffsetIsAppliedToMoves() {
+    GridPoint2 start = new GridPoint2(1, 0);
+    GridPoint2 next = new GridPoint2(2, 0);
+    minigameLogic.setSafeLocations(List.of(start, next));
+    minigameLogic.setPlayerOffset(new Vector2(-0.25f, 0f));
+    when(terrainComponent.tileToWorldPosition(next)).thenAnswer(invocation -> new Vector2(200, 0));
+
+    runMove(true);
+
+    verify(player).setPosition(new Vector2(199.75f, 0f));
   }
 
   @Test

@@ -59,6 +59,7 @@ public class CyclopsMinigameLogic extends Component {
   private Vector2 runStart = new Vector2();
   private Vector2 runTarget = new Vector2();
   private boolean runSuccess = false;
+  private Vector2 playerOffset = new Vector2();
 
   /* Important Grid Locations */
   private List<GridPoint2> safeLocations;
@@ -95,6 +96,10 @@ public class CyclopsMinigameLogic extends Component {
   }
 
   /* Getters & Setters */
+  public void setPlayerOffset(Vector2 playerOffset) {
+    this.playerOffset = playerOffset.cpy();
+  }
+
   public void setWinLocation(GridPoint2 winLocation) {
     this.winLocation = winLocation;
   }
@@ -126,7 +131,7 @@ public class CyclopsMinigameLogic extends Component {
 
   /* Player Handling Functions */
   private void movePlayer(GridPoint2 location) {
-    Vector2 worldPos = this.terrainComponent.tileToWorldPosition(location);
+    Vector2 worldPos = this.terrainComponent.tileToWorldPosition(location).add(playerOffset);
     logger.debug("Converting GridPoint2 Location ({}) to World Position ({})", location, worldPos);
     logger.info(
         "Moving Player (Entity {}) from orig:{} to dest:{}",
@@ -226,7 +231,8 @@ public class CyclopsMinigameLogic extends Component {
   private void beginRun(boolean success) {
     runSuccess = success;
     runStart = playerEntity.getPosition().cpy();
-    runTarget = terrainComponent.tileToWorldPosition(advanceToNextLocation(runSuccess));
+    runTarget =
+        terrainComponent.tileToWorldPosition(advanceToNextLocation(runSuccess)).add(playerOffset);
     playWalkingSound();
     playerEntity.getEvents().trigger("walk", new Vector2(1, 0));
     playerEntity.getEvents().trigger("sprint");
@@ -242,7 +248,8 @@ public class CyclopsMinigameLogic extends Component {
       if (combatStats != null) {
         combatStats.addHealth(-MISS_DAMAGE);
       }
-      // A miss costs a heart and retries the current statue; losing all hearts restarts the minigame.
+      // A miss costs a heart and retries the current statue; losing all hearts restarts the
+      // minigame.
       changeState(playerIsDead() ? State.DEATH : State.LOSS);
     }
   }

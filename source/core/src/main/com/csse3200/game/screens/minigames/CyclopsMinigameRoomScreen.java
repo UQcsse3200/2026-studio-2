@@ -168,7 +168,7 @@ public class CyclopsMinigameRoomScreen extends ScreenAdapter {
             List.of(
                 "Hmm... there's a cyclops in the way, I'll need to get past...",
                 "...I'll need to \"LEFT_CLICK\" to each of those statues at the right time"
-                + " (Left-click or TAB to continue)"));
+                    + " (Left-click or TAB to continue)"));
     textBoxComponent.create();
 
     InputComponent inputComponent =
@@ -191,9 +191,7 @@ public class CyclopsMinigameRoomScreen extends ScreenAdapter {
     ServiceLocator.getCyclopsMinigameEventHandler()
         .addListener(
             "died",
-            () ->
-                Gdx.app.postRunnable(
-                    () -> game.setScreen(GdxGame.ScreenType.CYCLOPS_MINIGAME)));
+            () -> Gdx.app.postRunnable(() -> game.setScreen(GdxGame.ScreenType.CYCLOPS_MINIGAME)));
 
     Entity ui = new Entity();
     ui.addComponent(new InputDecorator(stage, 10))

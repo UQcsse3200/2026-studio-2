@@ -6,14 +6,14 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
 
 class CyclopsRoomLayoutTest {
-  private static final int SPACING = CyclopsMinigameArea.MAP_SIZE.x / CyclopsMinigameArea.NUM_STATUES;
+  private static final int SPACING =
+      CyclopsMinigameArea.MAP_SIZE.x / CyclopsMinigameArea.NUM_STATUES;
 
   @Test
   void statuesAreEvenlySpaced() {
     for (int i = 1; i < CyclopsMinigameArea.NUM_STATUES; i++) {
       assertEquals(
-          SPACING,
-          CyclopsMinigameArea.statueTileX(i + 1) - CyclopsMinigameArea.statueTileX(i));
+          SPACING, CyclopsMinigameArea.statueTileX(i + 1) - CyclopsMinigameArea.statueTileX(i));
     }
   }
 
@@ -37,7 +37,9 @@ class CyclopsRoomLayoutTest {
   @Test
   void statuesAndGapsStayInsideRoom() {
     assertTrue(CyclopsMinigameArea.statueTileX(1) > 0);
-    assertTrue(CyclopsMinigameArea.gapTileX(CyclopsMinigameArea.NUM_STATUES) < CyclopsMinigameArea.MAP_SIZE.x);
+    assertTrue(
+        CyclopsMinigameArea.gapTileX(CyclopsMinigameArea.NUM_STATUES)
+            < CyclopsMinigameArea.MAP_SIZE.x);
   }
 
   @Test
