@@ -165,7 +165,7 @@
   "calypso": {
     "health": 300,
     "baseAttack": 2,
-    "speed": 2.0,
+    "speed": 4.0,
     "behaviour": "chase",
     "attackType": "calypso",
     "attackRange": 1.5,
@@ -178,7 +178,7 @@
     "maxChaseDistance": 9.0,
     "repositionPriority": 25,
     "repositionDistance": 2.0,
-    "maxSpeed": 2.0,
+    "maxSpeed": 4.0,
     "gravity": true,
 
     "itemDrops": [
