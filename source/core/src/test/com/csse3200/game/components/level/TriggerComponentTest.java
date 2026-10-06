@@ -26,17 +26,14 @@ class TriggerComponentTest {
 
   @Test
   void shouldActivateIdsWhenPlayerCollides() {
-    TriggerComponent component =
-        new TriggerComponent(new String[] {"door1", "platform1"}, false);
+    TriggerComponent component = new TriggerComponent(new String[] {"door1", "platform1"}, false);
 
     Entity triggerEntity = new Entity().addComponent(component);
     triggerEntity.create();
 
     final int[] activations = {0};
 
-    triggerEntity
-        .getEvents()
-        .addListener("activateByKey", (String id) -> activations[0]++);
+    triggerEntity.getEvents().addListener("activateByKey", (String id) -> activations[0]++);
 
     Entity player = new Entity().addComponent(mock(PlayerActions.class));
 
@@ -56,17 +53,14 @@ class TriggerComponentTest {
 
   @Test
   void shouldNotActivateWhenBodyHasNoUserData() {
-    TriggerComponent component =
-        new TriggerComponent(new String[] {"door1"}, false);
+    TriggerComponent component = new TriggerComponent(new String[] {"door1"}, false);
 
     Entity triggerEntity = new Entity().addComponent(component);
     triggerEntity.create();
 
     final int[] activations = {0};
 
-    triggerEntity
-        .getEvents()
-        .addListener("activateByKey", (String id) -> activations[0]++);
+    triggerEntity.getEvents().addListener("activateByKey", (String id) -> activations[0]++);
 
     Fixture other = mock(Fixture.class);
     Body body = mock(Body.class);
@@ -81,17 +75,14 @@ class TriggerComponentTest {
 
   @Test
   void shouldNotActivateWhenBodyHasNoEntity() {
-    TriggerComponent component =
-        new TriggerComponent(new String[] {"door1"}, false);
+    TriggerComponent component = new TriggerComponent(new String[] {"door1"}, false);
 
     Entity triggerEntity = new Entity().addComponent(component);
     triggerEntity.create();
 
     final int[] activations = {0};
 
-    triggerEntity
-        .getEvents()
-        .addListener("activateByKey", (String id) -> activations[0]++);
+    triggerEntity.getEvents().addListener("activateByKey", (String id) -> activations[0]++);
 
     BodyUserData data = new BodyUserData();
 
@@ -108,17 +99,14 @@ class TriggerComponentTest {
 
   @Test
   void shouldNotActivateWhenCollisionIsNotPlayer() {
-    TriggerComponent component =
-        new TriggerComponent(new String[] {"door1"}, false);
+    TriggerComponent component = new TriggerComponent(new String[] {"door1"}, false);
 
     Entity triggerEntity = new Entity().addComponent(component);
     triggerEntity.create();
 
     final int[] activations = {0};
 
-    triggerEntity
-        .getEvents()
-        .addListener("activateByKey", (String id) -> activations[0]++);
+    triggerEntity.getEvents().addListener("activateByKey", (String id) -> activations[0]++);
 
     Entity nonPlayer = new Entity();
 
@@ -140,21 +128,15 @@ class TriggerComponentTest {
   void shouldOnlyActivateOnceWhenOneTimeActivation() {
     ColliderComponent collider = mock(ColliderComponent.class);
 
-    TriggerComponent component =
-        new TriggerComponent(new String[] {"door1"}, true);
+    TriggerComponent component = new TriggerComponent(new String[] {"door1"}, true);
 
-    Entity triggerEntity =
-        new Entity()
-            .addComponent(component)
-            .addComponent(collider);
+    Entity triggerEntity = new Entity().addComponent(component).addComponent(collider);
 
     triggerEntity.create();
 
     final int[] activations = {0};
 
-    triggerEntity
-        .getEvents()
-        .addListener("activateByKey", (String id) -> activations[0]++);
+    triggerEntity.getEvents().addListener("activateByKey", (String id) -> activations[0]++);
 
     Entity player = new Entity().addComponent(mock(PlayerActions.class));
 
@@ -193,7 +175,6 @@ class TriggerComponentTest {
     when(other.getBody()).thenReturn(body);
     when(body.getUserData()).thenReturn(data);
 
-    assertDoesNotThrow(
-        () -> triggerEntity.getEvents().trigger("collisionStart", null, other));
+    assertDoesNotThrow(() -> triggerEntity.getEvents().trigger("collisionStart", null, other));
   }
 }
