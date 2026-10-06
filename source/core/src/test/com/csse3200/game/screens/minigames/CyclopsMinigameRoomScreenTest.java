@@ -1,5 +1,7 @@
 package com.csse3200.game.screens.minigames;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -48,5 +50,17 @@ class CyclopsMinigameRoomScreenTest {
     reload.getValue().run();
     verify(game).setScreen(GdxGame.ScreenType.CYCLOPS_MINIGAME);
     verify(cyclopsEvents).trigger(CyclopsMinigameLogic.CYCLOPS_SLEEP_EVENT);
+    CyclopsMinigameRoomScreen.consumeSkipIntroOnNextLoad();
+  }
+
+  @Test
+  void skipIntroFlagIsSetByRestartAndClearedAfterOneUse() {
+    Gdx.app = mock(Application.class);
+    ServiceLocator.registerCyclopsMinigameEventHandler(mock(EventHandler.class));
+
+    CyclopsMinigameRoomScreen.restartFromGameOver(mock(GdxGame.class));
+
+    assertTrue(CyclopsMinigameRoomScreen.consumeSkipIntroOnNextLoad());
+    assertFalse(CyclopsMinigameRoomScreen.consumeSkipIntroOnNextLoad());
   }
 }
