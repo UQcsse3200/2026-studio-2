@@ -20,6 +20,7 @@ public class RangedAttackTask extends DefaultTask implements PriorityTask {
   private final float projectileSpeed;
   private final float projectileLifetime;
   private final boolean useNecromancerProjectile;
+  private final boolean useCalypsoProjectile;
 
   private long lastAttackTime;
 
@@ -52,6 +53,41 @@ public class RangedAttackTask extends DefaultTask implements PriorityTask {
     this.projectileSpeed = projectileSpeed;
     this.projectileLifetime = projectileLifetime;
     this.useNecromancerProjectile = useNecromancerProjectile;
+    this.useCalypsoProjectile = false;
+  }
+
+  /**
+   * Creates a ranged attack task with support for a Calypso projectile.
+   *
+   * @param target target entity to attack
+   * @param priority task priority while target is in range
+   * @param attackRange maximum distance at which the enemy can fire
+   * @param cooldown seconds between attacks
+   * @param damage projectile damage
+   * @param projectileSpeed projectile movement speed
+   * @param projectileLifetime maximum projectile lifetime in seconds
+   * @param useNecromancerProjectile whether to use the necromancer projectile
+   * @param useCalypsoProjectile whether to use the Calypso projectile
+   */
+  public RangedAttackTask(
+      Entity target,
+      int priority,
+      float attackRange,
+      float cooldown,
+      int damage,
+      float projectileSpeed,
+      float projectileLifetime,
+      boolean useNecromancerProjectile,
+      boolean useCalypsoProjectile) {
+    this.target = target;
+    this.priority = priority;
+    this.attackRange = attackRange;
+    this.cooldown = cooldown;
+    this.damage = damage;
+    this.projectileSpeed = projectileSpeed;
+    this.projectileLifetime = projectileLifetime;
+    this.useNecromancerProjectile = useNecromancerProjectile;
+    this.useCalypsoProjectile = useCalypsoProjectile;
   }
 
   @Override
@@ -92,13 +128,21 @@ public class RangedAttackTask extends DefaultTask implements PriorityTask {
 
     Vector2 spawnCenter = enemyCenter.cpy().add(0.8f * facingDirection, -0.15f);
 
-    Entity projectile =
-        useNecromancerProjectile
-            ? ProjectileFact.createNecromancerProjectile(
-                targetCenter, damage, projectileSpeed, projectileLifetime)
-            : ProjectileFact.createSkeletonArcherProjectile(
-                targetCenter, damage, projectileSpeed, projectileLifetime);
+    Entity projectile;
 
+    if (useCalypsoProjectile) {
+      projectile =
+          ProjectileFact.createCalypsoProjectile(
+              targetCenter, damage, projectileSpeed, projectileLifetime);
+    } else if (useNecromancerProjectile) {
+      projectile =
+          ProjectileFact.createNecromancerProjectile(
+              targetCenter, damage, projectileSpeed, projectileLifetime);
+    } else {
+      projectile =
+          ProjectileFact.createSkeletonArcherProjectile(
+              targetCenter, damage, projectileSpeed, projectileLifetime);
+    }
     // setPosition() uses the bottom-left corner, so offset by half the
     // projectile size to place its centre at spawnCenter.
     Vector2 projectilePosition = spawnCenter.cpy().sub(projectile.getScale().cpy().scl(0.5f));

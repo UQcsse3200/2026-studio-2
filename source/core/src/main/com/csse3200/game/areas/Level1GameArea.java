@@ -174,6 +174,7 @@ public class Level1GameArea extends GameArea {
     "images/skeleton_warrior.atlas",
     "images/necromancer.atlas",
     "images/vulture.atlas",
+    "images/calypso.atlas",
   };
 
   private static final String[] forestSounds = {"sounds/Impact4.ogg"};
@@ -215,9 +216,9 @@ public class Level1GameArea extends GameArea {
     spawnSkeletonWarrior();
 
     // Test enemy functionalitys
-    spawnTestSkeletonWarrior();
+    // spawnTestSkeletonWarrior();
     // spawnTestSkeletonArcher();
-    spawnTestVulture();
+    // spawnTestVulture();
     // spawnTestNecromancer();
     spawnTestCalypso();
 

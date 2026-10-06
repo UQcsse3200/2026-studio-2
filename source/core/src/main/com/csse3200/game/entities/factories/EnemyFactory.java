@@ -13,7 +13,8 @@ import com.csse3200.game.components.EnemyTeleportComponent;
 import com.csse3200.game.components.PoisonStatsComponent;
 import com.csse3200.game.components.SlowStatsComponent;
 import com.csse3200.game.components.TouchAttackComponent;
-import com.csse3200.game.components.npc.SkeletonAnimationController;
+import com.csse3200.game.components.npc.EnemyAnimationController;
+import com.csse3200.game.components.tasks.SweepAttackTask;
 import com.csse3200.game.components.tasks.ChaseTask;
 import com.csse3200.game.components.tasks.DelayedAttackTask;
 import com.csse3200.game.components.tasks.FlyingChaseTask;
@@ -48,6 +49,18 @@ public class EnemyFactory {
   private static final EnemyConfigs configs =
       FileLoader.readClass(EnemyConfigs.class, "configs/Enemies.json");
 
+  private static final float CALYPSO_SWEEP_DURATION = 0.8f;
+  private static final float CALYPSO_IDLE_FRAME_TIME = 0.15f;
+  private static final float CALYPSO_WALK_FRAME_TIME = 0.15f;
+  private static final float CALYPSO_WIDTH = 1f;
+  private static final int   CALYPSO_SWEEP_HIT_FRAME = 2;
+  private static final int   CALYPSO_SWEEP_PRIORITY = 22;
+  private static final float CALYPSO_SWEEP_RANGE = 1.0f;
+  private static final float CALYPSO_SWEEP_HEIGHT = 1.5f;
+  private static final float CALYPSO_SWEEP_COOLDOWN = 1.5f;
+  private static final float CALYPSO_SWEEP_ANCHOR_X = 218.5f;
+  private static final float CALYPSO_SWEEP_ANCHOR_Y = 4f;
+
   /**
    * Creates a melee skeleton warrior that chases and attacks the target after a delay.
    *
@@ -65,7 +78,7 @@ public class EnemyFactory {
     animator.addAnimation("walk", 0.15f, Animation.PlayMode.LOOP);
     animator.addAnimation("idle", 0.15f, Animation.PlayMode.LOOP);
 
-    skeletonWarrior.addComponent(new SkeletonAnimationController(target));
+    skeletonWarrior.addComponent(new EnemyAnimationController(target));
     skeletonWarrior.addComponent(animator);
 
     // Skeleton Warrior has a charged attack (extra range melee with initial delay)
@@ -96,7 +109,7 @@ public class EnemyFactory {
     SkeletonArcher
         // .addComponent(new CombatStatsComponent(config.health, config.baseAttack))
         .addComponent(animator)
-        .addComponent(new SkeletonAnimationController(target));
+        .addComponent(new EnemyAnimationController(target));
 
     SkeletonArcher.getComponent(AnimationRenderComponent.class).scaleEntity();
 
@@ -151,7 +164,7 @@ public class EnemyFactory {
     Vulture
         // .addComponent(new CombatStatsComponent(config.health, config.baseAttack))
         .addComponent(animator)
-        .addComponent(new SkeletonAnimationController(target));
+        .addComponent(new EnemyAnimationController(target));
 
     Vulture.getComponent(AnimationRenderComponent.class).scaleEntity();
     // Vulture.getComponent(ColliderComponent.class).setSensor(true);
@@ -179,7 +192,7 @@ public class EnemyFactory {
     Necromancer
         // .addComponent(new CombatStatsComponent(config.health, config.baseAttack))
         .addComponent(animator)
-        .addComponent(new SkeletonAnimationController(target));
+        .addComponent(new EnemyAnimationController(target));
 
     Necromancer.getComponent(AnimationRenderComponent.class).scaleEntity();
 
@@ -203,7 +216,7 @@ public class EnemyFactory {
     animator.addAnimation("walk", 0.15f, Animation.PlayMode.LOOP);
     animator.addAnimation("idle", 0.15f, Animation.PlayMode.LOOP);
 
-    cyclops.addComponent(new SkeletonAnimationController(target));
+    cyclops.addComponent(new EnemyAnimationController(target));
     cyclops.addComponent(animator);
 
     cyclops
@@ -223,20 +236,52 @@ public class EnemyFactory {
     EnemyConfig config = configs.calypso;
     Entity calypso = createEnemy(target, config);
 
-    AnimationRenderComponent animator =
-        new AnimationRenderComponent(
-            ServiceLocator.getResourceService()
-                .getAsset("images/skeleton_warrior.atlas", TextureAtlas.class));
-    animator.addAnimation("walk", 0.15f, Animation.PlayMode.LOOP);
-    animator.addAnimation("idle", 0.15f, Animation.PlayMode.LOOP);
+    TextureAtlas atlas =
+            ServiceLocator.getResourceService().getAsset("images/calypso.atlas", TextureAtlas.class);
+    AnimationRenderComponent animator = new AnimationRenderComponent(atlas);
+    animator.addAnimation("idle", CALYPSO_IDLE_FRAME_TIME, Animation.PlayMode.LOOP);
+    animator.addAnimation("walk", CALYPSO_WALK_FRAME_TIME, Animation.PlayMode.LOOP);
 
-    calypso.addComponent(new SkeletonAnimationController(target));
+    int sweepFrames = atlas.findRegions("sweep").size;
+    float sweepFrameTime = sweepFrames > 0 ? CALYPSO_SWEEP_DURATION / sweepFrames : 0f;
+    animator.addAnimation(
+            "sweep",
+            sweepFrameTime,
+            Animation.PlayMode.NORMAL,
+            CALYPSO_SWEEP_ANCHOR_X,
+            CALYPSO_SWEEP_ANCHOR_Y);
+    float sweepWindUp =
+            sweepFrames > 0
+                    ? Math.min(CALYPSO_SWEEP_HIT_FRAME, sweepFrames - 1) * sweepFrameTime
+                    : CALYPSO_SWEEP_DURATION / 2f;
+
+    calypso.addComponent(new EnemyAnimationController(target));
     calypso.addComponent(animator);
     calypso.addComponent(new EnemyTeleportComponent(tpPositions, 500L, 10000L));
 
+    animator.scaleEntity();
+    float targetHeight = target.getScale().y;
+    if (targetHeight > 0f) {
+      calypso.scaleHeight(targetHeight);
+    } else {
+      calypso.scaleWidth(CALYPSO_WIDTH);
+    }
+    PhysicsUtils.setScaledCollider(calypso, 0.55f, 0.4f);
+    float sweepRange = CALYPSO_SWEEP_RANGE * calypso.getScale().x;
+
+    // Telegraphed melee sweep: triggers "attackStart" (plays the sweep animation) and "hitPlayer"
+    // when it connects (EnemyTeleportComponent / RepositionTask react to that).
     calypso
-        .getComponent(AITaskComponent.class)
-        .addTask(new DelayedAttackTask(target, 20, config.attackRange, 0.5f));
+            .getComponent(AITaskComponent.class)
+            .addTask(
+                    new SweepAttackTask(
+                            target,
+                            CALYPSO_SWEEP_PRIORITY,
+                            sweepRange,
+                            CALYPSO_SWEEP_HEIGHT,
+                            sweepWindUp,
+                            CALYPSO_SWEEP_DURATION,
+                            CALYPSO_SWEEP_COOLDOWN));
 
     return calypso;
   }
@@ -299,18 +344,35 @@ public class EnemyFactory {
     if (config.attackType.equals("range")) {
       aiComponent.addTask(
           new RangedAttackTask(
-              target, 20, config.attackRange, 2f, config.baseAttack, 4.5f, 5f, false));
+              target,
+              20,
+              config.attackRange,
+              2f,
+              config.baseAttack,
+              4.5f,
+              5f,
+              false)); // FATAL ERROR
       // If the enemy is a summon type, add summon + range task
     } else if (config.attackType.equals("summon")) {
       aiComponent
           .addTask(
               new RangedAttackTask(
-                  target, 20, config.attackRange, 2f, config.baseAttack, 4.5f, 5f, true))
+                  target,
+                  20,
+                  config.attackRange,
+                  2f,
+                  config.baseAttack,
+                  4.5f,
+                  5f,
+                  true)) // FATAL ERROR
           .addTask(new SummonTask(target, 30, config.attackRange, 5f));
     } else if (config.attackType.equals("cyclops")) {
       // add melee sweep attack and throwing boulder range attack
     } else if (config.attackType.equals("calypso")) {
-      // add wide aoe range attack + standard range + teleportation
+      // Standard projectile attack. Other Calypso attacks are added separately.
+      aiComponent.addTask(
+          new RangedAttackTask(
+              target, 20, config.attackRange, 2f, config.baseAttack, 4.5f, 5f, false, true));
     }
 
     return enemy;
