@@ -229,7 +229,7 @@ public class EnemyFactory {
             .addComponent(
                 new PhysicsMovementComponent(
                     new Vector2(config.maxSpeed, config.maxSpeed), config.gravity))
-            .addComponent(new ColliderComponent())
+            .addComponent(new ColliderComponent().setLayer(PhysicsLayer.CHARACTER))
             .addComponent(new HitboxComponent().setLayer(PhysicsLayer.NPC))
             .addComponent(new CombatStatsComponent(config.health, config.baseAttack))
             .addComponent(new EnemyDeathComponent())
@@ -257,7 +257,7 @@ public class EnemyFactory {
   private static Entity createPassiveEnemy(EnemyConfig config) {
     return new Entity()
         .addComponent(new PhysicsComponent().setBodyType(BodyType.StaticBody))
-        .addComponent(new ColliderComponent())
+        .addComponent(new ColliderComponent().setLayer(PhysicsLayer.CHARACTER))
         .addComponent(new HitboxComponent().setLayer(PhysicsLayer.NPC))
         .addComponent(new CombatStatsComponent(config.health, config.baseAttack))
         .addComponent(new EnemyDeathComponent())

@@ -87,7 +87,7 @@ public class LevelsGameScreen extends ScreenAdapter {
     "sounds/hit.ogg", "sounds/Arrow_release.wav", "sounds/jump.ogg", "sounds/itempick.wav"
   };
   private final Level1GameArea level1GameArea;
-  private boolean cheats = false;
+  private boolean cheats = true;
   private float gravity;
 
   public LevelsGameScreen(GdxGame game) {
@@ -145,7 +145,9 @@ public class LevelsGameScreen extends ScreenAdapter {
     player
         .getEvents()
         .addListener(
-            "jump",
+            // "jumpStart", not the raw "jump" input event: PlayerActions discards a press made
+            // mid-air, during a wind-up, or after death, and the sound must not play for those.
+            "jumpStart",
             () -> {
               try {
                 com.badlogic.gdx.audio.Sound jumpSound =

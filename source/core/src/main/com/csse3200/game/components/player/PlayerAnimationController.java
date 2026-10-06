@@ -9,6 +9,8 @@ public class PlayerAnimationController extends Component {
   private boolean moving = false;
   private boolean sprinting = false;
   private boolean jumping = false;
+  private boolean falling = false;
+  private boolean landing = false;
   private boolean dashing = false;
   private boolean hurt = false;
   private boolean attacking = false;
@@ -29,6 +31,9 @@ public class PlayerAnimationController extends Component {
     entity.getEvents().addListener("sprint", this::sprint);
     entity.getEvents().addListener("sprintStop", this::sprintStop);
     entity.getEvents().addListener("jumpStart", this::jumpStart);
+    entity.getEvents().addListener("fallStart", this::fallStart);
+    entity.getEvents().addListener("landed", this::landed);
+    entity.getEvents().addListener("grappleAttached", this::grappleAttached);
     entity.getEvents().addListener("dashStart", this::dashStart);
     entity.getEvents().addListener("airDashStart", this::airDashStart);
     entity.getEvents().addListener("hurt", this::hurt);
@@ -66,10 +71,12 @@ public class PlayerAnimationController extends Component {
       attacking = false;
       bowActive = false;
       updateAnimation();
-    } else if (jumping && animator.isFinished()) {
-      jumping = false;
+    } else if (landing && animator.isFinished()) {
+      landing = false;
       updateAnimation();
     }
+    // Note: the takeoff clip deliberately has no "finished" branch. It is NORMAL mode, so it holds
+    // its final tucked frame through the rest of the ascent until the fall or landing takes over.
   }
 
   void walk(Vector2 direction) {
@@ -80,7 +87,7 @@ public class PlayerAnimationController extends Component {
     if (direction.x != 0) {
       animator.setFlipX(direction.x < 0);
     }
-    if (!jumping && !dashing && !attacking) {
+    if (!jumping && !dashing && !attacking && !landing) {
       updateAnimation();
     }
   }
@@ -90,7 +97,7 @@ public class PlayerAnimationController extends Component {
       return;
     }
     moving = false;
-    if (!jumping && !dashing && !attacking) {
+    if (!jumping && !dashing && !attacking && !landing) {
       updateAnimation();
     }
   }
@@ -100,7 +107,7 @@ public class PlayerAnimationController extends Component {
       return;
     }
     sprinting = true;
-    if (!jumping && !dashing && !attacking) {
+    if (!jumping && !dashing && !attacking && !landing) {
       updateAnimation();
     }
   }
@@ -110,7 +117,7 @@ public class PlayerAnimationController extends Component {
       return;
     }
     sprinting = false;
-    if (!jumping && !dashing && !attacking) {
+    if (!jumping && !dashing && !attacking && !landing) {
       updateAnimation();
     }
   }
@@ -122,8 +129,70 @@ public class PlayerAnimationController extends Component {
     if (dashing) {
       return;
     }
+    landing = false;
     jumping = true;
-    animator.startAnimation("jump");
+    animator.startAnimation("jump_takeoff");
+  }
+
+  /**
+   * The player has started descending - whether from a jump, walking off a ledge or dropping
+   * through a platform. The looping fall carries on until they touch down.
+   */
+  void fallStart() {
+    if (dead) {
+      return;
+    }
+    jumping = false;
+    landing = false;
+    falling = true;
+    if (isBusyWithHigherPriorityAnimation()) {
+      // Recorded only. updateAnimation() picks the fall up once the current clip finishes.
+      return;
+    }
+    animator.startAnimation("jump_fall");
+  }
+
+  /** Touchdown. Plays a short recovery, but only if the player was visibly in the air. */
+  void landed() {
+    if (dead) {
+      return;
+    }
+    boolean wasAirborne = jumping || falling;
+    jumping = false;
+    falling = false;
+    if (!wasAirborne) {
+      // A one-frame blip in the ground raycast, e.g. crossing a seam between tiles. Ignore it
+      // rather than punching a landing crouch into the middle of a run.
+      return;
+    }
+    if (isBusyWithHigherPriorityAnimation()) {
+      return;
+    }
+    landing = true;
+    animator.startAnimation("jump_land");
+  }
+
+  /**
+   * Latching onto a rope ends the air sequence without a landing - the player is swinging now, so
+   * the fall loop shouldn't keep playing underneath them.
+   */
+  void grappleAttached() {
+    if (dead || (!jumping && !falling)) {
+      return;
+    }
+    jumping = false;
+    falling = false;
+    if (isBusyWithHigherPriorityAnimation()) {
+      return;
+    }
+    updateAnimation();
+  }
+
+  /**
+   * @return whether a clip that outranks the jump stages is currently playing.
+   */
+  private boolean isBusyWithHigherPriorityAnimation() {
+    return bowActive || dashing || hurt || attacking;
   }
 
   void dashStart() {
@@ -153,10 +222,13 @@ public class PlayerAnimationController extends Component {
 
   void death() {
     dead = true;
-    // Death outranks even the bow sequence.
+    // Death outranks everything, including the bow sequence and the jump stages.
     charging = false;
     drawingIn = false;
     bowActive = false;
+    jumping = false;
+    falling = false;
+    landing = false;
     animator.startAnimation("death");
   }
 
@@ -204,7 +276,10 @@ public class PlayerAnimationController extends Component {
 
   private void updateAnimation() {
     String desired = "idle";
-    if (moving) {
+    if (falling) {
+      // Still in the air: anything finishing mid-fall resumes the fall rather than idling.
+      desired = "jump_fall";
+    } else if (moving) {
       desired = sprinting ? "sprint" : "walk";
     }
     if (!desired.equals(animator.getCurrentAnimation())) {

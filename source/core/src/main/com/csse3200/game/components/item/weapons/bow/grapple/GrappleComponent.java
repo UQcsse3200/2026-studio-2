@@ -161,6 +161,9 @@ public class GrappleComponent extends Component {
     totalRopeLength = physicsComponent.getBody().getWorldCenter().dst(point);
     initialRopeLength = totalRopeLength;
     createJointAt(anchorBody, point, totalRopeLength);
+    // Announced only for a brand new attachment, not the rebuilds createJointAt does when the
+    // rope bends, so listeners see one event per grapple.
+    entity.getEvents().trigger("grappleAttached");
   }
 
   private void createJointAt(Body anchorBody, Vector2 point, float length) {

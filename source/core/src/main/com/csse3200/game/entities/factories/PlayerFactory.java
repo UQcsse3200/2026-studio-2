@@ -55,7 +55,11 @@ public class PlayerFactory {
     animator.addAnimation("idle", 0.2f, PlayMode.LOOP);
     animator.addAnimation("walk", 0.1f, PlayMode.LOOP);
     animator.addAnimation("sprint", 0.125f, PlayMode.LOOP);
-    animator.addAnimation("jump", 0.075f, PlayMode.NORMAL);
+    // The three crouch frames of the takeoff span PlayerActions.JUMP_WINDUP_MS at 0.03s each, so
+    // the leap lands exactly on liftoff. Keep the two in lockstep if either is retuned.
+    animator.addAnimation("jump_takeoff", 0.03f, PlayMode.NORMAL, 22.5f, 0f);
+    animator.addAnimation("jump_fall", 0.1f, PlayMode.LOOP, 22.5f, 0f);
+    animator.addAnimation("jump_land", 0.04f, PlayMode.NORMAL, 22.5f, 0f);
     animator.addAnimation("hurt", 0.04f, PlayMode.NORMAL);
     animator.addAnimation("death", 0.1458f, PlayMode.NORMAL);
     animator.addAnimation("sleep", 0.1458f, PlayMode.LOOP);
@@ -152,7 +156,9 @@ public class PlayerFactory {
     animator.addAnimation("idle", 0.15f, PlayMode.LOOP);
     animator.addAnimation("walk", 0.1f, PlayMode.LOOP);
     animator.addAnimation("sprint", 0.1f, PlayMode.LOOP);
-    animator.addAnimation("jump", 0.05f, PlayMode.NORMAL);
+    animator.addAnimation("jump_takeoff", 0.03f, PlayMode.NORMAL, 22.5f, 0f);
+    animator.addAnimation("jump_fall", 0.1f, PlayMode.LOOP, 22.5f, 0f);
+    animator.addAnimation("jump_land", 0.04f, PlayMode.NORMAL, 22.5f, 0f);
     animator.addAnimation("hurt", 0.04f, PlayMode.NORMAL);
     animator.addAnimation("death", 0.1458f, PlayMode.NORMAL);
     animator.addAnimation("sleep", 0.1458f, PlayMode.LOOP);

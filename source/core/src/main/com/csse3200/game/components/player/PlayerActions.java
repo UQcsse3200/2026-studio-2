@@ -14,7 +14,7 @@ import com.csse3200.game.services.ServiceLocator;
 
 /** Action component for interacting with the player */
 public class PlayerActions extends Component {
-  private static final float JUMP_FORCE = 23f;
+  private static final float JUMP_FORCE = 41f;
   private static final Vector2 MAX_SPEED = new Vector2(5f, 5f); // Metres per second
   private static final float SPRINT_MULTIPLIER = 1.75f;
   private static final float ROPE_JUMP_MULTIPLIER = 0.7f;
@@ -27,6 +27,12 @@ public class PlayerActions extends Component {
   private static final float DASH_RECOVERY = 0.1f;
   private static final float DASH_RECOVERY_CONTROL = 0.2f;
   private static final float SPRINT_RELEASE_GRACE = 0.12f;
+  // How fast the player must be descending before it counts as a fall, so a scuff over a tile seam
+  // or the moment of hang time at the apex doesn't flicker the animation.
+  private static final float FALL_SPEED_THRESHOLD = 1f;
+  // If a jump's impulse fires but the player never leaves the ground (jumping under a low ceiling),
+  // give up waiting after this long and report a landing so the animation can recover.
+  private static final long LIFTOFF_GRACE_MS = 200;
 
   private float extraSpeedMultiplier = 1f; // The Speed multiplier
   private long speedPotionEndTimeMs = 0; // The time that speed_potion ends
@@ -50,6 +56,10 @@ public class PlayerActions extends Component {
   public boolean droppingFromLedge = false;
   private boolean dead = false;
   private long jumpImpulseAt = -1; // Timestamp to apply the queued jump impulse, -1 if none queued
+  private boolean airborne = false; // Has left the ground since the last landing
+  private boolean falling = false; // "fallStart" already reported for this airborne stretch
+  private long liftoffDeadline =
+      -1; // When to give up waiting for a queued jump to leave the ground
   private float decelerationTraction = 1f;
   private float traction = 1f;
 
@@ -83,6 +93,7 @@ public class PlayerActions extends Component {
     boolean wasGrounded = isGrounded;
     isGrounded = checkGrounded();
     checkJumpWindup();
+    updateAirState();
 
     // The grapple is a hold action: let go of right click and the rope drops
     if (isGrappling() && !isRightMouseHeld()) {
@@ -171,6 +182,52 @@ public class PlayerActions extends Component {
       jumpImpulseAt = -1;
       Body body = physicsComponent.getBody();
       body.applyLinearImpulse(new Vector2(0, JUMP_FORCE), body.getWorldCenter(), true);
+      liftoffDeadline = ServiceLocator.getTimeSource().getTime() + LIFTOFF_GRACE_MS;
+    }
+  }
+
+  /**
+   * Tracks whether the player is airborne, rising or falling, and announces the transitions the
+   * animation controller needs: "fallStart" the moment a descent begins, and "landed" on touchdown.
+   * Velocity-driven rather than jump-driven, so walking off a ledge or dropping through a platform
+   * reports a fall too.
+   */
+  private void updateAirState() {
+    if (jumpImpulseAt >= 0) {
+      // Still crouching through the wind-up with both feet on the ground.
+      return;
+    }
+
+    if (isGrappling()) {
+      // Swinging is its own thing: not falling, and touching down mid-swing isn't a landing.
+      // Clearing the flag means letting go mid-air reports a fresh fall.
+      falling = false;
+      return;
+    }
+
+    if (!isGrounded) {
+      airborne = true;
+      liftoffDeadline = -1;
+      if (!falling && !isGrappling() && !isDashing) {
+        float verticalVelocity = physicsComponent.getBody().getLinearVelocity().y;
+        if (verticalVelocity < -FALL_SPEED_THRESHOLD) {
+          falling = true;
+          entity.getEvents().trigger("fallStart");
+        }
+      }
+      return;
+    }
+
+    if (airborne) {
+      airborne = false;
+      falling = false;
+      liftoffDeadline = -1;
+      entity.getEvents().trigger("landed");
+    } else if (liftoffDeadline >= 0
+        && ServiceLocator.getTimeSource().getTime() >= liftoffDeadline) {
+      // The jump fired but never got off the ground, e.g. straight into a low ceiling.
+      liftoffDeadline = -1;
+      entity.getEvents().trigger("landed");
     }
   }
 
@@ -198,7 +255,11 @@ public class PlayerActions extends Component {
     body.applyLinearImpulse(new Vector2(impulseX, 0), body.getWorldCenter(), true);
   }
 
-  /** Short ray down from the player's feet to see if we're standing on something. */
+  /**
+   * Short ray down from the player's feet to see if we're standing on something. Enemy bodies count
+   * as ground, so landing on one plays the landing recovery and lets you jump straight back off
+   * instead of looping the fall animation on their head.
+   */
   private boolean checkGrounded() {
     Vector2 position = entity.getCenterPosition();
     float halfHeight = entity.getScale().y / 2f;
@@ -208,7 +269,7 @@ public class PlayerActions extends Component {
     boolean grounded =
         ServiceLocator.getPhysicsService()
             .getPhysics()
-            .raycast(rayStart, rayEnd, PhysicsLayer.SOLID, hit);
+            .raycast(rayStart, rayEnd, PhysicsLayer.STANDABLE, hit);
 
     decelerationTraction = 1f;
     // if we're grounded, we need to check if we're on a slippery platform and update the player's
@@ -269,12 +330,15 @@ public class PlayerActions extends Component {
 
   /** Jump off the ground, or let go of the rope with a kick upward. */
   void jump() {
-    if (dead || jumpImpulseAt >= 0) {
+    if (dead) {
       return;
     }
     Body body = physicsComponent.getBody();
 
     if (isGrappling()) {
+      // A ground jump queued just before the rope latched on would otherwise still fire its
+      // impulse on top of the rope kick. Drop it; this jump replaces it.
+      jumpImpulseAt = -1;
       if (isDashing) {
         endDash();
       }
@@ -286,10 +350,15 @@ public class PlayerActions extends Component {
       return;
     }
 
+    // A ground jump is already winding up. Re-queueing would restart the crouch and push the
+    // liftoff further away with every press.
+    if (jumpImpulseAt >= 0) {
+      return;
+    }
+
     if (isGrounded) {
       airDashUsed = false;
       dashCooldownRemaining = 0f;
-      body.applyLinearImpulse(new Vector2(0, JUMP_FORCE), body.getWorldCenter(), true);
       isGrounded = false;
       jumpImpulseAt = ServiceLocator.getTimeSource().getTime() + JUMP_WINDUP_MS;
       entity.getEvents().trigger("jumpStart");
