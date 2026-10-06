@@ -23,12 +23,19 @@ public class TimingBarDisplay extends UIComponent {
   private static final Color SCORING_COLOR = Color.valueOf("#009A66");
   private static final Color BACKGROUND_COLOR = Color.TAN;
   private static final Color BORDER_COLOR = Color.BROWN;
+  private static final Color FLASH_COLOR = Color.WHITE;
+  static final int FLASH_FRAMES = 30;
+  static final int FLASH_BLINK_FRAMES = 5;
 
   private final TimingBarLogic logic;
   private Texture blankTexture;
 
   Table table;
   Image marker;
+  Image scoringZone;
+  private float shownScoringArea = -1f;
+  private boolean shrinkPending = false;
+  private int flashFramesLeft = 0;
 
   private boolean visible = false;
 
@@ -74,10 +81,10 @@ public class TimingBarDisplay extends UIComponent {
     background.setPosition(0, 0);
     group.addActor(background);
 
-    Image scoringZone = new Image(blankRegion);
+    scoringZone = new Image(blankRegion);
     scoringZone.setColor(SCORING_COLOR);
-    scoringZone.setSize(logic.getScoringAreaSize() * BAR_WIDTH, BAR_HEIGHT);
-    scoringZone.setPosition(BAR_WIDTH / 2 - scoringZone.getWidth() / 2, 0);
+    layoutScoringZone(logic.getScoringAreaSize());
+    shownScoringArea = logic.getScoringAreaSize();
     group.addActor(scoringZone);
 
     marker = new Image(blankRegion);
@@ -100,6 +107,38 @@ public class TimingBarDisplay extends UIComponent {
   public void update() {
     if (marker != null) {
       marker.setX(logic.getMarkerX() * BAR_WIDTH);
+    }
+    if (scoringZone != null) {
+      syncScoringZone();
+    }
+  }
+
+  private void layoutScoringZone(float scoringArea) {
+    scoringZone.setSize(scoringArea * BAR_WIDTH, BAR_HEIGHT);
+    scoringZone.setPosition(BAR_WIDTH / 2 - scoringZone.getWidth() / 2, 0);
+  }
+
+  /** Follows the logic's scoring width, and blinks the zone briefly when it shrinks. */
+  private void syncScoringZone() {
+    float scoringArea = logic.getScoringAreaSize();
+    if (scoringArea != shownScoringArea) {
+      shrinkPending |= scoringArea < shownScoringArea;
+      shownScoringArea = scoringArea;
+      layoutScoringZone(scoringArea);
+    }
+
+    if (shrinkPending && visible) {
+      shrinkPending = false;
+      flashFramesLeft = FLASH_FRAMES;
+    }
+
+    if (flashFramesLeft > 0) {
+      flashFramesLeft--;
+      int elapsed = FLASH_FRAMES - flashFramesLeft;
+      boolean on = (elapsed / FLASH_BLINK_FRAMES) % 2 == 0;
+      scoringZone.setColor(on ? FLASH_COLOR : SCORING_COLOR);
+    } else {
+      scoringZone.setColor(SCORING_COLOR);
     }
   }
 

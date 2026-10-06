@@ -403,6 +403,48 @@ public class CyclopsMinigameLogicTest {
   }
 
   @Test
+  void scoringWidthShrinksAfterEachSuccessfulMove() {
+    minigameLogic.setSafeLocations(
+        List.of(
+            new GridPoint2(1, 0),
+            new GridPoint2(2, 0),
+            new GridPoint2(3, 0),
+            new GridPoint2(4, 0),
+            new GridPoint2(5, 0),
+            new GridPoint2(6, 0)));
+    minigameLogic.setWinLocation(new GridPoint2(7, 0));
+
+    float[] expectedWidths = {18f, 16f, 14f, 12f, 10f};
+    for (float width : expectedWidths) {
+      runMove(true);
+      verify(timingBarLogic).changeScoringAreaWidth(width);
+    }
+  }
+
+  @Test
+  void missDoesNotChangeScoringWidth() {
+    minigameLogic.setSafeLocations(List.of(new GridPoint2(1, 0), new GridPoint2(2, 0)));
+    minigameLogic.setLossLocations(List.of(new GridPoint2(3, 0)));
+
+    runMove(false);
+
+    verify(timingBarLogic, never()).changeScoringAreaWidth(anyFloat());
+  }
+
+  @Test
+  void restartResetsScoringWidthToStart() {
+    minigameLogic.setSafeLocations(
+        List.of(new GridPoint2(1, 0), new GridPoint2(2, 0), new GridPoint2(3, 0)));
+    minigameLogic.setWinLocation(new GridPoint2(4, 0));
+    runMove(true);
+    runMove(true);
+
+    minigameLogic.restartMinigame();
+
+    verify(timingBarLogic).changeScoringAreaWidth(CyclopsMinigameLogic.START_SCORING_PERCENT);
+  }
+
+  @Test
   void hitDoesNotChangeHealth() {
     minigameLogic.setSafeLocations(List.of(new GridPoint2(1, 0), new GridPoint2(2, 0)));
     minigameLogic.setWinLocation(new GridPoint2(3, 0));

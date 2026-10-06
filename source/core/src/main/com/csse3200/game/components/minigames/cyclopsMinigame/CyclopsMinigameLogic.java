@@ -44,6 +44,8 @@ public class CyclopsMinigameLogic extends Component {
   static final float LOSS_DISPLAY_DELAY = 1.0f;
   static final float DEATH_DISPLAY_DELAY = 1.5f;
   static final int MISS_DAMAGE = 2;
+  static final float START_SCORING_PERCENT = 20f;
+  static final float END_SCORING_PERCENT = 10f;
 
   /* Components */
   private final TimingBarLogic timingBarLogic;
@@ -150,7 +152,16 @@ public class CyclopsMinigameLogic extends Component {
       hasWon = true;
       return this.winLocation;
     }
+    timingBarLogic.changeScoringAreaWidth(
+        scoringPercentForRock(currentSafeLocation, safeLocations.size()));
     return safeLocations.get(this.currentSafeLocation);
+  }
+
+  static float scoringPercentForRock(int rockIndex, int rockCount) {
+    int last = Math.max(rockCount - 1, 1);
+    int clampedIndex = Math.min(rockIndex, last);
+    return START_SCORING_PERCENT
+        - (START_SCORING_PERCENT - END_SCORING_PERCENT) * clampedIndex / last;
   }
 
   private boolean stopPressed() {
@@ -307,6 +318,7 @@ public class CyclopsMinigameLogic extends Component {
 
   public void restartMinigame() {
     currentSafeLocation = 0;
+    timingBarLogic.changeScoringAreaWidth(START_SCORING_PERCENT);
     movePlayer(safeLocations.getFirst());
     startMinigame();
   }
