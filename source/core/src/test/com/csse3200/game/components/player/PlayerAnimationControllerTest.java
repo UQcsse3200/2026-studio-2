@@ -1,6 +1,8 @@
 package com.csse3200.game.components.player;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -69,6 +71,8 @@ class PlayerAnimationControllerTest {
     animator.addAnimation("air_dash", 1f, PlayMode.NORMAL);
     animator.addAnimation("hurt", 1f, PlayMode.NORMAL);
     animator.addAnimation("melee", 1f, PlayMode.NORMAL);
+    animator.addAnimation("instrument_draw", 1f, PlayMode.NORMAL);
+    animator.addAnimation("instrument_hold", 1f, PlayMode.LOOP);
     entity.addComponent(animator);
     PlayerAnimationController controller = new PlayerAnimationController();
     entity.addComponent(controller);
@@ -316,9 +320,215 @@ class PlayerAnimationControllerTest {
                 "jump_land",
                 "air_dash",
                 "hurt",
-                "melee"));
+                "melee",
+                "instrument_draw",
+                "instrument_hold"));
     animator.addAnimation("walk", 1f, PlayMode.LOOP);
     return createController(entity, animator);
+  }
+
+  /** Plays the current clip to completion and lets the controller react to it finishing. */
+  private void finishClip(Entity entity, PlayerAnimationController controller) {
+    entity.getComponent(AnimationRenderComponent.class).render(mock(SpriteBatch.class));
+    controller.update();
+  }
+
+  @Test
+  void shouldPlayTheMeleeSwingAndFlipItForALeftwardSwing() {
+    Entity entity = new Entity();
+    createJumpController(entity);
+    AnimationRenderComponent animator = entity.getComponent(AnimationRenderComponent.class);
+
+    entity.getEvents().trigger("meleeSwing", -1);
+
+    assertEquals("melee", animator.getCurrentAnimation());
+    assertTrue(animator.isFlipX(), "a leftward swing should face left");
+  }
+
+  @Test
+  void shouldFaceRightForARightwardSwingRegardlessOfTheLastWalkDirection() {
+    Entity entity = new Entity();
+    createJumpController(entity);
+    AnimationRenderComponent animator = entity.getComponent(AnimationRenderComponent.class);
+    entity.getEvents().trigger("walk", new Vector2(-1f, 0f));
+
+    entity.getEvents().trigger("meleeSwing", 1);
+
+    assertEquals("melee", animator.getCurrentAnimation());
+    assertFalse(animator.isFlipX());
+  }
+
+  @Test
+  void shouldNotStartAMeleeSwingDuringABowShotOrADashOrAHurt() {
+    Entity bowEntity = new Entity();
+    createJumpController(bowEntity);
+    bowEntity.getEvents().trigger("chargeStart", new Vector2(1f, 0f));
+    bowEntity.getEvents().trigger("meleeSwing", 1);
+    assertEquals(
+        "bow_draw",
+        bowEntity.getComponent(AnimationRenderComponent.class).getCurrentAnimation(),
+        "the bow sequence outranks a swing");
+
+    Entity dashEntity = new Entity();
+    createJumpController(dashEntity);
+    dashEntity.getEvents().trigger("dashStart");
+    dashEntity.getEvents().trigger("meleeSwing", 1);
+    assertEquals(
+        "air_dash", dashEntity.getComponent(AnimationRenderComponent.class).getCurrentAnimation());
+
+    Entity hurtEntity = new Entity();
+    createJumpController(hurtEntity);
+    hurtEntity.getEvents().trigger("hurt");
+    hurtEntity.getEvents().trigger("meleeSwing", 1);
+    assertEquals(
+        "hurt", hurtEntity.getComponent(AnimationRenderComponent.class).getCurrentAnimation());
+  }
+
+  @Test
+  void shouldResumeFallingAfterAMeleeSwingEndsMidAir() {
+    Entity entity = new Entity();
+    PlayerAnimationController controller = createJumpController(entity);
+    AnimationRenderComponent animator = entity.getComponent(AnimationRenderComponent.class);
+
+    entity.getEvents().trigger("fallStart");
+    entity.getEvents().trigger("meleeSwing", 1);
+    assertEquals("melee", animator.getCurrentAnimation(), "a swing outranks the fall loop");
+
+    finishClip(entity, controller);
+
+    // The fall was only recorded while the swing played, so it has to come back afterwards rather
+    // than dropping the player into idle in mid-air.
+    assertEquals("jump_fall", animator.getCurrentAnimation());
+  }
+
+  @Test
+  void shouldNotLetMovementCutAMeleeSwingShort() {
+    Entity entity = new Entity();
+    createJumpController(entity);
+    AnimationRenderComponent animator = entity.getComponent(AnimationRenderComponent.class);
+
+    entity.getEvents().trigger("meleeSwing", 1);
+    entity.getEvents().trigger("walk", new Vector2(1f, 0f));
+    entity.getEvents().trigger("sprint");
+
+    assertEquals("melee", animator.getCurrentAnimation());
+  }
+
+  @Test
+  void shouldSuppressTheLandingRecoveryWhileASwingIsPlaying() {
+    Entity entity = new Entity();
+    createJumpController(entity);
+    AnimationRenderComponent animator = entity.getComponent(AnimationRenderComponent.class);
+
+    entity.getEvents().trigger("fallStart");
+    entity.getEvents().trigger("meleeSwing", 1);
+    entity.getEvents().trigger("landed");
+
+    assertEquals("melee", animator.getCurrentAnimation());
+  }
+
+  @Test
+  void shouldSettleIntoTheInstrumentHoldOnceTheDrawFinishes() {
+    Entity entity = new Entity();
+    PlayerAnimationController controller = createJumpController(entity);
+    AnimationRenderComponent animator = entity.getComponent(AnimationRenderComponent.class);
+
+    entity.getEvents().trigger("instrumentStart");
+    assertEquals("instrument_draw", animator.getCurrentAnimation());
+
+    finishClip(entity, controller);
+
+    assertEquals("instrument_hold", animator.getCurrentAnimation());
+  }
+
+  @Test
+  void shouldKeepHoldingTheInstrumentUntilSomethingInterruptsIt() {
+    Entity entity = new Entity();
+    PlayerAnimationController controller = createJumpController(entity);
+    AnimationRenderComponent animator = entity.getComponent(AnimationRenderComponent.class);
+
+    entity.getEvents().trigger("instrumentStart");
+    finishClip(entity, controller);
+
+    // The hold loops, so repeated updates must not drop it back to idle.
+    for (int i = 0; i < 5; i++) {
+      finishClip(entity, controller);
+    }
+
+    assertEquals("instrument_hold", animator.getCurrentAnimation());
+  }
+
+  @Test
+  void shouldPutTheInstrumentAwayWhenThePlayerWalks() {
+    Entity entity = new Entity();
+    PlayerAnimationController controller = createJumpController(entity);
+    AnimationRenderComponent animator = entity.getComponent(AnimationRenderComponent.class);
+
+    entity.getEvents().trigger("instrumentStart");
+    finishClip(entity, controller);
+
+    entity.getEvents().trigger("walk", new Vector2(1f, 0f));
+
+    assertEquals("walk", animator.getCurrentAnimation());
+  }
+
+  @Test
+  void shouldRefuseTheInstrumentWhileBusyWithAnotherAction() {
+    Entity jumpEntity = new Entity();
+    createJumpController(jumpEntity);
+    jumpEntity.getEvents().trigger("jumpStart");
+    jumpEntity.getEvents().trigger("instrumentStart");
+    assertEquals(
+        "jump_takeoff",
+        jumpEntity.getComponent(AnimationRenderComponent.class).getCurrentAnimation());
+
+    Entity swingEntity = new Entity();
+    createJumpController(swingEntity);
+    swingEntity.getEvents().trigger("meleeSwing", 1);
+    swingEntity.getEvents().trigger("instrumentStart");
+    assertEquals(
+        "melee", swingEntity.getComponent(AnimationRenderComponent.class).getCurrentAnimation());
+  }
+
+  @Test
+  void shouldPutTheInstrumentAwayOnDeath() {
+    Entity entity = new Entity();
+    PlayerAnimationController controller = createJumpController(entity);
+    AnimationRenderComponent animator = entity.getComponent(AnimationRenderComponent.class);
+    entity.getEvents().trigger("instrumentStart");
+    finishClip(entity, controller);
+
+    entity.getEvents().trigger("death");
+
+    assertEquals("death", animator.getCurrentAnimation());
+  }
+
+  @Test
+  void shouldPutTheInstrumentAwayWhenThePauseMenuOpens() {
+    Entity entity = new Entity();
+    PlayerAnimationController controller = createJumpController(entity);
+    AnimationRenderComponent animator = entity.getComponent(AnimationRenderComponent.class);
+    entity.getEvents().trigger("instrumentStart");
+    finishClip(entity, controller);
+
+    entity.getEvents().trigger("togglePause");
+
+    assertEquals("idle", animator.getCurrentAnimation());
+  }
+
+  @Test
+  void shouldRestoreTheMovementAnimationWhenRefreshed() {
+    Entity entity = new Entity();
+    PlayerAnimationController controller = createJumpController(entity);
+    AnimationRenderComponent animator = entity.getComponent(AnimationRenderComponent.class);
+    entity.getEvents().trigger("walk", new Vector2(1f, 0f));
+
+    // The rope pose stops the animator while it draws the player itself; refreshAnimation() is how
+    // the normal animation comes back once it stops.
+    animator.stopAnimation();
+    controller.refreshAnimation();
+
+    assertEquals("walk", animator.getCurrentAnimation());
   }
 
   @Test

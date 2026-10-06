@@ -86,7 +86,7 @@ class GrappleRenderComponentTest {
     GrappleComponent grapple = mock(GrappleComponent.class);
     when(grapple.isAttached()).thenReturn(true);
     when(grapple.getRopePath())
-            .thenReturn(List.of(new Vector2(0f, 0f), new Vector2(2f, 3f), new Vector2(5f, 3f)));
+        .thenReturn(List.of(new Vector2(0f, 0f), new Vector2(2f, 3f), new Vector2(5f, 3f)));
     Matrix4 projection = new Matrix4();
     when(batch.getProjectionMatrix()).thenReturn(projection);
     GrappleRenderComponent renderer = renderer(grapple);

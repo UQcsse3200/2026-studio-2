@@ -509,6 +509,41 @@ class KeyboardPlayerInputComponentTest {
   }
 
   @Test
+  void shouldNotStartMeleeWhileTheRightMouseButtonIsHeld() {
+    Entity player = new Entity();
+    KeyboardPlayerInputComponent component = aimedComponent(player);
+    AtomicInteger swings = new AtomicInteger();
+    player.getEvents().addListener("meleeStart", swings::incrementAndGet);
+
+    component.touchDown(4, 2, 0, Buttons.RIGHT);
+    assertTrue(component.isRightMouseHeld());
+
+    // Right-held means the player is charging a shot or hanging off the rope. Letting a swing
+    // start there would play the melee clip over the bow or rope pose, and the rope pose stops the
+    // animator every frame, so the swing would never report finishing and would latch "attacking".
+    assertFalse(component.touchDown(4, 2, 0, Buttons.LEFT));
+    assertEquals(0, swings.get());
+  }
+
+  @Test
+  void shouldAllowMeleeAgainOnceTheRightMouseButtonIsReleased() {
+    Entity player = new Entity();
+    KeyboardPlayerInputComponent component = aimedComponent(player);
+    AtomicInteger swings = new AtomicInteger();
+    player.getEvents().addListener("meleeStart", swings::incrementAndGet);
+
+    component.touchDown(4, 2, 0, Buttons.RIGHT);
+    component.touchDown(4, 2, 0, Buttons.LEFT);
+    assertEquals(0, swings.get());
+
+    component.touchUp(4, 2, 0, Buttons.RIGHT);
+    assertFalse(component.isRightMouseHeld());
+
+    assertTrue(component.touchDown(4, 2, 0, Buttons.LEFT));
+    assertEquals(1, swings.get());
+  }
+
+  @Test
   void shouldNotStartMeleeWhilePaused() {
     when(entityService.getPaused()).thenReturn(true);
     KeyboardPlayerInputComponent component = new KeyboardPlayerInputComponent();
