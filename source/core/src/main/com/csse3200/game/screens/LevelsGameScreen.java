@@ -256,7 +256,8 @@ public class LevelsGameScreen extends ScreenAdapter {
       levelSwapQueued = false;
     }
 
-    if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)
+    if (!minigameOverlayManager.isActive()
+        && Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)
         && !ServiceLocator.getEntityService().getSettingsOpen()) {
       pauseOverlay.request();
     }
