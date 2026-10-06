@@ -91,7 +91,8 @@ public class CyclopsMinigameArea extends GameArea {
     /* Timing Minigame Components */
     TimingBarLogic timingBarLogic = new TimingBarLogic(20f);
     TimingBarDisplay timingBarDisplay = new TimingBarDisplay(timingBarLogic);
-    CyclopsMinigameLogic cyclopsMinigameLogic = new CyclopsMinigameLogic(timingBarLogic, timingBarDisplay, terrain, player);
+    CyclopsMinigameLogic cyclopsMinigameLogic =
+        new CyclopsMinigameLogic(timingBarLogic, timingBarDisplay, terrain, player);
     cyclopsMinigameLogic.setWinLocation(winLocation);
     cyclopsMinigameLogic.setSafeLocations(statueLocations);
     cyclopsMinigameLogic.setLossLocations(statueGapLocations);

@@ -11,6 +11,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.areas.terrain.TerrainComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
+import com.csse3200.game.events.EventHandler;
 import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.services.GameTime;
 import com.csse3200.game.services.ResourceService;
@@ -45,6 +46,8 @@ public class CyclopsMinigameLogicTest {
 
     ServiceLocator.registerResourceService(new ResourceService());
     ServiceLocator.registerEntityService(new EntityService());
+    ServiceLocator.registerCyclopsMinigameEventHandler(new EventHandler());
+    ServiceLocator.getCyclopsMinigameEventHandler().addListener("win", () -> {});
 
     gameTime = mock(GameTime.class);
     ServiceLocator.registerTimeSource(gameTime);
