@@ -7,6 +7,7 @@ import com.badlogic.gdx.physics.box2d.Fixture;
 import com.csse3200.game.areas.terrain.TerrainFactory;
 import com.csse3200.game.areas.terrain.configs.levelconfigs.Level3Config;
 import com.csse3200.game.components.CameraComponent;
+import com.csse3200.game.components.GameVolume;
 import com.csse3200.game.components.level.RisingWaterComponent;
 import com.csse3200.game.components.player.PlayerActions;
 import com.csse3200.game.entities.Entity;
@@ -337,7 +338,7 @@ public class Level3GameArea extends GameArea {
     Music music = ServiceLocator.getResourceService().getAsset(backgroundMusic, Music.class);
 
     music.setLooping(true);
-    music.setVolume(0.3f);
+    GameVolume.setMusicVolume(music, 0.3f);
     music.play();
   }
 
