@@ -74,7 +74,9 @@ public class DelayedAttackTask extends DefaultTask implements PriorityTask {
 
     Vector2 attackOffset = new Vector2(offsetX, 0);
 
-    attack = AttackFactory.createNewAttack(size, attackOffset, attackDamage, 1f, attackKnockback);
+    attack =
+        AttackFactory.createNewAttack(
+            size, attackOffset, attackDamage, 1f, attackKnockback, owner.getEntity());
     attack.setPosition(enemyPosition);
     ServiceLocator.getEntityService().register(attack);
   }
