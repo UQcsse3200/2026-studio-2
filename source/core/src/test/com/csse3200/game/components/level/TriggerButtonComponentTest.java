@@ -43,17 +43,13 @@ class TriggerButtonComponentTest {
 
   @Test
   void shouldReturnToDefaultAnimationWhenFinished() {
-    RotatableAnimationRenderComponent animator =
-        mock(RotatableAnimationRenderComponent.class);
+    RotatableAnimationRenderComponent animator = mock(RotatableAnimationRenderComponent.class);
 
     when(animator.isFinished()).thenReturn(true);
 
     TriggerButtonComponent component = new TriggerButtonComponent();
 
-    Entity entity =
-        new Entity()
-            .addComponent(animator)
-            .addComponent(component);
+    Entity entity = new Entity().addComponent(animator).addComponent(component);
 
     entity.create();
 
@@ -66,17 +62,13 @@ class TriggerButtonComponentTest {
 
   @Test
   void shouldNotRestartAnimationWhenNotFinished() {
-    RotatableAnimationRenderComponent animator =
-        mock(RotatableAnimationRenderComponent.class);
+    RotatableAnimationRenderComponent animator = mock(RotatableAnimationRenderComponent.class);
 
     when(animator.isFinished()).thenReturn(false);
 
     TriggerButtonComponent component = new TriggerButtonComponent();
 
-    Entity entity =
-        new Entity()
-            .addComponent(animator)
-            .addComponent(component);
+    Entity entity = new Entity().addComponent(animator).addComponent(component);
 
     entity.create();
 
@@ -89,18 +81,14 @@ class TriggerButtonComponentTest {
 
   @Test
   void shouldNotActivateForNonArrowCollision() {
-    RotatableAnimationRenderComponent animator =
-        mock(RotatableAnimationRenderComponent.class);
+    RotatableAnimationRenderComponent animator = mock(RotatableAnimationRenderComponent.class);
 
     ActivatableComponent activatable = mock(ActivatableComponent.class);
 
     TriggerButtonComponent component = new TriggerButtonComponent();
 
     Entity button =
-        new Entity()
-            .addComponent(animator)
-            .addComponent(activatable)
-            .addComponent(component);
+        new Entity().addComponent(animator).addComponent(activatable).addComponent(component);
 
     button.create();
 
@@ -122,23 +110,18 @@ class TriggerButtonComponentTest {
 
   @Test
   void shouldNotActivateArrowBeforeCooldown() {
-    RotatableAnimationRenderComponent animator =
-        mock(RotatableAnimationRenderComponent.class);
+    RotatableAnimationRenderComponent animator = mock(RotatableAnimationRenderComponent.class);
 
     ActivatableComponent activatable = mock(ActivatableComponent.class);
 
     TriggerButtonComponent component = new TriggerButtonComponent();
 
     Entity button =
-        new Entity()
-            .addComponent(animator)
-            .addComponent(activatable)
-            .addComponent(component);
+        new Entity().addComponent(animator).addComponent(activatable).addComponent(component);
 
     button.create();
 
-    Entity arrow =
-        new Entity().addComponent(mock(ArrowProjectileComponent.class));
+    Entity arrow = new Entity().addComponent(mock(ArrowProjectileComponent.class));
 
     BodyUserData data = new BodyUserData();
     data.entity = arrow;
@@ -159,8 +142,7 @@ class TriggerButtonComponentTest {
 
   @Test
   void shouldActivateWhenArrowHitsAfterCooldown() {
-    RotatableAnimationRenderComponent animator =
-        mock(RotatableAnimationRenderComponent.class);
+    RotatableAnimationRenderComponent animator = mock(RotatableAnimationRenderComponent.class);
 
     ActivatableComponent activatable = mock(ActivatableComponent.class);
 
@@ -169,21 +151,15 @@ class TriggerButtonComponentTest {
     TriggerButtonComponent component = new TriggerButtonComponent();
 
     Entity button =
-        new Entity()
-            .addComponent(animator)
-            .addComponent(activatable)
-            .addComponent(component);
+        new Entity().addComponent(animator).addComponent(activatable).addComponent(component);
 
     button.create();
 
     final int[] activations = {0};
 
-    button
-        .getEvents()
-        .addListener("activateByKey", (String id) -> activations[0]++);
+    button.getEvents().addListener("activateByKey", (String id) -> activations[0]++);
 
-    Entity arrow =
-        new Entity().addComponent(mock(ArrowProjectileComponent.class));
+    Entity arrow = new Entity().addComponent(mock(ArrowProjectileComponent.class));
 
     BodyUserData data = new BodyUserData();
     data.entity = arrow;

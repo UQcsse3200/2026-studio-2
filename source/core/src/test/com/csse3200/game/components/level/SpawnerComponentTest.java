@@ -37,19 +37,13 @@ class SpawnerComponentTest {
 
     SpawnerComponent component =
         new SpawnerComponent(
-            createSpawnables(child),
-            1f,
-            5,
-            false,
-            SpawnerComponent.ACTIVATION_MODE.NORMAL);
+            createSpawnables(child), 1f, 5, false, SpawnerComponent.ACTIVATION_MODE.NORMAL);
 
     Entity spawner = new Entity().addComponent(component);
     spawner.create();
 
     final int[] spawnCount = {0};
-    spawner
-        .getEvents()
-        .addListener("spawnEntity", (Entity spawned) -> spawnCount[0]++);
+    spawner.getEvents().addListener("spawnEntity", (Entity spawned) -> spawnCount[0]++);
 
     when(timeSource.getDeltaTime()).thenReturn(2f);
 
@@ -64,19 +58,13 @@ class SpawnerComponentTest {
 
     SpawnerComponent component =
         new SpawnerComponent(
-            createSpawnables(child),
-            -1f,
-            5,
-            true,
-            SpawnerComponent.ACTIVATION_MODE.NORMAL);
+            createSpawnables(child), -1f, 5, true, SpawnerComponent.ACTIVATION_MODE.NORMAL);
 
     Entity spawner = new Entity().addComponent(component);
     spawner.create();
 
     final int[] spawnCount = {0};
-    spawner
-        .getEvents()
-        .addListener("spawnEntity", (Entity spawned) -> spawnCount[0]++);
+    spawner.getEvents().addListener("spawnEntity", (Entity spawned) -> spawnCount[0]++);
 
     when(timeSource.getDeltaTime()).thenReturn(10f);
 
@@ -91,19 +79,13 @@ class SpawnerComponentTest {
 
     SpawnerComponent component =
         new SpawnerComponent(
-            createSpawnables(child),
-            1f,
-            5,
-            true,
-            SpawnerComponent.ACTIVATION_MODE.NORMAL);
+            createSpawnables(child), 1f, 5, true, SpawnerComponent.ACTIVATION_MODE.NORMAL);
 
     Entity spawner = new Entity().addComponent(component);
     spawner.create();
 
     final int[] spawnCount = {0};
-    spawner
-        .getEvents()
-        .addListener("spawnEntity", (Entity spawned) -> spawnCount[0]++);
+    spawner.getEvents().addListener("spawnEntity", (Entity spawned) -> spawnCount[0]++);
 
     when(timeSource.getDeltaTime()).thenReturn(0.4f);
 
@@ -123,19 +105,13 @@ class SpawnerComponentTest {
 
     SpawnerComponent component =
         new SpawnerComponent(
-            createSpawnables(child),
-            1f,
-            5,
-            true,
-            SpawnerComponent.ACTIVATION_MODE.NORMAL);
+            createSpawnables(child), 1f, 5, true, SpawnerComponent.ACTIVATION_MODE.NORMAL);
 
     Entity spawner = new Entity().addComponent(component);
     spawner.create();
 
     final Entity[] spawnedEntity = {null};
-    spawner
-        .getEvents()
-        .addListener("spawnEntity", (Entity spawned) -> spawnedEntity[0] = spawned);
+    spawner.getEvents().addListener("spawnEntity", (Entity spawned) -> spawnedEntity[0] = spawned);
 
     when(timeSource.getDeltaTime()).thenReturn(1f);
 
@@ -151,11 +127,7 @@ class SpawnerComponentTest {
 
     SpawnerComponent component =
         new SpawnerComponent(
-            createSpawnables(child),
-            1f,
-            5,
-            true,
-            SpawnerComponent.ACTIVATION_MODE.NORMAL);
+            createSpawnables(child), 1f, 5, true, SpawnerComponent.ACTIVATION_MODE.NORMAL);
 
     Entity spawner = new Entity().addComponent(component);
     spawner.setPosition(4f, 6f);
@@ -178,19 +150,13 @@ class SpawnerComponentTest {
 
     SpawnerComponent component =
         new SpawnerComponent(
-            createSpawnables(child),
-            1f,
-            2,
-            true,
-            SpawnerComponent.ACTIVATION_MODE.NORMAL);
+            createSpawnables(child), 1f, 2, true, SpawnerComponent.ACTIVATION_MODE.NORMAL);
 
     Entity spawner = new Entity().addComponent(component);
     spawner.create();
 
     final int[] spawnCount = {0};
-    spawner
-        .getEvents()
-        .addListener("spawnEntity", (Entity spawned) -> spawnCount[0]++);
+    spawner.getEvents().addListener("spawnEntity", (Entity spawned) -> spawnCount[0]++);
 
     when(timeSource.getDeltaTime()).thenReturn(1f);
 
@@ -211,19 +177,13 @@ class SpawnerComponentTest {
 
     SpawnerComponent component =
         new SpawnerComponent(
-            createSpawnables(child),
-            1f,
-            5,
-            false,
-            SpawnerComponent.ACTIVATION_MODE.NORMAL);
+            createSpawnables(child), 1f, 5, false, SpawnerComponent.ACTIVATION_MODE.NORMAL);
 
     Entity spawner = new Entity().addComponent(component);
     spawner.create();
 
     final int[] spawnCount = {0};
-    spawner
-        .getEvents()
-        .addListener("spawnEntity", (Entity spawned) -> spawnCount[0]++);
+    spawner.getEvents().addListener("spawnEntity", (Entity spawned) -> spawnCount[0]++);
 
     when(timeSource.getDeltaTime()).thenReturn(1f);
 
@@ -239,19 +199,13 @@ class SpawnerComponentTest {
 
     SpawnerComponent component =
         new SpawnerComponent(
-            createSpawnables(child),
-            1f,
-            5,
-            true,
-            SpawnerComponent.ACTIVATION_MODE.NORMAL);
+            createSpawnables(child), 1f, 5, true, SpawnerComponent.ACTIVATION_MODE.NORMAL);
 
     Entity spawner = new Entity().addComponent(component);
     spawner.create();
 
     final int[] spawnCount = {0};
-    spawner
-        .getEvents()
-        .addListener("spawnEntity", (Entity spawned) -> spawnCount[0]++);
+    spawner.getEvents().addListener("spawnEntity", (Entity spawned) -> spawnCount[0]++);
 
     when(timeSource.getDeltaTime()).thenReturn(1f);
 
@@ -267,19 +221,13 @@ class SpawnerComponentTest {
 
     SpawnerComponent component =
         new SpawnerComponent(
-            createSpawnables(child),
-            1f,
-            5,
-            false,
-            SpawnerComponent.ACTIVATION_MODE.TOGGLE);
+            createSpawnables(child), 1f, 5, false, SpawnerComponent.ACTIVATION_MODE.TOGGLE);
 
     Entity spawner = new Entity().addComponent(component);
     spawner.create();
 
     final int[] spawnCount = {0};
-    spawner
-        .getEvents()
-        .addListener("spawnEntity", (Entity spawned) -> spawnCount[0]++);
+    spawner.getEvents().addListener("spawnEntity", (Entity spawned) -> spawnCount[0]++);
 
     when(timeSource.getDeltaTime()).thenReturn(1f);
 
@@ -295,19 +243,13 @@ class SpawnerComponentTest {
 
     SpawnerComponent component =
         new SpawnerComponent(
-            createSpawnables(child),
-            1f,
-            5,
-            true,
-            SpawnerComponent.ACTIVATION_MODE.TOGGLE);
+            createSpawnables(child), 1f, 5, true, SpawnerComponent.ACTIVATION_MODE.TOGGLE);
 
     Entity spawner = new Entity().addComponent(component);
     spawner.create();
 
     final int[] spawnCount = {0};
-    spawner
-        .getEvents()
-        .addListener("spawnEntity", (Entity spawned) -> spawnCount[0]++);
+    spawner.getEvents().addListener("spawnEntity", (Entity spawned) -> spawnCount[0]++);
 
     when(timeSource.getDeltaTime()).thenReturn(1f);
 
@@ -323,11 +265,7 @@ class SpawnerComponentTest {
 
     SpawnerComponent component =
         new SpawnerComponent(
-            createSpawnables(child),
-            1f,
-            1,
-            true,
-            SpawnerComponent.ACTIVATION_MODE.NORMAL);
+            createSpawnables(child), 1f, 1, true, SpawnerComponent.ACTIVATION_MODE.NORMAL);
 
     component.setIds(new String[] {"door1", "platform1"});
 
@@ -335,9 +273,7 @@ class SpawnerComponentTest {
     spawner.create();
 
     final int[] activations = {0};
-    spawner
-        .getEvents()
-        .addListener("activateByKey", (String id) -> activations[0]++);
+    spawner.getEvents().addListener("activateByKey", (String id) -> activations[0]++);
 
     when(timeSource.getDeltaTime()).thenReturn(1f);
 
@@ -356,11 +292,7 @@ class SpawnerComponentTest {
 
     SpawnerComponent component =
         new SpawnerComponent(
-            createSpawnables(child),
-            1f,
-            1,
-            true,
-            SpawnerComponent.ACTIVATION_MODE.NORMAL);
+            createSpawnables(child), 1f, 1, true, SpawnerComponent.ACTIVATION_MODE.NORMAL);
 
     component.setIds(new String[] {"door1"});
 
@@ -368,9 +300,7 @@ class SpawnerComponentTest {
     spawner.create();
 
     final int[] activations = {0};
-    spawner
-        .getEvents()
-        .addListener("activateByKey", (String id) -> activations[0]++);
+    spawner.getEvents().addListener("activateByKey", (String id) -> activations[0]++);
 
     when(timeSource.getDeltaTime()).thenReturn(1f);
 
@@ -388,19 +318,13 @@ class SpawnerComponentTest {
 
     SpawnerComponent component =
         new SpawnerComponent(
-            createSpawnables(child),
-            1f,
-            -1,
-            true,
-            SpawnerComponent.ACTIVATION_MODE.NORMAL);
+            createSpawnables(child), 1f, -1, true, SpawnerComponent.ACTIVATION_MODE.NORMAL);
 
     Entity spawner = new Entity().addComponent(component);
     spawner.create();
 
     final int[] spawnCount = {0};
-    spawner
-        .getEvents()
-        .addListener("spawnEntity", (Entity spawned) -> spawnCount[0]++);
+    spawner.getEvents().addListener("spawnEntity", (Entity spawned) -> spawnCount[0]++);
 
     when(timeSource.getDeltaTime()).thenReturn(1f);
 

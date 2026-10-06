@@ -45,7 +45,6 @@ class WinConditionComponentTest {
     Entity entity = new Entity().addComponent(component);
     entity.create();
 
-    verify(gameEndEventHandler, never())
-        .trigger("gameEnd", GameEndState.WIN);
+    verify(gameEndEventHandler, never()).trigger("gameEnd", GameEndState.WIN);
   }
 }

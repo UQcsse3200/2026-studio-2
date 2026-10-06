@@ -42,12 +42,9 @@ class SpikyBallComponentTest {
   void shouldMoveRight() {
     when(timeSource.getDeltaTime()).thenReturn(1f);
 
-    SpikyBallComponent component =
-        new SpikyBallComponent(new Vector2(1f, 0f));
+    SpikyBallComponent component = new SpikyBallComponent(new Vector2(1f, 0f));
 
-    Entity entity =
-        new Entity()
-            .addComponent(component);
+    Entity entity = new Entity().addComponent(component);
 
     entity.setPosition(2f, 3f);
     entity.create();
@@ -62,12 +59,9 @@ class SpikyBallComponentTest {
   void shouldMoveLeft() {
     when(timeSource.getDeltaTime()).thenReturn(1f);
 
-    SpikyBallComponent component =
-        new SpikyBallComponent(new Vector2(-1f, 0f));
+    SpikyBallComponent component = new SpikyBallComponent(new Vector2(-1f, 0f));
 
-    Entity entity =
-        new Entity()
-            .addComponent(component);
+    Entity entity = new Entity().addComponent(component);
 
     entity.setPosition(10f, 3f);
     entity.create();
@@ -82,12 +76,9 @@ class SpikyBallComponentTest {
   void shouldMoveVertically() {
     when(timeSource.getDeltaTime()).thenReturn(1f);
 
-    SpikyBallComponent component =
-        new SpikyBallComponent(new Vector2(0f, 1f));
+    SpikyBallComponent component = new SpikyBallComponent(new Vector2(0f, 1f));
 
-    Entity entity =
-        new Entity()
-            .addComponent(component);
+    Entity entity = new Entity().addComponent(component);
 
     entity.setPosition(2f, 3f);
     entity.create();
@@ -102,12 +93,9 @@ class SpikyBallComponentTest {
   void shouldScaleMovementByDeltaTime() {
     when(timeSource.getDeltaTime()).thenReturn(0.5f);
 
-    SpikyBallComponent component =
-        new SpikyBallComponent(new Vector2(1f, 0f));
+    SpikyBallComponent component = new SpikyBallComponent(new Vector2(1f, 0f));
 
-    Entity entity =
-        new Entity()
-            .addComponent(component);
+    Entity entity = new Entity().addComponent(component);
 
     entity.setPosition(0f, 0f);
     entity.create();
@@ -122,12 +110,9 @@ class SpikyBallComponentTest {
   void shouldMoveDiagonally() {
     when(timeSource.getDeltaTime()).thenReturn(1f);
 
-    SpikyBallComponent component =
-        new SpikyBallComponent(new Vector2(1f, -1f));
+    SpikyBallComponent component = new SpikyBallComponent(new Vector2(1f, -1f));
 
-    Entity entity =
-        new Entity()
-            .addComponent(component);
+    Entity entity = new Entity().addComponent(component);
 
     entity.setPosition(10f, 10f);
     entity.create();
@@ -140,12 +125,9 @@ class SpikyBallComponentTest {
 
   @Test
   void shouldScheduleDisposalOnCollision() {
-    SpikyBallComponent component =
-        new SpikyBallComponent(new Vector2(1f, 0f));
+    SpikyBallComponent component = new SpikyBallComponent(new Vector2(1f, 0f));
 
-    Entity entity =
-        new Entity()
-            .addComponent(component);
+    Entity entity = new Entity().addComponent(component);
 
     entity.create();
 
@@ -159,12 +141,9 @@ class SpikyBallComponentTest {
 
   @Test
   void shouldScheduleDisposalWhenHandleDisposeCalledDirectly() {
-    SpikyBallComponent component =
-        new SpikyBallComponent(new Vector2(1f, 0f));
+    SpikyBallComponent component = new SpikyBallComponent(new Vector2(1f, 0f));
 
-    Entity entity =
-        new Entity()
-            .addComponent(component);
+    Entity entity = new Entity().addComponent(component);
 
     entity.create();
 

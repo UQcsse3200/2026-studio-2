@@ -26,10 +26,7 @@ class RotatableMapComponentTest {
 
     RotatableMapComponent component = new RotatableMapComponent(90f);
 
-    Entity entity =
-        new Entity()
-            .addComponent(physics)
-            .addComponent(component);
+    Entity entity = new Entity().addComponent(physics).addComponent(component);
 
     entity.create();
 
@@ -44,10 +41,7 @@ class RotatableMapComponentTest {
 
     RotatableMapComponent component = new RotatableMapComponent(90f);
 
-    Entity entity =
-        new Entity()
-            .addComponent(physics)
-            .addComponent(component);
+    Entity entity = new Entity().addComponent(physics).addComponent(component);
 
     entity.create();
 
@@ -66,10 +60,7 @@ class RotatableMapComponentTest {
 
     RotatableMapComponent component = new RotatableMapComponent(90f);
 
-    Entity entity =
-        new Entity()
-            .addComponent(physics)
-            .addComponent(component);
+    Entity entity = new Entity().addComponent(physics).addComponent(component);
 
     entity.create();
 
@@ -88,10 +79,7 @@ class RotatableMapComponentTest {
 
     RotatableMapComponent component = new RotatableMapComponent(180f);
 
-    Entity entity =
-        new Entity()
-            .addComponent(physics)
-            .addComponent(component);
+    Entity entity = new Entity().addComponent(physics).addComponent(component);
 
     entity.create();
 
@@ -108,16 +96,11 @@ class RotatableMapComponentTest {
     PhysicsComponent physics = mock(PhysicsComponent.class);
     Body body = mock(Body.class);
 
-    when(physics.getBody())
-        .thenReturn(null)
-        .thenReturn(body);
+    when(physics.getBody()).thenReturn(null).thenReturn(body);
 
     RotatableMapComponent component = new RotatableMapComponent(30f);
 
-    Entity entity =
-        new Entity()
-            .addComponent(physics)
-            .addComponent(component);
+    Entity entity = new Entity().addComponent(physics).addComponent(component);
 
     entity.create();
 
