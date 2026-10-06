@@ -334,7 +334,57 @@ public class CyclopsMinigameLogicTest {
     minigameLogic.update();
 
     assertEquals(CyclopsMinigameLogic.State.STOP, minigameLogic.state);
-    verify(minigameLogic.transitionScreenCover, never()).setVisible(true);
+    verify(minigameLogic.transitionScreenCover).setVisible(true);
+  }
+
+  @Test
+  void deathTriggersDiedOnceAfterDelay() {
+    EventHandler cyclopsEvents = mock(EventHandler.class);
+    ServiceLocator.registerCyclopsMinigameEventHandler(cyclopsEvents);
+    minigameLogic.setSafeLocations(List.of(new GridPoint2(1, 0)));
+    minigameLogic.setLossLocations(List.of(new GridPoint2(2, 0)));
+    givePlayerHealth(CyclopsMinigameLogic.MISS_DAMAGE);
+
+    runMove(false);
+    assertEquals(CyclopsMinigameLogic.State.DEATH, minigameLogic.state);
+
+    when(gameTime.getDeltaTime()).thenReturn(CyclopsMinigameLogic.DEATH_DISPLAY_DELAY / 2);
+    minigameLogic.update();
+    verify(cyclopsEvents, never()).trigger("died");
+
+    when(gameTime.getDeltaTime()).thenReturn(10f);
+    minigameLogic.update();
+    minigameLogic.update();
+
+    verify(cyclopsEvents, times(1)).trigger("died");
+    assertEquals(CyclopsMinigameLogic.State.STOP, minigameLogic.state);
+  }
+
+  @Test
+  void missAtSecondStatueReturnsPlayerToSecondStatueAndKeepsProgress() {
+    GridPoint2 first = new GridPoint2(1, 0);
+    GridPoint2 second = new GridPoint2(2, 0);
+    GridPoint2 third = new GridPoint2(3, 0);
+    minigameLogic.setSafeLocations(List.of(first, second, third));
+    minigameLogic.setLossLocations(List.of(new GridPoint2(4, 0), new GridPoint2(5, 0)));
+    minigameLogic.setWinLocation(new GridPoint2(6, 0));
+
+    Vector2 secondPos = new Vector2(200, 0);
+    Vector2 thirdPos = new Vector2(300, 0);
+    when(terrainComponent.tileToWorldPosition(second)).thenReturn(secondPos);
+    when(terrainComponent.tileToWorldPosition(third)).thenReturn(thirdPos);
+    givePlayerHealth(10);
+
+    runMove(true);
+    runMove(false);
+    minigameLogic.update();
+    minigameLogic.update();
+
+    verify(player, times(2)).setPosition(secondPos);
+    assertEquals(CyclopsMinigameLogic.State.SHOW_DELAY, minigameLogic.state);
+
+    runMove(true);
+    verify(player).setPosition(thirdPos);
   }
 
   @Test

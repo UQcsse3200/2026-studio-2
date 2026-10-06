@@ -188,6 +188,12 @@ public class CyclopsMinigameRoomScreen extends ScreenAdapter {
                 game.startCutscene(result.getCutscene(), GdxGame.ScreenType.LEVEL_2_GAME);
               }
             });
+    ServiceLocator.getCyclopsMinigameEventHandler()
+        .addListener(
+            "died",
+            () ->
+                Gdx.app.postRunnable(
+                    () -> game.setScreen(GdxGame.ScreenType.CYCLOPS_MINIGAME)));
 
     Entity ui = new Entity();
     ui.addComponent(new InputDecorator(stage, 10))

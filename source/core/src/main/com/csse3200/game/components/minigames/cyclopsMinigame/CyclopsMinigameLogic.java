@@ -30,6 +30,7 @@ public class CyclopsMinigameLogic extends Component {
     MOVING,
     LOSS,
     LOSS_TRANSITION,
+    DEATH,
     WIN
   }
 
@@ -41,6 +42,7 @@ public class CyclopsMinigameLogic extends Component {
   static final float TRANSITION_DELAY_GAP = 0.2f;
   static final float TRANSITION_DELAY = 0.8f;
   static final float LOSS_DISPLAY_DELAY = 1.0f;
+  static final float DEATH_DISPLAY_DELAY = 1.5f;
   static final int MISS_DAMAGE = 2;
 
   /* Components */
@@ -240,7 +242,8 @@ public class CyclopsMinigameLogic extends Component {
       if (combatStats != null) {
         combatStats.addHealth(-MISS_DAMAGE);
       }
-      changeState(State.LOSS);
+      // A miss costs a heart and retries the current statue; losing all hearts restarts the minigame.
+      changeState(playerIsDead() ? State.DEATH : State.LOSS);
     }
   }
 
@@ -301,6 +304,11 @@ public class CyclopsMinigameLogic extends Component {
     startMinigame();
   }
 
+  private void retryCurrentStatue() {
+    movePlayer(safeLocations.get(currentSafeLocation));
+    startMinigame();
+  }
+
   /* Component Overrides */
   @Override
   public void create() {
@@ -335,21 +343,23 @@ public class CyclopsMinigameLogic extends Component {
       }
       case LOSS -> {
         if (elapsed(LOSS_DISPLAY_DELAY)) {
-          if (playerIsDead()) {
-            logger.info("Player has DIED in the cyclops minigame");
-            // TODO: decide what happens after death (exit to the level or a game-over screen)
-            changeState(State.STOP);
-          } else {
-            logger.info("Player has LOST the cyclops minigame");
-            transitionScreenCover.setVisible(true);
-            changeState(State.LOSS_TRANSITION);
-          }
+          logger.info("Player has LOST the cyclops minigame");
+          transitionScreenCover.setVisible(true);
+          changeState(State.LOSS_TRANSITION);
         }
       }
       case LOSS_TRANSITION -> {
         if (elapsed(TRANSITION_DELAY)) {
           transitionScreenCover.setVisible(false);
-          restartMinigame();
+          retryCurrentStatue();
+        }
+      }
+      case DEATH -> {
+        if (elapsed(DEATH_DISPLAY_DELAY)) {
+          logger.info("Player has DIED in the cyclops minigame");
+          transitionScreenCover.setVisible(true);
+          ServiceLocator.getCyclopsMinigameEventHandler().trigger("died");
+          changeState(State.STOP);
         }
       }
       case SHOW_DELAY -> {

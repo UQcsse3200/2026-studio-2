@@ -6,6 +6,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.areas.terrain.TerrainFactory;
 import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.components.TextBoxComponent;
+import com.csse3200.game.components.minigames.cyclopsMinigame.CyclopsCameraFollowComponent;
 import com.csse3200.game.components.minigames.cyclopsMinigame.CyclopsMinigameLogic;
 import com.csse3200.game.components.minigames.cyclopsMinigame.TimingBarDisplay;
 import com.csse3200.game.components.minigames.cyclopsMinigame.TimingBarLogic;
@@ -51,8 +52,8 @@ public class CyclopsMinigameArea extends GameArea {
   private Entity player;
   private Entity minigame;
 
-  private static final GridPoint2 MAP_SIZE = new GridPoint2(40, 30);
-  private static final int NUM_STATUES = 3;
+  static final GridPoint2 MAP_SIZE = new GridPoint2(80, 30);
+  static final int NUM_STATUES = 6;
   static final float STATUE_DEPTH_OFFSET = 0.01f;
   private int statueYLevel;
   private GridPoint2 winLocation;
@@ -77,6 +78,7 @@ public class CyclopsMinigameArea extends GameArea {
     displayFloor();
 
     player = spawnPlayer();
+    spawnCamera();
 
     playMusic();
 
@@ -112,11 +114,40 @@ public class CyclopsMinigameArea extends GameArea {
     spawnEntity(new Entity().addComponent(terrain));
 
     statueYLevel = 3;
-    winLocation = new GridPoint2(MAP_SIZE.x + 10, statueYLevel);
+    winLocation = new GridPoint2(winTileX(), statueYLevel);
+  }
 
-    Entity cameraEntityHolder = new Entity();
-    spawnEntityAt(cameraEntityHolder, new GridPoint2(MAP_SIZE.x / 2, MAP_SIZE.y / 2), false, false);
+  /**
+   * Keeps the camera on the player's x, clamped so the view never passes the room's ends. The
+   * height stays fixed at the middle of the room.
+   */
+  private void spawnCamera() {
+    float roomWidth = terrain.tileToWorldPosition(MAP_SIZE.x, 0).x;
+    float cameraY = terrain.tileToWorldPosition(0, MAP_SIZE.y / 2).y;
+    Entity cameraEntityHolder =
+        new Entity()
+            .addComponent(
+                new CyclopsCameraFollowComponent(
+                    player, cameraComponent.getCamera(), roomWidth, cameraY));
+    spawnEntity(cameraEntityHolder);
     this.cameraComponent.setTarget(cameraEntityHolder);
+  }
+
+  /*
+   * Statues are spaced evenly every (MAP_SIZE.x / NUM_STATUES) tiles. Each one is offset by
+   * (MAP_SIZE.x / (NUM_STATUES * 2)) to centre it in its section, and -2 nudges it slightly. Gaps
+   * sit in the same sections, and the win location sits just past the last statue.
+   */
+  static int statueTileX(int statueNumber) {
+    return ((MAP_SIZE.x / NUM_STATUES) * statueNumber) - (MAP_SIZE.x / (NUM_STATUES * 2)) - 2;
+  }
+
+  static int gapTileX(int statueNumber) {
+    return (MAP_SIZE.x / NUM_STATUES) * statueNumber - 2;
+  }
+
+  static int winTileX() {
+    return statueTileX(NUM_STATUES) + (MAP_SIZE.x / NUM_STATUES) / 2;
   }
 
   private void spawnStatues() {
@@ -124,17 +155,7 @@ public class CyclopsMinigameArea extends GameArea {
     this.statueGapLocations = new ArrayList<>(NUM_STATUES);
 
     for (int i = 1; i <= NUM_STATUES; i++) {
-      /* Formula for equally spacing out statues.
-       Idea was to have equal spacing for all statues (mapSize.x / NUM_STATUES).
-       This splits the map into (currently thirds), then * i (statue number) to place
-       in correct position.
-
-       This is then offset by (mapSize.x / num_statues*2) which effectively gets the middle
-       of the gap between two statues / locations.
-
-       -2 is just to better offset it and can be adjusted freely
-      */
-      int x = ((MAP_SIZE.x / NUM_STATUES) * i) - (MAP_SIZE.x / (NUM_STATUES * 2)) - 2;
+      int x = statueTileX(i);
       GridPoint2 location = new GridPoint2(x, statueYLevel);
       statueLocations.add(location);
 
@@ -147,16 +168,16 @@ public class CyclopsMinigameArea extends GameArea {
           i,
           terrain.tileToWorldPosition(new GridPoint2(x, statueYLevel)));
 
-      int gapX = (MAP_SIZE.x / NUM_STATUES) * i - 2;
-      GridPoint2 gapLocation = new GridPoint2(gapX, statueYLevel);
+      GridPoint2 gapLocation = new GridPoint2(gapTileX(i), statueYLevel);
       statueGapLocations.add(gapLocation);
     }
   }
 
-  /** Creates and displays the floor entity that spans the entire screen */
+  /** Creates and displays the floor entity that spans the entire room */
   private void displayFloor() {
+    float roomWidth = terrain.tileToWorldPosition(MAP_SIZE.x, 0).x;
     spawnEntityAt(
-        ObstacleFactory.createWall(MAP_SIZE.x, 0.1f),
+        ObstacleFactory.createWall(roomWidth, 0.1f),
         new GridPoint2(0, statueYLevel - 1),
         false,
         false);
