@@ -1,6 +1,9 @@
 package com.csse3200.game.ui.terminal.commands;
 
 import com.csse3200.game.GdxGame;
+import com.csse3200.game.components.player.PlayerActions;
+import com.csse3200.game.cutscene.CutsceneLoader;
+import com.csse3200.game.entities.Entity;
 import com.csse3200.game.events.EventHandler;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.ArrayList;
@@ -16,7 +19,26 @@ public class CyclopsMinigameCommand implements Command {
       ServiceLocator.registerCyclopsMinigameEventHandler(new EventHandler());
     }
     ServiceLocator.getCyclopsMinigameEventHandler()
-        .addListener("load", () -> game.setScreen(GdxGame.ScreenType.CYCLOPS_MINIGAME));
+        .addListener(
+            "load",
+            () -> {
+              Entity player = null;
+              for (Entity e : ServiceLocator.getEntityService().getEntities()) {
+                if (e.getComponent(PlayerActions.class) != null) {
+                  player = e;
+                  break;
+                }
+              }
+              game.savePlayerState(player);
+
+              CutsceneLoader loader = new CutsceneLoader();
+              CutsceneLoader.Result result = loader.load("cutscene3");
+              if (!result.isSuccess()) {
+                logger.debug("Could not start cutscene '{}': {}", "cutscene3", result.getError());
+              } else {
+                game.startCutscene(result.getCutscene(), GdxGame.ScreenType.LEVEL_2_GAME);
+              }
+            });
   }
 
   @Override

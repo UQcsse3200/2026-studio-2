@@ -139,6 +139,7 @@ public class LevelsGameScreen extends ScreenAdapter {
     }
 
     player = level1GameArea.getPlayer();
+    game.restorePlayerState(player);
     player.getEvents().addListener("respawnAtCheckpoint", () -> currentGameArea.respawn());
     player.getEvents().addListener("toggleMap", () -> currentGameArea.toggleLevelMap());
 

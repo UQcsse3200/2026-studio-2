@@ -5,7 +5,9 @@ import static com.badlogic.gdx.Gdx.app;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.csse3200.game.components.player.PlayerSnapshot;
 import com.csse3200.game.cutscene.CutsceneLoader;
+import com.csse3200.game.entities.Entity;
 import com.csse3200.game.files.UserSettings;
 import com.csse3200.game.screens.CutsceneScreen;
 import com.csse3200.game.screens.LevelsGameScreen;
@@ -35,6 +37,8 @@ public class GdxGame extends Game {
   // a check for if the intro cutscene has been triggered, once per game session, to prevent the
   // cutscene from being triggered multiple times.
   private boolean introStarted = false;
+
+  private PlayerSnapshot playerSnapshot;
 
   @Override
   public void create() {
@@ -138,6 +142,20 @@ public class GdxGame extends Game {
     if (transitionScreen != null) {
       transitionScreen.dispose();
     }
+  }
+
+  public void savePlayerState(Entity player) {
+    if (player == null) {
+      logger.warn("Attempting to save a null player");
+      return;
+    }
+    playerSnapshot = PlayerSnapshot.capture(player);
+  }
+
+  public void restorePlayerState(Entity player) {
+    if (playerSnapshot == null) return;
+    playerSnapshot.applyTo(player);
+    playerSnapshot = null;
   }
 
   @Override
