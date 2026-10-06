@@ -172,6 +172,11 @@ public class PlayerAnimationController extends Component {
     if (dead) {
       return;
     }
+    // The draw replaces the previous animation. Its completion must not be handled as the
+    // end of a hurt, dash or jump that was still active when the shoot button was pressed.
+    hurt = false;
+    dashing = false;
+    jumping = false;
     charging = true;
     drawingIn = true;
     attacking = true;
