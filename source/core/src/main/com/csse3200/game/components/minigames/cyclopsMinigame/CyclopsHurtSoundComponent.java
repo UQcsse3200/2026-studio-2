@@ -3,6 +3,7 @@ package com.csse3200.game.components.minigames.cyclopsMinigame;
 import com.badlogic.gdx.audio.Sound;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.Component;
+import com.csse3200.game.components.GameVolume;
 
 /**
  * Plays a hurt voice each time its entity fires "hurt". The voice is picked by hearts remaining, so
@@ -33,11 +34,11 @@ public class CyclopsHurtSoundComponent extends Component {
   void playVoiceForHearts() {
     CombatStatsComponent combatStats = entity.getComponent(CombatStatsComponent.class);
     if (combatStats != null && combatStats.isDead()) {
-      deathVoice.play(DEATH_VOLUME, DEATH_PITCH, 0f);
+      deathVoice.play(GameVolume.scale(DEATH_VOLUME), DEATH_PITCH, 0f);
       return;
     }
     int hearts = combatStats == null ? 0 : combatStats.getHealth() / HEALTH_PER_HEART;
     int index = Math.min(hearts, voicesByHearts.length - 1);
-    voicesByHearts[index].play(volumesByHearts[index]);
+    voicesByHearts[index].play(GameVolume.scale(volumesByHearts[index]));
   }
 }

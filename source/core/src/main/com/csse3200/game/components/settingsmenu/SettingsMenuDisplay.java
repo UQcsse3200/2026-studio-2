@@ -14,6 +14,7 @@ import com.badlogic.gdx.utils.Array;
 import com.csse3200.game.GdxGame;
 import com.csse3200.game.GdxGame.ScreenType;
 import com.csse3200.game.components.ButtonSound;
+import com.csse3200.game.components.GameVolume;
 import com.csse3200.game.files.UserSettings;
 import com.csse3200.game.files.UserSettings.DisplaySettings;
 import com.csse3200.game.services.ServiceLocator;
@@ -35,6 +36,7 @@ public class SettingsMenuDisplay extends UIComponent {
   private CheckBox fullScreenCheck;
   private CheckBox vsyncCheck;
   private Slider uiScaleSlider;
+  private Slider volumeSlider;
   private SelectBox<StringDecorator<DisplayMode>> displayModeSelect;
 
   private ScreenType returnScreen;
@@ -112,6 +114,11 @@ public class SettingsMenuDisplay extends UIComponent {
     uiScaleSlider.setValue(settings.uiScale);
     Label uiScaleValue = new Label(String.format("%.2fx", settings.uiScale), skin);
 
+    Label volumeLabel = new Label("Volume:", skin);
+    volumeSlider = new Slider(0f, 1f, 0.05f, false, skin);
+    volumeSlider.setValue(settings.volume);
+    Label volumeValue = new Label(Math.round(settings.volume * 100) + "%", skin);
+
     Label displayModeLabel = new Label("Resolution:", skin);
     displayModeSelect = new SelectBox<>(skin);
     Monitor selectedMonitor = Gdx.graphics.getMonitor();
@@ -141,6 +148,14 @@ public class SettingsMenuDisplay extends UIComponent {
     table.add(uiScaleTable).left();
 
     table.row().padTop(10f);
+    Table volumeTable = new Table();
+    volumeTable.add(volumeSlider).width(100).left();
+    volumeTable.add(volumeValue).left().padLeft(5f).expandX();
+
+    table.add(volumeLabel).right().padRight(15f);
+    table.add(volumeTable).left();
+
+    table.row().padTop(10f);
     table.add(displayModeLabel).right().padRight(15f);
     table.add(displayModeSelect).left();
 
@@ -149,6 +164,13 @@ public class SettingsMenuDisplay extends UIComponent {
         (Event event) -> {
           float value = uiScaleSlider.getValue();
           uiScaleValue.setText(String.format("%.2fx", value));
+          return true;
+        });
+    volumeSlider.addListener(
+        (Event event) -> {
+          float value = volumeSlider.getValue();
+          volumeValue.setText(Math.round(value * 100) + "%");
+          GameVolume.set(value);
           return true;
         });
 
@@ -245,6 +267,7 @@ public class SettingsMenuDisplay extends UIComponent {
     }
     settings.fullscreen = fullScreenCheck.isChecked();
     settings.uiScale = uiScaleSlider.getValue();
+    settings.volume = volumeSlider.getValue();
     settings.displayMode = new DisplaySettings(displayModeSelect.getSelected().object);
     settings.vsync = vsyncCheck.isChecked();
 
@@ -252,6 +275,7 @@ public class SettingsMenuDisplay extends UIComponent {
   }
 
   private void exitMenu() {
+    GameVolume.set(UserSettings.get().volume);
     game.setScreen(returnScreen);
   }
 

@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.anyFloat;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -184,24 +185,24 @@ class SpinTheWheelDisplayTest {
   void shouldPlayTheSpinAndPrizeSounds() {
     Sound spinSound = loadSound(SPIN_SOUND);
     Sound prizeSound = loadSound(PRIZE_SOUND);
-    when(spinSound.play()).thenReturn(7L);
+    when(spinSound.play(1f)).thenReturn(7L);
     show(new SpinTheWheelDisplay(ONE_ITEM));
 
     click(find("wheel-spin-button"));
 
-    verify(spinSound).play();
-    verify(prizeSound, never()).play();
+    verify(spinSound).play(1f);
+    verify(prizeSound, never()).play(anyFloat());
 
     finishAnimations();
 
     verify(spinSound).stop(7L);
-    verify(prizeSound).play();
+    verify(prizeSound).play(1f);
   }
 
   @Test
   void shouldStopTheSpinSoundWhenClosedMidSpin() {
     Sound spinSound = loadSound(SPIN_SOUND);
-    when(spinSound.play()).thenReturn(7L);
+    when(spinSound.play(1f)).thenReturn(7L);
     SpinTheWheelDisplay display = new SpinTheWheelDisplay(ONE_ITEM);
     show(display);
     click(find("wheel-spin-button"));
