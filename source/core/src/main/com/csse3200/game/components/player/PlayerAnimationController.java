@@ -224,6 +224,11 @@ public class PlayerAnimationController extends Component {
     }
   }
 
+  /** Re-picks the idle, walk or sprint animation, e.g. after the rope pose stops drawing. */
+  public void refreshAnimation() {
+    updateAnimation();
+  }
+
   public void playAnimation(String animationName) {
     animator.startAnimation(animationName);
   }

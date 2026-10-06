@@ -29,6 +29,7 @@ import com.csse3200.game.rendering.AnimationRenderComponent;
 import com.csse3200.game.rendering.item.GrappleRenderComponent;
 import com.csse3200.game.rendering.item.MeleeRenderComponent;
 import com.csse3200.game.services.ServiceLocator;
+import com.csse3200.game.rendering.item.GrappleHoldRenderComponent;
 
 /** Factory to create a player entity. */
 public class PlayerFactory {
@@ -94,7 +95,10 @@ public class PlayerFactory {
             .addComponent(new GrappleRenderComponent())
             .addComponent(new PlayerAnimationController())
             .addComponent(new MeleeRenderComponent())
-            .addComponent(new RespawnComponent());
+            .addComponent(new RespawnComponent())
+            .addComponent(new PlayerAnimationController())
+            .addComponent(new GrappleHoldRenderComponent())
+            .addComponent(new MeleeRenderComponent());
 
     player.getComponent(ColliderComponent.class).setDensity(1.5f);
     player.getComponent(AnimationRenderComponent.class).scaleEntity();
