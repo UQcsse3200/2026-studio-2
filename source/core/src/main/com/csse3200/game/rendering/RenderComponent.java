@@ -109,6 +109,7 @@ public abstract class RenderComponent extends Component implements Renderable, D
         backgroundLight = beforeFlashBackground;
         updateDarkness(deltaTime);
         updateBackgroundLight(deltaTime);
+        ServiceLocator.getLightingService().getEngine().setAmbientLight(darkness);
       }
     }
   }
