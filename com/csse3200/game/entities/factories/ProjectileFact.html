@@ -107,17 +107,25 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createNecromancerProjectile(com.badlogic.gdx.math.Vector2,int,float,float)" class="member-name-link">createNecromancerProjectile</a><wbr>(com.badlogic.gdx.math.Vector2&nbsp;targetPosition,
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createCalypsoProjectile(com.badlogic.gdx.math.Vector2,int,float,float)" class="member-name-link">createCalypsoProjectile</a><wbr>(com.badlogic.gdx.math.Vector2&nbsp;targetPosition,
  int&nbsp;damage,
  float&nbsp;speed,
  float&nbsp;lifetime)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Creates a projectile used by Calypso during the first phase of the boss fight.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createSkeletonArcherProjectile(com.badlogic.gdx.math.Vector2,int,float,float)" class="member-name-link">createSkeletonArcherProjectile</a><wbr>(com.badlogic.gdx.math.Vector2&nbsp;targetPosition,
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createNecromancerProjectile(com.badlogic.gdx.math.Vector2,int,float,float)" class="member-name-link">createNecromancerProjectile</a><wbr>(com.badlogic.gdx.math.Vector2&nbsp;targetPosition,
  int&nbsp;damage,
  float&nbsp;speed,
  float&nbsp;lifetime)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createSkeletonArcherProjectile(com.badlogic.gdx.math.Vector2,int,float,float)" class="member-name-link">createSkeletonArcherProjectile</a><wbr>(com.badlogic.gdx.math.Vector2&nbsp;targetPosition,
+ int&nbsp;damage,
+ float&nbsp;speed,
+ float&nbsp;lifetime)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Creates a projectile that travels towards a target position.</div>
 </div>
 </div>
@@ -163,6 +171,25 @@ loadScripts(document, 'script');</script>
  int&nbsp;damage,
  float&nbsp;speed,
  float&nbsp;lifetime)</span></div>
+</section>
+</li>
+<li>
+<section class="detail" id="createCalypsoProjectile(com.badlogic.gdx.math.Vector2,int,float,float)">
+<h3>createCalypsoProjectile</h3>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createCalypsoProjectile</span><wbr><span class="parameters">(com.badlogic.gdx.math.Vector2&nbsp;targetPosition,
+ int&nbsp;damage,
+ float&nbsp;speed,
+ float&nbsp;lifetime)</span></div>
+<div class="block">Creates a projectile used by Calypso during the first phase of the boss fight.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>targetPosition</code> - position the projectile travels towards</dd>
+<dd><code>damage</code> - damage dealt when the projectile hits the player</dd>
+<dd><code>speed</code> - projectile movement speed</dd>
+<dd><code>lifetime</code> - maximum projectile lifetime in seconds</dd>
+<dt>Returns:</dt>
+<dd>Calypso projectile entity</dd>
+</dl>
 </section>
 </li>
 </ul>
