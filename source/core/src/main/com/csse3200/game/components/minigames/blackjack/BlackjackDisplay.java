@@ -21,6 +21,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
 import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.csse3200.game.components.ButtonSound;
+import com.csse3200.game.components.GameVolume;
 import com.csse3200.game.components.inventory.InventoryComponent;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.UIComponent;
@@ -638,7 +639,7 @@ public class BlackjackDisplay extends UIComponent {
 
       Sound sound = ServiceLocator.getResourceService().getAsset(path, Sound.class);
 
-      sound.play(1.0f);
+      sound.play(GameVolume.scale(1.0f));
     } catch (RuntimeException ignored) {
       // Ignore unavailable audio during tests or teardown.
     }

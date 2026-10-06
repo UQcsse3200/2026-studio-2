@@ -8,6 +8,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.areas.terrain.TerrainComponent;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.Component;
+import com.csse3200.game.components.GameVolume;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.BlankTransitionScreenCover;
@@ -181,7 +182,7 @@ public class CyclopsMinigameLogic extends Component {
   private void playWalkingSound() {
     this.walkingSoundID = walkingSound.play();
     walkingSound.setLooping(this.walkingSoundID, true);
-    walkingSound.setVolume(this.walkingSoundID, walkingSoundVolume);
+    walkingSound.setVolume(this.walkingSoundID, GameVolume.scale(walkingSoundVolume));
   }
 
   private void stopWalkingSound() {
@@ -195,7 +196,7 @@ public class CyclopsMinigameLogic extends Component {
 
   private void playMarkerHitSound() {
     this.hitSoundID = hitSound.play();
-    hitSound.setVolume(this.hitSoundID, hitSoundVolume);
+    hitSound.setVolume(this.hitSoundID, GameVolume.scale(hitSoundVolume));
     logger.debug("Starting hit sound (ID: {}) with volume {}", this.hitSoundID, hitSoundVolume);
   }
 
@@ -210,7 +211,7 @@ public class CyclopsMinigameLogic extends Component {
 
   private void playMarkerMissSound() {
     this.missSoundID = missSound.play();
-    missSound.setVolume(this.missSoundID, missSoundVolume);
+    missSound.setVolume(this.missSoundID, GameVolume.scale(missSoundVolume));
     logger.debug("Starting miss sound (ID: {}) with volume {}", this.missSoundID, missSoundVolume);
   }
 

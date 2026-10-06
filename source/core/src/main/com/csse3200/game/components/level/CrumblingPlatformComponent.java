@@ -1,7 +1,9 @@
 package com.csse3200.game.components.level;
 
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.physics.box2d.Fixture;
+import com.csse3200.game.components.GameVolume;
 import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.rendering.DynamicTextureRenderComponent;
@@ -30,6 +32,11 @@ public class CrumblingPlatformComponent extends PlatformGrappleComponent {
 
   CrumbleState state = CrumbleState.NORMAL;
   float stateTime = 0f;
+  private static final String CRUMBLE_SOUND = "sounds/rock_break.ogg";
+  private static final float CRUMBLE_SOUND_INTERVAL = 0.3f;
+  private static final float MIN_CRUMBLE_VOLUME = 0.1f;
+  private static final float MAX_CRUMBLE_VOLUME = 0.6f;
+  private float soundTimer = 0f;
 
   /**
    * Creates a crumbling platform component.
@@ -74,6 +81,7 @@ public class CrumblingPlatformComponent extends PlatformGrappleComponent {
     // Player has touched the platform, so start the countdown.
     state = CrumbleState.WAITING_TO_CRUMBLE;
     stateTime = 0f;
+    soundTimer = 0f;
   }
 
   @Override
@@ -87,6 +95,7 @@ public class CrumblingPlatformComponent extends PlatformGrappleComponent {
 
       case WAITING_TO_CRUMBLE:
         stateTime += deltaTime;
+        updateCrumbleSound(deltaTime, stateTime);
 
         if (stateTime >= timeBeforeCrumble) {
           state = CrumbleState.CRUMBLING;
@@ -96,6 +105,7 @@ public class CrumblingPlatformComponent extends PlatformGrappleComponent {
 
       case CRUMBLING:
         stateTime += deltaTime;
+        updateCrumbleSound(deltaTime, timeBeforeCrumble + stateTime);
 
         if (stateTime >= crumbleTime) {
           crumble();
@@ -112,10 +122,30 @@ public class CrumblingPlatformComponent extends PlatformGrappleComponent {
     }
   }
 
+  private void updateCrumbleSound(float deltaTime, float elapsed) {
+    soundTimer -= deltaTime;
+    if (soundTimer > 0f) {
+      return;
+    }
+    soundTimer = CRUMBLE_SOUND_INTERVAL;
+    float progress = Math.min(elapsed / (timeBeforeCrumble + crumbleTime), 1f);
+    playCrumbleSound(MIN_CRUMBLE_VOLUME + (MAX_CRUMBLE_VOLUME - MIN_CRUMBLE_VOLUME) * progress);
+  }
+
+  private void playCrumbleSound(float volume) {
+    if (ServiceLocator.getResourceService() != null
+        && ServiceLocator.getResourceService().containsAsset(CRUMBLE_SOUND, Sound.class)) {
+      ServiceLocator.getResourceService()
+          .getAsset(CRUMBLE_SOUND, Sound.class)
+          .play(GameVolume.scale(volume));
+    }
+  }
+
   /** Makes the platform disappear and disables its collision. */
   void crumble() {
     state = CrumbleState.CRUMBLED;
     stateTime = 0f;
+    playCrumbleSound(MAX_CRUMBLE_VOLUME);
 
     // Disable collision so the player can fall through.
     PhysicsComponent physicsComponent = entity.getComponent(PhysicsComponent.class);
