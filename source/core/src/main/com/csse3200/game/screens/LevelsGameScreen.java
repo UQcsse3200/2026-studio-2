@@ -425,6 +425,5 @@ public class LevelsGameScreen extends ScreenAdapter {
         .addComponent(new TerminalDisplay());
 
     ServiceLocator.getEntityService().register(ui);
-
   }
 }
