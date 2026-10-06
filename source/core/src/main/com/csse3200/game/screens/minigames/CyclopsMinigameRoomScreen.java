@@ -166,7 +166,7 @@ public class CyclopsMinigameRoomScreen extends ScreenAdapter {
                 Align.center,
                 List.of(
                     "Hmm... there's a cyclops in the way, I'll need to get past...",
-                    "...I'll need to \"LEFT_CLICK\" to each of those statues at the right time"
+                    "...I'll need to \"LEFT_CLICK\" to each of those rocks at the right time"
                         + " (Left-click or TAB to continue)"));
     if (introBox != null) {
       introBox.create();
