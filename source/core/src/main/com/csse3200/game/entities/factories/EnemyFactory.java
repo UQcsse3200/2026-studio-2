@@ -326,7 +326,11 @@ public class EnemyFactory {
         // Adding the values for wander task from the enemy's config file
         new WanderTask(
             new Vector2(config.wanderRangeX, config.wanderRangeY), config.wanderWaitTime));
-    if (config.behaviour.equals("flying")) {
+    if (config.attackType.equals("calypso")) {
+        aiComponent
+          .addTask(new ChaseTask(target, config.chasePriority, viewDistance, maxChaseDistance));
+    }
+            else if (config.behaviour.equals("flying")) {
       aiComponent
           .addTask(
               new FlyingChaseTask(target, config.chasePriority, viewDistance, maxChaseDistance))
@@ -351,7 +355,7 @@ public class EnemyFactory {
               config.baseAttack,
               4.5f,
               5f,
-              false)); // FATAL ERROR
+              config.attackType));
       // If the enemy is a summon type, add summon + range task
     } else if (config.attackType.equals("summon")) {
       aiComponent
@@ -360,11 +364,11 @@ public class EnemyFactory {
                   target,
                   20,
                   config.attackRange,
-                  2f,
+                  10f,
                   config.baseAttack,
                   4.5f,
                   5f,
-                  true)) // FATAL ERROR
+                  config.attackType))
           .addTask(new SummonTask(target, 30, config.attackRange, 5f));
     } else if (config.attackType.equals("cyclops")) {
       // add melee sweep attack and throwing boulder range attack
@@ -372,7 +376,7 @@ public class EnemyFactory {
       // Standard projectile attack. Other Calypso attacks are added separately.
       aiComponent.addTask(
           new RangedAttackTask(
-              target, 20, config.attackRange, 2f, config.baseAttack, 4.5f, 5f, false, true));
+              target, 20, 50f, 7f, config.baseAttack, 4.5f, 5f, config.attackType));
     }
 
     return enemy;
