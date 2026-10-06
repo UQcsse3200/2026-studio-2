@@ -37,7 +37,7 @@ import com.csse3200.game.services.ServiceLocator;
  * similar characteristics.
  */
 public class NPCFactory {
-  /** Placeholder shopkeeper sprite until dedicated merchant art is added. */
+  /** Placeholder shopkeeper sprite until dedicated shopkeeper art is added. */
   public static final String SHOPKEEPER_TEXTURE = "images/Greek Statues Pack I/Leonid.png";
 
   private static final NPCConfigs configs =

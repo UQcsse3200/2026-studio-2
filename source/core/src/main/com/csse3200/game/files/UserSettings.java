@@ -94,6 +94,7 @@ public class UserSettings {
     public int width;
     public int height;
     public int refreshRate;
+    public float brightness;
 
     public DisplaySettings() {}
 

@@ -1,5 +1,6 @@
 package com.csse3200.game.entities.factories;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.csse3200.game.components.item.GoldPickupComponent;
 import com.csse3200.game.components.item.Item;
@@ -9,19 +10,20 @@ import com.csse3200.game.components.item.WheelTokenPickupComponent;
 import com.csse3200.game.components.item.consumables.HealthPotion;
 import com.csse3200.game.components.item.consumables.PoisonPotion;
 import com.csse3200.game.components.item.consumables.SpeedPotion;
-import com.csse3200.game.components.item.weapons.Spear;
-import com.csse3200.game.components.item.weapons.Sword;
 import com.csse3200.game.components.item.weapons.bow.arrow.Arrow;
+import com.csse3200.game.components.lighting.PointLightComponent;
 import com.csse3200.game.entities.Entity;
+import com.csse3200.game.lighting.LightingDefaults;
 import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.rendering.TextureRenderComponent;
+import com.csse3200.game.services.ServiceLocator;
 
 /** Factory to create item entities that sit in the world for the player to find or pick up. */
 public class ItemFactory {
   private static final float ITEM_HEIGHT = 0.85f;
-  public static final String GOLD_TEXTURE = "images/gold_coin.png";
+  public static final String GOLD_TEXTURE = "images/items/gold_coin.png";
   public static final String WHEEL_TOKEN_TEXTURE = "images/minigames/spinthewheel/wheel-token.png";
 
   /**
@@ -31,12 +33,19 @@ public class ItemFactory {
    * @return item entity
    */
   public static Entity createItem(Item item) {
+    Color itemColour = new Color(1, 1, 1, 0.5f);
     Entity itemEntity =
         new Entity()
             .addComponent(new TextureRenderComponent(item.getItemType().getTexturePath()))
             .addComponent(new PhysicsComponent().setBodyType(BodyType.StaticBody))
             .addComponent(new HitboxComponent().setLayer(PhysicsLayer.DEFAULT))
-            .addComponent(new ItemComponent(item));
+            .addComponent(new ItemComponent(item))
+            .addComponent(
+                new PointLightComponent(
+                    ServiceLocator.getLightingService().getEngine().getRayHandler(),
+                    LightingDefaults.RAYS,
+                    itemColour,
+                    LightingDefaults.DIST));
 
     itemEntity.getComponent(TextureRenderComponent.class).scaleEntity();
     itemEntity.scaleHeight(ITEM_HEIGHT);
@@ -57,8 +66,6 @@ public class ItemFactory {
       case HEALTH_POTION -> createHealthPotion(quantity);
       case FIRE_ARROW -> createFireArrow(quantity);
       case ICE_ARROW -> createIceArrow(quantity);
-      case Sword -> createSword(quantity);
-      case Spear -> createSpear(quantity);
       case SpeedPotion -> createSpeedPotion(quantity);
       case PoisonPotion -> createPoisonPotion(quantity);
     };
@@ -78,8 +85,6 @@ public class ItemFactory {
       case "healthPotion" -> createItem(ItemType.HEALTH_POTION, quantity);
       case "fireArrow" -> createItem(ItemType.FIRE_ARROW, quantity);
       case "iceArrow", "coldArrow" -> createItem(ItemType.ICE_ARROW, quantity);
-      case "sword" -> createItem(ItemType.Sword, quantity);
-      case "spear" -> createItem(ItemType.Spear, quantity);
       case "speedPotion" -> createItem(ItemType.SpeedPotion, quantity);
       case "poisonPotion" -> createItem(ItemType.PoisonPotion, quantity);
       default -> throw new IllegalArgumentException("Unknown item type: " + itemName);
@@ -110,14 +115,6 @@ public class ItemFactory {
     return createItem(new HealthPotion(quantity));
   }
 
-  public static Entity createSword(int quantity) {
-    return createItem(new Sword(quantity));
-  }
-
-  public static Entity createSpear(int quantity) {
-    return createItem(new Spear(quantity));
-  }
-
   public static Entity createSpeedPotion(int quantity) {
     return createItem(new SpeedPotion(quantity));
   }
@@ -142,12 +139,19 @@ public class ItemFactory {
    * @return gold pickup entity
    */
   public static Entity createGold(int amount) {
+    Color goldColour = new Color(255, 215, 0, 0.6f);
     Entity gold =
         new Entity()
             .addComponent(new TextureRenderComponent(GOLD_TEXTURE))
             .addComponent(new PhysicsComponent().setBodyType(BodyType.StaticBody))
             .addComponent(new HitboxComponent().setLayer(PhysicsLayer.DEFAULT))
-            .addComponent(new GoldPickupComponent(amount));
+            .addComponent(new GoldPickupComponent(amount))
+            .addComponent(
+                new PointLightComponent(
+                    ServiceLocator.getLightingService().getEngine().getRayHandler(),
+                    LightingDefaults.RAYS,
+                    goldColour,
+                    LightingDefaults.DIST));
 
     gold.getComponent(TextureRenderComponent.class).scaleEntity();
     gold.scaleHeight(ITEM_HEIGHT);

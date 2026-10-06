@@ -22,34 +22,19 @@ import org.slf4j.LoggerFactory;
 public class CyclopsMinigameArea extends GameArea {
   private static final Logger logger = LoggerFactory.getLogger(CyclopsMinigameArea.class);
   private static final String[] cyclopsMinigameTextures = {
-    "images/black_roof.png",
-    "images/purple_heart.png",
-    "images/transparent.png",
-    "images/Tile_2.png",
-    "images/platform.png",
-    "images/box_boy_leaf.png",
-    "images/spike.png",
-    "images/tree.png",
-    "images/ghost_king.png",
-    "images/ghost_1.png",
-    "images/grass_1.png",
-    "images/grass_2.png",
-    "images/grass_3.png",
-    "images/hex_grass_1.png",
-    "images/hex_grass_2.png",
-    "images/hex_grass_3.png",
-    "images/iso_grass_1.png",
-    "images/iso_grass_2.png",
-    "images/iso_grass_3.png",
-    "images/transparent.png",
+    "images/backgrounds/black_roof.png",
+    "images/health/purple_heart.png",
+    "images/ui/transparent.png",
+    "images/terrain/Others/platform.png",
+    "images/ui/transparent.png",
     "images/Greek Statues Pack I/Brute.png",
-    "images/CyclopsMinigameFloor.png",
-    "images/PixelArt_HeartBack.png",
-    "images/Damaged_heart.png",
-    "images/Last_Health.png"
+    "images/backgrounds/CyclopsMinigameFloor.png",
+    "images/health/PixelArt_HeartBack.png",
+    "images/health/Damaged_heart.png",
+    "images/health/Last_Health.png"
   };
 
-  private static final String[] cyclopsMinigameTexturesAtlases = {"images/player.atlas"};
+  private static final String[] cyclopsMinigameTexturesAtlases = {"images/player/player.atlas"};
 
   private static final String[] cyclopsMinigameMusic = {
     "sounds/minigames/cyclops/cave_background_noise.mp3"
@@ -73,7 +58,6 @@ public class CyclopsMinigameArea extends GameArea {
   private GridPoint2 winLocation;
   private ArrayList<GridPoint2> statueLocations;
   private ArrayList<GridPoint2> statueGapLocations;
-  private CyclopsMinigameLogic cyclopsMinigameLogic;
 
   private CutsceneInputComponent input;
   private TextBoxComponent textBox;
@@ -110,7 +94,7 @@ public class CyclopsMinigameArea extends GameArea {
     /* Timing Minigame Components */
     TimingBarLogic timingBarLogic = new TimingBarLogic(20f);
     TimingBarDisplay timingBarDisplay = new TimingBarDisplay(timingBarLogic);
-    cyclopsMinigameLogic =
+    CyclopsMinigameLogic cyclopsMinigameLogic =
         new CyclopsMinigameLogic(timingBarLogic, timingBarDisplay, terrain, player);
     cyclopsMinigameLogic.setWinLocation(winLocation);
     cyclopsMinigameLogic.setSafeLocations(statueLocations);

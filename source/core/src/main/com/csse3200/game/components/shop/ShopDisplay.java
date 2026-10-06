@@ -1,5 +1,6 @@
 package com.csse3200.game.components.shop;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -9,6 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.csse3200.game.components.inventory.InventoryComponent;
+import com.csse3200.game.components.inventory.InventorySlotStyle;
 import com.csse3200.game.components.item.ItemType;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.UIComponent;
@@ -21,6 +23,7 @@ import org.slf4j.LoggerFactory;
  * <p>Shows catalog items, current gold, and buy buttons. Purchases are handled by ShopComponent.
  */
 public class ShopDisplay extends UIComponent {
+  private final InventorySlotStyle slotStyle = new InventorySlotStyle();
   private static final Logger logger = LoggerFactory.getLogger(ShopDisplay.class);
   private static final float Z_INDEX = 3f;
   private static final float ICON_SIZE = 40f;
@@ -30,6 +33,14 @@ public class ShopDisplay extends UIComponent {
   private Label goldLabel;
   private Label statusLabel;
   private boolean open;
+  private boolean dirty;
+
+  private final Label.LabelStyle white = new Label.LabelStyle(skin.get(Label.LabelStyle.class));
+  private final Label.LabelStyle whiteLarge =
+      new Label.LabelStyle(skin.get("large", Label.LabelStyle.class));
+
+  private final TextButton.TextButtonStyle darkStyle =
+      new TextButton.TextButtonStyle(skin.get(TextButton.TextButtonStyle.class));
 
   @Override
   public void create() {
@@ -49,15 +60,17 @@ public class ShopDisplay extends UIComponent {
     table.setVisible(false);
 
     Table panel = new Table();
-    panel.setBackground(skin.getDrawable("window-c"));
+    panel.setBackground(slotStyle.getDarkerBox());
     panel.pad(30f);
 
-    Label title = new Label("Shop", skin, "title");
-    goldLabel = new Label(goldText(), skin);
+    whiteLarge.fontColor = Color.WHITE;
+    Label title = new Label("Shop", whiteLarge);
+    goldLabel = new Label(goldText(), white);
     listingsTable = new Table();
-    statusLabel = new Label("", skin);
+    statusLabel = new Label("", white);
 
-    TextButton closeBtn = new TextButton("Close", skin);
+    white.fontColor = Color.WHITE;
+    TextButton closeBtn = new TextButton("Close", darkStyle);
     closeBtn.addListener(
         new ChangeListener() {
           @Override
@@ -115,21 +128,22 @@ public class ShopDisplay extends UIComponent {
 
   private void onItemPurchased(ItemType itemType) {
     statusLabel.setText("Purchased " + itemType.getDisplayName() + ".");
-    refresh();
+    dirty = true;
   }
 
   private void onPurchaseFailed(String reason) {
     statusLabel.setText(reason);
-    refresh();
+    dirty = true;
   }
 
   private void refreshIfOpen() {
     if (open) {
-      refresh();
+      dirty = true;
     }
   }
 
   private void refresh() {
+    dirty = false;
     goldLabel.setText(goldText());
     refreshListings();
   }
@@ -137,6 +151,12 @@ public class ShopDisplay extends UIComponent {
   private void refreshListings() {
     listingsTable.clearChildren();
     ShopComponent shop = entity.getComponent(ShopComponent.class);
+
+    darkStyle.up = slotStyle.getDarkerBox();
+    darkStyle.down = slotStyle.getSelectedBox();
+    darkStyle.over = slotStyle.getNormalBox(); // optional hover feedback
+    darkStyle.disabled = slotStyle.getDarkerBox(); // see below
+    darkStyle.fontColor = Color.WHITE;
 
     for (ShopListing listing : ShopCatalog.getListings()) {
       listingsTable.add(createListingRow(listing, shop)).growX().padBottom(8f);
@@ -146,7 +166,7 @@ public class ShopDisplay extends UIComponent {
 
   private Table createListingRow(ShopListing listing, ShopComponent shop) {
     Table row = new Table();
-    row.setBackground(skin.getDrawable("button-c"));
+    row.setBackground(slotStyle.getNormalBox());
     row.pad(8f);
 
     Texture texture = getItemTexture(listing.getItemType());
@@ -154,11 +174,13 @@ public class ShopDisplay extends UIComponent {
       row.add(new Image(texture)).size(ICON_SIZE, ICON_SIZE).padRight(12f);
     }
 
-    row.add(new Label(listing.getItemType().getDisplayName(), skin)).width(180f).left();
-    row.add(new Label("x" + listing.getQuantity(), skin)).width(50f);
-    row.add(new Label(listing.getPrice() + "g", skin)).width(60f).padRight(12f);
+    white.fontColor = Color.WHITE;
 
-    TextButton buyBtn = new TextButton("Buy", skin);
+    row.add(new Label(listing.getItemType().getDisplayName(), white)).width(180f).left();
+    row.add(new Label("x" + listing.getQuantity(), white)).width(50f);
+    row.add(new Label(listing.getPrice() + "g", white)).width(60f).padRight(12f);
+
+    TextButton buyBtn = new TextButton("Buy", darkStyle);
     buyBtn.setDisabled(shop == null || !shop.canBuy(listing));
     buyBtn.addListener(
         new ChangeListener() {
@@ -196,7 +218,10 @@ public class ShopDisplay extends UIComponent {
 
   @Override
   public void draw(SpriteBatch batch) {
-    // draw is handled by the stage
+    // Render callbacks still run while gameplay is paused by this overlay.
+    if (open && dirty) {
+      refresh();
+    }
   }
 
   @Override
@@ -209,6 +234,7 @@ public class ShopDisplay extends UIComponent {
     if (table != null) {
       table.remove();
     }
+    slotStyle.dispose();
     super.dispose();
   }
 }

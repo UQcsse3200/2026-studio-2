@@ -14,6 +14,7 @@ import com.csse3200.game.components.TextBoxComponent;
 import com.csse3200.game.components.gamearea.PerformanceDisplay;
 import com.csse3200.game.components.minigames.cyclopsMinigame.CyclopsMinigameActions;
 import com.csse3200.game.components.minigames.cyclopsMinigame.CyclopsMinigameDisplay;
+import com.csse3200.game.cutscene.CutsceneLoader;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.entities.factories.RenderFactory;
@@ -40,12 +41,8 @@ public class CyclopsMinigameRoomScreen extends ScreenAdapter {
 
   private static final Logger logger = LoggerFactory.getLogger(CyclopsMinigameRoomScreen.class);
   private static final String[] cyclopsMinigameTextures = {
-    "images/title_odysseus_logo.png",
-    "images/box_boy_title.png",
-    "images/Health_Bar_Background.png",
-    "images/Inventory_background.png",
-    "images/red_heart.png",
-    "images/heart.png",
+    "images/ui/title_odysseus_logo.png",
+    "images/health/red_heart.png",
     "images/Buttons/exit_up_btn.png",
     "images/Buttons/exit_down_btn.png",
     "images/Buttons/restart_up_btn.png",
@@ -54,7 +51,7 @@ public class CyclopsMinigameRoomScreen extends ScreenAdapter {
     "images/Buttons/main_menu_down_btn.png",
     "images/Buttons/exit_game_up_btn.png",
     "images/Buttons/exit_game_down_btn.png",
-    "images/scroll_bg.png"
+    "images/ui/scroll_bg.png"
   };
   private static final Vector2 CAMERA_POSITION = new Vector2(7.5f, 7.5f);
 
@@ -62,6 +59,7 @@ public class CyclopsMinigameRoomScreen extends ScreenAdapter {
   private final Renderer renderer;
   private final PhysicsEngine physicsEngine;
 
+  private CyclopsMinigameArea cyclopsMinigameArea;
   private TextBoxComponent textBoxComponent;
   private boolean initalIntro = true;
 
@@ -90,8 +88,7 @@ public class CyclopsMinigameRoomScreen extends ScreenAdapter {
 
     logger.debug("Initialising cyclops minigame screen entities");
     TerrainFactory terrainFactory = new TerrainFactory(renderer.getCamera());
-    CyclopsMinigameArea cyclopsMinigameArea =
-        new CyclopsMinigameArea(renderer.getCamera(), terrainFactory);
+    cyclopsMinigameArea = new CyclopsMinigameArea(renderer.getCamera(), terrainFactory);
     cyclopsMinigameArea.create();
   }
 
@@ -124,6 +121,7 @@ public class CyclopsMinigameRoomScreen extends ScreenAdapter {
     logger.debug("Disposing minigame screen");
 
     renderer.dispose();
+    cyclopsMinigameArea.dispose();
     unloadAssets();
 
     ServiceLocator.getEntityService().dispose();
@@ -176,7 +174,20 @@ public class CyclopsMinigameRoomScreen extends ScreenAdapter {
     InputComponent inputComponent =
         ServiceLocator.getInputService().getInputFactory().createForTerminal();
 
-    Terminal terminal = new Terminal(game, GdxGame.ScreenType.CYCLOPS_MINIGAME);
+    Terminal terminal = new Terminal(game, GdxGame.ScreenType.LEVEL_2_GAME);
+
+    ServiceLocator.getCyclopsMinigameEventHandler()
+        .addListener(
+            "win",
+            () -> {
+              CutsceneLoader loader = new CutsceneLoader();
+              CutsceneLoader.Result result = loader.load("cutscene3");
+              if (!result.isSuccess()) {
+                logger.debug("Could not start cutscene '{}': {}", "cutscene3", result.getError());
+              } else {
+                game.startCutscene(result.getCutscene(), GdxGame.ScreenType.LEVEL_2_GAME);
+              }
+            });
 
     Entity ui = new Entity();
     ui.addComponent(new InputDecorator(stage, 10))

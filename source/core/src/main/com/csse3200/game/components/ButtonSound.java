@@ -7,11 +7,10 @@ import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 
 public class ButtonSound {
-  private static final String CLICK_SOUND = "sounds/mouse-click-press.wav";
-  private static final String RELEASE_SOUND = "sounds/mouse-click-release.wav";
-  private static final float TRANSITION_DELAY = 0.2f;
+  private static final String CLICK_SOUND = "sounds/Button_Sound_02.wav";
+  private static final float TRANSITION_DELAY = 0.35f;
 
-  public static final String[] SOUND_FILES = {CLICK_SOUND, RELEASE_SOUND};
+  public static final String[] SOUND_FILES = {CLICK_SOUND};
 
   /** Call in a screen's loadAssets() */
   public static void load(ResourceService resourceService) {
@@ -35,7 +34,6 @@ public class ButtonSound {
         new Timer.Task() {
           @Override
           public void run() {
-            playSafe(RELEASE_SOUND);
             if (action != null) {
               action.run();
             }

@@ -331,6 +331,7 @@ public class CyclopsMinigameLogic extends Component {
         /* TODO: Connect to next level / cutscene */
         logger.info("Player has WON the cyclops minigame");
         changeState(State.STOP);
+        Gdx.app.postRunnable(() -> ServiceLocator.getCyclopsMinigameEventHandler().trigger("win"));
       }
       case LOSS -> {
         if (elapsed(LOSS_DISPLAY_DELAY)) {
