@@ -1,6 +1,7 @@
 package com.csse3200.game.areas;
 
 import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.GridPoint2;
@@ -10,6 +11,7 @@ import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.components.TextBoxComponent;
 import com.csse3200.game.components.minigames.cyclopsMinigame.CyclopsCameraFollowComponent;
 import com.csse3200.game.components.minigames.cyclopsMinigame.CyclopsFloorRenderComponent;
+import com.csse3200.game.components.minigames.cyclopsMinigame.CyclopsHurtSoundComponent;
 import com.csse3200.game.components.minigames.cyclopsMinigame.CyclopsMinigameLogic;
 import com.csse3200.game.components.minigames.cyclopsMinigame.TimingBarDisplay;
 import com.csse3200.game.components.minigames.cyclopsMinigame.TimingBarLogic;
@@ -52,7 +54,8 @@ public class CyclopsMinigameArea extends GameArea {
     CAVE_FORMATION_3,
     "images/health/PixelArt_HeartBack.png",
     "images/health/Damaged_heart.png",
-    "images/health/Last_Health.png"
+    "images/health/Last_Health.png",
+    "images/minigames/Cyclops/timing_bar_frame.png"
   };
 
   private static final String[] cyclopsMinigameTexturesAtlases = {"images/player/player.atlas"};
@@ -61,10 +64,24 @@ public class CyclopsMinigameArea extends GameArea {
     "sounds/minigames/cyclops/cave_background_noise.mp3"
   };
 
+  // Indexed by hearts remaining after a hit. 0 hearts is the fatal hit, which uses placeholder 4.
+  public static final String[] HURT_VOICE_PATH_BY_HEARTS = {
+    "sounds/hurt_player_4.wav",
+    "sounds/hurt_player_2.wav",
+    "sounds/hurt_player_2.wav",
+    "sounds/hurt_player_1.wav",
+    "sounds/hurt_player_1.wav"
+  };
+  public static final float[] HURT_VOLUME_BY_HEARTS = {0.6f, 0.3f, 0.3f, 0.3f, 0.3f};
+
   private static final String[] cyclopsMinigameSounds = {
     "sounds/walkingSounds/walkingSound.mp3",
     "sounds/minigames/cyclops/marker-hit.ogg",
-    "sounds/minigames/cyclops/marker-miss.ogg"
+    "sounds/minigames/cyclops/marker-miss.ogg",
+    "sounds/hurt_player_1.wav",
+    "sounds/hurt_player_2.wav",
+    "sounds/hurt_player_3.wav",
+    "sounds/hurt_player_4.wav"
   };
 
   private final TerrainFactory terrainFactory;
@@ -265,6 +282,10 @@ public class CyclopsMinigameArea extends GameArea {
    */
   private Entity spawnPlayer() {
     Entity newPlayer = PlayerFactory.createPlayerDisplay();
+    Sound deathVoice =
+        ServiceLocator.getResourceService().getAsset("sounds/hurt_player_4.wav", Sound.class);
+    newPlayer.addComponent(
+        new CyclopsHurtSoundComponent(loadHurtVoices(), HURT_VOLUME_BY_HEARTS, deathVoice));
     Vector2 baseScale = newPlayer.getScale().cpy();
     newPlayer.setScale(baseScale.cpy().scl(PLAYER_SCALE));
     // Growing the sprite moves its centre right, so shift its anchor left to keep it over the tile.
@@ -273,6 +294,15 @@ public class CyclopsMinigameArea extends GameArea {
     spawnEntityAt(newPlayer, firstStatue, false, false);
     newPlayer.setPosition(terrain.tileToWorldPosition(firstStatue).add(playerOffset));
     return newPlayer;
+  }
+
+  private Sound[] loadHurtVoices() {
+    Sound[] voices = new Sound[HURT_VOICE_PATH_BY_HEARTS.length];
+    for (int i = 0; i < HURT_VOICE_PATH_BY_HEARTS.length; i++) {
+      voices[i] =
+          ServiceLocator.getResourceService().getAsset(HURT_VOICE_PATH_BY_HEARTS[i], Sound.class);
+    }
+    return voices;
   }
 
   private void playMusic() {
