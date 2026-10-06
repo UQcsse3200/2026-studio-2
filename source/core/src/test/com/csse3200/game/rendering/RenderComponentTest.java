@@ -94,6 +94,7 @@ class RenderComponentTest {
     RenderComponent renderComponent = spy(RenderComponent.class);
     assertEquals(1f, renderComponent.getDarkness());
     assertEquals(0f, renderComponent.getLightning());
+    assertEquals(1f, renderComponent.getBackgroundLight());
     assertFalse(renderComponent.getWeather());
   }
 

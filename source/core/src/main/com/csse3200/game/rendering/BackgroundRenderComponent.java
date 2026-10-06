@@ -97,9 +97,12 @@ public class BackgroundRenderComponent extends RenderComponent {
    * @param height height of the layer
    * @param offset positional offset relative to backgroundPos
    * @param velocity the independent velocity of the layer
-   * @param repeat whether or not this layer should repeat horizontally
+   * @param repeat whether or not this layer should repeat
    * @param distance the distance from POV affecting vertical parallax movement
    * @param transparency the transparency of the layer
+   * @param flash whether or not this layer should only be visible during lightning
+   * @param rotation how much to rotate the texture of this layer from 0 to 360
+   * @param lightningOrder the order this layer will become visible during lightning
    */
   public void addLayer(
       String texturePath,
@@ -131,6 +134,10 @@ public class BackgroundRenderComponent extends RenderComponent {
             flash,
             rotation,
             lightningOrder));
+  }
+
+  public int getLayerCount() {
+    return layers.size();
   }
 
   /** Scale is controlled individually for each layer. */
@@ -189,7 +196,6 @@ public class BackgroundRenderComponent extends RenderComponent {
    * @param layer the layer to get new position for
    */
   private void getPosUpdate(ParallaxLayer layer) {
-    // Since this is called every frame, changing frame rates will change speed
     layer.position.x += layer.velocity.x * ServiceLocator.getTimeSource().getDeltaTime();
     layer.position.y += layer.velocity.y * ServiceLocator.getTimeSource().getDeltaTime();
     weather = getWeather();
@@ -300,17 +306,6 @@ public class BackgroundRenderComponent extends RenderComponent {
           newRightDrawPosX += layer.width;
         }
       } else if (layer.repeat == RepeatMode.CHAOTIC) {
-
-        /// TODO
-        /// make gap a customisable variable on layer instantiation
-        /// make rotation a variable of addLayer
-        /// add lightning/rain sounds for light/medium/heavy
-        /// add random lightning generation
-        /// want to have light/medium/heavy intensities
-        /// light will have lightning 1-2, medium will have 2-3, heavy will have 3-4
-        /// light could have less frequent lightning, medium more, heavy much more
-        /// light could have chill vertical rain, medium longer more horizontal, heavy even more
-
         // gap between raindrops, works best if gap * int = 1, where int is any positive integer
         float gap = 0.5f;
         // random vertical offset applied to each rain drop in range -verticalOffset to
