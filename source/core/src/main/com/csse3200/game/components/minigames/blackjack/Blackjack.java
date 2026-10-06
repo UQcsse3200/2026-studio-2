@@ -142,9 +142,6 @@ public class Blackjack {
     if (amount <= 0) {
       throw new IllegalArgumentException("Bet must be greater than zero");
     }
-    if (amount > balance) {
-      throw new IllegalArgumentException("Bet cannot exceed the current balance");
-    }
     this.bet = amount;
   }
 
@@ -306,3 +303,4 @@ public class Blackjack {
     }
   }
 }
+

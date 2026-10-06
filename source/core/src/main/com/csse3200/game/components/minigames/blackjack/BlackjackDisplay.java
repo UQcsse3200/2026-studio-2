@@ -376,6 +376,7 @@ public class BlackjackDisplay extends UIComponent {
               resultOverlay.setVisible(false);
     resultOverlay.setTouchable(com.badlogic.gdx.scenes.scene2d.Touchable.disabled);
               betField.setText("");
+                stage.setKeyboardFocus(betField);
               resultLabel.setText("");
               statusLabel.setText(
                   inventory != null && inventory.getGold() <= 0
@@ -442,6 +443,7 @@ public class BlackjackDisplay extends UIComponent {
     if (showOverlay && !resultOverlay.isVisible()) {
       resultOverlay.getColor().a = 0f;
       resultOverlay.setVisible(true);
+      resultOverlay.setTouchable(com.badlogic.gdx.scenes.scene2d.Touchable.enabled);
       resultOverlay.addAction(Actions.fadeIn(0.25f));
     } else if (!showOverlay) {
       resultOverlay.setVisible(false);
@@ -924,6 +926,8 @@ public class BlackjackDisplay extends UIComponent {
     super.dispose();
   }
 }
+
+
 
 
 
