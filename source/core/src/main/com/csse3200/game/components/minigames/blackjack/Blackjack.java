@@ -99,6 +99,14 @@ public class Blackjack {
     return balance;
   }
 
+  /** Synchronises the chip balance with the player's current inventory gold. */
+  public void setBalance(int balance) {
+    if (balance < 0) {
+      throw new IllegalArgumentException("Balance cannot be negative");
+    }
+    this.balance = balance;
+  }
+
   /** Returns the current bet for the active round. */
   public int getBet() {
     return bet;
@@ -141,6 +149,9 @@ public class Blackjack {
     }
     if (amount <= 0) {
       throw new IllegalArgumentException("Bet must be greater than zero");
+    }
+    if (amount > balance) {
+      throw new IllegalArgumentException("Bet cannot exceed the current balance");
     }
     this.bet = amount;
   }

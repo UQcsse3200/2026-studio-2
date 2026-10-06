@@ -783,6 +783,7 @@ public class BlackjackDisplay extends UIComponent {
     }
 
     try {
+      blackjack.setBalance(inventory.getGold());
       blackjack.placeBet(amount);
     } catch (IllegalArgumentException exception) {
       resultLabel.setText(exception.getMessage());
