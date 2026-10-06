@@ -3,6 +3,7 @@ package com.csse3200.game.rendering.item;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.components.projectile.ArrowProjectileComponent;
 import com.csse3200.game.components.projectile.ArrowType;
@@ -47,7 +48,6 @@ public class ArrowRenderComponent extends RenderComponent {
     }
 
     Vector2 dir = (projectile != null) ? projectile.getCurrentDirection() : new Vector2(1f, 0f);
-    float rotationDeg = dir.angleDeg();
 
     Vector2 scale = entity.getScale();
     float width = scale.x;
@@ -61,6 +61,17 @@ public class ArrowRenderComponent extends RenderComponent {
         height = renderSize;
       }
     }
+
+    // arrow.png points diagonally up and right, while the elemental sprites point right.
+    // Non-uniform sizing changes that diagonal's angle, so account for the displayed dimensions
+    // as well as the artwork before aligning its shaft with the velocity.
+    float spriteAngle =
+        switch (arrowType) {
+          case STANDARD, GRAPPLE, POISON ->
+              MathUtils.atan2(height, width) * MathUtils.radiansToDegrees;
+          default -> 0f;
+        };
+    float rotationDeg = dir.angleDeg() - spriteAngle;
 
     Vector2 center = projectile != null ? projectile.getWorldCenter() : entity.getCenterPosition();
     float x = center.x - width / 2f;

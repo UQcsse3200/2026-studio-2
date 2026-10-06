@@ -63,7 +63,23 @@ class ArrowRenderComponentTest {
     arrow.getComponent(ArrowRenderComponent.class).render(batch);
 
     verify(batch)
-        .draw(texture, 0f, 0f, 0.15f, 0.05f, 0.3f, 0.1f, 1f, 1f, 0f, 0, 0, 300, 100, false, false);
+        .draw(
+            eq(texture),
+            eq(0f),
+            eq(0f),
+            eq(0.15f),
+            eq(0.05f),
+            eq(0.3f),
+            eq(0.1f),
+            eq(1f),
+            eq(1f),
+            near(-18.43495f),
+            eq(0),
+            eq(0),
+            eq(300),
+            eq(100),
+            eq(false),
+            eq(false));
   }
 
   @Test
@@ -85,7 +101,8 @@ class ArrowRenderComponentTest {
 
     renderer.render(batch);
 
-    // Bottom-left is the centre less half the size, and it's turned 90 degrees about its middle.
+    // Bottom-left is the centre less half the size. Correct the stretched diagonal artwork so
+    // its shaft points up, with rotation about its middle.
     verify(batch)
         .draw(
             eq(texture),
@@ -97,7 +114,7 @@ class ArrowRenderComponentTest {
             near(0.3f),
             eq(1f),
             eq(1f),
-            near(90f),
+            near(63.43495f),
             eq(0),
             eq(0),
             eq(300),
@@ -219,7 +236,23 @@ class ArrowRenderComponentTest {
     // It used to be a one-pixel texture stretched into a light-grey box. Now it's the arrow sprite,
     // untinted, at the usual arrow size.
     verify(batch)
-        .draw(texture, 0f, 0f, 0.3f, 0.15f, 0.6f, 0.3f, 1f, 1f, 0f, 0, 0, 26, 26, false, false);
+        .draw(
+            eq(texture),
+            eq(0f),
+            eq(0f),
+            eq(0.3f),
+            eq(0.15f),
+            eq(0.6f),
+            eq(0.3f),
+            eq(1f),
+            eq(1f),
+            near(-26.56505f),
+            eq(0),
+            eq(0),
+            eq(26),
+            eq(26),
+            eq(false),
+            eq(false));
     verify(batch).setColor(Color.WHITE);
     verify(batch, never()).setColor(Color.LIGHT_GRAY);
   }
