@@ -19,7 +19,7 @@ public class SpawnerComponent extends Component {
   private int spawnCounter;
   private boolean active;
   private ACTIVATION_MODE mode;
-  private String[] ids; // any activation ids to trigger when the spawner is finished spawning
+  private String[] ids = new String[0]; // any activation ids to trigger when the spawner is finished spawning
 
   private boolean spawnsComplete = false;
   private boolean triggeredIds = false;
