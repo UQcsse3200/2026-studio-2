@@ -296,6 +296,7 @@ public class BackgroundRenderComponentTest {
       backgroundComponent.toggleWeather();
     }
     backgroundComponent.draw(batch);
+    verify(batch).draw(any(Texture.class), anyFloat(), anyFloat(), anyFloat(), anyFloat());
   }
 
   @Test
@@ -344,6 +345,7 @@ public class BackgroundRenderComponentTest {
       backgroundComponent.toggleWeather();
     }
     backgroundComponent.draw(batch);
+    verify(batch).draw(any(Texture.class), anyFloat(), anyFloat(), anyFloat(), anyFloat());
   }
 
   @Test
@@ -392,6 +394,7 @@ public class BackgroundRenderComponentTest {
       backgroundComponent.toggleWeather();
     }
     backgroundComponent.draw(batch);
+    verify(batch).draw(any(Texture.class), anyFloat(), anyFloat(), anyFloat(), anyFloat());
   }
 
   @Test
@@ -440,6 +443,8 @@ public class BackgroundRenderComponentTest {
       backgroundComponent.toggleWeather();
     }
     backgroundComponent.draw(batch);
+    verify(batch, atLeastOnce())
+        .draw(any(Texture.class), anyFloat(), anyFloat(), anyFloat(), anyFloat());
   }
 
   @Test
@@ -488,6 +493,8 @@ public class BackgroundRenderComponentTest {
       backgroundComponent.toggleWeather();
     }
     backgroundComponent.draw(batch);
+    verify(batch, atLeastOnce())
+        .draw(any(Texture.class), anyFloat(), anyFloat(), anyFloat(), anyFloat());
   }
 
   @Test
@@ -501,5 +508,6 @@ public class BackgroundRenderComponentTest {
         new BackgroundRenderComponent(camera, backgroundPos, worldBounds);
 
     backgroundComponent.draw(batch);
+    verifyNoInteractions(batch);
   }
 }
