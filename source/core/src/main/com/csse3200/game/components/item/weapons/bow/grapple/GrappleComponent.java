@@ -3,6 +3,7 @@ package com.csse3200.game.components.item.weapons.bow.grapple;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.Joint;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
@@ -35,6 +36,8 @@ public class GrappleComponent extends Component {
   private static final float SWING_DAMPING = 0.5f;
   private static final float CLIMB_SPEED = 3f;
   private static final float MIN_PLAYER_SEGMENT_LENGTH = 1f;
+  private static final float CORNER_CLEARANCE = 0.1f;
+  private static final float CORNER_APPROACH_DISTANCE = 0.25f;
 
   // Below this the swing arc is nearly vertical (player level with the anchor), so left/right can't
   // pick a side from where the push points and it falls back to a fixed convention instead.
@@ -60,6 +63,7 @@ public class GrappleComponent extends Component {
 
   private float cooldownRemaining = 0f;
   private boolean climbing;
+  private RopeContact climbingCorner;
   private boolean descending;
   private boolean charging;
   private long chargeStartTimeMs;
@@ -209,6 +213,7 @@ public class GrappleComponent extends Component {
     totalRopeLength = 0f;
     initialRopeLength = 0f;
     ropeContacts.clear();
+    climbingCorner = null;
     physicsComponent.getBody().setLinearDamping(preSwingLinearDamping);
   }
 
@@ -402,6 +407,11 @@ public class GrappleComponent extends Component {
         // unwrap attempt until its bypass clears, even if the endpoints cross back meanwhile.
         // Retain the winding guard: a clear chord alone could cut through a wrap around a diamond.
         contact.unwrapPending |= contact.hasCrossedSide(before, after);
+        // The rope centre can clear an edge before the player's collider does. Complete the
+        // current corner climb before switching pivots, or gravity can pull them back below it.
+        if (contact == climbingCorner && climbing && !descending) {
+          continue;
+        }
         if (contact.unwrapPending && findObstruction(world, before, after) == null) {
           ropeContacts.remove(i);
           removed = true;
@@ -662,12 +672,14 @@ public class GrappleComponent extends Component {
   /** Stops retracting the rope and clears any unapplied constraint adjustment. */
   public void stopClimbing() {
     climbing = false;
+    climbingCorner = null;
     syncRopeLengthToActualPath();
   }
 
   /** Starts extending the rope while the descend control is held. */
   public void startDescending() {
     descending = true;
+    climbingCorner = null;
   }
 
   /** Stops extending the rope and clears any unapplied constraint adjustment. */
@@ -689,7 +701,138 @@ public class GrappleComponent extends Component {
     float fixedLength = fixedPathLength(anchor, ropeContacts);
     float actualTotalLength = fixedLength + ropeJoint.getAnchorA().dst(ropeJoint.getAnchorB());
     float adjustment = CLIMB_SPEED * ServiceLocator.getTimeSource().getDeltaTime();
+    CornerClearance clearance = cornerClearance();
+    if (climbing && clearance != null && climbAroundCorner(clearance)) {
+      // Let the collider move out from under an edge before pulling it upwards. A taut,
+      // shrinking segment would pin it against the terrain even with a sideways impulse.
+      setTotalRopeLength(actualTotalLength + adjustment, fixedLength);
+      return;
+    }
     setTotalRopeLength(actualTotalLength + (descending ? adjustment : -adjustment), fixedLength);
+  }
+
+  /** Guides a nearby climber around the active bend, with all terrain collisions still enabled. */
+  private boolean climbAroundCorner(CornerClearance clearance) {
+    Vector2 clearancePoint = clearance.point();
+    Body body = physicsComponent.getBody();
+    Vector2 pivot = ropeJoint.getAnchorA();
+    float clearanceRadius = pivot.dst(clearancePoint);
+    float approachDistance =
+        Math.max(MIN_PLAYER_SEGMENT_LENGTH, clearanceRadius)
+            + clearanceRadius
+            + CORNER_APPROACH_DISTANCE;
+    if (body.getWorldCenter().dst(pivot) > approachDistance) {
+      return false;
+    }
+    float dt = ServiceLocator.getTimeSource().getDeltaTime();
+    if (dt <= 0f) {
+      return false;
+    }
+    Vector2 velocity = clearancePoint.cpy().sub(body.getWorldCenter());
+    float firstDistance = velocity.dot(clearance.firstNormal());
+    float secondDistance = velocity.dot(clearance.secondNormal());
+    // Clearing both expanded faces is sufficient; an overshoot must not keep a bend pinned.
+    if (firstDistance <= ROPE_RADIUS && secondDistance <= ROPE_RADIUS) {
+      climbingCorner = null;
+      return false;
+    }
+    climbingCorner = activeContact();
+    if (firstDistance > ROPE_RADIUS && secondDistance > ROPE_RADIUS) {
+      // Clear the nearer face first. Pulling diagonally up into an underside lets contact
+      // friction cancel the small sideways motion needed to escape it.
+      velocity.set(
+          firstDistance < secondDistance ? clearance.firstNormal() : clearance.secondNormal());
+      velocity.scl(Math.min(firstDistance, secondDistance));
+    }
+    float distance = velocity.len();
+    if (distance > 0f) {
+      velocity.scl(Math.min(CLIMB_SPEED / distance, 1f / dt));
+    }
+    velocity.add(climbingCorner.body.getLinearVelocityFromWorldPoint(clearancePoint));
+    // Support the player's weight only while actively climbing around this corner.
+    Vector2 impulse =
+        velocity
+            .sub(body.getLinearVelocity())
+            .mulAdd(body.getWorld().getGravity(), -body.getGravityScale() * dt)
+            .scl(body.getMass());
+    body.applyLinearImpulse(impulse, body.getWorldCenter(), true);
+    return true;
+  }
+
+  /** Intersection of the corner's two edge planes, expanded by the player's solid collider. */
+  private record CornerClearance(Vector2 point, Vector2 firstNormal, Vector2 secondNormal) {}
+
+  private CornerClearance cornerClearance() {
+    RopeContact contact = activeContact();
+    if (contact == null || !(contact.fixture.getShape() instanceof PolygonShape polygon)) {
+      return null;
+    }
+    Vector2 local = new Vector2();
+    Vector2 corner = new Vector2();
+    int vertexIndex = 0;
+    float nearest = Float.MAX_VALUE;
+    Vector2 pivot = contact.getWorldPoint();
+    for (int i = 0; i < polygon.getVertexCount(); i++) {
+      polygon.getVertex(i, local);
+      Vector2 vertex = contact.body.getWorldPoint(local);
+      float distance = vertex.dst2(pivot);
+      if (distance < nearest) {
+        nearest = distance;
+        corner.set(vertex);
+        vertexIndex = i;
+      }
+    }
+    int count = polygon.getVertexCount();
+    polygon.getVertex((vertexIndex + count - 1) % count, local);
+    Vector2 incoming = corner.cpy().sub(contact.body.getWorldPoint(local));
+    polygon.getVertex((vertexIndex + 1) % count, local);
+    Vector2 outgoing = contact.body.getWorldPoint(local).cpy().sub(corner);
+    // Box2D polygon vertices wind counterclockwise, so right-hand edge normals point outwards.
+    Vector2 firstNormal = new Vector2(incoming.y, -incoming.x).nor();
+    Vector2 secondNormal = new Vector2(outgoing.y, -outgoing.x).nor();
+    float determinant = firstNormal.crs(secondNormal);
+    if (Math.abs(determinant) <= SIDE_EPSILON) {
+      return null;
+    }
+    float firstDistance = playerExtentAlong(firstNormal) + CORNER_CLEARANCE;
+    float secondDistance = playerExtentAlong(secondNormal) + CORNER_CLEARANCE;
+    corner.add(
+        (firstDistance * secondNormal.y - firstNormal.y * secondDistance) / determinant,
+        (firstNormal.x * secondDistance - firstDistance * secondNormal.x) / determinant);
+    return new CornerClearance(corner, firstNormal, secondNormal);
+  }
+
+  /**
+   * Distance from the centre to the collider face nearest the corner, excluding sensor hitboxes.
+   */
+  private float playerExtentAlong(Vector2 outwardNormal) {
+    Body body = physicsComponent.getBody();
+    Vector2 local = new Vector2();
+    float extent = 0f;
+    for (Fixture fixture : body.getFixtureList()) {
+      if (fixture.isSensor()) {
+        continue;
+      }
+      if (fixture.getShape() instanceof PolygonShape polygon) {
+        for (int i = 0; i < polygon.getVertexCount(); i++) {
+          polygon.getVertex(i, local);
+          extent =
+              Math.max(
+                  extent,
+                  -body.getWorldPoint(local).cpy().sub(body.getWorldCenter()).dot(outwardNormal));
+        }
+      } else if (fixture.getShape() instanceof CircleShape circle) {
+        float distance =
+            body.getWorldPoint(circle.getPosition())
+                        .cpy()
+                        .sub(body.getWorldCenter())
+                        .dot(outwardNormal)
+                    * -1f
+                + circle.getRadius();
+        extent = Math.max(extent, distance);
+      }
+    }
+    return extent;
   }
 
   private void syncRopeLengthToActualPath() {
@@ -708,7 +851,14 @@ public class GrappleComponent extends Component {
   }
 
   private void setTotalRopeLength(float requestedLength, float fixedLength) {
-    float minimumLength = Math.min(initialRopeLength, fixedLength + MIN_PLAYER_SEGMENT_LENGTH);
+    CornerClearance clearance = cornerClearance();
+    float minimumSegmentLength =
+        clearance == null
+            ? MIN_PLAYER_SEGMENT_LENGTH
+            : Math.max(
+                MIN_PLAYER_SEGMENT_LENGTH,
+                ropeJoint.getAnchorA().dst(clearance.point()) + ROPE_RADIUS);
+    float minimumLength = Math.min(initialRopeLength, fixedLength + minimumSegmentLength);
     totalRopeLength = Math.clamp(requestedLength, minimumLength, initialRopeLength);
     ropeJoint.setMaxLength(Math.max(totalRopeLength - fixedLength, MIN_JOINT_LENGTH));
   }
