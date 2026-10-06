@@ -51,6 +51,10 @@ public abstract class RenderComponent extends Component implements Renderable, D
     return this.lightning;
   }
 
+  public float getBackgroundLight() {
+    return this.backgroundLight;
+  }
+
   public void toggleWeather() {
     weather = !weather;
   }
