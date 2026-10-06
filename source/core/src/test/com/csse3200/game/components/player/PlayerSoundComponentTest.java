@@ -79,7 +79,7 @@ class PlayerSoundComponentTest {
 
   @Test
   void shouldNotPlayGulpForNonPotionItems() {
-    player.getEvents().trigger("itemUsed", ItemType.Sword);
+    player.getEvents().trigger("itemUsed", ItemType.STANDARD_ARROW);
 
     verify(resources, never()).getAsset("sounds/Drink_01.wav", Sound.class);
   }

@@ -13,7 +13,6 @@ public class SoundEffects {
     "sounds/Drink_01.wav",
     "sounds/Drink_02.wav",
     "sounds/Bottle Break.wav",
-    "sounds/melee sound.wav",
     "sounds/rock_break.ogg",
     "sounds/evil cyber laugh.wav",
     "sounds/shoot.ogg",
