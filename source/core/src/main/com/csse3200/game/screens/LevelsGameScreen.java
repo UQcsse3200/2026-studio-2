@@ -194,6 +194,12 @@ public class LevelsGameScreen extends ScreenAdapter {
 
     minigameOverlayManager = new MinigameOverlayManager();
     blackjackOverlay = new BlackjackOverlay(player, minigameOverlayManager);
+    player.getEvents().addListener("openBlackjack", blackjackOverlay::request);
+
+    if (cheats) {
+      level1GameArea.getPlayer().getComponent(PhysicsComponent.class).getBody().setGravityScale(0);
+      level1GameArea.getPlayer().getComponent(KeyboardPlayerInputComponent.class).toggleCheats();
+    }
   }
 
   private void onPlayerDeath() {
@@ -452,5 +458,6 @@ public class LevelsGameScreen extends ScreenAdapter {
         .addComponent(new TerminalDisplay());
 
     ServiceLocator.getEntityService().register(ui);
+
   }
 }
