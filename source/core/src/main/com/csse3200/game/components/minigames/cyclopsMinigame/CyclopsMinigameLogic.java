@@ -6,7 +6,9 @@ import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.areas.terrain.TerrainComponent;
+import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.Component;
+import com.csse3200.game.components.GameVolume;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.BlankTransitionScreenCover;
@@ -28,6 +30,8 @@ public class CyclopsMinigameLogic extends Component {
     PRE_MOVE,
     MOVING,
     LOSS,
+    RETREAT,
+    DEATH,
     WIN
   }
 
@@ -38,6 +42,13 @@ public class CyclopsMinigameLogic extends Component {
   static final float SHOW_HIDE_DELAY = 0.3f;
   static final float TRANSITION_DELAY_GAP = 0.2f;
   static final float TRANSITION_DELAY = 0.8f;
+  static final float HURT_PAUSE_DELAY = 0.6f;
+  static final float DEATH_DISPLAY_DELAY = 1.5f;
+  static final int MISS_DAMAGE = 2;
+  public static final String CYCLOPS_WAKE_EVENT = "cyclopsWake";
+  public static final String CYCLOPS_SLEEP_EVENT = "cyclopsSleep";
+  static final float START_SCORING_PERCENT = 20f;
+  static final float END_SCORING_PERCENT = 10f;
 
   /* Components */
   private final TimingBarLogic timingBarLogic;
@@ -49,6 +60,11 @@ public class CyclopsMinigameLogic extends Component {
   private static final String playerLossAnimation = "hurt";
 
   BlankTransitionScreenCover transitionScreenCover;
+
+  private Vector2 runStart = new Vector2();
+  private Vector2 runTarget = new Vector2();
+  private boolean runSuccess = false;
+  private Vector2 playerOffset = new Vector2();
 
   /* Important Grid Locations */
   private List<GridPoint2> safeLocations;
@@ -85,6 +101,10 @@ public class CyclopsMinigameLogic extends Component {
   }
 
   /* Getters & Setters */
+  public void setPlayerOffset(Vector2 playerOffset) {
+    this.playerOffset = playerOffset.cpy();
+  }
+
   public void setWinLocation(GridPoint2 winLocation) {
     this.winLocation = winLocation;
   }
@@ -116,7 +136,7 @@ public class CyclopsMinigameLogic extends Component {
 
   /* Player Handling Functions */
   private void movePlayer(GridPoint2 location) {
-    Vector2 worldPos = this.terrainComponent.tileToWorldPosition(location);
+    Vector2 worldPos = this.terrainComponent.tileToWorldPosition(location).add(playerOffset);
     logger.debug("Converting GridPoint2 Location ({}) to World Position ({})", location, worldPos);
     logger.info(
         "Moving Player (Entity {}) from orig:{} to dest:{}",
@@ -126,37 +146,25 @@ public class CyclopsMinigameLogic extends Component {
     playerEntity.setPosition(worldPos);
   }
 
-  void moveToNextLocation(boolean success) {
-    if (success) {
-      this.currentSafeLocation++;
-
-      if (!areNextSafeLocations()) { // Then player will move to win location
-        logger.info("Moving Player (Entity {}) to win location", this.playerEntity.getId());
-        movePlayer(this.winLocation);
-        hasWon = true;
-        return;
-      }
-
-      logger.info(
-          "Moving Player (Entity {}) to next safe location #{}",
-          this.playerEntity.getId(),
-          this.currentSafeLocation);
-      movePlayer(safeLocations.get(this.currentSafeLocation));
-    } else {
-      logger.info(
-          "Moving Player (Entity {}) to loss location #{}",
-          this.playerEntity.getId(),
-          this.currentSafeLocation);
-      movePlayer(lossLocations.get(this.currentSafeLocation));
+  GridPoint2 advanceToNextLocation(boolean success) {
+    if (!success) {
+      return lossLocations.get(Math.min(this.currentSafeLocation, lossLocations.size() - 1));
     }
+    this.currentSafeLocation = Math.min(this.currentSafeLocation + 1, safeLocations.size());
+    if (!areNextSafeLocations()) {
+      hasWon = true;
+      return this.winLocation;
+    }
+    timingBarLogic.changeScoringAreaWidth(
+        scoringPercentForRock(currentSafeLocation, safeLocations.size()));
+    return safeLocations.get(this.currentSafeLocation);
   }
 
-  void timingSuccess() {
-    moveToNextLocation(true);
-  }
-
-  void timingFailure() {
-    moveToNextLocation(false);
+  static float scoringPercentForRock(int rockIndex, int rockCount) {
+    int last = Math.max(rockCount - 1, 1);
+    int clampedIndex = Math.min(rockIndex, last);
+    return START_SCORING_PERCENT
+        - (START_SCORING_PERCENT - END_SCORING_PERCENT) * clampedIndex / last;
   }
 
   private boolean stopPressed() {
@@ -174,7 +182,7 @@ public class CyclopsMinigameLogic extends Component {
   private void playWalkingSound() {
     this.walkingSoundID = walkingSound.play();
     walkingSound.setLooping(this.walkingSoundID, true);
-    walkingSound.setVolume(this.walkingSoundID, walkingSoundVolume);
+    walkingSound.setVolume(this.walkingSoundID, GameVolume.scale(walkingSoundVolume));
   }
 
   private void stopWalkingSound() {
@@ -188,7 +196,7 @@ public class CyclopsMinigameLogic extends Component {
 
   private void playMarkerHitSound() {
     this.hitSoundID = hitSound.play();
-    hitSound.setVolume(this.hitSoundID, hitSoundVolume);
+    hitSound.setVolume(this.hitSoundID, GameVolume.scale(hitSoundVolume));
     logger.debug("Starting hit sound (ID: {}) with volume {}", this.hitSoundID, hitSoundVolume);
   }
 
@@ -203,7 +211,7 @@ public class CyclopsMinigameLogic extends Component {
 
   private void playMarkerMissSound() {
     this.missSoundID = missSound.play();
-    missSound.setVolume(this.missSoundID, missSoundVolume);
+    missSound.setVolume(this.missSoundID, GameVolume.scale(missSoundVolume));
     logger.debug("Starting miss sound (ID: {}) with volume {}", this.missSoundID, missSoundVolume);
   }
 
@@ -234,15 +242,36 @@ public class CyclopsMinigameLogic extends Component {
     return timeInState >= seconds;
   }
 
+  private void beginRun(boolean success) {
+    runSuccess = success;
+    runStart = playerEntity.getPosition().cpy();
+    runTarget =
+        terrainComponent.tileToWorldPosition(advanceToNextLocation(runSuccess)).add(playerOffset);
+    playWalkingSound();
+    playerEntity.getEvents().trigger("walk", new Vector2(1, 0));
+    playerEntity.getEvents().trigger("sprint");
+  }
+
   private void handleTimingOutcome() {
-    if (this.timingBarLogic.checkHit()) {
-      timingSuccess();
+    if (runSuccess) {
       if (hasWon) changeState(State.WIN);
       else startMinigame();
     } else {
-      timingFailure();
-      changeState(State.LOSS);
+      CombatStatsComponent combatStats = playerEntity.getComponent(CombatStatsComponent.class);
+      if (combatStats != null) {
+        combatStats.addHealth(-MISS_DAMAGE);
+      }
+      playerEntity.getEvents().trigger(playerLossAnimation);
+      ServiceLocator.getCyclopsMinigameEventHandler().trigger(CYCLOPS_WAKE_EVENT);
+      // A miss costs a heart and retries the current statue; losing all hearts restarts the
+      // minigame.
+      changeState(playerIsDead() ? State.DEATH : State.LOSS);
     }
+  }
+
+  private boolean playerIsDead() {
+    CombatStatsComponent combatStats = playerEntity.getComponent(CombatStatsComponent.class);
+    return combatStats != null && combatStats.isDead();
   }
 
   private void handlePlaying(float delta) {
@@ -252,6 +281,30 @@ public class CyclopsMinigameLogic extends Component {
       playCorrectMarkerSound();
       changeState(State.HIDE_DELAY);
     }
+  }
+
+  private boolean canForceOutcome(String outcome) {
+    if (state == State.PLAY) {
+      return true;
+    }
+    logger.info("Ignoring forced {} outcome while in state {}", outcome, state);
+    return false;
+  }
+
+  void timingSuccess() {
+    if (!canForceOutcome("success")) return;
+    timingBarLogic.stopMarker();
+    timingBarDisplay.setVisible(false);
+    beginRun(true);
+    changeState(State.MOVING);
+  }
+
+  void timingFailure() {
+    if (!canForceOutcome("failure")) return;
+    timingBarLogic.stopMarker();
+    timingBarDisplay.setVisible(false);
+    beginRun(false);
+    changeState(State.MOVING);
   }
 
   public void startMinigame() {
@@ -268,7 +321,33 @@ public class CyclopsMinigameLogic extends Component {
   }
 
   public void restartMinigame() {
+    currentSafeLocation = 0;
+    timingBarLogic.changeScoringAreaWidth(START_SCORING_PERCENT);
     movePlayer(safeLocations.getFirst());
+    ServiceLocator.getCyclopsMinigameEventHandler().trigger(CYCLOPS_SLEEP_EVENT);
+    startMinigame();
+  }
+
+  private void beginRetreat() {
+    runStart = playerEntity.getPosition().cpy();
+    runTarget =
+        terrainComponent
+            .tileToWorldPosition(safeLocations.get(currentSafeLocation))
+            .add(playerOffset);
+    playWalkingSound();
+    playerEntity.getEvents().trigger("walk", new Vector2(-1, 0));
+    playerEntity.getEvents().trigger("sprint");
+    changeState(State.RETREAT);
+  }
+
+  private void finishRetreat() {
+    playerEntity.setPosition(runTarget);
+    playerEntity.getEvents().trigger("sprintStop");
+    playerEntity.getEvents().trigger("walkStop");
+    stopWalkingSound();
+    playerEntity.getEvents().trigger("walk", new Vector2(1, 0));
+    playerEntity.getEvents().trigger("walkStop");
+    ServiceLocator.getCyclopsMinigameEventHandler().trigger(CYCLOPS_SLEEP_EVENT);
     startMinigame();
   }
 
@@ -305,11 +384,25 @@ public class CyclopsMinigameLogic extends Component {
         Gdx.app.postRunnable(() -> ServiceLocator.getCyclopsMinigameEventHandler().trigger("win"));
       }
       case LOSS -> {
-        /* Want to play a scream from cyclops, screen go black and after delay
-         * show player back at start of level
-         */
-        logger.info("Player has LOST the cyclops minigame");
-        changeState(State.STOP);
+        if (elapsed(HURT_PAUSE_DELAY)) {
+          beginRetreat();
+        }
+      }
+      case RETREAT -> {
+        if (elapsed(TRANSITION_DELAY)) {
+          finishRetreat();
+        } else {
+          float progress = timeInState / TRANSITION_DELAY;
+          playerEntity.setPosition(runStart.cpy().lerp(runTarget, progress));
+        }
+      }
+      case DEATH -> {
+        if (elapsed(DEATH_DISPLAY_DELAY)) {
+          logger.info("Player has DIED in the cyclops minigame");
+          transitionScreenCover.setVisible(true);
+          ServiceLocator.getCyclopsMinigameEventHandler().trigger("died");
+          changeState(State.STOP);
+        }
       }
       case SHOW_DELAY -> {
         if (elapsed(SHOW_HIDE_DELAY)) {
@@ -328,16 +421,20 @@ public class CyclopsMinigameLogic extends Component {
       }
       case PRE_MOVE -> {
         if (elapsed(TRANSITION_DELAY_GAP)) {
-          transitionScreenCover.setVisible(true);
-          playWalkingSound();
+          beginRun(timingBarLogic.checkHit());
           changeState(State.MOVING);
         }
       }
       case MOVING -> {
         if (elapsed(TRANSITION_DELAY)) {
-          transitionScreenCover.setVisible(false);
+          playerEntity.setPosition(runTarget);
+          playerEntity.getEvents().trigger("sprintStop");
+          playerEntity.getEvents().trigger("walkStop");
           stopWalkingSound();
           handleTimingOutcome(); /* Changes state itself */
+        } else {
+          float progress = timeInState / TRANSITION_DELAY;
+          playerEntity.setPosition(runStart.cpy().lerp(runTarget, progress));
         }
       }
     }

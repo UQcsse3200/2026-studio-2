@@ -3,6 +3,7 @@ package com.csse3200.game.components.minigames.blackjack;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.utils.Timer;
+import com.csse3200.game.components.GameVolume;
 import com.csse3200.game.components.inventory.InventoryComponent;
 import com.csse3200.game.components.minigames.MinigameOverlayManager;
 import com.csse3200.game.entities.Entity;
@@ -90,7 +91,7 @@ public class BlackjackOverlay {
     Music music = ServiceLocator.getResourceService().getAsset(BLACKJACK_MUSIC, Music.class);
 
     music.setLooping(true);
-    music.setVolume(0.25f);
+    GameVolume.setMusicVolume(music, 0.25f);
     music.play();
 
     int startingGold = inventory == null ? 0 : inventory.getGold();

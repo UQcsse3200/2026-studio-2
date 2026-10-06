@@ -9,14 +9,15 @@ import com.csse3200.game.rendering.AnimationRenderComponent;
  * This class listens to events relevant to a skeleton entity's state and plays the animation when
  * one of the events is triggered.
  */
-public class SkeletonAnimationController extends Component {
+public class EnemyAnimationController extends Component {
   private static final float MOVING_SPEED_THRESHOLD = 0.1f;
   private static final float FACING_DEADZONE = 0.05f;
   private final Entity target;
   private AnimationRenderComponent animator;
   private PhysicsComponent physics;
+  private boolean isAttacking = false;
 
-  public SkeletonAnimationController(Entity target) {
+  public EnemyAnimationController(Entity target) {
     this.target = target;
   }
 
@@ -26,10 +27,19 @@ public class SkeletonAnimationController extends Component {
     animator = this.entity.getComponent(AnimationRenderComponent.class);
     physics = this.entity.getComponent(PhysicsComponent.class);
     animateIdle();
+
+    entity.getEvents().addListener("attackStart", this::animateSweep);
   }
 
   @Override
   public void update() {
+    if (isAttacking) {
+      if (animator.isFinished()) {
+        isAttacking = false;
+        animateIdle();
+      }
+      return;
+    }
     faceTarget();
 
     if (isMoving()) {
@@ -59,6 +69,10 @@ public class SkeletonAnimationController extends Component {
   }
 
   void animateWalk() {
+    if (!animator.hasAnimation("walk")) {
+      animateIdle();
+      return;
+    }
     if (!"walk".equals(animator.getCurrentAnimation())) {
       animator.startAnimation("walk");
     }
@@ -68,5 +82,13 @@ public class SkeletonAnimationController extends Component {
     if (!"idle".equals(animator.getCurrentAnimation())) {
       animator.startAnimation("idle");
     }
+  }
+
+  void animateSweep() {
+    if (!animator.hasAnimation("sweep")) {
+      return;
+    }
+    isAttacking = true;
+    animator.startAnimation("sweep");
   }
 }
