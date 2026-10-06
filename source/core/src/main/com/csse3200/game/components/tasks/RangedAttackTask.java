@@ -34,8 +34,6 @@ public class RangedAttackTask extends DefaultTask implements PriorityTask {
    * @param damage projectile damage
    * @param projectileSpeed projectile movement speed
    * @param projectileLifetime maximum projectile lifetime in seconds
-   * @param useNecromancerProjectile whether to use the necromancer projectile
-   * @param useCalypsoProjectile whether to use the Calypso projectile
    */
   public RangedAttackTask(
       Entity target,
