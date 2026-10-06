@@ -90,7 +90,8 @@ public class EnemyFactory {
     // Skeleton Warrior has a charged attack (extra range melee with initial delay)
     skeletonWarrior
         .getComponent(AITaskComponent.class)
-        .addTask(new DelayedAttackTask(target, 20, config.attackRange, 0.5f));
+        .addTask(
+            new DelayedAttackTask(target, 20, config.attackRange, 0.5f, config.baseAttack, 10f));
 
     return skeletonWarrior;
   }
@@ -227,7 +228,8 @@ public class EnemyFactory {
 
     cyclops
         .getComponent(AITaskComponent.class)
-        .addTask(new DelayedAttackTask(target, 20, config.attackRange, 0.5f));
+        .addTask(
+            new DelayedAttackTask(target, 20, config.attackRange, 0.5f, config.baseAttack, 10f));
 
     return cyclops;
   }
