@@ -22,17 +22,21 @@ import com.csse3200.game.entities.configs.PlayerConfig;
 import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.files.FileLoader;
 import com.csse3200.game.input.InputService;
+import com.csse3200.game.lighting.LightingEngine;
+import com.csse3200.game.lighting.LightingService;
 import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.physics.PhysicsService;
 import com.csse3200.game.physics.components.ColliderComponent;
 import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.rendering.AnimationRenderComponent;
+import com.csse3200.game.rendering.ParticleEffectsRenderingComponent;
 import com.csse3200.game.services.GameTime;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.MockedConstruction;
 
 /** Tests factory assembly without starting the inventory/shop UI or loading GPU textures. */
 @ExtendWith(GameExtension.class)
@@ -47,6 +51,13 @@ class PlayerFactoryTest {
     ServiceLocator.registerTimeSource(time);
     physics = new PhysicsService();
     ServiceLocator.registerPhysicsService(physics);
+
+    LightingEngine lightingEngine = mock(LightingEngine.class);
+    when(lightingEngine.getRayHandler()).thenReturn(mock(box2dLight.RayHandler.class));
+    LightingService lightingService = mock(LightingService.class);
+    when(lightingService.getEngine()).thenReturn(lightingEngine);
+    ServiceLocator.registerLightingService(lightingService);
+
     previousInput = Gdx.input.getInputProcessor();
     ServiceLocator.registerInputService(new InputService());
     TextureAtlas atlas = mock(TextureAtlas.class);
@@ -69,45 +80,59 @@ class PlayerFactoryTest {
 
   @Test
   void shouldEquipAttachedBowAndRegisterCombatAnimations() {
-    Entity player = PlayerFactory.createPlayer();
-    BowComponent bow = player.getComponent(BowComponent.class);
-    assertNotNull(bow);
-    assertSame(bow, player.getComponent(WeaponComponent.class).getPrimaryWeapon());
-    assertNotNull(player.getComponent(GrappleComponent.class));
-    assertNotNull(player.getComponent(PlayerActions.class));
-    AnimationRenderComponent animator = player.getComponent(AnimationRenderComponent.class);
-    for (String clip :
-        new String[] {
-          "idle",
-          "walk",
-          "sprint",
-          "jump",
-          "hurt",
-          "death",
-          "air_dash",
-          "bow_draw",
-          "bow_hold",
-          "bow_shoot"
-        }) {
-      assertTrue(animator.hasAnimation(clip), "Missing player animation: " + clip);
+    try (MockedConstruction<ParticleEffectsRenderingComponent> particles =
+        mockConstruction(ParticleEffectsRenderingComponent.class)) {
+      Entity player = PlayerFactory.createPlayer();
+      BowComponent bow = player.getComponent(BowComponent.class);
+      assertNotNull(bow);
+      assertSame(bow, player.getComponent(WeaponComponent.class).getPrimaryWeapon());
+      assertNotNull(player.getComponent(GrappleComponent.class));
+      assertNotNull(player.getComponent(PlayerActions.class));
+      AnimationRenderComponent animator = player.getComponent(AnimationRenderComponent.class);
+      for (String clip :
+          new String[] {
+            "idle",
+            "walk",
+            "sprint",
+            "jump",
+            "hurt",
+            "death",
+            "air_dash",
+            "bow_draw",
+            "bow_hold",
+            "bow_shoot"
+          }) {
+        assertTrue(animator.hasAnimation(clip), "Missing player animation: " + clip);
+      }
+      player.getComponent(PlayerAnimationController.class).create();
+      assertEquals("idle", animator.getCurrentAnimation());
+      assertEquals(0.6f, player.getScale().x, 0.001f);
+      assertEquals(1.2f, player.getScale().y, 0.001f);
+      player.getComponent(PhysicsComponent.class).create();
+      player.getComponent(ColliderComponent.class).create();
+      player.getComponent(HitboxComponent.class).create();
+      assertEquals(PhysicsLayer.PLAYER, player.getComponent(HitboxComponent.class).getLayer());
+      assertTrue(player.getComponent(HitboxComponent.class).getFixture().isSensor());
+      assertFalse(player.getComponent(ColliderComponent.class).getFixture().isSensor());
     }
-    player.getComponent(PlayerAnimationController.class).create();
-    assertEquals("idle", animator.getCurrentAnimation());
-    assertEquals(0.6f, player.getScale().x, 0.001f);
-    assertEquals(1.2f, player.getScale().y, 0.001f);
-    player.getComponent(PhysicsComponent.class).create();
-    player.getComponent(ColliderComponent.class).create();
-    player.getComponent(HitboxComponent.class).create();
-    assertEquals(PhysicsLayer.PLAYER, player.getComponent(HitboxComponent.class).getLayer());
-    assertTrue(player.getComponent(HitboxComponent.class).getFixture().isSensor());
-    assertFalse(player.getComponent(ColliderComponent.class).getFixture().isSensor());
+  }
+
+  @Test
+  void shouldCreateDisplayPlayerWithoutPlayerActions() {
+    Entity player = PlayerFactory.createPlayerDisplay();
+
+    assertNotNull(player.getComponent(AnimationRenderComponent.class));
+    org.junit.jupiter.api.Assertions.assertNull(player.getComponent(PlayerActions.class));
   }
 
   @Test
   void shouldApplyConfiguredHealthDamageAndInvulnerabilityToCreatedPlayer() {
     PlayerConfig config = FileLoader.readClass(PlayerConfig.class, "configs/player.json");
-    CombatStatsComponent stats =
-        PlayerFactory.createPlayer().getComponent(CombatStatsComponent.class);
+    CombatStatsComponent stats;
+    try (MockedConstruction<ParticleEffectsRenderingComponent> particles =
+        mockConstruction(ParticleEffectsRenderingComponent.class)) {
+      stats = PlayerFactory.createPlayer().getComponent(CombatStatsComponent.class);
+    }
     assertEquals(config.health, stats.getHealth());
     assertEquals(config.baseAttack, stats.getBaseAttack());
     CombatStatsComponent attacker = new CombatStatsComponent(10, 1);
@@ -119,6 +144,16 @@ class PlayerFactoryTest {
     when(time.getTime()).thenReturn(config.invulnerabilityDuration);
     stats.hit(attacker);
     assertEquals(config.health - 2, stats.getHealth());
+  }
+
+  @Test
+  void shouldCreateFullPlayerWithBowComponent() {
+    try (MockedConstruction<ParticleEffectsRenderingComponent> particles =
+        mockConstruction(ParticleEffectsRenderingComponent.class)) {
+      Entity player = PlayerFactory.createPlayer();
+
+      assertNotNull(player.getComponent(BowComponent.class));
+    }
   }
 
   @Test

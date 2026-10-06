@@ -55,11 +55,7 @@ class Level1GameAreaTest {
   @Test
   void shouldHaveCorrectGoldSpawns() {
     assertArrayEquals(
-        new GridPoint2[] {
-          new GridPoint2(9, 5),
-          new GridPoint2(15, 7),
-          new GridPoint2(20, 8)
-        },
+        new GridPoint2[] {new GridPoint2(9, 5), new GridPoint2(15, 7), new GridPoint2(20, 8)},
         Level1GameArea.GOLD_SPAWNS);
   }
 
