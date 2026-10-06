@@ -16,7 +16,7 @@ import com.csse3200.game.services.ServiceLocator;
  * respawnTime seconds before becoming active again.
  */
 public class CrumblingPlatformComponent extends PlatformGrappleComponent {
-  private enum CrumbleState {
+  enum CrumbleState {
     NORMAL,
     WAITING_TO_CRUMBLE,
     CRUMBLING,
@@ -26,10 +26,10 @@ public class CrumblingPlatformComponent extends PlatformGrappleComponent {
   private final float timeBeforeCrumble;
   private final float crumbleTime;
   private final float respawnTime;
-  private Texture platformTexture;
+  Texture platformTexture;
 
-  private CrumbleState state = CrumbleState.NORMAL;
-  private float stateTime = 0f;
+  CrumbleState state = CrumbleState.NORMAL;
+  float stateTime = 0f;
 
   /**
    * Creates a crumbling platform component.
@@ -60,7 +60,7 @@ public class CrumblingPlatformComponent extends PlatformGrappleComponent {
    * @param me this platform's fixture
    * @param other the fixture that made contact with the platform
    */
-  private void onCollisionStart(Fixture me, Fixture other) {
+  protected void onCollisionStart(Fixture me, Fixture other) {
     // Only allow activation while the platform is in its normal state.
     if (state != CrumbleState.NORMAL) {
       return;
@@ -113,7 +113,7 @@ public class CrumblingPlatformComponent extends PlatformGrappleComponent {
   }
 
   /** Makes the platform disappear and disables its collision. */
-  private void crumble() {
+  void crumble() {
     state = CrumbleState.CRUMBLED;
     stateTime = 0f;
 
@@ -127,11 +127,11 @@ public class CrumblingPlatformComponent extends PlatformGrappleComponent {
     DynamicTextureRenderComponent renderComponent =
         entity.getComponent(DynamicTextureRenderComponent.class);
     platformTexture = renderComponent.getTexture();
-    renderComponent.setTexture("images/transparent.png");
+    renderComponent.setTexture("images/ui/transparent.png");
   }
 
   /** Restores the platform after the respawn timer finishes. */
-  private void respawn() {
+  void respawn() {
     state = CrumbleState.NORMAL;
     stateTime = 0f;
 

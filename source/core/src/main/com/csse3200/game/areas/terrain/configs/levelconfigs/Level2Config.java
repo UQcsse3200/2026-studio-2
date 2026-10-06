@@ -10,20 +10,26 @@ import com.csse3200.game.areas.terrain.configs.*;
 import com.csse3200.game.components.item.*;
 import com.csse3200.game.components.item.weapons.bow.arrow.*;
 import com.csse3200.game.components.level.SpawnerComponent;
+import com.csse3200.game.entities.Entity;
+import com.csse3200.game.entities.factories.EnemyFactory;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class Level2Config extends LevelConfig {
 
-  public Level2Config() {
+  public Level2Config(Entity player) {
     // Textures
     // TFP = Texture File Path
-    platformTFP = "images/Platform_level-2.png";
-    movingPlatformTFP = "images/Platform_level-2.png";
-    crumblingPlatformTFP = "images/Platform_level-2.png";
-    triggerablePlatformTFP = "images/Platform_level-2.png";
-    ledgesTFP = "images/Platform_level-2.png";
-    groundTFP = "images/tile-level2.png";
+    platformTFP = "images/terrain/Level_2/level_2_platform.png";
+    movingPlatformTFP = "images/terrain/Level_2/level_2_platform.png";
+    crumblingPlatformTFP = "images/terrain/Level_2/level_2_platform.png";
+    triggerablePlatformTFP = "images/terrain/Level_2/level_2_platform.png";
+    ledgesTFP = "images/terrain/Level_2/level_2_platform.png";
+    groundTFP = "images/terrain/Level_2/level_2_tile.png";
+    spikeTFP = "images/terrain/Level_2/level_2_spikes.png";
+    checkpointAtlas = "images/terrain/Level_1/Level_1_checkpoint.atlas";
 
     playerSpawn = new GridPoint2(0, 42);
     winConditionSpawn = new GridPoint2(33, 8);
@@ -32,6 +38,9 @@ public class Level2Config extends LevelConfig {
     platforms =
         new PlatformConfig[] {
           new PlatformConfig(new GridPoint2(0, 40), 3, 1, 3, platformTFP), // P1
+          new PlatformConfig(new GridPoint2(11, 25), 3, 1, 3, platformTFP),
+          new PlatformConfig(new GridPoint2(14, 28), 3, 1, 3, platformTFP),
+          new PlatformConfig(new GridPoint2(17, 31), 3, 1, 3, platformTFP),
           new PlatformConfig(new GridPoint2(8, 40), 3, 1, 9, platformTFP), // P2
           new PlatformConfig(new GridPoint2(17, 39), 3, 1, 11, platformTFP), // P3
           new PlatformConfig(new GridPoint2(0, 28), 2, 1, 2, platformTFP), // P4
@@ -89,13 +98,13 @@ public class Level2Config extends LevelConfig {
     crumblingPlatforms =
         new CrumblingPlatformConfig[] {
           new CrumblingPlatformConfig(
-              new GridPoint2(16, 8), 3, 1, 0, crumblingPlatformTFP, 1.25f, 0.75f, 3f), // CP1
+              new GridPoint2(16, 8), 3, 1, 0, crumblingPlatformTFP, 2.5f, 1f, 4f), // CP1
           new CrumblingPlatformConfig(
-              new GridPoint2(24, 8), 2, 1, 0, crumblingPlatformTFP, 0.75f, 0.5f, 3f), // CP2
+              new GridPoint2(24, 8), 3, 1, 0, crumblingPlatformTFP, 2.25f, 0.75f, 3.5f), // CP2
           new CrumblingPlatformConfig(
-              new GridPoint2(46, 39), 2, 1, 0, crumblingPlatformTFP, 0.5f, 0.25f, 3f), // C3
+              new GridPoint2(46, 39), 2, 1, 0, crumblingPlatformTFP, 1.5f, 1f, 3f), // C3
           new CrumblingPlatformConfig(
-              new GridPoint2(42, 40), 2, 1, 0, crumblingPlatformTFP, 0.5f, 0.25f, 3f), // CP4
+              new GridPoint2(42, 40), 2, 1, 0, crumblingPlatformTFP, 1.5f, 1f, 3f), // CP4
         };
 
     triggerablePlatforms =
@@ -106,16 +115,16 @@ public class Level2Config extends LevelConfig {
               1,
               2,
               triggerablePlatformTFP,
-              new String[] {}, // should be enemyArenaComplete
-              true), // P7
+              new String[] {"enemyArenaComplete"},
+              false), // P7
           new TriggerablePlatformConfig(
               new GridPoint2(33, 25),
               3,
               1,
               8,
               triggerablePlatformTFP,
-              new String[] {}, // should be enemyArenaComplete
-              true), // P8
+              new String[] {"enemyArenaComplete"},
+              false), // P8
           new TriggerablePlatformConfig(
               new GridPoint2(28, 40),
               4,
@@ -133,6 +142,8 @@ public class Level2Config extends LevelConfig {
               new String[] {"triggerWheelSpinPlatform"},
               false), // TP2
         };
+
+    bounds = new PlatformConfig[] {new PlatformConfig(new GridPoint2(-1, -5), 1, 55, 0, groundTFP)};
 
     floors =
         new PlatformConfig[] {
@@ -168,11 +179,15 @@ public class Level2Config extends LevelConfig {
         new PlatformConfig[] {
           new PlatformConfig(new GridPoint2(29, 15), 3, 1, 0, ledgesTFP), // L1
           new PlatformConfig(new GridPoint2(42, 21), 7, 1, 0, ledgesTFP), // L2
+          new PlatformConfig(new GridPoint2(23, 19), 4, 1, 0, ledgesTFP),
+          new PlatformConfig(new GridPoint2(33, 19), 4, 1, 0, ledgesTFP),
+          new PlatformConfig(new GridPoint2(29, 22), 3, 1, 0, ledgesTFP),
+          new PlatformConfig(new GridPoint2(25, 31), 3, 1, 0, ledgesTFP),
         };
 
     spikes =
         new SpikeClusterConfig[] {
-          new SpikeClusterConfig(0, 11, 37, 37, 0f, false), // SC1
+          // new SpikeClusterConfig(0, 11, 37, 37, 0f, false), // SC1
           new SpikeClusterConfig(19, 21, 29, 29, 0f, false), // SC2
           new SpikeClusterConfig(4, 6, 29, 29, 0f, false), // SC3
           new SpikeClusterConfig(0, 2, 12, 12, 0f, true), // SC4
@@ -267,9 +282,51 @@ public class Level2Config extends LevelConfig {
               SpawnerComponent.ACTIVATION_MODE.TOGGLE), // SBT12
         };
 
+    // contains spawner data for the enemy spawners
+    SpawnerConfig[] spawnerConfig = {
+      new SpawnerConfig(
+          new ArrayList<>(
+              List.of(
+                  () -> EnemyFactory.createVulture(player), // double up to make it more likely to
+                  () -> EnemyFactory.createVulture(player), // spawn vultures and warriors
+                  () -> EnemyFactory.createSkeletonWarrior(player),
+                  () -> EnemyFactory.createSkeletonWarrior(player),
+                  () -> EnemyFactory.createSkeletonArcher(player),
+                  () -> EnemyFactory.createNecromancer(player))),
+          5f,
+          7,
+          SpawnerComponent.ACTIVATION_MODE.NORMAL,
+          false), // ES1+2
+    };
+
+    enemySpawners =
+        new EnemySpawnerConfig[] {
+          new EnemySpawnerConfig(
+              new GridPoint2(24, 17),
+              spawnerConfig[0],
+              new String[] {"enemyArena"},
+              new String[] {"enemyArenaComplete"}), // ES1
+          new EnemySpawnerConfig(
+              new GridPoint2(34, 17),
+              spawnerConfig[0],
+              new String[] {"enemyArena"},
+              new String[] {"enemyArenaComplete"}), // ES2
+        };
+
+    mapTriggers =
+        new TriggerConfig[] {
+          new TriggerConfig(
+              new GridPoint2(30, 16), new Vector2(3f, 1f), new String[] {"enemyArena"}, true),
+        };
+
     checkpoints =
         new CheckpointConfig[] {
           new CheckpointConfig(new GridPoint2(0, 41)),
+          new CheckpointConfig(new GridPoint2(0, 8)),
+          new CheckpointConfig(new GridPoint2(39, 28)),
+          new CheckpointConfig(new GridPoint2(45, 8)),
         };
+
+    wheelSpinSpawns = new GridPoint2[] {new GridPoint2(29, 41)};
   }
 }

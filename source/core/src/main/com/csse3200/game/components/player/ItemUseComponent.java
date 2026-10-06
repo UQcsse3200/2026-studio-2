@@ -97,9 +97,7 @@ public class ItemUseComponent extends Component {
     if (inventory == null) {
       return;
     }
-    if (inventory.getSelectedItem() == ItemType.ROPE_ARROW) {
-      entity.getEvents().trigger("grappleRelease");
-    }
+    entity.getEvents().trigger("grappleRelease");
     entity.getEvents().trigger("chargeRelease", getAimDirection());
   }
 
@@ -122,8 +120,6 @@ public class ItemUseComponent extends Component {
       case STANDARD_ARROW, FIRE_ARROW, ICE_ARROW, ROPE_ARROW ->
           useArrow(selected, getAimDirection());
       case HEALTH_POTION -> useHealthPotion();
-      case Sword -> useMeleeWeapon(ItemType.Sword);
-      case Spear -> useMeleeWeapon(ItemType.Spear);
       case SpeedPotion -> useSpeedPotion();
       case PoisonPotion -> usePoisonPotion();
     };
@@ -156,20 +152,6 @@ public class ItemUseComponent extends Component {
     }
 
     entity.getEvents().trigger("itemUsed", arrowItem);
-    return true;
-  }
-
-  private boolean useMeleeWeapon(ItemType weaponType) {
-    if (!inventory.hasItem(weaponType)) {
-      logger.debug("No {} available to use", weaponType);
-      entity.getEvents().trigger("itemUseFailed", weaponType);
-      return false;
-    }
-
-    entity
-        .getEvents()
-        .trigger("meleeAttack", getAimDirection(), weaponType.getDamage(), weaponType.getRange());
-    entity.getEvents().trigger("itemUsed", weaponType);
     return true;
   }
 

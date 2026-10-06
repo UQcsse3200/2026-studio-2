@@ -21,15 +21,13 @@ public class MainMenuActions extends Component {
   public void create() {
     entity.getEvents().addListener("Play", this::onPlay);
     entity.getEvents().addListener("Continue", this::onContinue);
-    entity.getEvents().addListener("Minigames", this::onMinigames);
     entity.getEvents().addListener("Sandbox", this::onSandbox);
     entity.getEvents().addListener("Settings", this::onSettings);
     entity.getEvents().addListener("Exit", this::onExit);
   }
 
   /**
-   * Starts the intro cutscene, then enters the tutorial level. if cutscene is completed, proceeds
-   * to tutorial level
+   * Starts the intro cutscene, then enters level 1. if cutscene is completed, proceeds to level 1
    */
   private void onPlay() {
     logger.info("Play");
@@ -38,11 +36,6 @@ public class MainMenuActions extends Component {
 
   private void onContinue() {
     logger.info("Continue");
-  }
-
-  private void onMinigames() {
-    logger.info("Minigames");
-    game.setScreen(GdxGame.ScreenType.MINIGAME_SELECT);
   }
 
   /** Swaps to the Sandbox screen. */

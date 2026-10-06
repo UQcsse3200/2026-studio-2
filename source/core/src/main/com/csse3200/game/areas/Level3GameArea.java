@@ -8,9 +8,12 @@ import com.csse3200.game.areas.terrain.TerrainFactory;
 import com.csse3200.game.areas.terrain.configs.levelconfigs.Level3Config;
 import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.components.level.RisingWaterComponent;
+import com.csse3200.game.components.player.PlayerActions;
 import com.csse3200.game.entities.Entity;
+import com.csse3200.game.entities.factories.ItemFactory;
 import com.csse3200.game.entities.factories.ObstacleFactory;
-import com.csse3200.game.rendering.BackgroundRenderComponent;
+import com.csse3200.game.physics.BodyUserData;
+import com.csse3200.game.rendering.*;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import org.slf4j.Logger;
@@ -28,53 +31,50 @@ public class Level3GameArea extends GameArea {
 
   /** Textures used by the level 2 game area. */
   private static final String[] level3Textures = {
-    "images/scroll_bg.png",
+    "images/ui/scroll_bg.png",
     // Level 3 background
-    "images/Background-2.png",
-    "images/Platform_level-3.png",
-    "images/Platform-crumbling-level-3.png",
+    "images/terrain/Level_3/Platform_level-3.png",
+    "images/terrain/Level_3/Platform-crumbling-level-3.png",
+    "images/parallax/level_1_background.png",
+    "images/parallax/level_1_furthest.png",
+    "images/parallax/level_1_clouds.png",
+    "images/parallax/lightning_1.png",
+    "images/parallax/lightning_2.png",
+    "images/parallax/lightning_3.png",
+    "images/parallax/lightning_4.png",
+    "images/parallax/rain_small.png",
 
     // Level 3 ground tile
-    "images/tile-level3.png",
-    "images/water tile.png",
+    "images/terrain/Level_3/tile-level3.png",
+    "images/terrain/Level_3/water tile.png",
 
     // Transparent texture used for the physics-only floor
-    "images/transparent.png",
+    "images/ui/transparent.png",
 
     // Existing game textures
-    "images/black_roof.png",
-    "images/purple_heart.png",
-    "images/DevGridTile.png",
-    "images/Tile_2.png",
-    "images/box_boy_leaf.png",
-    "images/spike.png",
-    "images/tree.png",
-    "images/ghost_king.png",
-    "images/ghost_1.png",
-    "images/grass_1.png",
-    "images/grass_2.png",
-    "images/grass_3.png",
-    "images/hex_grass_1.png",
-    "images/hex_grass_2.png",
-    "images/hex_grass_3.png",
-    "images/iso_grass_1.png",
-    "images/iso_grass_2.png",
-    "images/iso_grass_3.png",
-    "images/spiky_ball.png",
-    "images/spiky_ball_trap.png",
-    "images/checkpoint_lit.png",
-    "images/checkpoint_unlit.png",
+    "images/terrain/Level_1/Level_1_Spike.png",
+    "images/traps/spiky_ball.png",
+    "images/traps/spiky_ball_trap.png",
+    ItemFactory.WHEEL_TOKEN_TEXTURE,
+
     // Enemy textures
-    "images/skeleton_warrior.png",
-    "images/skeleton_archer.png",
-    "images/arrow.png",
-    "images/rope_arrow.png",
-    "images/fire_arrow.png",
-    "images/cold_arrow.png"
+    "images/enemies/skeleton_warrior.png",
+    "images/enemies/skeleton_archer.png",
+    "images/projectiles/arrow.png",
+    "images/projectiles/rope_arrow.png",
+    "images/projectiles/fire_arrow.png",
+    "images/projectiles/ice_arrow.png",
+    "images/projectiles/necromancer_projectile.png",
+    "images/items/poison_potion.png",
   };
 
   private static final String[] level3TexturesAtlas = {
-    "images/terrain_iso_grass.atlas", "images/in_level_button.atlas"
+    "images/enemies/skeleton_archer.atlas",
+    "images/enemies/skeleton_warrior.atlas",
+    "images/enemies/necromancer.atlas",
+    "images/enemies/vulture.atlas",
+    "images/terrain/Level_1/Level_1_checkpoint.atlas",
+    "images/ui/in_level_button.atlas"
   };
 
   private static final String[] level3Sounds = {"sounds/Impact4.ogg"};
@@ -89,7 +89,7 @@ public class Level3GameArea extends GameArea {
   public Level3GameArea(TerrainFactory terrainFactory, CameraComponent camera, Entity player) {
     super(camera);
 
-    config = new Level3Config();
+    config = new Level3Config(player);
 
     this.terrainFactory = terrainFactory;
     this.camera = camera;
@@ -100,32 +100,185 @@ public class Level3GameArea extends GameArea {
   public void create() {
     loadAssets();
 
-    spawnBackground();
     spawnTerrain();
+    spawnBackground();
+
     spawnConfigEntities();
     spawnRisingWater();
+    spawnForeground();
+    activateWeather();
     player.setPosition(new Vector2(config.getPlayerSpawn().x, config.getPlayerSpawn().y));
   }
 
-  /** Creates the Level 2 background. */
-  private void spawnBackground() {
-    final Vector2 backgroundPos = new Vector2(-15f, -10f);
+  private void activateWeather() {
+    for (Entity entity : ServiceLocator.getEntityService().getEntities()) {
+      if (entity.getComponent(AnimationRenderComponent.class) != null) {
+        entity.getComponent(AnimationRenderComponent.class).toggleWeather();
+      }
+      if (entity.getComponent(BackgroundRenderComponent.class) != null) {
+        entity.getComponent(BackgroundRenderComponent.class).toggleWeather();
+      }
+      if (entity.getComponent(DynamicTextureRenderComponent.class) != null) {
+        entity.getComponent(DynamicTextureRenderComponent.class).toggleWeather();
+      }
+      if (entity.getComponent(RotatableAnimationRenderComponent.class) != null) {
+        entity.getComponent(RotatableAnimationRenderComponent.class).toggleWeather();
+      }
+      if (entity.getComponent(TextureRenderComponent.class) != null) {
+        entity.getComponent(TextureRenderComponent.class).toggleWeather();
+      }
+      if (entity.getComponent(TiledRenderComponent.class) != null) {
+        entity.getComponent(TiledRenderComponent.class).toggleWeather();
+      }
+      if (entity.getComponent(GrappleSideRenderComponent.class) != null) {
+        entity.getComponent(GrappleSideRenderComponent.class).toggleWeather();
+      }
+    }
+  }
 
-    BackgroundRenderComponent backgroundComponent =
-        new BackgroundRenderComponent(camera, backgroundPos, worldBounds);
+  private void spawnForeground() {
+    final Vector2 foregroundPos = new Vector2(-10f, -10f);
+    ForegroundRenderComponent foregroundComponent =
+        new ForegroundRenderComponent(camera, foregroundPos, worldBounds);
+    foregroundComponent.addLayer(
+        "images/parallax/rain_small.png", // 0.2,0.4 for xxl
+        new Vector2(0f, 0f),
+        0.1f,
+        0.2f,
+        new Vector2(0f, 0f),
+        new Vector2(1.5f, -2f),
+        RepeatMode.CHAOTIC,
+        1f,
+        0.4f,
+        false,
+        15,
+        -1);
+
+    // Create the background entity.
+    Entity foreground = new Entity().addComponent(foregroundComponent);
+
+    // Position the background in the game world.
+    foreground.setPosition(foregroundPos);
+
+    spawnEntity(foreground);
+  }
+
+  /** Creates the Level 3 background. */
+  private void spawnBackground() {
+    final Vector2 backgroundPos = new Vector2(-10f, -10f);
+    backgroundComponent = new BackgroundRenderComponent(camera, backgroundPos, worldBounds);
+
+    // Complete original background image
     backgroundComponent.addLayer(
-        "images/Background-2.png",
-        new Vector2(0.10f, 0f),
+        "images/parallax/level_1_background.png",
+        new Vector2(0.1f, 0f), // Parallax factor
+        30f,
+        13f,
+        new Vector2(0f, 4.25f), // Positional offset
+        new Vector2(0f, 0f), // Independent velocity
+        RepeatMode.NONE,
+        1f,
+        1f,
+        false,
+        0,
+        -1);
+
+    // Furthest clouds image
+    backgroundComponent.addLayer(
+        "images/parallax/level_1_clouds.png",
+        new Vector2(0.1f, 0f), // Parallax factor
+        30f,
+        4f,
+        new Vector2(-3f, 9f), // Positional offset
+        new Vector2(-0.06f, 0f), // Independent velocity
+        RepeatMode.HORIZONTAL,
+        1f,
+        1f,
+        false,
+        0,
+        -1);
+
+    // Second-furthest clouds image
+    backgroundComponent.addLayer(
+        "images/parallax/level_1_clouds.png",
+        new Vector2(0.1f, 0f), // Parallax factor
         30f,
         15f,
-        new Vector2(0f, 3.5f),
-        new Vector2(0f, 0f),
-        false,
+        new Vector2(25f, 7.5f), // Positional offset
+        new Vector2(0.12f, 0f), // Independent velocity
+        RepeatMode.HORIZONTAL,
         1f,
-        1f);
+        1f,
+        false,
+        0,
+        -1);
 
+    // Lightning image 1
+    backgroundComponent.addLayer(
+        "images/parallax/lightning_1.png",
+        new Vector2(0f, 0f),
+        2f,
+        7f,
+        new Vector2(15f, 9.5f),
+        new Vector2(0f, 0f),
+        RepeatMode.NONE,
+        1f,
+        0f,
+        true,
+        0,
+        0);
+
+    // Lightning image 2
+    backgroundComponent.addLayer(
+        "images/parallax/lightning_2.png",
+        new Vector2(0f, 0f),
+        2f,
+        7f,
+        new Vector2(6f, 9.5f),
+        new Vector2(0f, 0f),
+        RepeatMode.NONE,
+        1f,
+        0f,
+        true,
+        0,
+        1);
+
+    // Furthest mountains image
+    backgroundComponent.addLayer(
+        "images/parallax/level_1_furthest.png",
+        new Vector2(0.06f, 0f), // Parallax factor 0.12
+        30f,
+        7f,
+        new Vector2(5f, 6.5f), // Positional offset
+        new Vector2(0f, 0f), // Independent velocity
+        RepeatMode.HORIZONTAL,
+        1f,
+        0.6f,
+        false,
+        0,
+        -1);
+
+    // Second-furthest mountains image
+    backgroundComponent.addLayer(
+        "images/parallax/level_1_furthest.png",
+        new Vector2(0.11f, 0f), // Parallax factor 0.12
+        30f,
+        10f,
+        new Vector2(-5f, 5f), // Positional offset
+        new Vector2(0f, 0f), // Independent velocity
+        RepeatMode.HORIZONTAL,
+        1f,
+        1f,
+        false,
+        0,
+        -1);
+
+    // Create the background entity.
     Entity background = new Entity().addComponent(backgroundComponent);
+
+    // Position the background in the game world.
     background.setPosition(backgroundPos);
+
     spawnEntity(background);
   }
 
@@ -135,7 +288,8 @@ public class Level3GameArea extends GameArea {
     spawnEntity(new Entity().addComponent(terrain));
     float tileSize = terrain.getTileSize();
     GridPoint2 tileBounds = terrain.getMapBounds(0);
-    worldBounds = new Vector2(tileBounds.x * tileSize, tileBounds.y * tileSize);
+    // worldBounds = new Vector2(tileBounds.x * tileSize, tileBounds.y * tileSize);
+    worldBounds = new Vector2(30f, 100f);
   }
 
   private void spawnRisingWater() {
@@ -158,6 +312,14 @@ public class Level3GameArea extends GameArea {
   }
 
   private void waterCollided(Fixture me, Fixture other) {
+    // Only emit signals if the other colliding body is the player
+    BodyUserData data = (BodyUserData) other.getBody().getUserData();
+    if (data == null
+        || data.entity == null
+        || data.entity.getComponent(PlayerActions.class) == null) {
+      return;
+    }
+
     water
         .getEvents()
         .trigger("setHeight", water.getComponent(RisingWaterComponent.class).getStoredHeight());
@@ -203,6 +365,11 @@ public class Level3GameArea extends GameArea {
     resourceService.unloadAssets(level3TexturesAtlas);
     resourceService.unloadAssets(level3Sounds);
     resourceService.unloadAssets(level3Music);
+  }
+
+  @Override
+  public void toggleLevelMap() {
+    toggleMap(worldBounds, camera, backgroundComponent, "level3");
   }
 
   /** Dispose of the game area. */

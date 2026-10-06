@@ -4,14 +4,12 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.utils.Array;
 import com.csse3200.game.components.player.PlayerActions;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.rendering.TextureRenderComponent;
-import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -25,6 +23,7 @@ public class CheckpointComponentTest {
   private Entity checkpointEntity;
   CheckpointComponent checkpointComponent;
   TextureRenderComponent textureRenderComponent;
+  EntityService entityService;
 
   @BeforeEach
   void beforeEach() {
@@ -34,18 +33,13 @@ public class CheckpointComponentTest {
     checkpointEntity = new Entity();
     checkpointEntity.addComponent(checkpointComponent);
     checkpointEntity.addComponent(textureRenderComponent);
+
     player = new Entity();
     player.addComponent(new PlayerActions());
     entities.add(player);
-    EntityService entityService = mock(EntityService.class);
+    entityService = mock(EntityService.class);
     when(entityService.getEntities()).thenReturn(entities);
     ServiceLocator.registerEntityService(entityService);
-
-    ResourceService resourceService = mock(ResourceService.class);
-    Texture mockTexture = mock(Texture.class);
-    when(resourceService.getAsset("images/checkpoint_lit.png", Texture.class))
-        .thenReturn(mockTexture);
-    ServiceLocator.registerResourceService(resourceService);
   }
 
   @Test
@@ -103,5 +97,27 @@ public class CheckpointComponentTest {
     player.setPosition(11, 9);
     checkpointComponent.update();
     assertFalse(checkpointComponent.isActive());
+  }
+
+  @Test
+  void shouldNotActivatedCollectedCheckpoint() {
+    checkpointComponent = new CheckpointComponent(true, new GridPoint2(0, 0));
+    assertTrue(checkpointComponent.isActive());
+    checkpointComponent.activate();
+    assertTrue(checkpointComponent.isActive());
+
+    // ensure activate method doesn't attempt to spawn another lit checkpoint entity
+    // ensures early return
+    verify(entityService, never()).register(any(Entity.class));
+  }
+
+  @Test
+  void shouldRepeatPlayerFindingIfNoPlayerFound() {
+    entityService.scheduleForDisposal(player);
+
+    checkpointComponent.update();
+    verify(entityService, atLeastOnce()).getEntities();
+    checkpointComponent.update();
+    verify(entityService, atLeastOnce()).getEntities();
   }
 }

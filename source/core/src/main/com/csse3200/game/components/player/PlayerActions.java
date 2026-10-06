@@ -14,7 +14,7 @@ import com.csse3200.game.services.ServiceLocator;
 
 /** Action component for interacting with the player */
 public class PlayerActions extends Component {
-  private static final float JUMP_FORCE = 22f;
+  private static final float JUMP_FORCE = 23f;
   private static final Vector2 MAX_SPEED = new Vector2(5f, 5f); // Metres per second
   private static final float SPRINT_MULTIPLIER = 1.75f;
   private static final float ROPE_JUMP_MULTIPLIER = 0.7f;
@@ -37,7 +37,6 @@ public class PlayerActions extends Component {
   private boolean moving = false;
   private boolean isGrounded = false;
   private boolean isSprinting = false;
-  private boolean paused = false;
   private boolean isDashing = false;
   private float dashTimeRemaining = 0f;
   private float dashCooldownRemaining = 0f;
@@ -54,6 +53,15 @@ public class PlayerActions extends Component {
   private float decelerationTraction = 1f;
   private float traction = 1f;
 
+  /**
+   * The direction the player is currently facing.
+   *
+   * @return 1 if facing right, -1 if facing left
+   */
+  public int getFacingDirection() {
+    return facingDirection;
+  }
+
   @Override
   public void create() {
     physicsComponent = entity.getComponent(PhysicsComponent.class);
@@ -66,7 +74,6 @@ public class PlayerActions extends Component {
     entity.getEvents().addListener("dash", this::dash);
     entity.getEvents().addListener("hurt", this::onHurtInterruptDash);
     entity.getEvents().addListener("updateLedgeDrop", this::setLedgeDropping);
-    entity.getEvents().addListener("togglePaused", this::togglePause);
     entity.getEvents().addListener("speedPotionUsed", this::applySpeedPotion);
     entity.getEvents().addListener("death", this::die);
   }
@@ -91,25 +98,9 @@ public class PlayerActions extends Component {
       dashCooldownRemaining -= ServiceLocator.getTimeSource().getDeltaTime();
     }
 
-    if (sprintStopPending) {
-      sprintStopGraceRemaining -= ServiceLocator.getTimeSource().getDeltaTime();
-      if (sprintStopGraceRemaining <= 0f) {
-        confirmStopSprinting();
-      }
-    }
-
-    if (isDashing) {
-      dashTimeRemaining -= ServiceLocator.getTimeSource().getDeltaTime();
-      if (dashTimeRemaining <= 0f) {
-        endDash();
-        dashRecoveryRemaining = DASH_RECOVERY;
-      } else {
-        // Re-assert the burst every frame so collisions and stray impulses can't eat it.
-        // Vertical velocity is held at zero to match the zero-gravity dash.
-        Body body = physicsComponent.getBody();
-        body.setLinearVelocity(dashDirection * DASH_SPEED, 0f);
-        return;
-      }
+    updateSprintRelease();
+    if (updateDash()) {
+      return;
     }
 
     if (dashRecoveryRemaining > 0f) {
@@ -134,6 +125,33 @@ public class PlayerActions extends Component {
     if (extraSpeedMultiplier != 1f && time != null && time.getTime() >= speedPotionEndTimeMs) {
       extraSpeedMultiplier = 1f;
     }
+  }
+
+  private void updateSprintRelease() {
+    if (sprintStopPending) {
+      sprintStopGraceRemaining -= ServiceLocator.getTimeSource().getDeltaTime();
+      if (sprintStopGraceRemaining <= 0f) {
+        confirmStopSprinting();
+      }
+    }
+  }
+
+  /**
+   * @return whether the active dash consumes this frame's movement.
+   */
+  private boolean updateDash() {
+    if (!isDashing) {
+      return false;
+    }
+    dashTimeRemaining -= ServiceLocator.getTimeSource().getDeltaTime();
+    if (dashTimeRemaining <= 0f) {
+      endDash();
+      dashRecoveryRemaining = DASH_RECOVERY;
+      return false;
+    }
+    // Re-assert the burst so collisions cannot consume it; keep vertical drift at zero.
+    physicsComponent.getBody().setLinearVelocity(dashDirection * DASH_SPEED, 0f);
+    return true;
   }
 
   private boolean isGrappling() {
@@ -170,8 +188,10 @@ public class PlayerActions extends Component {
 
     // Reduced control while recovering from a dash; otherwise full control on the ground and
     // weak in the air so swing momentum isn't wiped on landing.
-    float control =
-        dashRecoveryRemaining > 0f ? DASH_RECOVERY_CONTROL : (isGrounded ? traction : AIR_CONTROL);
+    float control = isGrounded ? traction : AIR_CONTROL;
+    if (dashRecoveryRemaining > 0f) {
+      control = DASH_RECOVERY_CONTROL;
+    }
 
     // impulse = (desiredVel - currentVel) * mass
     float impulseX = (desiredVelocityX - velocity.x) * body.getMass() * control;
@@ -211,10 +231,6 @@ public class PlayerActions extends Component {
     return grounded;
   }
 
-  void togglePause() {
-    paused = !paused;
-  }
-
   /** Stops the player permanently reacting to input once they've died. */
   void die() {
     dead = true;
@@ -233,16 +249,12 @@ public class PlayerActions extends Component {
     if (dead) {
       return;
     }
-    if (paused) {
-      stopWalking();
-    } else {
-      traction = 1f;
-      this.walkDirection = direction;
-      if (direction.x != 0) {
-        facingDirection = direction.x > 0 ? 1 : -1;
-      }
-      moving = true;
+    traction = 1f;
+    this.walkDirection = direction;
+    if (direction.x != 0) {
+      facingDirection = direction.x > 0 ? 1 : -1;
     }
+    moving = true;
   }
 
   /** Stops the player from walking. */
@@ -330,7 +342,7 @@ public class PlayerActions extends Component {
   }
 
   void dash() {
-    if (isDashing || dashCooldownRemaining > 0f || paused) {
+    if (isDashing || dashCooldownRemaining > 0f) {
       return;
     }
     if (isGrappling()) {

@@ -125,7 +125,7 @@ class EntityTest {
   }
 
   @Test
-  void shouldDisposeComponents() {
+  void shouldDisposeComponentsOnlyOnce() {
     Entity entity = new Entity();
     TestComponent1 component = spy(TestComponent1.class);
     entity.addComponent(component);
@@ -135,6 +135,8 @@ class EntityTest {
     ServiceLocator.registerEntityService(entityService);
 
     entity.dispose();
+    entity
+        .dispose(); // Dead enemies can still be referenced by their game area during a transition.
     verify(component).dispose();
     verify(entityService).unregister(entity);
   }

@@ -276,7 +276,6 @@ public class AnimationRenderComponent extends RenderComponent {
     }
     // Color prevColor = batch.getColor().cpy();
     float light = getDarkness();
-    batch.setColor(light, light, light, 1f);
     batch.draw(region.getTexture(), drawX, drawY, width, height, u, v, u2, v2);
     // batch.setColor(prevColor);
     batch.setColor(Color.WHITE);
@@ -287,6 +286,8 @@ public class AnimationRenderComponent extends RenderComponent {
 
   @Override
   public void dispose() {
+    // Atlases belong to ResourceService and are shared by all entities of the same type.
+    // Disposing one enemy must not invalidate the textures used by surviving/new enemies.
     super.dispose();
   }
 }

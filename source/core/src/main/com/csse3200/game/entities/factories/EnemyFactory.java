@@ -1,5 +1,6 @@
 package com.csse3200.game.entities.factories;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
@@ -14,6 +15,8 @@ import com.csse3200.game.components.PoisonStatsComponent;
 import com.csse3200.game.components.SlowStatsComponent;
 import com.csse3200.game.components.TouchAttackComponent;
 import com.csse3200.game.components.npc.EnemyAnimationController;
+import com.csse3200.game.components.lighting.PointLightComponent;
+import com.csse3200.game.components.npc.SkeletonAnimationController;
 import com.csse3200.game.components.tasks.ChaseTask;
 import com.csse3200.game.components.tasks.DelayedAttackTask;
 import com.csse3200.game.components.tasks.FlyingChaseTask;
@@ -27,6 +30,7 @@ import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.EnemyConfig;
 import com.csse3200.game.entities.configs.EnemyConfigs;
 import com.csse3200.game.files.FileLoader;
+import com.csse3200.game.lighting.LightingDefaults;
 import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.physics.PhysicsUtils;
 import com.csse3200.game.physics.components.ColliderComponent;
@@ -35,6 +39,8 @@ import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.physics.components.PhysicsMovementComponent;
 import com.csse3200.game.rendering.AnimationRenderComponent;
 import com.csse3200.game.rendering.EnemyHealthRenderComponent;
+import com.csse3200.game.rendering.ParticleEffectsRenderingComponent;
+import com.csse3200.game.rendering.StatusEffectRenderComponent;
 import com.csse3200.game.rendering.TextureRenderComponent;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.List;
@@ -74,7 +80,7 @@ public class EnemyFactory {
     AnimationRenderComponent animator =
         new AnimationRenderComponent(
             ServiceLocator.getResourceService()
-                .getAsset("images/skeleton_warrior.atlas", TextureAtlas.class));
+                .getAsset("images/enemies/skeleton_warrior.atlas", TextureAtlas.class));
     animator.addAnimation("walk", 0.15f, Animation.PlayMode.LOOP);
     animator.addAnimation("idle", 0.15f, Animation.PlayMode.LOOP);
 
@@ -102,7 +108,7 @@ public class EnemyFactory {
     AnimationRenderComponent animator =
         new AnimationRenderComponent(
             ServiceLocator.getResourceService()
-                .getAsset("images/skeleton_archer.atlas", TextureAtlas.class));
+                .getAsset("images/enemies/skeleton_archer.atlas", TextureAtlas.class));
     animator.addAnimation("walk", 0.15f, Animation.PlayMode.LOOP);
     animator.addAnimation("idle", 0.15f, Animation.PlayMode.LOOP);
 
@@ -124,7 +130,7 @@ public class EnemyFactory {
    */
   public static Entity createPassiveSkeletonWarrior() {
     Entity skeletonWarrior = createPassiveEnemy(configs.skeletonWarrior);
-    skeletonWarrior.addComponent(new TextureRenderComponent("images/skeleton_warrior.png"));
+    skeletonWarrior.addComponent(new TextureRenderComponent("images/enemies/skeleton_warrior.png"));
     skeletonWarrior.getComponent(TextureRenderComponent.class).scaleEntity();
     PhysicsUtils.setScaledCollider(skeletonWarrior, 1.2f, 0.7f);
     return skeletonWarrior;
@@ -138,7 +144,7 @@ public class EnemyFactory {
    */
   public static Entity createPassiveSkeletonArcher() {
     Entity skeletonArcher = createPassiveEnemy(configs.skeletonArcher);
-    skeletonArcher.addComponent(new TextureRenderComponent("images/skeleton_archer.png"));
+    skeletonArcher.addComponent(new TextureRenderComponent("images/enemies/skeleton_archer.png"));
     skeletonArcher.getComponent(TextureRenderComponent.class).scaleEntity();
     PhysicsUtils.setScaledCollider(skeletonArcher, 1.2f, 0.7f);
     return skeletonArcher;
@@ -157,7 +163,7 @@ public class EnemyFactory {
     AnimationRenderComponent animator =
         new AnimationRenderComponent(
             ServiceLocator.getResourceService()
-                .getAsset("images/vulture.atlas", TextureAtlas.class));
+                .getAsset("images/enemies/vulture.atlas", TextureAtlas.class));
     animator.addAnimation("walk", 0.15f, Animation.PlayMode.LOOP);
     animator.addAnimation("idle", 0.15f, Animation.PlayMode.LOOP);
 
@@ -185,7 +191,7 @@ public class EnemyFactory {
     AnimationRenderComponent animator =
         new AnimationRenderComponent(
             ServiceLocator.getResourceService()
-                .getAsset("images/necromancer.atlas", TextureAtlas.class));
+                .getAsset("images/enemies/necromancer.atlas", TextureAtlas.class));
     animator.addAnimation("walk", 0.15f, Animation.PlayMode.LOOP);
     animator.addAnimation("idle", 0.15f, Animation.PlayMode.LOOP);
 
@@ -316,9 +322,18 @@ public class EnemyFactory {
             .addComponent(new PoisonStatsComponent())
             .addComponent(new BurnStatsComponent())
             .addComponent(new SlowStatsComponent())
+            .addComponent(
+                new PointLightComponent(
+                    ServiceLocator.getLightingService().getEngine().getRayHandler(),
+                    LightingDefaults.RAYS,
+                    Color.CLEAR,
+                    LightingDefaults.DIST))
+            .addComponent(new ParticleEffectsRenderingComponent())
             .addComponent(new EnemyItemDropComponent(config.itemDrops))
             .addComponent(new EnemyHealthRenderComponent())
-            .addComponent(aiComponent);
+            .addComponent(aiComponent)
+            .addComponent(new SlowStatsComponent())
+            .addComponent(new StatusEffectRenderComponent());
 
     PhysicsUtils.setScaledCollider(enemy, 0.9f, 0.4f); // 0.4f seems small: any reason?
 
@@ -383,7 +398,8 @@ public class EnemyFactory {
         .addComponent(new EnemyDeathComponent())
         .addComponent(new PoisonStatsComponent())
         .addComponent(new BurnStatsComponent())
-        .addComponent(new SlowStatsComponent());
+        .addComponent(new SlowStatsComponent())
+        .addComponent(new ParticleEffectsRenderingComponent());
   }
 
   private EnemyFactory() {

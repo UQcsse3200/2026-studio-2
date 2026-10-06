@@ -11,10 +11,12 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.input.InputComponent;
 import com.csse3200.game.physics.components.PhysicsComponent;
+import com.csse3200.game.services.ServiceLocator;
 
 /** Input handler for player keyboard and mouse controls. */
 public class KeyboardPlayerInputComponent extends InputComponent {
   private final Vector2 walkDirection = Vector2.Zero.cpy();
+  private static final String SELECT_QUICK_SLOT = "selectQuickSlot";
   private static final int SPEED = 1;
   private static final int LEFT = 0;
   private static final int RIGHT = 1;
@@ -52,6 +54,13 @@ public class KeyboardPlayerInputComponent extends InputComponent {
   }
 
   /**
+   * @return the camera used for aiming, or null if none has been set yet
+   */
+  public CameraComponent getCameraComponent() {
+    return cameraComponent;
+  }
+
+  /**
    * Triggers player events on specific keycodes.
    *
    * @return whether the input was processed
@@ -68,54 +77,61 @@ public class KeyboardPlayerInputComponent extends InputComponent {
     switch (keycode) {
       // Hotbar number keys
       case Keys.NUM_1:
-        entity.getEvents().trigger("selectQuickSlot", 0);
+        entity.getEvents().trigger(SELECT_QUICK_SLOT, 0);
         return true;
       case Keys.NUM_2:
-        entity.getEvents().trigger("selectQuickSlot", 1);
+        entity.getEvents().trigger(SELECT_QUICK_SLOT, 1);
         return true;
       case Keys.NUM_3:
-        entity.getEvents().trigger("selectQuickSlot", 2);
+        entity.getEvents().trigger(SELECT_QUICK_SLOT, 2);
         return true;
       case Keys.NUM_4:
-        entity.getEvents().trigger("selectQuickSlot", 3);
+        entity.getEvents().trigger(SELECT_QUICK_SLOT, 3);
         return true;
       case Keys.NUM_5:
-        entity.getEvents().trigger("selectQuickSlot", 4);
+        entity.getEvents().trigger(SELECT_QUICK_SLOT, 4);
         return true;
       case Keys.NUM_6:
-        entity.getEvents().trigger("selectQuickSlot", 5);
+        entity.getEvents().trigger(SELECT_QUICK_SLOT, 5);
         return true;
       case Keys.NUM_7:
-        entity.getEvents().trigger("selectQuickSlot", 6);
+        entity.getEvents().trigger(SELECT_QUICK_SLOT, 6);
         return true;
       case Keys.NUM_8:
-        entity.getEvents().trigger("selectQuickSlot", 7);
+        entity.getEvents().trigger(SELECT_QUICK_SLOT, 7);
         return true;
       case Keys.NUM_9:
-        entity.getEvents().trigger("selectQuickSlot", 8);
+        entity.getEvents().trigger(SELECT_QUICK_SLOT, 8);
         return true;
       case Keys.W:
         entity.getEvents().trigger("grappleClimbStart");
         keysHeld[UP] = true;
-        triggerWalkEvent();
+        if (!ServiceLocator.getEntityService().getPaused()) {
+          triggerWalkEvent();
+        }
         return true;
-      case Keys.A:
-      case Keys.LEFT:
+      case Keys.A, Keys.LEFT:
         keysHeld[LEFT] = true;
-        triggerWalkEvent();
+        if (!ServiceLocator.getEntityService().getPaused()) {
+          triggerWalkEvent();
+        }
         return true;
-      case Keys.D:
-      case Keys.RIGHT:
+      case Keys.D, Keys.RIGHT:
         keysHeld[RIGHT] = true;
-        triggerWalkEvent();
+        if (!ServiceLocator.getEntityService().getPaused()) {
+          triggerWalkEvent();
+        }
         return true;
       case Keys.SPACE:
-        triggerJumpEvent();
+        if (!ServiceLocator.getEntityService().getPaused()) {
+          triggerJumpEvent();
+        }
         return true;
-      case Keys.SHIFT_LEFT:
-      case Keys.SHIFT_RIGHT:
-        sprintHeld = true;
-        triggerSprintEvent();
+      case Keys.SHIFT_LEFT, Keys.SHIFT_RIGHT:
+        if (!ServiceLocator.getEntityService().getPaused()) {
+          sprintHeld = true;
+          triggerSprintEvent();
+        }
         return true;
       case Keys.E:
         triggerAttackOrItemUse();
@@ -142,13 +158,21 @@ public class KeyboardPlayerInputComponent extends InputComponent {
         entity.getEvents().trigger("grappleDescendStart");
         entity.getEvents().trigger("updateLedgeDrop", true);
         keysHeld[DOWN] = true;
-        triggerWalkEvent();
+        if (!ServiceLocator.getEntityService().getPaused()) {
+          triggerWalkEvent();
+        }
         return true;
       case Keys.TAB:
         entity.getEvents().trigger("openArrowWheel");
         return true;
       case Keys.ESCAPE:
-        entity.getEvents().trigger("togglePause");
+        if (!ServiceLocator.getEntityService().getSettingsOpen()) {
+          entity.getEvents().trigger("togglePause");
+        }
+        unpause();
+        return true;
+      case Keys.M:
+        entity.getEvents().trigger("toggleMap");
         return true;
       default:
         return false;
@@ -167,13 +191,11 @@ public class KeyboardPlayerInputComponent extends InputComponent {
       return false;
     }
     switch (keycode) {
-      case Keys.A:
-      case Keys.LEFT:
+      case Keys.A, Keys.LEFT:
         keysHeld[LEFT] = false;
         triggerWalkEvent();
         return true;
-      case Keys.D:
-      case Keys.RIGHT:
+      case Keys.D, Keys.RIGHT:
         keysHeld[RIGHT] = false;
         triggerWalkEvent();
         return true;
@@ -195,8 +217,7 @@ public class KeyboardPlayerInputComponent extends InputComponent {
         keysHeld[DOWN] = false;
         triggerWalkEvent();
         return true;
-      case Keys.SHIFT_LEFT:
-      case Keys.SHIFT_RIGHT:
+      case Keys.SHIFT_LEFT, Keys.SHIFT_RIGHT:
         sprintHeld = false;
         triggerSprintEvent();
         return true;
@@ -229,9 +250,6 @@ public class KeyboardPlayerInputComponent extends InputComponent {
     }
     if (dead || isArrowWheelOpen()) {
       return false;
-    }
-    if (button == Buttons.LEFT) {
-      return triggerAimedEvent("melee", screenX, screenY);
     }
     if (button == Buttons.RIGHT) {
       rightMouseHeld = true;
@@ -268,11 +286,6 @@ public class KeyboardPlayerInputComponent extends InputComponent {
       return isShopOpen();
     }
 
-    if (button == Buttons.LEFT) {
-      entity.getEvents().trigger("stopMelee");
-      return true;
-    }
-
     if (button == Buttons.RIGHT) {
       // Clear even if the shop is open. The overlay may still deliver this event, and swallowing
       // it without cancelling leaves the bow stuck charging after the shop closes.
@@ -286,15 +299,13 @@ public class KeyboardPlayerInputComponent extends InputComponent {
   /** Reports the pointer's offset from the centre of the screen, where the wheel is drawn. */
   @Override
   public boolean mouseMoved(int screenX, int screenY) {
-    if (Gdx.graphics == null) {
-      return false;
+    if (Gdx.graphics != null) {
+      float centreX = Gdx.graphics.getWidth() / 2f;
+      float centreY = Gdx.graphics.getHeight() / 2f;
+      // Screen y grows downwards, so flip it to match the wheel's y-up directions.
+      Vector2 offsetFromCentre = new Vector2(screenX - centreX, centreY - screenY);
+      entity.getEvents().trigger("arrowWheelPointerMoved", offsetFromCentre);
     }
-
-    float centreX = Gdx.graphics.getWidth() / 2f;
-    float centreY = Gdx.graphics.getHeight() / 2f;
-    // Screen y grows downwards, so flip it to match the wheel's y-up directions.
-    Vector2 offsetFromCentre = new Vector2(screenX - centreX, centreY - screenY);
-    entity.getEvents().trigger("arrowWheelPointerMoved", offsetFromCentre);
 
     // Reported, not consumed, so other handlers still see the movement.
     return false;
@@ -386,8 +397,14 @@ public class KeyboardPlayerInputComponent extends InputComponent {
       return null;
     }
     Camera camera = cameraComponent.getCamera();
-    Vector3 worldPosition = camera.unproject(new Vector3(screenX, screenY, 0f));
+    Vector3 screenPosition = screenPosition(screenX, screenY);
+    Vector3 worldPosition = camera.unproject(screenPosition);
     return new Vector2(worldPosition.x, worldPosition.y).sub(entity.getCenterPosition());
+  }
+
+  /** Converts pixel coordinates to the floating-point vector required by the camera. */
+  private static Vector3 screenPosition(double x, double y) {
+    return new Vector3((float) x, (float) y, 0f);
   }
 
   private void triggerWalkEvent() {

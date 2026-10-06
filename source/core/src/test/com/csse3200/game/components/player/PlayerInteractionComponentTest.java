@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.when;
 
 import com.badlogic.gdx.graphics.Texture;
@@ -16,11 +17,15 @@ import com.csse3200.game.components.item.GoldPickupComponent;
 import com.csse3200.game.components.item.Item;
 import com.csse3200.game.components.item.ItemComponent;
 import com.csse3200.game.components.item.ItemType;
+import com.csse3200.game.components.item.WheelTokenPickupComponent;
 import com.csse3200.game.components.item.weapons.bow.arrow.Arrow;
+import com.csse3200.game.components.lighting.PointLightComponent;
 import com.csse3200.game.components.npc.ShopNpcComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.extensions.GameExtension;
+import com.csse3200.game.lighting.LightingEngine;
+import com.csse3200.game.lighting.LightingService;
 import com.csse3200.game.physics.PhysicsService;
 import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.physics.components.PhysicsComponent;
@@ -30,6 +35,7 @@ import com.csse3200.game.services.ServiceLocator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.MockedConstruction;
 
 @ExtendWith(GameExtension.class)
 class PlayerInteractionComponentTest {
@@ -38,6 +44,12 @@ class PlayerInteractionComponentTest {
     ServiceLocator.registerPhysicsService(new PhysicsService());
     ServiceLocator.registerEntityService(new EntityService());
     ServiceLocator.registerRenderService(new RenderService());
+
+    LightingEngine lightingEngine = mock(LightingEngine.class);
+    when(lightingEngine.getRayHandler()).thenReturn(mock(box2dLight.RayHandler.class));
+    LightingService lightingService = mock(LightingService.class);
+    when(lightingService.getEngine()).thenReturn(lightingEngine);
+    ServiceLocator.registerLightingService(lightingService);
 
     // Dropping an item spawns a world entity via ItemFactory, which loads a texture. Mock the
     // resource service so drop tests don't depend on real asset loading in a headless test.
@@ -144,7 +156,10 @@ class PlayerInteractionComponentTest {
     InventoryComponent inventory = player.getComponent(InventoryComponent.class);
     inventory.addItem(ItemType.STANDARD_ARROW, 4);
 
-    assertTrue(player.getComponent(PlayerInteractionComponent.class).dropItem());
+    try (MockedConstruction<PointLightComponent> ignored =
+        mockConstruction(PointLightComponent.class)) {
+      assertTrue(player.getComponent(PlayerInteractionComponent.class).dropItem());
+    }
     assertEquals(0, inventory.getItemCount(ItemType.STANDARD_ARROW));
   }
 
@@ -154,7 +169,10 @@ class PlayerInteractionComponentTest {
     InventoryComponent inventory = player.getComponent(InventoryComponent.class);
     inventory.addItem(ItemType.ROPE_ARROW, 3);
 
-    assertTrue(player.getComponent(PlayerInteractionComponent.class).dropItem());
+    try (MockedConstruction<PointLightComponent> ignored =
+        mockConstruction(PointLightComponent.class)) {
+      assertTrue(player.getComponent(PlayerInteractionComponent.class).dropItem());
+    }
     assertEquals(0, inventory.getItemCount(ItemType.ROPE_ARROW));
 
     int droppedQuantity = 0;
@@ -318,6 +336,21 @@ class PlayerInteractionComponentTest {
   }
 
   @Test
+  void shouldPickUpWheelTokenAndAskForTheWheel() {
+    Entity player = createPlayer(new InventoryComponent(0));
+    spawnWheelToken(new Vector2(0.5f, 0f));
+
+    boolean[] picked = {false};
+    player.getEvents().addListener("wheelTokenPickedUp", () -> picked[0] = true);
+
+    PlayerInteractionComponent interaction = player.getComponent(PlayerInteractionComponent.class);
+
+    assertTrue(interaction.interact());
+    assertTrue(picked[0]);
+    assertNull(interaction.findNearestWheelToken());
+  }
+
+  @Test
   void shouldPreferShopNpcOverGold() {
     Entity player = createPlayer(new InventoryComponent(0));
     spawnGold(new Vector2(0.5f, 0f));
@@ -371,5 +404,16 @@ class PlayerInteractionComponentTest {
     gold.setPosition(position);
     ServiceLocator.getEntityService().register(gold);
     return gold;
+  }
+
+  Entity spawnWheelToken(Vector2 position) {
+    Entity token =
+        new Entity()
+            .addComponent(new PhysicsComponent())
+            .addComponent(new HitboxComponent())
+            .addComponent(new WheelTokenPickupComponent());
+    token.setPosition(position);
+    ServiceLocator.getEntityService().register(token);
+    return token;
   }
 }

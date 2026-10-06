@@ -33,7 +33,6 @@ public class TiledRenderComponent extends RenderComponent {
 
     Color prevColor = batch.getColor().cpy();
     float light = getDarkness();
-    batch.setColor(light, light, light, 1f);
     batch.draw(textureRegion, position.x, position.y, scale.x, scale.y);
     batch.setColor(prevColor);
   }

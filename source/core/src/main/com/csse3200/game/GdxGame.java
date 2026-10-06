@@ -41,11 +41,22 @@ public class GdxGame extends Game {
     logger.info("Creating game");
     loadSettings();
 
-    // Sets background to light yellow
-    Gdx.gl.glClearColor(248f / 255f, 249 / 255f, 178 / 255f, 1);
-
+    applyDefaultClearColor();
+ 
     // setScreen(ScreenType.LEVEL_BOSS_GAME);
     setScreen(ScreenType.MAIN_MENU);
+  }
+  
+  /**
+   * Restores the default light-yellow clear colour used behind transparent terrain (e.g. Sandbox).
+   *
+   * <p>Cutscenes set a black clear colour while they are on screen; this puts the game colour back.
+   */
+  public static void applyDefaultClearColor() {
+    if (Gdx.gl == null) {
+      return;
+    }
+    Gdx.gl.glClearColor(248f / 255f, 249 / 255f, 178 / 255f, 1);
   }
 
   /** Loads the game's settings. */
@@ -94,14 +105,14 @@ public class GdxGame extends Game {
     setScreen(new CutsceneScreen(this, cutscene, destination));
   }
 
-  /** Starts the initial cutscene once per game session, then falls back to the tutorial level. */
+  /** Starts the initial cutscene once per game session, then falls back to level 1. */
   public void startInitialCutscene() {
     if (introStarted) {
       transitionTo(ScreenType.LEVEL_1_GAME);
       return;
     }
 
-    // logging for if the cutscene is not available, and fallback to tutorial level
+    // logging for if the cutscene is not available, and fallback to level 1
     CutsceneLoader.Result result = new CutsceneLoader().load("cutscene1");
     if (!result.isSuccess()) {
       logger.debug("Initial cutscene unavailable: {}", result.getError());
