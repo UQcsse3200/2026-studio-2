@@ -32,9 +32,9 @@ public class CyclopsMinigameCommand implements Command {
               game.savePlayerState(player);
 
               CutsceneLoader loader = new CutsceneLoader();
-              CutsceneLoader.Result result = loader.load("cutscene3");
+              CutsceneLoader.Result result = loader.load("cutscene2");
               if (!result.isSuccess()) {
-                logger.debug("Could not start cutscene '{}': {}", "cutscene3", result.getError());
+                logger.debug("Could not start cutscene '{}': {}", "cutscene2", result.getError());
               } else {
                 game.startCutscene(result.getCutscene(), GdxGame.ScreenType.CYCLOPS_MINIGAME);
               }
