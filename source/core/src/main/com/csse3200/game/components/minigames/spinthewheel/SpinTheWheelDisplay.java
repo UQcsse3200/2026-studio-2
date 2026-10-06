@@ -23,6 +23,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Scaling;
+import com.csse3200.game.components.GameVolume;
 import com.csse3200.game.components.inventory.InventoryComponent;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
@@ -456,7 +457,7 @@ public class SpinTheWheelDisplay extends UIComponent {
     if (sound == null) {
       return NOT_PLAYING;
     }
-    return sound.play();
+    return sound.play(GameVolume.scale(1f));
   }
 
   /** Silences the spin */

@@ -12,6 +12,7 @@ import com.csse3200.game.areas.terrain.configs.PlatformConfig;
 import com.csse3200.game.areas.terrain.configs.levelconfigs.Level1Config;
 import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.components.Component;
+import com.csse3200.game.components.GameVolume;
 import com.csse3200.game.components.gamearea.GameAreaDisplay;
 import com.csse3200.game.components.level.DesertHazardRecoveryComponent;
 import com.csse3200.game.components.level.RoomDoorComponent;
@@ -517,7 +518,7 @@ public class Level1GameArea extends GameArea {
     Music music = ServiceLocator.getResourceService().getAsset(backgroundMusic, Music.class);
 
     music.setLooping(true);
-    music.setVolume(0.3f);
+    GameVolume.setMusicVolume(music, 0.3f);
     music.play();
   }
 

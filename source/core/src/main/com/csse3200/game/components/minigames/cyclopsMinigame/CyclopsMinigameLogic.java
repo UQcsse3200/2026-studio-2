@@ -7,6 +7,7 @@ import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.utils.Timer;
 import com.csse3200.game.areas.terrain.TerrainComponent;
 import com.csse3200.game.components.Component;
+import com.csse3200.game.components.GameVolume;
 import com.csse3200.game.components.player.PlayerAnimationController;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.events.EventHandler;
@@ -190,10 +191,10 @@ public class CyclopsMinigameLogic extends Component {
 
       if (timingBarLogic.checkHit()) {
         hitSoundID = hitSound.play();
-        hitSound.setVolume(hitSoundID, hitSoundVolume);
+        hitSound.setVolume(hitSoundID, GameVolume.scale(hitSoundVolume));
       } else {
         missSoundID = missSound.play();
-        missSound.setVolume(missSoundID, missSoundVolume);
+        missSound.setVolume(missSoundID, GameVolume.scale(missSoundVolume));
       }
 
       scheduleTimingMinigameHide();
@@ -219,7 +220,7 @@ public class CyclopsMinigameLogic extends Component {
   private void playWalkingSound() {
     walkingSoundID = walkingSound.play();
     walkingSound.setLooping(walkingSoundID, true);
-    walkingSound.setVolume(walkingSoundID, walkingSoundVolume);
+    walkingSound.setVolume(walkingSoundID, GameVolume.scale(walkingSoundVolume));
   }
 
   private void transition() {
