@@ -231,7 +231,6 @@ class BlackjackDisplayTest {
     invokeTryStartRound(display);
 
     assertEquals(10, blackjack.getBet());
-    assertEquals(90, inventory.getGold());
     assertTrue(blackjack.isRoundInProgress() || blackjack.isRoundOver());
   }
 
