@@ -15,14 +15,16 @@ import java.util.Set;
 /** Close-range melee attack that sweeps an arc in front of the entity. */
 public class MeleeComponent extends Component implements PrimaryWeapon {
 
-  private static final float RANGE = 1.25f;
+  /** Keep in sync with REACH in MeleeRenderComponent so the visual matches the hit area. */
+  private static final float RANGE = 1.5f;
+
   private static final float SWORD_COOLDOWN = 0.3f;
 
   /** Total width of the swing in degrees, centred on the attack direction. */
   private static final float SWEEP_ARC_DEGREES = 120f;
 
   /** Rays fanned across the arc. More rays means fewer gaps at long range. */
-  private static final int SWEEP_RAY_COUNT = 13;
+  private static final int SWEEP_RAY_COUNT = 20;
 
   private float cooldownTimer = 0f;
 
@@ -72,7 +74,10 @@ public class MeleeComponent extends Component implements PrimaryWeapon {
       }
     }
 
-    entity.getEvents().trigger("attackAnimation", forward);
+    // Only announce contact when something was actually hit
+    if (!targets.isEmpty()) {
+      entity.getEvents().trigger("attackAnimation", forward);
+    }
   }
 
   /** Returns the NPC entity hit by a ray from start to end, or null if nothing was hit. */

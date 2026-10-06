@@ -50,11 +50,11 @@ class KeyboardPlayerInputComponentTest {
     Gdx.input = mock(Input.class);
     camera = mock(Camera.class);
     when(camera.unproject(any(Vector3.class)))
-        .thenAnswer(
-            invocation -> {
-              Vector3 position = invocation.getArgument(0);
-              return position.set(10f, 5f, 0f);
-            });
+            .thenAnswer(
+                    invocation -> {
+                      Vector3 position = invocation.getArgument(0);
+                      return position.set(10f, 5f, 0f);
+                    });
     entityService = mock(EntityService.class);
     ServiceLocator.registerEntityService(entityService);
   }
@@ -69,14 +69,15 @@ class KeyboardPlayerInputComponentTest {
 
   @Test
   void shouldMeleeOnLeftClick() {
-    Entity player = new Entity();
+    Entity player = new Entity().addComponent(new PlayerActions());
     KeyboardPlayerInputComponent component = aimedComponent(player);
 
     AtomicReference<Vector2> direction = new AtomicReference<>();
     player.getEvents().addListener("melee", (Vector2 aim) -> direction.set(aim));
 
     assertTrue(component.touchDown(4, 2, 0, Buttons.LEFT));
-    assertTrue(direction.get().epsilonEquals(new Vector2(9.5f, 4.5f)));
+    // The mouse is aimed at (9.5, 4.5), but melee follows the player's facing, not the mouse.
+    assertTrue(direction.get().epsilonEquals(new Vector2(1f, 0f)));
   }
 
   @Test
@@ -87,13 +88,13 @@ class KeyboardPlayerInputComponentTest {
     AtomicInteger shots = new AtomicInteger();
     AtomicReference<Vector2> direction = new AtomicReference<>();
     player
-        .getEvents()
-        .addListener(
-            "shoot",
-            (Vector2 aim) -> {
-              shots.incrementAndGet();
-              direction.set(aim);
-            });
+            .getEvents()
+            .addListener(
+                    "shoot",
+                    (Vector2 aim) -> {
+                      shots.incrementAndGet();
+                      direction.set(aim);
+                    });
 
     assertTrue(component.touchDown(4, 2, 0, Buttons.RIGHT));
     assertEquals(1, shots.get());
@@ -136,15 +137,15 @@ class KeyboardPlayerInputComponentTest {
   }
 
   @Test
-  void shouldNotHandleQ() {
+  void shouldTriggerInstrumentOnQ() {
     Entity player = new Entity();
     KeyboardPlayerInputComponent component = aimedComponent(player);
 
-    AtomicInteger events = new AtomicInteger();
-    player.getEvents().addListener("cycleArrow", events::incrementAndGet);
+    AtomicInteger instruments = new AtomicInteger();
+    player.getEvents().addListener("instrumentStart", instruments::incrementAndGet);
 
-    assertFalse(component.keyDown(Keys.Q));
-    assertEquals(0, events.get());
+    assertTrue(component.keyDown(Keys.Q));
+    assertEquals(1, instruments.get());
   }
 
   @Test
@@ -154,11 +155,11 @@ class KeyboardPlayerInputComponentTest {
     KeyboardPlayerInputComponent component = new KeyboardPlayerInputComponent();
     InventoryComponent inventory = new InventoryComponent(0);
     Entity player =
-        new Entity()
-            .addComponent(component)
-            .addComponent(inventory)
-            .addComponent(new WeaponComponent(primary))
-            .addComponent(new ItemUseComponent());
+            new Entity()
+                    .addComponent(component)
+                    .addComponent(inventory)
+                    .addComponent(new WeaponComponent(primary))
+                    .addComponent(new ItemUseComponent());
     player.setPosition(0f, 0f);
     Entity cameraEntity = new Entity().addComponent(new CameraComponent(camera));
     component.setCameraComponent(cameraEntity.getComponent(CameraComponent.class));
@@ -168,13 +169,13 @@ class KeyboardPlayerInputComponentTest {
     AtomicInteger shots = new AtomicInteger();
     AtomicReference<Vector2> direction = new AtomicReference<>();
     player
-        .getEvents()
-        .addListener(
-            "primaryAttack",
-            (Vector2 aimDirection) -> {
-              shots.incrementAndGet();
-              direction.set(aimDirection);
-            });
+            .getEvents()
+            .addListener(
+                    "primaryAttack",
+                    (Vector2 aimDirection) -> {
+                      shots.incrementAndGet();
+                      direction.set(aimDirection);
+                    });
 
     assertTrue(component.keyDown(Keys.E));
     assertTrue(component.keyDown(Keys.E));
@@ -371,7 +372,11 @@ class KeyboardPlayerInputComponentTest {
   void shouldBlockWeaponInputWhileTheArrowWheelIsOpen() {
     KeyboardPlayerInputComponent component = new KeyboardPlayerInputComponent();
     ArrowWheelComponent wheel = new ArrowWheelComponent();
-    Entity player = new Entity().addComponent(component).addComponent(wheel);
+    Entity player =
+            new Entity()
+                    .addComponent(component)
+                    .addComponent(wheel)
+                    .addComponent(new PlayerActions());
     player.setPosition(0f, 0f);
     wheel.create();
     component.setCameraComponent(new CameraComponent(camera));
@@ -394,11 +399,11 @@ class KeyboardPlayerInputComponentTest {
     InventoryComponent inventory = new InventoryComponent(0);
     PlayerInteractionComponent interaction = new PlayerInteractionComponent();
     Entity player =
-        new Entity()
-            .addComponent(component)
-            .addComponent(inventory)
-            .addComponent(new ItemUseComponent())
-            .addComponent(interaction);
+            new Entity()
+                    .addComponent(component)
+                    .addComponent(inventory)
+                    .addComponent(new ItemUseComponent())
+                    .addComponent(interaction);
     player.setPosition(0f, 0f);
     component.setCameraComponent(new CameraComponent(camera));
     inventory.addItem(ItemType.STANDARD_ARROW, 2);
@@ -433,11 +438,11 @@ class KeyboardPlayerInputComponentTest {
     InventoryComponent inventory = new InventoryComponent(0);
     PlayerInteractionComponent interaction = new PlayerInteractionComponent();
     Entity player =
-        new Entity()
-            .addComponent(component)
-            .addComponent(inventory)
-            .addComponent(new ItemUseComponent())
-            .addComponent(interaction);
+            new Entity()
+                    .addComponent(component)
+                    .addComponent(inventory)
+                    .addComponent(new ItemUseComponent())
+                    .addComponent(interaction);
     player.setPosition(0f, 0f);
     component.setCameraComponent(new CameraComponent(camera));
     player.create();
