@@ -21,6 +21,7 @@ import com.csse3200.game.components.tasks.ChaseTask;
 import com.csse3200.game.components.tasks.DelayedAttackTask;
 import com.csse3200.game.components.tasks.FlyingChaseTask;
 import com.csse3200.game.components.tasks.FlyingRepositionTask;
+import com.csse3200.game.components.tasks.FlyingWanderTask;
 import com.csse3200.game.components.tasks.RangedAttackTask;
 import com.csse3200.game.components.tasks.RepositionTask;
 import com.csse3200.game.components.tasks.SummonTask;
@@ -340,15 +341,17 @@ public class EnemyFactory {
 
     PhysicsUtils.setScaledCollider(enemy, 0.9f, 0.4f); // 0.4f seems small: any reason?
 
-    aiComponent.addTask(
-        // Adding the values for wander task from the enemy's config file
-        new WanderTask(
-            new Vector2(config.wanderRangeX, config.wanderRangeY), config.wanderWaitTime));
     if (config.attackType.equals("calypso")) {
-      aiComponent.addTask(
-          new ChaseTask(target, config.chasePriority, viewDistance, maxChaseDistance));
+      aiComponent
+          .addTask(
+              new WanderTask(
+                  new Vector2(config.wanderRangeX, config.wanderRangeY), config.wanderWaitTime))
+          .addTask(new ChaseTask(target, config.chasePriority, viewDistance, maxChaseDistance));
     } else if (config.behaviour.equals("flying")) {
       aiComponent
+          .addTask(
+              new FlyingWanderTask(
+                  new Vector2(config.wanderRangeX, config.wanderRangeY), config.wanderWaitTime))
           .addTask(
               new FlyingChaseTask(target, config.chasePriority, viewDistance, maxChaseDistance))
           .addTask(
@@ -356,6 +359,9 @@ public class EnemyFactory {
                   target, config.repositionPriority, config.repositionDistance));
     } else {
       aiComponent
+          .addTask(
+              new WanderTask(
+                  new Vector2(config.wanderRangeX, config.wanderRangeY), config.wanderWaitTime))
           .addTask(new ChaseTask(target, config.chasePriority, viewDistance, maxChaseDistance))
           .addTask(
               new RepositionTask(target, config.repositionPriority, config.repositionDistance));

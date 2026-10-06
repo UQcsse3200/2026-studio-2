@@ -9,7 +9,7 @@
 
     "wanderRangeX": 4.0,
     "wanderRangeY": 0.0,
-    "wanderWaitTime": 2.0,
+    "wanderWaitTime": 1.0,
     "chasePriority": 10,
     "viewDistance": 6.0,
     "maxChaseDistance": 9.0,
@@ -42,7 +42,7 @@
 
     "wanderRangeX": 4.0,
     "wanderRangeY": 0.0,
-    "wanderWaitTime": 2.0,
+    "wanderWaitTime": 1.0,
     "chasePriority": 10,
     "viewDistance": 10.0,
     "maxChaseDistance": 12.5,
@@ -75,7 +75,7 @@
 
     "wanderRangeX": 4.0,
     "wanderRangeY": 0.0,
-    "wanderWaitTime": 2.0,
+    "wanderWaitTime": 1.0,
     "chasePriority": 10,
     "viewDistance": 6.0,
     "maxChaseDistance": 12.5,
@@ -107,7 +107,7 @@
 
     "wanderRangeX": 4.0,
     "wanderRangeY": 0.0,
-    "wanderWaitTime": 2.0,
+    "wanderWaitTime": 1.0,
     "chasePriority": 10,
     "viewDistance": 10.0,
     "maxChaseDistance": 12.5,
@@ -139,7 +139,7 @@
 
     "wanderRangeX": 4.0,
     "wanderRangeY": 0.0,
-    "wanderWaitTime": 2.0,
+    "wanderWaitTime": 1.0,
     "chasePriority": 10,
     "viewDistance": 6.0,
     "maxChaseDistance": 9.0,
@@ -172,7 +172,7 @@
 
     "wanderRangeX": 4.0,
     "wanderRangeY": 0.0,
-    "wanderWaitTime": 2.0,
+    "wanderWaitTime": 1.0,
     "chasePriority": 10,
     "viewDistance": 50.0,
     "maxChaseDistance": 9.0,
