@@ -10,7 +10,7 @@ import com.csse3200.game.services.ServiceLocator;
 public class PlayerAnimationController extends Component {
   private static final float INSTRUMENT_VOLUME = 0.3f; // 0.0 is silent, 1.0 is full volume
   // Must match the frame duration given to "instrument_draw" in PlayerFactory.
-  private static final float INSTRUMENT_FRAME_DURATION = 0.08f;
+  private static final float INSTRUMENT_FRAME_DURATION = 0.11f;
   // First frame of instrument_draw where the instrument is clearly out of its hiding place.
   private static final int INSTRUMENT_OUT_FRAME = 10;
   // The level's background track, the same one PauseMenuDisplay pauses and resumes.

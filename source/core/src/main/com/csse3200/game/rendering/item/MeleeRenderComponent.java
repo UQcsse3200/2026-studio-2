@@ -5,17 +5,23 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.components.item.weapons.melee.MeleeComponent;
 import com.csse3200.game.rendering.RenderComponent;
 
-/** Draws a fading slash arc in front of the player while a melee swing is in progress. */
+/**
+ * Draws the outer edge of a slash arc in front of the player while a melee swing is in progress.
+ */
 public class MeleeRenderComponent extends RenderComponent {
   /** Fraction of the swing spent sweeping the arc round. After that it just fades out. */
-  private static final float SWEEP_FRACTION = 0.5f;
+  private static final float SWEEP_FRACTION = 0.3f;
 
-  private static final float MAX_ALPHA = 0.55f;
+  private static final float MAX_ALPHA = 0.9f;
   private static final int ARC_SEGMENTS = 24;
+
+  /** Thickness of the drawn edge, in world units. */
+  private static final float EDGE_WIDTH = 0.08f;
 
   // Created on first draw so the component can be constructed without a graphics context
   private ShapeRenderer shapeRenderer;
@@ -39,9 +45,10 @@ public class MeleeRenderComponent extends RenderComponent {
       return;
     }
 
-    // The arc sweeps from the bottom to the top of the facing direction, mirrored when facing left.
+    // The arc sweeps from the top down to the bottom of the facing direction, mirrored when facing
+    // left.
     float half = MeleeComponent.ARC_DEGREES / 2f;
-    float start = melee.getFacing() >= 0 ? -half : 180f + half - sweep;
+    float start = melee.getFacing() >= 0 ? half - sweep : 180f - half;
     Vector2 centre = entity.getCenterPosition();
 
     if (shapeRenderer == null) {
@@ -56,7 +63,19 @@ public class MeleeRenderComponent extends RenderComponent {
     shapeRenderer.setProjectionMatrix(batch.getProjectionMatrix());
     shapeRenderer.begin(ShapeType.Filled);
     shapeRenderer.setColor(1f, 1f, 1f, alpha);
-    shapeRenderer.arc(centre.x, centre.y, MeleeComponent.RANGE, start, sweep, ARC_SEGMENTS);
+    // Only the curved outer edge is drawn, as a chain of short thick lines along the arc.
+    float previousX = 0f;
+    float previousY = 0f;
+    for (int i = 0; i <= ARC_SEGMENTS; i++) {
+      float angle = start + sweep * i / ARC_SEGMENTS;
+      float x = centre.x + MeleeComponent.RANGE * MathUtils.cosDeg(angle);
+      float y = centre.y + MeleeComponent.RANGE * MathUtils.sinDeg(angle);
+      if (i > 0) {
+        shapeRenderer.rectLine(previousX, previousY, x, y, EDGE_WIDTH);
+      }
+      previousX = x;
+      previousY = y;
+    }
     shapeRenderer.end();
     Gdx.gl.glDisable(GL20.GL_BLEND);
 

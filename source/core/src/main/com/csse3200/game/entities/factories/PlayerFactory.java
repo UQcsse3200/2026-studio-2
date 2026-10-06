@@ -55,21 +55,21 @@ public class PlayerFactory {
         new AnimationRenderComponent(
             ServiceLocator.getResourceService()
                 .getAsset("images/player/player.atlas", TextureAtlas.class));
-    animator.addAnimation("idle", 0.2f, PlayMode.LOOP);
-    animator.addAnimation("walk", 0.1f, PlayMode.LOOP);
-    animator.addAnimation("sprint", 0.125f, PlayMode.LOOP);
-    animator.addAnimation("jump", 0.075f, PlayMode.NORMAL);
-    animator.addAnimation("hurt", 0.04f, PlayMode.NORMAL);
-    animator.addAnimation("death", 0.1458f, PlayMode.NORMAL);
-    animator.addAnimation("sleep", 0.1458f, PlayMode.LOOP);
-    animator.addAnimation("dash", 0.025f, PlayMode.NORMAL, 134.5f, 39f);
-    animator.addAnimation("air_dash", 0.025f, PlayMode.NORMAL, 94f, 39f);
-    animator.addAnimation("bow_draw", 0.08f, PlayMode.NORMAL, 72f, 23f);
-    animator.addAnimation("bow_hold", 0.1f, PlayMode.LOOP, 72f, 24f);
-    animator.addAnimation("bow_shoot", 0.05f, PlayMode.NORMAL, 71f, 23f);
-    animator.addAnimation("instrument_draw", 0.08f, PlayMode.NORMAL, 78.4f, 37.5f);
-    animator.addAnimation("instrument_hold", 0.1f, PlayMode.LOOP, 78.4f, 37.5f);
-    animator.addAnimation("melee", 0.03f, PlayMode.NORMAL, 79f, 38f);
+    animator.addAnimation("idle", 0.28f, PlayMode.LOOP);
+    animator.addAnimation("walk", 0.14f, PlayMode.LOOP);
+    animator.addAnimation("sprint", 0.175f, PlayMode.LOOP);
+    animator.addAnimation("jump", 0.1f, PlayMode.NORMAL);
+    animator.addAnimation("hurt", 0.055f, PlayMode.NORMAL);
+    animator.addAnimation("death", 0.2f, PlayMode.NORMAL);
+    animator.addAnimation("sleep", 0.2f, PlayMode.LOOP);
+    animator.addAnimation("dash", 0.035f, PlayMode.NORMAL, 134.5f, 39f);
+    animator.addAnimation("air_dash", 0.035f, PlayMode.NORMAL, 94f, 39f);
+    animator.addAnimation("bow_draw", 0.11f, PlayMode.NORMAL, 72f, 23f);
+    animator.addAnimation("bow_hold", 0.14f, PlayMode.LOOP, 72f, 24f);
+    animator.addAnimation("bow_shoot", 0.07f, PlayMode.NORMAL, 71f, 23f);
+    animator.addAnimation("instrument_draw", 0.11f, PlayMode.NORMAL, 78.4f, 37.5f);
+    animator.addAnimation("instrument_hold", 0.14f, PlayMode.LOOP, 78.4f, 37.5f);
+    animator.addAnimation("melee", MeleeComponent.FRAME_DURATION, PlayMode.NORMAL, 79f, 38f);
 
     Entity player =
         new Entity()
@@ -159,13 +159,13 @@ public class PlayerFactory {
         new AnimationRenderComponent(
             ServiceLocator.getResourceService()
                 .getAsset("images/player/player.atlas", TextureAtlas.class));
-    animator.addAnimation("idle", 0.15f, PlayMode.LOOP);
-    animator.addAnimation("walk", 0.1f, PlayMode.LOOP);
-    animator.addAnimation("sprint", 0.1f, PlayMode.LOOP);
-    animator.addAnimation("jump", 0.05f, PlayMode.NORMAL);
-    animator.addAnimation("hurt", 0.04f, PlayMode.NORMAL);
-    animator.addAnimation("death", 0.1458f, PlayMode.NORMAL);
-    animator.addAnimation("sleep", 0.1458f, PlayMode.LOOP);
+    animator.addAnimation("idle", 0.21f, PlayMode.LOOP);
+    animator.addAnimation("walk", 0.14f, PlayMode.LOOP);
+    animator.addAnimation("sprint", 0.14f, PlayMode.LOOP);
+    animator.addAnimation("jump", 0.07f, PlayMode.NORMAL);
+    animator.addAnimation("hurt", 0.055f, PlayMode.NORMAL);
+    animator.addAnimation("death", 0.2f, PlayMode.NORMAL);
+    animator.addAnimation("sleep", 0.2f, PlayMode.LOOP);
 
     Entity player =
         new Entity()

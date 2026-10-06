@@ -23,7 +23,7 @@ import java.util.Set;
  */
 public class MeleeComponent extends Component {
   /** How far the arc reaches from the player's centre, in world units. */
-  public static final float RANGE = 1.6f;
+  public static final float RANGE = 1.5f;
 
   /** Total angle of the arc in degrees, centred on the facing direction. */
   public static final float ARC_DEGREES = 110f;
@@ -31,11 +31,17 @@ public class MeleeComponent extends Component {
   /** Number of rays used to sweep the arc. More rays leave fewer gaps at long range. */
   public static final int RAY_COUNT = 9;
 
-  /** Seconds from the start of the swing until the arc lands, so it lines up with the animation. */
-  public static final float HIT_DELAY = 0.12f;
+  /** Seconds each frame of the melee animation is shown. Raise it to slow the swing down. */
+  public static final float FRAME_DURATION = 0.06f;
+
+  /** Number of frames in the melee animation. */
+  public static final int FRAME_COUNT = 12;
 
   /** Seconds the swing lasts. This matches the length of the melee animation. */
-  public static final float SWING_DURATION = 0.36f;
+  public static final float SWING_DURATION = FRAME_DURATION * FRAME_COUNT;
+
+  /** Seconds from the start of the swing until the arc lands, at about the fifth frame. */
+  public static final float HIT_DELAY = FRAME_DURATION * 4.5f;
 
   /** Seconds after a swing finishes before another can start. */
   public static final float COOLDOWN = 0.15f;

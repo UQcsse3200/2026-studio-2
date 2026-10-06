@@ -96,7 +96,7 @@ class MeleeComponentTest {
     player.getEvents().addListener("meleeHit", (Entity target) -> hits.incrementAndGet());
 
     player.getEvents().trigger("meleeStart");
-    run(3);
+    run(4);
 
     assertEquals(80, enemy.getComponent(CombatStatsComponent.class).getHealth());
     assertEquals(1, hits.get());
