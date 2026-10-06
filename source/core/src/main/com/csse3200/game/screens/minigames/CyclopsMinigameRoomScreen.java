@@ -1,5 +1,7 @@
 package com.csse3200.game.screens.minigames;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
@@ -12,6 +14,7 @@ import com.csse3200.game.components.TextBoxComponent;
 import com.csse3200.game.components.gamearea.PerformanceDisplay;
 import com.csse3200.game.components.minigames.cyclopsMinigame.CyclopsMinigameActions;
 import com.csse3200.game.components.minigames.cyclopsMinigame.CyclopsMinigameDisplay;
+import com.csse3200.game.components.minigames.cyclopsMinigame.CyclopsMinigameLogic;
 import com.csse3200.game.cutscene.CutsceneLoader;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
@@ -26,7 +29,6 @@ import com.csse3200.game.rendering.Renderer;
 import com.csse3200.game.services.GameTime;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
-import com.csse3200.game.ui.GameEndActions;
 import com.csse3200.game.ui.GameEndDisplay;
 import com.csse3200.game.ui.GameEndState;
 import com.csse3200.game.ui.terminal.Terminal;
@@ -57,9 +59,9 @@ public class CyclopsMinigameRoomScreen extends ScreenAdapter {
   private final Renderer renderer;
   private final PhysicsEngine physicsEngine;
 
-  private final CyclopsMinigameArea cyclopsMinigameArea;
-  private TextBoxComponent textBoxComponent;
-  private boolean initialIntro = true;
+  private CyclopsMinigameArea cyclopsMinigameArea;
+  static boolean skipIntroOnNextLoad = false;
+  private CyclopsIntro intro;
 
   public CyclopsMinigameRoomScreen(GdxGame game) {
     this.game = game;
@@ -82,7 +84,7 @@ public class CyclopsMinigameRoomScreen extends ScreenAdapter {
     renderer.getDebug().renderPhysicsWorld(physicsEngine.getWorld());
 
     loadAssets();
-    createUI();
+    createUI(consumeSkipIntroOnNextLoad());
 
     logger.debug("Initialising cyclops minigame screen entities");
     TerrainFactory terrainFactory = new TerrainFactory(renderer.getCamera());
@@ -92,9 +94,11 @@ public class CyclopsMinigameRoomScreen extends ScreenAdapter {
 
   @Override
   public void render(float delta) {
-    // And update to check for minigame start??
-    if (initialIntro && textBoxComponent.isDismissed()) {
-      initialIntro = false;
+    if (intro.isShowing() && Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) {
+      intro.advance();
+    }
+
+    if (intro.takeStartDue()) {
       ServiceLocator.getCyclopsMinigameEventHandler().trigger("start");
     }
 
@@ -141,27 +145,33 @@ public class CyclopsMinigameRoomScreen extends ScreenAdapter {
    * Creates the main game's ui including components for rendering ui elements to the screen and
    * capturing and handling ui input.
    */
-  private void createUI() {
+  private void createUI(boolean skipIntro) {
     logger.debug("Creating ui");
     Stage stage = ServiceLocator.getRenderService().getStage();
 
-    textBoxComponent =
-        new TextBoxComponent(
-            600,
-            150,
-            Color.BLACK,
-            Color.TAN,
-            Color.BROWN,
-            20f,
-            300,
-            16,
-            3,
-            "flat-earth/skin/fonts/PixeloidSans.fnt",
-            Align.center,
-            List.of(
-                "Hmm... there's a cyclops in the way, I'll need to get past...",
-                "...I'll need to \"LEFT_CLICK\" to each of those statues at the right time"));
-    textBoxComponent.create();
+    TextBoxComponent introBox =
+        skipIntro
+            ? null
+            : new TextBoxComponent(
+                600,
+                150,
+                Color.BLACK,
+                Color.TAN,
+                Color.BROWN,
+                20f,
+                300,
+                16,
+                3,
+                "flat-earth/skin/fonts/PixeloidSans.fnt",
+                Align.center,
+                List.of(
+                    "Hmm... there's a cyclops in the way, I'll need to get past...",
+                    "...I'll need to \"LEFT_CLICK\" to each of those rocks at the right time"
+                        + " (Left-click or TAB to continue)"));
+    if (introBox != null) {
+      introBox.create();
+    }
+    intro = new CyclopsIntro(introBox);
 
     InputComponent inputComponent =
         ServiceLocator.getInputService().getInputFactory().createForTerminal();
@@ -180,6 +190,8 @@ public class CyclopsMinigameRoomScreen extends ScreenAdapter {
                 game.startCutscene(result.getCutscene(), GdxGame.ScreenType.LEVEL_2_GAME);
               }
             });
+    ServiceLocator.getCyclopsMinigameEventHandler()
+        .addListener("died", CyclopsMinigameRoomScreen::showGameOver);
 
     Entity ui = new Entity();
     ui.addComponent(new InputDecorator(stage, 10))
@@ -189,9 +201,28 @@ public class CyclopsMinigameRoomScreen extends ScreenAdapter {
         .addComponent(terminal)
         .addComponent(inputComponent)
         .addComponent(new GameEndDisplay(GameEndState.LOSE))
-        .addComponent(new GameEndActions(this.game))
         .addComponent(new TerminalDisplay());
+    ui.getEvents().addListener("mainMenu", () -> game.setScreen(GdxGame.ScreenType.MAIN_MENU));
+    ui.getEvents().addListener("exitGame", game::exit);
+    ui.getEvents().addListener("restart", () -> restartFromGameOver(game));
 
     ServiceLocator.getEntityService().register(ui);
+  }
+
+  static void showGameOver() {
+    ServiceLocator.getGameEndEventHandler().trigger("gameEnd", GameEndState.LOSE);
+  }
+
+  static void restartFromGameOver(GdxGame game) {
+    ServiceLocator.getCyclopsMinigameEventHandler()
+        .trigger(CyclopsMinigameLogic.CYCLOPS_SLEEP_EVENT);
+    skipIntroOnNextLoad = true;
+    Gdx.app.postRunnable(() -> game.setScreen(GdxGame.ScreenType.CYCLOPS_MINIGAME));
+  }
+
+  static boolean consumeSkipIntroOnNextLoad() {
+    boolean skip = skipIntroOnNextLoad;
+    skipIntroOnNextLoad = false;
+    return skip;
   }
 }
