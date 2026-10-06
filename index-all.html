@@ -327,7 +327,8 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/player/ArrowWheelDisplay.html" class="type-name-link" title="class in com.csse3200.game.components.player">ArrowWheelDisplay</a> - Class in <a href="com/csse3200/game/components/player/package-summary.html">com.csse3200.game.components.player</a></dt>
 <dd>
-<div class="block">Draws the arrow wheel in the middle of the screen while it is open.</div>
+<div class="block">Draws the arrow wheel in the bottom-left corner of the screen while it is open, as one
+ inventory-style slot per arrow type.</div>
 </dd>
 <dt><a href="com/csse3200/game/components/player/ArrowWheelDisplay.html#%3Cinit%3E()" class="member-name-link">ArrowWheelDisplay()</a> - Constructor for class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/ArrowWheelDisplay.html" title="class in com.csse3200.game.components.player">ArrowWheelDisplay</a></dt>
 <dd>&nbsp;</dd>
@@ -2751,6 +2752,8 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Get the entity's scale.</div>
 </dd>
+<dt><a href="com/csse3200/game/components/player/ArrowWheelComponent.html#getScreenCentre()" class="member-name-link">getScreenCentre()</a> - Method in class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/ArrowWheelComponent.html" title="class in com.csse3200.game.components.player">ArrowWheelComponent</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/areas/terrain/configs/MovingPlatformConfig.html#getSecondTarget()" class="member-name-link">getSecondTarget()</a> - Method in class com.csse3200.game.areas.terrain.configs.<a href="com/csse3200/game/areas/terrain/configs/MovingPlatformConfig.html" title="class in com.csse3200.game.areas.terrain.configs">MovingPlatformConfig</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/player/ArrowWheelComponent.html#getSelected()" class="member-name-link">getSelected()</a> - Method in class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/ArrowWheelComponent.html" title="class in com.csse3200.game.components.player">ArrowWheelComponent</a></dt>
@@ -3867,7 +3870,8 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/player/KeyboardPlayerInputComponent.html#mouseMoved(int,int)" class="member-name-link">mouseMoved(int, int)</a> - Method in class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/KeyboardPlayerInputComponent.html" title="class in com.csse3200.game.components.player">KeyboardPlayerInputComponent</a></dt>
 <dd>
-<div class="block">Reports the pointer's offset from the centre of the screen, where the wheel is drawn.</div>
+<div class="block">Reports the pointer's offset from the centre of the arrow wheel, or from the centre of the
+ screen if the wheel hasn't been placed.</div>
 </dd>
 <dt><a href="com/csse3200/game/input/InputComponent.html#mouseMoved(int,int)" class="member-name-link">mouseMoved(int, int)</a> - Method in class com.csse3200.game.input.<a href="com/csse3200/game/input/InputComponent.html" title="class in com.csse3200.game.input">InputComponent</a></dt>
 <dd>&nbsp;</dd>
@@ -4930,6 +4934,11 @@ loadScripts(document, 'script');</script>
 <dt><a href="com/csse3200/game/GdxGame.html#setScreen(com.csse3200.game.GdxGame.ScreenType)" class="member-name-link">setScreen(GdxGame.ScreenType)</a> - Method in class com.csse3200.game.<a href="com/csse3200/game/GdxGame.html" title="class in com.csse3200.game">GdxGame</a></dt>
 <dd>
 <div class="block">Sets the game's screen to a new screen of the provided type.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/player/ArrowWheelComponent.html#setScreenCentre(float,float)" class="member-name-link">setScreenCentre(float, float)</a> - Method in class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/ArrowWheelComponent.html" title="class in com.csse3200.game.components.player">ArrowWheelComponent</a></dt>
+<dd>
+<div class="block">Records where the wheel is drawn, so the pointer can be measured from its centre rather than
+ the screen's.</div>
 </dd>
 <dt><a href="com/csse3200/game/physics/components/ColliderComponent.html#setSensor(boolean)" class="member-name-link">setSensor(boolean)</a> - Method in class com.csse3200.game.physics.components.<a href="com/csse3200/game/physics/components/ColliderComponent.html" title="class in com.csse3200.game.physics.components">ColliderComponent</a></dt>
 <dd>

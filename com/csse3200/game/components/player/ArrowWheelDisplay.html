@@ -101,11 +101,13 @@ loadScripts(document, 'script');</script>
 <hr>
 <div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">ArrowWheelDisplay</span>
 <span class="extends-implements">extends <a href="../../ui/UIComponent.html" title="class in com.csse3200.game.ui">UIComponent</a></span></div>
-<div class="block">Draws the arrow wheel in the middle of the screen while it is open.
+<div class="block">Draws the arrow wheel in the bottom-left corner of the screen while it is open, as one
+ inventory-style slot per arrow type.
 
- <p>Wedges are laid out to match <a href="../projectile/ArrowType.html#forDirection(com.badlogic.gdx.math.Vector2)"><code>ArrowType.forDirection(com.badlogic.gdx.math.Vector2)</code></a>, so the wedge under the mouse is
- the one the wheel will select. The highlighted wedge is drawn brighter, and wedges the player has
- no arrows for are greyed out.</div>
+ <p>Slots sit on a circle at the same angles <a href="../projectile/ArrowType.html#forDirection(com.badlogic.gdx.math.Vector2)"><code>ArrowType.forDirection(com.badlogic.gdx.math.Vector2)</code></a> uses (the first one at
+ the top, then clockwise). The wheel tells <a href="ArrowWheelComponent.html" title="class in com.csse3200.game.components.player"><code>ArrowWheelComponent</code></a> where its centre is on
+ screen, so the slot the pointer is aimed at is the one the wheel will select. The highlighted
+ slot gets the selected border, and slots the player has no arrows for are faded.</div>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -158,7 +160,7 @@ loadScripts(document, 'script');</script>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Called when the component is disposed.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected void</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#draw(com.badlogic.gdx.graphics.g2d.SpriteBatch)" class="member-name-link">draw</a><wbr>(com.badlogic.gdx.graphics.g2d.SpriteBatch&nbsp;batch)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Draw the renderable.</div>
@@ -225,7 +227,7 @@ loadScripts(document, 'script');</script>
 <li>
 <section class="detail" id="draw(com.badlogic.gdx.graphics.g2d.SpriteBatch)">
 <h3>draw</h3>
-<div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">draw</span><wbr><span class="parameters">(com.badlogic.gdx.graphics.g2d.SpriteBatch&nbsp;batch)</span></div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">draw</span><wbr><span class="parameters">(com.badlogic.gdx.graphics.g2d.SpriteBatch&nbsp;batch)</span></div>
 <div class="block"><span class="description-from-type-label">Description copied from class:&nbsp;<code><a href="../../rendering/RenderComponent.html#draw(com.badlogic.gdx.graphics.g2d.SpriteBatch)">RenderComponent</a></code></span></div>
 <div class="block">Draw the renderable. Should be called only by the renderer, not manually.</div>
 <dl class="notes">
