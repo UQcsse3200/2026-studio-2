@@ -209,7 +209,10 @@ public class CyclopsMinigameArea extends GameArea {
    */
   private Entity spawnPlayer() {
     Entity newPlayer = PlayerFactory.createPlayerDisplay();
-    newPlayer.addComponent(new CyclopsHurtSoundComponent(loadHurtVoices(), HURT_VOLUME_BY_HEARTS));
+    Sound deathVoice =
+        ServiceLocator.getResourceService().getAsset("sounds/hurt_player_4.wav", Sound.class);
+    newPlayer.addComponent(
+        new CyclopsHurtSoundComponent(loadHurtVoices(), HURT_VOLUME_BY_HEARTS, deathVoice));
     Vector2 baseScale = newPlayer.getScale().cpy();
     newPlayer.setScale(baseScale.cpy().scl(PLAYER_SCALE));
     // Growing the sprite moves its centre right, so shift its anchor left to keep it over the tile.

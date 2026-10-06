@@ -682,6 +682,20 @@ public class CyclopsMinigameLogicTest {
   }
 
   @Test
+  void nonFatalMissDoesNotShowGameOverPanel() {
+    EventHandler gameEnd = mock(EventHandler.class);
+    ServiceLocator.registerGameEndEventHandler(gameEnd);
+    minigameLogic.setSafeLocations(List.of(new GridPoint2(1, 0), new GridPoint2(2, 0)));
+    minigameLogic.setLossLocations(List.of(new GridPoint2(3, 0)));
+    givePlayerHealth(10);
+
+    runMove(false);
+    minigameLogic.update();
+
+    verifyNoInteractions(gameEnd);
+  }
+
+  @Test
   void successfulMoveFiresNoCyclopsEvents() {
     EventHandler cyclopsEvents = mock(EventHandler.class);
     ServiceLocator.registerCyclopsMinigameEventHandler(cyclopsEvents);

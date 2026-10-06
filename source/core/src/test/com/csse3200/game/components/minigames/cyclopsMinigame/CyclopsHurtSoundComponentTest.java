@@ -45,13 +45,13 @@ class CyclopsHurtSoundComponentTest {
   @Test
   void eachHeartLevelPlaysItsVoiceAndVolumeOncePerHurt() {
     // Health after the hit, and the voice index that health maps to (health / 2, capped at 4).
-    int[][] healthAndIndex = {{8, 4}, {6, 3}, {4, 2}, {2, 1}, {0, 0}};
+    int[][] healthAndIndex = {{8, 4}, {6, 3}, {4, 2}, {2, 1}};
 
     for (int[] pair : healthAndIndex) {
       Sound[] voices = mockVoices();
       Entity player = new Entity().addComponent(new CombatStatsComponent(pair[0], 1));
       CyclopsHurtSoundComponent component =
-          new CyclopsHurtSoundComponent(voices, VOLUMES_BY_HEARTS);
+          new CyclopsHurtSoundComponent(voices, VOLUMES_BY_HEARTS, mock(Sound.class));
       player.addComponent(component);
       component.create();
 
@@ -60,5 +60,21 @@ class CyclopsHurtSoundComponentTest {
       verify(voices[pair[1]]).play(VOLUMES_BY_HEARTS[pair[1]]);
       assertEquals(1, totalPlays(voices));
     }
+  }
+
+  @Test
+  void fatalHitPlaysDeathVoiceAndNotTheNormalHurtSound() {
+    Sound[] voices = mockVoices();
+    Sound deathVoice = mock(Sound.class);
+    Entity player = new Entity().addComponent(new CombatStatsComponent(0, 1));
+    CyclopsHurtSoundComponent component =
+        new CyclopsHurtSoundComponent(voices, VOLUMES_BY_HEARTS, deathVoice);
+    player.addComponent(component);
+    component.create();
+
+    player.getEvents().trigger(CyclopsHurtSoundComponent.HURT_EVENT);
+
+    verify(deathVoice).play(0.8f, 0.75f, 0f);
+    assertEquals(0, totalPlays(voices));
   }
 }

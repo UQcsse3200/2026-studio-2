@@ -14,6 +14,7 @@ import com.csse3200.game.components.TextBoxComponent;
 import com.csse3200.game.components.gamearea.PerformanceDisplay;
 import com.csse3200.game.components.minigames.cyclopsMinigame.CyclopsMinigameActions;
 import com.csse3200.game.components.minigames.cyclopsMinigame.CyclopsMinigameDisplay;
+import com.csse3200.game.components.minigames.cyclopsMinigame.CyclopsMinigameLogic;
 import com.csse3200.game.cutscene.CutsceneLoader;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
@@ -28,7 +29,6 @@ import com.csse3200.game.rendering.Renderer;
 import com.csse3200.game.services.GameTime;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
-import com.csse3200.game.ui.GameEndActions;
 import com.csse3200.game.ui.GameEndDisplay;
 import com.csse3200.game.ui.GameEndState;
 import com.csse3200.game.ui.terminal.Terminal;
@@ -189,9 +189,7 @@ public class CyclopsMinigameRoomScreen extends ScreenAdapter {
               }
             });
     ServiceLocator.getCyclopsMinigameEventHandler()
-        .addListener(
-            "died",
-            () -> Gdx.app.postRunnable(() -> game.setScreen(GdxGame.ScreenType.CYCLOPS_MINIGAME)));
+        .addListener("died", CyclopsMinigameRoomScreen::showGameOver);
 
     Entity ui = new Entity();
     ui.addComponent(new InputDecorator(stage, 10))
@@ -201,9 +199,21 @@ public class CyclopsMinigameRoomScreen extends ScreenAdapter {
         .addComponent(terminal)
         .addComponent(inputComponent)
         .addComponent(new GameEndDisplay(GameEndState.LOSE))
-        .addComponent(new GameEndActions(this.game))
         .addComponent(new TerminalDisplay());
+    ui.getEvents().addListener("mainMenu", () -> game.setScreen(GdxGame.ScreenType.MAIN_MENU));
+    ui.getEvents().addListener("exitGame", game::exit);
+    ui.getEvents().addListener("restart", () -> restartFromGameOver(game));
 
     ServiceLocator.getEntityService().register(ui);
+  }
+
+  static void showGameOver() {
+    ServiceLocator.getGameEndEventHandler().trigger("gameEnd", GameEndState.LOSE);
+  }
+
+  static void restartFromGameOver(GdxGame game) {
+    ServiceLocator.getCyclopsMinigameEventHandler()
+        .trigger(CyclopsMinigameLogic.CYCLOPS_SLEEP_EVENT);
+    Gdx.app.postRunnable(() -> game.setScreen(GdxGame.ScreenType.CYCLOPS_MINIGAME));
   }
 }

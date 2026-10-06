@@ -44,8 +44,8 @@ public class CyclopsMinigameLogic extends Component {
   static final float HURT_PAUSE_DELAY = 0.6f;
   static final float DEATH_DISPLAY_DELAY = 1.5f;
   static final int MISS_DAMAGE = 2;
-  static final String CYCLOPS_WAKE_EVENT = "cyclopsWake";
-  static final String CYCLOPS_SLEEP_EVENT = "cyclopsSleep";
+  public static final String CYCLOPS_WAKE_EVENT = "cyclopsWake";
+  public static final String CYCLOPS_SLEEP_EVENT = "cyclopsSleep";
   static final float START_SCORING_PERCENT = 20f;
   static final float END_SCORING_PERCENT = 10f;
 
