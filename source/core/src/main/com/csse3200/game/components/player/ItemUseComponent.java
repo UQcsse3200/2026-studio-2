@@ -4,6 +4,7 @@ import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.Component;
+import com.csse3200.game.components.GameVolume;
 import com.csse3200.game.components.inventory.InventoryComponent;
 import com.csse3200.game.components.item.ItemType;
 import com.csse3200.game.components.item.weapons.PrimaryWeapon;
@@ -63,7 +64,7 @@ public class ItemUseComponent extends Component {
       try {
         Sound arrowSound =
             ServiceLocator.getResourceService().getAsset("sounds/Arrow_release.wav", Sound.class);
-        arrowSound.play(0.4f);
+        arrowSound.play(GameVolume.scale(0.4f));
       } catch (Exception e) {
       }
       return;

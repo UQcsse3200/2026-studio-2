@@ -19,9 +19,10 @@ public class RangedAttackTask extends DefaultTask implements PriorityTask {
   private final int damage;
   private final float projectileSpeed;
   private final float projectileLifetime;
-  private final boolean useNecromancerProjectile;
+  private final String attackType;
 
   private long lastAttackTime;
+  private long currentTime;
 
   /**
    * Creates a ranged attack task.
@@ -33,7 +34,6 @@ public class RangedAttackTask extends DefaultTask implements PriorityTask {
    * @param damage projectile damage
    * @param projectileSpeed projectile movement speed
    * @param projectileLifetime maximum projectile lifetime in seconds
-   * @param useNecromancerProjectile if the enemy is a necromancer, use specific projectile
    */
   public RangedAttackTask(
       Entity target,
@@ -43,7 +43,7 @@ public class RangedAttackTask extends DefaultTask implements PriorityTask {
       int damage,
       float projectileSpeed,
       float projectileLifetime,
-      boolean useNecromancerProjectile) {
+      String attackType) {
     this.target = target;
     this.priority = priority;
     this.attackRange = attackRange;
@@ -51,30 +51,30 @@ public class RangedAttackTask extends DefaultTask implements PriorityTask {
     this.damage = damage;
     this.projectileSpeed = projectileSpeed;
     this.projectileLifetime = projectileLifetime;
-    this.useNecromancerProjectile = useNecromancerProjectile;
+    this.attackType = attackType;
   }
 
   @Override
   public void start() {
     super.start();
-    lastAttackTime = 0;
+
+    if (lastAttackTime == 0) {
+      lastAttackTime = ServiceLocator.getTimeSource().getTime();
+    }
   }
 
   @Override
   public void update() {
-    long currentTime = ServiceLocator.getTimeSource().getTime();
-
-    if (currentTime - lastAttackTime >= cooldown * 1000) {
-      fireProjectile();
-      lastAttackTime = currentTime;
-    }
+    fireProjectile();
+    lastAttackTime = ServiceLocator.getTimeSource().getTime();
   }
 
   @Override
   public int getPriority() {
     float distance = owner.getEntity().getPosition().dst(target.getPosition());
+    currentTime = ServiceLocator.getTimeSource().getTime();
 
-    if (distance <= attackRange) {
+    if (distance <= attackRange && currentTime - lastAttackTime >= cooldown * 1000) {
       return priority;
     }
 
@@ -92,13 +92,21 @@ public class RangedAttackTask extends DefaultTask implements PriorityTask {
 
     Vector2 spawnCenter = enemyCenter.cpy().add(0.8f * facingDirection, -0.15f);
 
-    Entity projectile =
-        useNecromancerProjectile
-            ? ProjectileFact.createNecromancerProjectile(
-                targetCenter, damage, projectileSpeed, projectileLifetime)
-            : ProjectileFact.createSkeletonArcherProjectile(
-                targetCenter, damage, projectileSpeed, projectileLifetime);
+    Entity projectile;
 
+    if (attackType.equals("calypso")) {
+      projectile =
+          ProjectileFact.createCalypsoProjectile(
+              targetCenter, damage, projectileSpeed, projectileLifetime);
+    } else if (attackType.equals("summon")) {
+      projectile =
+          ProjectileFact.createNecromancerProjectile(
+              targetCenter, damage, projectileSpeed, projectileLifetime);
+    } else {
+      projectile =
+          ProjectileFact.createSkeletonArcherProjectile(
+              targetCenter, damage, projectileSpeed, projectileLifetime);
+    }
     // setPosition() uses the bottom-left corner, so offset by half the
     // projectile size to place its centre at spawnCenter.
     Vector2 projectilePosition = spawnCenter.cpy().sub(projectile.getScale().cpy().scl(0.5f));
