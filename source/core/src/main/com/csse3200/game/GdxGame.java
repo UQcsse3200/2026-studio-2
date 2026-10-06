@@ -42,11 +42,11 @@ public class GdxGame extends Game {
     loadSettings();
 
     applyDefaultClearColor();
- 
+
     // setScreen(ScreenType.LEVEL_BOSS_GAME);
     setScreen(ScreenType.MAIN_MENU);
   }
-  
+
   /**
    * Restores the default light-yellow clear colour used behind transparent terrain (e.g. Sandbox).
    *

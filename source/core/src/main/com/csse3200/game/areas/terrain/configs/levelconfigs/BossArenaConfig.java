@@ -6,9 +6,9 @@ import com.csse3200.game.areas.terrain.configs.PlatformConfig;
 
 public class BossArenaConfig extends LevelConfig {
   public BossArenaConfig() {
-    platformTFP = "images/Platform_level-3.png";
-    ledgesTFP = "images/Platform_level-3.png";
-    groundTFP = "images/tile-level3.png";
+    platformTFP = "images/terrain/Level_3/Platform_level-3.png";
+    ledgesTFP = "images/terrain/Level_3/Platform_level-3.png";
+    groundTFP = "images/terrain/Level_3/tile-level3.png";
 
     playerSpawn = new GridPoint2(9, 2);
 

@@ -14,9 +14,9 @@ import com.csse3200.game.components.EnemyTeleportComponent;
 import com.csse3200.game.components.PoisonStatsComponent;
 import com.csse3200.game.components.SlowStatsComponent;
 import com.csse3200.game.components.TouchAttackComponent;
-import com.csse3200.game.components.npc.EnemyAnimationController;
 import com.csse3200.game.components.lighting.PointLightComponent;
-import com.csse3200.game.components.npc.SkeletonAnimationController;
+// import com.csse3200.game.components.npc.SkeletonAnimationController;
+import com.csse3200.game.components.npc.EnemyAnimationController;
 import com.csse3200.game.components.tasks.ChaseTask;
 import com.csse3200.game.components.tasks.DelayedAttackTask;
 import com.csse3200.game.components.tasks.FlyingChaseTask;
@@ -243,7 +243,8 @@ public class EnemyFactory {
     Entity calypso = createEnemy(target, config);
 
     TextureAtlas atlas =
-        ServiceLocator.getResourceService().getAsset("images/calypso.atlas", TextureAtlas.class);
+        ServiceLocator.getResourceService()
+            .getAsset("images/enemies/calypso.atlas", TextureAtlas.class);
     AnimationRenderComponent animator = new AnimationRenderComponent(atlas);
     animator.addAnimation("idle", CALYPSO_IDLE_FRAME_TIME, Animation.PlayMode.LOOP);
     animator.addAnimation("walk", CALYPSO_WALK_FRAME_TIME, Animation.PlayMode.LOOP);

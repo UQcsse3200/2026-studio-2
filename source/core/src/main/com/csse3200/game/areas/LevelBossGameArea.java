@@ -30,56 +30,17 @@ public class LevelBossGameArea extends GameArea {
 
   private Entity water;
 
-  /** Textures used by the level 2 game area. */
+  /** Textures used by the level boss game area. */
   private static final String[] level3Textures = {
-    "images/scroll_bg.png",
-    // Level 3 background
-    "images/Background-2.png",
-    "images/Platform_level-3.png",
-    "images/Platform-crumbling-level-3.png",
-
-    // Level 3 ground tile
-    "images/tile-level3.png",
-    "images/water tile.png",
-
-    // Transparent texture used for the physics-only floor
-    "images/transparent.png",
-
-    // Existing game textures
-    "images/black_roof.png",
-    "images/purple_heart.png",
-    "images/DevGridTile.png",
-    "images/Tile_2.png",
-    "images/box_boy_leaf.png",
-    "images/spike.png",
-    "images/tree.png",
-    "images/ghost_king.png",
-    "images/ghost_1.png",
-    "images/grass_1.png",
-    "images/grass_2.png",
-    "images/grass_3.png",
-    "images/hex_grass_1.png",
-    "images/hex_grass_2.png",
-    "images/hex_grass_3.png",
-    "images/iso_grass_1.png",
-    "images/iso_grass_2.png",
-    "images/iso_grass_3.png",
-    "images/spiky_ball.png",
-    "images/spiky_ball_trap.png",
-    "images/checkpoint_lit.png",
-    "images/checkpoint_unlit.png",
-    // Enemy textures
-    "images/skeleton_warrior.png",
-    "images/skeleton_archer.png",
-    "images/arrow.png",
-    "images/rope_arrow.png",
-    "images/fire_arrow.png",
-    "images/cold_arrow.png",
-    "images/necromancer_projectile.png"
+    "images/backgrounds/Background-2.png",
+    "images/terrain/Level_3/Platform_level-3.png",
+    "images/terrain/Level_3/tile-level3.png",
+    "images/ui/transparent.png",
+    "images/projectiles/necromancer_projectile.png"
   };
 
   private static final String[] level3TexturesAtlas = {
-    "images/terrain_iso_grass.atlas", "images/in_level_button.atlas", "images/calypso.atlas"
+    "images/in_level_button.atlas", "images/enemies/calypso.atlas"
   };
 
   private static final String[] level3Sounds = {"sounds/Impact4.ogg"};
@@ -127,15 +88,18 @@ public class LevelBossGameArea extends GameArea {
     BackgroundRenderComponent backgroundComponent =
         new BackgroundRenderComponent(camera, backgroundPos, worldBounds);
     backgroundComponent.addLayer(
-        "images/Background-2.png",
-        new Vector2(0.10f, 0f),
-        30f,
-        15f,
-        new Vector2(0f, 3.5f),
+        "images/backgrounds/Background-2.png",
+        new Vector2(0.15f, 0f),
+        36f,
+        20.2f,
+        new Vector2(0f, 5f),
         new Vector2(0f, 0f),
-        false,
+        RepeatMode.NONE,
+        0.7f,
         1f,
-        1f);
+        false,
+        0,
+        -1);
 
     Entity background = new Entity().addComponent(backgroundComponent);
     background.setPosition(backgroundPos);

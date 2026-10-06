@@ -99,7 +99,8 @@ public class ProjectileFact {
             .addComponent(new ProjectileComponent(lifetime))
             .addComponent(new ColliderComponent())
             // Temporary asset until the Calypso projectile sprite is available.
-            .addComponent(new TextureRenderComponent("images/necromancer_projectile.png"));
+            .addComponent(
+                new TextureRenderComponent("images/projectiles/necromancer_projectile.png"));
 
     projectile.getComponent(TextureRenderComponent.class).scaleEntity();
     projectile.setScale(projectile.getScale().scl(0.8f));
