@@ -1139,3 +1139,184 @@ bow_shoot
   orig: 128, 128
   offset: 0, 0
   index: 7
+
+player_instrument.png
+size: 800, 800
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+instrument_draw
+  rotate: false
+  xy: 0, 0
+  size: 160, 160
+  orig: 160, 160
+  offset: 0, 0
+  index: 0
+instrument_draw
+  rotate: false
+  xy: 160, 0
+  size: 160, 160
+  orig: 160, 160
+  offset: 0, 0
+  index: 1
+instrument_draw
+  rotate: false
+  xy: 320, 0
+  size: 160, 160
+  orig: 160, 160
+  offset: 0, 0
+  index: 2
+instrument_draw
+  rotate: false
+  xy: 480, 0
+  size: 160, 160
+  orig: 160, 160
+  offset: 0, 0
+  index: 3
+instrument_draw
+  rotate: false
+  xy: 640, 0
+  size: 160, 160
+  orig: 160, 160
+  offset: 0, 0
+  index: 4
+instrument_draw
+  rotate: false
+  xy: 0, 160
+  size: 160, 160
+  orig: 160, 160
+  offset: 0, 0
+  index: 5
+instrument_draw
+  rotate: false
+  xy: 160, 160
+  size: 160, 160
+  orig: 160, 160
+  offset: 0, 0
+  index: 6
+instrument_draw
+  rotate: false
+  xy: 320, 160
+  size: 160, 160
+  orig: 160, 160
+  offset: 0, 0
+  index: 7
+instrument_draw
+  rotate: false
+  xy: 480, 160
+  size: 160, 160
+  orig: 160, 160
+  offset: 0, 0
+  index: 8
+instrument_draw
+  rotate: false
+  xy: 640, 160
+  size: 160, 160
+  orig: 160, 160
+  offset: 0, 0
+  index: 9
+instrument_draw
+  rotate: false
+  xy: 0, 320
+  size: 160, 160
+  orig: 160, 160
+  offset: 0, 0
+  index: 10
+instrument_draw
+  rotate: false
+  xy: 160, 320
+  size: 160, 160
+  orig: 160, 160
+  offset: 0, 0
+  index: 11
+instrument_hold
+  rotate: false
+  xy: 320, 320
+  size: 160, 160
+  orig: 160, 160
+  offset: 0, 0
+  index: 0
+instrument_hold
+  rotate: false
+  xy: 480, 320
+  size: 160, 160
+  orig: 160, 160
+  offset: 0, 0
+  index: 1
+instrument_hold
+  rotate: false
+  xy: 640, 320
+  size: 160, 160
+  orig: 160, 160
+  offset: 0, 0
+  index: 2
+instrument_hold
+  rotate: false
+  xy: 0, 480
+  size: 160, 160
+  orig: 160, 160
+  offset: 0, 0
+  index: 3
+instrument_hold
+  rotate: false
+  xy: 160, 480
+  size: 160, 160
+  orig: 160, 160
+  offset: 0, 0
+  index: 4
+instrument_hold
+  rotate: false
+  xy: 320, 480
+  size: 160, 160
+  orig: 160, 160
+  offset: 0, 0
+  index: 5
+instrument_hold
+  rotate: false
+  xy: 480, 480
+  size: 160, 160
+  orig: 160, 160
+  offset: 0, 0
+  index: 6
+instrument_hold
+  rotate: false
+  xy: 640, 480
+  size: 160, 160
+  orig: 160, 160
+  offset: 0, 0
+  index: 7
+instrument_hold
+  rotate: false
+  xy: 0, 640
+  size: 160, 160
+  orig: 160, 160
+  offset: 0, 0
+  index: 8
+instrument_hold
+  rotate: false
+  xy: 160, 640
+  size: 160, 160
+  orig: 160, 160
+  offset: 0, 0
+  index: 9
+instrument_hold
+  rotate: false
+  xy: 320, 640
+  size: 160, 160
+  orig: 160, 160
+  offset: 0, 0
+  index: 10
+instrument_hold
+  rotate: false
+  xy: 480, 640
+  size: 160, 160
+  orig: 160, 160
+  offset: 0, 0
+  index: 11
+instrument_hold
+  rotate: false
+  xy: 640, 640
+  size: 160, 160
+  orig: 160, 160
+  offset: 0, 0
+  index: 12

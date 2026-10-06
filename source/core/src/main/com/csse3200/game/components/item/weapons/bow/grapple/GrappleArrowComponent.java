@@ -6,6 +6,7 @@ import com.csse3200.game.components.player.KeyboardPlayerInputComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.services.ServiceLocator;
+import com.csse3200.game.components.item.weapons.bow.grapple.GrappleComponent;
 
 /** Rides on a fired grapple arrow and hooks the player onto solid ground or a platform. */
 public class GrappleArrowComponent extends Component {
