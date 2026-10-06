@@ -2,8 +2,8 @@ package com.csse3200.game.components.minigames.blackjack;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
-import com.csse3200.game.components.GameVolume;
 import com.badlogic.gdx.utils.Timer;
+import com.csse3200.game.components.GameVolume;
 import com.csse3200.game.components.inventory.InventoryComponent;
 import com.csse3200.game.components.minigames.MinigameOverlayManager;
 import com.csse3200.game.entities.Entity;
@@ -16,16 +16,14 @@ import org.slf4j.LoggerFactory;
 /**
  * Blackjack UI overlay.
  *
- * <p>This overlay deliberately does NOT pause EntityService and does NOT install
- * a MinigameOverlayInputComponent. Normal gameplay input therefore remains
- * intact when the overlay is removed.
+ * <p>This overlay deliberately does NOT pause EntityService and does NOT install a
+ * MinigameOverlayInputComponent. Normal gameplay input therefore remains intact when the overlay is
+ * removed.
  */
 public class BlackjackOverlay {
-  private static final Logger logger =
-      LoggerFactory.getLogger(BlackjackOverlay.class);
+  private static final Logger logger = LoggerFactory.getLogger(BlackjackOverlay.class);
 
-  private static final String BLACKJACK_MUSIC =
-      "sounds/minigames/blackjack/blackjack-bgm.mp3";
+  private static final String BLACKJACK_MUSIC = "sounds/minigames/blackjack/blackjack-bgm.mp3";
 
   private final Entity player;
   private final InventoryComponent inventory;
@@ -43,16 +41,11 @@ public class BlackjackOverlay {
     this(player, new MinigameOverlayManager());
   }
 
-  public BlackjackOverlay(
-      Entity player,
-      MinigameOverlayManager overlayManager) {
+  public BlackjackOverlay(Entity player, MinigameOverlayManager overlayManager) {
 
     this.player = player;
 
-    this.inventory =
-        player == null
-            ? null
-            : player.getComponent(InventoryComponent.class);
+    this.inventory = player == null ? null : player.getComponent(InventoryComponent.class);
 
     this.overlayManager = overlayManager;
   }
@@ -87,34 +80,25 @@ public class BlackjackOverlay {
   private void open() {
     logger.info("Opening Blackjack UI");
 
-    BlurredBackdropDisplay backdrop =
-        new BlurredBackdropDisplay(ScreenBlur.capture());
+    BlurredBackdropDisplay backdrop = new BlurredBackdropDisplay(ScreenBlur.capture());
 
-    ServiceLocator.getResourceService()
-        .loadMusic(new String[] {BLACKJACK_MUSIC});
+    ServiceLocator.getResourceService().loadMusic(new String[] {BLACKJACK_MUSIC});
 
-    ServiceLocator.getResourceService()
-        .loadSounds(BlackjackConfig.SOUNDS);
+    ServiceLocator.getResourceService().loadSounds(BlackjackConfig.SOUNDS);
 
     ServiceLocator.getResourceService().loadAll();
 
-    Music music =
-        ServiceLocator.getResourceService()
-            .getAsset(BLACKJACK_MUSIC, Music.class);
+    Music music = ServiceLocator.getResourceService().getAsset(BLACKJACK_MUSIC, Music.class);
 
     music.setLooping(true);
     GameVolume.setMusicVolume(music, 0.25f);
     music.play();
 
-    int startingGold =
-        inventory == null ? 0 : inventory.getGold();
+    int startingGold = inventory == null ? 0 : inventory.getGold();
 
     BlackjackDisplay display =
         new BlackjackDisplay(
-            new Blackjack(startingGold),
-            inventory,
-            this::setSoundEnabled,
-            this::requestClose);
+            new Blackjack(startingGold), inventory, this::setSoundEnabled, this::requestClose);
 
     /*
      * IMPORTANT:
@@ -128,8 +112,7 @@ public class BlackjackOverlay {
         new Entity()
             .addComponent(backdrop)
             .addComponent(display)
-            .addComponent(
-                new BlackjackOverlayActions(this::requestClose));
+            .addComponent(new BlackjackOverlayActions(this::requestClose));
 
     ServiceLocator.getEntityService().register(overlay);
 
@@ -140,8 +123,8 @@ public class BlackjackOverlay {
   }
 
   /**
-   * Delay removal very slightly so the Back mouse event completely finishes
-   * before the Blackjack actors disappear.
+   * Delay removal very slightly so the Back mouse event completely finishes before the Blackjack
+   * actors disappear.
    */
   private void requestClose() {
     if (closing || overlay == null) {
@@ -158,9 +141,7 @@ public class BlackjackOverlay {
     if (ServiceLocator.getRenderService() != null
         && ServiceLocator.getRenderService().getStage() != null) {
 
-      ServiceLocator.getRenderService()
-          .getStage()
-          .unfocusAll();
+      ServiceLocator.getRenderService().getStage().unfocusAll();
     }
 
     /*
@@ -171,8 +152,7 @@ public class BlackjackOverlay {
         new Timer.Task() {
           @Override
           public void run() {
-            Gdx.app.postRunnable(
-                BlackjackOverlay.this::closeNow);
+            Gdx.app.postRunnable(BlackjackOverlay.this::closeNow);
           }
         },
         0.10f);
@@ -181,30 +161,23 @@ public class BlackjackOverlay {
   private void closeNow() {
     logger.info("Removing Blackjack UI");
 
-    if (ServiceLocator.getResourceService()
-        .containsAsset(BLACKJACK_MUSIC, Music.class)) {
+    if (ServiceLocator.getResourceService().containsAsset(BLACKJACK_MUSIC, Music.class)) {
 
-      Music music =
-          ServiceLocator.getResourceService()
-              .getAsset(BLACKJACK_MUSIC, Music.class);
+      Music music = ServiceLocator.getResourceService().getAsset(BLACKJACK_MUSIC, Music.class);
 
       music.stop();
 
-      ServiceLocator.getResourceService()
-          .unloadAssets(new String[] {BLACKJACK_MUSIC});
+      ServiceLocator.getResourceService().unloadAssets(new String[] {BLACKJACK_MUSIC});
     }
 
     if (ServiceLocator.getRenderService() != null
         && ServiceLocator.getRenderService().getStage() != null) {
 
-      ServiceLocator.getRenderService()
-          .getStage()
-          .unfocusAll();
+      ServiceLocator.getRenderService().getStage().unfocusAll();
     }
 
     if (overlay != null) {
-      ServiceLocator.getEntityService()
-          .scheduleRemoval(overlay);
+      ServiceLocator.getEntityService().scheduleRemoval(overlay);
 
       overlay = null;
     }
@@ -230,14 +203,11 @@ public class BlackjackOverlay {
   }
 
   private void setSoundEnabled(boolean enabled) {
-    if (!ServiceLocator.getResourceService()
-        .containsAsset(BLACKJACK_MUSIC, Music.class)) {
+    if (!ServiceLocator.getResourceService().containsAsset(BLACKJACK_MUSIC, Music.class)) {
       return;
     }
 
-    Music music =
-        ServiceLocator.getResourceService()
-            .getAsset(BLACKJACK_MUSIC, Music.class);
+    Music music = ServiceLocator.getResourceService().getAsset(BLACKJACK_MUSIC, Music.class);
 
     if (enabled) {
       music.play();
@@ -246,9 +216,3 @@ public class BlackjackOverlay {
     }
   }
 }
-
-
-
-
-
-

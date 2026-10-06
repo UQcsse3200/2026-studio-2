@@ -277,9 +277,7 @@ public class BlackjackDisplay extends UIComponent {
             // Hard restore gameplay after leaving Blackjack.
             com.badlogic.gdx.Gdx.app.postRunnable(
                 () -> {
-                  com.csse3200.game.services.ServiceLocator
-                      .getEntityService()
-                      .setPaused(false);
+                  com.csse3200.game.services.ServiceLocator.getEntityService().setPaused(false);
                 });
           }
         });
@@ -347,6 +345,7 @@ public class BlackjackDisplay extends UIComponent {
     table.toFront();
     buildResultOverlay();
   }
+
   private void buildResultOverlay() {
     resultOverlay = new Table();
     resultOverlay.setFillParent(true);
@@ -375,9 +374,9 @@ public class BlackjackDisplay extends UIComponent {
 
             if (!blackjack.isRoundInProgress()) {
               resultOverlay.setVisible(false);
-    resultOverlay.setTouchable(com.badlogic.gdx.scenes.scene2d.Touchable.disabled);
+              resultOverlay.setTouchable(com.badlogic.gdx.scenes.scene2d.Touchable.disabled);
               betField.setText("");
-                stage.setKeyboardFocus(betField);
+              stage.setKeyboardFocus(betField);
               resultLabel.setText("");
               statusLabel.setText(
                   inventory != null && inventory.getGold() <= 0
@@ -448,7 +447,7 @@ public class BlackjackDisplay extends UIComponent {
       resultOverlay.addAction(Actions.fadeIn(0.25f));
     } else if (!showOverlay) {
       resultOverlay.setVisible(false);
-    resultOverlay.setTouchable(com.badlogic.gdx.scenes.scene2d.Touchable.disabled);
+      resultOverlay.setTouchable(com.badlogic.gdx.scenes.scene2d.Touchable.disabled);
       resultOverlay.getColor().a = 1f;
     }
 
@@ -928,29 +927,3 @@ public class BlackjackDisplay extends UIComponent {
     super.dispose();
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

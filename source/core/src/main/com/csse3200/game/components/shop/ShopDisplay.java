@@ -252,6 +252,3 @@ public class ShopDisplay extends UIComponent {
     super.dispose();
   }
 }
-
-
-
