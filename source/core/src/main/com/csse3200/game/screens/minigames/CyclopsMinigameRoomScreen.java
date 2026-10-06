@@ -57,9 +57,9 @@ public class CyclopsMinigameRoomScreen extends ScreenAdapter {
   private final Renderer renderer;
   private final PhysicsEngine physicsEngine;
 
-  private CyclopsMinigameArea cyclopsMinigameArea;
+  private final CyclopsMinigameArea cyclopsMinigameArea;
   private TextBoxComponent textBoxComponent;
-  private boolean initalIntro = true;
+  private boolean initialIntro = true;
 
   public CyclopsMinigameRoomScreen(GdxGame game) {
     this.game = game;
@@ -93,8 +93,8 @@ public class CyclopsMinigameRoomScreen extends ScreenAdapter {
   @Override
   public void render(float delta) {
     // And update to check for minigame start??
-    if (initalIntro && textBoxComponent.isDismissed()) {
-      initalIntro = false;
+    if (initialIntro && textBoxComponent.isDismissed()) {
+      initialIntro = false;
       ServiceLocator.getCyclopsMinigameEventHandler().trigger("start");
     }
 

@@ -144,6 +144,11 @@ public class GdxGame extends Game {
     }
   }
 
+  /**
+   * Collects a snapshot of the player's state components (gold, health, inventory)
+   *
+   * @param player - the player entity to save
+   */
   public void savePlayerState(Entity player) {
     if (player == null) {
       logger.warn("Attempting to save a null player");
@@ -152,6 +157,12 @@ public class GdxGame extends Game {
     playerSnapshot = PlayerSnapshot.capture(player);
   }
 
+  /**
+   * If a player snapshot is available then update the given player entity to match the stored
+   * snapshot data (gold, health, inventory)
+   *
+   * @param player - the player to update with the stored snapshot
+   */
   public void restorePlayerState(Entity player) {
     if (playerSnapshot == null) return;
     playerSnapshot.applyTo(player);

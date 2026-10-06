@@ -17,6 +17,13 @@ public class PlayerSnapshot {
     this.inventory = inventory;
   }
 
+  /**
+   * Capture and store the components of the player that are needed between levels (eg. health,
+   * gold, inventory items)
+   *
+   * @param player - the player to take a snapshot of
+   * @return a PlayerSnapshot component storing the gold, health and inventory of the player
+   */
   public static PlayerSnapshot capture(Entity player) {
     CombatStatsComponent stats = player.getComponent(CombatStatsComponent.class);
     InventoryComponent inventory = player.getComponent(InventoryComponent.class);
@@ -24,6 +31,12 @@ public class PlayerSnapshot {
     return new PlayerSnapshot(stats.getHealth(), inventory.getGold(), inventory.getSlots());
   }
 
+  /**
+   * Apply the stored PlayerSnapshot to the given player entity. Updating the gold, health and
+   * inventory components
+   *
+   * @param player - the player to apply the saved PlayerSnapshot to
+   */
   public void applyTo(Entity player) {
     player.getComponent(CombatStatsComponent.class).setHealth(health);
     player.getComponent(InventoryComponent.class).setGold(gold);
