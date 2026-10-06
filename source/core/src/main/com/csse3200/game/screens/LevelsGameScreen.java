@@ -10,8 +10,11 @@ import com.csse3200.game.areas.GameArea;
 import com.csse3200.game.areas.Level1GameArea;
 import com.csse3200.game.areas.Level2GameArea;
 import com.csse3200.game.areas.Level3GameArea;
+import com.csse3200.game.areas.LevelBossGameArea;
 import com.csse3200.game.areas.terrain.TerrainFactory;
 import com.csse3200.game.components.ButtonSound;
+import com.csse3200.game.components.GameVolume;
+import com.csse3200.game.components.SoundEffects;
 import com.csse3200.game.components.gamearea.CoordinateDisplay;
 import com.csse3200.game.components.gamearea.PerformanceDisplay;
 import com.csse3200.game.components.item.ItemAssets;
@@ -136,6 +139,11 @@ public class LevelsGameScreen extends ScreenAdapter {
     Entity levelChanger = currentGameArea.getLevelChanger();
     if (levelChanger != null) {
       levelChanger.getEvents().addListener("triggerNextLevel", this::queueAreaSwap);
+      levelChanger
+          .getEvents()
+          .addListener(
+              "triggerNextLevel",
+              (String level) -> SoundEffects.play("sounds/level_complete.wav", 0.5f));
     }
 
     player = level1GameArea.getPlayer();
@@ -222,6 +230,9 @@ public class LevelsGameScreen extends ScreenAdapter {
         break;
       case "level3":
         nextGameArea = new Level3GameArea(terrainFactory, renderer.getCamera(), player);
+        break;
+      case "boss":
+        nextGameArea = new LevelBossGameArea(terrainFactory, renderer.getCamera(), player);
         break;
       default:
         return;
@@ -401,7 +412,7 @@ public class LevelsGameScreen extends ScreenAdapter {
     resourceService.loadTextureAtlases(mainGameAtlas);
     resourceService.loadSounds(WheelConfig.SOUNDS);
     resourceService.loadMusic(gameEndMusic);
-    resourceService.loadSounds(gameSounds);
+    SoundEffects.load(resourceService);
     resourceService.loadMusic(gameplayMusicFiles);
     ButtonSound.load(resourceService);
     resourceService.loadAll();
@@ -413,7 +424,7 @@ public class LevelsGameScreen extends ScreenAdapter {
     resourceService.unloadAssets(mainGameTextures);
     resourceService.unloadAssets(mainGameAtlas);
     resourceService.unloadAssets(WheelConfig.SOUNDS);
-    resourceService.unloadAssets(gameSounds);
+    SoundEffects.unload(resourceService);
     resourceService.unloadAssets(gameEndMusic);
     resourceService.unloadAssets(gameplayMusicFiles);
     ButtonSound.unload(resourceService);
@@ -422,7 +433,7 @@ public class LevelsGameScreen extends ScreenAdapter {
   private void playMusic() {
     Music music = ServiceLocator.getResourceService().getAsset(gameplayMusic, Music.class);
     music.setLooping(true);
-    music.setVolume(0.05f);
+    GameVolume.setMusicVolume(music, 0.05f);
     music.play();
   }
 
