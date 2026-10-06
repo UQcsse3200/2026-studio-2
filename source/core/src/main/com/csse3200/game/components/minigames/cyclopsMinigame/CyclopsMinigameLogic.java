@@ -243,11 +243,11 @@ public class CyclopsMinigameLogic extends Component {
       if (hasWon) changeState(State.WIN);
       else startMinigame();
     } else {
-      playerEntity.getEvents().trigger(playerLossAnimation);
       CombatStatsComponent combatStats = playerEntity.getComponent(CombatStatsComponent.class);
       if (combatStats != null) {
         combatStats.addHealth(-MISS_DAMAGE);
       }
+      playerEntity.getEvents().trigger(playerLossAnimation);
       // A miss costs a heart and retries the current statue; losing all hearts restarts the
       // minigame.
       changeState(playerIsDead() ? State.DEATH : State.LOSS);
