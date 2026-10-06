@@ -29,6 +29,7 @@ import com.csse3200.game.rendering.CaveEntranceRenderComponent;
 import com.csse3200.game.rendering.TextureRenderComponent;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -166,6 +167,7 @@ public class Level1GameArea extends GameArea {
     "images/enemies/skeleton_warrior.atlas",
     "images/enemies/necromancer.atlas",
     "images/enemies/vulture.atlas",
+    "images/enemies/calypso.atlas",
   };
 
   private static final String[] forestSounds = {"sounds/Impact4.ogg"};
@@ -220,6 +222,7 @@ public class Level1GameArea extends GameArea {
     // spawnTestSkeletonArcher();
     // spawnTestVulture();
     // spawnTestNecromancer();
+    // spawnTestCalypso();
 
     // spawnVulture();
     // spawnNecromancer();
@@ -496,6 +499,17 @@ public class Level1GameArea extends GameArea {
     ceiling.setPosition(x, 11.25f);
     spawnEntity(ceiling);
   }
+
+  List<Vector2> testCalypsoTpPositions =
+      List.of(new Vector2(5f, 3f), new Vector2(10f, 7f), new Vector2(15f, 2f));
+
+  /**
+   * private void spawnTestCalypso() { for (GridPoint2 spawnLocation : testSpawnLocations) { Entity
+   * enemy = EnemyFactory.createCalypso(player, testCalypsoTpPositions); spawnEntityAt(enemy,
+   * spawnLocation, true, true); } }*
+   */
+
+  // ======== ^^^^^ ============
 
   /** Plays the background music. */
   private void playMusic() {
