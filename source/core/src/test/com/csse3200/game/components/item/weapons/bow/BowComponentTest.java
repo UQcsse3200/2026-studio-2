@@ -86,7 +86,7 @@ class BowComponentTest {
     assertTrue(animationDirection.get().epsilonEquals(expectedDirection));
     assertEquals(1f, speedMultiplierRef.get());
     verify(entityService).register(projectile);
-    verify(attackSound).play();
+    verify(attackSound).play(1f);
   }
 
   @Test

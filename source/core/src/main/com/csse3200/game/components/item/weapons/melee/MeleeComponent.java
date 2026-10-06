@@ -4,6 +4,7 @@ import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.Component;
+import com.csse3200.game.components.GameVolume;
 import com.csse3200.game.components.item.weapons.PrimaryWeapon;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.physics.BodyUserData;
@@ -42,7 +43,9 @@ public class MeleeComponent extends Component implements PrimaryWeapon {
     cooldownTimer = SWORD_COOLDOWN;
     if (ServiceLocator.getResourceService() != null
         && ServiceLocator.getResourceService().containsAsset(SWORD_SOUND, Sound.class)) {
-      ServiceLocator.getResourceService().getAsset(SWORD_SOUND, Sound.class).play(0.15f);
+      ServiceLocator.getResourceService()
+          .getAsset(SWORD_SOUND, Sound.class)
+          .play(GameVolume.scale(0.15f));
     }
 
     // Cast a short ray out from the entity and stop at the first NPC it touches

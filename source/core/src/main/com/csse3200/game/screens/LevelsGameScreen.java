@@ -11,6 +11,7 @@ import com.csse3200.game.areas.Level1GameArea;
 import com.csse3200.game.areas.Level2GameArea;
 import com.csse3200.game.areas.terrain.TerrainFactory;
 import com.csse3200.game.components.ButtonSound;
+import com.csse3200.game.components.GameVolume;
 import com.csse3200.game.components.SoundEffects;
 import com.csse3200.game.components.gamearea.CoordinateDisplay;
 import com.csse3200.game.components.gamearea.PerformanceDisplay;
@@ -349,7 +350,7 @@ public class LevelsGameScreen extends ScreenAdapter {
   private void playMusic() {
     Music music = ServiceLocator.getResourceService().getAsset(gameplayMusic, Music.class);
     music.setLooping(true);
-    music.setVolume(0.05f);
+    GameVolume.setMusicVolume(music, 0.05f);
     music.play();
   }
 

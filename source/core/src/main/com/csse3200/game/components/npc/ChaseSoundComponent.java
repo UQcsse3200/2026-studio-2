@@ -2,6 +2,7 @@ package com.csse3200.game.components.npc;
 
 import com.badlogic.gdx.audio.Sound;
 import com.csse3200.game.components.Component;
+import com.csse3200.game.components.GameVolume;
 import com.csse3200.game.services.ServiceLocator;
 
 public class ChaseSoundComponent extends Component {
@@ -31,6 +32,8 @@ public class ChaseSoundComponent extends Component {
       return;
     }
     lastPlayTime = now;
-    ServiceLocator.getResourceService().getAsset(soundPath, Sound.class).play(volume);
+    ServiceLocator.getResourceService()
+        .getAsset(soundPath, Sound.class)
+        .play(GameVolume.scale(volume));
   }
 }

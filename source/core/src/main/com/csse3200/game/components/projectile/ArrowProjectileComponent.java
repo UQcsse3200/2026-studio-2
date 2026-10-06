@@ -8,6 +8,7 @@ import com.badlogic.gdx.physics.box2d.Filter;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.Component;
+import com.csse3200.game.components.GameVolume;
 import com.csse3200.game.components.item.ItemType;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.physics.BodyUserData;
@@ -246,7 +247,9 @@ public class ArrowProjectileComponent extends Component {
     if (arrowType == ArrowType.POTION
         && ServiceLocator.getResourceService() != null
         && ServiceLocator.getResourceService().containsAsset(POTION_SMASH_SOUND, Sound.class)) {
-      ServiceLocator.getResourceService().getAsset(POTION_SMASH_SOUND, Sound.class).play(0.3f);
+      ServiceLocator.getResourceService()
+          .getAsset(POTION_SMASH_SOUND, Sound.class)
+          .play(GameVolume.scale(0.3f));
     }
     ServiceLocator.getEntityService().scheduleRemoval(entity);
   }

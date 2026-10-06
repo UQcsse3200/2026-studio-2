@@ -41,7 +41,9 @@ public class SoundEffects {
   public static void play(String path, float volume) {
     if (ServiceLocator.getResourceService() != null
         && ServiceLocator.getResourceService().containsAsset(path, Sound.class)) {
-      ServiceLocator.getResourceService().getAsset(path, Sound.class).play(volume);
+      ServiceLocator.getResourceService()
+          .getAsset(path, Sound.class)
+          .play(GameVolume.scale(volume));
     }
   }
 }

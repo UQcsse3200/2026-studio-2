@@ -5,6 +5,7 @@ import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.csse3200.game.GdxGame;
 import com.csse3200.game.components.ButtonSound;
+import com.csse3200.game.components.GameVolume;
 import com.csse3200.game.components.mainmenu.MainMenuActions;
 import com.csse3200.game.components.mainmenu.MainMenuDisplay;
 import com.csse3200.game.entities.Entity;
@@ -113,7 +114,7 @@ public class MainMenuScreen extends ScreenAdapter {
   private void playMusic() {
     Music music = ServiceLocator.getResourceService().getAsset(mainMenuMusic, Music.class);
     music.setLooping(true);
-    music.setVolume(0.1f);
+    GameVolume.setMusicVolume(music, 0.1f);
     music.play();
   }
 

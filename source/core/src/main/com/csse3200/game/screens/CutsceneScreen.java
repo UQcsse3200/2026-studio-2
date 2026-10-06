@@ -14,6 +14,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Scaling;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.csse3200.game.GdxGame;
+import com.csse3200.game.components.GameVolume;
 import com.csse3200.game.components.TextBoxComponent;
 import com.csse3200.game.cutscene.CutsceneLoader;
 import com.csse3200.game.cutscene.CutsceneScene;
@@ -137,7 +138,7 @@ public class CutsceneScreen extends ScreenAdapter {
     }
     music = resourceService.getAsset(musicPath, Music.class);
     music.setLooping(true);
-    music.setVolume(0.1f);
+    GameVolume.setMusicVolume(music, 0.1f);
     music.play();
   }
 

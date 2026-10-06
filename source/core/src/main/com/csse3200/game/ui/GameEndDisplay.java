@@ -15,6 +15,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Value;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.csse3200.game.components.ButtonSound;
+import com.csse3200.game.components.GameVolume;
 import com.csse3200.game.components.maingame.MainGameExitDisplay;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.events.EventHandler;
@@ -110,13 +111,13 @@ public class GameEndDisplay extends UIComponent {
         Music music =
             ServiceLocator.getResourceService().getAsset("sounds/Win_music.mp3", Music.class);
         music.setLooping(true);
-        music.setVolume(0.13f);
+        GameVolume.setMusicVolume(music, 0.13f);
         music.play();
       } else {
         Music music =
             ServiceLocator.getResourceService().getAsset("sounds/Death_music.ogg", Music.class);
         music.setLooping(false);
-        music.setVolume(0.4f);
+        GameVolume.setMusicVolume(music, 0.4f);
         music.play();
       }
     } catch (Exception e) {

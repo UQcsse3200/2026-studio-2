@@ -1,6 +1,7 @@
 package com.csse3200.game.components.minigames.blackjack;
 
 import com.badlogic.gdx.audio.Music;
+import com.csse3200.game.components.GameVolume;
 import com.csse3200.game.components.inventory.InventoryComponent;
 import com.csse3200.game.components.minigames.MinigameOverlayInputComponent;
 import com.csse3200.game.components.minigames.MinigameOverlayManager;
@@ -64,7 +65,7 @@ public class BlackjackOverlay {
 
     Music music = ServiceLocator.getResourceService().getAsset(BLACKJACK_MUSIC, Music.class);
     music.setLooping(true);
-    music.setVolume(0.25f);
+    GameVolume.setMusicVolume(music, 0.25f);
     music.play();
 
     BlackjackDisplay display =

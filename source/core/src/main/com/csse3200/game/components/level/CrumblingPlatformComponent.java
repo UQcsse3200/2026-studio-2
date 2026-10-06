@@ -3,6 +3,7 @@ package com.csse3200.game.components.level;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.physics.box2d.Fixture;
+import com.csse3200.game.components.GameVolume;
 import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.rendering.DynamicTextureRenderComponent;
@@ -134,7 +135,9 @@ public class CrumblingPlatformComponent extends PlatformGrappleComponent {
   private void playCrumbleSound(float volume) {
     if (ServiceLocator.getResourceService() != null
         && ServiceLocator.getResourceService().containsAsset(CRUMBLE_SOUND, Sound.class)) {
-      ServiceLocator.getResourceService().getAsset(CRUMBLE_SOUND, Sound.class).play(volume);
+      ServiceLocator.getResourceService()
+          .getAsset(CRUMBLE_SOUND, Sound.class)
+          .play(GameVolume.scale(volume));
     }
   }
 
