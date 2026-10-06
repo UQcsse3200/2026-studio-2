@@ -29,7 +29,7 @@ public class CyclopsMinigameLogic extends Component {
     PRE_MOVE,
     MOVING,
     LOSS,
-    LOSS_TRANSITION,
+    RETREAT,
     DEATH,
     WIN
   }
@@ -41,9 +41,11 @@ public class CyclopsMinigameLogic extends Component {
   static final float SHOW_HIDE_DELAY = 0.3f;
   static final float TRANSITION_DELAY_GAP = 0.2f;
   static final float TRANSITION_DELAY = 0.8f;
-  static final float LOSS_DISPLAY_DELAY = 1.0f;
+  static final float HURT_PAUSE_DELAY = 0.6f;
   static final float DEATH_DISPLAY_DELAY = 1.5f;
   static final int MISS_DAMAGE = 2;
+  static final String CYCLOPS_WAKE_EVENT = "cyclopsWake";
+  static final String CYCLOPS_SLEEP_EVENT = "cyclopsSleep";
   static final float START_SCORING_PERCENT = 20f;
   static final float END_SCORING_PERCENT = 10f;
 
@@ -259,6 +261,7 @@ public class CyclopsMinigameLogic extends Component {
         combatStats.addHealth(-MISS_DAMAGE);
       }
       playerEntity.getEvents().trigger(playerLossAnimation);
+      ServiceLocator.getCyclopsMinigameEventHandler().trigger(CYCLOPS_WAKE_EVENT);
       // A miss costs a heart and retries the current statue; losing all hearts restarts the
       // minigame.
       changeState(playerIsDead() ? State.DEATH : State.LOSS);
@@ -320,11 +323,30 @@ public class CyclopsMinigameLogic extends Component {
     currentSafeLocation = 0;
     timingBarLogic.changeScoringAreaWidth(START_SCORING_PERCENT);
     movePlayer(safeLocations.getFirst());
+    ServiceLocator.getCyclopsMinigameEventHandler().trigger(CYCLOPS_SLEEP_EVENT);
     startMinigame();
   }
 
-  private void retryCurrentStatue() {
-    movePlayer(safeLocations.get(currentSafeLocation));
+  private void beginRetreat() {
+    runStart = playerEntity.getPosition().cpy();
+    runTarget =
+        terrainComponent
+            .tileToWorldPosition(safeLocations.get(currentSafeLocation))
+            .add(playerOffset);
+    playWalkingSound();
+    playerEntity.getEvents().trigger("walk", new Vector2(-1, 0));
+    playerEntity.getEvents().trigger("sprint");
+    changeState(State.RETREAT);
+  }
+
+  private void finishRetreat() {
+    playerEntity.setPosition(runTarget);
+    playerEntity.getEvents().trigger("sprintStop");
+    playerEntity.getEvents().trigger("walkStop");
+    stopWalkingSound();
+    playerEntity.getEvents().trigger("walk", new Vector2(1, 0));
+    playerEntity.getEvents().trigger("walkStop");
+    ServiceLocator.getCyclopsMinigameEventHandler().trigger(CYCLOPS_SLEEP_EVENT);
     startMinigame();
   }
 
@@ -361,16 +383,16 @@ public class CyclopsMinigameLogic extends Component {
         Gdx.app.postRunnable(() -> ServiceLocator.getCyclopsMinigameEventHandler().trigger("win"));
       }
       case LOSS -> {
-        if (elapsed(LOSS_DISPLAY_DELAY)) {
-          logger.info("Player has LOST the cyclops minigame");
-          transitionScreenCover.setVisible(true);
-          changeState(State.LOSS_TRANSITION);
+        if (elapsed(HURT_PAUSE_DELAY)) {
+          beginRetreat();
         }
       }
-      case LOSS_TRANSITION -> {
+      case RETREAT -> {
         if (elapsed(TRANSITION_DELAY)) {
-          transitionScreenCover.setVisible(false);
-          retryCurrentStatue();
+          finishRetreat();
+        } else {
+          float progress = timeInState / TRANSITION_DELAY;
+          playerEntity.setPosition(runStart.cpy().lerp(runTarget, progress));
         }
       }
       case DEATH -> {

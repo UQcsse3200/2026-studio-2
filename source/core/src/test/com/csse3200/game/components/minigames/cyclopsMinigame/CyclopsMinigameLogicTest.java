@@ -25,6 +25,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InOrder;
 
 @ExtendWith(GameExtension.class)
 public class CyclopsMinigameLogicTest {
@@ -622,7 +623,7 @@ public class CyclopsMinigameLogicTest {
 
   /* Testing Loss Sequence */
   @Test
-  void missedTimingShowsBlackScreenThenRestartsMinigameAtFirstLocation() {
+  void missRetreatsToCurrentStatueWithoutTransitionCover() {
     GridPoint2 start = new GridPoint2(1, 0);
     GridPoint2 next = new GridPoint2(2, 0);
     GridPoint2 loss = new GridPoint2(3, 0);
@@ -640,31 +641,57 @@ public class CyclopsMinigameLogicTest {
     when(gameTime.getDeltaTime()).thenReturn(10f);
     when(timingBarLogic.checkHit()).thenReturn(false);
 
-    minigameLogic.changeState(CyclopsMinigameLogic.State.PRE_MOVE);
-    minigameLogic.update();
-    minigameLogic.update();
+    runMove(false);
     verify(player).setPosition(lossPos);
     assertEquals(CyclopsMinigameLogic.State.LOSS, minigameLogic.state);
 
-    when(gameTime.getDeltaTime()).thenReturn(CyclopsMinigameLogic.LOSS_DISPLAY_DELAY / 2);
+    when(gameTime.getDeltaTime()).thenReturn(CyclopsMinigameLogic.HURT_PAUSE_DELAY / 2);
     minigameLogic.update();
     assertEquals(CyclopsMinigameLogic.State.LOSS, minigameLogic.state);
-    verify(minigameLogic.transitionScreenCover, never()).setVisible(true);
 
     when(gameTime.getDeltaTime()).thenReturn(10f);
     minigameLogic.update();
-    verify(minigameLogic.transitionScreenCover).setVisible(true);
-    assertEquals(CyclopsMinigameLogic.State.LOSS_TRANSITION, minigameLogic.state);
+    assertEquals(CyclopsMinigameLogic.State.RETREAT, minigameLogic.state);
+    verify(events).trigger("walk", new Vector2(-1, 0));
 
     minigameLogic.update();
-    verify(minigameLogic.transitionScreenCover).setVisible(false);
-    verify(player).setPosition(startPos);
     assertEquals(CyclopsMinigameLogic.State.SHOW_DELAY, minigameLogic.state);
+    verify(player).setPosition(startPos);
+    verify(minigameLogic.transitionScreenCover, never()).setVisible(true);
+    verify(minigameLogic.walkingSound, atLeastOnce()).play();
+  }
 
+  @Test
+  void missFiresWakeThenSleepOnceEach() {
+    EventHandler cyclopsEvents = mock(EventHandler.class);
+    ServiceLocator.registerCyclopsMinigameEventHandler(cyclopsEvents);
+    minigameLogic.setSafeLocations(List.of(new GridPoint2(1, 0), new GridPoint2(2, 0)));
+    minigameLogic.setLossLocations(List.of(new GridPoint2(3, 0)));
+    minigameLogic.setWinLocation(new GridPoint2(4, 0));
+    givePlayerHealth(10);
+
+    runMove(false);
     minigameLogic.update();
-    verify(timingBarDisplay).setVisible(true);
-    verify(timingBarLogic).startMarker();
-    assertEquals(CyclopsMinigameLogic.State.PLAY, minigameLogic.state);
+    minigameLogic.update();
+
+    InOrder inOrder = inOrder(cyclopsEvents);
+    inOrder.verify(cyclopsEvents, times(1)).trigger("cyclopsWake");
+    inOrder.verify(cyclopsEvents, times(1)).trigger("cyclopsSleep");
+    verify(cyclopsEvents, times(1)).trigger("cyclopsWake");
+    verify(cyclopsEvents, times(1)).trigger("cyclopsSleep");
+  }
+
+  @Test
+  void successfulMoveFiresNoCyclopsEvents() {
+    EventHandler cyclopsEvents = mock(EventHandler.class);
+    ServiceLocator.registerCyclopsMinigameEventHandler(cyclopsEvents);
+    minigameLogic.setSafeLocations(List.of(new GridPoint2(1, 0), new GridPoint2(2, 0)));
+    minigameLogic.setWinLocation(new GridPoint2(3, 0));
+
+    runMove(true);
+
+    verify(cyclopsEvents, never()).trigger("cyclopsWake");
+    verify(cyclopsEvents, never()).trigger("cyclopsSleep");
   }
 
   @Test
