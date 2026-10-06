@@ -315,4 +315,15 @@ class ArrowWheelComponentTest {
 
     assertEquals(ArrowType.STANDARD, wheel.getSelected());
   }
+
+  @Test
+  void shouldRememberWhereTheWheelIsOnScreen() {
+    ArrowWheelComponent wheel = new ArrowWheelComponent();
+    assertNull(wheel.getScreenCentre());
+
+    wheel.setScreenCentre(150f, 450f);
+
+    assertEquals(150f, wheel.getScreenCentre().x);
+    assertEquals(450f, wheel.getScreenCentre().y);
+  }
 }
