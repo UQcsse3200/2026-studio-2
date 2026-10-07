@@ -271,7 +271,12 @@ loadScripts(document, 'script');</script>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="ColliderComponent.html" title="class in com.csse3200.game.physics.components">ColliderComponent</a></span>&nbsp;<span class="element-name">setAsBoxAligned</span><wbr><span class="parameters">(com.badlogic.gdx.math.Vector2&nbsp;size,
  <a href="PhysicsComponent.AlignX.html" title="enum class in com.csse3200.game.physics.components">PhysicsComponent.AlignX</a>&nbsp;alignX,
  <a href="PhysicsComponent.AlignY.html" title="enum class in com.csse3200.game.physics.components">PhysicsComponent.AlignY</a>&nbsp;alignY)</span></div>
-<div class="block">Set physics as a box with a given size. Box is aligned based on alignment.</div>
+<div class="block">Set physics as a box with a given size. Box is aligned based on alignment.
+
+ <p>Every offset computed here is in entity-local space, where (0,0) is the entity's bottom-left
+ corner and the entity spans <code>entity.getScale()</code>. Never use a world coordinate such as
+ <code>getCenterPosition()</code>, which only happens to agree with the local one while the entity
+ sits at the origin.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>size</code> - size of the box</dd>

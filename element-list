@@ -14,6 +14,7 @@ com.csse3200.game.components.item.weapons
 com.csse3200.game.components.item.weapons.bow
 com.csse3200.game.components.item.weapons.bow.arrow
 com.csse3200.game.components.item.weapons.bow.grapple
+com.csse3200.game.components.item.weapons.melee
 com.csse3200.game.components.itemdictionary
 com.csse3200.game.components.level
 com.csse3200.game.components.lighting
