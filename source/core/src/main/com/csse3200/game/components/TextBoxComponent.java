@@ -28,9 +28,12 @@ public class TextBoxComponent extends UIComponent {
   private static final Logger logger = LoggerFactory.getLogger(TextBoxComponent.class);
 
   /** Portrait image edge length in pixels. JPEG aspect is preserved via fit scaling. */
-  private static final float PORTRAIT_SIZE = 96f;
-  /** Fraction of the portrait overlapping the box's top edge (rest sits above the box). */
-  private static final float PORTRAIT_OVERLAP = 0.5f;
+  private static final float PORTRAIT_SIZE = 100f;
+  /**
+   * Fraction of the portrait overlapping the box's top edge. Zero keeps the portrait fully above
+   * the box so it can never cover the first text line; its bottom edge stays connected to the top.
+   */
+  private static final float PORTRAIT_OVERLAP = 0f;
 
   private float posX;
   private float posY;
@@ -219,8 +222,9 @@ public class TextBoxComponent extends UIComponent {
   }
 
   /**
-   * Pins the portrait centered on the box's top edge, half overlapping it. Tracks the live table
-   * bounds so it follows the box as typing packs it taller and under either alignment mode.
+   * Pins the portrait centered above the box's top edge, connected to but never covering the text.
+   * Tracks the live table bounds so it follows the box as typing packs it taller and under either
+   * alignment mode.
    */
   private void layoutPortrait() {
     if (portraitImage == null || portraitTexture == null) {

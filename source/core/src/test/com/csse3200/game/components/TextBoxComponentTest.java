@@ -332,7 +332,7 @@ class TextBoxComponentTest {
   }
 
   @Test
-  void shouldShowPortraitOverlappingTopEdge() {
+  void shouldShowPortraitAboveBoxTopEdge() {
     TextBoxComponent component =
         makeComponent(List.of("Some text"), 100f, List.of(TEST_PORTRAIT));
     when(mockGraphics.getDeltaTime()).thenReturn(1f); // fully reveal so pack() gives size
@@ -347,9 +347,9 @@ class TextBoxComponentTest {
     assertTrue(portrait.isVisible());
     Table table = getField(component, "table");
     assertTrue(table.getHeight() > 0f);
-    // Centered on the box, half overlapping its top edge.
+    // Centered above the box: bottom edge on the top edge, never covering the text.
     assertEquals(table.getX() + (table.getWidth() - 96f) / 2f, portrait.getX(), 0.01f);
-    assertEquals(table.getY() + table.getHeight() - 96f * 0.5f, portrait.getY(), 0.01f);
+    assertEquals(table.getY() + table.getHeight(), portrait.getY(), 0.01f);
   }
 
   @Test
