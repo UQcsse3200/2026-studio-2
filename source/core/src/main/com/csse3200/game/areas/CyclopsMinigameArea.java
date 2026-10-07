@@ -2,18 +2,20 @@ package com.csse3200.game.areas;
 
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.areas.terrain.TerrainFactory;
 import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.components.GameVolume;
 import com.csse3200.game.components.TextBoxComponent;
+import com.csse3200.game.components.minigames.cyclopsMinigame.CyclopsBackdropSpriteComponent;
 import com.csse3200.game.components.minigames.cyclopsMinigame.CyclopsCameraFollowComponent;
-import com.csse3200.game.components.minigames.cyclopsMinigame.CyclopsFloorRenderComponent;
+import com.csse3200.game.components.minigames.cyclopsMinigame.CyclopsCaveBackgroundComponent;
 import com.csse3200.game.components.minigames.cyclopsMinigame.CyclopsHurtSoundComponent;
 import com.csse3200.game.components.minigames.cyclopsMinigame.CyclopsMinigameLogic;
+import com.csse3200.game.components.minigames.cyclopsMinigame.SleepingCyclopsRenderComponent;
 import com.csse3200.game.components.minigames.cyclopsMinigame.TimingBarDisplay;
 import com.csse3200.game.components.minigames.cyclopsMinigame.TimingBarLogic;
 import com.csse3200.game.entities.Entity;
@@ -31,17 +33,48 @@ public class CyclopsMinigameArea extends GameArea {
 
   static final float PLAYER_SCALE = 1.5f;
   private static final float FORMATION_HEIGHT_PER_PLAYER_HEIGHT = 1.7f;
-  private static final int CAVE_FLOOR_GROUND_TOP_ROW = 289;
-  private static final int CAVE_FLOOR_GROUND_ROWS = 35;
-  private static final float FLOOR_SCREEN_FRACTION = 0.2f;
 
-  private static final String CAVE_FLOOR_TEXTURE = "images/minigames/Cyclops/CyclopsCaveFloor.png";
-  static final String CAVE_FORMATION_1 = "images/minigames/Cyclops/cave_formation_1.png";
-  static final String CAVE_FORMATION_2 = "images/minigames/Cyclops/cave_formation_2.png";
-  static final String CAVE_FORMATION_3 = "images/minigames/Cyclops/cave_formation_3.png";
+  // The cave backdrop is scaled to exactly the camera's height, so its stone floor (row 812 of
+  // 941) has to sit this far up the screen for everything to line up.
+  private static final String CAVE_BACKGROUND_TEXTURE =
+      "images/minigames/Cyclops/cave_background.png";
+  private static final String CAVE_FLOOR_TEXTURE = "images/minigames/Cyclops/cave_floor.png";
+  private static final int CAVE_BACKGROUND_HEIGHT = 941;
+  private static final int CAVE_BACKGROUND_FLOOR_ROW = 812;
+  private static final float FLOOR_SCREEN_FRACTION =
+      (CAVE_BACKGROUND_HEIGHT - CAVE_BACKGROUND_FLOOR_ROW) / (float) CAVE_BACKGROUND_HEIGHT;
+
+  // The "stones" the player hops between: barrel, cart, vase (repeating).
+  static final String CAVE_FORMATION_1 = "images/minigames/Cyclops/cave_prop_barrel.png";
+  static final String CAVE_FORMATION_2 = "images/minigames/Cyclops/cave_prop_cart.png";
+  static final String CAVE_FORMATION_3 = "images/minigames/Cyclops/cave_prop_vase.png";
   static final String[] CAVE_FORMATION_TEXTURES = {
     CAVE_FORMATION_1, CAVE_FORMATION_2, CAVE_FORMATION_3
   };
+
+  // The sleeping cyclops. One of his sprite pixels is this many prop-texture pixels wide, which
+  // keeps him at the same scale relative to the props as in the design preview.
+  private static final String CYCLOPS_SLEEP_SHEET = "images/minigames/Cyclops/sleeping_cyclops.png";
+  private static final float CYCLOPS_PIXEL_IN_PROP_PIXELS = 4.2f;
+  // He sleeps at the back, on a rock platform that stands on the floor line. The platform sprite
+  // is drawn at the same pixel size as the cyclops.
+  private static final String CAVE_PLATFORM_TEXTURE =
+      "images/minigames/Cyclops/cave_rock_platform.png";
+
+  /** Rows of the platform's top face that he sinks into, so he lies on it rather than hovering. */
+  private static final float PLATFORM_REST_ROWS = 5f;
+
+  /** Platform and cyclops are tinted slightly dark and cool so they read as further back. */
+  private static final float BACK_TINT_RED = 0.80f;
+
+  private static final float BACK_TINT_GREEN = 0.80f;
+  private static final float BACK_TINT_BLUE = 0.88f;
+
+  /** Pushes the platform just behind the cyclops (higher y draws behind) and both behind props. */
+  private static final float BACK_DEPTH_OFFSET = 0.02f;
+
+  /** Extra camera zoom-out on top of whatever is needed to fit the whole design in view. */
+  private static final float CAMERA_ZOOM_OUT_EXTRA = 1.15f;
 
   private static final String[] cyclopsMinigameTextures = {
     "images/backgrounds/black_roof.png",
@@ -49,7 +82,10 @@ public class CyclopsMinigameArea extends GameArea {
     "images/ui/transparent.png",
     "images/terrain/Others/platform.png",
     "images/ui/transparent.png",
+    CAVE_BACKGROUND_TEXTURE,
     CAVE_FLOOR_TEXTURE,
+    CAVE_PLATFORM_TEXTURE,
+    CYCLOPS_SLEEP_SHEET,
     CAVE_FORMATION_1,
     CAVE_FORMATION_2,
     CAVE_FORMATION_3,
@@ -89,8 +125,15 @@ public class CyclopsMinigameArea extends GameArea {
 
   private Entity player;
   private Entity minigame;
+  private Entity cyclops;
   private Vector2 playerOffset = new Vector2();
   private float formationHeight;
+
+  /** World units per prop-texture pixel (shared, so the props keep their relative sizes). */
+  private float propWorldPerPixel;
+
+  /** Height in texture pixels of the tallest prop (the vase). */
+  private float tallestPropPixels;
 
   static final GridPoint2 MAP_SIZE = new GridPoint2(80, 30);
   static final int NUM_STATUES = 6;
@@ -116,6 +159,7 @@ public class CyclopsMinigameArea extends GameArea {
     spawnTerrain();
     player = spawnPlayer();
     spawnStatues();
+    spawnSleepingCyclops();
     displayFloor();
     spawnCamera();
 
@@ -158,13 +202,28 @@ public class CyclopsMinigameArea extends GameArea {
   }
 
   /**
+   * Zoom needed so the whole backdrop design fits in view: the vase is designed to be {@code
+   * tallestPropPixels / CAVE_BACKGROUND_HEIGHT} of the view height, with the platform and cyclops
+   * above it. Never zooms in, then zooms out a little more by {@link #CAMERA_ZOOM_OUT_EXTRA}.
+   */
+  static float zoomFor(float formationHeight, float tallestPropPixels, float viewportHeight) {
+    float designViewHeight = formationHeight * CAVE_BACKGROUND_HEIGHT / tallestPropPixels;
+    return Math.max(1f, designViewHeight / viewportHeight) * CAMERA_ZOOM_OUT_EXTRA;
+  }
+
+  /**
    * Keeps the camera on the player's x, clamped so the view never passes the room's ends. The
-   * height is fixed so the floor line sits a fifth of the way up the screen.
+   * camera is zoomed out (see {@link #zoomFor}) and its height is fixed so the floor line sits
+   * {@link #FLOOR_SCREEN_FRACTION} of the way up the screen, which is where the backdrop's stone
+   * floor ends up.
    */
   private void spawnCamera() {
     float roomWidth = terrain.tileToWorldPosition(MAP_SIZE.x, 0).x;
     float floorY = terrain.tileToWorldPosition(0, statueYLevel).y;
-    float viewHeight = cameraComponent.getCamera().viewportHeight;
+    OrthographicCamera camera = (OrthographicCamera) cameraComponent.getCamera();
+    camera.zoom = zoomFor(formationHeight, tallestPropPixels, camera.viewportHeight);
+    camera.update();
+    float viewHeight = camera.viewportHeight * camera.zoom;
     float cameraY = floorY + (0.5f - FLOOR_SCREEN_FRACTION) * viewHeight;
     Entity cameraEntityHolder =
         new Entity()
@@ -196,14 +255,34 @@ public class CyclopsMinigameArea extends GameArea {
     return CAVE_FORMATION_TEXTURES[(statueNumber - 1) % CAVE_FORMATION_TEXTURES.length];
   }
 
+  /** Tile column the platform and cyclops are centred on: the exact middle of the room. */
+  static int cyclopsTileX() {
+    return MAP_SIZE.x / 2;
+  }
+
   static float formationHeightFor(float playerHeight) {
     return FORMATION_HEIGHT_PER_PLAYER_HEIGHT * playerHeight;
+  }
+
+  /**
+   * World units per texture pixel such that the tallest prop is {@code tallestPropWorldHeight}
+   * tall. Every prop uses the same factor, so a barrel stays smaller than the vase.
+   */
+  static float propWorldPerPixelFor(float tallestPropWorldHeight, float tallestPropPixels) {
+    return tallestPropWorldHeight / tallestPropPixels;
   }
 
   private void spawnStatues() {
     this.statueLocations = new ArrayList<>(NUM_STATUES);
     this.statueGapLocations = new ArrayList<>(NUM_STATUES);
     formationHeight = formationHeightFor(player.getScale().y);
+
+    tallestPropPixels = 0f;
+    for (String path : CAVE_FORMATION_TEXTURES) {
+      Texture image = ServiceLocator.getResourceService().getAsset(path, Texture.class);
+      tallestPropPixels = Math.max(tallestPropPixels, image.getHeight());
+    }
+    propWorldPerPixel = propWorldPerPixelFor(formationHeight, tallestPropPixels);
 
     for (int i = 1; i <= NUM_STATUES; i++) {
       int x = statueTileX(i);
@@ -216,8 +295,8 @@ public class CyclopsMinigameArea extends GameArea {
       Entity formation = ObstacleFactory.createCaveFormation(formationTexture);
       formation.setScale(
           new Vector2(
-              formationHeight * formationImage.getWidth() / formationImage.getHeight(),
-              formationHeight));
+              formationImage.getWidth() * propWorldPerPixel,
+              formationImage.getHeight() * propWorldPerPixel));
       spawnEntityAt(formation, new GridPoint2(x, statueYLevel), true, false);
       formation.setPosition(formation.getPosition().cpy().add(0, STATUE_DEPTH_OFFSET));
       logger.info(
@@ -231,43 +310,54 @@ public class CyclopsMinigameArea extends GameArea {
   }
 
   /**
-   * Draws the cave floor's ground strip across the room with its top edge on the floor line, and
-   * adds the physics floor.
+   * Spawns the rock platform (standing on the floor line, at the back) and the sleeping cyclops
+   * lying on top of it. He wakes and sleeps on the {@code cyclopsWake} / {@code cyclopsSleep}
+   * events that {@link CyclopsMinigameLogic} already triggers. Set the last two constructor flags
+   * to false to stop him twitching or opening his eye on his own.
+   */
+  private void spawnSleepingCyclops() {
+    float pixelWorldSize = CYCLOPS_PIXEL_IN_PROP_PIXELS * propWorldPerPixel;
+    Texture platformImage =
+        ServiceLocator.getResourceService().getAsset(CAVE_PLATFORM_TEXTURE, Texture.class);
+    Vector2 floorPoint = terrain.tileToWorldPosition(new GridPoint2(cyclopsTileX(), statueYLevel));
+    float platformTopY = floorPoint.y + platformImage.getHeight() * pixelWorldSize;
+
+    Entity platform =
+        new Entity()
+            .addComponent(
+                new CyclopsBackdropSpriteComponent(CAVE_PLATFORM_TEXTURE, pixelWorldSize)
+                    .setTint(BACK_TINT_RED, BACK_TINT_GREEN, BACK_TINT_BLUE));
+    spawnEntity(platform);
+    platform.setPosition(floorPoint.x, platformTopY + BACK_DEPTH_OFFSET);
+
+    cyclops =
+        new Entity()
+            .addComponent(
+                new SleepingCyclopsRenderComponent(CYCLOPS_SLEEP_SHEET, pixelWorldSize, true, true)
+                    .setTint(BACK_TINT_RED, BACK_TINT_GREEN, BACK_TINT_BLUE));
+    spawnEntity(cyclops);
+    cyclops.setPosition(floorPoint.x, platformTopY - PLATFORM_REST_ROWS * pixelWorldSize);
+  }
+
+  /**
+   * Adds the cave backdrop (one still image) with the stone floor locked to the world on the floor
+   * line, and the physics floor.
    */
   private void displayFloor() {
     float roomWidth = terrain.tileToWorldPosition(MAP_SIZE.x, 0).x;
     float floorY = terrain.tileToWorldPosition(0, statueYLevel).y;
 
-    Texture floorImage =
-        ServiceLocator.getResourceService().getAsset(CAVE_FLOOR_TEXTURE, Texture.class);
-    TextureRegion ground =
-        new TextureRegion(
-            floorImage,
-            0,
-            CAVE_FLOOR_GROUND_TOP_ROW,
-            floorImage.getWidth(),
-            CAVE_FLOOR_GROUND_ROWS);
-    Texture formationImage =
-        ServiceLocator.getResourceService().getAsset(CAVE_FORMATION_1, Texture.class);
-    float worldPerPixel = formationHeight / formationImage.getHeight();
-    float tileWidth = floorImage.getWidth() * worldPerPixel;
-    float stripHeight = CAVE_FLOOR_GROUND_ROWS * worldPerPixel;
-    TextureRegion darkestRow =
-        new TextureRegion(
-            floorImage,
-            0,
-            CAVE_FLOOR_GROUND_TOP_ROW + CAVE_FLOOR_GROUND_ROWS - 1,
-            floorImage.getWidth(),
-            1);
-    float depth = 2f * cameraComponent.getCamera().viewportHeight;
-    Entity floor =
+    Entity background =
         new Entity()
             .addComponent(
-                new CyclopsFloorRenderComponent(
-                    ground, darkestRow, tileWidth, stripHeight, roomWidth, depth));
-    // Two texture pixels above the feet, so the ground overlaps them and nothing shows between.
-    floor.setPosition(0f, floorY + STATUE_DEPTH_OFFSET + 2f * worldPerPixel);
-    spawnEntity(floor);
+                new CyclopsCaveBackgroundComponent(
+                    CAVE_BACKGROUND_TEXTURE,
+                    CAVE_FLOOR_TEXTURE,
+                    (OrthographicCamera) cameraComponent.getCamera(),
+                    roomWidth,
+                    floorY,
+                    CAVE_BACKGROUND_FLOOR_ROW));
+    spawnEntity(background);
 
     spawnEntityAt(
         ObstacleFactory.createWall(roomWidth, 0.1f),
