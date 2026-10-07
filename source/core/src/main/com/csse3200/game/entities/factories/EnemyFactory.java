@@ -208,34 +208,6 @@ public class EnemyFactory {
   }
 
   /**
-   * Creates a cyclops miniboss
-   *
-   * @param target entity the enemy will chase and attack
-   * @return cyclops entity
-   */
-  public static Entity createCyclops(Entity target) {
-    EnemyConfig config = configs.cyclops;
-    Entity cyclops = createEnemy(target, config);
-
-    AnimationRenderComponent animator =
-        new AnimationRenderComponent(
-            ServiceLocator.getResourceService()
-                .getAsset("images/skeleton_warrior.atlas", TextureAtlas.class));
-    animator.addAnimation("walk", 0.15f, Animation.PlayMode.LOOP);
-    animator.addAnimation("idle", 0.15f, Animation.PlayMode.LOOP);
-
-    cyclops.addComponent(new EnemyAnimationController(target));
-    cyclops.addComponent(animator);
-
-    cyclops
-        .getComponent(AITaskComponent.class)
-        .addTask(
-            new DelayedAttackTask(target, 20, config.attackRange, 0.5f, config.baseAttack, 10f));
-
-    return cyclops;
-  }
-
-  /**
    * Creates a calypso mainboss
    *
    * @param target entity the enemy will chase and attack
