@@ -32,7 +32,7 @@ public class Level2Config extends LevelConfig {
     checkpointAtlas = "images/terrain/Level_1/Level_1_checkpoint.atlas";
 
     playerSpawn = new GridPoint2(0, 42);
-    winConditionSpawn = new GridPoint2(33, 8);
+    nextLevelTriggerSpawn = new GridPoint2(33, 8);
     nextLevelName = "level3";
 
     platforms =

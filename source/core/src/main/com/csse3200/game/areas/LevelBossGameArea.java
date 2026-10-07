@@ -24,7 +24,15 @@ public class LevelBossGameArea extends GameArea {
   private static final GridPoint2 CALYPSO_SPAWN = new GridPoint2(15, 1);
 
   private static final List<Vector2> CALYPSO_TP_POSITIONS =
-      List.of(new Vector2(5f, 3f), new Vector2(10f, 7f), new Vector2(15f, 2f));
+      List.of(
+          new Vector2(16f, 1.2f),
+          new Vector2(4f, 1.2f),
+          new Vector2(-8f, 4.8f),
+          new Vector2(0f, 4.8f),
+          new Vector2(-8f, 9f),
+          new Vector2(12f, 9f),
+          new Vector2(-4f, 12.7f),
+          new Vector2(8f, 12.7f));
 
   private Vector2 worldBounds;
 

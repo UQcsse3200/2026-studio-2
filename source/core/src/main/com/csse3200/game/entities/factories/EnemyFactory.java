@@ -22,6 +22,7 @@ import com.csse3200.game.components.tasks.ChaseTask;
 import com.csse3200.game.components.tasks.DelayedAttackTask;
 import com.csse3200.game.components.tasks.FlyingChaseTask;
 import com.csse3200.game.components.tasks.FlyingRepositionTask;
+import com.csse3200.game.components.tasks.FlyingWanderTask;
 import com.csse3200.game.components.tasks.RangedAttackTask;
 import com.csse3200.game.components.tasks.RepositionTask;
 import com.csse3200.game.components.tasks.SummonTask;
@@ -92,7 +93,8 @@ public class EnemyFactory {
     // Skeleton Warrior has a charged attack (extra range melee with initial delay)
     skeletonWarrior
         .getComponent(AITaskComponent.class)
-        .addTask(new DelayedAttackTask(target, 20, config.attackRange, 0.5f));
+        .addTask(
+            new DelayedAttackTask(target, 20, config.attackRange, 0.5f, config.baseAttack, 10f));
 
     return skeletonWarrior;
   }
@@ -210,33 +212,6 @@ public class EnemyFactory {
   }
 
   /**
-   * Creates a cyclops miniboss
-   *
-   * @param target entity the enemy will chase and attack
-   * @return cyclops entity
-   */
-  public static Entity createCyclops(Entity target) {
-    EnemyConfig config = configs.cyclops;
-    Entity cyclops = createEnemy(target, config);
-
-    AnimationRenderComponent animator =
-        new AnimationRenderComponent(
-            ServiceLocator.getResourceService()
-                .getAsset("images/skeleton_warrior.atlas", TextureAtlas.class));
-    animator.addAnimation("walk", 0.15f, Animation.PlayMode.LOOP);
-    animator.addAnimation("idle", 0.15f, Animation.PlayMode.LOOP);
-
-    cyclops.addComponent(new EnemyAnimationController(target));
-    cyclops.addComponent(animator);
-
-    cyclops
-        .getComponent(AITaskComponent.class)
-        .addTask(new DelayedAttackTask(target, 20, config.attackRange, 0.5f));
-
-    return cyclops;
-  }
-
-  /**
    * Creates a calypso mainboss
    *
    * @param target entity the enemy will chase and attack
@@ -319,7 +294,7 @@ public class EnemyFactory {
             .addComponent(
                 new PhysicsMovementComponent(
                     new Vector2(config.maxSpeed, config.maxSpeed), config.gravity))
-            .addComponent(new ColliderComponent())
+            .addComponent(new ColliderComponent().setLayer(PhysicsLayer.CHARACTER))
             .addComponent(new HitboxComponent().setLayer(PhysicsLayer.NPC))
             .addComponent(new CombatStatsComponent(config.health, config.baseAttack))
             .addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER, 10f))
@@ -342,15 +317,17 @@ public class EnemyFactory {
 
     PhysicsUtils.setScaledCollider(enemy, 0.9f, 0.4f); // 0.4f seems small: any reason?
 
-    aiComponent.addTask(
-        // Adding the values for wander task from the enemy's config file
-        new WanderTask(
-            new Vector2(config.wanderRangeX, config.wanderRangeY), config.wanderWaitTime));
     if (config.attackType.equals("calypso")) {
-      aiComponent.addTask(
-          new ChaseTask(target, config.chasePriority, viewDistance, maxChaseDistance));
+      aiComponent
+          .addTask(
+              new WanderTask(
+                  new Vector2(config.wanderRangeX, config.wanderRangeY), config.wanderWaitTime))
+          .addTask(new ChaseTask(target, config.chasePriority, viewDistance, maxChaseDistance));
     } else if (config.behaviour.equals("flying")) {
       aiComponent
+          .addTask(
+              new FlyingWanderTask(
+                  new Vector2(config.wanderRangeX, config.wanderRangeY), config.wanderWaitTime))
           .addTask(
               new FlyingChaseTask(target, config.chasePriority, viewDistance, maxChaseDistance))
           .addTask(
@@ -358,6 +335,9 @@ public class EnemyFactory {
                   target, config.repositionPriority, config.repositionDistance));
     } else {
       aiComponent
+          .addTask(
+              new WanderTask(
+                  new Vector2(config.wanderRangeX, config.wanderRangeY), config.wanderWaitTime))
           .addTask(new ChaseTask(target, config.chasePriority, viewDistance, maxChaseDistance))
           .addTask(
               new RepositionTask(target, config.repositionPriority, config.repositionDistance));
@@ -397,7 +377,7 @@ public class EnemyFactory {
   private static Entity createPassiveEnemy(EnemyConfig config) {
     return new Entity()
         .addComponent(new PhysicsComponent().setBodyType(BodyType.StaticBody))
-        .addComponent(new ColliderComponent())
+        .addComponent(new ColliderComponent().setLayer(PhysicsLayer.CHARACTER))
         .addComponent(new HitboxComponent().setLayer(PhysicsLayer.NPC))
         .addComponent(new CombatStatsComponent(config.health, config.baseAttack))
         .addComponent(new EnemyDeathComponent())

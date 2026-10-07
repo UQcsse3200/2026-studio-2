@@ -127,7 +127,7 @@ public class RisingWaterComponent extends Component {
     storedHeight = Math.max(initialHeight, lenientHeight);
   }
 
-  private void toggleActivation(boolean newState) {
+  protected void toggleActivation(boolean newState) {
     if (newState) {
       setSpeed(initialSpeed);
     } else {

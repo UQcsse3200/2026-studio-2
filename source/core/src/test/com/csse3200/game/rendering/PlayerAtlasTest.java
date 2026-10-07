@@ -41,8 +41,18 @@ class PlayerAtlasTest {
   }
 
   @Test
-  void shouldExposeJumpAnimation() {
-    assertEquals(11, atlas.findRegions("jump").size);
+  void shouldExposeJumpTakeoffAnimation() {
+    assertEquals(8, atlas.findRegions("jump_takeoff").size);
+  }
+
+  @Test
+  void shouldExposeJumpFallAnimation() {
+    assertEquals(1, atlas.findRegions("jump_fall").size);
+  }
+
+  @Test
+  void shouldExposeJumpLandAnimation() {
+    assertEquals(3, atlas.findRegions("jump_land").size);
   }
 
   @Test
