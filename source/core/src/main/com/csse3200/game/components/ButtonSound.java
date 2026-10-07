@@ -45,7 +45,7 @@ public class ButtonSound {
   private static void playSafe(String path) {
     try {
       Sound sound = ServiceLocator.getResourceService().getAsset(path, Sound.class);
-      sound.play(1.0f);
+      sound.play(GameVolume.scale(1.0f));
       System.out.println("ButtonSound played: " + path);
     } catch (GdxRuntimeException e) {
       System.out.println("ButtonSound FAILED: " + path + " - " + e.getMessage());

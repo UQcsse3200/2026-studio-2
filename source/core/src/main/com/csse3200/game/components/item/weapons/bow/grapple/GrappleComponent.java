@@ -14,6 +14,7 @@ import com.badlogic.gdx.physics.box2d.joints.RopeJoint;
 import com.badlogic.gdx.physics.box2d.joints.RopeJointDef;
 import com.badlogic.gdx.utils.Array;
 import com.csse3200.game.components.Component;
+import com.csse3200.game.components.GameVolume;
 import com.csse3200.game.components.item.weapons.bow.BowCharge;
 import com.csse3200.game.components.projectile.ArrowProjectileComponent;
 import com.csse3200.game.entities.Entity;
@@ -250,7 +251,7 @@ public class GrappleComponent extends Component {
     try {
       Sound arrowSound =
           ServiceLocator.getResourceService().getAsset("sounds/Arrow_release.wav", Sound.class);
-      arrowSound.play(0.4f);
+      arrowSound.play(GameVolume.scale(0.4f));
     } catch (Exception e) {
       // skip
     }

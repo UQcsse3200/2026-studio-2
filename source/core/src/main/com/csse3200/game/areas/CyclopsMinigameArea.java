@@ -5,6 +5,7 @@ import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.areas.terrain.TerrainFactory;
 import com.csse3200.game.components.CameraComponent;
+import com.csse3200.game.components.GameVolume;
 import com.csse3200.game.components.TextBoxComponent;
 import com.csse3200.game.components.minigames.cyclopsMinigame.CyclopsMinigameLogic;
 import com.csse3200.game.components.minigames.cyclopsMinigame.TimingBarDisplay;
@@ -172,7 +173,7 @@ public class CyclopsMinigameArea extends GameArea {
         ServiceLocator.getResourceService()
             .getAsset("sounds/minigames/cyclops/cave_background_noise.mp3", Music.class);
     music.setLooping(true);
-    music.setVolume(0.4f);
+    GameVolume.setMusicVolume(music, 0.4f);
     music.play();
   }
 

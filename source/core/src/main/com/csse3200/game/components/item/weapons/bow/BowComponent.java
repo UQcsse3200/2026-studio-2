@@ -3,6 +3,7 @@ package com.csse3200.game.components.item.weapons.bow;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.components.Component;
+import com.csse3200.game.components.GameVolume;
 import com.csse3200.game.components.item.weapons.PrimaryWeapon;
 import com.csse3200.game.components.projectile.ArrowProjectileComponent;
 import com.csse3200.game.components.projectile.ArrowType;
@@ -14,7 +15,7 @@ import com.csse3200.game.services.ServiceLocator;
 /** Ranged attack behaviour that fires player arrow variants (Standard, Ice, Fire, Grapple). */
 public class BowComponent extends Component implements PrimaryWeapon {
 
-  private static final String ATTACK_SOUND = "sounds/Impact4.ogg";
+  private static final String ATTACK_SOUND = "sounds/shoot.ogg";
   private static final float BOW_COOLDOWN = 0.4f;
 
   /** How far in front of the player's centre, in player widths, a fired arrow spawns. */
@@ -208,7 +209,7 @@ public class BowComponent extends Component implements PrimaryWeapon {
         && ServiceLocator.getResourceService().containsAsset(ATTACK_SOUND, Sound.class)) {
       Sound attackSound = ServiceLocator.getResourceService().getAsset(ATTACK_SOUND, Sound.class);
       if (attackSound != null) {
-        attackSound.play();
+        attackSound.play(GameVolume.scale(1f));
       }
     }
 

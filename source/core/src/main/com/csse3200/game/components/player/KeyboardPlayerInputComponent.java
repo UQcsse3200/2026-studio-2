@@ -296,14 +296,23 @@ public class KeyboardPlayerInputComponent extends InputComponent {
     return isShopOpen();
   }
 
-  /** Reports the pointer's offset from the centre of the screen, where the wheel is drawn. */
+  /**
+   * Reports the pointer's offset from the centre of the arrow wheel, or from the centre of the
+   * screen if the wheel hasn't been placed.
+   */
   @Override
   public boolean mouseMoved(int screenX, int screenY) {
     if (Gdx.graphics != null) {
       float centreX = Gdx.graphics.getWidth() / 2f;
-      float centreY = Gdx.graphics.getHeight() / 2f;
+      float centreYFromTop = Gdx.graphics.getHeight() / 2f;
+      ArrowWheelComponent wheel = entity.getComponent(ArrowWheelComponent.class);
+      Vector2 wheelCentre = wheel == null ? null : wheel.getScreenCentre();
+      if (wheelCentre != null) {
+        centreX = wheelCentre.x;
+        centreYFromTop = wheelCentre.y;
+      }
       // Screen y grows downwards, so flip it to match the wheel's y-up directions.
-      Vector2 offsetFromCentre = new Vector2(screenX - centreX, centreY - screenY);
+      Vector2 offsetFromCentre = new Vector2(screenX - centreX, centreYFromTop - screenY);
       entity.getEvents().trigger("arrowWheelPointerMoved", offsetFromCentre);
     }
 
