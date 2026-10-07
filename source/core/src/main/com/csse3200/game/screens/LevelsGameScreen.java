@@ -90,8 +90,10 @@ public class LevelsGameScreen extends ScreenAdapter {
     "sounds/hit.ogg", "sounds/Arrow_release.wav", "sounds/jump.ogg", "sounds/itempick.wav"
   };
   private final Level1GameArea level1GameArea;
-  private boolean cheats = true;
-  private float gravity;
+  // Cheat mode (Backspace): zero gravity plus free vertical movement. Starts off.
+  private boolean cheats = false;
+  // Gravity scale to restore when cheat mode is switched off.
+  private float gravity = 1f;
 
   public LevelsGameScreen(GdxGame game) {
     this.game = game;
