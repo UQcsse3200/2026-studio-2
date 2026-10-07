@@ -1,0 +1,81 @@
+{
+  "fadeDuration": 0.4,
+  "music": "sounds/Main_menu_sound.mp3",
+  "scenes": [
+    {
+      "image": "scene1.jpeg",
+      "text": {
+        "xPos": 600,
+        "yPos": 150,
+        "charsPerSecond": 20,
+        "maxWidth": 600,
+        "padding": 16,
+        "borderThickness": 3,
+        "textAlignment": "center",
+        "pages": [
+          "..."
+        ]
+      }
+    },
+    {
+      "image": "scene2.jpeg",
+      "text": {
+        "xPos": 600,
+        "yPos": 150,
+        "charsPerSecond": 20,
+        "maxWidth": 600,
+        "padding": 16,
+        "borderThickness": 3,
+        "textAlignment": "center",
+        "pages": [
+          "..."
+        ]
+      }
+    },
+    {
+      "image": "scene3.jpeg",
+      "text": {
+        "xPos": 600,
+        "yPos": 150,
+        "charsPerSecond": 20,
+        "maxWidth": 600,
+        "padding": 16,
+        "borderThickness": 3,
+        "textAlignment": "center",
+        "pages": [
+          "..."
+        ]
+      }
+    },
+    {
+      "image": "scene4.jpeg",
+      "text": {
+        "xPos": 600,
+        "yPos": 150,
+        "charsPerSecond": 20,
+        "maxWidth": 600,
+        "padding": 16,
+        "borderThickness": 3,
+        "textAlignment": "center",
+        "pages": [
+          "..."
+        ]
+      }
+    },
+    {
+      "image": "scene5.jpeg",
+      "text": {
+        "xPos": 600,
+        "yPos": 150,
+        "charsPerSecond": 20,
+        "maxWidth": 600,
+        "padding": 16,
+        "borderThickness": 3,
+        "textAlignment": "center",
+        "pages": [
+          "..."
+        ]
+      }
+    }
+  ]
+}
