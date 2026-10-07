@@ -109,7 +109,7 @@ loadScripts(document, 'script');</script>
 <div class="col-first even-row-color"><code>static final float</code></div>
 <div class="col-second even-row-color"><code><a href="#ARC_GRAVITY_SCALE" class="member-name-link">ARC_GRAVITY_SCALE</a></code></div>
 <div class="col-last even-row-color">
-<div class="block">Fraction of world gravity applied to a flying arrow.</div>
+<div class="block">How much of the world's gravity every arrow (grapple included) falls under in flight.</div>
 </div>
 <div class="col-first odd-row-color"><code>static final short</code></div>
 <div class="col-second odd-row-color"><code><a href="#TERRAIN" class="member-name-link">TERRAIN</a></code></div>
@@ -181,12 +181,15 @@ loadScripts(document, 'script');</script>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>com.badlogic.gdx.math.Vector2</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getDirection()" class="member-name-link">getDirection</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isSpent()" class="member-name-link">isSpent</a>()</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>com.badlogic.gdx.math.Vector2</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getWorldCenter()" class="member-name-link">getWorldCenter</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#update()" class="member-name-link">update</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isSpent()" class="member-name-link">isSpent</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#update()" class="member-name-link">update</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Called once per frame of the game, and should be used for most component logic.</div>
 </div>
 </div>
@@ -228,7 +231,7 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="ARC_GRAVITY_SCALE">
 <h3>ARC_GRAVITY_SCALE</h3>
 <div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type">float</span>&nbsp;<span class="element-name">ARC_GRAVITY_SCALE</span></div>
-<div class="block">Fraction of world gravity applied to a flying arrow.</div>
+<div class="block">How much of the world's gravity every arrow (grapple included) falls under in flight.</div>
 <dl class="notes">
 <dt>See Also:</dt>
 <dd>
@@ -317,6 +320,18 @@ loadScripts(document, 'script');</script>
 <dl class="notes">
 <dt>Overrides:</dt>
 <dd><code><a href="../Component.html#update()">update</a></code>&nbsp;in class&nbsp;<code><a href="../Component.html" title="class in com.csse3200.game.components">Component</a></code></dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="getWorldCenter()">
+<h3>getWorldCenter</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">com.badlogic.gdx.math.Vector2</span>&nbsp;<span class="element-name">getWorldCenter</span>()</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>where the arrow actually is in the world - the centre of its collision box. This is not
+     <code>entity.getCenterPosition()</code>: the body's origin is the box's corner, so once the
+     arrow has turned to face its flight path the two no longer agree.</dd>
 </dl>
 </section>
 </li>

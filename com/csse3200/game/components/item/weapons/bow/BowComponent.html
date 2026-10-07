@@ -46,7 +46,7 @@ loadScripts(document, 'script');</script>
 <li>
 <p>Detail:</p>
 <ul>
-<li>Field</li>
+<li><a href="#field-detail">Field</a></li>
 <li><a href="#constructor-detail">Constr</a></li>
 <li><a href="#method-detail">Method</a></li>
 </ul>
@@ -64,7 +64,7 @@ loadScripts(document, 'script');</script>
 </ul>
 <ul class="sub-nav-list">
 <li>Detail:&nbsp;</li>
-<li>Field&nbsp;|&nbsp;</li>
+<li><a href="#field-detail">Field</a>&nbsp;|&nbsp;</li>
 <li><a href="#constructor-detail">Constr</a>&nbsp;|&nbsp;</li>
 <li><a href="#method-detail">Method</a></li>
 </ul>
@@ -121,6 +121,17 @@ implements <a href="../PrimaryWeapon.html" title="interface in com.csse3200.game
 <li>
 <section class="field-summary" id="field-summary">
 <h2>Field Summary</h2>
+<div class="caption"><span>Fields</span></div>
+<div class="summary-table three-column-summary">
+<div class="table-header col-first">Modifier and Type</div>
+<div class="table-header col-second">Field</div>
+<div class="table-header col-last">Description</div>
+<div class="col-first even-row-color"><code>static final float</code></div>
+<div class="col-second even-row-color"><code><a href="#SPAWN_OFFSET" class="member-name-link">SPAWN_OFFSET</a></code></div>
+<div class="col-last even-row-color">
+<div class="block">How far in front of the player's centre, in player widths, a fired arrow spawns.</div>
+</div>
+</div>
 <div class="inherited-list">
 <h3 id="fields-inherited-from-class-com.csse3200.game.components.Component">Fields inherited from class&nbsp;com.csse3200.game.components.<a href="../../../Component.html" title="class in com.csse3200.game.components">Component</a></h3>
 <code><a href="../../../Component.html#enabled">enabled</a>, <a href="../../../Component.html#entity">entity</a></code></div>
@@ -173,8 +184,7 @@ implements <a href="../PrimaryWeapon.html" title="interface in com.csse3200.game
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>float</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getChargeSpeedMultiplier()" class="member-name-link">getChargeSpeedMultiplier</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Returns the speed multiplier a shot released right now would get, scaled linearly by how long
- the draw has been held (from <code>MIN_CHARGE_SPEED_FACTOR</code> at 0s up to full at <code>MAX_CHARGE_SECONDS</code>).</div>
+<div class="block">Returns the speed multiplier a shot released right now would get (see <a href="BowCharge.html" title="class in com.csse3200.game.components.item.weapons.bow"><code>BowCharge</code></a>).</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>float</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getCooldownRemaining()" class="member-name-link">getCooldownRemaining</a>()</code></div>
@@ -200,8 +210,8 @@ implements <a href="../PrimaryWeapon.html" title="interface in com.csse3200.game
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#releaseCharge(com.badlogic.gdx.math.Vector2)" class="member-name-link">releaseCharge</a><wbr>(com.badlogic.gdx.math.Vector2&nbsp;direction)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Fires the currently charging shot, if any, with speed scaled linearly by how long it was held
- (from <code>MIN_CHARGE_SPEED_FACTOR</code> at 0s up to full speed at <code>MAX_CHARGE_SECONDS</code>).</div>
+<div class="block">Fires the currently charging shot, if any, with speed scaled by how long it was held (see
+ <a href="BowCharge.html" title="class in com.csse3200.game.components.item.weapons.bow"><code>BowCharge</code></a>).</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setArrowType(com.csse3200.game.components.projectile.ArrowType)" class="member-name-link">setArrowType</a><wbr>(<a href="../../../projectile/ArrowType.html" title="enum class in com.csse3200.game.components.projectile">ArrowType</a>&nbsp;arrowType)</code></div>
@@ -233,6 +243,29 @@ implements <a href="../PrimaryWeapon.html" title="interface in com.csse3200.game
 </section>
 <section class="details">
 <ul class="details-list">
+<!-- ============ FIELD DETAIL =========== -->
+<li>
+<section class="field-details" id="field-detail">
+<h2>Field Details</h2>
+<ul class="member-list">
+<li>
+<section class="detail" id="SPAWN_OFFSET">
+<h3>SPAWN_OFFSET</h3>
+<div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type">float</span>&nbsp;<span class="element-name">SPAWN_OFFSET</span></div>
+<div class="block">How far in front of the player's centre, in player widths, a fired arrow spawns.</div>
+<dl class="notes">
+<dt>See Also:</dt>
+<dd>
+<ul class="tag-list">
+<li><a href="../../../../../../../constant-values.html#com.csse3200.game.components.item.weapons.bow.BowComponent.SPAWN_OFFSET">Constant Field Values</a></li>
+</ul>
+</dd>
+</dl>
+</section>
+</li>
+</ul>
+</section>
+</li>
 <!-- ========= CONSTRUCTOR DETAIL ======== -->
 <li>
 <section class="constructor-details" id="constructor-detail">
@@ -336,9 +369,8 @@ implements <a href="../PrimaryWeapon.html" title="interface in com.csse3200.game
 <section class="detail" id="releaseCharge(com.badlogic.gdx.math.Vector2)">
 <h3>releaseCharge</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">releaseCharge</span><wbr><span class="parameters">(com.badlogic.gdx.math.Vector2&nbsp;direction)</span></div>
-<div class="block">Fires the currently charging shot, if any, with speed scaled linearly by how long it was held
- (from <code>MIN_CHARGE_SPEED_FACTOR</code> at 0s up to full speed at <code>MAX_CHARGE_SECONDS</code>).
- No-ops if nothing was charging.</div>
+<div class="block">Fires the currently charging shot, if any, with speed scaled by how long it was held (see
+ <a href="BowCharge.html" title="class in com.csse3200.game.components.item.weapons.bow"><code>BowCharge</code></a>). No-ops if nothing was charging.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>direction</code> - Aim direction at release time.</dd>
@@ -359,8 +391,8 @@ implements <a href="../PrimaryWeapon.html" title="interface in com.csse3200.game
 <section class="detail" id="getChargeSpeedMultiplier()">
 <h3>getChargeSpeedMultiplier</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">float</span>&nbsp;<span class="element-name">getChargeSpeedMultiplier</span>()</div>
-<div class="block">Returns the speed multiplier a shot released right now would get, scaled linearly by how long
- the draw has been held (from <code>MIN_CHARGE_SPEED_FACTOR</code> at 0s up to full at <code>MAX_CHARGE_SECONDS</code>). Returns the minimum factor when nothing is charging.</div>
+<div class="block">Returns the speed multiplier a shot released right now would get (see <a href="BowCharge.html" title="class in com.csse3200.game.components.item.weapons.bow"><code>BowCharge</code></a>).
+ Returns the minimum factor when nothing is charging.</div>
 </section>
 </li>
 <li>
@@ -379,7 +411,7 @@ implements <a href="../PrimaryWeapon.html" title="interface in com.csse3200.game
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">float</span>&nbsp;<span class="element-name">getArrowGravityY</span>()</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>the y acceleration the current arrow type experiences in flight</dd>
+<dd>the y acceleration every arrow type, grapple included, experiences in flight</dd>
 </dl>
 </section>
 </li>
