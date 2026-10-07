@@ -54,9 +54,8 @@ public class Level1GameArea extends GameArea {
   };
 
   private static final GridPoint2[] skeletonArcherTestSpawnLocations = {
-          new GridPoint2(4, 5),
+    new GridPoint2(4, 5),
   };
-
 
   // Encounters are activated nearby so sentries do not wander away before the player arrives.
   private static final GridPoint2[] skeletonWarriorSpawnLocations = {
@@ -388,10 +387,10 @@ public class Level1GameArea extends GameArea {
   //   }
   // }
 
-   private void spawnTestSkeletonArcher() {
-     for (GridPoint2 spawnLocation : skeletonArcherTestSpawnLocations) {
-       Entity enemy = EnemyFactory.createSkeletonArcher(player);
-       spawnEntityAt(enemy, spawnLocation, true, true);
+  private void spawnTestSkeletonArcher() {
+    for (GridPoint2 spawnLocation : skeletonArcherTestSpawnLocations) {
+      Entity enemy = EnemyFactory.createSkeletonArcher(player);
+      spawnEntityAt(enemy, spawnLocation, true, true);
     }
   }
 
