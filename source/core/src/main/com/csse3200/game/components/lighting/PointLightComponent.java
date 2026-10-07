@@ -45,7 +45,9 @@ public class PointLightComponent extends Component implements Disposable {
     circleLight.setXray(false);
 
     short categoryBits = -1;
-    short maskBits = (short) ~PhysicsLayer.DEFAULT;
+    // CHARACTER is excluded alongside DEFAULT purely to preserve existing behaviour: enemy
+    // colliders used to sit on DEFAULT, so light has always passed straight through them.
+    short maskBits = (short) ~(PhysicsLayer.DEFAULT | PhysicsLayer.CHARACTER);
     short groupIndex = 0;
     circleLight.setContactFilter(categoryBits, groupIndex, maskBits);
   }

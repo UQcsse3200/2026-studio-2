@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
  * Wander around by moving a random position within a range of the starting position. Wait a little
  * bit between movements. Requires an entity with a PhysicsMovementComponent.
  */
-public class WanderTask extends DefaultTask implements PriorityTask {
+public class FlyingWanderTask extends DefaultTask implements PriorityTask {
   private static final Logger logger = LoggerFactory.getLogger(WanderTask.class);
 
   private final Vector2 wanderRange;
@@ -21,15 +21,13 @@ public class WanderTask extends DefaultTask implements PriorityTask {
   private MovementTask movementTask;
   private WaitTask waitTask;
   private Task currentTask;
-  private EdgeDetectTask edgeDetector;
-  private Vector2 wanderTarget;
 
   /**
    * @param wanderRange Distance in X and Y the entity can move from its position when start() is
    *     called.
    * @param waitTime How long in seconds to wait between wandering.
    */
-  public WanderTask(Vector2 wanderRange, float waitTime) {
+  public FlyingWanderTask(Vector2 wanderRange, float waitTime) {
     this.wanderRange = wanderRange;
     this.waitTime = waitTime;
   }
@@ -42,15 +40,11 @@ public class WanderTask extends DefaultTask implements PriorityTask {
   @Override
   public void start() {
     super.start();
-
     startPos = owner.getEntity().getPosition();
-
-    edgeDetector = new EdgeDetectTask(0.3f);
 
     waitTask = new WaitTask(waitTime);
     waitTask.create(owner);
-    wanderTarget = getRandomPosInRange();
-    movementTask = new MovementTask(wanderTarget);
+    movementTask = new MovementTask(getRandomPosInRange());
     movementTask.create(owner);
 
     movementTask.start();
@@ -68,20 +62,6 @@ public class WanderTask extends DefaultTask implements PriorityTask {
         startMoving();
       }
     }
-
-    // Edge detection
-    if (currentTask == movementTask) {
-      Vector2 currentPos = owner.getEntity().getPosition();
-
-      float direction = Math.signum(wanderTarget.x - currentPos.x);
-
-      if (direction != 0 && !edgeDetector.isGroundAhead(owner.getEntity(), direction)) {
-        movementTask.stop();
-        startWaiting();
-        return;
-      }
-    }
-
     currentTask.update();
   }
 
@@ -92,8 +72,7 @@ public class WanderTask extends DefaultTask implements PriorityTask {
 
   private void startMoving() {
     logger.debug("Starting moving");
-    wanderTarget = getRandomPosInRange();
-    movementTask.setTarget(wanderTarget);
+    movementTask.setTarget(getRandomPosInRange());
     swapTask(movementTask);
   }
 

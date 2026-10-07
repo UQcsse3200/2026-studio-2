@@ -30,6 +30,9 @@ public class TouchAttackComponent extends Component {
   private static final float DELAY = 0.25f; // small delay to avoid spam checking each frame
   private Fixture targetFixture;
 
+  // Ensure hitPlayer gets passed onto the responsible entity
+  private Entity owner;
+
   /**
    * Create a component which attacks entities on collision, without knockback.
    *
@@ -50,8 +53,26 @@ public class TouchAttackComponent extends Component {
     this.knockbackForce = knockback;
   }
 
+  /**
+   * Create a component which attacks entities on collision, with knockback and a given seperate
+   * owning entity than the one with the component instance.
+   *
+   * @param targetLayer The physics layer of the target's collider.
+   * @param knockback The magnitude of the knockback applied to the entity.
+   * @param owner The entity that is responsible for the fixture with this TouchAttackComponent
+   */
+  public TouchAttackComponent(short targetLayer, float knockback, Entity owner) {
+    this.targetLayer = targetLayer;
+    this.knockbackForce = knockback;
+    this.owner = owner;
+  }
+
   @Override
   public void create() {
+    if (owner == null) {
+      owner = entity;
+    }
+
     entity.getEvents().addListener("collisionStart", this::onCollisionStart);
     entity.getEvents().addListener("collisionEnd", this::onCollisionEnd);
     combatStats = entity.getComponent(CombatStatsComponent.class);
@@ -61,7 +82,7 @@ public class TouchAttackComponent extends Component {
   @Override
   public void update() {
     if (hitPlayer) {
-      entity.getEvents().trigger("hitPlayer");
+      owner.getEvents().trigger("hitPlayer");
       hitPlayer = false;
     }
 
@@ -92,7 +113,6 @@ public class TouchAttackComponent extends Component {
 
     targetFixture = other;
     touchTimer = 0f;
-    attack(other);
   }
 
   private void onCollisionEnd(Fixture me, Fixture other) {
