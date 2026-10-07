@@ -70,6 +70,11 @@ class TextBoxComponentTest {
   }
 
   private TextBoxComponent makeComponent(List<String> pages, float charsPerSecond) {
+    return makeComponent(pages, charsPerSecond, List.of());
+  }
+
+  private TextBoxComponent makeComponent(
+      List<String> pages, float charsPerSecond, List<String> portraitPaths) {
     return new TextBoxComponent(
         10f,
         10f,
@@ -82,7 +87,8 @@ class TextBoxComponentTest {
         3,
         null, // no custom font -> falls back to the skin's default font
         com.badlogic.gdx.utils.Align.center,
-        pages);
+        pages,
+        portraitPaths);
   }
 
   @SuppressWarnings("unchecked")
@@ -297,8 +303,7 @@ class TextBoxComponentTest {
 
     component.create();
     invokeDraw(component);
-    component.setPosition(
-        100f, 200f, com.badlogic.gdx.utils.Align.bottom);
+    component.setPosition(100f, 200f, com.badlogic.gdx.utils.Align.bottom);
     invokeDraw(component); // draw() must keep the stored alignment, not reset to top
 
     int posAlign = getField(component, "posAlign");
@@ -307,5 +312,95 @@ class TextBoxComponentTest {
     assertTrue(table.getHeight() > 0f);
     // Bottom edge pinned at y: with top alignment this would sit a full height lower.
     assertEquals(200f, table.getY(), 0.01f);
+  }
+
+  // ---- Portrait handling ----
+
+  private static final String TEST_PORTRAIT = "images/cutscenes/cutscene1/scene1.jpeg";
+
+  @Test
+  void shouldNotCreatePortraitWhenPathsBlank() {
+    TextBoxComponent component = makeComponent(List.of("Some text"), 100f);
+    when(mockGraphics.getDeltaTime()).thenReturn(1f);
+    when(mockInput.isKeyJustPressed(Keys.TAB)).thenReturn(false);
+
+    component.create();
+    invokeDraw(component);
+
+    assertNull(getField(component, "portraitImage"));
+    assertNull(getField(component, "portraitTexture"));
+  }
+
+  @Test
+  void shouldShowPortraitOverlappingTopEdge() {
+    TextBoxComponent component =
+        makeComponent(List.of("Some text"), 100f, List.of(TEST_PORTRAIT));
+    when(mockGraphics.getDeltaTime()).thenReturn(1f); // fully reveal so pack() gives size
+    when(mockInput.isKeyJustPressed(Keys.TAB)).thenReturn(false);
+
+    component.create();
+    invokeDraw(component);
+
+    assertNotNull(getField(component, "portraitTexture"));
+    com.badlogic.gdx.scenes.scene2d.ui.Image portrait = getField(component, "portraitImage");
+    assertNotNull(portrait);
+    assertTrue(portrait.isVisible());
+    Table table = getField(component, "table");
+    assertTrue(table.getHeight() > 0f);
+    // Centered on the box, half overlapping its top edge.
+    assertEquals(table.getX() + (table.getWidth() - 96f) / 2f, portrait.getX(), 0.01f);
+    assertEquals(table.getY() + table.getHeight() - 96f * 0.5f, portrait.getY(), 0.01f);
+  }
+
+  @Test
+  void shouldHidePortraitOnPageWithoutPortrait() {
+    TextBoxComponent component =
+        makeComponent(List.of("Page one", "Page two"), 100f, List.of(TEST_PORTRAIT, ""));
+    when(mockGraphics.getDeltaTime()).thenReturn(1f);
+    when(mockInput.isKeyJustPressed(Keys.TAB)).thenReturn(false);
+
+    component.create();
+    invokeDraw(component); // page one: portrait shown
+    com.badlogic.gdx.scenes.scene2d.ui.Image portrait = getField(component, "portraitImage");
+    assertTrue(portrait.isVisible());
+
+    when(mockInput.isKeyJustPressed(Keys.TAB)).thenReturn(true);
+    invokeDraw(component); // TAB on fully-revealed page one -> advance to page two
+    invokeDraw(component); // page two loads: no portrait
+
+    assertNull(getField(component, "portraitTexture"));
+    assertFalse(portrait.isVisible());
+  }
+
+  @Test
+  void shouldIgnoreBadPortraitPath() {
+    TextBoxComponent component =
+        makeComponent(List.of("Some text"), 100f, List.of("images/does-not-exist.jpeg"));
+    when(mockGraphics.getDeltaTime()).thenReturn(1f);
+    when(mockInput.isKeyJustPressed(Keys.TAB)).thenReturn(false);
+
+    component.create();
+    assertDoesNotThrow(() -> invokeDraw(component));
+
+    assertNull(getField(component, "portraitTexture"));
+    assertNull(getField(component, "portraitImage"));
+    assertTrue(component.isCurrentPageComplete());
+  }
+
+  @Test
+  void shouldRemovePortraitOnDismiss() {
+    TextBoxComponent component =
+        makeComponent(List.of("Some text"), 100f, List.of(TEST_PORTRAIT));
+    when(mockGraphics.getDeltaTime()).thenReturn(1f);
+    when(mockInput.isKeyJustPressed(Keys.TAB)).thenReturn(false);
+
+    component.create();
+    invokeDraw(component);
+    assertNotNull(getField(component, "portraitImage"));
+
+    component.dismiss();
+
+    assertNull(getField(component, "portraitImage"));
+    assertNull(getField(component, "portraitTexture"));
   }
 }
