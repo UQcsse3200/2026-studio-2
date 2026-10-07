@@ -1,29 +1,25 @@
 package com.csse3200.game.components.player;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
-
-import com.badlogic.gdx.physics.box2d.Body;
-import com.badlogic.gdx.physics.box2d.Fixture;
-import com.csse3200.game.components.level.SlipperyPlatformComponent;
-import com.csse3200.game.entities.Entity;
-import com.csse3200.game.extensions.GameExtension;
-import com.csse3200.game.physics.BodyUserData;
-import com.csse3200.game.physics.PhysicsEngine;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.csse3200.game.components.item.weapons.bow.grapple.GrappleComponent;
+import com.csse3200.game.components.level.SlipperyPlatformComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.extensions.GameExtension;
+import com.csse3200.game.physics.BodyUserData;
+import com.csse3200.game.physics.PhysicsEngine;
 import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.physics.PhysicsService;
 import com.csse3200.game.physics.components.PhysicsComponent;
@@ -388,7 +384,7 @@ class PlayerActionsTest {
     when(physics.getPhysics()).thenReturn(engine);
 
     // mock raycast
-    when(engine.raycast(any(), any(), eq(PhysicsLayer.SOLID), any()))
+    when(engine.raycast(any(), any(), eq(PhysicsLayer.STANDABLE), any()))
         .thenAnswer(
             invocation -> {
               RaycastHit hit = invocation.getArgument(3); // mock the out hit parameter
