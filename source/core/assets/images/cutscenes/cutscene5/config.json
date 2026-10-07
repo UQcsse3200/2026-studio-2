@@ -76,6 +76,21 @@
           "..."
         ]
       }
+    },
+        {
+      "image": "scene6.jpeg",
+      "text": {
+        "xPos": 600,
+        "yPos": 150,
+        "charsPerSecond": 20,
+        "maxWidth": 600,
+        "padding": 16,
+        "borderThickness": 3,
+        "textAlignment": "center",
+        "pages": [
+          "..."
+        ]
+      }
     }
   ]
 }
