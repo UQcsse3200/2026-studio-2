@@ -118,6 +118,7 @@ public class ServiceLocator {
     inputService = null;
     resourceService = null;
     gameEndEventHandler = null;
+    cyclopsMinigameEventHandler = null;
     lightingService = null;
   }
 

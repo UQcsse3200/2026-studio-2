@@ -141,6 +141,7 @@ public class LevelsGameScreen extends ScreenAdapter {
     registerLevelSwap();
 
     player = level1GameArea.getPlayer();
+    game.restorePlayerState(player);
     player.getEvents().addListener("respawnAtCheckpoint", () -> currentGameArea.respawn());
     player.getEvents().addListener("toggleMap", () -> currentGameArea.toggleLevelMap());
 
@@ -198,6 +199,12 @@ public class LevelsGameScreen extends ScreenAdapter {
 
     minigameOverlayManager = new MinigameOverlayManager();
     blackjackOverlay = new BlackjackOverlay(player, minigameOverlayManager);
+    player.getEvents().addListener("openBlackjack", blackjackOverlay::request);
+
+    if (cheats) {
+      level1GameArea.getPlayer().getComponent(PhysicsComponent.class).getBody().setGravityScale(0);
+      level1GameArea.getPlayer().getComponent(KeyboardPlayerInputComponent.class).toggleCheats();
+    }
   }
 
   private void onPlayerDeath() {
@@ -270,7 +277,8 @@ public class LevelsGameScreen extends ScreenAdapter {
       levelSwapQueued = false;
     }
 
-    if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)
+    if (!minigameOverlayManager.isActive()
+        && Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)
         && !ServiceLocator.getEntityService().getSettingsOpen()) {
       pauseOverlay.request();
     }
@@ -281,9 +289,10 @@ public class LevelsGameScreen extends ScreenAdapter {
       debug.setActive(!debug.getActive());
     }
 
+    /*
     if (Gdx.input.isKeyJustPressed(Input.Keys.L)) {
       blackjackOverlay.request();
-    }
+    } */
 
     if (Gdx.input.isKeyJustPressed(Input.Keys.BACKSPACE)) {
       cheats = !cheats;
@@ -297,7 +306,7 @@ public class LevelsGameScreen extends ScreenAdapter {
       }
     }
 
-    if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
+    if (!minigameOverlayManager.isActive() && Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
       if (level.equals("level1")) {
         level = "level2";
       } else if (level.equals("level2")) {

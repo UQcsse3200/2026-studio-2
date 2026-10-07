@@ -52,6 +52,13 @@ class BlackjackConfigTest {
   }
 
   @Test
+  void shouldContainBlackjackSounds() {
+    assertEquals(3, BlackjackConfig.SOUNDS.length);
+    assertTrue(
+        Arrays.stream(BlackjackConfig.SOUNDS).allMatch(path -> Gdx.files.internal(path).exists()));
+  }
+
+  @Test
   void shouldConfigureAnInventoryReward() {
     InventoryComponent inventory = new InventoryComponent(0);
 
