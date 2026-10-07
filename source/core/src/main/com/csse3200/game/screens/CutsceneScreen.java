@@ -223,7 +223,8 @@ public class CutsceneScreen extends ScreenAdapter {
             config.borderThickness,
             config.fontPath,
             config.getTextAlignment(),
-            config.pages);
+            config.pages,
+            config.portraitPaths);
     textBox.setExternallyControlled(true);
     textBox.create();
     fadeOverlay.toFront();

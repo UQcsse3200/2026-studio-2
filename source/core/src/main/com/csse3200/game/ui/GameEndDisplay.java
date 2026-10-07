@@ -192,7 +192,8 @@ public class GameEndDisplay extends UIComponent {
             3,
             null,
             Align.center,
-            List.of(resultText));
+            List.of(resultText),
+            List.of());
     messageBox.setExternallyControlled(true);
     messageBox.create();
   }

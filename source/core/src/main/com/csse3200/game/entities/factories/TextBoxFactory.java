@@ -36,7 +36,8 @@ public class TextBoxFactory {
               textConfig.borderThickness,
               textConfig.fontPath,
               textConfig.getTextAlignment(),
-              textConfig.pages)
+              textConfig.pages,
+              textConfig.portraitPaths)
           .create();
     } catch (Exception e) {
       logger.error("Failed to create text box: {}", e.getMessage());
