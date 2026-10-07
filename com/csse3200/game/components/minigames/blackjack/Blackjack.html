@@ -210,13 +210,18 @@ loadScripts(document, 'script');</script>
 <div class="block">Places a bet before the round begins.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#stand()" class="member-name-link">stand</a>()</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setBalance(int)" class="member-name-link">setBalance</a><wbr>(int&nbsp;balance)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Stops the player from drawing and resolves the dealer's turn.</div>
+<div class="block">Synchronises the chip balance with the player's current inventory gold.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#startNewRound()" class="member-name-link">startNewRound</a>()</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#stand()" class="member-name-link">stand</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Stops the player from drawing and resolves the dealer's turn.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#startNewRound()" class="member-name-link">startNewRound</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Starts a fresh round using the current bet.</div>
 </div>
 </div>
@@ -262,6 +267,13 @@ loadScripts(document, 'script');</script>
 <h3>getBalance</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">getBalance</span>()</div>
 <div class="block">Returns the player's current chip balance.</div>
+</section>
+</li>
+<li>
+<section class="detail" id="setBalance(int)">
+<h3>setBalance</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setBalance</span><wbr><span class="parameters">(int&nbsp;balance)</span></div>
+<div class="block">Synchronises the chip balance with the player's current inventory gold.</div>
 </section>
 </li>
 <li>

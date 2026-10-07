@@ -179,6 +179,17 @@ loadScripts(document, 'script');</script>
  it faded into.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#restorePlayerState(com.csse3200.game.entities.Entity)" class="member-name-link">restorePlayerState</a><wbr>(<a href="entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;player)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">If a player snapshot is available then update the given player entity to match the stored
+ snapshot data (gold, health, inventory)</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#savePlayerState(com.csse3200.game.entities.Entity)" class="member-name-link">savePlayerState</a><wbr>(<a href="entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;player)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Collects a snapshot of the player's state components (gold, health, inventory)</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setScreen(com.csse3200.game.GdxGame.ScreenType)" class="member-name-link">setScreen</a><wbr>(<a href="GdxGame.ScreenType.html" title="enum class in com.csse3200.game">GdxGame.ScreenType</a>&nbsp;screenType)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Sets the game's screen to a new screen of the provided type.</div>
@@ -295,6 +306,29 @@ loadScripts(document, 'script');</script>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>toScreen</code> - the screen the transition faded into</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="savePlayerState(com.csse3200.game.entities.Entity)">
+<h3>savePlayerState</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">savePlayerState</span><wbr><span class="parameters">(<a href="entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;player)</span></div>
+<div class="block">Collects a snapshot of the player's state components (gold, health, inventory)</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>player</code> - - the player entity to save</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="restorePlayerState(com.csse3200.game.entities.Entity)">
+<h3>restorePlayerState</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">restorePlayerState</span><wbr><span class="parameters">(<a href="entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;player)</span></div>
+<div class="block">If a player snapshot is available then update the given player entity to match the stored
+ snapshot data (gold, health, inventory)</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>player</code> - - the player to update with the stored snapshot</dd>
 </dl>
 </section>
 </li>
