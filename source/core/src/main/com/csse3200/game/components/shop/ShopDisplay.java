@@ -93,8 +93,10 @@ public class ShopDisplay extends UIComponent {
           @Override
           public void changed(ChangeEvent changeEvent, Actor actor) {
             logger.info("Blackjack button clicked");
-            close();
-            entity.getEvents().trigger("openBlackjack");
+            /* Re-add when blackjack is fixed */
+            // close();
+            logger.info("To be re-added on fix");
+            // entity.getEvents().trigger("openBlackjack");
           }
         });
 

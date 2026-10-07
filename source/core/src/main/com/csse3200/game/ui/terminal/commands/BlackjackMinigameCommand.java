@@ -23,7 +23,8 @@ public class BlackjackMinigameCommand implements Command {
     }
 
     logger.info("Loading Blackjack minigame");
-    game.setScreen(GdxGame.ScreenType.MINIGAME_BLACKJACK);
+    // game.setScreen(GdxGame.ScreenType.MINIGAME_BLACKJACK);
+    logger.info("To be re-added on fix");
     return true;
   }
 }
