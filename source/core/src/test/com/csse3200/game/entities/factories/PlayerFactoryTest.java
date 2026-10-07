@@ -94,7 +94,9 @@ class PlayerFactoryTest {
             "idle",
             "walk",
             "sprint",
-            "jump",
+            "jump_takeoff",
+            "jump_fall",
+            "jump_land",
             "hurt",
             "death",
             "air_dash",
@@ -168,8 +170,8 @@ class PlayerFactoryTest {
     display.getEvents().trigger("death");
     assertEquals(
         "death", display.getComponent(AnimationRenderComponent.class).getCurrentAnimation());
-    assertEquals(0.75f, display.getScale().x, 0.001f);
-    assertEquals(1.5f, display.getScale().y, 0.001f);
+    assertEquals(0.6f, display.getScale().x, 0.001f);
+    assertEquals(1.2f, display.getScale().y, 0.001f);
   }
 
   @Test

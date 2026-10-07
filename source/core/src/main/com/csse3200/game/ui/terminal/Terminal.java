@@ -4,14 +4,7 @@ import com.csse3200.game.GdxGame;
 import com.csse3200.game.components.Component;
 import com.csse3200.game.events.EventHandler;
 import com.csse3200.game.services.ServiceLocator;
-import com.csse3200.game.ui.terminal.commands.Command;
-import com.csse3200.game.ui.terminal.commands.CutsceneCommand;
-import com.csse3200.game.ui.terminal.commands.DebugCommand;
-import com.csse3200.game.ui.terminal.commands.GameEndLoseCommand;
-import com.csse3200.game.ui.terminal.commands.GameEndWinCommand;
-import com.csse3200.game.ui.terminal.commands.KillAllEnemiesCommand;
-import com.csse3200.game.ui.terminal.commands.SpinTheWheelCommand;
-import com.csse3200.game.ui.terminal.commands.TextBoxCommand;
+import com.csse3200.game.ui.terminal.commands.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -50,6 +43,8 @@ public class Terminal extends Component {
   public Terminal(GdxGame game, GdxGame.ScreenType destination) {
     this();
     addCommand("cutscene", new CutsceneCommand(game, destination));
+    addCommand("cyclopsMinigame", new CyclopsMinigameCommand(game));
+    addCommand("blackjackMinigame", new BlackjackMinigameCommand(game));
   }
 
   /**

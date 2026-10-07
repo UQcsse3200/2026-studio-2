@@ -86,9 +86,14 @@ public class LevelsGameScreen extends ScreenAdapter {
   private static final String winMusic = "sounds/Win_music.mp3";
   private static final String loseMusic = "sounds/Death_music.ogg";
   private static final String[] gameEndMusic = {winMusic, loseMusic, "sounds/Main_menu_sound.mp3"};
+  private static final String[] gameSounds = {
+    "sounds/hit.ogg", "sounds/Arrow_release.wav", "sounds/jump.ogg", "sounds/itempick.wav"
+  };
   private final Level1GameArea level1GameArea;
+  // Cheat mode (Backspace): zero gravity plus free vertical movement. Starts off.
   private boolean cheats = false;
-  private float gravity;
+  // Gravity scale to restore when cheat mode is switched off.
+  private float gravity = 1f;
 
   public LevelsGameScreen(GdxGame game) {
     this.game = game;
@@ -133,20 +138,57 @@ public class LevelsGameScreen extends ScreenAdapter {
     level1GameArea.create();
 
     currentGameArea = level1GameArea;
-    Entity levelChanger = currentGameArea.getLevelChanger();
-    if (levelChanger != null) {
-      levelChanger.getEvents().addListener("triggerNextLevel", this::queueAreaSwap);
-      levelChanger
-          .getEvents()
-          .addListener(
-              "triggerNextLevel",
-              (String level) -> SoundEffects.play("sounds/level_complete.wav", 0.5f));
-    }
+    registerLevelSwap();
 
     player = level1GameArea.getPlayer();
+    game.restorePlayerState(player);
     player.getEvents().addListener("respawnAtCheckpoint", () -> currentGameArea.respawn());
     player.getEvents().addListener("toggleMap", () -> currentGameArea.toggleLevelMap());
 
+    player
+        .getEvents()
+        .addListener(
+            // "jumpStart", not the raw "jump" input event: PlayerActions discards a press made
+            // mid-air, during a wind-up, or after death, and the sound must not play for those.
+            "jumpStart",
+            () -> {
+              try {
+                com.badlogic.gdx.audio.Sound jumpSound =
+                    ServiceLocator.getResourceService()
+                        .getAsset("sounds/jump.ogg", com.badlogic.gdx.audio.Sound.class);
+                jumpSound.play(0.5f);
+              } catch (Exception e) {
+                // skip
+              }
+            });
+    player
+        .getEvents()
+        .addListener(
+            "hurt",
+            () -> {
+              try {
+                com.badlogic.gdx.audio.Sound hurtSound =
+                    ServiceLocator.getResourceService()
+                        .getAsset("sounds/hit.ogg", com.badlogic.gdx.audio.Sound.class);
+                hurtSound.play(0.2f);
+              } catch (Exception e) {
+                // skip
+              }
+            });
+    player
+        .getEvents()
+        .addListener(
+            "itemPickedUp",
+            (Object item) -> {
+              try {
+                com.badlogic.gdx.audio.Sound pickupSound =
+                    ServiceLocator.getResourceService()
+                        .getAsset("sounds/itempick.wav", com.badlogic.gdx.audio.Sound.class);
+                pickupSound.play(0.2f);
+              } catch (Exception e) {
+                // skip
+              }
+            });
     // Follow the player with the camera.
     renderer.getCamera().setTarget(player);
     player.getEvents().addListener("deathAnimationFinished", this::onPlayerDeath);
@@ -157,12 +199,30 @@ public class LevelsGameScreen extends ScreenAdapter {
 
     minigameOverlayManager = new MinigameOverlayManager();
     blackjackOverlay = new BlackjackOverlay(player, minigameOverlayManager);
+    player.getEvents().addListener("openBlackjack", blackjackOverlay::request);
+
+    if (cheats) {
+      level1GameArea.getPlayer().getComponent(PhysicsComponent.class).getBody().setGravityScale(0);
+      level1GameArea.getPlayer().getComponent(KeyboardPlayerInputComponent.class).toggleCheats();
+    }
   }
 
   private void onPlayerDeath() {
     ServiceLocator.getEntityService().scheduleRemoval(player);
     Gdx.app.postRunnable(
         () -> ServiceLocator.getGameEndEventHandler().trigger("gameEnd", GameEndState.LOSE));
+  }
+
+  private void registerLevelSwap() {
+    Entity levelChanger = currentGameArea.getLevelChanger();
+    if (levelChanger != null) {
+      levelChanger.getEvents().addListener("triggerNextLevel", this::queueAreaSwap);
+      levelChanger
+          .getEvents()
+          .addListener(
+              "triggerNextLevel",
+              (String level) -> SoundEffects.play("sounds/level_complete.wav", 0.5f));
+    }
   }
 
   /**
@@ -204,6 +264,7 @@ public class LevelsGameScreen extends ScreenAdapter {
     currentGameArea.dispose();
     currentGameArea = nextGameArea;
     nextGameArea = null;
+    registerLevelSwap();
 
     renderer.getCamera().setTarget(currentGameArea.getPlayer());
   }
@@ -216,7 +277,8 @@ public class LevelsGameScreen extends ScreenAdapter {
       levelSwapQueued = false;
     }
 
-    if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)
+    if (!minigameOverlayManager.isActive()
+        && Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)
         && !ServiceLocator.getEntityService().getSettingsOpen()) {
       pauseOverlay.request();
     }
@@ -227,9 +289,10 @@ public class LevelsGameScreen extends ScreenAdapter {
       debug.setActive(!debug.getActive());
     }
 
+    /*
     if (Gdx.input.isKeyJustPressed(Input.Keys.L)) {
       blackjackOverlay.request();
-    }
+    } */
 
     if (Gdx.input.isKeyJustPressed(Input.Keys.BACKSPACE)) {
       cheats = !cheats;
@@ -243,12 +306,14 @@ public class LevelsGameScreen extends ScreenAdapter {
       }
     }
 
-    if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
+    if (!minigameOverlayManager.isActive() && Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
       if (level.equals("level1")) {
         level = "level2";
       } else if (level.equals("level2")) {
         level = "level3";
       } else if (level.equals("level3")) {
+        level = "boss";
+      } else if (level.equals("boss")) {
         level = "none";
       }
       queueAreaSwap(level);

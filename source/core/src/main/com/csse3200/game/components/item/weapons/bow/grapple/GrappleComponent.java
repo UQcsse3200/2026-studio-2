@@ -309,6 +309,8 @@ public class GrappleComponent extends Component {
             + pivot.dst(physicsComponent.getBody().getWorldCenter());
     initialRopeLength = totalRopeLength;
     rebuildJointForPath();
+    // Announce only a new attachment, not joint rebuilds when the rope bends.
+    entity.getEvents().trigger("grappleAttached");
   }
 
   private Vector2 arrowPoint() {

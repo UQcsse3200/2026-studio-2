@@ -12,6 +12,9 @@ public class DelayedAttackTask extends DefaultTask implements PriorityTask {
   private final int priority;
   private final float attackRange;
   private final float attackDelay;
+  private final int attackDamage;
+  private final float attackKnockback;
+  // Can add attack Duration if necessary
 
   private float attackStartTime;
   private Entity attack;
@@ -19,22 +22,28 @@ public class DelayedAttackTask extends DefaultTask implements PriorityTask {
   private float attackDuration = 1;
 
   public DelayedAttackTask(Entity target, int priority, float attackRange) {
-    this(target, priority, attackRange, 0);
+    this(target, priority, attackRange, 0, 2, 0f);
   }
 
-  public DelayedAttackTask(Entity target, int priority, float attackRange, float attackDelay) {
+  public DelayedAttackTask(
+      Entity target,
+      int priority,
+      float attackRange,
+      float attackDelay,
+      int attackDamage,
+      float attackKnockback) {
     this.target = target;
     this.priority = priority;
     this.attackRange = attackRange;
     this.attackDelay = attackDelay;
+    this.attackDamage = attackDamage;
+    this.attackKnockback = attackKnockback;
   }
 
   @Override
   public void start() {
     super.start();
     this.attackStartTime = ServiceLocator.getTimeSource().getTime();
-
-    //  !! SPRINT 4 CHARGED ATTACK ANIMATION START
   }
 
   @Override
@@ -63,9 +72,12 @@ public class DelayedAttackTask extends DefaultTask implements PriorityTask {
     float direction = target.getCenterPosition().sub(enemyPosition).x < 0 ? -1f : 1f;
     float offsetX = direction * (enemyWidth + size.x) / 2;
 
-    Vector2 attackPosition = enemyPosition.add(offsetX, 0);
+    Vector2 attackOffset = new Vector2(offsetX, 0);
 
-    attack = AttackFactory.createNewAttack(size, attackPosition, 1, 1f);
+    attack =
+        AttackFactory.createNewAttack(
+            size, attackOffset, attackDamage, 1f, attackKnockback, owner.getEntity());
+    attack.setPosition(enemyPosition);
     ServiceLocator.getEntityService().register(attack);
   }
 

@@ -172,16 +172,21 @@ class GrappleFlightRopeTest {
 
   @Test
   void impactShouldPreserveFlightBendsAndUseTheWholePathAsRopeLength() {
+    int[] attachments = {0};
+    player.getEvents().addListener("grappleAttached", () -> attachments[0]++);
     Entity arrow = curveOverObstacle();
+    assertEquals(0, attachments[0], "flight must not start the holding pose");
     List<Vector2> flightPath = grapple.getRopePath();
     assertEquals(4, flightPath.size());
     Fixture target = box(8.5f, -4f, 0.5f, 1f);
     arrow
         .getEvents()
         .trigger("collisionStart", arrow.getComponent(HitboxComponent.class).getFixture(), target);
+    assertEquals(0, attachments[0], "attachment waits for the joint to be built");
     entities.update();
 
     assertTrue(grapple.isAttached());
+    assertEquals(1, attachments[0]);
     List<Vector2> anchoredPath = grapple.getRopePath();
     assertEquals(flightPath, anchoredPath, "anchoring on x=8 should preserve the flight path");
     float pathLength = 0f;
@@ -192,6 +197,10 @@ class GrappleFlightRopeTest {
     assertTrue(grapple.getRopeLength() > new Vector2(8f, -4f).len() + 2f);
     assertEquals(1, physics.getPhysics().getWorld().getJointCount());
     assertEquals(anchoredPath.get(1), grapple.getAnchorPoint(), "swing pivot is nearest bend");
+    player.setPosition(6.5f, 3.5f);
+    grapple.update();
+    assertTrue(grapple.getRopePath().size() < anchoredPath.size(), "passed bends should unwrap");
+    assertEquals(1, attachments[0], "changing the joint pivot must not announce a new attachment");
   }
 
   @Test

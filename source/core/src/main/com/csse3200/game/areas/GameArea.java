@@ -348,14 +348,14 @@ public abstract class GameArea implements Disposable {
       resizeScale = new Vector2(scaleX, scaleY);
 
       backgroundComponent.scaleEntity(resizeScale, worldBounds, true, level);
-      player.getComponent(InventoryBarDisplay.class).hideBar();
-      player.getComponent(PlayerStatsDisplay.class).hide();
+      getPlayer().getComponent(InventoryBarDisplay.class).hideBar();
+      getPlayer().getComponent(PlayerStatsDisplay.class).hide();
     } else {
       cameraComponent.resize((int) viewportWidth, (int) viewportHeight, viewportWidth);
-      cameraComponent.setTarget(player);
+      cameraComponent.setTarget(getPlayer());
       backgroundComponent.scaleEntity(resizeScale, worldBounds, false, level);
-      player.getComponent(InventoryBarDisplay.class).showBar();
-      player.getComponent(PlayerStatsDisplay.class).show();
+      getPlayer().getComponent(InventoryBarDisplay.class).showBar();
+      getPlayer().getComponent(PlayerStatsDisplay.class).show();
     }
     mapToggled = !mapToggled;
   }

@@ -317,13 +317,14 @@ public class ObstacleFactory {
   }
 
   /**
-   * Creates a statue that is able to be stood in front of.
+   * Creates a cave rock formation that the player can hide behind.
    *
-   * @return statue entity
+   * @param texturePath texture to render for the formation
+   * @return formation entity
    */
-  public static Entity createStatue() {
+  public static Entity createCaveFormation(String texturePath) {
     return new Entity()
-        .addComponent(new TextureRenderComponent("images/Greek Statues Pack I/Brute.png"))
+        .addComponent(new TextureRenderComponent(texturePath))
         .addComponent(new PhysicsComponent().setBodyType(BodyType.StaticBody))
         .addComponent(new ColliderComponent().setLayer(PhysicsLayer.NONE));
   }

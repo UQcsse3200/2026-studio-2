@@ -23,6 +23,12 @@ import org.mockito.MockedConstruction;
 /** Verifies rope geometry sent to the graphics boundary without creating an OpenGL context. */
 @ExtendWith(GameExtension.class)
 class GrappleRenderComponentTest {
+  /** Keep in sync with LINE_WIDTH in GrappleRenderComponent. */
+  private static final float ROPE_WIDTH = 0.083f;
+
+  /** Keep in sync with ROPE_COLOUR in GrappleRenderComponent. */
+  private static final Color ROPE_COLOUR = new Color(67f / 255f, 32f / 255f, 21f / 255f, 1f);
+
   private RenderService service;
   private SpriteBatch batch;
 
@@ -86,8 +92,8 @@ class GrappleRenderComponentTest {
       renderer.render(batch);
       assertEquals(1, shapes.constructed().size());
       ShapeRenderer shape = shapes.constructed().getFirst();
-      verify(shape).rectLine(0f, 0f, 2f, 3f, 0.05f);
-      verify(shape).rectLine(2f, 3f, 5f, 3f, 0.05f);
+      verify(shape).rectLine(0f, 0f, 2f, 3f, ROPE_WIDTH);
+      verify(shape).rectLine(2f, 3f, 5f, 3f, ROPE_WIDTH);
       verify(batch).end();
       verify(batch).begin();
       renderer.dispose();
@@ -112,9 +118,9 @@ class GrappleRenderComponentTest {
       order.verify(batch).getProjectionMatrix();
       order.verify(shape).setProjectionMatrix(projection);
       order.verify(shape).begin(ShapeRenderer.ShapeType.Filled);
-      order.verify(shape).setColor(Color.BROWN);
-      order.verify(shape).rectLine(0f, 0f, 2f, 3f, 0.05f);
-      order.verify(shape).rectLine(2f, 3f, 5f, 3f, 0.05f);
+      order.verify(shape).setColor(ROPE_COLOUR);
+      order.verify(shape).rectLine(0f, 0f, 2f, 3f, ROPE_WIDTH);
+      order.verify(shape).rectLine(2f, 3f, 5f, 3f, ROPE_WIDTH);
       order.verify(shape).end();
       order.verify(batch).begin();
       order.verifyNoMoreInteractions();
@@ -136,8 +142,8 @@ class GrappleRenderComponentTest {
       renderer.render(batch);
       assertEquals(1, shapes.constructed().size());
       ShapeRenderer shape = shapes.constructed().getFirst();
-      verify(shape).rectLine(0f, 0f, 2f, 3f, 0.05f);
-      verify(shape).rectLine(1f, 1f, 4f, 6f, 0.05f);
+      verify(shape).rectLine(0f, 0f, 2f, 3f, ROPE_WIDTH);
+      verify(shape).rectLine(1f, 1f, 4f, 6f, ROPE_WIDTH);
       verify(batch, times(2)).begin();
       renderer.dispose();
     }

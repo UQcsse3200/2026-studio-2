@@ -13,6 +13,7 @@ import com.csse3200.game.components.item.ItemType;
 import com.csse3200.game.components.item.weapons.WeaponComponent;
 import com.csse3200.game.components.item.weapons.bow.BowComponent;
 import com.csse3200.game.components.item.weapons.bow.grapple.GrappleComponent;
+import com.csse3200.game.components.item.weapons.melee.MeleeComponent;
 import com.csse3200.game.components.itemdictionary.ItemDictionaryComponent;
 import com.csse3200.game.components.itemdictionary.ItemDictionaryDisplay;
 import com.csse3200.game.components.level.RespawnComponent;
@@ -30,8 +31,10 @@ import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.rendering.AnimationRenderComponent;
 import com.csse3200.game.rendering.ParticleEffectsRenderingComponent;
+import com.csse3200.game.rendering.item.GrappleHoldRenderComponent;
 import com.csse3200.game.rendering.item.GrappleIndicatorRenderComponent;
 import com.csse3200.game.rendering.item.GrappleRenderComponent;
+import com.csse3200.game.rendering.item.MeleeRenderComponent;
 import com.csse3200.game.services.ServiceLocator;
 
 /** Factory to create a player entity. */
@@ -56,7 +59,11 @@ public class PlayerFactory {
     animator.addAnimation("idle", 0.2f, PlayMode.LOOP);
     animator.addAnimation("walk", 0.1f, PlayMode.LOOP);
     animator.addAnimation("sprint", 0.125f, PlayMode.LOOP);
-    animator.addAnimation("jump", 0.075f, PlayMode.NORMAL);
+    // The three crouch frames of the takeoff span PlayerActions.JUMP_WINDUP_MS at 0.03s each, so
+    // the leap lands exactly on liftoff. Keep the two in lockstep if either is retuned.
+    animator.addAnimation("jump_takeoff", 0.03f, PlayMode.NORMAL, 22.5f, 0f);
+    animator.addAnimation("jump_fall", 0.1f, PlayMode.LOOP, 22.5f, 0f);
+    animator.addAnimation("jump_land", 0.04f, PlayMode.NORMAL, 22.5f, 0f);
     animator.addAnimation("hurt", 0.04f, PlayMode.NORMAL);
     animator.addAnimation("death", 0.1458f, PlayMode.NORMAL);
     animator.addAnimation("sleep", 0.1458f, PlayMode.LOOP);
@@ -65,6 +72,9 @@ public class PlayerFactory {
     animator.addAnimation("bow_draw", 0.08f, PlayMode.NORMAL, 72f, 23f);
     animator.addAnimation("bow_hold", 0.1f, PlayMode.LOOP, 72f, 24f);
     animator.addAnimation("bow_shoot", 0.05f, PlayMode.NORMAL, 71f, 23f);
+    animator.addAnimation("instrument_draw", 0.11f, PlayMode.NORMAL, 78.4f, 37.5f);
+    animator.addAnimation("instrument_hold", 0.14f, PlayMode.LOOP, 78.4f, 37.5f);
+    animator.addAnimation("melee", MeleeComponent.FRAME_DURATION, PlayMode.NORMAL, 79f, 38f);
 
     Entity player =
         new Entity()
@@ -98,6 +108,9 @@ public class PlayerFactory {
             .addComponent(new GrappleRenderComponent())
             .addComponent(new GrappleIndicatorRenderComponent())
             .addComponent(new PlayerAnimationController())
+            .addComponent(new GrappleHoldRenderComponent())
+            .addComponent(new MeleeComponent())
+            .addComponent(new MeleeRenderComponent())
             .addComponent(new RespawnComponent())
             .addComponent(new PoisonStatsComponent())
             .addComponent(new BurnStatsComponent())
@@ -155,7 +168,9 @@ public class PlayerFactory {
     animator.addAnimation("idle", 0.15f, PlayMode.LOOP);
     animator.addAnimation("walk", 0.1f, PlayMode.LOOP);
     animator.addAnimation("sprint", 0.1f, PlayMode.LOOP);
-    animator.addAnimation("jump", 0.05f, PlayMode.NORMAL);
+    animator.addAnimation("jump_takeoff", 0.03f, PlayMode.NORMAL, 22.5f, 0f);
+    animator.addAnimation("jump_fall", 0.1f, PlayMode.LOOP, 22.5f, 0f);
+    animator.addAnimation("jump_land", 0.04f, PlayMode.NORMAL, 22.5f, 0f);
     animator.addAnimation("hurt", 0.04f, PlayMode.NORMAL);
     animator.addAnimation("death", 0.1458f, PlayMode.NORMAL);
     animator.addAnimation("sleep", 0.1458f, PlayMode.LOOP);
@@ -163,9 +178,6 @@ public class PlayerFactory {
     Entity player =
         new Entity()
             .addComponent(animator)
-            .addComponent(new PhysicsComponent())
-            .addComponent(new ColliderComponent())
-            .addComponent(new HitboxComponent().setLayer(PhysicsLayer.PLAYER))
             .addComponent(
                 new CombatStatsComponent(
                     stats.health, stats.baseAttack, stats.invulnerabilityDuration))
@@ -173,10 +185,8 @@ public class PlayerFactory {
             .addComponent(new PlayerAnimationController())
             .addComponent(new RespawnComponent());
 
-    PhysicsUtils.setScaledCollider(player, 0.6f, 0.3f);
-    player.getComponent(ColliderComponent.class).setDensity(1.5f);
     player.getComponent(AnimationRenderComponent.class).scaleEntity();
-    player.scaleWidth(0.75f);
+    player.scaleWidth(0.6f);
 
     return player;
   }

@@ -17,6 +17,6 @@ class CyclopsMinigameActionsTests {
 
     ui.getEvents().trigger("exit");
 
-    verify(game).setScreen(GdxGame.ScreenType.MINIGAME_SELECT);
+    verify(game).setScreen(GdxGame.ScreenType.MAIN_MENU);
   }
 }
