@@ -8,6 +8,7 @@ import static org.mockito.Mockito.when;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.csse3200.game.components.CombatStatsComponent;
+import com.csse3200.game.components.item.weapons.bow.BowCharge;
 import com.csse3200.game.components.item.weapons.bow.BowComponent;
 import com.csse3200.game.components.lighting.PointLightComponent;
 import com.csse3200.game.components.projectile.ArrowProjectileComponent;
@@ -157,18 +158,23 @@ class PlayerProjectileIntegrationTest {
   }
 
   @Test
-  void shouldKeepGrappleSpeedIndependentOfChargeAndIgnoreEnemyImpacts() {
+  void shouldChargeGrappleSpeedLikeOtherArrowsAndIgnoreEnemyImpacts() {
     ServiceLocator.registerTimeSource(mock(GameTime.class));
     BowComponent bow = new BowComponent(ArrowType.GRAPPLE);
     Entity shooter = new Entity().addComponent(bow);
     entities.register(shooter);
-    // An immediate release gives ordinary arrows minimum charge, but grapples retain full speed.
+    // An immediate release gives every arrow, grapples included, the minimum charge: slow, so a
+    // barely held shot falls short. Grapples also arc like any other arrow now.
     bow.startCharge(Vector2.X);
     bow.releaseCharge(Vector2.X);
     Entity arrow = entities.getEntities().get(1);
     Body body = arrow.getComponent(PhysicsComponent.class).getBody();
-    assertEquals(new Vector2(22f, 0f), body.getLinearVelocity());
-    assertEquals(0f, body.getGravityScale());
+    assertEquals(
+        ProjectileFactory.GRAPPLE_ARROW_SPEED * BowCharge.MIN_SPEED_FACTOR,
+        body.getLinearVelocity().x,
+        0.001f);
+    assertEquals(0f, body.getLinearVelocity().y, 0.001f);
+    assertEquals(ArrowProjectileComponent.ARC_GRAVITY_SCALE, body.getGravityScale());
     Entity enemy = enemy();
     impact(arrow, enemy);
     assertEquals(30, enemy.getComponent(CombatStatsComponent.class).getHealth());

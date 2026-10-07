@@ -83,6 +83,39 @@ class GrappleComponentGeometryTest {
   }
 
   @Test
+  @SuppressWarnings("unchecked")
+  void shouldRememberABlockedUnwrapUntilTheBypassClearsAfterAReturnCrossing() throws Exception {
+    World world = new World(Vector2.Zero, true);
+    try {
+      Fixture support = rectangle(world, new Vector2(5f, 2f), 0.1f, 0.1f, 0f);
+      Fixture blocker = rectangle(world, new Vector2(5f, 2f), 2f, 6f, 0f);
+      GrappleComponent grapple = new GrappleComponent();
+      var contactsField = GrappleComponent.class.getDeclaredField("ropeContacts");
+      contactsField.setAccessible(true);
+      List<GrappleComponent.RopeContact> contacts =
+          (List<GrappleComponent.RopeContact>) contactsField.get(grapple);
+      contacts.add(new GrappleComponent.RopeContact(support, new Vector2(5f, 2f), -1));
+      var unwrap =
+          GrappleComponent.class.getDeclaredMethod(
+              "removeUnwrappedContacts", World.class, Vector2.class, Vector2.class);
+      unwrap.setAccessible(true);
+
+      // Cross the bend, but a separate obstacle prevents the bypass from opening yet.
+      unwrap.invoke(grapple, world, new Vector2(10f, 4f), new Vector2(0f, 4f));
+      assertEquals(1, contacts.size());
+      // Return to the insertion side while still blocked, then clear the bypass without moving
+      // either endpoint again. Neither insertion-side-only nor a one-frame crossing handles this.
+      unwrap.invoke(grapple, world, new Vector2(10f, 0f), new Vector2(0f, 0f));
+      assertEquals(1, contacts.size());
+      blocker.getBody().setTransform(5f, 30f, 0f);
+      unwrap.invoke(grapple, world, new Vector2(10f, 0f), new Vector2(0f, 0f));
+      assertTrue(contacts.isEmpty(), "pending unwrap should complete when the blocker moves away");
+    } finally {
+      world.dispose();
+    }
+  }
+
+  @Test
   void shouldRetainInitialWindingSidePerContact() {
     World world = new World(Vector2.Zero, true);
     try {

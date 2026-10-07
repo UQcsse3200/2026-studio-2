@@ -63,6 +63,9 @@ public class PlayerAnimationController extends Component {
     entity.getEvents().addListener("chargeStart", this::drawStart);
     entity.getEvents().addListener("chargeRelease", this::drawRelease);
     entity.getEvents().addListener("chargeCancel", this::drawCancel);
+    // The grapple broadcasts its own charge events and shares the bow animation clips.
+    entity.getEvents().addListener("grappleChargeStart", this::drawStart);
+    entity.getEvents().addListener("grappleChargeFire", this::drawRelease);
     entity.getEvents().addListener("instrumentStart", this::instrumentStart);
     entity.getEvents().addListener("meleeSwing", this::meleeStart);
     entity.getEvents().addListener("togglePause", this::cancelInstrumentForPause);
@@ -299,6 +302,11 @@ public class PlayerAnimationController extends Component {
     if (dead) {
       return;
     }
+    // The draw replaces the previous animation. Its completion must not be handled as the
+    // end of a hurt, dash or jump that was still active when the shoot button was pressed.
+    hurt = false;
+    dashing = false;
+    jumping = false;
     cancelInstrument();
     charging = true;
     drawingIn = true;

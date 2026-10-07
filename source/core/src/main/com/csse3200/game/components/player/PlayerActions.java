@@ -96,11 +96,6 @@ public class PlayerActions extends Component {
     checkJumpWindup();
     updateAirState();
 
-    // The grapple is a hold action: let go of right click and the rope drops
-    if (isGrappling() && !isRightMouseHeld()) {
-      grapple.release();
-    }
-
     if (isGrounded && !wasGrounded) {
       airDashUsed = false;
       dashCooldownRemaining = 0f;
@@ -230,11 +225,6 @@ public class PlayerActions extends Component {
       liftoffDeadline = -1;
       entity.getEvents().trigger("landed");
     }
-  }
-
-  private boolean isRightMouseHeld() {
-    KeyboardPlayerInputComponent input = entity.getComponent(KeyboardPlayerInputComponent.class);
-    return input != null && input.isRightMouseHeld();
   }
 
   private void updateSpeed() {

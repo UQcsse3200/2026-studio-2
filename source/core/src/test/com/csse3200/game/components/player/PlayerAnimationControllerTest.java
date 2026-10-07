@@ -784,6 +784,82 @@ class PlayerAnimationControllerTest {
   }
 
   @Test
+  void shouldKeepBowChargeWhenStartedDuringHurtAnimation() {
+    assertChargeSurvivesPriorAnimation("hurt", "chargeStart", "chargeRelease");
+  }
+
+  @Test
+  void shouldKeepBowChargeWhenStartedDuringDashAnimation() {
+    assertChargeSurvivesPriorAnimation("dashStart", "chargeStart", "chargeRelease");
+  }
+
+  @Test
+  void shouldKeepGrappleChargeWhenStartedDuringHurtAnimation() {
+    assertChargeSurvivesPriorAnimation("hurt", "grappleChargeStart", "grappleChargeFire");
+  }
+
+  @Test
+  void shouldKeepGrappleChargeWhenStartedDuringDashAnimation() {
+    assertChargeSurvivesPriorAnimation("airDashStart", "grappleChargeStart", "grappleChargeFire");
+  }
+
+  @Test
+  void shouldResumeWalkingAfterChargingDuringJumpAnimation() {
+    assertChargeSurvivesPriorAnimation("jumpStart", "chargeStart", "chargeRelease");
+  }
+
+  private void assertChargeSurvivesPriorAnimation(
+      String priorEvent, String chargeStartEvent, String chargeReleaseEvent) {
+    AnimationRenderComponent animator =
+        new AnimationRenderComponent(
+            mockAtlasWithRegions(
+                "idle",
+                "death",
+                "bow_draw",
+                "bow_hold",
+                "bow_shoot",
+                "hurt",
+                "air_dash",
+                "jump_takeoff",
+                "walk"));
+    Entity entity = new Entity();
+    PlayerAnimationController controller = createController(entity, animator);
+    animator.addAnimation("walk", 1f, PlayMode.LOOP);
+    SpriteBatch batch = mock(SpriteBatch.class);
+
+    // Start the draw before the previous one-shot animation has completed.
+    entity.getEvents().trigger(priorEvent);
+    String priorAnimation =
+        switch (priorEvent) {
+          case "jumpStart" -> "jump_takeoff";
+          case "dashStart", "airDashStart" -> "air_dash";
+          default -> "hurt";
+        };
+    assertEquals(priorAnimation, animator.getCurrentAnimation());
+    entity.getEvents().trigger(chargeStartEvent, new Vector2(1f, 0f));
+    assertEquals("bow_draw", animator.getCurrentAnimation());
+    animator.render(batch);
+    controller.update();
+    assertEquals(
+        "bow_hold",
+        animator.getCurrentAnimation(),
+        "the previous animation must not cut off the draw when it finishes");
+    for (int i = 0; i < 4; i++) {
+      animator.render(batch);
+      controller.update();
+      assertEquals("bow_hold", animator.getCurrentAnimation(), "hold until the button is released");
+    }
+
+    entity.getEvents().trigger(chargeReleaseEvent, new Vector2(1f, 0f));
+    assertEquals("bow_shoot", animator.getCurrentAnimation());
+    animator.render(batch);
+    controller.update();
+    assertEquals("idle", animator.getCurrentAnimation());
+    entity.getEvents().trigger("walk", new Vector2(1f, 0f));
+    assertEquals("walk", animator.getCurrentAnimation(), "movement should resume after the shot");
+  }
+
+  @Test
   void shouldIgnoreChargeReleaseWithoutPriorChargeStart() {
     AnimationRenderComponent animator =
         new AnimationRenderComponent(

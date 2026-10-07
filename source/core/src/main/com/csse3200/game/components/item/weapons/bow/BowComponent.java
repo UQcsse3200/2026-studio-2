@@ -17,10 +17,9 @@ public class BowComponent extends Component implements PrimaryWeapon {
 
   private static final String ATTACK_SOUND = "sounds/shoot.ogg";
   private static final float BOW_COOLDOWN = 0.4f;
-  private static final float MAX_CHARGE_SECONDS = 1.5f;
-  // Fraction of full speed a shot has at zero charge - keeps a tap-release shot weak/short-range
-  // rather than firing at full power or not firing at all.
-  private static final float MIN_CHARGE_SPEED_FACTOR = 0.3f;
+
+  /** How far in front of the player's centre, in player widths, a fired arrow spawns. */
+  public static final float SPAWN_OFFSET = 0.8f;
 
   @FunctionalInterface
   public interface ProjectileCreator {
@@ -79,10 +78,7 @@ public class BowComponent extends Component implements PrimaryWeapon {
         this.projectileCreator = ProjectileFactory::createFireArrow;
         break;
       case GRAPPLE:
-        // Grapples always launch at a fixed speed, independent of bow charge.
-        this.projectileCreator =
-            (shooter, position, direction, speedMultiplier) ->
-                ProjectileFactory.createGrappleArrow(shooter, position, direction);
+        this.projectileCreator = ProjectileFactory::createGrappleArrow;
         break;
       case STANDARD:
       default:
@@ -121,9 +117,8 @@ public class BowComponent extends Component implements PrimaryWeapon {
   }
 
   /**
-   * Fires the currently charging shot, if any, with speed scaled linearly by how long it was held
-   * (from {@link #MIN_CHARGE_SPEED_FACTOR} at 0s up to full speed at {@link #MAX_CHARGE_SECONDS}).
-   * No-ops if nothing was charging.
+   * Fires the currently charging shot, if any, with speed scaled by how long it was held (see
+   * {@link BowCharge}). No-ops if nothing was charging.
    *
    * @param direction Aim direction at release time.
    */
@@ -148,18 +143,15 @@ public class BowComponent extends Component implements PrimaryWeapon {
   }
 
   /**
-   * Returns the speed multiplier a shot released right now would get, scaled linearly by how long
-   * the draw has been held (from {@link #MIN_CHARGE_SPEED_FACTOR} at 0s up to full at {@link
-   * #MAX_CHARGE_SECONDS}). Returns the minimum factor when nothing is charging.
+   * Returns the speed multiplier a shot released right now would get (see {@link BowCharge}).
+   * Returns the minimum factor when nothing is charging.
    */
   public float getChargeSpeedMultiplier() {
-    float elapsedSeconds = 0f;
+    long heldMs = 0L;
     if (isCharging) {
-      long now = ServiceLocator.getTimeSource().getTime();
-      elapsedSeconds = Math.min(MAX_CHARGE_SECONDS, (now - chargeStartTimeMs) / 1000f);
+      heldMs = ServiceLocator.getTimeSource().getTime() - chargeStartTimeMs;
     }
-    float chargeFraction = elapsedSeconds / MAX_CHARGE_SECONDS;
-    return MIN_CHARGE_SPEED_FACTOR + (1.5f - MIN_CHARGE_SPEED_FACTOR) * chargeFraction;
+    return BowCharge.speedMultiplier(heldMs);
   }
 
   /**
@@ -170,12 +162,10 @@ public class BowComponent extends Component implements PrimaryWeapon {
   }
 
   /**
-   * @return the y acceleration the current arrow type experiences in flight
+   * @return the y acceleration every arrow type, grapple included, experiences in flight
    */
   public float getArrowGravityY() {
-    return currentArrowType == ArrowType.GRAPPLE
-        ? 0f
-        : PhysicsEngine.GRAVITY_Y * ArrowProjectileComponent.ARC_GRAVITY_SCALE;
+    return PhysicsEngine.GRAVITY_Y * ArrowProjectileComponent.ARC_GRAVITY_SCALE;
   }
 
   /**
@@ -185,7 +175,9 @@ public class BowComponent extends Component implements PrimaryWeapon {
    * @return world spawn position
    */
   public Vector2 getSpawnPosition(Vector2 direction) {
-    return entity.getCenterPosition().mulAdd(direction.cpy().nor(), entity.getScale().x * 0.8f);
+    return entity
+        .getCenterPosition()
+        .mulAdd(direction.cpy().nor(), entity.getScale().x * SPAWN_OFFSET);
   }
 
   /**
