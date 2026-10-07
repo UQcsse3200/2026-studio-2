@@ -48,6 +48,11 @@ public class ColliderComponent extends Component {
   /**
    * Set physics as a box with a given size. Box is aligned based on alignment.
    *
+   * <p>Every offset computed here is in entity-local space, where (0,0) is the entity's bottom-left
+   * corner and the entity spans {@code entity.getScale()}. Never use a world coordinate such as
+   * {@code getCenterPosition()}, which only happens to agree with the local one while the entity
+   * sits at the origin.
+   *
    * @param size size of the box
    * @param alignX how to align x relative to entity
    * @param alignY how to align y relative to entity
@@ -60,7 +65,7 @@ public class ColliderComponent extends Component {
         position.x = size.x / 2;
         break;
       case CENTER:
-        position.x = entity.getCenterPosition().x;
+        position.x = entity.getScale().x / 2;
         break;
       case RIGHT:
         position.x = entity.getScale().x - (size.x / 2);
@@ -72,7 +77,7 @@ public class ColliderComponent extends Component {
         position.y = size.y / 2;
         break;
       case CENTER:
-        position.y = entity.getCenterPosition().y;
+        position.y = entity.getScale().y / 2;
         break;
       case TOP:
         position.y = entity.getScale().y - (size.y / 2);
@@ -179,6 +184,23 @@ public class ColliderComponent extends Component {
    */
   public Fixture getFixture() {
     return fixture;
+  }
+
+  /**
+   * Exclude layers from collision detection, preserving all other filter settings. May be called
+   * before or after the fixture is created.
+   *
+   * @param layers layers this collider should pass through
+   * @return self
+   */
+  public ColliderComponent excludeCollisionLayers(short layers) {
+    fixtureDef.filter.maskBits &= ~layers;
+    if (fixture != null) {
+      Filter filter = fixture.getFilterData();
+      filter.maskBits &= ~layers;
+      fixture.setFilterData(filter);
+    }
+    return this;
   }
 
   /**

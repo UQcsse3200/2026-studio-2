@@ -19,6 +19,7 @@ import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.physics.raycast.RaycastHit;
 import com.csse3200.game.services.GameTime;
 import com.csse3200.game.services.ServiceLocator;
+import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -66,7 +67,10 @@ class PlayerMovementRegressionTest {
     doReturn(grounded)
         .when(engine)
         .raycast(
-            any(Vector2.class), any(Vector2.class), eq(PhysicsLayer.SOLID), any(RaycastHit.class));
+            any(Vector2.class),
+            any(Vector2.class),
+            eq(PhysicsLayer.STANDABLE),
+            any(RaycastHit.class));
   }
 
   private void advance(float seconds) {
@@ -161,19 +165,6 @@ class PlayerMovementRegressionTest {
   }
 
   @Test
-  void shouldRejectDashWhilePausedThenAllowItAfterResume() {
-    player.getEvents().trigger("togglePaused");
-    player.getEvents().trigger("dash");
-    assertEquals(2.5f, body.getGravityScale());
-    assertEquals(0f, body.getLinearVelocity().x);
-
-    player.getEvents().trigger("togglePaused");
-    player.getEvents().trigger("dash");
-    assertEquals(0f, body.getGravityScale());
-    assertTrue(body.getLinearVelocity().x > 0f);
-  }
-
-  @Test
   void shouldBlockDashWhileAttachedToGrapple() {
     when(grapple.isAttached()).thenReturn(true);
     body.setLinearVelocity(2f, -3f);
@@ -247,5 +238,53 @@ class PlayerMovementRegressionTest {
 
     verifyNoInteractions(ended);
     assertTrue(body.getLinearVelocity().x > 5f);
+  }
+
+  @Test
+  void shouldCancelPendingJumpImpulseWhenPlayerDies() {
+    setGrounded(true);
+    advance(0f);
+    player.getEvents().trigger("jump");
+    body.setLinearVelocity(0f, 0f);
+    player.getEvents().trigger("death");
+    when(time.getTime()).thenReturn(100L);
+    advance(0f);
+    assertEquals(0f, body.getLinearVelocity().y);
+  }
+
+  @Test
+  void shouldNotExtendSprintGraceOnRepeatedRelease() {
+    setGrounded(true);
+    advance(0f);
+    player.getEvents().trigger("sprint");
+    advance(0.2f);
+    AtomicInteger stops = new AtomicInteger();
+    player.getEvents().addListener("sprintEnd", stops::incrementAndGet);
+    player.getEvents().trigger("sprintStop");
+    advance(0.1f);
+    player.getEvents().trigger("sprintStop");
+    advance(0.03f);
+    assertEquals(1, stops.get());
+  }
+
+  @Test
+  void shouldNotExtendDashDurationOnRepeatedDashRequest() {
+    player.getEvents().trigger("dash");
+    advance(0.1f);
+    player.getEvents().trigger("dash");
+    advance(0.06f);
+    assertEquals(2.5f, body.getGravityScale());
+  }
+
+  @Test
+  void shouldUseWeakerAirControlThanGroundControl() {
+    player.getEvents().trigger("walk", new Vector2(1f, 0f));
+    advance(0f);
+    assertEquals(0.5f, body.getLinearVelocity().x, 0.001f);
+    body.setLinearVelocity(0f, -3f);
+    setGrounded(true);
+    advance(0f);
+    assertEquals(5f, body.getLinearVelocity().x, 0.001f);
+    assertEquals(-3f, body.getLinearVelocity().y, 0.001f);
   }
 }

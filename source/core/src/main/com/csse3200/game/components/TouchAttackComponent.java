@@ -8,6 +8,7 @@ import com.csse3200.game.physics.BodyUserData;
 import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.physics.components.PhysicsComponent;
+import com.csse3200.game.services.ServiceLocator;
 
 /**
  * When this entity touches a valid enemy's hitbox, deal damage to them and apply a knockback.
@@ -22,6 +23,15 @@ public class TouchAttackComponent extends Component {
   private float knockbackForce = 0f;
   private CombatStatsComponent combatStats;
   private HitboxComponent hitboxComponent;
+  private boolean hitPlayer = false;
+
+  // Behaviour to ensure continuous collision is punished (not only at start)
+  private float touchTimer = 0f;
+  private static final float DELAY = 0.25f; // small delay to avoid spam checking each frame
+  private Fixture targetFixture;
+
+  // Ensure hitPlayer gets passed onto the responsible entity
+  private Entity owner;
 
   /**
    * Create a component which attacks entities on collision, without knockback.
@@ -43,11 +53,51 @@ public class TouchAttackComponent extends Component {
     this.knockbackForce = knockback;
   }
 
+  /**
+   * Create a component which attacks entities on collision, with knockback and a given seperate
+   * owning entity than the one with the component instance.
+   *
+   * @param targetLayer The physics layer of the target's collider.
+   * @param knockback The magnitude of the knockback applied to the entity.
+   * @param owner The entity that is responsible for the fixture with this TouchAttackComponent
+   */
+  public TouchAttackComponent(short targetLayer, float knockback, Entity owner) {
+    this.targetLayer = targetLayer;
+    this.knockbackForce = knockback;
+    this.owner = owner;
+  }
+
   @Override
   public void create() {
+    if (owner == null) {
+      owner = entity;
+    }
+
     entity.getEvents().addListener("collisionStart", this::onCollisionStart);
+    entity.getEvents().addListener("collisionEnd", this::onCollisionEnd);
     combatStats = entity.getComponent(CombatStatsComponent.class);
     hitboxComponent = entity.getComponent(HitboxComponent.class);
+  }
+
+  @Override
+  public void update() {
+    if (hitPlayer) {
+      owner.getEvents().trigger("hitPlayer");
+      hitPlayer = false;
+    }
+
+    if (targetFixture == null) {
+      touchTimer = 0f;
+      return;
+    }
+
+    touchTimer += ServiceLocator.getTimeSource().getDeltaTime();
+
+    if (touchTimer >= DELAY) {
+      attack(targetFixture);
+
+      touchTimer = 0f;
+    }
   }
 
   private void onCollisionStart(Fixture me, Fixture other) {
@@ -61,20 +111,37 @@ public class TouchAttackComponent extends Component {
       return;
     }
 
-    // Try to attack target.
-    Entity target = ((BodyUserData) other.getBody().getUserData()).entity;
-    CombatStatsComponent targetStats = target.getComponent(CombatStatsComponent.class);
-    if (targetStats != null) {
-      targetStats.hit(combatStats);
+    targetFixture = other;
+    touchTimer = 0f;
+  }
+
+  private void onCollisionEnd(Fixture me, Fixture other) {
+    if (hitboxComponent.getFixture() != me) {
+      // Not triggered by hitbox, ignore
+      return;
     }
 
-    // Apply knockback
+    if (targetFixture == other) {
+      targetFixture = null;
+    }
+  }
+
+  private void attack(Fixture other) {
+    Entity target = ((BodyUserData) other.getBody().getUserData()).entity;
+    CombatStatsComponent targetStats = target.getComponent(CombatStatsComponent.class);
     PhysicsComponent physicsComponent = target.getComponent(PhysicsComponent.class);
-    if (physicsComponent != null && knockbackForce > 0f) {
-      Body targetBody = physicsComponent.getBody();
-      Vector2 direction = target.getCenterPosition().sub(entity.getCenterPosition());
-      Vector2 impulse = direction.setLength(knockbackForce);
-      targetBody.applyLinearImpulse(impulse, targetBody.getWorldCenter(), true);
+
+    if (targetStats != null) {
+      // Apply knockback
+      if (physicsComponent != null && knockbackForce > 0f) {
+        Body targetBody = physicsComponent.getBody();
+        Vector2 direction = target.getCenterPosition().sub(entity.getCenterPosition());
+        Vector2 impulse = direction.setLength(knockbackForce);
+        targetBody.applyLinearImpulse(impulse, targetBody.getWorldCenter(), true);
+      }
+      // Try to attack target.
+      targetStats.hit(combatStats);
+      hitPlayer = true;
     }
   }
 }

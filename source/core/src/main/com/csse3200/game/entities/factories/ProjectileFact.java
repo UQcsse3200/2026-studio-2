@@ -2,8 +2,8 @@ package com.csse3200.game.entities.factories;
 
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.components.CombatStatsComponent;
+import com.csse3200.game.components.ProjectileAttackComponent;
 import com.csse3200.game.components.ProjectileComponent;
-import com.csse3200.game.components.TouchAttackComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.physics.PhysicsUtils;
@@ -35,12 +35,12 @@ public class ProjectileFact {
         new Entity()
             .addComponent(new PhysicsComponent())
             .addComponent(movement)
-            .addComponent(new HitboxComponent().setLayer(PhysicsLayer.NPC))
+            .addComponent(new HitboxComponent().setLayer(PhysicsLayer.ENEMY_PROJECTILE))
             .addComponent(new CombatStatsComponent(1, damage))
-            .addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER))
+            .addComponent(new ProjectileAttackComponent(PhysicsLayer.PLAYER))
             .addComponent(new ProjectileComponent(lifetime))
             .addComponent(new ColliderComponent())
-            .addComponent(new TextureRenderComponent("images/arrow.png"));
+            .addComponent(new TextureRenderComponent("images/projectiles/arrow.png"));
 
     projectile.getComponent(TextureRenderComponent.class).scaleEntity();
     projectile.setScale(projectile.getScale().scl(0.6f));
@@ -59,12 +59,48 @@ public class ProjectileFact {
         new Entity()
             .addComponent(new PhysicsComponent())
             .addComponent(movement)
-            .addComponent(new HitboxComponent().setLayer(PhysicsLayer.NPC))
+            .addComponent(new HitboxComponent().setLayer(PhysicsLayer.ENEMY_PROJECTILE))
             .addComponent(new CombatStatsComponent(1, damage))
-            .addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER))
+            .addComponent(new ProjectileAttackComponent(PhysicsLayer.PLAYER))
             .addComponent(new ProjectileComponent(lifetime))
             .addComponent(new ColliderComponent())
-            .addComponent(new TextureRenderComponent("images/necromancer_projectile.png"));
+            .addComponent(
+                new TextureRenderComponent("images/projectiles/necromancer_projectile.png"));
+
+    projectile.getComponent(TextureRenderComponent.class).scaleEntity();
+    projectile.setScale(projectile.getScale().scl(0.8f));
+    PhysicsUtils.setScaledCollider(projectile, 0.3f, 0.3f);
+
+    return projectile;
+  }
+
+  /**
+   * Creates a projectile used by Calypso during the first phase of the boss fight.
+   *
+   * @param targetPosition position the projectile travels towards
+   * @param damage damage dealt when the projectile hits the player
+   * @param speed projectile movement speed
+   * @param lifetime maximum projectile lifetime in seconds
+   * @return Calypso projectile entity
+   */
+  public static Entity createCalypsoProjectile(
+      Vector2 targetPosition, int damage, float speed, float lifetime) {
+
+    PhysicsMovementComponent movement = new PhysicsMovementComponent(new Vector2(speed, speed));
+    movement.setTarget(targetPosition);
+
+    Entity projectile =
+        new Entity()
+            .addComponent(new PhysicsComponent())
+            .addComponent(movement)
+            .addComponent(new HitboxComponent().setLayer(PhysicsLayer.NPC))
+            .addComponent(new CombatStatsComponent(1, damage))
+            .addComponent(new ProjectileAttackComponent(PhysicsLayer.PLAYER))
+            .addComponent(new ProjectileComponent(lifetime))
+            .addComponent(new ColliderComponent())
+            // Temporary asset until the Calypso projectile sprite is available.
+            .addComponent(
+                new TextureRenderComponent("images/projectiles/necromancer_projectile.png"));
 
     projectile.getComponent(TextureRenderComponent.class).scaleEntity();
     projectile.setScale(projectile.getScale().scl(0.8f));

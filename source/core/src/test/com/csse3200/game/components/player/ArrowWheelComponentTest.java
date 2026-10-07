@@ -21,7 +21,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 class ArrowWheelComponentTest {
   private static final float FAR = ArrowType.DEADZONE_RADIUS * 3f;
   private static final Vector2 TOWARDS_FIRE = new Vector2(FAR, 0f);
-  private static final Vector2 TOWARDS_COLD = new Vector2(0f, -FAR);
+  // Three wedges: Standard at the top, Fire 120 degrees clockwise, Ice 240 degrees clockwise.
+  private static final Vector2 TOWARDS_COLD = new Vector2(-0.866f * FAR, -0.5f * FAR);
   private static final Vector2 CENTRE = new Vector2(0f, 0f);
 
   private ArrowWheelComponent wheel;
@@ -82,7 +83,7 @@ class ArrowWheelComponentTest {
     wheel.open();
     wheel.highlightFromPointer(TOWARDS_COLD);
 
-    assertFalse(wheel.highlightFromPointer(new Vector2(FAR * 0.2f, -FAR)));
+    assertFalse(wheel.highlightFromPointer(new Vector2(-FAR * 0.2f, -FAR)));
     assertEquals(ArrowType.ICE, wheel.getHighlighted());
   }
 
@@ -214,13 +215,22 @@ class ArrowWheelComponentTest {
 
   @Test
   void shouldLockAndUnlockTypes() {
-    assertTrue(wheel.isAvailable(ArrowType.POISON));
+    assertTrue(wheel.isAvailable(ArrowType.FIRE));
 
-    wheel.setAvailable(ArrowType.POISON, false);
-    assertFalse(wheel.isAvailable(ArrowType.POISON));
+    wheel.setAvailable(ArrowType.FIRE, false);
+    assertFalse(wheel.isAvailable(ArrowType.FIRE));
 
-    wheel.setAvailable(ArrowType.POISON, true);
-    assertTrue(wheel.isAvailable(ArrowType.POISON));
+    wheel.setAvailable(ArrowType.FIRE, true);
+    assertTrue(wheel.isAvailable(ArrowType.FIRE));
+  }
+
+  @Test
+  void shouldRejectNonWheelTypesEvenWhenUnlockedWithoutInventory() {
+    for (ArrowType type : new ArrowType[] {ArrowType.POISON, ArrowType.POTION}) {
+      assertFalse(wheel.isAvailable(type));
+      wheel.setAvailable(type, true);
+      assertFalse(wheel.isAvailable(type));
+    }
   }
 
   @Test
@@ -240,5 +250,80 @@ class ArrowWheelComponentTest {
     player = new Entity().addComponent(inventory).addComponent(wheel);
     player.create();
     return inventory;
+  }
+
+  @Test
+  void shouldKeepTheSelectedTypeWhileThePlayerStillHasIt() {
+    InventoryComponent inventory = givePlayerAnInventory();
+    inventory.addItem(ItemType.STANDARD_ARROW, 5);
+
+    assertEquals(ArrowType.STANDARD, wheel.selectNextAvailable());
+    assertEquals(ArrowType.STANDARD, wheel.getSelected());
+  }
+
+  @Test
+  void shouldSwitchToAnArrowThePlayerStillHasWhenTheSelectedOneRunsOut() {
+    InventoryComponent inventory = givePlayerAnInventory();
+    inventory.addItem(ItemType.FIRE_ARROW, 1);
+    wheel.open();
+    wheel.highlightFromPointer(TOWARDS_FIRE);
+    wheel.close();
+    inventory.removeItem(ItemType.FIRE_ARROW, 1);
+    inventory.addItem(ItemType.STANDARD_ARROW, 5);
+
+    assertEquals(ArrowType.STANDARD, wheel.selectNextAvailable());
+    assertEquals(ArrowType.STANDARD, wheel.getSelected());
+    assertEquals(ItemType.STANDARD_ARROW, inventory.getSelectedItem());
+  }
+
+  @Test
+  void shouldAnnounceTheTypeItFallsBackTo() {
+    InventoryComponent inventory = givePlayerAnInventory();
+    inventory.addItem(ItemType.FIRE_ARROW, 1);
+    inventory.addItem(ItemType.ICE_ARROW, 3);
+    wheel.open();
+    wheel.highlightFromPointer(TOWARDS_FIRE);
+    wheel.close();
+    AtomicReference<ArrowType> announced = new AtomicReference<>();
+    player.getEvents().addListener("arrowSelected", (ArrowType type) -> announced.set(type));
+
+    inventory.removeItem(ItemType.FIRE_ARROW, 1);
+
+    assertEquals(ArrowType.ICE, announced.get());
+    assertEquals(ArrowType.ICE, wheel.getSelected());
+  }
+
+  @Test
+  void shouldLeaveTheSelectionAloneWhenThePlayerHasNoArrowsAtAll() {
+    givePlayerAnInventory();
+
+    assertNull(wheel.selectNextAvailable());
+    assertEquals(ArrowType.STANDARD, wheel.getSelected());
+  }
+
+  @Test
+  void shouldFallBackWhenTheInventorySelectionChanges() {
+    InventoryComponent inventory = givePlayerAnInventory();
+    inventory.addItem(ItemType.FIRE_ARROW, 1);
+    wheel.open();
+    wheel.highlightFromPointer(TOWARDS_FIRE);
+    wheel.close();
+    inventory.removeItem(ItemType.FIRE_ARROW, 1);
+    inventory.addItem(ItemType.STANDARD_ARROW, 5);
+
+    player.getEvents().trigger("inventorySelectionChanged");
+
+    assertEquals(ArrowType.STANDARD, wheel.getSelected());
+  }
+
+  @Test
+  void shouldRememberWhereTheWheelIsOnScreen() {
+    ArrowWheelComponent wheel = new ArrowWheelComponent();
+    assertNull(wheel.getScreenCentre());
+
+    wheel.setScreenCentre(150f, 450f);
+
+    assertEquals(150f, wheel.getScreenCentre().x);
+    assertEquals(450f, wheel.getScreenCentre().y);
   }
 }

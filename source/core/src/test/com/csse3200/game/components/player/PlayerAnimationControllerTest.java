@@ -1,6 +1,8 @@
 package com.csse3200.game.components.player;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -63,10 +65,14 @@ class PlayerAnimationControllerTest {
     animator.addAnimation("bow_shoot", 1f, PlayMode.NORMAL);
     // Registered so priority tests fail loudly if a competing animation is allowed through, rather
     // than silently no-opping because the animation was never added.
-    animator.addAnimation("jump", 1f, PlayMode.NORMAL);
+    animator.addAnimation("jump_takeoff", 1f, PlayMode.NORMAL);
+    animator.addAnimation("jump_fall", 1f, PlayMode.LOOP);
+    animator.addAnimation("jump_land", 1f, PlayMode.NORMAL);
     animator.addAnimation("air_dash", 1f, PlayMode.NORMAL);
     animator.addAnimation("hurt", 1f, PlayMode.NORMAL);
     animator.addAnimation("melee", 1f, PlayMode.NORMAL);
+    animator.addAnimation("instrument_draw", 1f, PlayMode.NORMAL);
+    animator.addAnimation("instrument_hold", 1f, PlayMode.LOOP);
     entity.addComponent(animator);
     PlayerAnimationController controller = new PlayerAnimationController();
     entity.addComponent(controller);
@@ -245,7 +251,9 @@ class PlayerAnimationControllerTest {
                 "bow_draw",
                 "bow_hold",
                 "bow_shoot",
-                "jump",
+                "jump_takeoff",
+                "jump_fall",
+                "jump_land",
                 "air_dash",
                 "hurt",
                 "melee"));
@@ -274,7 +282,15 @@ class PlayerAnimationControllerTest {
   void shouldAllowOtherAnimationsAgainOnceShootFinishes() {
     AnimationRenderComponent animator =
         new AnimationRenderComponent(
-            mockAtlasWithRegions("idle", "death", "bow_draw", "bow_hold", "bow_shoot", "jump"));
+            mockAtlasWithRegions(
+                "idle",
+                "death",
+                "bow_draw",
+                "bow_hold",
+                "bow_shoot",
+                "jump_takeoff",
+                "jump_fall",
+                "jump_land"));
     Entity entity = new Entity();
     PlayerAnimationController controller = createController(entity, animator);
 
@@ -285,7 +301,462 @@ class PlayerAnimationControllerTest {
 
     entity.getEvents().trigger("jumpStart");
 
-    assertEquals("jump", animator.getCurrentAnimation());
+    assertEquals("jump_takeoff", animator.getCurrentAnimation());
+  }
+
+  /** Builds an entity with every jump stage registered, ready to drive through the sequence. */
+  private PlayerAnimationController createJumpController(Entity entity) {
+    AnimationRenderComponent animator =
+        new AnimationRenderComponent(
+            mockAtlasWithRegions(
+                "idle",
+                "walk",
+                "death",
+                "bow_draw",
+                "bow_hold",
+                "bow_shoot",
+                "jump_takeoff",
+                "jump_fall",
+                "jump_land",
+                "air_dash",
+                "hurt",
+                "melee",
+                "instrument_draw",
+                "instrument_hold"));
+    animator.addAnimation("walk", 1f, PlayMode.LOOP);
+    return createController(entity, animator);
+  }
+
+  /** Plays the current clip to completion and lets the controller react to it finishing. */
+  private void finishClip(Entity entity, PlayerAnimationController controller) {
+    entity.getComponent(AnimationRenderComponent.class).render(mock(SpriteBatch.class));
+    controller.update();
+  }
+
+  @Test
+  void shouldPlayTheMeleeSwingAndFlipItForALeftwardSwing() {
+    Entity entity = new Entity();
+    createJumpController(entity);
+    AnimationRenderComponent animator = entity.getComponent(AnimationRenderComponent.class);
+
+    entity.getEvents().trigger("meleeSwing", -1);
+
+    assertEquals("melee", animator.getCurrentAnimation());
+    assertTrue(animator.isFlipX(), "a leftward swing should face left");
+  }
+
+  @Test
+  void shouldFaceRightForARightwardSwingRegardlessOfTheLastWalkDirection() {
+    Entity entity = new Entity();
+    createJumpController(entity);
+    AnimationRenderComponent animator = entity.getComponent(AnimationRenderComponent.class);
+    entity.getEvents().trigger("walk", new Vector2(-1f, 0f));
+
+    entity.getEvents().trigger("meleeSwing", 1);
+
+    assertEquals("melee", animator.getCurrentAnimation());
+    assertFalse(animator.isFlipX());
+  }
+
+  @Test
+  void shouldNotStartAMeleeSwingDuringABowShotOrADashOrAHurt() {
+    Entity bowEntity = new Entity();
+    createJumpController(bowEntity);
+    bowEntity.getEvents().trigger("chargeStart", new Vector2(1f, 0f));
+    bowEntity.getEvents().trigger("meleeSwing", 1);
+    assertEquals(
+        "bow_draw",
+        bowEntity.getComponent(AnimationRenderComponent.class).getCurrentAnimation(),
+        "the bow sequence outranks a swing");
+
+    Entity dashEntity = new Entity();
+    createJumpController(dashEntity);
+    dashEntity.getEvents().trigger("dashStart");
+    dashEntity.getEvents().trigger("meleeSwing", 1);
+    assertEquals(
+        "air_dash", dashEntity.getComponent(AnimationRenderComponent.class).getCurrentAnimation());
+
+    Entity hurtEntity = new Entity();
+    createJumpController(hurtEntity);
+    hurtEntity.getEvents().trigger("hurt");
+    hurtEntity.getEvents().trigger("meleeSwing", 1);
+    assertEquals(
+        "hurt", hurtEntity.getComponent(AnimationRenderComponent.class).getCurrentAnimation());
+  }
+
+  @Test
+  void shouldResumeFallingAfterAMeleeSwingEndsMidAir() {
+    Entity entity = new Entity();
+    PlayerAnimationController controller = createJumpController(entity);
+    AnimationRenderComponent animator = entity.getComponent(AnimationRenderComponent.class);
+
+    entity.getEvents().trigger("fallStart");
+    entity.getEvents().trigger("meleeSwing", 1);
+    assertEquals("melee", animator.getCurrentAnimation(), "a swing outranks the fall loop");
+
+    finishClip(entity, controller);
+
+    // The fall was only recorded while the swing played, so it has to come back afterwards rather
+    // than dropping the player into idle in mid-air.
+    assertEquals("jump_fall", animator.getCurrentAnimation());
+  }
+
+  @Test
+  void shouldNotLetMovementCutAMeleeSwingShort() {
+    Entity entity = new Entity();
+    createJumpController(entity);
+    AnimationRenderComponent animator = entity.getComponent(AnimationRenderComponent.class);
+
+    entity.getEvents().trigger("meleeSwing", 1);
+    entity.getEvents().trigger("walk", new Vector2(1f, 0f));
+    entity.getEvents().trigger("sprint");
+
+    assertEquals("melee", animator.getCurrentAnimation());
+  }
+
+  @Test
+  void shouldSuppressTheLandingRecoveryWhileASwingIsPlaying() {
+    Entity entity = new Entity();
+    createJumpController(entity);
+    AnimationRenderComponent animator = entity.getComponent(AnimationRenderComponent.class);
+
+    entity.getEvents().trigger("fallStart");
+    entity.getEvents().trigger("meleeSwing", 1);
+    entity.getEvents().trigger("landed");
+
+    assertEquals("melee", animator.getCurrentAnimation());
+  }
+
+  @Test
+  void shouldSettleIntoTheInstrumentHoldOnceTheDrawFinishes() {
+    Entity entity = new Entity();
+    PlayerAnimationController controller = createJumpController(entity);
+    AnimationRenderComponent animator = entity.getComponent(AnimationRenderComponent.class);
+
+    entity.getEvents().trigger("instrumentStart");
+    assertEquals("instrument_draw", animator.getCurrentAnimation());
+
+    finishClip(entity, controller);
+
+    assertEquals("instrument_hold", animator.getCurrentAnimation());
+  }
+
+  @Test
+  void shouldKeepHoldingTheInstrumentUntilSomethingInterruptsIt() {
+    Entity entity = new Entity();
+    PlayerAnimationController controller = createJumpController(entity);
+    AnimationRenderComponent animator = entity.getComponent(AnimationRenderComponent.class);
+
+    entity.getEvents().trigger("instrumentStart");
+    finishClip(entity, controller);
+
+    // The hold loops, so repeated updates must not drop it back to idle.
+    for (int i = 0; i < 5; i++) {
+      finishClip(entity, controller);
+    }
+
+    assertEquals("instrument_hold", animator.getCurrentAnimation());
+  }
+
+  @Test
+  void shouldPutTheInstrumentAwayWhenThePlayerWalks() {
+    Entity entity = new Entity();
+    PlayerAnimationController controller = createJumpController(entity);
+    AnimationRenderComponent animator = entity.getComponent(AnimationRenderComponent.class);
+
+    entity.getEvents().trigger("instrumentStart");
+    finishClip(entity, controller);
+
+    entity.getEvents().trigger("walk", new Vector2(1f, 0f));
+
+    assertEquals("walk", animator.getCurrentAnimation());
+  }
+
+  @Test
+  void shouldRefuseTheInstrumentWhileBusyWithAnotherAction() {
+    Entity jumpEntity = new Entity();
+    createJumpController(jumpEntity);
+    jumpEntity.getEvents().trigger("jumpStart");
+    jumpEntity.getEvents().trigger("instrumentStart");
+    assertEquals(
+        "jump_takeoff",
+        jumpEntity.getComponent(AnimationRenderComponent.class).getCurrentAnimation());
+
+    Entity swingEntity = new Entity();
+    createJumpController(swingEntity);
+    swingEntity.getEvents().trigger("meleeSwing", 1);
+    swingEntity.getEvents().trigger("instrumentStart");
+    assertEquals(
+        "melee", swingEntity.getComponent(AnimationRenderComponent.class).getCurrentAnimation());
+  }
+
+  @Test
+  void shouldPutTheInstrumentAwayOnDeath() {
+    Entity entity = new Entity();
+    PlayerAnimationController controller = createJumpController(entity);
+    AnimationRenderComponent animator = entity.getComponent(AnimationRenderComponent.class);
+    entity.getEvents().trigger("instrumentStart");
+    finishClip(entity, controller);
+
+    entity.getEvents().trigger("death");
+
+    assertEquals("death", animator.getCurrentAnimation());
+  }
+
+  @Test
+  void shouldPutTheInstrumentAwayWhenThePauseMenuOpens() {
+    Entity entity = new Entity();
+    PlayerAnimationController controller = createJumpController(entity);
+    AnimationRenderComponent animator = entity.getComponent(AnimationRenderComponent.class);
+    entity.getEvents().trigger("instrumentStart");
+    finishClip(entity, controller);
+
+    entity.getEvents().trigger("togglePause");
+
+    assertEquals("idle", animator.getCurrentAnimation());
+  }
+
+  @Test
+  void shouldRestoreTheMovementAnimationWhenRefreshed() {
+    Entity entity = new Entity();
+    PlayerAnimationController controller = createJumpController(entity);
+    AnimationRenderComponent animator = entity.getComponent(AnimationRenderComponent.class);
+    entity.getEvents().trigger("walk", new Vector2(1f, 0f));
+
+    // The rope pose stops the animator while it draws the player itself; refreshAnimation() is how
+    // the normal animation comes back once it stops.
+    animator.stopAnimation();
+    controller.refreshAnimation();
+
+    assertEquals("walk", animator.getCurrentAnimation());
+  }
+
+  @Test
+  void shouldHoldTakeoffPastItsClipLengthInsteadOfRevertingToIdle() {
+    Entity entity = new Entity();
+    PlayerAnimationController controller = createJumpController(entity);
+    AnimationRenderComponent animator = entity.getComponent(AnimationRenderComponent.class);
+
+    entity.getEvents().trigger("jumpStart");
+
+    // Regression: the takeoff used to clear itself when the clip finished, dropping the player
+    // into idle while still airborne. It must hold its last tucked frame until the fall begins.
+    for (int i = 0; i < 5; i++) {
+      animator.render(mock(SpriteBatch.class));
+      controller.update();
+    }
+
+    assertEquals("jump_takeoff", animator.getCurrentAnimation());
+  }
+
+  @Test
+  void shouldLoopTheFallUntilLanding() {
+    Entity entity = new Entity();
+    PlayerAnimationController controller = createJumpController(entity);
+    AnimationRenderComponent animator = entity.getComponent(AnimationRenderComponent.class);
+
+    entity.getEvents().trigger("jumpStart");
+    entity.getEvents().trigger("fallStart");
+    assertEquals("jump_fall", animator.getCurrentAnimation());
+
+    for (int i = 0; i < 5; i++) {
+      animator.render(mock(SpriteBatch.class));
+      controller.update();
+    }
+
+    assertEquals("jump_fall", animator.getCurrentAnimation());
+  }
+
+  @Test
+  void shouldPlayLandingRecoveryOnceThenReturnToIdle() {
+    Entity entity = new Entity();
+    PlayerAnimationController controller = createJumpController(entity);
+    AnimationRenderComponent animator = entity.getComponent(AnimationRenderComponent.class);
+
+    entity.getEvents().trigger("jumpStart");
+    entity.getEvents().trigger("fallStart");
+    entity.getEvents().trigger("landed");
+    assertEquals("jump_land", animator.getCurrentAnimation());
+
+    animator.render(mock(SpriteBatch.class)); // Finishes the single-frame recovery.
+    controller.update();
+
+    assertEquals("idle", animator.getCurrentAnimation());
+  }
+
+  @Test
+  void shouldNotLetMovementCutTheLandingRecoveryShort() {
+    Entity entity = new Entity();
+    PlayerAnimationController controller = createJumpController(entity);
+    AnimationRenderComponent animator = entity.getComponent(AnimationRenderComponent.class);
+
+    entity.getEvents().trigger("fallStart");
+    entity.getEvents().trigger("landed");
+    assertEquals("jump_land", animator.getCurrentAnimation());
+
+    entity.getEvents().trigger("walk", new Vector2(1f, 0f));
+    assertEquals("jump_land", animator.getCurrentAnimation());
+
+    animator.render(mock(SpriteBatch.class));
+    controller.update();
+
+    assertEquals("walk", animator.getCurrentAnimation());
+  }
+
+  @Test
+  void shouldResumeFallingAfterADashInterruptsIt() {
+    Entity entity = new Entity();
+    PlayerAnimationController controller = createJumpController(entity);
+    AnimationRenderComponent animator = entity.getComponent(AnimationRenderComponent.class);
+
+    entity.getEvents().trigger("fallStart");
+    entity.getEvents().trigger("airDashStart");
+    assertEquals("air_dash", animator.getCurrentAnimation());
+
+    animator.render(mock(SpriteBatch.class)); // dash clip finishes, still airborne
+    controller.update();
+
+    assertEquals("jump_fall", animator.getCurrentAnimation());
+  }
+
+  @Test
+  void shouldNotPlayTheLandingRecoveryOverADash() {
+    Entity entity = new Entity();
+    PlayerAnimationController controller = createJumpController(entity);
+    AnimationRenderComponent animator = entity.getComponent(AnimationRenderComponent.class);
+
+    entity.getEvents().trigger("fallStart");
+    entity.getEvents().trigger("airDashStart");
+    entity.getEvents().trigger("landed"); // dashed straight into the floor
+    assertEquals("air_dash", animator.getCurrentAnimation());
+
+    animator.render(mock(SpriteBatch.class));
+    controller.update();
+
+    // Grounded again, so it resolves to idle rather than resuming the fall.
+    assertEquals("idle", animator.getCurrentAnimation());
+  }
+
+  @Test
+  void shouldLetDeathOverrideTheAirSequenceAndIgnoreLaterAirEvents() {
+    Entity entity = new Entity();
+    createJumpController(entity);
+    AnimationRenderComponent animator = entity.getComponent(AnimationRenderComponent.class);
+
+    entity.getEvents().trigger("jumpStart");
+    entity.getEvents().trigger("fallStart");
+    entity.getEvents().trigger("death");
+    assertEquals("death", animator.getCurrentAnimation());
+
+    entity.getEvents().trigger("fallStart");
+    entity.getEvents().trigger("landed");
+    entity.getEvents().trigger("grappleAttached");
+
+    assertEquals("death", animator.getCurrentAnimation());
+  }
+
+  @Test
+  void shouldNotStartTheTakeoffDuringABowShot() {
+    Entity entity = new Entity();
+    createJumpController(entity);
+    AnimationRenderComponent animator = entity.getComponent(AnimationRenderComponent.class);
+
+    entity.getEvents().trigger("chargeStart", new Vector2(1f, 0f));
+    entity.getEvents().trigger("jumpStart");
+
+    assertEquals("bow_draw", animator.getCurrentAnimation());
+  }
+
+  @Test
+  void shouldStopTheFallLoopWhenTheGrappleAttaches() {
+    Entity entity = new Entity();
+    createJumpController(entity);
+    AnimationRenderComponent animator = entity.getComponent(AnimationRenderComponent.class);
+
+    entity.getEvents().trigger("fallStart");
+    assertEquals("jump_fall", animator.getCurrentAnimation());
+
+    entity.getEvents().trigger("grappleAttached");
+
+    // Swinging, not falling - the loop must not keep playing underneath the player.
+    assertEquals("idle", animator.getCurrentAnimation());
+  }
+
+  @Test
+  void shouldStopTheTakeoffPoseWhenTheGrappleAttaches() {
+    Entity entity = new Entity();
+    createJumpController(entity);
+    AnimationRenderComponent animator = entity.getComponent(AnimationRenderComponent.class);
+
+    entity.getEvents().trigger("walk", new Vector2(1f, 0f));
+    entity.getEvents().trigger("jumpStart");
+    entity.getEvents().trigger("grappleAttached");
+
+    assertEquals("walk", animator.getCurrentAnimation());
+  }
+
+  @Test
+  void shouldFallAgainAfterReleasingTheGrapple() {
+    Entity entity = new Entity();
+    createJumpController(entity);
+    AnimationRenderComponent animator = entity.getComponent(AnimationRenderComponent.class);
+
+    entity.getEvents().trigger("fallStart");
+    entity.getEvents().trigger("grappleAttached");
+    assertEquals("idle", animator.getCurrentAnimation());
+
+    // PlayerActions clears its own falling flag on attach, so letting go mid-air reports a
+    // fresh fall and the loop comes back.
+    entity.getEvents().trigger("fallStart");
+
+    assertEquals("jump_fall", animator.getCurrentAnimation());
+  }
+
+  @Test
+  void shouldIgnoreLandingWhenNeverAirborne() {
+    Entity entity = new Entity();
+    createJumpController(entity);
+    AnimationRenderComponent animator = entity.getComponent(AnimationRenderComponent.class);
+
+    // A one-frame blip in the ground raycast while running must not punch in a landing crouch.
+    entity.getEvents().trigger("walk", new Vector2(1f, 0f));
+    entity.getEvents().trigger("landed");
+
+    assertEquals("walk", animator.getCurrentAnimation());
+  }
+
+  @Test
+  void shouldResumeFallAfterAHurtEndsMidAir() {
+    Entity entity = new Entity();
+    PlayerAnimationController controller = createJumpController(entity);
+    AnimationRenderComponent animator = entity.getComponent(AnimationRenderComponent.class);
+
+    entity.getEvents().trigger("fallStart");
+    entity.getEvents().trigger("hurt");
+    assertEquals("hurt", animator.getCurrentAnimation());
+
+    animator.render(mock(SpriteBatch.class)); // Finishes the hurt reaction.
+    controller.update();
+
+    // Still in the air, so it must go back to falling rather than idling mid-flight.
+    assertEquals("jump_fall", animator.getCurrentAnimation());
+  }
+
+  @Test
+  void shouldNotInterruptABowShotWithAFall() {
+    Entity entity = new Entity();
+    PlayerAnimationController controller = createJumpController(entity);
+    AnimationRenderComponent animator = entity.getComponent(AnimationRenderComponent.class);
+
+    entity.getEvents().trigger("chargeStart", new Vector2(1f, 0f));
+    entity.getEvents().trigger("chargeRelease", new Vector2(1f, 0f));
+    entity.getEvents().trigger("fallStart");
+    assertEquals("bow_shoot", animator.getCurrentAnimation());
+
+    animator.render(mock(SpriteBatch.class)); // Finishes bow_shoot.
+    controller.update();
+
+    assertEquals("jump_fall", animator.getCurrentAnimation());
   }
 
   @Test

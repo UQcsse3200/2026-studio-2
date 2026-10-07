@@ -3,6 +3,7 @@ package com.csse3200.game.ui.terminal;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import com.csse3200.game.GdxGame;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.extensions.GameExtension;
@@ -96,6 +97,17 @@ class TerminalTest {
     assertEquals("1", capturedArg.get(0));
     assertEquals("2", capturedArg.get(1));
     assertEquals("3", capturedArg.get(2));
+  }
+
+  @Test
+  void shouldLoadBlackjackMinigameCommand() {
+    GdxGame game = mock(GdxGame.class);
+    Terminal terminal = new Terminal(game, GdxGame.ScreenType.MAIN_GAME);
+
+    terminal.setEnteredMessage("blackjackMinigame load");
+
+    assertTrue(terminal.processMessage());
+    verify(game).setScreen(GdxGame.ScreenType.MINIGAME_BLACKJACK);
   }
 
   @Test
