@@ -119,8 +119,13 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#createTextBox(java.lang.String)" class="member-name-link">createTextBox</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;filePath)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#createTextBox(com.csse3200.game.entities.configs.TextConfig)" class="member-name-link">createTextBox</a><wbr>(<a href="../configs/TextConfig.html" title="class in com.csse3200.game.entities.configs">TextConfig</a>&nbsp;textConfig)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Creates a text box from an in-memory config (e.g.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#createTextBox(java.lang.String)" class="member-name-link">createTextBox</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;filePath)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Loads a text box config from the given JSON file and creates the resulting text box.</div>
 </div>
 </div>
@@ -162,6 +167,17 @@ loadScripts(document, 'script');</script>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>filePath</code> - the path from source. e.g: configs/textBoxes.json</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="createTextBox(com.csse3200.game.entities.configs.TextConfig)">
+<h3>createTextBox</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">createTextBox</span><wbr><span class="parameters">(<a href="../configs/TextConfig.html" title="class in com.csse3200.game.entities.configs">TextConfig</a>&nbsp;textConfig)</span></div>
+<div class="block">Creates a text box from an in-memory config (e.g. built by a terminal command preview).</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>textConfig</code> - the text box config to display</dd>
 </dl>
 </section>
 </li>
