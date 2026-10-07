@@ -67,7 +67,10 @@ class PlayerMovementRegressionTest {
     doReturn(grounded)
         .when(engine)
         .raycast(
-            any(Vector2.class), any(Vector2.class), eq(PhysicsLayer.SOLID), any(RaycastHit.class));
+            any(Vector2.class),
+            any(Vector2.class),
+            eq(PhysicsLayer.STANDABLE),
+            any(RaycastHit.class));
   }
 
   private void advance(float seconds) {

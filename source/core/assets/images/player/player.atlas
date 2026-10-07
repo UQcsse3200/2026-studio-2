@@ -275,88 +275,107 @@ sprint
   offset: 0, 0
   index: 11
 
-player_jump.png
-size: 192, 400
+player_jump_takeoff.png
+size: 192, 200
 format: RGBA8888
 filter: Nearest,Nearest
 repeat: none
-jump
+jump_takeoff
+  rotate: false
+  xy: 0, 0
+  size: 48, 100
+  orig: 48, 100
+  offset: 0, 0
+  index: 0
+jump_takeoff
   rotate: false
   xy: 48, 0
   size: 48, 100
   orig: 48, 100
   offset: 0, 0
-  index: 0
-jump
+  index: 1
+jump_takeoff
   rotate: false
   xy: 96, 0
   size: 48, 100
   orig: 48, 100
   offset: 0, 0
-  index: 1
-jump
+  index: 2
+jump_takeoff
   rotate: false
   xy: 144, 0
   size: 48, 100
   orig: 48, 100
   offset: 0, 0
-  index: 2
-jump
+  index: 3
+jump_takeoff
   rotate: false
   xy: 0, 100
   size: 48, 100
   orig: 48, 100
   offset: 0, 0
-  index: 3
-jump
+  index: 4
+jump_takeoff
   rotate: false
   xy: 48, 100
   size: 48, 100
   orig: 48, 100
   offset: 0, 0
-  index: 4
-jump
+  index: 5
+jump_takeoff
   rotate: false
   xy: 96, 100
   size: 48, 100
   orig: 48, 100
   offset: 0, 0
-  index: 5
-jump
+  index: 6
+jump_takeoff
   rotate: false
   xy: 144, 100
   size: 48, 100
   orig: 48, 100
   offset: 0, 0
-  index: 6
-jump
-  rotate: false
-  xy: 0, 200
-  size: 48, 100
-  orig: 48, 100
-  offset: 0, 0
   index: 7
-jump
+
+player_jump_fall.png
+size: 48, 100
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+jump_fall
   rotate: false
-  xy: 48, 200
+  xy: 0, 0
   size: 48, 100
   orig: 48, 100
   offset: 0, 0
-  index: 8
-jump
+  index: 0
+
+player_jump_land.png
+size: 144, 100
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+jump_land
   rotate: false
-  xy: 96, 200
+  xy: 0, 0
   size: 48, 100
   orig: 48, 100
   offset: 0, 0
-  index: 9
-jump
+  index: 0
+jump_land
   rotate: false
-  xy: 144, 200
+  xy: 48, 0
   size: 48, 100
   orig: 48, 100
   offset: 0, 0
-  index: 10
+  index: 1
+jump_land
+  rotate: false
+  xy: 96, 0
+  size: 48, 100
+  orig: 48, 100
+  offset: 0, 0
+  index: 2
 
 player_hurt.png
 size: 220, 288
@@ -1139,3 +1158,184 @@ bow_shoot
   orig: 128, 128
   offset: 0, 0
   index: 7
+
+player_instrument.png
+size: 800, 800
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+instrument_draw
+  rotate: false
+  xy: 0, 0
+  size: 160, 160
+  orig: 160, 160
+  offset: 0, 0
+  index: 0
+instrument_draw
+  rotate: false
+  xy: 160, 0
+  size: 160, 160
+  orig: 160, 160
+  offset: 0, 0
+  index: 1
+instrument_draw
+  rotate: false
+  xy: 320, 0
+  size: 160, 160
+  orig: 160, 160
+  offset: 0, 0
+  index: 2
+instrument_draw
+  rotate: false
+  xy: 480, 0
+  size: 160, 160
+  orig: 160, 160
+  offset: 0, 0
+  index: 3
+instrument_draw
+  rotate: false
+  xy: 640, 0
+  size: 160, 160
+  orig: 160, 160
+  offset: 0, 0
+  index: 4
+instrument_draw
+  rotate: false
+  xy: 0, 160
+  size: 160, 160
+  orig: 160, 160
+  offset: 0, 0
+  index: 5
+instrument_draw
+  rotate: false
+  xy: 160, 160
+  size: 160, 160
+  orig: 160, 160
+  offset: 0, 0
+  index: 6
+instrument_draw
+  rotate: false
+  xy: 320, 160
+  size: 160, 160
+  orig: 160, 160
+  offset: 0, 0
+  index: 7
+instrument_draw
+  rotate: false
+  xy: 480, 160
+  size: 160, 160
+  orig: 160, 160
+  offset: 0, 0
+  index: 8
+instrument_draw
+  rotate: false
+  xy: 640, 160
+  size: 160, 160
+  orig: 160, 160
+  offset: 0, 0
+  index: 9
+instrument_draw
+  rotate: false
+  xy: 0, 320
+  size: 160, 160
+  orig: 160, 160
+  offset: 0, 0
+  index: 10
+instrument_draw
+  rotate: false
+  xy: 160, 320
+  size: 160, 160
+  orig: 160, 160
+  offset: 0, 0
+  index: 11
+instrument_hold
+  rotate: false
+  xy: 320, 320
+  size: 160, 160
+  orig: 160, 160
+  offset: 0, 0
+  index: 0
+instrument_hold
+  rotate: false
+  xy: 480, 320
+  size: 160, 160
+  orig: 160, 160
+  offset: 0, 0
+  index: 1
+instrument_hold
+  rotate: false
+  xy: 640, 320
+  size: 160, 160
+  orig: 160, 160
+  offset: 0, 0
+  index: 2
+instrument_hold
+  rotate: false
+  xy: 0, 480
+  size: 160, 160
+  orig: 160, 160
+  offset: 0, 0
+  index: 3
+instrument_hold
+  rotate: false
+  xy: 160, 480
+  size: 160, 160
+  orig: 160, 160
+  offset: 0, 0
+  index: 4
+instrument_hold
+  rotate: false
+  xy: 320, 480
+  size: 160, 160
+  orig: 160, 160
+  offset: 0, 0
+  index: 5
+instrument_hold
+  rotate: false
+  xy: 480, 480
+  size: 160, 160
+  orig: 160, 160
+  offset: 0, 0
+  index: 6
+instrument_hold
+  rotate: false
+  xy: 640, 480
+  size: 160, 160
+  orig: 160, 160
+  offset: 0, 0
+  index: 7
+instrument_hold
+  rotate: false
+  xy: 0, 640
+  size: 160, 160
+  orig: 160, 160
+  offset: 0, 0
+  index: 8
+instrument_hold
+  rotate: false
+  xy: 160, 640
+  size: 160, 160
+  orig: 160, 160
+  offset: 0, 0
+  index: 9
+instrument_hold
+  rotate: false
+  xy: 320, 640
+  size: 160, 160
+  orig: 160, 160
+  offset: 0, 0
+  index: 10
+instrument_hold
+  rotate: false
+  xy: 480, 640
+  size: 160, 160
+  orig: 160, 160
+  offset: 0, 0
+  index: 11
+instrument_hold
+  rotate: false
+  xy: 640, 640
+  size: 160, 160
+  orig: 160, 160
+  offset: 0, 0
+  index: 12
