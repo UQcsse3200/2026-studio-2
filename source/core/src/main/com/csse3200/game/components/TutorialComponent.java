@@ -7,11 +7,10 @@ import com.csse3200.game.ui.terminal.Terminal;
 /**
  * Observes raw key presses to advance a tutorial textbox through a fixed sequence.
  *
- * Steps: press A and D for movement, then SPACE to jump, then SHIFT to dash/sprint. Movement is never
- * blocked, this component always returns false so the player input handler still receives every
- * key. Priority exceeds the player handler so keyDown is seen before the player consumes it.
+ * <p>Steps: press A and D for movement, then SPACE to jump, then SHIFT to dash/sprint. Movement is
+ * never blocked, this component always returns false so the player input handler still receives
+ * every key. Priority exceeds the player handler so keyDown is seen before the player consumes it.
  */
-
 public class TutorialComponent extends InputComponent {
   private final TextBoxComponent textBox;
   private int step = 0;

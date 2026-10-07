@@ -333,8 +333,7 @@ class TextBoxComponentTest {
 
   @Test
   void shouldShowPortraitAboveBoxTopEdge() {
-    TextBoxComponent component =
-        makeComponent(List.of("Some text"), 100f, List.of(TEST_PORTRAIT));
+    TextBoxComponent component = makeComponent(List.of("Some text"), 100f, List.of(TEST_PORTRAIT));
     when(mockGraphics.getDeltaTime()).thenReturn(1f); // fully reveal so pack() gives size
     when(mockInput.isKeyJustPressed(Keys.TAB)).thenReturn(false);
 
@@ -389,8 +388,7 @@ class TextBoxComponentTest {
 
   @Test
   void shouldRemovePortraitOnDismiss() {
-    TextBoxComponent component =
-        makeComponent(List.of("Some text"), 100f, List.of(TEST_PORTRAIT));
+    TextBoxComponent component = makeComponent(List.of("Some text"), 100f, List.of(TEST_PORTRAIT));
     when(mockGraphics.getDeltaTime()).thenReturn(1f);
     when(mockInput.isKeyJustPressed(Keys.TAB)).thenReturn(false);
 

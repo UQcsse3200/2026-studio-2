@@ -37,8 +37,7 @@ class GameEndDisplayTest {
     ServiceLocator.registerRenderService(renderService);
 
     ResourceService resourceService = mock(ResourceService.class);
-    when(resourceService.getAsset(anyString(), eq(Texture.class)))
-        .thenReturn(mock(Texture.class));
+    when(resourceService.getAsset(anyString(), eq(Texture.class))).thenReturn(mock(Texture.class));
     ServiceLocator.registerResourceService(resourceService);
 
     ServiceLocator.registerEntityService(new EntityService());
@@ -162,8 +161,7 @@ class GameEndDisplayTest {
     }
   }
 
-  private static com.badlogic.gdx.scenes.scene2d.ui.Table getMessageTable(
-      GameEndDisplay display) {
+  private static com.badlogic.gdx.scenes.scene2d.ui.Table getMessageTable(GameEndDisplay display) {
     try {
       java.lang.reflect.Field field =
           com.csse3200.game.components.TextBoxComponent.class.getDeclaredField("table");

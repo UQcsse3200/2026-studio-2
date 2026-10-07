@@ -33,14 +33,19 @@ public class GameEndDisplay extends UIComponent {
   private static final float BUTTON_HEIGHT = 70f;
 
   private static final float MESSAGE_CHARS_PER_SECOND = 21f;
+
   /** Fraction of the stage height where the top of the result message sits. */
   private static final float MESSAGE_Y_FRACTION = 0.68f;
+
   /** Gap in pixels kept between the top of the restart button and the message above it. */
   private static final float MESSAGE_BUTTON_GAP = 24f;
+
   /** Breathing room in pixels between the title and the buttons below it. */
   private static final float TITLE_BUTTON_SPACING = 90f;
+
   /** Fraction of the stage width used as the message wrap width. */
   private static final float MESSAGE_WIDTH_FRACTION = 0.7f;
+
   private static final Color TRANSPARENT = new Color(0f, 0f, 0f, 0f);
 
   // private static NinePatchDrawable cachedBackground;
@@ -201,8 +206,8 @@ public class GameEndDisplay extends UIComponent {
   /**
    * Keeps the message box anchored in the panel's message row, just above the restart button.
    * Tracking the button (rather than a fixed stage fraction) keeps the text clear of the title and
-   * buttons on any resolution or with any message length. The box's bottom edge is pinned above
-   * the button so taller (wrapped) messages grow upward, never over the buttons.
+   * buttons on any resolution or with any message length. The box's bottom edge is pinned above the
+   * button so taller (wrapped) messages grow upward, never over the buttons.
    */
   private void positionMessageBox() {
     if (messageBox == null || stage == null) {
@@ -212,7 +217,8 @@ public class GameEndDisplay extends UIComponent {
       Vector2 buttonTopCenter =
           restartBtn.localToStageCoordinates(
               new Vector2(restartBtn.getWidth() / 2f, restartBtn.getHeight()));
-      messageBox.setPosition(buttonTopCenter.x, buttonTopCenter.y + MESSAGE_BUTTON_GAP, Align.bottom);
+      messageBox.setPosition(
+          buttonTopCenter.x, buttonTopCenter.y + MESSAGE_BUTTON_GAP, Align.bottom);
       return;
     }
     messageBox.setPosition(stage.getWidth() / 2f, stage.getHeight() * MESSAGE_Y_FRACTION);

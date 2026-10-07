@@ -33,16 +33,14 @@ class TextBoxCommandTest {
   @Test
   void shouldResolveShorthandToPortraitsDirectory() {
     assertEquals(
-        "images/portraits/calypsoHappy.png",
-        TextBoxCommand.resolvePortraitPath("calypsoHappy"));
+        "images/portraits/calypsoHappy.png", TextBoxCommand.resolvePortraitPath("calypsoHappy"));
   }
 
   @Test
   void shouldFallBackThroughExtensions() {
     // Only .png exists for this portrait: .jpeg and .jpg are skipped before landing on it.
     assertEquals(
-        "images/portraits/calypsoRegret.png",
-        TextBoxCommand.resolvePortraitPath("calypsoRegret"));
+        "images/portraits/calypsoRegret.png", TextBoxCommand.resolvePortraitPath("calypsoRegret"));
   }
 
   @Test

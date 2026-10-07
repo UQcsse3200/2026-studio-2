@@ -29,6 +29,7 @@ public class TextBoxComponent extends UIComponent {
 
   /** Portrait image edge length in pixels. JPEG aspect is preserved via fit scaling. */
   private static final float PORTRAIT_SIZE = 100f;
+
   /**
    * Fraction of the portrait overlapping the box's top edge. Zero keeps the portrait fully above
    * the box so it can never cover the first text line; its bottom edge stays connected to the top.
@@ -71,10 +72,10 @@ public class TextBoxComponent extends UIComponent {
    *     Pass {@code null} to use the skin's default font.
    * @param textAlignment horizontal alignment of the text within the box, e.g. {@link Align#left},
    *     {@link Align#center}, {@link Align#right}.
-   * @param portraitPaths optional per-page portrait image paths (asset-relative JPEG/PNG),
-   *     parallel to {@code pages}: entry {@code i} is shown overlapping the top edge of the box
-   *     while page {@code i} is displayed. Blank or missing entries mean no portrait for that page.
-   *     Pass {@code null} or an empty list for no portraits.
+   * @param portraitPaths optional per-page portrait image paths (asset-relative JPEG/PNG), parallel
+   *     to {@code pages}: entry {@code i} is shown overlapping the top edge of the box while page
+   *     {@code i} is displayed. Blank or missing entries mean no portrait for that page. Pass
+   *     {@code null} or an empty list for no portraits.
    */
   public TextBoxComponent(
       float xPos,
@@ -242,8 +243,8 @@ public class TextBoxComponent extends UIComponent {
   }
 
   /**
-   * Repositions the textbox table with an explicit alignment so it pins the
-   * box's bottom edge above another entity. The alignment survives redraws.
+   * Repositions the textbox table with an explicit alignment so it pins the box's bottom edge above
+   * another entity. The alignment survives redraws.
    */
   public void setPosition(float x, float y, int align) {
     posX = x;

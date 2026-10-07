@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Starts the movement tutorial from the debug terminal.
  *
- * Format: {@code tutorial}. The tutorial textbox is anchored bottom-left beside the inventory
+ * <p>Format: {@code tutorial}. The tutorial textbox is anchored bottom-left beside the inventory
  * hotbar and advances on A+D, SPACE, then SHIFT key presses. Re-running the command restarts it.
  */
 public class TutorialCommand implements Command {
