@@ -100,4 +100,29 @@ class PlatformGrappleComponentTest {
     assertFalse(comp.successfulGrapple(4));
     assertTrue(comp.successfulGrapple(8));
   }
+
+  @Test
+  void shouldReportEachSideIndependentlyFromTheBitmask() {
+    PlatformGrappleComponent comp =
+        new PlatformGrappleComponent(
+            PlatformGrappleComponent.TOP_SIDE | PlatformGrappleComponent.BOTTOM_SIDE);
+
+    assertTrue(comp.isSideGrappleable(PlatformGrappleComponent.TOP_SIDE));
+    assertTrue(comp.isSideGrappleable(PlatformGrappleComponent.BOTTOM_SIDE));
+    assertFalse(comp.isSideGrappleable(PlatformGrappleComponent.LEFT_SIDE));
+    assertFalse(comp.isSideGrappleable(PlatformGrappleComponent.RIGHT_SIDE));
+  }
+
+  @Test
+  void shouldRejectAGrappleThatDidNotHitExactlyOneSideEvenWhenEverySideIsAllowed() {
+    PlatformGrappleComponent comp = new PlatformGrappleComponent(15);
+
+    // Only 1, 2, 4 and 8 are real sides - anything else (a miss, a corner, junk) never succeeds,
+    // even though its bits overlap the allowed mask.
+    assertFalse(comp.successfulGrapple(0));
+    assertFalse(comp.successfulGrapple(3));
+    assertFalse(comp.successfulGrapple(5));
+    assertFalse(comp.successfulGrapple(16));
+    assertFalse(comp.successfulGrapple(-1));
+  }
 }

@@ -137,8 +137,7 @@ class PlayerActionsTest {
     player.update();
     assertEquals(1, falls.get(), "descending freely should report a fall");
 
-    // Latch onto a rope. PlayerActions drops the rope at the end of each update because no right
-    // mouse button is held in this harness, but updateAirState() runs first and sees it attached.
+    // Latch onto a rope and stay attached until the release event.
     BodyDef anchorDef = new BodyDef();
     anchorDef.type = BodyDef.BodyType.StaticBody;
     anchorDef.position.set(0f, 5f);
@@ -151,6 +150,7 @@ class PlayerActionsTest {
     assertEquals(1, falls.get(), "swinging is not falling");
 
     // Back in free air and still descending, so the fall is reported again.
+    player.getEvents().trigger("grappleRelease");
     player.update();
     assertEquals(2, falls.get());
   }

@@ -134,12 +134,21 @@ public class ProjectileFactory {
   }
 
   public static Entity createGrappleArrow(Entity shooter, Vector2 position, Vector2 direction) {
+    return createGrappleArrow(shooter, position, direction, 1f);
+  }
+
+  /**
+   * Like every other arrow, a charged shot is just launched faster or slower - how far it gets then
+   * falls out of the arc, so the range cap stays the same however hard it was drawn.
+   */
+  public static Entity createGrappleArrow(
+      Entity shooter, Vector2 position, Vector2 direction, float speedMultiplier) {
     return createArrow(
         shooter,
         position,
         direction,
         ItemType.ROPE_ARROW.getDamage(),
-        GRAPPLE_ARROW_SPEED,
+        GRAPPLE_ARROW_SPEED * speedMultiplier,
         GRAPPLE_ARROW_RANGE,
         ArrowType.GRAPPLE);
   }

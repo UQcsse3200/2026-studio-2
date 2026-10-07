@@ -82,6 +82,25 @@ class GrappleRenderComponentTest {
   }
 
   @Test
+  void shouldDrawTheRopeWhileArrowIsFlyingBeforeTerrainAttachment() {
+    GrappleComponent grapple = mock(GrappleComponent.class);
+    when(grapple.isAttached()).thenReturn(false);
+    when(grapple.getRopePath())
+        .thenReturn(List.of(new Vector2(0f, 0f), new Vector2(2f, 3f), new Vector2(5f, 3f)));
+    GrappleRenderComponent renderer = renderer(grapple);
+    try (MockedConstruction<ShapeRenderer> shapes = mockConstruction(ShapeRenderer.class)) {
+      renderer.render(batch);
+      assertEquals(1, shapes.constructed().size());
+      ShapeRenderer shape = shapes.constructed().getFirst();
+      verify(shape).rectLine(0f, 0f, 2f, 3f, ROPE_WIDTH);
+      verify(shape).rectLine(2f, 3f, 5f, 3f, ROPE_WIDTH);
+      verify(batch).end();
+      verify(batch).begin();
+      renderer.dispose();
+    }
+  }
+
+  @Test
   void shouldDrawEveryBendInOrderAndRestoreSpriteBatch() {
     GrappleComponent grapple = mock(GrappleComponent.class);
     when(grapple.isAttached()).thenReturn(true);

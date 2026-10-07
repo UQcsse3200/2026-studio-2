@@ -3,17 +3,20 @@ package com.csse3200.game.components.item.weapons.bow.grapple;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.Joint;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.RayCastCallback;
 import com.badlogic.gdx.physics.box2d.Shape;
 import com.badlogic.gdx.physics.box2d.World;
-import com.badlogic.gdx.physics.box2d.joints.DistanceJoint;
-import com.badlogic.gdx.physics.box2d.joints.DistanceJointDef;
+import com.badlogic.gdx.physics.box2d.joints.RopeJoint;
+import com.badlogic.gdx.physics.box2d.joints.RopeJointDef;
 import com.badlogic.gdx.utils.Array;
 import com.csse3200.game.components.Component;
 import com.csse3200.game.components.GameVolume;
+import com.csse3200.game.components.item.weapons.bow.BowCharge;
+import com.csse3200.game.components.projectile.ArrowProjectileComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.ProjectileFactory;
 import com.csse3200.game.physics.PhysicsLayer;
@@ -25,12 +28,21 @@ import java.util.List;
 /** Fires a grapple arrow, then swings from wherever it lands. */
 public class GrappleComponent extends Component {
 
+  /** How far in front of the player's centre, in player widths, a fired arrow spawns. */
+  public static final float SPAWN_OFFSET = 0.6f;
+
   private static final float GRAPPLE_COOLDOWN = 2f;
   private static final float SWING_FORCE = 7f;
   private static final float MAX_SWING_SPEED = 7f;
   private static final float SWING_DAMPING = 0.5f;
   private static final float CLIMB_SPEED = 3f;
   private static final float MIN_PLAYER_SEGMENT_LENGTH = 1f;
+  private static final float CORNER_CLEARANCE = 0.1f;
+  private static final float CORNER_APPROACH_DISTANCE = 0.25f;
+
+  // Below this the swing arc is nearly vertical (player level with the anchor), so left/right can't
+  // pick a side from where the push points and it falls back to a fixed convention instead.
+  private static final float MIN_TANGENT_X = 0.05f;
 
   /** Keeps the rendered rope just outside the collider instead of clipping through its corner. */
   private static final float ROPE_RADIUS = 0.025f;
@@ -41,7 +53,7 @@ public class GrappleComponent extends Component {
   private static final int MAX_ROPE_CONTACTS = 16;
 
   private PhysicsComponent physicsComponent;
-  private DistanceJoint ropeJoint;
+  private RopeJoint ropeJoint;
   private Body originalAnchorBody;
   private Vector2 originalAnchorLocal;
   private float totalRopeLength;
@@ -52,7 +64,10 @@ public class GrappleComponent extends Component {
 
   private float cooldownRemaining = 0f;
   private boolean climbing;
+  private CornerClimb cornerClimb;
   private boolean descending;
+  private boolean charging;
+  private long chargeStartTimeMs;
   // Whatever linearDamping the body had right before swinging, restored on release so a grapple
   // cycle never permanently changes the player's drag (and therefore jump height/speed).
   private float preSwingLinearDamping;
@@ -61,19 +76,106 @@ public class GrappleComponent extends Component {
   private Body pendingAnchorBody;
   private Vector2 pendingAnchorPoint;
 
+  // The arrow currently in flight, if any - tracked so a respawn can cancel it before it can land
+  // and attach a rope back to wherever the player died.
+  private Entity pendingArrow;
+
   // Reused when checking the joint is still alive, to avoid allocating every frame
   private final Array<Joint> liveJoints = new Array<>();
+  private final Array<Body> liveBodies = new Array<>();
 
   @Override
   public void create() {
     physicsComponent = entity.getComponent(PhysicsComponent.class);
-    entity.getEvents().addListener("grappleFire", this::fire);
+    entity.getEvents().addListener("grappleFire", (Vector2 direction) -> fire(direction));
     entity.getEvents().addListener("grappleRelease", this::release);
     entity.getEvents().addListener("grappleSwing", this::swing);
     entity.getEvents().addListener("grappleClimbStart", this::startClimbing);
     entity.getEvents().addListener("grappleClimbStop", this::stopClimbing);
     entity.getEvents().addListener("grappleDescendStart", this::startDescending);
     entity.getEvents().addListener("grappleDescendStop", this::stopDescending);
+    entity.getEvents().addListener("grappleDrawStart", this::startCharge);
+    entity.getEvents().addListener("grappleDrawRelease", this::releaseCharge);
+    entity.getEvents().addListener("chargeCancel", this::cancelCharge);
+    entity.getEvents().addListener("death", this::cancelCharge);
+    entity.getEvents().addListener("respawnAtCheckpoint", this::resetOnRespawn);
+  }
+
+  /**
+   * Begins charging a grapple shot on shoot-button-down, mirroring the bow's own hold-to-draw.
+   * Deliberately its own event, separate from the bow's "chargeStart"/"chargeRelease", so the two
+   * weapons never cross-trigger each other off the same shared broadcast. No-ops (and fires no
+   * animation event) if already attached, already charging, or still on cooldown from the last
+   * shot.
+   *
+   * @param direction Aim direction at the moment charging started.
+   */
+  public void startCharge(Vector2 direction) {
+    if (direction == null || direction.isZero() || isAttached() || isOnCooldown() || charging) {
+      return;
+    }
+    charging = true;
+    chargeStartTimeMs = ServiceLocator.getTimeSource().getTime();
+    // Only fires once the charge is actually accepted, so no draw animation plays for a press that
+    // did nothing - e.g. while the grapple is still on cooldown.
+    entity.getEvents().trigger("grappleChargeStart", direction);
+  }
+
+  /**
+   * Fires the currently charging shot, if any, on shoot-button-release, with launch speed scaled by
+   * how long it was held exactly as the bow's is (see {@link BowCharge}) - a tap barely lobs it, a
+   * full draw flings it far. No-ops if nothing was charging.
+   *
+   * @param direction Aim direction at release time.
+   */
+  public void releaseCharge(Vector2 direction) {
+    if (!charging) {
+      return;
+    }
+    float speedMultiplier = currentSpeedMultiplier();
+    charging = false;
+    entity.getEvents().trigger("grappleChargeFire", direction);
+    fire(direction, speedMultiplier);
+  }
+
+  /**
+   * Cancels an in-progress charge without firing, e.g. if the player dies mid-draw or a UI overlay
+   * steals the mouse-up.
+   */
+  private void cancelCharge() {
+    charging = false;
+  }
+
+  /**
+   * @return the speed multiplier a release right now would fire with, or 1 when not charging - used
+   *     by the aim preview to show exactly where the current charge would land, and by {@link
+   *     #releaseCharge} to scale the actual shot
+   */
+  public float currentSpeedMultiplier() {
+    if (!charging) {
+      return 1f;
+    }
+    long now = ServiceLocator.getTimeSource().getTime();
+    return BowCharge.speedMultiplier(now - chargeStartTimeMs);
+  }
+
+  /**
+   * @return true while a shot is being charged, i.e. between the shoot button going down and coming
+   *     back up
+   */
+  public boolean isCharging() {
+    return charging;
+  }
+
+  /**
+   * Clears every bit of grapple state on respawn - otherwise an arrow fired right before falling
+   * can still land and attach a rope back to wherever you died, well after you've been teleported
+   * to the checkpoint.
+   */
+  private void resetOnRespawn() {
+    release();
+    cancelCharge();
+    cooldownRemaining = 0f;
   }
 
   @Override
@@ -85,6 +187,16 @@ public class GrappleComponent extends Component {
     if (ropeJoint != null && !jointIsAlive()) {
       forgetJoint();
     }
+    if (cornerClimb != null) {
+      // The rope may have unwrapped onto a different body while this climb is still finishing.
+      ServiceLocator.getPhysicsService().getPhysics().getWorld().getBodies(liveBodies);
+      // Body and fixture wrappers are pooled. Their cached shape identity changes on reuse.
+      if (!liveBodies.contains(cornerClimb.body(), true)
+          || !cornerClimb.body().getFixtureList().contains(cornerClimb.fixture(), true)
+          || cornerClimb.fixture().getShape() != cornerClimb.shape()) {
+        cornerClimb = null;
+      }
+    }
     if (ropeJoint != null) {
       updateRopeContact();
     }
@@ -92,6 +204,9 @@ public class GrappleComponent extends Component {
       createJoint(pendingAnchorBody, pendingAnchorPoint);
       pendingAnchorBody = null;
       pendingAnchorPoint = null;
+    }
+    if (pendingArrow != null) {
+      updateFlightRope(arrowPoint());
     }
     updateRopeLength();
   }
@@ -110,12 +225,27 @@ public class GrappleComponent extends Component {
     totalRopeLength = 0f;
     initialRopeLength = 0f;
     ropeContacts.clear();
+    cornerClimb = null;
     physicsComponent.getBody().setLinearDamping(preSwingLinearDamping);
   }
 
-  /** Launches a grapple arrow, unless one is in flight, attached, or still on cooldown. */
+  /** Launches a normal-speed grapple arrow unless attached or on cooldown. */
   public void fire(Vector2 direction) {
-    if (direction == null || direction.isZero() || cooldownRemaining > 0f || isAttached()) {
+    fire(direction, 1f);
+  }
+
+  /**
+   * Launches a grapple arrow unless attached or still on cooldown. Replaces a previous missed shot.
+   *
+   * @param speedMultiplier scales the arrow's launch speed - 1 for a normal shot, lower for one
+   *     released early out of a charge, higher for a fully drawn one
+   */
+  public void fire(Vector2 direction, float speedMultiplier) {
+    if (direction == null
+        || direction.isZero()
+        || cooldownRemaining > 0f
+        || isAttached()
+        || pendingAnchorBody != null) {
       return;
     }
     try {
@@ -127,12 +257,16 @@ public class GrappleComponent extends Component {
     }
 
     Vector2 aim = direction.cpy().nor();
-    Vector2 spawn = entity.getCenterPosition().mulAdd(aim, entity.getScale().x * 0.6f);
+    Vector2 spawn = entity.getCenterPosition().mulAdd(aim, entity.getScale().x * SPAWN_OFFSET);
 
     // Pass 'entity' so the grapple arrow ignores player collisions
-    Entity arrow = ProjectileFactory.createGrappleArrow(entity, spawn, aim);
+    Entity arrow = ProjectileFactory.createGrappleArrow(entity, spawn, aim, speedMultiplier);
     arrow.addComponent(new GrappleArrowComponent(entity));
+    // A previous missed shot may still be flying after its cooldown. Retire it before replacing
+    // the rope endpoint, so its later collision or disposal cannot affect this shot.
+    cancelFlight();
     ServiceLocator.getEntityService().register(arrow);
+    pendingArrow = arrow;
 
     // Only set on a successful shot, so spamming the button doesn't extend the wait
     cooldownRemaining = GRAPPLE_COOLDOWN;
@@ -149,8 +283,18 @@ public class GrappleComponent extends Component {
     if (isAttached() || pendingAnchorBody != null) {
       return;
     }
+    // Capture the final segment before the arrow is removed. Raycasts are safe during a physics
+    // contact callback; joint creation is deferred until the world is unlocked.
+    if (pendingArrow != null) {
+      updateFlightRope(point);
+    }
+    pendingArrow = null;
     pendingAnchorBody = anchorBody;
     pendingAnchorPoint = point.cpy();
+    // Once the grapple actually activates, the cooldown no longer applies - you should be free to
+    // detach and fire straight back off to chain swings. The cooldown only exists to stop the shot
+    // itself being spammed for free while it's still missing.
+    cooldownRemaining = 0f;
   }
 
   private void createJoint(Body anchorBody, Vector2 point) {
@@ -159,18 +303,56 @@ public class GrappleComponent extends Component {
     preSwingLinearDamping = physicsComponent.getBody().getLinearDamping();
     originalAnchorBody = anchorBody;
     originalAnchorLocal = anchorBody.getLocalPoint(point).cpy();
-    totalRopeLength = physicsComponent.getBody().getWorldCenter().dst(point);
+    Vector2 pivot = activeContact() == null ? point : activeContact().getWorldPoint();
+    totalRopeLength =
+        fixedPathLength(point, ropeContacts)
+            + pivot.dst(physicsComponent.getBody().getWorldCenter());
     initialRopeLength = totalRopeLength;
-    createJointAt(anchorBody, point, totalRopeLength);
-    // Announced only for a brand new attachment, not the rebuilds createJointAt does when the
-    // rope bends, so listeners see one event per grapple.
+    rebuildJointForPath();
+    // Announce only a new attachment, not joint rebuilds when the rope bends.
     entity.getEvents().trigger("grappleAttached");
+  }
+
+  private Vector2 arrowPoint() {
+    ArrowProjectileComponent projectile = pendingArrow.getComponent(ArrowProjectileComponent.class);
+    return projectile == null ? pendingArrow.getCenterPosition() : projectile.getWorldCenter();
+  }
+
+  /** Pays out rope freely while retaining bends formed by the arrow's path around terrain. */
+  private void updateFlightRope(Vector2 point) {
+    World world = ServiceLocator.getPhysicsService().getPhysics().getWorld();
+    Vector2 player = physicsComponent.getBody().getWorldCenter().cpy();
+    removeUnwrappedContacts(world, point, player);
+    insertMissingContacts(world, point, player);
+  }
+
+  /** Drops only the rope belonging to this arrow, including when it misses or expires. */
+  void onArrowRemoved(Entity arrow) {
+    if (pendingArrow == arrow) {
+      pendingArrow = null;
+      ropeContacts.clear();
+    }
+  }
+
+  private void cancelFlight() {
+    Entity arrow = pendingArrow;
+    pendingArrow = null;
+    if (arrow != null) {
+      GrappleArrowComponent grappleArrow = arrow.getComponent(GrappleArrowComponent.class);
+      if (grappleArrow != null) {
+        grappleArrow.cancel();
+      }
+      if (ServiceLocator.getEntityService() != null) {
+        ServiceLocator.getEntityService().scheduleRemoval(arrow);
+      }
+    }
+    ropeContacts.clear();
   }
 
   private void createJointAt(Body anchorBody, Vector2 point, float length) {
     Body playerBody = physicsComponent.getBody();
 
-    DistanceJointDef def = new DistanceJointDef();
+    RopeJointDef def = new RopeJointDef();
     def.bodyA = anchorBody;
     def.bodyB = playerBody;
 
@@ -180,14 +362,14 @@ public class GrappleComponent extends Component {
     // Pivot from the player's centre of mass so the pendulum hangs evenly
     def.localAnchorB.set(playerBody.getLocalCenter());
 
-    // Fixed length keeps the player on the arc so momentum carries to the other side
-    def.length = Math.max(length, MIN_JOINT_LENGTH);
-    def.frequencyHz = 0f; // 0 = rigid rod, raise for a springier rope
-    def.dampingRatio = 0f;
+    // A rope only caps how far away the player can get, so momentum still carries them round the
+    // anchor when it's taut. It goes slack once they're closer - unlike a rigid rod, which would
+    // hold them at this exact distance and swing them in an arc even when the anchor is below.
+    def.maxLength = Math.max(length, MIN_JOINT_LENGTH);
     def.collideConnected = true;
 
     ropeJoint =
-        (DistanceJoint) ServiceLocator.getPhysicsService().getPhysics().getWorld().createJoint(def);
+        (RopeJoint) ServiceLocator.getPhysicsService().getPhysics().getWorld().createJoint(def);
 
     // Stop the player spinning and bleed the swing off over time.
     playerBody.setFixedRotation(true);
@@ -211,7 +393,7 @@ public class GrappleComponent extends Component {
       rebuildJointForPath();
     } else if (!ropeContacts.isEmpty()) {
       // Moving contacts change the length consumed above the active pivot every frame.
-      ropeJoint.setLength(Math.max(remainingRopeLength(anchor), MIN_JOINT_LENGTH));
+      ropeJoint.setMaxLength(Math.max(remainingRopeLength(anchor), MIN_JOINT_LENGTH));
     }
   }
 
@@ -235,8 +417,11 @@ public class GrappleComponent extends Component {
         Vector2 before = i == 0 ? anchor : ropeContacts.get(i - 1).getWorldPoint();
         Vector2 after =
             i == ropeContacts.size() - 1 ? player : ropeContacts.get(i + 1).getWorldPoint();
-        if (contact.hasCrossedSide(before, after)
-            && findObstruction(world, before, after) == null) {
+        // A crossed bend may still be blocked by another segment or obstacle. Remember the
+        // unwrap attempt until its bypass clears, even if the endpoints cross back meanwhile.
+        // Retain the winding guard: a clear chord alone could cut through a wrap around a diamond.
+        contact.unwrapPending |= contact.hasCrossedSide(before, after);
+        if (contact.unwrapPending && findObstruction(world, before, after) == null) {
           ropeContacts.remove(i);
           removed = true;
           break;
@@ -281,7 +466,8 @@ public class GrappleComponent extends Component {
     }
     ropeContacts.add(
         index, new RopeContact(obstruction.fixture, point, sideOf(before, after, point)));
-    if (fixedPathLength(anchor, ropeContacts) > totalRopeLength - MIN_JOINT_LENGTH) {
+    if (pendingArrow == null
+        && fixedPathLength(anchor, ropeContacts) > totalRopeLength - MIN_JOINT_LENGTH) {
       // This bend would consume more rope than exists and leave no valid player constraint.
       ropeContacts.remove(index);
       return false;
@@ -435,12 +621,13 @@ public class GrappleComponent extends Component {
 
   /** Detaches the rope, restoring free movement. Momentum carries over. */
   public void release() {
-    if (!isAttached()) {
-      return;
+    pendingAnchorBody = null;
+    pendingAnchorPoint = null;
+    cancelFlight();
+    if (isAttached()) {
+      ServiceLocator.getPhysicsService().getPhysics().getWorld().destroyJoint(ropeJoint);
+      forgetJoint();
     }
-
-    ServiceLocator.getPhysicsService().getPhysics().getWorld().destroyJoint(ropeJoint);
-    forgetJoint();
   }
 
   @Override
@@ -448,6 +635,10 @@ public class GrappleComponent extends Component {
     // The physics world disposes its own joints on teardown, and destroying the player body
     // takes this joint with it, so just drop the reference.
     ropeJoint = null;
+    cornerClimb = null;
+    pendingAnchorBody = null;
+    pendingAnchorPoint = null;
+    cancelFlight();
   }
 
   /**
@@ -471,8 +662,14 @@ public class GrappleComponent extends Component {
     // Vector from the anchor out to the player (live, so it tracks a moving anchor)
     Vector2 r = entity.getCenterPosition().sub(ropeJoint.getAnchorA());
 
-    // Rotate 90 degrees one way or the other depending on which key is held
-    Vector2 tangent = direction > 0 ? new Vector2(-r.y, r.x).nor() : new Vector2(r.y, -r.x).nor();
+    // Push along the arc, towards whichever side the key points. A fixed 90 degree turn of r would
+    // point the wrong way once the player is above the anchor, shoving them against the key.
+    Vector2 tangent = new Vector2(-r.y, r.x).nor();
+    boolean pointsTheWrongWay =
+        Math.abs(tangent.x) > MIN_TANGENT_X ? tangent.x * direction < 0 : direction < 0;
+    if (pointsTheWrongWay) {
+      tangent.scl(-1f);
+    }
 
     body.applyForceToCenter(tangent.scl(SWING_FORCE * body.getMass()), true);
   }
@@ -485,12 +682,14 @@ public class GrappleComponent extends Component {
   /** Stops retracting the rope and clears any unapplied constraint adjustment. */
   public void stopClimbing() {
     climbing = false;
+    cornerClimb = null;
     syncRopeLengthToActualPath();
   }
 
   /** Starts extending the rope while the descend control is held. */
   public void startDescending() {
     descending = true;
+    cornerClimb = null;
   }
 
   /** Stops extending the rope and clears any unapplied constraint adjustment. */
@@ -512,7 +711,162 @@ public class GrappleComponent extends Component {
     float fixedLength = fixedPathLength(anchor, ropeContacts);
     float actualTotalLength = fixedLength + ropeJoint.getAnchorA().dst(ropeJoint.getAnchorB());
     float adjustment = CLIMB_SPEED * ServiceLocator.getTimeSource().getDeltaTime();
+    CornerClimb target = cornerClimb == null ? cornerClimbAt(activeContact()) : cornerClimb;
+    CornerClearance clearance = cornerClearance(target);
+    if (climbing && clearance != null && climbAroundCorner(target, clearance)) {
+      // Let the collider move out from under an edge before pulling it upwards. A taut,
+      // shrinking segment would pin it against the terrain even with a sideways impulse.
+      setTotalRopeLength(actualTotalLength + adjustment, fixedLength);
+      return;
+    }
     setTotalRopeLength(actualTotalLength + (descending ? adjustment : -adjustment), fixedLength);
+  }
+
+  /** Finishes clearing a corner independently of whether the rope has already unwrapped it. */
+  private boolean climbAroundCorner(CornerClimb target, CornerClearance clearance) {
+    Vector2 clearancePoint = clearance.point();
+    Body body = physicsComponent.getBody();
+    Vector2 pivot = target.body().getWorldPoint(target.localCorner());
+    float clearanceRadius = pivot.dst(clearancePoint);
+    float approachDistance =
+        Math.max(MIN_PLAYER_SEGMENT_LENGTH, clearanceRadius)
+            + clearanceRadius
+            + CORNER_APPROACH_DISTANCE;
+    if (cornerClimb == null && body.getWorldCenter().dst(pivot) > approachDistance) {
+      return false;
+    }
+    float dt = ServiceLocator.getTimeSource().getDeltaTime();
+    if (dt <= 0f) {
+      return false;
+    }
+    Vector2 velocity = clearancePoint.cpy().sub(body.getWorldCenter());
+    float firstDistance = velocity.dot(clearance.firstNormal());
+    float secondDistance = velocity.dot(clearance.secondNormal());
+    // Clearing both expanded faces is sufficient; an overshoot must not keep a bend pinned.
+    if (firstDistance <= ROPE_RADIUS && secondDistance <= ROPE_RADIUS) {
+      cornerClimb = null;
+      return false;
+    }
+    cornerClimb = target;
+    if (firstDistance > ROPE_RADIUS && secondDistance > ROPE_RADIUS) {
+      // Clear the nearer face first. Pulling diagonally up into an underside lets contact
+      // friction cancel the small sideways motion needed to escape it.
+      velocity.set(
+          firstDistance < secondDistance ? clearance.firstNormal() : clearance.secondNormal());
+      velocity.scl(Math.min(firstDistance, secondDistance));
+    }
+    float distance = velocity.len();
+    if (distance > 0f) {
+      velocity.scl(Math.min(CLIMB_SPEED / distance, 1f / dt));
+    }
+    velocity.add(target.body().getLinearVelocityFromWorldPoint(clearancePoint));
+    // Support the player's weight only while actively climbing around this corner.
+    Vector2 impulse =
+        velocity
+            .sub(body.getLinearVelocity())
+            .mulAdd(body.getWorld().getGravity(), -body.getGravityScale() * dt)
+            .scl(body.getMass());
+    body.applyLinearImpulse(impulse, body.getWorldCenter(), true);
+    return true;
+  }
+
+  /** Intersection of the corner's two edge planes, expanded by the player's solid collider. */
+  private record CornerClearance(Vector2 point, Vector2 firstNormal, Vector2 secondNormal) {}
+
+  /** A movement target in terrain-local space, with no dependence on rope contact membership. */
+  private record CornerClimb(
+      Body body,
+      Fixture fixture,
+      PolygonShape shape,
+      Vector2 localCorner,
+      Vector2 firstLocalNormal,
+      Vector2 secondLocalNormal) {}
+
+  private CornerClimb cornerClimbAt(RopeContact contact) {
+    if (contact == null || !(contact.fixture.getShape() instanceof PolygonShape polygon)) {
+      return null;
+    }
+    Vector2 local = new Vector2();
+    Vector2 corner = new Vector2();
+    int vertexIndex = 0;
+    float nearest = Float.MAX_VALUE;
+    Vector2 pivot = contact.getWorldPoint();
+    for (int i = 0; i < polygon.getVertexCount(); i++) {
+      polygon.getVertex(i, local);
+      Vector2 vertex = contact.body.getWorldPoint(local);
+      float distance = vertex.dst2(pivot);
+      if (distance < nearest) {
+        nearest = distance;
+        corner.set(local);
+        vertexIndex = i;
+      }
+    }
+    int count = polygon.getVertexCount();
+    polygon.getVertex((vertexIndex + count - 1) % count, local);
+    Vector2 incoming = corner.cpy().sub(local);
+    polygon.getVertex((vertexIndex + 1) % count, local);
+    Vector2 outgoing = local.cpy().sub(corner);
+    // Box2D polygon vertices wind counterclockwise, so right-hand edge normals point outwards.
+    Vector2 firstNormal = new Vector2(incoming.y, -incoming.x).nor();
+    Vector2 secondNormal = new Vector2(outgoing.y, -outgoing.x).nor();
+    return new CornerClimb(
+        contact.body, contact.fixture, polygon, corner, firstNormal, secondNormal);
+  }
+
+  private CornerClearance cornerClearance() {
+    return cornerClearance(cornerClimbAt(activeContact()));
+  }
+
+  private CornerClearance cornerClearance(CornerClimb target) {
+    if (target == null) {
+      return null;
+    }
+    Vector2 corner = target.body().getWorldPoint(target.localCorner()).cpy();
+    Vector2 firstNormal = target.body().getWorldVector(target.firstLocalNormal()).cpy();
+    Vector2 secondNormal = target.body().getWorldVector(target.secondLocalNormal()).cpy();
+    float determinant = firstNormal.crs(secondNormal);
+    if (Math.abs(determinant) <= SIDE_EPSILON) {
+      return null;
+    }
+    float firstDistance = playerExtentAlong(firstNormal) + CORNER_CLEARANCE;
+    float secondDistance = playerExtentAlong(secondNormal) + CORNER_CLEARANCE;
+    corner.add(
+        (firstDistance * secondNormal.y - firstNormal.y * secondDistance) / determinant,
+        (firstNormal.x * secondDistance - firstDistance * secondNormal.x) / determinant);
+    return new CornerClearance(corner, firstNormal, secondNormal);
+  }
+
+  /**
+   * Distance from the centre to the collider face nearest the corner, excluding sensor hitboxes.
+   */
+  private float playerExtentAlong(Vector2 outwardNormal) {
+    Body body = physicsComponent.getBody();
+    Vector2 local = new Vector2();
+    float extent = 0f;
+    for (Fixture fixture : body.getFixtureList()) {
+      if (fixture.isSensor()) {
+        continue;
+      }
+      if (fixture.getShape() instanceof PolygonShape polygon) {
+        for (int i = 0; i < polygon.getVertexCount(); i++) {
+          polygon.getVertex(i, local);
+          extent =
+              Math.max(
+                  extent,
+                  -body.getWorldPoint(local).cpy().sub(body.getWorldCenter()).dot(outwardNormal));
+        }
+      } else if (fixture.getShape() instanceof CircleShape circle) {
+        float distance =
+            body.getWorldPoint(circle.getPosition())
+                        .cpy()
+                        .sub(body.getWorldCenter())
+                        .dot(outwardNormal)
+                    * -1f
+                + circle.getRadius();
+        extent = Math.max(extent, distance);
+      }
+    }
+    return extent;
   }
 
   private void syncRopeLengthToActualPath() {
@@ -531,13 +885,28 @@ public class GrappleComponent extends Component {
   }
 
   private void setTotalRopeLength(float requestedLength, float fixedLength) {
-    float minimumLength = Math.min(initialRopeLength, fixedLength + MIN_PLAYER_SEGMENT_LENGTH);
+    CornerClearance clearance = cornerClearance();
+    float minimumSegmentLength =
+        clearance == null
+            ? MIN_PLAYER_SEGMENT_LENGTH
+            : Math.max(
+                MIN_PLAYER_SEGMENT_LENGTH,
+                ropeJoint.getAnchorA().dst(clearance.point()) + ROPE_RADIUS);
+    float minimumLength = Math.min(initialRopeLength, fixedLength + minimumSegmentLength);
     totalRopeLength = Math.clamp(requestedLength, minimumLength, initialRopeLength);
-    ropeJoint.setLength(Math.max(totalRopeLength - fixedLength, MIN_JOINT_LENGTH));
+    ropeJoint.setMaxLength(Math.max(totalRopeLength - fixedLength, MIN_JOINT_LENGTH));
   }
 
   public boolean isAttached() {
     return ropeJoint != null;
+  }
+
+  /**
+   * @return true from the moment a shot is fired until its cooldown ends, covering the arrow's
+   *     flight - used to hide the aim preview the instant you actually shoot
+   */
+  public boolean isOnCooldown() {
+    return cooldownRemaining > 0f;
   }
 
   /**
@@ -569,21 +938,22 @@ public class GrappleComponent extends Component {
   }
 
   /**
-   * @return ordered world-space points used to draw the taut rope, from player to arrow anchor.
+   * @return ordered world-space points from player to the flying arrow or terrain anchor.
    */
   public List<Vector2> getRopePath() {
     List<Vector2> points = new ArrayList<>(3);
-    if (!isAttached()) {
+    Vector2 anchor =
+        pendingArrow != null
+            ? arrowPoint()
+            : pendingAnchorPoint != null ? pendingAnchorPoint.cpy() : getOriginalAnchorPoint();
+    if (anchor == null) {
       return points;
     }
     points.add(physicsComponent.getBody().getWorldCenter().cpy());
     for (int i = ropeContacts.size() - 1; i >= 0; i--) {
       points.add(ropeContacts.get(i).getWorldPoint());
     }
-    Vector2 anchor = getOriginalAnchorPoint();
-    if (anchor != null) {
-      points.add(anchor);
-    }
+    points.add(anchor);
     return points;
   }
 
@@ -592,6 +962,7 @@ public class GrappleComponent extends Component {
     private final Body body;
     private final Vector2 localPoint;
     private final int initialSide;
+    private boolean unwrapPending;
 
     RopeContact(Fixture fixture, Vector2 worldPoint, int initialSide) {
       this.fixture = fixture;
