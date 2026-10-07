@@ -5,6 +5,7 @@ import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.utils.Timer;
 import com.csse3200.game.components.GameVolume;
 import com.csse3200.game.components.inventory.InventoryComponent;
+import com.csse3200.game.components.minigames.MinigameOverlayInputComponent;
 import com.csse3200.game.components.minigames.MinigameOverlayManager;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.services.ServiceLocator;
@@ -13,13 +14,7 @@ import com.csse3200.game.ui.ScreenBlur;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * Blackjack UI overlay.
- *
- * <p>This overlay deliberately does NOT pause EntityService and does NOT install a
- * MinigameOverlayInputComponent. Normal gameplay input therefore remains intact when the overlay is
- * removed.
- */
+/** Blackjack UI overlay. Pauses normal gameplay and blocks gameplay input while active. */
 public class BlackjackOverlay {
   private static final Logger logger = LoggerFactory.getLogger(BlackjackOverlay.class);
 
@@ -62,10 +57,7 @@ public class BlackjackOverlay {
     logger.info("Blackjack requested");
 
     openRequested = true;
-
-    // IMPORTANT:
-    // Do NOT call EntityService.setPaused(true).
-    // Do NOT disable player keyboard input.
+    ServiceLocator.getEntityService().setPaused(true);
   }
 
   public void afterRender() {
@@ -99,20 +91,12 @@ public class BlackjackOverlay {
     BlackjackDisplay display =
         new BlackjackDisplay(
             new Blackjack(startingGold), inventory, this::setSoundEnabled, this::requestClose);
-
-    /*
-     * IMPORTANT:
-     *
-     * There is intentionally NO MinigameOverlayInputComponent here.
-     *
-     * BlackjackDisplay's full-screen table handles the UI mouse input.
-     * We do not touch the player's gameplay keyboard input.
-     */
     overlay =
         new Entity()
             .addComponent(backdrop)
             .addComponent(display)
-            .addComponent(new BlackjackOverlayActions(this::requestClose));
+            .addComponent(new BlackjackOverlayActions(this::requestClose))
+            .addComponent(new MinigameOverlayInputComponent(this::requestClose, true));
 
     ServiceLocator.getEntityService().register(overlay);
 
@@ -189,17 +173,9 @@ public class BlackjackOverlay {
       player.getEvents().trigger("openShop");
     }
 
-    /*
-     * NO:
-     *   setPaused(false)
-     *   KeyboardPlayerInputComponent.setEnabled(...)
-     *
-     * We never changed those states in the first place.
-     */
-
     closing = false;
 
-    logger.info("Blackjack removed - normal gameplay untouched");
+    logger.info("Blackjack removed - returned to shop");
   }
 
   private void setSoundEnabled(boolean enabled) {

@@ -252,7 +252,7 @@ public class LevelsGameScreen extends ScreenAdapter {
       }
     }
 
-    if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
+    if (!minigameOverlayManager.isActive() && Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
       if (level.equals("level1")) {
         level = "level2";
       } else if (level.equals("level2")) {

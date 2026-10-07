@@ -273,12 +273,6 @@ public class BlackjackDisplay extends UIComponent {
             } else {
               entity.getEvents().trigger("back");
             }
-
-            // Hard restore gameplay after leaving Blackjack.
-            com.badlogic.gdx.Gdx.app.postRunnable(
-                () -> {
-                  com.csse3200.game.services.ServiceLocator.getEntityService().setPaused(false);
-                });
           }
         });
     Table dealerRegion = new Table();
