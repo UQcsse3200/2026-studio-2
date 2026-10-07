@@ -254,6 +254,105 @@ class GrappleCornerClimbTest {
   }
 
   @Test
+  void passedBendShouldUnwrapBeforeThePlayerFinishesClearingTheCorner() {
+    attachOverPlatform(1f, 0.6f, 1f, -2f);
+    Vector2 passedBend = grapple.getRopePath().get(1).cpy();
+    Vector2 nextBend = grapple.getRopePath().get(2).cpy();
+    boolean observedCornerClearance = false;
+    grapple.startClimbing();
+    for (int i = 0; i < 500; i++) {
+      entities.update();
+      Vector2 center = playerBody.getWorldCenter();
+      if (center.x < 0f && center.y > passedBend.y + 0.05f && center.y < 0.95f) {
+        observedCornerClearance = true;
+        assertTrue(
+            grapple.getRopePath().stream().noneMatch(point -> point.epsilonEquals(passedBend)),
+            "the rendered rope must not turn backwards through the passed bend");
+        assertTrue(
+            grapple.getAnchorPoint().epsilonEquals(nextBend),
+            "the physical rope must use the same next bend as the rendered rope");
+      }
+      physics.getPhysics().update();
+      center = playerBody.getWorldCenter();
+      assertFalse(
+          center.x > -0.27f && center.x < 2.27f && center.y > -0.97f && center.y < 0.97f,
+          "corner clearance must preserve terrain collisions");
+    }
+    assertTrue(
+        observedCornerClearance, "test must cover the transition before the collider clears");
+    assertTrue(
+        playerBody.getWorldCenter().x > 2.4f, "climbing must continue after the bend unwraps");
+    assertTrue(playerBody.getWorldCenter().y < -1.5f);
+    assertEquals(2, grapple.getRopePath().size());
+    assertEquals(1f, grapple.getRopeLength(), 0.05f);
+  }
+
+  private void climbUntilRopeUnwrapsBeforeColliderClears() {
+    grapple.startClimbing();
+    for (int i = 0; i < 150; i++) {
+      entities.update();
+      Vector2 center = playerBody.getWorldCenter();
+      if (grapple.getRopePath().size() == 2 && center.x < 0f && center.y < 0.95f) {
+        return;
+      }
+      physics.getPhysics().update();
+    }
+    fail("rope must unwrap while the independent corner climb is still underway");
+  }
+
+  @Test
+  void releasingClimbAfterUnwrappingShouldCancelTheIndependentCornerTarget() {
+    attachOverPlatform(1f, 0.6f, 1f);
+    climbUntilRopeUnwrapsBeforeColliderClears();
+    grapple.stopClimbing();
+    playerBody.setGravityScale(0f);
+    playerBody.setLinearVelocity(0f, 0f);
+    Vector2 stopped = playerBody.getWorldCenter().cpy();
+    for (int i = 0; i < 20; i++) {
+      entities.update();
+      physics.getPhysics().update();
+    }
+    assertTrue(
+        playerBody.getWorldCenter().epsilonEquals(stopped, 0.001f),
+        "the unwrapped corner must not keep moving the player after W is released");
+  }
+
+  @Test
+  void removingAnUnwrappedCornerBodyShouldDiscardItsClimbTargetAndKeepTheAnchor() {
+    attachOverPlatform(1f, 0.6f, 1f);
+    climbUntilRopeUnwrapsBeforeColliderClears();
+    physics.getPhysics().destroyBody(platformBody);
+    for (int i = 0; i < 300; i++) {
+      entities.update();
+      physics.getPhysics().update();
+    }
+    assertTrue(
+        grapple.isAttached(), "removing the passed corner must not release the original anchor");
+    assertTrue(playerBody.getWorldCenter().x > 2.4f);
+    assertEquals(2, grapple.getRopePath().size());
+    assertEquals(1f, grapple.getRopeLength(), 0.05f);
+  }
+
+  @Test
+  void replacementTerrainMustNotInheritTheRemovedCornersClimbTarget() {
+    attachOverPlatform(1f, 0.6f, 1f);
+    climbUntilRopeUnwrapsBeforeColliderClears();
+    physics.getPhysics().destroyBody(platformBody);
+    Body replacement = platform(-100f, -100f, 1f, 0.5f).getBody();
+    assertSame(platformBody, replacement, "exercise Box2D's pooled body wrapper reuse");
+    playerBody.setGravityScale(0f);
+    playerBody.setLinearVelocity(0f, 0f);
+    float initialX = playerBody.getWorldCenter().x;
+    entities.update();
+    physics.getPhysics().update();
+    assertTrue(
+        playerBody.getWorldCenter().x >= initialX - 0.001f,
+        "the player must climb toward the original anchor, not the unrelated replacement terrain");
+    assertTrue(grapple.isAttached());
+    assertEquals(2, grapple.getRopePath().size());
+  }
+
+  @Test
   void releasingClimbShouldStopSupportingThePlayerAtTheCorner() {
     attachOverPlatform(1f, 0.6f, 1f);
     grapple.startClimbing();

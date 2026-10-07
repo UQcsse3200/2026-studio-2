@@ -63,7 +63,7 @@ public class GrappleComponent extends Component {
 
   private float cooldownRemaining = 0f;
   private boolean climbing;
-  private RopeContact climbingCorner;
+  private CornerClimb cornerClimb;
   private boolean descending;
   private boolean charging;
   private long chargeStartTimeMs;
@@ -81,6 +81,7 @@ public class GrappleComponent extends Component {
 
   // Reused when checking the joint is still alive, to avoid allocating every frame
   private final Array<Joint> liveJoints = new Array<>();
+  private final Array<Body> liveBodies = new Array<>();
 
   @Override
   public void create() {
@@ -185,6 +186,16 @@ public class GrappleComponent extends Component {
     if (ropeJoint != null && !jointIsAlive()) {
       forgetJoint();
     }
+    if (cornerClimb != null) {
+      // The rope may have unwrapped onto a different body while this climb is still finishing.
+      ServiceLocator.getPhysicsService().getPhysics().getWorld().getBodies(liveBodies);
+      // Body and fixture wrappers are pooled. Their cached shape identity changes on reuse.
+      if (!liveBodies.contains(cornerClimb.body(), true)
+          || !cornerClimb.body().getFixtureList().contains(cornerClimb.fixture(), true)
+          || cornerClimb.fixture().getShape() != cornerClimb.shape()) {
+        cornerClimb = null;
+      }
+    }
     if (ropeJoint != null) {
       updateRopeContact();
     }
@@ -213,7 +224,7 @@ public class GrappleComponent extends Component {
     totalRopeLength = 0f;
     initialRopeLength = 0f;
     ropeContacts.clear();
-    climbingCorner = null;
+    cornerClimb = null;
     physicsComponent.getBody().setLinearDamping(preSwingLinearDamping);
   }
 
@@ -407,11 +418,6 @@ public class GrappleComponent extends Component {
         // unwrap attempt until its bypass clears, even if the endpoints cross back meanwhile.
         // Retain the winding guard: a clear chord alone could cut through a wrap around a diamond.
         contact.unwrapPending |= contact.hasCrossedSide(before, after);
-        // The rope centre can clear an edge before the player's collider does. Complete the
-        // current corner climb before switching pivots, or gravity can pull them back below it.
-        if (contact == climbingCorner && climbing && !descending) {
-          continue;
-        }
         if (contact.unwrapPending && findObstruction(world, before, after) == null) {
           ropeContacts.remove(i);
           removed = true;
@@ -626,6 +632,7 @@ public class GrappleComponent extends Component {
     // The physics world disposes its own joints on teardown, and destroying the player body
     // takes this joint with it, so just drop the reference.
     ropeJoint = null;
+    cornerClimb = null;
     pendingAnchorBody = null;
     pendingAnchorPoint = null;
     cancelFlight();
@@ -672,14 +679,14 @@ public class GrappleComponent extends Component {
   /** Stops retracting the rope and clears any unapplied constraint adjustment. */
   public void stopClimbing() {
     climbing = false;
-    climbingCorner = null;
+    cornerClimb = null;
     syncRopeLengthToActualPath();
   }
 
   /** Starts extending the rope while the descend control is held. */
   public void startDescending() {
     descending = true;
-    climbingCorner = null;
+    cornerClimb = null;
   }
 
   /** Stops extending the rope and clears any unapplied constraint adjustment. */
@@ -701,8 +708,9 @@ public class GrappleComponent extends Component {
     float fixedLength = fixedPathLength(anchor, ropeContacts);
     float actualTotalLength = fixedLength + ropeJoint.getAnchorA().dst(ropeJoint.getAnchorB());
     float adjustment = CLIMB_SPEED * ServiceLocator.getTimeSource().getDeltaTime();
-    CornerClearance clearance = cornerClearance();
-    if (climbing && clearance != null && climbAroundCorner(clearance)) {
+    CornerClimb target = cornerClimb == null ? cornerClimbAt(activeContact()) : cornerClimb;
+    CornerClearance clearance = cornerClearance(target);
+    if (climbing && clearance != null && climbAroundCorner(target, clearance)) {
       // Let the collider move out from under an edge before pulling it upwards. A taut,
       // shrinking segment would pin it against the terrain even with a sideways impulse.
       setTotalRopeLength(actualTotalLength + adjustment, fixedLength);
@@ -711,17 +719,17 @@ public class GrappleComponent extends Component {
     setTotalRopeLength(actualTotalLength + (descending ? adjustment : -adjustment), fixedLength);
   }
 
-  /** Guides a nearby climber around the active bend, with all terrain collisions still enabled. */
-  private boolean climbAroundCorner(CornerClearance clearance) {
+  /** Finishes clearing a corner independently of whether the rope has already unwrapped it. */
+  private boolean climbAroundCorner(CornerClimb target, CornerClearance clearance) {
     Vector2 clearancePoint = clearance.point();
     Body body = physicsComponent.getBody();
-    Vector2 pivot = ropeJoint.getAnchorA();
+    Vector2 pivot = target.body().getWorldPoint(target.localCorner());
     float clearanceRadius = pivot.dst(clearancePoint);
     float approachDistance =
         Math.max(MIN_PLAYER_SEGMENT_LENGTH, clearanceRadius)
             + clearanceRadius
             + CORNER_APPROACH_DISTANCE;
-    if (body.getWorldCenter().dst(pivot) > approachDistance) {
+    if (cornerClimb == null && body.getWorldCenter().dst(pivot) > approachDistance) {
       return false;
     }
     float dt = ServiceLocator.getTimeSource().getDeltaTime();
@@ -733,10 +741,10 @@ public class GrappleComponent extends Component {
     float secondDistance = velocity.dot(clearance.secondNormal());
     // Clearing both expanded faces is sufficient; an overshoot must not keep a bend pinned.
     if (firstDistance <= ROPE_RADIUS && secondDistance <= ROPE_RADIUS) {
-      climbingCorner = null;
+      cornerClimb = null;
       return false;
     }
-    climbingCorner = activeContact();
+    cornerClimb = target;
     if (firstDistance > ROPE_RADIUS && secondDistance > ROPE_RADIUS) {
       // Clear the nearer face first. Pulling diagonally up into an underside lets contact
       // friction cancel the small sideways motion needed to escape it.
@@ -748,7 +756,7 @@ public class GrappleComponent extends Component {
     if (distance > 0f) {
       velocity.scl(Math.min(CLIMB_SPEED / distance, 1f / dt));
     }
-    velocity.add(climbingCorner.body.getLinearVelocityFromWorldPoint(clearancePoint));
+    velocity.add(target.body().getLinearVelocityFromWorldPoint(clearancePoint));
     // Support the player's weight only while actively climbing around this corner.
     Vector2 impulse =
         velocity
@@ -762,8 +770,16 @@ public class GrappleComponent extends Component {
   /** Intersection of the corner's two edge planes, expanded by the player's solid collider. */
   private record CornerClearance(Vector2 point, Vector2 firstNormal, Vector2 secondNormal) {}
 
-  private CornerClearance cornerClearance() {
-    RopeContact contact = activeContact();
+  /** A movement target in terrain-local space, with no dependence on rope contact membership. */
+  private record CornerClimb(
+      Body body,
+      Fixture fixture,
+      PolygonShape shape,
+      Vector2 localCorner,
+      Vector2 firstLocalNormal,
+      Vector2 secondLocalNormal) {}
+
+  private CornerClimb cornerClimbAt(RopeContact contact) {
     if (contact == null || !(contact.fixture.getShape() instanceof PolygonShape polygon)) {
       return null;
     }
@@ -778,18 +794,33 @@ public class GrappleComponent extends Component {
       float distance = vertex.dst2(pivot);
       if (distance < nearest) {
         nearest = distance;
-        corner.set(vertex);
+        corner.set(local);
         vertexIndex = i;
       }
     }
     int count = polygon.getVertexCount();
     polygon.getVertex((vertexIndex + count - 1) % count, local);
-    Vector2 incoming = corner.cpy().sub(contact.body.getWorldPoint(local));
+    Vector2 incoming = corner.cpy().sub(local);
     polygon.getVertex((vertexIndex + 1) % count, local);
-    Vector2 outgoing = contact.body.getWorldPoint(local).cpy().sub(corner);
+    Vector2 outgoing = local.cpy().sub(corner);
     // Box2D polygon vertices wind counterclockwise, so right-hand edge normals point outwards.
     Vector2 firstNormal = new Vector2(incoming.y, -incoming.x).nor();
     Vector2 secondNormal = new Vector2(outgoing.y, -outgoing.x).nor();
+    return new CornerClimb(
+        contact.body, contact.fixture, polygon, corner, firstNormal, secondNormal);
+  }
+
+  private CornerClearance cornerClearance() {
+    return cornerClearance(cornerClimbAt(activeContact()));
+  }
+
+  private CornerClearance cornerClearance(CornerClimb target) {
+    if (target == null) {
+      return null;
+    }
+    Vector2 corner = target.body().getWorldPoint(target.localCorner()).cpy();
+    Vector2 firstNormal = target.body().getWorldVector(target.firstLocalNormal()).cpy();
+    Vector2 secondNormal = target.body().getWorldVector(target.secondLocalNormal()).cpy();
     float determinant = firstNormal.crs(secondNormal);
     if (Math.abs(determinant) <= SIDE_EPSILON) {
       return null;
