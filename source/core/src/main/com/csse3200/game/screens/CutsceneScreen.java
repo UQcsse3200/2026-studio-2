@@ -8,8 +8,12 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Scaling;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
@@ -20,6 +24,7 @@ import com.csse3200.game.cutscene.CutsceneLoader;
 import com.csse3200.game.cutscene.CutsceneScene;
 import com.csse3200.game.entities.configs.TextConfig;
 import com.csse3200.game.input.CutsceneInputComponent;
+import com.csse3200.game.input.InputDecorator;
 import com.csse3200.game.input.InputService;
 import com.csse3200.game.rendering.RenderService;
 import com.csse3200.game.services.ResourceService;
@@ -30,6 +35,19 @@ import org.slf4j.LoggerFactory;
 /** An isolated screen for displaying an ordered cutscene before creating a level. */
 public class CutsceneScreen extends ScreenAdapter {
   private static final Logger logger = LoggerFactory.getLogger(CutsceneScreen.class);
+
+  static final String SKIP_UP_TEXTURE = "images/Buttons/continue_up_btn.png";
+  static final String SKIP_DOWN_TEXTURE = "images/Buttons/continue_down_btn.png";
+
+  /**
+   * Stage input priority. Must exceed {@link CutsceneInputComponent}'s 100 so button presses reach
+   * the stage first and don't also trigger a cutscene advance.
+   */
+  static final int STAGE_INPUT_PRIORITY = 200;
+
+  private static final float SKIP_BUTTON_WIDTH = 200f;
+  private static final float SKIP_BUTTON_HEIGHT = 70f;
+  private static final float SKIP_BUTTON_PAD = 20f;
 
   private enum State {
     FADE_IN,
@@ -51,6 +69,9 @@ public class CutsceneScreen extends ScreenAdapter {
   private final Image fadeOverlay;
   private final Texture blackTexture;
   private final CutsceneInputComponent input;
+  private final InputDecorator stageInput;
+  private final Table skipTable;
+  private final ImageButton skipButton;
 
   private Music music;
   private TextBoxComponent textBox;
@@ -95,6 +116,7 @@ public class CutsceneScreen extends ScreenAdapter {
     renderService.setStage(stage);
 
     resourceService.loadTextures(cutscene.getImagePaths());
+    resourceService.loadTextures(new String[] {SKIP_UP_TEXTURE, SKIP_DOWN_TEXTURE});
     String musicPath = cutscene.getDefinition().music;
     if (musicPath != null && !musicPath.isBlank()) {
       resourceService.loadMusic(new String[] {musicPath});
@@ -114,7 +136,42 @@ public class CutsceneScreen extends ScreenAdapter {
 
     input = new CutsceneInputComponent(this::advanceRequested);
     input.create();
+
+    skipButton = createSkipButton();
+    skipTable = new Table();
+    skipTable.setFillParent(true);
+    skipTable.bottom().right().pad(SKIP_BUTTON_PAD);
+    skipTable.add(skipButton).width(SKIP_BUTTON_WIDTH).height(SKIP_BUTTON_HEIGHT);
+    stage.addActor(skipTable);
+
+    // Route input to the stage so Scene2D actors (the skip button) receive touch events.
+    // Priority exceeds CutsceneInputComponent's so button presses are consumed by the stage
+    // and don't also advance the cutscene. Touches elsewhere fall through to advance.
+    stageInput = new InputDecorator(stage, STAGE_INPUT_PRIORITY);
+    stageInput.create();
+
     showScene(0);
+  }
+
+  private ImageButton createSkipButton() {
+    ImageButton.ImageButtonStyle style = new ImageButton.ImageButtonStyle();
+    try {
+      Texture up = resourceService.getAsset(SKIP_UP_TEXTURE, Texture.class);
+      Texture down = resourceService.getAsset(SKIP_DOWN_TEXTURE, Texture.class);
+      style.up = new TextureRegionDrawable(new TextureRegion(up));
+      style.down = new TextureRegionDrawable(new TextureRegion(down));
+    } catch (Exception e) {
+      logger.warn("Skip button textures unavailable, using empty style: {}", e.getMessage());
+    }
+    ImageButton button = new ImageButton(style);
+    button.addListener(
+        new ChangeListener() {
+          @Override
+          public void changed(ChangeEvent event, Actor actor) {
+            skipCutscene();
+          }
+        });
+    return button;
   }
 
   private Texture createBlackTexture() {
@@ -167,12 +224,36 @@ public class CutsceneScreen extends ScreenAdapter {
             config.borderThickness,
             config.fontPath,
             config.getTextAlignment(),
-            config.pages);
+            config.pages,
+            config.portraitPaths);
     textBox.setExternallyControlled(true);
     textBox.create();
     fadeOverlay.toFront();
+    skipTable.toFront();
     fadeTimer = 0f;
     state = State.FADE_IN;
+  }
+
+  /** Skips the rest of the cutscene and transitions to the destination screen. Idempotent. */
+  void skipCutscene() {
+    if (state == State.COMPLETE) {
+      return;
+    }
+    state = State.COMPLETE;
+    input.dispose();
+    stageInput.dispose();
+    if (music != null) {
+      music.stop();
+    }
+    game.transitionTo(destination);
+  }
+
+  ImageButton getSkipButton() {
+    return skipButton;
+  }
+
+  Table getSkipTable() {
+    return skipTable;
   }
 
   private void advanceRequested() {
@@ -239,6 +320,7 @@ public class CutsceneScreen extends ScreenAdapter {
         if (fadeTimer >= duration) {
           state = State.COMPLETE;
           input.dispose();
+          stageInput.dispose();
           // Fade the destination screen in from black instead of swapping instantly.
           game.transitionTo(destination);
         }
@@ -263,6 +345,7 @@ public class CutsceneScreen extends ScreenAdapter {
     logger.debug("Disposing cutscene screen");
     GdxGame.applyDefaultClearColor();
     input.dispose();
+    stageInput.dispose();
     if (textBox != null && !textBox.isDismissed()) {
       textBox.dismiss();
     }

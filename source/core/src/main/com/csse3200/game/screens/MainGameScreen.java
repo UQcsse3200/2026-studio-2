@@ -60,6 +60,7 @@ public class MainGameScreen extends ScreenAdapter {
   private final Renderer renderer;
   private final PhysicsEngine physicsEngine;
   private Entity player;
+  private Terminal terminal;
   private final SpinTheWheelOverlay wheelOverlay;
   private final BlackjackOverlay blackjackOverlay;
   private final MinigameOverlayManager minigameOverlayManager;
@@ -116,7 +117,11 @@ public class MainGameScreen extends ScreenAdapter {
 
   @Override
   public void render(float delta) {
-    if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)
+    // Overlay shortcuts bypass the input handler chain, so ignore them while the terminal is
+    // open. F1 still toggles the terminal itself.
+    boolean terminalOpen = terminal != null && terminal.isOpen();
+    if (!terminalOpen
+        && Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)
         && !ServiceLocator.getEntityService().getSettingsOpen()) {
       pauseOverlay.request();
     }
@@ -233,13 +238,14 @@ public class MainGameScreen extends ScreenAdapter {
         ServiceLocator.getInputService().getInputFactory().createForTerminal();
 
     Entity ui = new Entity();
+    terminal = new Terminal(game, GdxGame.ScreenType.MAIN_GAME);
     ui.addComponent(new InputDecorator(stage, 10))
         .addComponent(new PerformanceDisplay())
         .addComponent(new MainGameActions(this.game))
         .addComponent(new MainGameExitDisplay())
         .addComponent(new GameEndDisplay(GameEndState.LOSE))
         .addComponent(new GameEndActions(this.game))
-        .addComponent(new Terminal(game, GdxGame.ScreenType.MAIN_GAME))
+        .addComponent(terminal)
         .addComponent(inputComponent)
         .addComponent(new TerminalDisplay());
 

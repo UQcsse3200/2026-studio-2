@@ -4,7 +4,10 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import com.csse3200.game.GdxGame;
+import com.csse3200.game.entities.Entity;
+import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.extensions.GameExtension;
+import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.terminal.commands.Command;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -117,5 +120,29 @@ class TerminalTest {
 
     terminal.handleBackspace();
     assertEquals("a", terminal.getEnteredMessage());
+  }
+
+  @Test
+  void isAnyOpenShouldBeFalseWithoutEntityService() {
+    assertFalse(Terminal.isAnyOpen());
+  }
+
+  @Test
+  void isAnyOpenShouldTrackRegisteredTerminals() {
+    EntityService entityService = new EntityService();
+    ServiceLocator.registerEntityService(entityService);
+
+    Terminal terminal = new Terminal();
+    Entity ui = new Entity();
+    ui.addComponent(terminal);
+    entityService.register(ui);
+
+    assertFalse(Terminal.isAnyOpen());
+
+    terminal.setOpen();
+    assertTrue(Terminal.isAnyOpen());
+
+    terminal.setClosed();
+    assertFalse(Terminal.isAnyOpen());
   }
 }

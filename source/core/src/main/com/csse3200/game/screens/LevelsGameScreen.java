@@ -81,6 +81,8 @@ public class LevelsGameScreen extends ScreenAdapter {
   private final BlackjackOverlay blackjackOverlay;
   private final MinigameOverlayManager minigameOverlayManager;
   private Entity player;
+  private GameEndDisplay gameEndDisplay;
+  private Terminal terminal;
   private static final String gameplayMusic = "sounds/gameplay_bg.ogg";
   private static final String[] gameplayMusicFiles = {gameplayMusic};
   private static final String winMusic = "sounds/Win_music.mp3";
@@ -208,9 +210,29 @@ public class LevelsGameScreen extends ScreenAdapter {
   }
 
   private void onPlayerDeath() {
-    ServiceLocator.getEntityService().scheduleRemoval(player);
+    // Keep the player entity so the restart button can revive at the last checkpoint.
     Gdx.app.postRunnable(
         () -> ServiceLocator.getGameEndEventHandler().trigger("gameEnd", GameEndState.LOSE));
+  }
+
+  /** Restart handler for the game-over panel: checkpoint respawn with health penalty. */
+  private void restartAtCheckpoint() {
+    if (currentGameArea != null) {
+      currentGameArea.restart();
+    }
+    if (gameEndDisplay != null) {
+      gameEndDisplay.hide();
+    }
+    try {
+      Music music = ServiceLocator.getResourceService().getAsset(gameplayMusic, Music.class);
+      if (!music.isPlaying()) {
+        music.setLooping(true);
+        GameVolume.setMusicVolume(music, 0.05f);
+        music.play();
+      }
+    } catch (Exception e) {
+      logger.warn("Could not resume gameplay music: {}", e.getMessage());
+    }
   }
 
   private void registerLevelSwap() {
@@ -277,7 +299,11 @@ public class LevelsGameScreen extends ScreenAdapter {
       levelSwapQueued = false;
     }
 
-    if (!minigameOverlayManager.isActive()
+    // Overlay shortcuts bypass the input handler chain, so ignore them while the terminal is
+    // open. F1 still toggles the terminal itself.
+    boolean terminalOpen = terminal != null && terminal.isOpen();
+    if (!terminalOpen
+        && !minigameOverlayManager.isActive()
         && Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)
         && !ServiceLocator.getEntityService().getSettingsOpen()) {
       pauseOverlay.request();
@@ -469,15 +495,16 @@ public class LevelsGameScreen extends ScreenAdapter {
 
     Entity ui = new Entity();
 
+    gameEndDisplay = new GameEndDisplay(GameEndState.LOSE);
+    terminal = new Terminal(game, GdxGame.ScreenType.LEVEL_1_GAME);
     ui.addComponent(new InputDecorator(stage, 10))
         .addComponent(new PerformanceDisplay())
         .addComponent(new CoordinateDisplay(renderer.getCamera()))
         .addComponent(new MainGameActions(this.game))
         .addComponent(new PauseButtonDisplay(() -> pauseOverlay.request()))
-        .addComponent(
-            new GameEndDisplay(GameEndState.LOSE)) // Add GameEndDisplay component to the UI entity
-        .addComponent(new GameEndActions(this.game))
-        .addComponent(new Terminal(game, GdxGame.ScreenType.LEVEL_1_GAME))
+        .addComponent(gameEndDisplay) // Add GameEndDisplay component to the UI entity
+        .addComponent(new GameEndActions(this.game, this::restartAtCheckpoint))
+        .addComponent(terminal)
         .addComponent(inputComponent)
         .addComponent(new TerminalDisplay());
 

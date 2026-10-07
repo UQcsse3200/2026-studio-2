@@ -86,6 +86,7 @@ public class PlayerActions extends Component {
     entity.getEvents().addListener("updateLedgeDrop", this::setLedgeDropping);
     entity.getEvents().addListener("speedPotionUsed", this::applySpeedPotion);
     entity.getEvents().addListener("death", this::die);
+    entity.getEvents().addListener("revive", this::revive);
   }
 
   @Override
@@ -288,6 +289,12 @@ public class PlayerActions extends Component {
     Body body = physicsComponent.getBody();
     Vector2 velocity = body.getLinearVelocity();
     body.setLinearVelocity(0f, velocity.y);
+    stopWalking();
+  }
+
+  /** Revives the player after a checkpoint restart so input and movement work again. */
+  void revive() {
+    dead = false;
     stopWalking();
   }
 

@@ -15,6 +15,7 @@ import com.csse3200.game.components.player.KeyboardPlayerInputComponent;
 import com.csse3200.game.components.player.PlayerStatsDisplay;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.ItemFactory;
+import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.rendering.BackgroundRenderComponent;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.ArrayList;
@@ -306,6 +307,28 @@ public abstract class GameArea implements Disposable {
 
   /** Public method to respawn the player at the last collected checkpoint upon an event trigger. */
   public void respawn() {
+    GridPoint2 respawnPoint = getRespawnPoint();
+    resetPlayerVelocity();
+    RespawnComponent respawn = player.getComponent(RespawnComponent.class);
+    respawn.queueRespawn(new Vector2(respawnPoint.x, respawnPoint.y));
+  }
+
+  /**
+   * Restart after death/game-over: teleport to the last checkpoint and revive with a health
+   * penalty. Unlike a full level reload, checkpoint progress is kept.
+   */
+  public void restart() {
+    GridPoint2 respawnPoint = getRespawnPoint();
+    resetPlayerVelocity();
+    player.setEnabled(true);
+    RespawnComponent.reviveWithPenalty(player);
+    RespawnComponent respawn = player.getComponent(RespawnComponent.class);
+    respawn.queueRespawn(new Vector2(respawnPoint.x, respawnPoint.y));
+    player.getEvents().trigger("revive");
+  }
+
+  /** Last collected checkpoint position, or the level spawn if none collected. */
+  public GridPoint2 getRespawnPoint() {
     ArrayList<CheckpointComponent> checkpoints = config.getCheckpoints();
     // If no checkpoints collected use playerSpawn as respawnPoint
     GridPoint2 respawnPoint = config.getPlayerSpawn();
@@ -318,11 +341,17 @@ public abstract class GameArea implements Disposable {
         respawnPoint = checkpoint.getPosition();
       }
     }
-    float x = respawnPoint.x;
-    float y = respawnPoint.y;
+    return respawnPoint;
+  }
 
-    RespawnComponent respawn = player.getComponent(RespawnComponent.class);
-    respawn.queueRespawn(new Vector2(x, y));
+  private void resetPlayerVelocity() {
+    if (player == null) {
+      return;
+    }
+    PhysicsComponent physics = player.getComponent(PhysicsComponent.class);
+    if (physics != null && physics.getBody() != null) {
+      physics.getBody().setLinearVelocity(0f, 0f);
+    }
   }
 
   public void toggleLevelMap() {}

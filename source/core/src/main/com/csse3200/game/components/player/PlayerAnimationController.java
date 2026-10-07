@@ -71,6 +71,7 @@ public class PlayerAnimationController extends Component {
     entity.getEvents().addListener("togglePause", this::cancelInstrumentForPause);
     entity.getEvents().addListener("sprintEnd", this::sprintStop);
     entity.getEvents().addListener("death", this::death);
+    entity.getEvents().addListener("revive", this::revive);
     entity.getEvents().addListener("sleep", this::sleep);
 
     animator.startAnimation("idle");
@@ -280,6 +281,17 @@ public class PlayerAnimationController extends Component {
     landing = false;
     cancelInstrument();
     animator.startAnimation("death");
+  }
+
+  void revive() {
+    dead = false;
+    deathAnimationFinishedFired = false;
+    hurt = false;
+    dashing = false;
+    attacking = false;
+    jumping = false;
+    moving = false;
+    updateAnimation();
   }
 
   void sleep() {

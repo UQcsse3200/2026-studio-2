@@ -36,11 +36,10 @@ public class KeyboardTerminalInputComponent extends InputComponent {
   }
 
   /**
-   * If the toggle key is pressed, the terminal will open / close.
-   *
-   * <p>Otherwise, handles input if the terminal is open. This is because keyDown events are
-   * triggered alongside keyTyped events. If the user is typing in the terminal, the input shouldn't
-   * trigger any other input handlers.
+   * If the toggle key is pressed, the terminal will open / close. Otherwise, handles input if the
+   * terminal is open. This is because keyDown events are triggered alongside keyTyped events. If
+   * the user is typing in the terminal, the input shouldn't trigger any other input handlers. While
+   * the terminal is open every key is swallowed, including ESC — F1 is the only way out.
    *
    * @return whether the input was processed
    * @see InputProcessor#keyDown(int)
@@ -52,13 +51,16 @@ public class KeyboardTerminalInputComponent extends InputComponent {
       terminal.toggleIsOpen();
       return true;
     }
+    if (terminal.isOpen()) {
+      return true;
+    }
     // Shop close stays here because this handler runs before player input, which swallows keys
     // while the shop is open. Pause itself is owned by the pause overlay on main.
     if (keycode == Input.Keys.ESCAPE && closeOpenShop()) {
       return true;
     }
 
-    return terminal.isOpen();
+    return false;
   }
 
   /**
@@ -126,6 +128,35 @@ public class KeyboardTerminalInputComponent extends InputComponent {
    */
   @Override
   public boolean keyUp(int keycode) {
+    return terminal.isOpen();
+  }
+
+  /**
+   * Swallows pointer input while the terminal is open so clicks don't attack, shoot, or drive the
+   * arrow wheel while typing.
+   */
+  @Override
+  public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+    return terminal.isOpen();
+  }
+
+  @Override
+  public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+    return terminal.isOpen();
+  }
+
+  @Override
+  public boolean touchDragged(int screenX, int screenY, int pointer) {
+    return terminal.isOpen();
+  }
+
+  @Override
+  public boolean mouseMoved(int screenX, int screenY) {
+    return terminal.isOpen();
+  }
+
+  @Override
+  public boolean scrolled(float amountX, float amountY) {
     return terminal.isOpen();
   }
 }
