@@ -14,6 +14,7 @@ import com.csse3200.game.ui.terminal.commands.GameEndLoseCommand;
 import com.csse3200.game.ui.terminal.commands.GameEndWinCommand;
 import com.csse3200.game.ui.terminal.commands.KillAllEnemiesCommand;
 import com.csse3200.game.ui.terminal.commands.TextBoxCommand;
+import com.csse3200.game.ui.terminal.commands.TutorialCommand;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -46,6 +47,7 @@ public class Terminal extends Component {
       ServiceLocator.registerGameEndEventHandler(new EventHandler());
     }
     addCommand("textbox", new TextBoxCommand("configs/textBoxes.json"));
+    addCommand("tutorial", new TutorialCommand());
   }
 
   public Terminal(GdxGame game, GdxGame.ScreenType destination) {
