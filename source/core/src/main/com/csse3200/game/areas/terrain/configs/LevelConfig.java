@@ -312,12 +312,10 @@ public class LevelConfig {
 
     for (CheckpointConfig c : checkpoints) {
       Entity checkpoint = new Entity();
-      checkpoint.addComponent(new CheckpointComponent(false, c.getPosition()));
       checkpoint.addComponent(new CheckpointComponent(false, c.getPosition(), checkpointAtlas));
       checkpoint.setScale(1f, 1.5f);
 
       c.setEntity(checkpoint);
-      entities.add(new SpawnData(c.getPosition(), checkpoint));
 
       // The torch art comes from the checkpoint atlas. Without one the checkpoint still works but
       // has nothing to draw.

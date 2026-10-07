@@ -138,15 +138,7 @@ public class LevelsGameScreen extends ScreenAdapter {
     level1GameArea.create();
 
     currentGameArea = level1GameArea;
-    Entity levelChanger = currentGameArea.getLevelChanger();
-    if (levelChanger != null) {
-      levelChanger.getEvents().addListener("triggerNextLevel", this::queueAreaSwap);
-      levelChanger
-          .getEvents()
-          .addListener(
-              "triggerNextLevel",
-              (String level) -> SoundEffects.play("sounds/level_complete.wav", 0.5f));
-    }
+    registerLevelSwap();
 
     player = level1GameArea.getPlayer();
     player.getEvents().addListener("respawnAtCheckpoint", () -> currentGameArea.respawn());
@@ -214,6 +206,18 @@ public class LevelsGameScreen extends ScreenAdapter {
         () -> ServiceLocator.getGameEndEventHandler().trigger("gameEnd", GameEndState.LOSE));
   }
 
+  private void registerLevelSwap() {
+    Entity levelChanger = currentGameArea.getLevelChanger();
+    if (levelChanger != null) {
+      levelChanger.getEvents().addListener("triggerNextLevel", this::queueAreaSwap);
+      levelChanger
+          .getEvents()
+          .addListener(
+              "triggerNextLevel",
+              (String level) -> SoundEffects.play("sounds/level_complete.wav", 0.5f));
+    }
+  }
+
   /**
    * When the level changer triggers a level change event, this method receives and creates the
    * requested game area object and queues it to be rendered at the next available frame
@@ -253,6 +257,7 @@ public class LevelsGameScreen extends ScreenAdapter {
     currentGameArea.dispose();
     currentGameArea = nextGameArea;
     nextGameArea = null;
+    registerLevelSwap();
 
     renderer.getCamera().setTarget(currentGameArea.getPlayer());
   }
@@ -298,6 +303,8 @@ public class LevelsGameScreen extends ScreenAdapter {
       } else if (level.equals("level2")) {
         level = "level3";
       } else if (level.equals("level3")) {
+        level = "boss";
+      } else if (level.equals("boss")) {
         level = "none";
       }
       queueAreaSwap(level);
