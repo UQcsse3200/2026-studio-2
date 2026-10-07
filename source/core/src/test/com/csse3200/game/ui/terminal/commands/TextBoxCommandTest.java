@@ -33,13 +33,16 @@ class TextBoxCommandTest {
   @Test
   void shouldResolveShorthandToPortraitsDirectory() {
     assertEquals(
-        "images/portraits/test_portrait.jpeg", TextBoxCommand.resolvePortraitPath("test_portrait"));
+        "images/portraits/calypsoHappy.png",
+        TextBoxCommand.resolvePortraitPath("calypsoHappy"));
   }
 
   @Test
   void shouldFallBackThroughExtensions() {
+    // Only .png exists for this portrait: .jpeg and .jpg are skipped before landing on it.
     assertEquals(
-        "images/portraits/calypso_happy.png", TextBoxCommand.resolvePortraitPath("calypso_happy"));
+        "images/portraits/calypsoRegret.png",
+        TextBoxCommand.resolvePortraitPath("calypsoRegret"));
   }
 
   @Test
@@ -86,7 +89,7 @@ class TextBoxCommandTest {
   void shouldPreviewKnownPortrait() {
     TextBoxCommand command = new TextBoxCommand("configs/textBoxes.json");
 
-    assertTrue(command.action(args("portrait", "test_portrait")));
+    assertTrue(command.action(args("portrait", "calypsoHappy")));
     verify(renderService).register(any(TextBoxComponent.class));
   }
 }
