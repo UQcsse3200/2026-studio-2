@@ -33,7 +33,26 @@ public class ArrowWheelComponent extends Component {
     entity.getEvents().addListener("closeArrowWheel", this::close);
     entity.getEvents().addListener("arrowWheelPointerMoved", this::highlightFromPointer);
     entity.getEvents().addListener("bowEquipped", this::setBowEquipped);
-    entity.getEvents().addListener("inventorySelectionChanged", this::selectNextAvailable);
+    entity.getEvents().addListener("inventorySelectionChanged", this::syncInventorySelection);
+    // Quantity changes may require selecting another slot. Do this on a different event so
+    // selectSlot never republishes inventorySelectionChanged inside its own dispatch.
+    entity.getEvents().addListener("inventoryChanged", this::selectNextAvailable);
+  }
+
+  /** Mirrors hotbar arrow choices without changing a deliberately selected potion or rope. */
+  private void syncInventorySelection() {
+    if (inventory == null) {
+      return;
+    }
+    ItemType item = inventory.getSelectedItem();
+    if (item == null || !item.isArrow()) {
+      return;
+    }
+    ArrowType type = item.toArrowType();
+    if (isAvailable(type) && selected != type) {
+      selected = type;
+      entity.getEvents().trigger("arrowSelected", selected);
+    }
   }
 
   /** Returns whether the wheel should currently be drawn. */

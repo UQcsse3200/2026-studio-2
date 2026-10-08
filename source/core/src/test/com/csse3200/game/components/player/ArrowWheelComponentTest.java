@@ -326,4 +326,45 @@ class ArrowWheelComponentTest {
     assertEquals(150f, wheel.getScreenCentre().x);
     assertEquals(450f, wheel.getScreenCentre().y);
   }
+
+  @Test
+  void shouldFallBackAcrossPotionSlotsWithoutReenteringSelectionEvents() {
+    InventoryComponent inventory = givePlayerAnInventory();
+    inventory.addItem(ItemType.STANDARD_ARROW, 1);
+    inventory.addItem(ItemType.HEALTH_POTION, 1);
+    inventory.addItem(ItemType.FIRE_ARROW, 2);
+    AtomicInteger selections = new AtomicInteger();
+    player.getEvents().addListener("inventorySelectionChanged", selections::incrementAndGet);
+
+    assertTrue(inventory.removeItem(ItemType.STANDARD_ARROW, 1));
+
+    assertEquals(ItemType.FIRE_ARROW, inventory.getSelectedItem());
+    assertEquals(ArrowType.FIRE, wheel.getSelected());
+    assertEquals(2, inventory.getItemCount(ItemType.FIRE_ARROW));
+    assertEquals(2, selections.get());
+  }
+
+  @Test
+  void shouldFollowExplicitHotbarArrowSelection() {
+    InventoryComponent inventory = givePlayerAnInventory();
+    inventory.addItem(ItemType.STANDARD_ARROW, 2);
+    inventory.addItem(ItemType.FIRE_ARROW, 2);
+
+    inventory.selectSlot(1);
+
+    assertEquals(ArrowType.FIRE, wheel.getSelected());
+    assertEquals(ItemType.FIRE_ARROW, inventory.getSelectedItem());
+  }
+
+  @Test
+  void shouldRespectExplicitPotionSelectionWhileArrowsRemain() {
+    InventoryComponent inventory = givePlayerAnInventory();
+    inventory.addItem(ItemType.STANDARD_ARROW, 2);
+    inventory.addItem(ItemType.HEALTH_POTION, 1);
+
+    inventory.selectSlot(1);
+
+    assertEquals(ItemType.HEALTH_POTION, inventory.getSelectedItem());
+    assertEquals(ArrowType.STANDARD, wheel.getSelected());
+  }
 }
