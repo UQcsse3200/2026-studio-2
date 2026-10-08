@@ -11,6 +11,9 @@ import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.csse3200.game.components.CameraComponent;
+import com.csse3200.game.components.CombatStatsComponent;
+import com.csse3200.game.components.inventory.InventoryComponent;
+import com.csse3200.game.components.item.ItemType;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.extensions.GameExtension;
@@ -184,5 +187,124 @@ class PlayerInputStateTest {
     assertFalse(input.touchUp(1, 1, 0, Buttons.MIDDLE));
     assertTrue(events.isEmpty());
     assertTrue(directions.isEmpty());
+  }
+
+  @Test
+  void shouldKeepWalkingUntilBothLeftAliasesAreReleased() {
+    input.keyDown(Keys.A);
+    input.keyDown(Keys.LEFT);
+    events.clear();
+    directions.clear();
+
+    input.keyUp(Keys.A);
+
+    assertTrue(events.isEmpty());
+    assertEquals(List.of(new Vector2(-1f, 0f)), directions);
+    input.keyUp(Keys.LEFT);
+    assertEquals(List.of("walkStop"), events);
+  }
+
+  @Test
+  void shouldKeepSprintingUntilBothShiftKeysAreReleased() {
+    input.keyDown(Keys.SHIFT_LEFT);
+    input.keyDown(Keys.SHIFT_RIGHT);
+    events.clear();
+
+    input.keyUp(Keys.SHIFT_LEFT);
+
+    assertFalse(events.contains("sprintStop"));
+    input.keyUp(Keys.SHIFT_RIGHT);
+    assertEquals("sprintStop", events.getLast());
+  }
+
+  @Test
+  void shouldRejectRightClickWhilePausedWithoutHoldingTheMouse() {
+    when(ServiceLocator.getEntityService().getPaused()).thenReturn(true);
+    List<Vector2> shots = new ArrayList<>();
+    player.getEvents().<Vector2>addListener("shoot", shots::add);
+
+    assertFalse(input.touchDown(10, 10, 0, Buttons.RIGHT));
+
+    assertFalse(input.isRightMouseHeld());
+    assertTrue(shots.isEmpty());
+  }
+
+  @Test
+  void shouldCancelReleaseOfAChargeWhilePaused() {
+    input.touchDown(10, 10, 0, Buttons.RIGHT);
+    when(ServiceLocator.getEntityService().getPaused()).thenReturn(true);
+
+    input.touchUp(10, 10, 0, Buttons.RIGHT);
+
+    assertFalse(input.isRightMouseHeld());
+    assertEquals(List.of("chargeCancel"), events);
+  }
+
+  @Test
+  void shouldNotReplayKeysReleasedDuringDeathAfterRevival() {
+    input.keyDown(Keys.D);
+    input.keyDown(Keys.SHIFT_LEFT);
+    player.getEvents().trigger("death");
+    input.keyUp(Keys.D);
+    input.keyUp(Keys.SHIFT_LEFT);
+    player.getEvents().trigger("revive");
+    events.clear();
+    directions.clear();
+
+    input.unpause();
+
+    assertTrue(directions.isEmpty());
+    assertEquals(List.of("walkStop", "sprintStop"), events);
+  }
+
+  @Test
+  void shouldConsumeNoPotionWhenEIsPressedWhilePaused() {
+    var inventory = new InventoryComponent(0);
+    inventory.addItem(ItemType.HEALTH_POTION, 1);
+    var stats = new CombatStatsComponent(8, 10, 1);
+    var use = new ItemUseComponent();
+    input = new KeyboardPlayerInputComponent();
+    player =
+        new Entity()
+            .addComponent(input)
+            .addComponent(inventory)
+            .addComponent(stats)
+            .addComponent(use);
+    player.create();
+    when(ServiceLocator.getEntityService().getPaused()).thenReturn(true);
+
+    input.keyDown(Keys.E);
+
+    assertEquals(8, stats.getHealth());
+    assertEquals(1, inventory.getItemCount(ItemType.HEALTH_POTION));
+    input.keyUp(Keys.E);
+    when(ServiceLocator.getEntityService().getPaused()).thenReturn(false);
+    input.keyDown(Keys.E);
+    assertEquals(10, stats.getHealth());
+    assertEquals(0, inventory.getItemCount(ItemType.HEALTH_POTION));
+  }
+
+  @Test
+  void shouldKeepRightAliasHeldDespiteRepeatedKeyDownAndRelease() {
+    input.keyDown(Keys.D);
+    input.keyDown(Keys.D);
+    input.keyDown(Keys.RIGHT);
+    input.keyUp(Keys.RIGHT);
+    assertEquals(new Vector2(1f, 0f), directions.getLast());
+    input.keyUp(Keys.D);
+    assertEquals(List.of("walkStop"), events);
+  }
+
+  @Test
+  void shouldStopGrappleClimbWhenKeyIsReleasedDuringPause() {
+    List<String> climbing = new ArrayList<>();
+    player.getEvents().addListener("grappleClimbStart", () -> climbing.add("start"));
+    player.getEvents().addListener("grappleClimbStop", () -> climbing.add("stop"));
+    input.keyDown(Keys.W);
+    when(ServiceLocator.getEntityService().getPaused()).thenReturn(true);
+    input.keyUp(Keys.W);
+    when(ServiceLocator.getEntityService().getPaused()).thenReturn(false);
+    input.unpause();
+    assertEquals(List.of("start", "stop"), climbing);
   }
 }

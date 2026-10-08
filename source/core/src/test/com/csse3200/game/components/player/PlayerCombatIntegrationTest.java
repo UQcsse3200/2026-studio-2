@@ -7,6 +7,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -192,7 +193,8 @@ class PlayerCombatIntegrationTest {
     assertFalse(itemUse.useSelectedItem());
 
     factory.verifyNoInteractions();
-    verifyNoInteractions(entities, sound, primaryAttack, itemUsed, animation);
+    verify(entities, never()).register(any());
+    verifyNoInteractions(sound, primaryAttack, itemUsed, animation);
     assertEquals(0, inventory.getItemCount(ItemType.STANDARD_ARROW));
   }
 
@@ -273,7 +275,8 @@ class PlayerCombatIntegrationTest {
 
     assertEquals(2, inventory.getItemCount(ItemType.STANDARD_ARROW));
     factory.verifyNoInteractions();
-    verifyNoInteractions(entities, sound, primaryAttack, itemUsed, animation);
+    verify(entities, never()).register(any());
+    verifyNoInteractions(sound, primaryAttack, itemUsed, animation);
     verify(itemFailed).handle(ItemType.STANDARD_ARROW);
   }
 
@@ -293,7 +296,8 @@ class PlayerCombatIntegrationTest {
 
     assertEquals(2, isolatedInventory.getItemCount(ItemType.STANDARD_ARROW));
     factory.verifyNoInteractions();
-    verifyNoInteractions(entities, sound, primaryAttack, itemUsed);
+    verify(entities, never()).register(any());
+    verifyNoInteractions(sound, primaryAttack, itemUsed);
     verify(itemFailed).handle(ItemType.STANDARD_ARROW);
   }
 
@@ -384,13 +388,15 @@ class PlayerCombatIntegrationTest {
     input.touchDown(40, 60, 0, Buttons.RIGHT);
     assertEquals(2, inventory.getItemCount(ItemType.STANDARD_ARROW));
     verify(chargeStart).handle(new Vector2(3f, 4f));
-    verifyNoInteractions(entities, primaryAttack, itemFailed);
+    verify(entities, never()).register(any());
+    verifyNoInteractions(primaryAttack, itemFailed);
 
     input.keyDown(Keys.E);
 
     verify(itemFailed).handle(ItemType.STANDARD_ARROW);
     assertEquals(2, inventory.getItemCount(ItemType.STANDARD_ARROW));
-    verifyNoInteractions(entities, primaryAttack);
+    verify(entities, never()).register(any());
+    verifyNoInteractions(primaryAttack);
 
     input.touchUp(40, 60, 0, Buttons.RIGHT);
 
@@ -416,7 +422,8 @@ class PlayerCombatIntegrationTest {
     verify(chargeStart).handle(new Vector2(3f, 4f));
     verify(itemUsed).handle(ItemType.STANDARD_ARROW);
     verify(itemFailed).handle(ItemType.STANDARD_ARROW);
-    verifyNoInteractions(entities, primaryAttack, animation, sound);
+    verify(entities, never()).register(any());
+    verifyNoInteractions(primaryAttack, animation, sound);
 
     input.touchUp(40, 60, 0, Buttons.RIGHT);
 
@@ -452,7 +459,7 @@ class PlayerCombatIntegrationTest {
 
     assertEquals(ItemType.FIRE_ARROW, inventory.getSelectedItem());
     assertEquals(0, inventory.getItemCount(ItemType.STANDARD_ARROW));
-    verifyNoInteractions(entities);
+    verify(entities, never()).register(any());
 
     input.touchUp(40, 60, 0, Buttons.RIGHT);
 
@@ -473,7 +480,8 @@ class PlayerCombatIntegrationTest {
 
     assertEquals(1, inventory.getItemCount(ItemType.STANDARD_ARROW));
     verify(itemUsed).handle(ItemType.STANDARD_ARROW);
-    verifyNoInteractions(entities, primaryAttack, animation, sound, itemFailed);
+    verify(entities, never()).register(any());
+    verifyNoInteractions(primaryAttack, animation, sound, itemFailed);
     factory.verifyNoInteractions();
   }
 
@@ -539,14 +547,16 @@ class PlayerCombatIntegrationTest {
     assertFalse(input.isRightMouseHeld());
     assertTrue(bow.isReady());
     factory.verifyNoInteractions();
-    verifyNoInteractions(entities, primaryAttack, animation, sound);
+    verify(entities, never()).register(any());
+    verifyNoInteractions(primaryAttack, animation, sound);
 
     input.touchUp(40, 60, 0, Buttons.RIGHT);
     player.getEvents().trigger("closeShop");
 
     assertTrue(bow.isReady());
     factory.verifyNoInteractions();
-    verifyNoInteractions(entities, primaryAttack, animation, sound);
+    verify(entities, never()).register(any());
+    verifyNoInteractions(primaryAttack, animation, sound);
   }
 
   @Test
@@ -568,7 +578,8 @@ class PlayerCombatIntegrationTest {
     assertEquals(1, inventory.getItemCount(ItemType.HEALTH_POTION));
     verify(itemUsed).handle(ItemType.HEALTH_POTION);
     verify(itemFailed).handle(ItemType.HEALTH_POTION);
-    verifyNoInteractions(entities, primaryAttack, animation, sound);
+    verify(entities, never()).register(any());
+    verifyNoInteractions(primaryAttack, animation, sound);
     factory.verifyNoInteractions();
   }
 }
