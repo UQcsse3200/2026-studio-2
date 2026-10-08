@@ -173,18 +173,62 @@ class PlayerAnimationTransitionsTest {
     player.getEvents().trigger("sprintStop");
     player.getEvents().trigger("dashStart");
     player.getEvents().trigger("airDashStart");
-    player.getEvents().trigger("melee", Vector2.X);
+    player.getEvents().trigger("meleeSwing", 1);
     player.getEvents().trigger("chargeCancel");
     assertEquals("death", animator.getCurrentAnimation());
   }
 
   @Test
   void shouldNotRestartMeleeOnRepeatedIdleUpdateAfterCompletion() {
-    player.getEvents().trigger("melee", Vector2.X);
+    player.getEvents().trigger("meleeSwing", 1);
     finishClip();
     assertEquals("idle", animator.getCurrentAnimation());
     controller.update();
     controller.update();
     assertEquals("idle", animator.getCurrentAnimation());
+  }
+
+  @Test
+  void shouldKeepHurtClipWhenMovementChanges() {
+    player.getEvents().trigger("hurt");
+    player.getEvents().trigger("walk", Vector2.X);
+    player.getEvents().trigger("sprint");
+    assertEquals("hurt", animator.getCurrentAnimation());
+    finishClip();
+    assertEquals("sprint", animator.getCurrentAnimation());
+  }
+
+  @Test
+  void shouldResumeMovementAfterBowInterruptsLanding() {
+    player.getEvents().trigger("fallStart");
+    player.getEvents().trigger("landed");
+    player.getEvents().trigger("chargeStart", Vector2.X);
+    player.getEvents().trigger("chargeRelease", Vector2.X);
+    finishClip();
+    player.getEvents().trigger("walk", Vector2.X);
+    assertEquals("walk", animator.getCurrentAnimation());
+    player.getEvents().trigger("walkStop");
+    assertEquals("idle", animator.getCurrentAnimation());
+  }
+
+  @Test
+  void shouldResumeMovementAfterMeleeInterruptsLanding() {
+    player.getEvents().trigger("fallStart");
+    player.getEvents().trigger("landed");
+    player.getEvents().trigger("meleeSwing", -1);
+    assertEquals("melee", animator.getCurrentAnimation());
+    assertTrue(animator.isFlipX());
+    finishClip();
+    player.getEvents().trigger("walk", Vector2.X);
+    assertEquals("walk", animator.getCurrentAnimation());
+  }
+
+  @Test
+  void shouldClearSprintAnimationAfterRevival() {
+    player.getEvents().trigger("sprint");
+    player.getEvents().trigger("death");
+    player.getEvents().trigger("revive");
+    player.getEvents().trigger("walk", Vector2.X);
+    assertEquals("walk", animator.getCurrentAnimation());
   }
 }

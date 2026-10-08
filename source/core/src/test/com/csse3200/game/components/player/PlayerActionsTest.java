@@ -404,4 +404,35 @@ class PlayerActionsTest {
     player.update();
     verify(slippery, atLeastOnce()).getSlipperiness(); // ensure slipperiness is queried
   }
+
+  @Test
+  void shouldCancelDashAndRestoreGravityOnDeath() {
+    Entity player = createPlayer();
+    Body body = player.getComponent(PhysicsComponent.class).getBody();
+    body.setGravityScale(1.7f);
+    player.getEvents().trigger("dash");
+    assertEquals(0f, body.getGravityScale());
+    player.getEvents().trigger("death");
+    player.update();
+    assertEquals(1.7f, body.getGravityScale(), 0.001f);
+    assertEquals(0f, body.getLinearVelocity().x, 0.001f);
+    player.getEvents().trigger("dash");
+    assertEquals(0f, body.getLinearVelocity().x, 0.001f);
+  }
+
+  @Test
+  void shouldRestoreWalkingSpeedAfterRevival() {
+    Entity player = createPlayer();
+    PlayerActions actions = player.getComponent(PlayerActions.class);
+    Body body = player.getComponent(PhysicsComponent.class).getBody();
+    actions.walk(Vector2.X);
+    player.update();
+    float walkingSpeed = body.getLinearVelocity().x;
+    actions.sprint();
+    player.getEvents().trigger("death");
+    player.getEvents().trigger("revive");
+    actions.walk(Vector2.X);
+    player.update();
+    assertEquals(walkingSpeed, body.getLinearVelocity().x, 0.001f);
+  }
 }

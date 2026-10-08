@@ -86,24 +86,21 @@ public class PlayerAnimationController extends Component {
       }
       return;
     }
-    if (instrumentMusicPending && !ServiceLocator.getEntityService().getPaused()) {
-      instrumentDrawTime += ServiceLocator.getTimeSource().getDeltaTime();
-      if (instrumentDrawTime >= INSTRUMENT_FRAME_DURATION * INSTRUMENT_OUT_FRAME) {
-        instrumentMusicPending = false;
-        playInstrumentMusic();
-      }
+    updateInstrumentMusic();
+    if (!animator.isFinished()) {
+      return;
     }
-    if (hurt && animator.isFinished()) {
+    if (hurt) {
       hurt = false;
       updateAnimation();
-    } else if (dashing && animator.isFinished()) {
+    } else if (dashing) {
       dashing = false;
       updateAnimation();
-    } else if (drawingIn && animator.isFinished()) {
+    } else if (drawingIn) {
       // The one-shot draw-back has finished pulling the string - settle into the looping hold.
       drawingIn = false;
       animator.startAnimation("bow_hold");
-    } else if (instrumentDrawing && animator.isFinished()) {
+    } else if (instrumentDrawing) {
       // The one-shot pick-up has finished - settle into the looping hold until interrupted.
       instrumentDrawing = false;
       animator.startAnimation("instrument_hold");
@@ -111,17 +108,27 @@ public class PlayerAnimationController extends Component {
         instrumentMusicPending = false;
         playInstrumentMusic();
       }
-    } else if (attacking && animator.isFinished()) {
+    } else if (attacking) {
       // Also where bow_shoot lands, which is the end of the bow sequence.
       attacking = false;
       bowActive = false;
       updateAnimation();
-    } else if (landing && animator.isFinished()) {
+    } else if (landing) {
       landing = false;
       updateAnimation();
     }
     // Note: the takeoff clip deliberately has no "finished" branch. It is NORMAL mode, so it holds
     // its final tucked frame through the rest of the ascent until the fall or landing takes over.
+  }
+
+  private void updateInstrumentMusic() {
+    if (instrumentMusicPending && !ServiceLocator.getEntityService().getPaused()) {
+      instrumentDrawTime += ServiceLocator.getTimeSource().getDeltaTime();
+      if (instrumentDrawTime >= INSTRUMENT_FRAME_DURATION * INSTRUMENT_OUT_FRAME) {
+        instrumentMusicPending = false;
+        playInstrumentMusic();
+      }
+    }
   }
 
   void walk(Vector2 direction) {
@@ -133,9 +140,7 @@ public class PlayerAnimationController extends Component {
       animator.setFlipX(direction.x < 0);
       cancelInstrument();
     }
-    if (!jumping && !dashing && !attacking && !landing) {
-      updateAnimation();
-    }
+    updateAnimation();
   }
 
   void walkStop() {
@@ -143,9 +148,7 @@ public class PlayerAnimationController extends Component {
       return;
     }
     moving = false;
-    if (!jumping && !dashing && !attacking && !landing) {
-      updateAnimation();
-    }
+    updateAnimation();
   }
 
   void sprint() {
@@ -154,9 +157,7 @@ public class PlayerAnimationController extends Component {
     }
     cancelInstrument();
     sprinting = true;
-    if (!jumping && !dashing && !attacking && !landing) {
-      updateAnimation();
-    }
+    updateAnimation();
   }
 
   void sprintStop() {
@@ -164,9 +165,7 @@ public class PlayerAnimationController extends Component {
       return;
     }
     sprinting = false;
-    if (!jumping && !dashing && !attacking && !landing) {
-      updateAnimation();
-    }
+    updateAnimation();
   }
 
   void jumpStart() {
@@ -247,6 +246,8 @@ public class PlayerAnimationController extends Component {
     if (dead || bowActive) {
       return;
     }
+    hurt = false;
+    landing = false;
     cancelInstrument();
     jumping = false;
     attacking = false; // dash cancels the attack
@@ -262,6 +263,7 @@ public class PlayerAnimationController extends Component {
     if (dead || bowActive) {
       return;
     }
+    landing = false;
     cancelInstrument();
     jumping = false;
     dashing = false;
@@ -291,6 +293,7 @@ public class PlayerAnimationController extends Component {
     attacking = false;
     jumping = false;
     moving = false;
+    sprinting = false;
     updateAnimation();
   }
 
@@ -307,6 +310,7 @@ public class PlayerAnimationController extends Component {
     hurt = false;
     dashing = false;
     jumping = false;
+    landing = false;
     cancelInstrument();
     charging = true;
     drawingIn = true;
@@ -350,6 +354,7 @@ public class PlayerAnimationController extends Component {
     if (dead || bowActive || dashing || hurt) {
       return;
     }
+    landing = false;
     cancelInstrument();
     if (facing != null && facing != 0) {
       animator.setFlipX(facing < 0);
@@ -363,6 +368,7 @@ public class PlayerAnimationController extends Component {
     if (dead || bowActive || jumping || dashing || hurt || attacking || instrumentActive) {
       return;
     }
+    landing = false;
     instrumentActive = true;
     instrumentDrawing = true;
     instrumentDrawTime = 0f;
@@ -442,7 +448,7 @@ public class PlayerAnimationController extends Component {
   }
 
   private void updateAnimation() {
-    if (instrumentActive) {
+    if (dead || instrumentActive || jumping || landing || isBusyWithHigherPriorityAnimation()) {
       return;
     }
     String desired = "idle";
