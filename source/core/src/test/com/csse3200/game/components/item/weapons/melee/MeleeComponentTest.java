@@ -176,4 +176,41 @@ class MeleeComponentTest {
 
     assertEquals(100, player.getComponent(CombatStatsComponent.class).getHealth());
   }
+
+  @Test
+  void revivedPlayerCanDamageAnEnemyAgain() {
+    enemyIsInArc();
+    player.getEvents().trigger("death");
+    player.getEvents().trigger("revive");
+
+    player.getEvents().trigger("meleeStart");
+    run(4);
+
+    assertEquals(80, enemy.getComponent(CombatStatsComponent.class).getHealth());
+  }
+
+  @Test
+  void deathCancelsTheDelayedHitAndSwing() {
+    enemyIsInArc();
+    player.getEvents().trigger("meleeStart");
+    player.getEvents().trigger("death");
+
+    run(4);
+
+    assertFalse(melee.isSwinging());
+    assertEquals(100, enemy.getComponent(CombatStatsComponent.class).getHealth());
+  }
+
+  @Test
+  void reviveClearsThePreviousSwingCooldown() {
+    player.getEvents().trigger("meleeStart");
+    run(4);
+    player.getEvents().trigger("death");
+    player.getEvents().trigger("revive");
+
+    player.getEvents().trigger("meleeStart");
+
+    assertTrue(melee.isSwinging());
+    assertEquals(0f, melee.getSwingProgress());
+  }
 }
