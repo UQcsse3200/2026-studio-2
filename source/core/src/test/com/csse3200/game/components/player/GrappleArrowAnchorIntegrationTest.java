@@ -2,10 +2,12 @@ package com.csse3200.game.components.player;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.DynamicTest.dynamicTest;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockingDetails;
 import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.badlogic.gdx.math.Vector2;
@@ -25,9 +27,9 @@ import com.csse3200.game.physics.PhysicsService;
 import com.csse3200.game.rendering.RenderService;
 import com.csse3200.game.services.GameTime;
 import com.csse3200.game.services.ServiceLocator;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import java.util.stream.Stream;
+import org.junit.jupiter.api.DynamicTest;
+import org.junit.jupiter.api.TestFactory;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
@@ -44,8 +46,7 @@ class GrappleArrowAnchorIntegrationTest {
   private GrappleComponent grapple;
   private Entity shooter;
 
-  @BeforeEach
-  void setUp() {
+  private void setUp() {
     GameTime time = mock(GameTime.class);
     when(time.getDeltaTime()).thenReturn(STEP);
     ServiceLocator.registerTimeSource(time);
@@ -72,8 +73,7 @@ class GrappleArrowAnchorIntegrationTest {
     fixture.setFilterData(filter);
   }
 
-  @AfterEach
-  void tearDown() {
+  private void tearDown() {
     physicsService.getPhysics().dispose();
   }
 
@@ -93,37 +93,38 @@ class GrappleArrowAnchorIntegrationTest {
       if (attached) {
         org.mockito.ArgumentCaptor<Vector2> point =
             org.mockito.ArgumentCaptor.forClass(Vector2.class);
-        org.mockito.Mockito.verify(grapple).attachTo(any(Body.class), point.capture());
+        verify(grapple).attachTo(any(Body.class), point.capture());
         return point.getValue();
       }
     }
     return null;
   }
 
-  @Test
-  void shouldAnchorOnTheWallFaceForAnArrowFlyingUpAndLeft() {
-    Vector2 anchor = fireAndGetAnchor(new Vector2(-1f, 0.6f), 1f);
+  private record FlightCase(String name, float slope, float speed) {}
 
-    assertNotNull(anchor, "the arrow should have reached the wall and attached");
-    // Rotating the arrow used to swing its collision box ahead of its sprite, so this landed in
-    // mid-air well short of the face.
-    assertEquals(WALL_FACE_X, anchor.x, 0.05f);
-  }
-
-  @Test
-  void shouldAnchorOnTheWallFaceForAnArrowFlyingNearlyStraightUp() {
-    // Shallow approaches to a wall need the longest reach to find the surface from.
-    Vector2 anchor = fireAndGetAnchor(new Vector2(-1f, 6f), 1f);
-
-    assertNotNull(anchor, "the arrow should have reached the wall and attached");
-    assertEquals(WALL_FACE_X, anchor.x, 0.05f);
-  }
-
-  @Test
-  void shouldAnchorOnTheWallFaceForAChargedArrowFlyingLeft() {
-    Vector2 anchor = fireAndGetAnchor(new Vector2(-1f, 0.2f), 1.5f);
-
-    assertNotNull(anchor, "the arrow should have reached the wall and attached");
-    assertEquals(WALL_FACE_X, anchor.x, 0.05f);
+  @TestFactory
+  Stream<DynamicTest> shouldAnchorOnTheWallFaceAcrossFlightPaths() {
+    return Stream.of(
+            new FlightCase("up and left", 0.6f, 1f),
+            new FlightCase("nearly straight up", 6f, 1f),
+            new FlightCase("fully charged", 0.2f, 1.5f))
+        .map(
+            flight ->
+                dynamicTest(
+                    flight.name(),
+                    () -> {
+                      // Dynamic cases each need their own physics world and mock invocation
+                      // history.
+                      setUp();
+                      try {
+                        Vector2 anchor =
+                            fireAndGetAnchor(new Vector2(-1f, flight.slope()), flight.speed());
+                        assertNotNull(
+                            anchor, "the arrow should have reached the wall and attached");
+                        assertEquals(WALL_FACE_X, anchor.x, 0.05f);
+                      } finally {
+                        tearDown();
+                      }
+                    }));
   }
 }

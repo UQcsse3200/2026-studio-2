@@ -91,6 +91,9 @@ public class PlayerActions extends Component {
 
   @Override
   public void update() {
+    if (dead) {
+      return;
+    }
     boolean wasGrounded = isGrounded;
     isGrounded = checkGrounded();
     checkJumpWindup();
@@ -170,10 +173,6 @@ public class PlayerActions extends Component {
     if (jumpImpulseAt < 0) {
       return;
     }
-    if (dead) {
-      jumpImpulseAt = -1;
-      return;
-    }
     if (ServiceLocator.getTimeSource().getTime() >= jumpImpulseAt) {
       jumpImpulseAt = -1;
       Body body = physicsComponent.getBody();
@@ -204,7 +203,7 @@ public class PlayerActions extends Component {
     if (!isGrounded) {
       airborne = true;
       liftoffDeadline = -1;
-      if (!falling && !isGrappling() && !isDashing) {
+      if (!falling && !isDashing) {
         float verticalVelocity = physicsComponent.getBody().getLinearVelocity().y;
         if (verticalVelocity < -FALL_SPEED_THRESHOLD) {
           falling = true;
@@ -268,14 +267,11 @@ public class PlayerActions extends Component {
     if (grounded && hit.fixture != null) {
       // get raw data and check if it's user data is a proper BodyUserData
       Object userData = hit.fixture.getBody().getUserData();
-      if (userData instanceof BodyUserData data) {
-        // check the entity variable is set and access component data
-        if (data.entity != null) {
-          SlipperyPlatformComponent slipperyPlatform =
-              data.entity.getComponent(SlipperyPlatformComponent.class);
-          if (slipperyPlatform != null) {
-            decelerationTraction = slipperyPlatform.getSlipperiness();
-          }
+      if (userData instanceof BodyUserData data && data.entity != null) {
+        SlipperyPlatformComponent slipperyPlatform =
+            data.entity.getComponent(SlipperyPlatformComponent.class);
+        if (slipperyPlatform != null) {
+          decelerationTraction = slipperyPlatform.getSlipperiness();
         }
       }
     }
@@ -286,6 +282,7 @@ public class PlayerActions extends Component {
   /** Stops the player permanently reacting to input once they've died. */
   void die() {
     dead = true;
+    resetMovementState();
     Body body = physicsComponent.getBody();
     Vector2 velocity = body.getLinearVelocity();
     body.setLinearVelocity(0f, velocity.y);
@@ -295,7 +292,22 @@ public class PlayerActions extends Component {
   /** Revives the player after a checkpoint restart so input and movement work again. */
   void revive() {
     dead = false;
+    resetMovementState();
     stopWalking();
+  }
+
+  private void resetMovementState() {
+    onHurtInterruptDash();
+    isSprinting = false;
+    sprintStopPending = false;
+    sprintStopGraceRemaining = 0f;
+    dashCooldownRemaining = 0f;
+    airDashUsed = false;
+    jumpImpulseAt = -1;
+    liftoffDeadline = -1;
+    airborne = false;
+    falling = false;
+    droppingFromLedge = false;
   }
 
   /**
@@ -408,7 +420,7 @@ public class PlayerActions extends Component {
   }
 
   void dash() {
-    if (isDashing || dashCooldownRemaining > 0f) {
+    if (dead || isDashing || dashCooldownRemaining > 0f) {
       return;
     }
     if (isGrappling()) {

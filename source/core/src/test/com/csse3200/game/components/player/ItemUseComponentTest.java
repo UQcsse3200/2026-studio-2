@@ -41,7 +41,8 @@ class ItemUseComponentTest {
     ServiceLocator.registerTimeSource(time);
 
     LightingEngine lightingEngine = mock(LightingEngine.class);
-    when(lightingEngine.getRayHandler()).thenReturn(mock(box2dLight.RayHandler.class));
+    box2dLight.RayHandler rayHandler = mock(box2dLight.RayHandler.class);
+    when(lightingEngine.getRayHandler()).thenReturn(rayHandler);
     LightingService lightingService = mock(LightingService.class);
     when(lightingService.getEngine()).thenReturn(lightingEngine);
     ServiceLocator.registerLightingService(lightingService);
@@ -210,7 +211,7 @@ class ItemUseComponentTest {
     AtomicReference<ItemType> failed = new AtomicReference<>();
     AtomicInteger drawStarts = new AtomicInteger();
     AtomicInteger used = new AtomicInteger();
-    player.getEvents().addListener("itemUseFailed", (ItemType type) -> failed.set(type));
+    player.getEvents().addListener("itemUseFailed", failed::set);
     player
         .getEvents()
         .addListener("grappleDrawStart", (Vector2 ignored) -> drawStarts.incrementAndGet());
@@ -234,7 +235,7 @@ class ItemUseComponentTest {
     player
         .getEvents()
         .addListener("setArrowType", (ArrowType ignored) -> bowTypeChanges.incrementAndGet());
-    player.getEvents().addListener("itemUsed", (ItemType type) -> used.set(type));
+    player.getEvents().addListener("itemUsed", used::set);
 
     player.getEvents().trigger("shoot", new Vector2(1f, 0f));
 
@@ -480,7 +481,7 @@ class ItemUseComponentTest {
 
     AtomicReference<ArrowType> bowType = new AtomicReference<>();
     int[] releases = {0};
-    player.getEvents().addListener("setArrowType", (ArrowType t) -> bowType.set(t));
+    player.getEvents().addListener("setArrowType", bowType::set);
     player.getEvents().addListener("chargeRelease", (Vector2 ignored) -> releases[0]++);
 
     player.getEvents().trigger("shoot", new Vector2(1f, 0f));
@@ -500,7 +501,7 @@ class ItemUseComponentTest {
 
     AtomicReference<ArrowType> bowType = new AtomicReference<>();
     int[] releases = {0};
-    player.getEvents().addListener("setArrowType", (ArrowType t) -> bowType.set(t));
+    player.getEvents().addListener("setArrowType", bowType::set);
     player.getEvents().addListener("chargeRelease", (Vector2 ignored) -> releases[0]++);
 
     player.getEvents().trigger("shoot", new Vector2(1f, 0f));

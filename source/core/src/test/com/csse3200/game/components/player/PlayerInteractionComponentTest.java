@@ -6,8 +6,10 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockConstruction;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
 import com.badlogic.gdx.graphics.Texture;
@@ -46,7 +48,8 @@ class PlayerInteractionComponentTest {
     ServiceLocator.registerRenderService(new RenderService());
 
     LightingEngine lightingEngine = mock(LightingEngine.class);
-    when(lightingEngine.getRayHandler()).thenReturn(mock(box2dLight.RayHandler.class));
+    box2dLight.RayHandler rayHandler = mock(box2dLight.RayHandler.class);
+    when(lightingEngine.getRayHandler()).thenReturn(rayHandler);
     LightingService lightingService = mock(LightingService.class);
     when(lightingService.getEngine()).thenReturn(lightingEngine);
     ServiceLocator.registerLightingService(lightingService);
@@ -364,6 +367,142 @@ class PlayerInteractionComponentTest {
     assertTrue(interaction.interact());
     assertTrue(opened[0]);
     assertEquals(0, player.getComponent(InventoryComponent.class).getGold());
+  }
+
+  @Test
+  void shouldReportFailureWhenNoTargetIsNearby() {
+    Entity player = createPlayer(new InventoryComponent(0));
+    int[] failures = {0};
+    player.getEvents().addListener("interactionFailed", () -> failures[0]++);
+    assertFalse(player.getComponent(PlayerInteractionComponent.class).interact());
+    assertEquals(1, failures[0]);
+  }
+
+  @Test
+  void shouldRejectPickupsWithoutRequiredComponentsOrContents() {
+    InventoryComponent inventory = new InventoryComponent(0);
+    Entity player = createPlayer(inventory);
+    PlayerInteractionComponent interaction = player.getComponent(PlayerInteractionComponent.class);
+    int[] failures = {0};
+    java.util.List<Item> blocked = new java.util.ArrayList<>();
+    player.getEvents().addListener("interactionFailed", () -> failures[0]++);
+    player.getEvents().<Item>addListener("itemPickupBlocked", blocked::add);
+    Entity empty = new Entity();
+    assertFalse(interaction.pickup(empty));
+    assertFalse(interaction.pickupGold(empty));
+    assertFalse(interaction.pickupWheelToken(empty));
+    assertFalse(interaction.pickupGold(null));
+    assertFalse(interaction.pickupWheelToken(null));
+    assertFalse(interaction.isInRange(null));
+    Entity distantGold = spawnGold(new Vector2(10, 0));
+    Entity distantToken = spawnWheelToken(new Vector2(10, 0));
+    assertFalse(interaction.pickupGold(distantGold));
+    assertFalse(interaction.pickupWheelToken(distantToken));
+    assertEquals(7, failures[0]);
+    Entity missingItem = spawnWorldItem(null, new Vector2(0, 0));
+    assertFalse(interaction.pickup(missingItem));
+    assertEquals(1, blocked.size());
+    assertNull(blocked.getFirst());
+    assertEquals(0, inventory.getGold());
+    assertTrue(ServiceLocator.getEntityService().getEntities().contains(missingItem, true));
+  }
+
+  @Test
+  void shouldPickTheNearestTargetAcrossItemGoldAndTokenKinds() {
+    InventoryComponent inventory = new InventoryComponent(0);
+    Entity player = createPlayer(inventory);
+    PlayerInteractionComponent interaction = player.getComponent(PlayerInteractionComponent.class);
+    spawnGold(new Vector2(1f, 0));
+    Entity item = spawnWorldItem(new Arrow(ItemType.FIRE_ARROW, 2), new Vector2(0.5f, 0));
+    spawnWheelToken(new Vector2(1.25f, 0));
+    assertTrue(interaction.interact());
+    assertEquals(2, interaction.getInventory().getItemCount(ItemType.FIRE_ARROW));
+    assertEquals(0, inventory.getGold());
+    assertFalse(ServiceLocator.getEntityService().getEntities().contains(item, true));
+    assertTrue(interaction.interact());
+    assertEquals(10, inventory.getGold());
+    org.junit.jupiter.api.Assertions.assertNotNull(interaction.findNearestWheelToken());
+  }
+
+  @Test
+  void shouldPreferGoldOnDistanceTieAndTokenWhenItIsCloser() {
+    Entity player = createPlayer(new InventoryComponent(0));
+    PlayerInteractionComponent interaction = player.getComponent(PlayerInteractionComponent.class);
+    spawnGold(new Vector2(1f, 0));
+    spawnWorldItem(new Arrow(ItemType.ICE_ARROW, 1), new Vector2(1f, 0));
+    spawnWheelToken(new Vector2(0.25f, 0));
+    assertTrue(interaction.interact());
+    assertNull(interaction.findNearestWheelToken());
+    assertEquals(0, interaction.getInventory().getGold());
+    assertTrue(interaction.interact());
+    assertEquals(10, interaction.getInventory().getGold());
+    assertEquals(0, interaction.getInventory().getItemCount(ItemType.ICE_ARROW));
+  }
+
+  @Test
+  void shouldKeepNearestItemWhenLaterCandidatesAreFartherAndIncludeRangeBoundary() {
+    Entity player = createPlayer(new InventoryComponent(0));
+    ServiceLocator.getEntityService().register(player);
+    Entity near = spawnWorldItem(new Arrow(ItemType.ICE_ARROW, 1), new Vector2(1.5f, 0));
+    spawnWorldItem(new Arrow(ItemType.FIRE_ARROW, 1), new Vector2(1.6f, 0));
+    PlayerInteractionComponent interaction = player.getComponent(PlayerInteractionComponent.class);
+    assertTrue(interaction.isInRange(near));
+    assertEquals(near, interaction.findNearestItem());
+    Entity nearer = spawnWorldItem(new Arrow(ItemType.STANDARD_ARROW, 1), new Vector2(0.2f, 0));
+    assertEquals(nearer, interaction.findNearestItem());
+    spawnWorldItem(new Arrow(ItemType.ROPE_ARROW, 1), new Vector2(0.7f, 0));
+    assertEquals(nearer, interaction.findNearestItem());
+  }
+
+  @Test
+  void shouldLeaveWorldAndInventoryUnchangedWhenRemovalFails() {
+    InventoryComponent inventory = spy(new InventoryComponent(0));
+    inventory.addItem(ItemType.FIRE_ARROW, 3);
+    doReturn(false).when(inventory).removeItem(ItemType.FIRE_ARROW, 3);
+    Entity player = createPlayer(inventory);
+    PlayerInteractionComponent interaction = player.getComponent(PlayerInteractionComponent.class);
+    int[] failures = {0};
+    int[] successes = {0};
+    player.getEvents().addListener("interactionFailed", () -> failures[0]++);
+    player.getEvents().<ItemType>addListener("itemDropped", ignored -> successes[0]++);
+    player.getEvents().<ItemType>addListener("itemDeleted", ignored -> successes[0]++);
+    assertFalse(interaction.dropItem());
+    assertFalse(interaction.deleteItem());
+    assertEquals(2, failures[0]);
+    assertEquals(0, successes[0]);
+    assertEquals(3, inventory.getItemCount(ItemType.FIRE_ARROW));
+    assertEquals(0, ServiceLocator.getEntityService().getEntities().size);
+  }
+
+  @Test
+  void shouldTreatNullSwitchDirectionAsNextItem() {
+    InventoryComponent inventory = new InventoryComponent(0);
+    inventory.addItem(ItemType.FIRE_ARROW, 1);
+    inventory.addItem(ItemType.ICE_ARROW, 1);
+    Entity player = createPlayer(inventory);
+    player.getComponent(PlayerInteractionComponent.class).switchItem(null);
+    assertEquals(ItemType.ICE_ARROW, inventory.getSelectedItem());
+  }
+
+  @Test
+  void shouldDropEveryItemKindWithItsQuantityAndPlayerPosition() {
+    for (ItemType type : ItemType.values()) {
+      ServiceLocator.registerEntityService(new EntityService());
+      InventoryComponent inventory = new InventoryComponent(0);
+      inventory.addItem(type, 3);
+      Entity player = createPlayer(inventory);
+      player.setPosition(4, 7);
+      try (MockedConstruction<PointLightComponent> ignored =
+          mockConstruction(PointLightComponent.class)) {
+        assertTrue(player.getComponent(PlayerInteractionComponent.class).dropItem());
+      }
+      assertEquals(0, inventory.getItemCount(type));
+      assertEquals(1, ServiceLocator.getEntityService().getEntities().size);
+      Entity dropped = ServiceLocator.getEntityService().getEntities().first();
+      assertEquals(type, dropped.getComponent(ItemComponent.class).getItem().getItemType());
+      assertEquals(3, dropped.getComponent(ItemComponent.class).getItem().getQuantity());
+      assertEquals(new Vector2(4, 7), dropped.getPosition());
+    }
   }
 
   Entity createPlayer(InventoryComponent inventory) {

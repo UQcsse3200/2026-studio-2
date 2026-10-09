@@ -73,9 +73,7 @@ class BowComponentTest {
     player.setScale(2f, 2f);
 
     AtomicReference<Vector2> animationDirection = new AtomicReference<>();
-    player
-        .getEvents()
-        .addListener("attackAnimation", (Vector2 direction) -> animationDirection.set(direction));
+    player.getEvents().addListener("attackAnimation", animationDirection::set);
 
     component.attack(new Vector2(3f, 4f));
 
@@ -265,5 +263,31 @@ class BowComponentTest {
     assertEquals(0f, component.getCooldownRemaining());
     verify(entityService, never()).register(projectile);
     verify(attackSound, never()).play();
+  }
+
+  @Test
+  void previewUsesArrowTypeAndCurrentChargeForItsFlightParameters() {
+    BowComponent bow = new BowComponent();
+    Entity player = new Entity().addComponent(bow);
+    bow.create();
+    ArrowType[] types = {
+      ArrowType.STANDARD,
+      ArrowType.ICE,
+      ArrowType.FIRE,
+      ArrowType.GRAPPLE,
+      ArrowType.POTION,
+      ArrowType.POISON
+    };
+    float[] speeds = {5.4f, 4.8f, 5.4f, 6.6f, 3.6f, 5.4f};
+    for (int i = 0; i < types.length; i++) {
+      bow.setArrowType(types[i]);
+      assertEquals(speeds[i], bow.getLaunchSpeed(), 0.0001f);
+    }
+    bow.setArrowType(ArrowType.ICE);
+    when(gameTime.getTime()).thenReturn(0L);
+    player.getEvents().trigger("chargeStart", Vector2.X);
+    when(gameTime.getTime()).thenReturn(1500L);
+    assertEquals(24f, bow.getLaunchSpeed(), 0.0001f);
+    assertEquals(-20f, bow.getArrowGravityY(), 0.0001f);
   }
 }

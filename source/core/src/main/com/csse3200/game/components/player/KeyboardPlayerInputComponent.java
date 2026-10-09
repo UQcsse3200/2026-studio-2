@@ -12,6 +12,9 @@ import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.input.InputComponent;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.services.ServiceLocator;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 /** Input handler for player keyboard and mouse controls. */
 public class KeyboardPlayerInputComponent extends InputComponent {
@@ -23,7 +26,9 @@ public class KeyboardPlayerInputComponent extends InputComponent {
   private static final int UP = 2;
   private static final int DOWN = 3;
   private final boolean[] keysHeld = new boolean[4];
+  private final Set<Integer> heldKeys = new HashSet<>();
   private boolean sprintHeld;
+  private boolean inputSyncPending;
   private CameraComponent cameraComponent;
   private boolean attackHeld;
   private boolean dead;
@@ -38,8 +43,8 @@ public class KeyboardPlayerInputComponent extends InputComponent {
   public void create() {
     super.create();
     entity.getEvents().addListener("togglePause", this::unpause);
-    entity.getEvents().addListener("death", () -> dead = true);
-    entity.getEvents().addListener("revive", () -> dead = false);
+    entity.getEvents().addListener("death", () -> setDead(true));
+    entity.getEvents().addListener("revive", () -> setDead(false));
     entity.getEvents().addListener("openShop", this::releaseHeldGameplayInput);
     entity.getEvents().addListener("closeShop", this::syncReleasedShootButton);
     entity.getEvents().addListener("releaseHeldGameplayInput", this::releaseHeldGameplayInput);
@@ -72,67 +77,66 @@ public class KeyboardPlayerInputComponent extends InputComponent {
     if (dead) {
       return false;
     }
-    if (isShopOpen() && keycode != Keys.F) {
+    if (isShopOpen()) {
+      if (keycode == Keys.F) {
+        entity.getEvents().trigger("interact");
+      }
       return true;
     }
+    if (handleMovementKey(keycode, true)) {
+      return true;
+    }
+    if (keycode == Keys.ESCAPE) {
+      if (!ServiceLocator.getEntityService().getSettingsOpen()) {
+        entity.getEvents().trigger("togglePause");
+      }
+      unpause();
+      return true;
+    }
+    if (keycode == Keys.M) {
+      entity.getEvents().trigger("toggleMap");
+      return true;
+    }
+    if (isPaused()) {
+      return isActionKey(keycode);
+    }
+    if (keycode >= Keys.NUM_1 && keycode <= Keys.NUM_9) {
+      entity.getEvents().trigger(SELECT_QUICK_SLOT, keycode - Keys.NUM_1);
+      return true;
+    }
+    return handleActionKey(keycode);
+  }
+
+  private boolean isActionKey(int keycode) {
+    return switch (keycode) {
+      case Keys.NUM_1,
+          Keys.NUM_2,
+          Keys.NUM_3,
+          Keys.NUM_4,
+          Keys.NUM_5,
+          Keys.NUM_6,
+          Keys.NUM_7,
+          Keys.NUM_8,
+          Keys.NUM_9,
+          Keys.SPACE,
+          Keys.E,
+          Keys.F,
+          Keys.B,
+          Keys.R,
+          Keys.FORWARD_DEL,
+          Keys.PERIOD,
+          Keys.COMMA,
+          Keys.TAB,
+          Keys.Q ->
+          true;
+      default -> false;
+    };
+  }
+
+  private boolean handleActionKey(int keycode) {
     switch (keycode) {
-      // Hotbar number keys
-      case Keys.NUM_1:
-        entity.getEvents().trigger(SELECT_QUICK_SLOT, 0);
-        return true;
-      case Keys.NUM_2:
-        entity.getEvents().trigger(SELECT_QUICK_SLOT, 1);
-        return true;
-      case Keys.NUM_3:
-        entity.getEvents().trigger(SELECT_QUICK_SLOT, 2);
-        return true;
-      case Keys.NUM_4:
-        entity.getEvents().trigger(SELECT_QUICK_SLOT, 3);
-        return true;
-      case Keys.NUM_5:
-        entity.getEvents().trigger(SELECT_QUICK_SLOT, 4);
-        return true;
-      case Keys.NUM_6:
-        entity.getEvents().trigger(SELECT_QUICK_SLOT, 5);
-        return true;
-      case Keys.NUM_7:
-        entity.getEvents().trigger(SELECT_QUICK_SLOT, 6);
-        return true;
-      case Keys.NUM_8:
-        entity.getEvents().trigger(SELECT_QUICK_SLOT, 7);
-        return true;
-      case Keys.NUM_9:
-        entity.getEvents().trigger(SELECT_QUICK_SLOT, 8);
-        return true;
-      case Keys.W:
-        entity.getEvents().trigger("grappleClimbStart");
-        keysHeld[UP] = true;
-        if (!ServiceLocator.getEntityService().getPaused()) {
-          triggerWalkEvent();
-        }
-        return true;
-      case Keys.A, Keys.LEFT:
-        keysHeld[LEFT] = true;
-        if (!ServiceLocator.getEntityService().getPaused()) {
-          triggerWalkEvent();
-        }
-        return true;
-      case Keys.D, Keys.RIGHT:
-        keysHeld[RIGHT] = true;
-        if (!ServiceLocator.getEntityService().getPaused()) {
-          triggerWalkEvent();
-        }
-        return true;
       case Keys.SPACE:
-        if (!ServiceLocator.getEntityService().getPaused()) {
-          triggerJumpEvent();
-        }
-        return true;
-      case Keys.SHIFT_LEFT, Keys.SHIFT_RIGHT:
-        if (!ServiceLocator.getEntityService().getPaused()) {
-          sprintHeld = true;
-          triggerSprintEvent();
-        }
+        triggerJumpEvent();
         return true;
       case Keys.E:
         triggerAttackOrItemUse();
@@ -155,30 +159,11 @@ public class KeyboardPlayerInputComponent extends InputComponent {
       case Keys.COMMA:
         entity.getEvents().trigger("switchItem", -1);
         return true;
-      case Keys.S:
-        entity.getEvents().trigger("grappleDescendStart");
-        entity.getEvents().trigger("updateLedgeDrop", true);
-        keysHeld[DOWN] = true;
-        if (!ServiceLocator.getEntityService().getPaused()) {
-          triggerWalkEvent();
-        }
-        return true;
       case Keys.TAB:
         entity.getEvents().trigger("openArrowWheel");
         return true;
-      case Keys.ESCAPE:
-        if (!ServiceLocator.getEntityService().getSettingsOpen()) {
-          entity.getEvents().trigger("togglePause");
-        }
-        unpause();
-        return true;
-      case Keys.M:
-        entity.getEvents().trigger("toggleMap");
-        return true;
       case Keys.Q:
-        if (!ServiceLocator.getEntityService().getPaused()) {
-          entity.getEvents().trigger("instrumentStart");
-        }
+        entity.getEvents().trigger("instrumentStart");
         return true;
       default:
         return false;
@@ -196,37 +181,10 @@ public class KeyboardPlayerInputComponent extends InputComponent {
     if (dead) {
       return false;
     }
+    if (handleMovementKey(keycode, false)) {
+      return true;
+    }
     switch (keycode) {
-      case Keys.A, Keys.LEFT:
-        keysHeld[LEFT] = false;
-        triggerWalkEvent();
-        return true;
-      case Keys.D, Keys.RIGHT:
-        keysHeld[RIGHT] = false;
-        triggerWalkEvent();
-        return true;
-      case Keys.W:
-        entity.getEvents().trigger("grappleClimbStop");
-        keysHeld[UP] = false;
-        triggerWalkEvent();
-        return true;
-      case Keys.UP:
-        keysHeld[UP] = false;
-        triggerWalkEvent();
-        return true;
-      case Keys.S:
-        entity.getEvents().trigger("grappleDescendStop");
-        keysHeld[DOWN] = false;
-        triggerWalkEvent();
-        return true;
-      case Keys.DOWN:
-        keysHeld[DOWN] = false;
-        triggerWalkEvent();
-        return true;
-      case Keys.SHIFT_LEFT, Keys.SHIFT_RIGHT:
-        sprintHeld = false;
-        triggerSprintEvent();
-        return true;
       case Keys.E:
         attackHeld = false;
         return true;
@@ -236,6 +194,76 @@ public class KeyboardPlayerInputComponent extends InputComponent {
       default:
         return false;
     }
+  }
+
+  private boolean handleMovementKey(int keycode, boolean pressed) {
+    switch (keycode) {
+      case Keys.A, Keys.LEFT, Keys.D, Keys.RIGHT, Keys.W, Keys.S, Keys.SHIFT_LEFT, Keys.SHIFT_RIGHT:
+        break;
+      default:
+        return false;
+    }
+    if (pressed) {
+      heldKeys.add(keycode);
+    } else {
+      heldKeys.remove(keycode);
+    }
+    keysHeld[LEFT] = heldKeys.contains(Keys.A) || heldKeys.contains(Keys.LEFT);
+    keysHeld[RIGHT] = heldKeys.contains(Keys.D) || heldKeys.contains(Keys.RIGHT);
+    keysHeld[UP] = heldKeys.contains(Keys.W);
+    keysHeld[DOWN] = heldKeys.contains(Keys.S);
+    sprintHeld = heldKeys.contains(Keys.SHIFT_LEFT) || heldKeys.contains(Keys.SHIFT_RIGHT);
+    if (!isPaused()) {
+      triggerMovementKey(keycode, pressed);
+    } else {
+      inputSyncPending = true;
+      if (!pressed) {
+        stopGrappleMovement(keycode);
+      }
+    }
+    return true;
+  }
+
+  private void triggerMovementKey(int keycode, boolean pressed) {
+    if (keycode == Keys.SHIFT_LEFT || keycode == Keys.SHIFT_RIGHT) {
+      triggerSprintEvent();
+      return;
+    }
+    if (keycode == Keys.W) {
+      entity.getEvents().trigger(pressed ? "grappleClimbStart" : "grappleClimbStop");
+    } else if (keycode == Keys.S) {
+      entity.getEvents().trigger(pressed ? "grappleDescendStart" : "grappleDescendStop");
+      if (pressed) {
+        entity.getEvents().trigger("updateLedgeDrop", true);
+      }
+    }
+    triggerWalkEvent();
+  }
+
+  private void stopGrappleMovement(int keycode) {
+    if (keycode == Keys.W) {
+      entity.getEvents().trigger("grappleClimbStop");
+    } else if (keycode == Keys.S) {
+      entity.getEvents().trigger("grappleDescendStop");
+    }
+  }
+
+  private boolean isPaused() {
+    return ServiceLocator.getEntityService().getPaused();
+  }
+
+  private void resetHeldInput() {
+    inputSyncPending = false;
+    heldKeys.clear();
+    Arrays.fill(keysHeld, false);
+    sprintHeld = false;
+    attackHeld = false;
+    rightMouseHeld = false;
+  }
+
+  private void setDead(boolean dead) {
+    this.dead = dead;
+    resetHeldInput();
   }
 
   public void toggleCheats() {
@@ -254,11 +282,11 @@ public class KeyboardPlayerInputComponent extends InputComponent {
     if (isShopOpen()) {
       return true;
     }
-    if (dead || isArrowWheelOpen()) {
+    if (dead || isArrowWheelOpen() || isPaused()) {
       return false;
     }
     if (button == Buttons.LEFT) {
-      if (rightMouseHeld || ServiceLocator.getEntityService().getPaused()) {
+      if (rightMouseHeld) {
         return false;
       }
       entity.getEvents().trigger("meleeStart");
@@ -302,7 +330,7 @@ public class KeyboardPlayerInputComponent extends InputComponent {
     if (button == Buttons.RIGHT) {
       // Clear even if the shop is open. The overlay may still deliver this event, and swallowing
       // it without cancelling leaves the bow stuck charging after the shop closes.
-      clearHeldShootButton(isShopOpen());
+      clearHeldShootButton(isShopOpen() || isPaused());
       return true;
     }
 
@@ -339,10 +367,9 @@ public class KeyboardPlayerInputComponent extends InputComponent {
   }
 
   private void releaseHeldGameplayInput() {
-    keysHeld[LEFT] = false;
-    keysHeld[RIGHT] = false;
-    sprintHeld = false;
-    attackHeld = false;
+    resetHeldInput();
+    stopGrappleMovement(Keys.W);
+    stopGrappleMovement(Keys.S);
     triggerWalkEvent();
     entity.getEvents().trigger("sprintStop");
     // Opening a UI can steal the mouse-up, so drop the charge immediately instead of firing.
@@ -453,8 +480,30 @@ public class KeyboardPlayerInputComponent extends InputComponent {
     }
   }
 
+  @Override
+  public void earlyUpdate() {
+    if (inputSyncPending && !isPaused()) {
+      unpause();
+    }
+  }
+
   public void unpause() {
+    if (dead) {
+      return;
+    }
+    if (isPaused()) {
+      // Screens change the pause state after the input callback. Apply on the next game frame.
+      inputSyncPending = true;
+      return;
+    }
+    inputSyncPending = false;
     triggerWalkEvent();
     triggerSprintEvent();
+    if (keysHeld[UP]) {
+      entity.getEvents().trigger("grappleClimbStart");
+    }
+    if (keysHeld[DOWN]) {
+      entity.getEvents().trigger("grappleDescendStart");
+    }
   }
 }

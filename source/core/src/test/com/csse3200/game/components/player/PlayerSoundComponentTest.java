@@ -5,12 +5,14 @@ import static org.mockito.ArgumentMatchers.anyFloat;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.utils.Timer;
 import com.csse3200.game.components.item.ItemType;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.extensions.GameExtension;
@@ -101,5 +103,29 @@ class PlayerSoundComponentTest {
 
     verify(resources).getAsset("sounds/itemSwitch.wav", Sound.class);
     verify(sound).play(0.15f);
+  }
+
+  @Test
+  void speedPotionSchedulesTheSecondGulpAfterTheFirst() {
+    try (var timer = mockStatic(Timer.class)) {
+      player.getEvents().trigger("itemUsed", ItemType.SpeedPotion);
+      verify(resources).getAsset("sounds/Drink_01.wav", Sound.class);
+      verify(resources, never()).getAsset("sounds/Drink_02.wav", Sound.class);
+      ArgumentCaptor<Timer.Task> task = ArgumentCaptor.forClass(Timer.Task.class);
+      timer.verify(() -> Timer.schedule(task.capture(), eq(0.45f)));
+      task.getValue().run();
+      verify(resources).getAsset("sounds/Drink_02.wav", Sound.class);
+      verify(sound, times(2)).play(0.9f);
+    }
+  }
+
+  @Test
+  void missingClockDoesNotPlayRopeAudioOrSpendItsCooldown() {
+    ServiceLocator.registerTimeSource(null);
+    player.getEvents().trigger("grappleSwing", 1f);
+    verify(resources, never()).getAsset("sounds/rope_swing.wav", Sound.class);
+    ServiceLocator.registerTimeSource(time);
+    player.getEvents().trigger("grappleSwing", 1f);
+    verify(resources).getAsset("sounds/rope_swing.wav", Sound.class);
   }
 }

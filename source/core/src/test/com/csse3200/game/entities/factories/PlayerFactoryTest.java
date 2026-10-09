@@ -53,7 +53,8 @@ class PlayerFactoryTest {
     ServiceLocator.registerPhysicsService(physics);
 
     LightingEngine lightingEngine = mock(LightingEngine.class);
-    when(lightingEngine.getRayHandler()).thenReturn(mock(box2dLight.RayHandler.class));
+    box2dLight.RayHandler rayHandler = mock(box2dLight.RayHandler.class);
+    when(lightingEngine.getRayHandler()).thenReturn(rayHandler);
     LightingService lightingService = mock(LightingService.class);
     when(lightingService.getEngine()).thenReturn(lightingEngine);
     ServiceLocator.registerLightingService(lightingService);
@@ -194,5 +195,26 @@ class PlayerFactoryTest {
   @Test
   void giveStartingLoadoutIgnoresNullPlayer() {
     assertDoesNotThrow(() -> PlayerFactory.giveStartingLoadout(null));
+  }
+
+  @Test
+  void loadoutSupportsPlayersWithoutInventoryOrDictionary() {
+    Entity noInventory = new Entity();
+    assertDoesNotThrow(() -> PlayerFactory.giveStartingLoadout(noInventory));
+    InventoryComponent inventory = new InventoryComponent(0);
+    Entity noDictionary = new Entity().addComponent(inventory);
+    PlayerFactory.giveStartingLoadout(noDictionary);
+    assertEquals(1, inventory.getItemCount(ItemType.ROPE_ARROW));
+  }
+
+  @Test
+  void factoriesRejectReflectiveInstantiation() throws Exception {
+    for (Class<?> utility : new Class<?>[] {PlayerFactory.class, ProjectileFactory.class}) {
+      var constructor = utility.getDeclaredConstructor();
+      constructor.setAccessible(true);
+      var exception =
+          assertThrows(java.lang.reflect.InvocationTargetException.class, constructor::newInstance);
+      assertInstanceOf(IllegalStateException.class, exception.getCause());
+    }
   }
 }
