@@ -1,8 +1,10 @@
 package com.csse3200.game.components.projectile;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
 
 import com.badlogic.gdx.math.MathUtils;
@@ -301,5 +303,18 @@ class ArrowProjectileComponentTest {
             "collisionStart",
             arrow.getComponent(HitboxComponent.class).getFixture(),
             target.getComponent(HitboxComponent.class).getFixture());
+  }
+
+  @Test
+  void shouldSkipMotionWhenPhysicsBodyIsUnavailable() {
+    PhysicsComponent physics = spy(new PhysicsComponent());
+    ArrowProjectileComponent projectile = new ArrowProjectileComponent(Vector2.X, 10f, 15f);
+    Entity arrow = new Entity().addComponent(physics).addComponent(projectile);
+    arrow.create();
+    doReturn(null).when(physics).getBody();
+
+    assertDoesNotThrow(projectile::update);
+    assertFalse(projectile.isSpent());
+    assertEquals(arrow.getCenterPosition(), projectile.getWorldCenter());
   }
 }

@@ -87,7 +87,7 @@ public class GrappleComponent extends Component {
   @Override
   public void create() {
     physicsComponent = entity.getComponent(PhysicsComponent.class);
-    entity.getEvents().addListener("grappleFire", (Vector2 direction) -> fire(direction));
+    entity.getEvents().<Vector2>addListener("grappleFire", this::fire);
     entity.getEvents().addListener("grappleRelease", this::release);
     entity.getEvents().addListener("grappleSwing", this::swing);
     entity.getEvents().addListener("grappleClimbStart", this::startClimbing);
@@ -303,7 +303,8 @@ public class GrappleComponent extends Component {
     preSwingLinearDamping = physicsComponent.getBody().getLinearDamping();
     originalAnchorBody = anchorBody;
     originalAnchorLocal = anchorBody.getLocalPoint(point).cpy();
-    Vector2 pivot = activeContact() == null ? point : activeContact().getWorldPoint();
+    RopeContact contact = activeContact();
+    Vector2 pivot = contact == null ? point : contact.getWorldPoint();
     totalRopeLength =
         fixedPathLength(point, ropeContacts)
             + pivot.dst(physicsComponent.getBody().getWorldCenter());
@@ -942,10 +943,12 @@ public class GrappleComponent extends Component {
    */
   public List<Vector2> getRopePath() {
     List<Vector2> points = new ArrayList<>(3);
-    Vector2 anchor =
-        pendingArrow != null
-            ? arrowPoint()
-            : pendingAnchorPoint != null ? pendingAnchorPoint.cpy() : getOriginalAnchorPoint();
+    Vector2 anchor;
+    if (pendingArrow != null) {
+      anchor = arrowPoint();
+    } else {
+      anchor = pendingAnchorPoint != null ? pendingAnchorPoint.cpy() : getOriginalAnchorPoint();
+    }
     if (anchor == null) {
       return points;
     }

@@ -7,10 +7,12 @@ public class FireArr extends Arrow {
     super(ItemType.FIRE_ARROW, quantity);
   }
 
+  @Override
   public float getBurnDamagePerSecond() {
     return getItemType().getBurnDamagePerSecond();
   }
 
+  @Override
   public float getBurnTime() {
     return getItemType().getBurnTime();
   }

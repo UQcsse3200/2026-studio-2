@@ -22,7 +22,7 @@ public final class BowCharge {
    * @return the multiplier to apply to the arrow's base launch speed
    */
   public static float speedMultiplier(long elapsedMs) {
-    float elapsedSeconds = Math.max(0f, Math.min(MAX_CHARGE_SECONDS, elapsedMs / 1000f));
+    float elapsedSeconds = Math.clamp(elapsedMs / 1000f, 0f, MAX_CHARGE_SECONDS);
     float chargeFraction = elapsedSeconds / MAX_CHARGE_SECONDS;
     return MIN_SPEED_FACTOR + (MAX_SPEED_FACTOR - MIN_SPEED_FACTOR) * chargeFraction;
   }
