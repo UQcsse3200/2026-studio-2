@@ -482,7 +482,7 @@ public class KeyboardPlayerInputComponent extends InputComponent {
 
   @Override
   public void earlyUpdate() {
-    if (inputSyncPending && !dead && !isPaused()) {
+    if (inputSyncPending && !isPaused()) {
       unpause();
     }
   }

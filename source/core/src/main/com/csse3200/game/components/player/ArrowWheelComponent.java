@@ -119,7 +119,7 @@ public class ArrowWheelComponent extends Component {
       return true;
     }
     ItemType arrowItem = arrowItemFor(type);
-    return arrowItem != null && inventory.hasItem(arrowItem);
+    return inventory.hasItem(arrowItem);
   }
 
   /** Only types displayed on the wheel may be selected or unlocked. */
@@ -223,12 +223,12 @@ public class ArrowWheelComponent extends Component {
       return;
     }
     ItemType arrowItem = arrowItemFor(type);
-    for (int i = 0; i < inventory.getSlotCount(); i++) {
-      if (inventory.getSlot(i).getItemType() == arrowItem) {
-        inventory.selectSlot(i);
-        return;
-      }
+    // Both callers have just confirmed availability, so this inventory contains a matching slot.
+    int slotIndex = 0;
+    while (inventory.getSlot(slotIndex).getItemType() != arrowItem) {
+      slotIndex++;
     }
+    inventory.selectSlot(slotIndex);
   }
 
   /** Returns the inventory item that fires as this arrow type, or null if there isn't one. */

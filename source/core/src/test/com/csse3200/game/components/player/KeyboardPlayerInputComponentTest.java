@@ -331,6 +331,11 @@ class KeyboardPlayerInputComponentTest {
     component.keyDown(Keys.D);
     component.keyUp(Keys.D);
     verifyNoMoreInteractions(body);
+
+    component.toggleCheats();
+    component.keyDown(Keys.W);
+    component.keyDown(Keys.S);
+    verifyNoMoreInteractions(body);
   }
 
   @Test
@@ -587,5 +592,29 @@ class KeyboardPlayerInputComponentTest {
     assertFalse(component.touchDown(4, 2, 0, Buttons.LEFT));
 
     assertEquals(0, swings.get());
+  }
+
+  @Test
+  void shouldConsumeMouseReleaseAfterDeathWhileShopStillOwnsInput() {
+    ServiceLocator.registerInputService(mock(InputService.class));
+    ServiceLocator.registerEntityService(new EntityService());
+    KeyboardPlayerInputComponent component = new KeyboardPlayerInputComponent();
+    PlayerInteractionComponent interaction = new PlayerInteractionComponent();
+    Entity player =
+        new Entity()
+            .addComponent(component)
+            .addComponent(new InventoryComponent(0))
+            .addComponent(interaction);
+    player.create();
+    Entity shop = new Entity().addComponent(new ShopNpcComponent());
+    ServiceLocator.getEntityService().register(shop);
+    assertTrue(interaction.interact());
+    player.getEvents().trigger("death");
+    AtomicInteger shots = new AtomicInteger();
+    player.getEvents().addListener("stopShoot", shots::incrementAndGet);
+    assertTrue(component.touchUp(1, 1, 0, Buttons.RIGHT));
+    assertTrue(component.touchUp(1, 1, 0, Buttons.LEFT));
+    assertEquals(0, shots.get());
+    assertFalse(component.isRightMouseHeld());
   }
 }
