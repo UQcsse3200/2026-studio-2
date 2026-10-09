@@ -74,6 +74,9 @@ class GrappleHoldPoseTest {
       renderer.dispose();
       renderer.dispose();
       verify(texture).dispose();
+      clearInvocations(batch);
+      renderer.render(batch);
+      verifyNoInteractions(batch);
     }
   }
 
@@ -139,6 +142,55 @@ class GrappleHoldPoseTest {
       renderer.update();
       renderer.render(batch);
       verify(controller).refreshAnimation();
+      verifyNoInteractions(batch);
+      assertEquals(1, textures.constructed().size());
+    }
+  }
+
+  @Test
+  void missingFilesOrTexturePreventsDrawing() {
+    Files files = Gdx.files;
+    Gdx.files = null;
+    renderer.create();
+    renderer.update();
+    renderer.render(batch);
+    Gdx.files = files;
+    when(files.internal("images/player/player_rope_hold.png").exists()).thenReturn(false);
+    renderer.create();
+    renderer.update();
+    renderer.render(batch);
+    verifyNoInteractions(batch);
+  }
+
+  @Test
+  void missingGrappleOrAnimatorPreventsDrawing() {
+    try (var textures = mockConstruction(Texture.class)) {
+      GrappleHoldRenderComponent noGrapple = new GrappleHoldRenderComponent();
+      new Entity().addComponent(animator).addComponent(noGrapple);
+      noGrapple.create();
+      noGrapple.update();
+      noGrapple.render(batch);
+      GrappleHoldRenderComponent noAnimator = new GrappleHoldRenderComponent();
+      new Entity().addComponent(grapple).addComponent(noAnimator);
+      noAnimator.create();
+      noAnimator.update();
+      noAnimator.render(batch);
+      verifyNoInteractions(batch);
+      assertEquals(2, textures.constructed().size());
+    }
+  }
+
+  @Test
+  void ropePoseCanDetachWithoutAnAnimationController() {
+    GrappleHoldRenderComponent noController = new GrappleHoldRenderComponent();
+    new Entity().addComponent(grapple).addComponent(animator).addComponent(noController);
+    try (var textures = mockConstruction(Texture.class)) {
+      noController.create();
+      noController.update();
+      verify(animator).stopAnimation();
+      when(grapple.isAttached()).thenReturn(false);
+      noController.update();
+      noController.render(batch);
       verifyNoInteractions(batch);
       assertEquals(1, textures.constructed().size());
     }
