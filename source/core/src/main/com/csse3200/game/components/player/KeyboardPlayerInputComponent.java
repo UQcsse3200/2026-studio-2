@@ -28,6 +28,7 @@ public class KeyboardPlayerInputComponent extends InputComponent {
   private final boolean[] keysHeld = new boolean[4];
   private final Set<Integer> heldKeys = new HashSet<>();
   private boolean sprintHeld;
+  private boolean inputSyncPending;
   private CameraComponent cameraComponent;
   private boolean attackHeld;
   private boolean dead;
@@ -76,7 +77,10 @@ public class KeyboardPlayerInputComponent extends InputComponent {
     if (dead) {
       return false;
     }
-    if (isShopOpen() && keycode != Keys.F) {
+    if (isShopOpen()) {
+      if (keycode == Keys.F) {
+        entity.getEvents().trigger("interact");
+      }
       return true;
     }
     if (handleMovementKey(keycode, true)) {
@@ -211,8 +215,11 @@ public class KeyboardPlayerInputComponent extends InputComponent {
     sprintHeld = heldKeys.contains(Keys.SHIFT_LEFT) || heldKeys.contains(Keys.SHIFT_RIGHT);
     if (!isPaused()) {
       triggerMovementKey(keycode, pressed);
-    } else if (!pressed) {
-      stopGrappleMovement(keycode);
+    } else {
+      inputSyncPending = true;
+      if (!pressed) {
+        stopGrappleMovement(keycode);
+      }
     }
     return true;
   }
@@ -246,6 +253,7 @@ public class KeyboardPlayerInputComponent extends InputComponent {
   }
 
   private void resetHeldInput() {
+    inputSyncPending = false;
     heldKeys.clear();
     Arrays.fill(keysHeld, false);
     sprintHeld = false;
@@ -472,10 +480,23 @@ public class KeyboardPlayerInputComponent extends InputComponent {
     }
   }
 
+  @Override
+  public void earlyUpdate() {
+    if (inputSyncPending && !dead && !isPaused()) {
+      unpause();
+    }
+  }
+
   public void unpause() {
-    if (dead || isPaused()) {
+    if (dead) {
       return;
     }
+    if (isPaused()) {
+      // Screens change the pause state after the input callback. Apply on the next game frame.
+      inputSyncPending = true;
+      return;
+    }
+    inputSyncPending = false;
     triggerWalkEvent();
     triggerSprintEvent();
     if (keysHeld[UP]) {

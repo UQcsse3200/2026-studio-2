@@ -19,6 +19,8 @@ public class ArrowWheelComponent extends Component {
   private final Set<ArrowType> available = EnumSet.allOf(ArrowType.class);
 
   private InventoryComponent inventory;
+  private ItemType previousInventorySelection;
+  private boolean selectedArrowDepleted;
   private boolean bowEquipped = true;
   private boolean open = false;
   private ArrowType highlighted;
@@ -29,6 +31,7 @@ public class ArrowWheelComponent extends Component {
   @Override
   public void create() {
     inventory = entity.getComponent(InventoryComponent.class);
+    previousInventorySelection = inventory == null ? null : inventory.getSelectedItem();
     entity.getEvents().addListener("openArrowWheel", this::open);
     entity.getEvents().addListener("closeArrowWheel", this::close);
     entity.getEvents().addListener("arrowWheelPointerMoved", this::highlightFromPointer);
@@ -36,7 +39,7 @@ public class ArrowWheelComponent extends Component {
     entity.getEvents().addListener("inventorySelectionChanged", this::syncInventorySelection);
     // Quantity changes may require selecting another slot. Do this on a different event so
     // selectSlot never republishes inventorySelectionChanged inside its own dispatch.
-    entity.getEvents().addListener("inventoryChanged", this::selectNextAvailable);
+    entity.getEvents().addListener("inventoryChanged", this::handleInventoryChanged);
   }
 
   /** Mirrors hotbar arrow choices without changing a deliberately selected potion or rope. */
@@ -44,7 +47,14 @@ public class ArrowWheelComponent extends Component {
     if (inventory == null) {
       return;
     }
+    if (previousInventorySelection != null
+        && previousInventorySelection.isArrow()
+        && isWheelType(previousInventorySelection.toArrowType())
+        && !inventory.hasItem(previousInventorySelection)) {
+      selectedArrowDepleted = true;
+    }
     ItemType item = inventory.getSelectedItem();
+    previousInventorySelection = item;
     if (item == null || !item.isArrow()) {
       return;
     }
@@ -52,6 +62,13 @@ public class ArrowWheelComponent extends Component {
     if (isAvailable(type) && selected != type) {
       selected = type;
       entity.getEvents().trigger("arrowSelected", selected);
+    }
+  }
+
+  private void handleInventoryChanged() {
+    if (selectedArrowDepleted) {
+      selectedArrowDepleted = false;
+      selectNextAvailable();
     }
   }
 

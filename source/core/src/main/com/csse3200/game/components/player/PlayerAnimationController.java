@@ -448,7 +448,7 @@ public class PlayerAnimationController extends Component {
   }
 
   private void updateAnimation() {
-    if (dead || instrumentActive || jumping || landing || isBusyWithHigherPriorityAnimation()) {
+    if (isPlayingActionAnimation()) {
       return;
     }
     String desired = "idle";
@@ -461,6 +461,11 @@ public class PlayerAnimationController extends Component {
     if (!desired.equals(animator.getCurrentAnimation())) {
       animator.startAnimation(desired);
     }
+  }
+
+  /** Whether an action clip must keep playing instead of being hidden by the rope pose. */
+  public boolean isPlayingActionAnimation() {
+    return dead || instrumentActive || jumping || landing || isBusyWithHigherPriorityAnimation();
   }
 
   /** Re-picks the idle, walk or sprint animation, e.g. after the rope pose stops drawing. */

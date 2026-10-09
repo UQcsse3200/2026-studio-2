@@ -3,9 +3,14 @@ package com.csse3200.game.rendering.item;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
+import com.badlogic.gdx.Files;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation.PlayMode;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -48,7 +53,10 @@ class GrappleHoldRenderComponentTest {
     ServiceLocator.registerTimeSource(time);
 
     TextureAtlas atlas = mock(TextureAtlas.class);
-    for (String name : new String[] {"idle", "walk", "jump_fall"}) {
+    for (String name :
+        new String[] {
+          "idle", "walk", "jump_fall", "bow_draw", "bow_hold", "bow_shoot", "jump_land"
+        }) {
       Array<AtlasRegion> regions = new Array<>(1);
       regions.add(mock(AtlasRegion.class));
       when(atlas.findRegions(name)).thenReturn(regions);
@@ -57,6 +65,10 @@ class GrappleHoldRenderComponentTest {
     animator.addAnimation("idle", 1f, PlayMode.LOOP);
     animator.addAnimation("walk", 1f, PlayMode.LOOP);
     animator.addAnimation("jump_fall", 1f, PlayMode.LOOP);
+    animator.addAnimation("bow_draw", 1f, PlayMode.NORMAL);
+    animator.addAnimation("bow_hold", 1f, PlayMode.LOOP);
+    animator.addAnimation("bow_shoot", 1f, PlayMode.NORMAL);
+    animator.addAnimation("jump_land", 1f, PlayMode.NORMAL);
 
     grapple = new GrappleComponent();
     player =
@@ -144,5 +156,57 @@ class GrappleHoldRenderComponentTest {
     player.getComponent(GrappleHoldRenderComponent.class).render(batch);
 
     verifyNoInteractions(batch);
+  }
+
+  @Test
+  void shouldFinishTheGrappleShotBeforeHidingItsAnimationAndRestoreOnDetach() {
+    assertActionCompletesBeforePose(
+        () -> {
+          player.getEvents().trigger("grappleChargeStart", Vector2.X);
+          player.getEvents().trigger("grappleChargeFire", Vector2.X);
+        },
+        "bow_shoot");
+  }
+
+  @Test
+  void shouldFinishLandingWhenTheRopeAttachesDuringRecovery() {
+    assertActionCompletesBeforePose(
+        () -> {
+          player.getEvents().trigger("fallStart");
+          player.getEvents().trigger("landed");
+        },
+        "jump_land");
+  }
+
+  private void assertActionCompletesBeforePose(Runnable startAction, String animation) {
+    Files previousFiles = Gdx.files;
+    Gdx.files = mock(Files.class);
+    FileHandle file = mock(FileHandle.class);
+    when(file.exists()).thenReturn(true);
+    when(Gdx.files.internal("images/player/player_rope_hold.png")).thenReturn(file);
+    try (var textures = mockConstruction(Texture.class)) {
+      GrappleHoldRenderComponent hold = player.getComponent(GrappleHoldRenderComponent.class);
+      AnimationRenderComponent animator = player.getComponent(AnimationRenderComponent.class);
+      PlayerAnimationController controller = player.getComponent(PlayerAnimationController.class);
+      hold.create();
+      startAction.run();
+      attachRope();
+      hold.update();
+      assertEquals(animation, animator.getCurrentAnimation());
+      when(ServiceLocator.getTimeSource().getDeltaTime()).thenReturn(1f);
+      animator.render(mock(SpriteBatch.class));
+      controller.update();
+      assertEquals("idle", animator.getCurrentAnimation());
+      hold.update();
+      org.junit.jupiter.api.Assertions.assertNull(animator.getCurrentAnimation());
+      grapple.release();
+      hold.update();
+      assertEquals("idle", animator.getCurrentAnimation());
+      player.getEvents().trigger("walk", Vector2.X);
+      assertEquals("walk", animator.getCurrentAnimation());
+      assertEquals(1, textures.constructed().size());
+    } finally {
+      Gdx.files = previousFiles;
+    }
   }
 }

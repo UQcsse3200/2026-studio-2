@@ -307,4 +307,34 @@ class PlayerInputStateTest {
     input.unpause();
     assertEquals(List.of("start", "stop"), climbing);
   }
+
+  @Test
+  void shouldApplyReleasedKeysWhenPauseClosesAfterTheEscapeCallback() {
+    input.keyDown(Keys.D);
+    input.keyDown(Keys.SHIFT_LEFT);
+    when(ServiceLocator.getEntityService().getPaused()).thenReturn(true);
+    input.keyUp(Keys.D);
+    input.keyUp(Keys.SHIFT_LEFT);
+    input.keyDown(Keys.ESCAPE);
+    events.clear();
+    directions.clear();
+    // Screens close the pause overlay after rendering, after the input callback has returned.
+    when(ServiceLocator.getEntityService().getPaused()).thenReturn(false);
+    input.earlyUpdate();
+    assertTrue(directions.isEmpty());
+    assertEquals(List.of("walkStop", "sprintStop"), events);
+    events.clear();
+    input.earlyUpdate();
+    assertTrue(events.isEmpty(), "synchronize only once after resume");
+  }
+
+  @Test
+  void shouldApplyMovementPressedWhilePausedOnTheFirstResumedFrame() {
+    when(ServiceLocator.getEntityService().getPaused()).thenReturn(true);
+    input.keyDown(Keys.D);
+    assertTrue(directions.isEmpty());
+    when(ServiceLocator.getEntityService().getPaused()).thenReturn(false);
+    input.earlyUpdate();
+    assertEquals(List.of(new Vector2(1f, 0f)), directions);
+  }
 }
