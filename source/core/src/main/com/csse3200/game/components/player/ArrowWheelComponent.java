@@ -16,6 +16,7 @@ import java.util.Set;
  * and consumes ammo. A type the player has no arrows for cannot be chosen.
  */
 public class ArrowWheelComponent extends Component {
+  private static final String ARROW_SELECTED = "arrowSelected";
   private final Set<ArrowType> available = EnumSet.allOf(ArrowType.class);
 
   private InventoryComponent inventory;
@@ -61,7 +62,7 @@ public class ArrowWheelComponent extends Component {
     ArrowType type = item.toArrowType();
     if (isAvailable(type) && selected != type) {
       selected = type;
-      entity.getEvents().trigger("arrowSelected", selected);
+      entity.getEvents().trigger(ARROW_SELECTED, selected);
     }
   }
 
@@ -186,7 +187,7 @@ public class ArrowWheelComponent extends Component {
 
     selected = candidate;
     selectInventorySlotFor(selected);
-    entity.getEvents().trigger("arrowSelected", selected);
+    entity.getEvents().trigger(ARROW_SELECTED, selected);
     return true;
   }
 
@@ -209,7 +210,7 @@ public class ArrowWheelComponent extends Component {
       if (isAvailable(type)) {
         selected = type;
         selectInventorySlotFor(selected);
-        entity.getEvents().trigger("arrowSelected", selected);
+        entity.getEvents().trigger(ARROW_SELECTED, selected);
         return selected;
       }
     }

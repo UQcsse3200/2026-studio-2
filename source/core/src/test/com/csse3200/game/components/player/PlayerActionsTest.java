@@ -562,7 +562,7 @@ class PlayerActionsTest {
     PlayerActions actions = player.getComponent(PlayerActions.class);
     Body body = player.getComponent(PhysicsComponent.class).getBody();
     java.util.List<Float> swings = new java.util.ArrayList<>();
-    player.getEvents().addListener("grappleSwing", (Float direction) -> swings.add(direction));
+    player.getEvents().<Float>addListener("grappleSwing", swings::add);
     actions.walk(new Vector2(-1f, 0f));
     actions.update();
     assertEquals(java.util.List.of(-1f), swings);

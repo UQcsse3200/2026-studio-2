@@ -6,8 +6,10 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockConstruction;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
 import com.badlogic.gdx.graphics.Texture;
@@ -454,9 +456,9 @@ class PlayerInteractionComponentTest {
 
   @Test
   void shouldLeaveWorldAndInventoryUnchangedWhenRemovalFails() {
-    InventoryComponent inventory = org.mockito.Mockito.spy(new InventoryComponent(0));
+    InventoryComponent inventory = spy(new InventoryComponent(0));
     inventory.addItem(ItemType.FIRE_ARROW, 3);
-    org.mockito.Mockito.doReturn(false).when(inventory).removeItem(ItemType.FIRE_ARROW, 3);
+    doReturn(false).when(inventory).removeItem(ItemType.FIRE_ARROW, 3);
     Entity player = createPlayer(inventory);
     PlayerInteractionComponent interaction = player.getComponent(PlayerInteractionComponent.class);
     int[] failures = {0};

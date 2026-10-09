@@ -147,7 +147,7 @@ public class MeleeComponent extends Component {
 
     for (int i = 0; i < RAY_COUNT; i++) {
       float angle = -half + ARC_DEGREES * i / (RAY_COUNT - 1);
-      Vector2 end = new Vector2((float) facing, 0f).rotateDeg(angle).scl(RANGE).add(origin);
+      Vector2 end = new Vector2(facing, 0f).rotateDeg(angle).scl(RANGE).add(origin);
 
       RaycastHit wall = new RaycastHit();
       if (physics.raycast(origin, end, PhysicsLayer.SOLID, wall) && wall.point != null) {
