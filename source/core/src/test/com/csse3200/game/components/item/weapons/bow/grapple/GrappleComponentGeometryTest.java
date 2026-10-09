@@ -24,7 +24,7 @@ class GrappleComponentGeometryTest {
   void shouldDiscoverPlatformEdgesFromAnchorTowardPlayer() {
     World world = new World(Vector2.Zero, true);
     try {
-      Fixture wall = rectangle(world, new Vector2(5f, 0f), 2f, 4f, 0f);
+      rectangle(world, new Vector2(5f, 0f), 2f, 4f, 0f);
 
       List<GrappleComponent.RopeContact> contacts =
           GrappleComponent.traceContacts(world, new Vector2(10f, 3f), new Vector2(0f, 0f));
@@ -44,7 +44,7 @@ class GrappleComponentGeometryTest {
   void shouldTransformRotatedFixtureVerticesIntoWorldSpace() {
     World world = new World(Vector2.Zero, true);
     try {
-      Fixture wall = rectangle(world, new Vector2(3f, 4f), 2f, 4f, 90f);
+      rectangle(world, new Vector2(3f, 4f), 2f, 4f, 90f);
 
       List<GrappleComponent.RopeContact> contacts =
           GrappleComponent.traceContacts(world, new Vector2(8f, 8f), new Vector2(-2f, 0f));

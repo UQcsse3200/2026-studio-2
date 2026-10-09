@@ -1,6 +1,5 @@
 package com.csse3200.game.rendering.item;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import com.badlogic.gdx.graphics.Color;
