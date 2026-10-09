@@ -340,9 +340,7 @@ public class GrappleComponent extends Component {
     pendingArrow = null;
     if (arrow != null) {
       GrappleArrowComponent grappleArrow = arrow.getComponent(GrappleArrowComponent.class);
-      if (grappleArrow != null) {
-        grappleArrow.cancel();
-      }
+      grappleArrow.cancel();
       if (ServiceLocator.getEntityService() != null) {
         ServiceLocator.getEntityService().scheduleRemoval(arrow);
       }
@@ -381,10 +379,6 @@ public class GrappleComponent extends Component {
   private void updateRopeContact() {
     Vector2 player = physicsComponent.getBody().getWorldCenter();
     Vector2 anchor = getOriginalAnchorPoint();
-    if (anchor == null) {
-      return;
-    }
-
     World world = ServiceLocator.getPhysicsService().getPhysics().getWorld();
     RopeContact previousActive = activeContact();
     removeUnwrappedContacts(world, anchor, player);
@@ -614,9 +608,7 @@ public class GrappleComponent extends Component {
 
   private static Vector2 offsetFromCollider(Vector2 vertex, Vector2 centre) {
     Vector2 outward = vertex.cpy().sub(centre);
-    if (!outward.isZero()) {
-      vertex.mulAdd(outward.nor(), ROPE_RADIUS);
-    }
+    vertex.mulAdd(outward.nor(), ROPE_RADIUS);
     return vertex;
   }
 
@@ -705,10 +697,6 @@ public class GrappleComponent extends Component {
     }
 
     Vector2 anchor = getOriginalAnchorPoint();
-    if (anchor == null) {
-      return;
-    }
-
     float fixedLength = fixedPathLength(anchor, ropeContacts);
     float actualTotalLength = fixedLength + ropeJoint.getAnchorA().dst(ropeJoint.getAnchorB());
     float adjustment = CLIMB_SPEED * ServiceLocator.getTimeSource().getDeltaTime();
@@ -757,9 +745,7 @@ public class GrappleComponent extends Component {
       velocity.scl(Math.min(firstDistance, secondDistance));
     }
     float distance = velocity.len();
-    if (distance > 0f) {
-      velocity.scl(Math.min(CLIMB_SPEED / distance, 1f / dt));
-    }
+    velocity.scl(Math.min(CLIMB_SPEED / distance, 1f / dt));
     velocity.add(target.body().getLinearVelocityFromWorldPoint(clearancePoint));
     // Support the player's weight only while actively climbing around this corner.
     Vector2 impulse =
@@ -876,10 +862,6 @@ public class GrappleComponent extends Component {
     }
 
     Vector2 anchor = getOriginalAnchorPoint();
-    if (anchor == null) {
-      return;
-    }
-
     float fixedLength = fixedPathLength(anchor, ropeContacts);
     float actualTotalLength = fixedLength + ropeJoint.getAnchorA().dst(ropeJoint.getAnchorB());
     setTotalRopeLength(actualTotalLength, fixedLength);
@@ -933,7 +915,7 @@ public class GrappleComponent extends Component {
   }
 
   private Vector2 getOriginalAnchorPoint() {
-    return originalAnchorBody == null || originalAnchorLocal == null
+    return originalAnchorBody == null
         ? null
         : originalAnchorBody.getWorldPoint(originalAnchorLocal).cpy();
   }

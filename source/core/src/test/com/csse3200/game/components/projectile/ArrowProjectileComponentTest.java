@@ -316,5 +316,6 @@ class ArrowProjectileComponentTest {
     assertDoesNotThrow(projectile::update);
     assertFalse(projectile.isSpent());
     assertEquals(arrow.getCenterPosition(), projectile.getWorldCenter());
+    assertEquals(Vector2.X, projectile.getCurrentDirection());
   }
 }
