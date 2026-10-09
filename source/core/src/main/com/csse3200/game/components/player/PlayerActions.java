@@ -173,10 +173,6 @@ public class PlayerActions extends Component {
     if (jumpImpulseAt < 0) {
       return;
     }
-    if (dead) {
-      jumpImpulseAt = -1;
-      return;
-    }
     if (ServiceLocator.getTimeSource().getTime() >= jumpImpulseAt) {
       jumpImpulseAt = -1;
       Body body = physicsComponent.getBody();
@@ -207,7 +203,7 @@ public class PlayerActions extends Component {
     if (!isGrounded) {
       airborne = true;
       liftoffDeadline = -1;
-      if (!falling && !isGrappling() && !isDashing) {
+      if (!falling && !isDashing) {
         float verticalVelocity = physicsComponent.getBody().getLinearVelocity().y;
         if (verticalVelocity < -FALL_SPEED_THRESHOLD) {
           falling = true;

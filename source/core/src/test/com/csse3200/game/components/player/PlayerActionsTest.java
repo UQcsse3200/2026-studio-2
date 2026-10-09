@@ -1,6 +1,7 @@
 package com.csse3200.game.components.player;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -65,7 +66,7 @@ class PlayerActionsTest {
     createSurfaceUnderPlayer(PhysicsLayer.CHARACTER);
   }
 
-  private void createSurfaceUnderPlayer(short categoryBits) {
+  private Body createSurfaceUnderPlayer(short categoryBits) {
     BodyDef bodyDef = new BodyDef();
     bodyDef.type = BodyDef.BodyType.StaticBody;
     bodyDef.position.set(0.5f, -0.2f);
@@ -78,6 +79,7 @@ class PlayerActionsTest {
     fixtureDef.filter.categoryBits = categoryBits;
     ground.createFixture(fixtureDef);
     box.dispose();
+    return ground;
   }
 
   private AtomicInteger countEvent(Entity player, String event) {
@@ -434,5 +436,272 @@ class PlayerActionsTest {
     actions.walk(Vector2.X);
     player.update();
     assertEquals(walkingSpeed, body.getLinearVelocity().x, 0.001f);
+  }
+
+  @Test
+  void shouldKeepFacingWhenVerticalWalkInputArrivesAndDashInThatDirection() {
+    Entity player = createPlayer();
+    PlayerActions actions = player.getComponent(PlayerActions.class);
+    actions.walk(new Vector2(-1f, 0f));
+    actions.walk(Vector2.Y);
+    assertEquals(-1, actions.getFacingDirection());
+    actions.dash();
+    assertEquals(-14f, player.getComponent(PhysicsComponent.class).getBody().getLinearVelocity().x);
+  }
+
+  @Test
+  void shouldApplyAndExpireSpeedPotionWhileWalking() {
+    Entity player = createPlayer();
+    createGroundUnderPlayer();
+    player.update();
+    PlayerActions actions = player.getComponent(PlayerActions.class);
+    Body body = player.getComponent(PhysicsComponent.class).getBody();
+    assertFalse(actions.isSpeedPotionActive());
+    actions.walk(Vector2.X);
+    player.getEvents().trigger("speedPotionUsed", 0.5f, 1f);
+    assertEquals(7.5f, body.getLinearVelocity().x, 0.001f);
+    assertTrue(actions.isSpeedPotionActive());
+    when(gameTime.getTime()).thenReturn(999L);
+    player.update();
+    assertTrue(actions.isSpeedPotionActive());
+    when(gameTime.getTime()).thenReturn(1000L);
+    assertFalse(actions.isSpeedPotionActive());
+    player.update();
+    player.update();
+    assertEquals(5f, body.getLinearVelocity().x, 0.001f);
+    assertFalse(actions.isSpeedPotionActive());
+  }
+
+  @Test
+  void shouldRetainPotionMovementWhenTimeSourceIsTemporarilyUnavailable() {
+    Entity player = createPlayer();
+    createGroundUnderPlayer();
+    player.update();
+    PlayerActions actions = player.getComponent(PlayerActions.class);
+    actions.walk(Vector2.X);
+    player.getEvents().trigger("speedPotionUsed", 1f, 2f);
+    ServiceLocator.registerTimeSource(null);
+    assertFalse(actions.isSpeedPotionActive());
+    player.update();
+    assertEquals(10f, player.getComponent(PhysicsComponent.class).getBody().getLinearVelocity().x);
+    ServiceLocator.registerTimeSource(gameTime);
+    assertTrue(actions.isSpeedPotionActive());
+  }
+
+  @Test
+  void shouldNotRestartJumpWindupOrAllowAnotherJumpInAir() {
+    Entity player = createPlayer();
+    createGroundUnderPlayer();
+    player.update();
+    AtomicInteger jumps = countEvent(player, "jumpStart");
+    player.getEvents().trigger("jump");
+    when(gameTime.getTime()).thenReturn(80L);
+    player.getEvents().trigger("jump");
+    when(gameTime.getTime()).thenReturn(90L);
+    player.update();
+    assertEquals(41f, player.getComponent(PhysicsComponent.class).getBody().getLinearVelocity().y);
+    assertEquals(1, jumps.get());
+    player.setPosition(0f, 5f);
+    player.update();
+    player.getEvents().trigger("jump");
+    assertEquals(1, jumps.get());
+  }
+
+  @Test
+  void shouldIgnoreSprintPressAndReleaseAfterDeath() {
+    Entity player = createPlayer();
+    Body body = player.getComponent(PhysicsComponent.class).getBody();
+    player.getEvents().trigger("death");
+    player.getEvents().trigger("sprint");
+    player.getEvents().trigger("sprintStop");
+    assertEquals(0f, body.getLinearVelocity().x);
+    assertEquals(1f, body.getGravityScale());
+  }
+
+  @Test
+  void shouldNotExtendSprintReleaseGraceWhenReleaseRepeats() {
+    Entity player = createPlayer();
+    PlayerActions actions = player.getComponent(PlayerActions.class);
+    AtomicInteger ends = countEvent(player, "sprintEnd");
+    actions.stopSprinting();
+    assertEquals(0, ends.get());
+    actions.sprint();
+    actions.stopSprinting();
+    when(gameTime.getDeltaTime()).thenReturn(0.08f);
+    player.update();
+    actions.stopSprinting();
+    player.update();
+    assertEquals(1, ends.get());
+  }
+
+  private Entity createGrapplingPlayer() {
+    Entity player =
+        new Entity()
+            .addComponent(new PhysicsComponent())
+            .addComponent(new GrappleComponent())
+            .addComponent(new PlayerActions());
+    player.create();
+    return player;
+  }
+
+  private void attachRope(Entity player) {
+    BodyDef anchorDef = new BodyDef();
+    anchorDef.type = BodyDef.BodyType.StaticBody;
+    anchorDef.position.set(0f, 5f);
+    Body anchor = ServiceLocator.getPhysicsService().getPhysics().createBody(anchorDef);
+    GrappleComponent grapple = player.getComponent(GrappleComponent.class);
+    grapple.attachTo(anchor, new Vector2(0f, 5f));
+    grapple.update();
+    assertTrue(grapple.isAttached());
+  }
+
+  @Test
+  void shouldSendWalkDirectionToSwingAndLeaveMomentumWhenWalkingStops() {
+    Entity player = createGrapplingPlayer();
+    attachRope(player);
+    PlayerActions actions = player.getComponent(PlayerActions.class);
+    Body body = player.getComponent(PhysicsComponent.class).getBody();
+    java.util.List<Float> swings = new java.util.ArrayList<>();
+    player.getEvents().addListener("grappleSwing", (Float direction) -> swings.add(direction));
+    actions.walk(new Vector2(-1f, 0f));
+    actions.update();
+    assertEquals(java.util.List.of(-1f), swings);
+    body.setLinearVelocity(6f, 2f);
+    actions.stopWalking();
+    assertEquals(new Vector2(6f, 2f), body.getLinearVelocity());
+    actions.sprint();
+    actions.stopSprinting();
+    when(gameTime.getDeltaTime()).thenReturn(0.13f);
+    actions.update();
+    assertEquals(new Vector2(6f, 2f), body.getLinearVelocity());
+  }
+
+  @Test
+  void shouldRestoreGravityWhenJumpingOffRopeAttachedDuringDash() {
+    Entity player = createGrapplingPlayer();
+    PlayerActions actions = player.getComponent(PlayerActions.class);
+    Body body = player.getComponent(PhysicsComponent.class).getBody();
+    body.setGravityScale(1.4f);
+    actions.dash();
+    actions.stopWalking();
+    assertEquals(14f, body.getLinearVelocity().x);
+    attachRope(player);
+    actions.jump();
+    assertFalse(player.getComponent(GrappleComponent.class).isAttached());
+    assertEquals(1.4f, body.getGravityScale());
+    assertEquals(28.7f, body.getLinearVelocity().y, 0.001f);
+  }
+
+  @Test
+  void shouldSkipRecoverySteeringWhenRopeAttachesAsDashEnds() {
+    Entity player = createGrapplingPlayer();
+    PlayerActions actions = player.getComponent(PlayerActions.class);
+    actions.walk(Vector2.X);
+    actions.dash();
+    attachRope(player);
+    when(gameTime.getDeltaTime()).thenReturn(0.16f);
+    actions.update();
+    assertEquals(14f, player.getComponent(PhysicsComponent.class).getBody().getLinearVelocity().x);
+    assertEquals(1f, player.getComponent(PhysicsComponent.class).getBody().getGravityScale());
+  }
+
+  @Test
+  void shouldEndSprintWithoutBrakingAnActiveDash() {
+    Entity player = createPlayer();
+    PlayerActions actions = player.getComponent(PlayerActions.class);
+    actions.sprint();
+    actions.stopSprinting();
+    when(gameTime.getDeltaTime()).thenReturn(0.125f);
+    actions.update();
+    assertEquals(14f, player.getComponent(PhysicsComponent.class).getBody().getLinearVelocity().x);
+    assertEquals(0f, player.getComponent(PhysicsComponent.class).getBody().getGravityScale());
+  }
+
+  @Test
+  void shouldRefuseSecondAirDashEvenAfterCooldownUntilTouchdown() {
+    Entity player = createPlayer();
+    PlayerActions actions = player.getComponent(PlayerActions.class);
+    AtomicInteger dashes = countEvent(player, "airDashStart");
+    actions.dash();
+    when(gameTime.getDeltaTime()).thenReturn(1.1f);
+    actions.update();
+    actions.dash();
+    assertEquals(1, dashes.get());
+    createGroundUnderPlayer();
+    actions.update();
+    player.setPosition(0f, 5f);
+    actions.update();
+    actions.dash();
+    assertEquals(2, dashes.get());
+  }
+
+  @Test
+  void shouldWakeBodyOnlyWhenLedgeDropBegins() {
+    Entity player = createPlayer();
+    Body body = player.getComponent(PhysicsComponent.class).getBody();
+    body.setAwake(false);
+    player.getEvents().trigger("updateLedgeDrop", false);
+    assertFalse(body.isAwake());
+    player.getEvents().trigger("updateLedgeDrop", true);
+    assertTrue(body.isAwake());
+    assertTrue(player.getComponent(PlayerActions.class).droppingFromLedge);
+  }
+
+  @Test
+  void shouldUseNormalStoppingTractionForGroundWithoutAnEntityOrSlipperyComponent() {
+    Entity player = createPlayer();
+    Body floor = createSurfaceUnderPlayer(PhysicsLayer.GROUND);
+    BodyUserData data = new BodyUserData();
+    floor.setUserData(data);
+    player.update();
+    Body body = player.getComponent(PhysicsComponent.class).getBody();
+    body.setLinearVelocity(5f, 0f);
+    player.getEvents().trigger("walkStop");
+    assertEquals(0f, body.getLinearVelocity().x);
+    data.entity = new Entity();
+    player.update();
+    body.setLinearVelocity(5f, 0f);
+    player.getEvents().trigger("walkStop");
+    assertEquals(0f, body.getLinearVelocity().x);
+  }
+
+  @Test
+  void shouldApplySprintSpeedWhenDashIsUnavailableAndRestoreWalkAfterRelease() {
+    Entity player = createPlayer();
+    PlayerActions actions = player.getComponent(PlayerActions.class);
+    Body body = player.getComponent(PhysicsComponent.class).getBody();
+    actions.dash();
+    when(gameTime.getDeltaTime()).thenReturn(1.1f);
+    actions.update();
+    actions.walk(Vector2.X);
+    body.setLinearVelocity(0f, 0f);
+    actions.sprint();
+    assertEquals(0.875f, body.getLinearVelocity().x, 0.001f);
+    actions.stopSprinting();
+    when(gameTime.getDeltaTime()).thenReturn(0.13f);
+    actions.update();
+    assertTrue(body.getLinearVelocity().x < 2f, "Release should restore ordinary air steering");
+  }
+
+  @Test
+  void shouldAcceptLedgeDropBeforePhysicsBodyBecomesAvailable() {
+    PhysicsComponent physics = mock(PhysicsComponent.class);
+    PlayerActions actions = new PlayerActions();
+    Entity player = new Entity().addComponent(physics).addComponent(actions);
+    actions.create();
+    player.getEvents().trigger("updateLedgeDrop", true);
+    assertTrue(actions.droppingFromLedge);
+    Body body = mock(Body.class);
+    when(physics.getBody()).thenReturn(body);
+    player.getEvents().trigger("updateLedgeDrop", true);
+    verify(body).setAwake(true);
+  }
+
+  @Test
+  void shouldDashLeftWhileWalkingLeft() {
+    Entity player = createPlayer();
+    player.getEvents().trigger("walk", new Vector2(-1f, 0f));
+    player.getEvents().trigger("dash");
+    assertEquals(-14f, player.getComponent(PhysicsComponent.class).getBody().getLinearVelocity().x);
   }
 }

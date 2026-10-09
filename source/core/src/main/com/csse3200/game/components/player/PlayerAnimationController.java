@@ -328,10 +328,6 @@ public class PlayerAnimationController extends Component {
     }
     charging = false;
     drawingIn = false;
-    if (dead) {
-      bowActive = false;
-      return;
-    }
     animator.startAnimation("bow_shoot");
   }
 
