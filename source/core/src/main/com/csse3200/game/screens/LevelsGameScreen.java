@@ -13,7 +13,9 @@ import com.csse3200.game.areas.terrain.TerrainFactory;
 import com.csse3200.game.components.ButtonSound;
 import com.csse3200.game.components.gamearea.CoordinateDisplay;
 import com.csse3200.game.components.gamearea.PerformanceDisplay;
+import com.csse3200.game.components.inventory.BackpackDisplay;
 import com.csse3200.game.components.item.ItemAssets;
+import com.csse3200.game.components.itemdictionary.ItemDictionaryDisplay;
 import com.csse3200.game.components.maingame.MainGameActions;
 import com.csse3200.game.components.maingame.PauseButtonDisplay;
 import com.csse3200.game.components.maingame.PauseMenuOverlay;
@@ -83,6 +85,7 @@ public class LevelsGameScreen extends ScreenAdapter {
   };
   private final Level1GameArea level1GameArea;
   private boolean cheats = false;
+  private boolean inventoryPaused = false;
 
   public LevelsGameScreen(GdxGame game) {
     this.game = game;
@@ -195,6 +198,59 @@ public class LevelsGameScreen extends ScreenAdapter {
         () -> ServiceLocator.getGameEndEventHandler().trigger("gameEnd", GameEndState.LOSE));
   }
 
+  private boolean closeInventoryOverlay() {
+    for (Entity entity : ServiceLocator.getEntityService().getEntities()) {
+      BackpackDisplay backpack = entity.getComponent(BackpackDisplay.class);
+
+      if (backpack != null && backpack.isBackpackVisible()) {
+        backpack.hideBackpack();
+        return true;
+      }
+
+      ItemDictionaryDisplay dictionary = entity.getComponent(ItemDictionaryDisplay.class);
+
+      if (dictionary != null && dictionary.isDictionaryVisible()) {
+        dictionary.hideDictionary();
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  private boolean isInventoryOverlayOpen() {
+    for (Entity entity : ServiceLocator.getEntityService().getEntities()) {
+      BackpackDisplay backpack = entity.getComponent(BackpackDisplay.class);
+
+      if (backpack != null && backpack.isBackpackVisible()) {
+        return true;
+      }
+
+      ItemDictionaryDisplay dictionary = entity.getComponent(ItemDictionaryDisplay.class);
+
+      if (dictionary != null && dictionary.isDictionaryVisible()) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  private void updateInventoryPauseState() {
+    boolean overlayOpen = isInventoryOverlayOpen();
+    EntityService entityService = ServiceLocator.getEntityService();
+
+    if (overlayOpen && !inventoryPaused) {
+      if (!entityService.getPaused()) {
+        entityService.setPaused(true);
+        inventoryPaused = true;
+      }
+    } else if (!overlayOpen && inventoryPaused) {
+      entityService.setPaused(false);
+      inventoryPaused = false;
+    }
+  }
+
   /**
    * When the level changer triggers a level change event, this method receives and creates the
    * requested game area object and queues it to be rendered at the next available frame
@@ -240,9 +296,11 @@ public class LevelsGameScreen extends ScreenAdapter {
       levelSwapQueued = false;
     }
 
-    if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)
-        && !ServiceLocator.getEntityService().getSettingsOpen()) {
-      pauseOverlay.request();
+    // ESC closes the inventory UI before opening the pause menu.
+    if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
+      if (!closeInventoryOverlay() && !ServiceLocator.getEntityService().getSettingsOpen()) {
+        pauseOverlay.request();
+      }
     }
 
     // F3 toggles debug mode: physics outlines plus player and mouse coordinates
@@ -254,9 +312,13 @@ public class LevelsGameScreen extends ScreenAdapter {
     if (Gdx.input.isKeyJustPressed(Input.Keys.L)) {
       blackjackOverlay.request();
     }
+    // Apply pause before updating the game world.
+    updateInventoryPauseState();
 
     physicsEngine.update();
     ServiceLocator.getEntityService().update();
+    // Detect inventory UI opened during this frame.
+    updateInventoryPauseState();
     renderer.render();
     wheelOverlay.afterRender();
     pauseOverlay.afterRender();

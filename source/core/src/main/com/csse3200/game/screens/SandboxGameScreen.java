@@ -1,10 +1,14 @@
 package com.csse3200.game.screens;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.csse3200.game.GdxGame;
 import com.csse3200.game.areas.SandboxGameArea;
 import com.csse3200.game.areas.terrain.TerrainFactory;
+import com.csse3200.game.components.inventory.BackpackDisplay;
+import com.csse3200.game.components.itemdictionary.ItemDictionaryDisplay;
 import com.csse3200.game.components.maingame.MainGameActions;
 import com.csse3200.game.components.maingame.MainGameExitDisplay;
 import com.csse3200.game.entities.Entity;
@@ -29,6 +33,7 @@ public class SandboxGameScreen extends ScreenAdapter {
   private final Renderer renderer;
   private final PhysicsEngine physicsEngine;
   private final SandboxGameArea sandboxGameArea;
+  private boolean inventoryPaused = false;
 
   /**
    * Creates the sandbox screen and its minimal service lifecycle.
@@ -67,10 +72,71 @@ public class SandboxGameScreen extends ScreenAdapter {
     ServiceLocator.getEntityService().register(ui);
   }
 
+  private boolean closeInventoryOverlay() {
+    for (Entity entity : ServiceLocator.getEntityService().getEntities()) {
+      BackpackDisplay backpack = entity.getComponent(BackpackDisplay.class);
+
+      if (backpack != null && backpack.isBackpackVisible()) {
+        backpack.hideBackpack();
+        return true;
+      }
+
+      ItemDictionaryDisplay dictionary = entity.getComponent(ItemDictionaryDisplay.class);
+
+      if (dictionary != null && dictionary.isDictionaryVisible()) {
+        dictionary.hideDictionary();
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  private boolean isInventoryOverlayOpen() {
+    for (Entity entity : ServiceLocator.getEntityService().getEntities()) {
+      BackpackDisplay backpack = entity.getComponent(BackpackDisplay.class);
+
+      if (backpack != null && backpack.isBackpackVisible()) {
+        return true;
+      }
+
+      ItemDictionaryDisplay dictionary = entity.getComponent(ItemDictionaryDisplay.class);
+
+      if (dictionary != null && dictionary.isDictionaryVisible()) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  private void updateInventoryPauseState() {
+    boolean overlayOpen = isInventoryOverlayOpen();
+
+    if (overlayOpen && !inventoryPaused) {
+      if (!ServiceLocator.getEntityService().getPaused()) {
+        ServiceLocator.getEntityService().setPaused(true);
+        inventoryPaused = true;
+      }
+    } else if (!overlayOpen && inventoryPaused) {
+      ServiceLocator.getEntityService().setPaused(false);
+      inventoryPaused = false;
+    }
+  }
+
   @Override
   public void render(float delta) {
+    if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
+      closeInventoryOverlay();
+    }
+
+    updateInventoryPauseState();
+
     physicsEngine.update();
     ServiceLocator.getEntityService().update();
+
+    updateInventoryPauseState();
+
     renderer.render();
   }
 

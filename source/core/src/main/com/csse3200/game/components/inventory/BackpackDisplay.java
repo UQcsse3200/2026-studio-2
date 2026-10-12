@@ -1,5 +1,7 @@
 package com.csse3200.game.components.inventory;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -423,6 +425,15 @@ public class BackpackDisplay extends UIComponent {
    */
   public boolean isBackpackVisible() {
     return visible;
+  }
+
+  @Override
+  public void update() {
+    super.update();
+
+    if (visible && Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
+      hideBackpack();
+    }
   }
 
   @Override
