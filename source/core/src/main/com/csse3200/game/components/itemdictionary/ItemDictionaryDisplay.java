@@ -372,6 +372,10 @@ public class ItemDictionaryDisplay extends UIComponent {
   @Override
   public void update() {
     super.update();
+    if (visible && Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
+      hideDictionary();
+      return;
+    }
 
     if (Gdx.input.isKeyJustPressed(Input.Keys.I)) {
       toggleDictionary();

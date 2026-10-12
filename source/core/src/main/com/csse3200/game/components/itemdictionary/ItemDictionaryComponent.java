@@ -18,6 +18,7 @@ public class ItemDictionaryComponent extends Component {
   @Override
   public void create() {
     entity.getEvents().addListener("itemPickedUp", this::onItemPickedUp);
+    entity.getEvents().addListener("itemPurchased", this::onItemPurchased);
   }
 
   /**
@@ -31,6 +32,15 @@ public class ItemDictionaryComponent extends Component {
     }
 
     unlockItem(item.getItemType());
+  }
+
+  /**
+   * Handles a successful shop purchase and unlocks the item in the dictionary.
+   *
+   * @param itemType item type that was purchased
+   */
+  private void onItemPurchased(ItemType itemType) {
+    unlockItem(itemType);
   }
 
   /**

@@ -40,6 +40,8 @@ public class KeyboardPlayerInputComponent extends InputComponent {
     entity.getEvents().addListener("togglePause", this::unpause);
     entity.getEvents().addListener("death", () -> dead = true);
     entity.getEvents().addListener("openShop", this::releaseHeldGameplayInput);
+    entity.getEvents().addListener("backpackOpened", this::releaseHeldGameplayInput);
+    entity.getEvents().addListener("dictionaryOpened", this::releaseHeldGameplayInput);
     entity.getEvents().addListener("closeShop", this::syncReleasedShootButton);
     entity.getEvents().addListener("releaseHeldGameplayInput", this::releaseHeldGameplayInput);
   }
@@ -72,6 +74,11 @@ public class KeyboardPlayerInputComponent extends InputComponent {
       return false;
     }
     if (isShopOpen() && keycode != Keys.F) {
+      return true;
+    }
+    // Block gameplay controls while paused.
+    // Preserve F for the existing shop interaction.
+    if (isGamePaused() && !isShopOpen()) {
       return true;
     }
     switch (keycode) {
@@ -186,6 +193,32 @@ public class KeyboardPlayerInputComponent extends InputComponent {
     if (dead) {
       return false;
     }
+    // Clear held keys without triggering gameplay actions while paused.
+    if (isGamePaused()) {
+      switch (keycode) {
+        case Keys.A, Keys.LEFT:
+          keysHeld[LEFT] = false;
+          break;
+        case Keys.D, Keys.RIGHT:
+          keysHeld[RIGHT] = false;
+          break;
+        case Keys.W, Keys.UP:
+          keysHeld[UP] = false;
+          break;
+        case Keys.S, Keys.DOWN:
+          keysHeld[DOWN] = false;
+          break;
+        case Keys.SHIFT_LEFT, Keys.SHIFT_RIGHT:
+          sprintHeld = false;
+          break;
+        case Keys.E:
+          attackHeld = false;
+          break;
+        default:
+          break;
+      }
+      return true;
+    }
     switch (keycode) {
       case Keys.A, Keys.LEFT:
         keysHeld[LEFT] = false;
@@ -244,6 +277,11 @@ public class KeyboardPlayerInputComponent extends InputComponent {
     if (isShopOpen()) {
       return true;
     }
+    // Do not allow attacks or shooting while paused.
+    if (isGamePaused()) {
+      return true;
+    }
+
     if (dead || isArrowWheelOpen()) {
       return false;
     }
@@ -430,5 +468,15 @@ public class KeyboardPlayerInputComponent extends InputComponent {
   public void unpause() {
     triggerWalkEvent();
     triggerSprintEvent();
+  }
+
+  /**
+   * Checks whether gameplay is currently paused.
+   *
+   * @return true if the entity service exists and gameplay is paused
+   */
+  private boolean isGamePaused() {
+    return ServiceLocator.getEntityService() != null
+        && ServiceLocator.getEntityService().getPaused();
   }
 }
