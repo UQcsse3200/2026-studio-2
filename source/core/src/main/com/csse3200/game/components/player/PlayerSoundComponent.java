@@ -21,7 +21,10 @@ public class PlayerSoundComponent extends Component {
 
   @Override
   public void create() {
-    entity.getEvents().addListener("jump", () -> SoundEffects.play("sounds/jump.ogg", 0.5f));
+    // Both ground and grapple jumps report acceptance; raw input can be rejected.
+    entity
+        .getEvents()
+        .addListener("jumpAccepted", () -> SoundEffects.play("sounds/jump.ogg", 0.5f));
     entity.getEvents().addListener("hurt", this::playHurt);
     entity
         .getEvents()

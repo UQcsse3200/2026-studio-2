@@ -13,6 +13,7 @@ import static org.mockito.Mockito.when;
 
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.utils.Timer;
+import com.csse3200.game.components.GameVolume;
 import com.csse3200.game.components.item.ItemType;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.extensions.GameExtension;
@@ -45,8 +46,8 @@ class PlayerSoundComponentTest {
   }
 
   @Test
-  void shouldPlayJumpSound() {
-    player.getEvents().trigger("jump");
+  void shouldPlayAcceptedJumpSound() {
+    player.getEvents().trigger("jumpAccepted");
 
     verify(resources).getAsset("sounds/jump.ogg", Sound.class);
     verify(sound).play(0.5f);
@@ -69,6 +70,48 @@ class PlayerSoundComponentTest {
 
     verify(resources).getAsset("sounds/itempickup02.wav", Sound.class);
     verify(resources).getAsset("sounds/itempick.wav", Sound.class);
+  }
+
+  @Test
+  void hurtSoundRespectsMute() {
+    float previousVolume = GameVolume.get();
+    try {
+      GameVolume.set(0f);
+      player.getEvents().trigger("hurt");
+
+      verify(sound).play(0f);
+      verify(sound, times(1)).play(anyFloat());
+    } finally {
+      GameVolume.set(previousVolume);
+    }
+  }
+
+  @Test
+  void itemPickupSoundRespectsMute() {
+    float previousVolume = GameVolume.get();
+    try {
+      GameVolume.set(0f);
+      player.getEvents().trigger("itemPickedUp", ItemType.HEALTH_POTION);
+
+      verify(sound).play(0f);
+      verify(sound, times(1)).play(anyFloat());
+    } finally {
+      GameVolume.set(previousVolume);
+    }
+  }
+
+  @Test
+  void itemPickupSoundScalesWithMasterVolume() {
+    float previousVolume = GameVolume.get();
+    try {
+      GameVolume.set(0.5f);
+      player.getEvents().trigger("itemPickedUp", ItemType.HEALTH_POTION);
+
+      verify(sound).play(0.1f);
+      verify(sound, times(1)).play(anyFloat());
+    } finally {
+      GameVolume.set(previousVolume);
+    }
   }
 
   @Test

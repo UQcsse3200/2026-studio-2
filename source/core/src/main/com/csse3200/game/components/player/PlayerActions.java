@@ -356,6 +356,7 @@ public class PlayerActions extends Component {
       dashCooldownRemaining = 0f;
       body.applyLinearImpulse(
           new Vector2(0, JUMP_FORCE * ROPE_JUMP_MULTIPLIER), body.getWorldCenter(), true);
+      entity.getEvents().trigger("jumpAccepted");
       return;
     }
 
@@ -371,6 +372,7 @@ public class PlayerActions extends Component {
       isGrounded = false;
       jumpImpulseAt = ServiceLocator.getTimeSource().getTime() + JUMP_WINDUP_MS;
       entity.getEvents().trigger("jumpStart");
+      entity.getEvents().trigger("jumpAccepted");
     }
   }
 
