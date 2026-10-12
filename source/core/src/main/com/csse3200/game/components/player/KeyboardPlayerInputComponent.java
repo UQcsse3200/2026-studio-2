@@ -78,7 +78,7 @@ public class KeyboardPlayerInputComponent extends InputComponent {
     }
     // Block gameplay controls while paused.
     // Preserve F for the existing shop interaction.
-    if (ServiceLocator.getEntityService().getPaused() && !isShopOpen()) {
+    if (isGamePaused() && !isShopOpen()) {
       return true;
     }
     switch (keycode) {
@@ -194,7 +194,7 @@ public class KeyboardPlayerInputComponent extends InputComponent {
       return false;
     }
     // Clear held keys without triggering gameplay actions while paused.
-    if (ServiceLocator.getEntityService().getPaused()) {
+    if (isGamePaused()) {
       switch (keycode) {
         case Keys.A, Keys.LEFT:
           keysHeld[LEFT] = false;
@@ -278,7 +278,7 @@ public class KeyboardPlayerInputComponent extends InputComponent {
       return true;
     }
     // Do not allow attacks or shooting while paused.
-    if (ServiceLocator.getEntityService().getPaused()) {
+    if (isGamePaused()) {
       return true;
     }
 
@@ -468,5 +468,15 @@ public class KeyboardPlayerInputComponent extends InputComponent {
   public void unpause() {
     triggerWalkEvent();
     triggerSprintEvent();
+  }
+
+  /**
+   * Checks whether gameplay is currently paused.
+   *
+   * @return true if the entity service exists and gameplay is paused
+   */
+  private boolean isGamePaused() {
+    return ServiceLocator.getEntityService() != null
+        && ServiceLocator.getEntityService().getPaused();
   }
 }
