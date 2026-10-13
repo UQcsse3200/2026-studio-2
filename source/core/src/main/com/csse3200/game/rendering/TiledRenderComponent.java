@@ -1,5 +1,6 @@
 package com.csse3200.game.rendering;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -9,6 +10,7 @@ import com.csse3200.game.services.ServiceLocator;
 public class TiledRenderComponent extends RenderComponent {
   private final TextureRegion textureRegion;
   private final float tileWorldSize;
+  private final int WATER_LAYER = 11;
 
   public TiledRenderComponent(String texturePath, float tileWorldSize) {
     Texture texture = ServiceLocator.getResourceService().getAsset(texturePath, Texture.class);
@@ -30,6 +32,14 @@ public class TiledRenderComponent extends RenderComponent {
     textureRegion.setU2(tilesX);
     textureRegion.setV2(tilesY);
 
+    Color prevColor = batch.getColor().cpy();
+    float light = getDarkness();
     batch.draw(textureRegion, position.x, position.y, scale.x, scale.y);
+    batch.setColor(prevColor);
+  }
+
+  @Override
+  public int getLayer() {
+    return WATER_LAYER;
   }
 }

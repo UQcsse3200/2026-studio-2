@@ -20,6 +20,8 @@ import com.csse3200.game.components.item.consumables.SpeedPotion;
 import com.csse3200.game.components.item.weapons.bow.arrow.Arrow;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.extensions.GameExtension;
+import com.csse3200.game.lighting.LightingEngine;
+import com.csse3200.game.lighting.LightingService;
 import com.csse3200.game.physics.PhysicsService;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
@@ -36,6 +38,12 @@ class ItemFactoryTest {
   void setUp() {
     physicsService = new PhysicsService();
     ServiceLocator.registerPhysicsService(physicsService);
+
+    LightingEngine lightingEngine = mock(LightingEngine.class);
+    when(lightingEngine.getRayHandler()).thenReturn(mock(box2dLight.RayHandler.class));
+    LightingService lightingService = mock(LightingService.class);
+    when(lightingService.getEngine()).thenReturn(lightingEngine);
+    ServiceLocator.registerLightingService(lightingService);
 
     Texture texture = mock(Texture.class);
     when(texture.getWidth()).thenReturn(1);

@@ -19,6 +19,11 @@ public class PhysicsLayer {
   public static final short ALL = ~0;
 
   public static final short ENEMY_PROJECTILE = (1 << 7);
+  // The solid body of a character, as opposed to the NPC sensor used for damage. Separate so the
+  // player can stand on an enemy without arrows treating that body as a second thing to hit.
+  public static final short CHARACTER = (1 << 8);
+  // Everything the player can land on. Enemies count: standing on one is standing on ground.
+  public static final short STANDABLE = SOLID | CHARACTER;
 
   public static boolean contains(short filterBits, short layer) {
     return (filterBits & layer) != 0;

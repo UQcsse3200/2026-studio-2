@@ -8,12 +8,17 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.NinePatch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
+import com.badlogic.gdx.utils.Scaling;
 import com.csse3200.game.ui.UIComponent;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import org.slf4j.Logger;
@@ -22,8 +27,18 @@ import org.slf4j.LoggerFactory;
 public class TextBoxComponent extends UIComponent {
   private static final Logger logger = LoggerFactory.getLogger(TextBoxComponent.class);
 
-  private final float xPos;
-  private final float yPos;
+  /** Portrait image edge length in pixels. JPEG aspect is preserved via fit scaling. */
+  private static final float PORTRAIT_SIZE = 100f;
+
+  /**
+   * Fraction of the portrait overlapping the box's top edge. Zero keeps the portrait fully above
+   * the box so it can never cover the first text line; its bottom edge stays connected to the top.
+   */
+  private static final float PORTRAIT_OVERLAP = 0f;
+
+  private float posX;
+  private float posY;
+  private int posAlign = Align.top;
   private final Color textColor;
   private final Color backgroundColour;
   private final Color borderColour;
@@ -33,6 +48,7 @@ public class TextBoxComponent extends UIComponent {
   private final int borderThickness;
   private final int textAlignment;
   private final List<String> pages;
+  private final List<String> portraitPaths;
   private final BitmapFont customFont;
   private int currentPageIndex = 0;
   private NinePatchDrawable cachedBackground;
@@ -44,6 +60,8 @@ public class TextBoxComponent extends UIComponent {
   private String lastSourceContent = null;
   private Table table;
   private Label label;
+  private Image portraitImage;
+  private Texture portraitTexture;
 
   // Boxes stay on screen until TAB is pressed: first press reveals the rest of the current
   // page immediately (if it's still typing). A second press moves on to the next page, if any -
@@ -54,6 +72,10 @@ public class TextBoxComponent extends UIComponent {
    *     Pass {@code null} to use the skin's default font.
    * @param textAlignment horizontal alignment of the text within the box, e.g. {@link Align#left},
    *     {@link Align#center}, {@link Align#right}.
+   * @param portraitPaths optional per-page portrait image paths (asset-relative JPEG/PNG), parallel
+   *     to {@code pages}: entry {@code i} is shown overlapping the top edge of the box while page
+   *     {@code i} is displayed. Blank or missing entries mean no portrait for that page. Pass
+   *     {@code null} or an empty list for no portraits.
    */
   public TextBoxComponent(
       float xPos,
@@ -67,10 +89,11 @@ public class TextBoxComponent extends UIComponent {
       int borderThickness,
       String fontPath,
       int textAlignment,
-      List<String> pages) {
+      List<String> pages,
+      List<String> portraitPaths) {
 
-    this.xPos = xPos;
-    this.yPos = yPos;
+    this.posX = xPos;
+    this.posY = yPos;
     this.textColor = textColour;
     this.backgroundColour = backgroundColour;
     this.charsPerSecond = charsPerSecond;
@@ -80,6 +103,8 @@ public class TextBoxComponent extends UIComponent {
     this.borderThickness = borderThickness;
     this.textAlignment = textAlignment;
     this.pages = (pages == null || pages.isEmpty()) ? Collections.singletonList("") : pages;
+    this.portraitPaths =
+        (portraitPaths == null) ? Collections.emptyList() : new ArrayList<>(portraitPaths);
     this.customFont = loadFont(fontPath);
   }
 
@@ -143,6 +168,97 @@ public class TextBoxComponent extends UIComponent {
     if (label != null) {
       label.setText(fullContent);
       table.pack();
+    }
+  }
+
+  /** Returns the portrait path for the given page, or null when that page has no portrait. */
+  private String portraitPathForPage(int pageIndex) {
+    if (pageIndex < 0 || pageIndex >= portraitPaths.size()) {
+      return null;
+    }
+    String path = portraitPaths.get(pageIndex);
+    return (path == null || path.isBlank()) ? null : path;
+  }
+
+  /**
+   * Swaps the portrait image to the given page's portrait, hiding it when the page has none. The
+   * previous portrait texture is disposed to avoid leaking GPU memory across page turns.
+   */
+  private void updatePortraitForPage(int pageIndex) {
+    if (portraitTexture != null) {
+      portraitTexture.dispose();
+      portraitTexture = null;
+    }
+    String path = portraitPathForPage(pageIndex);
+    if (path == null) {
+      if (portraitImage != null) {
+        portraitImage.setVisible(false);
+      }
+      return;
+    }
+    try {
+      portraitTexture = new Texture(Gdx.files.internal(path));
+    } catch (Exception e) {
+      logger.error("Failed to load portrait from {}: {}", path, e.getMessage());
+      portraitTexture = null;
+      if (portraitImage != null) {
+        portraitImage.setVisible(false);
+      }
+      return;
+    }
+    if (portraitImage == null) {
+      portraitImage = new Image();
+      portraitImage.setScaling(Scaling.fit);
+      portraitImage.setSize(PORTRAIT_SIZE, PORTRAIT_SIZE);
+      portraitImage.setVisible(false);
+      stage.addActor(portraitImage);
+    }
+    portraitImage.setDrawable(new TextureRegionDrawable(new TextureRegion(portraitTexture)));
+    // Keep the portrait directly above its own box (and below fade overlays etc.).
+    if (table != null
+        && table.getParent() != null
+        && portraitImage.getParent() == table.getParent()) {
+      table.getParent().addActorAfter(table, portraitImage);
+    }
+  }
+
+  /**
+   * Pins the portrait centered above the box's top edge, connected to but never covering the text.
+   * Tracks the live table bounds so it follows the box as typing packs it taller and under either
+   * alignment mode.
+   */
+  private void layoutPortrait() {
+    if (portraitImage == null || portraitTexture == null) {
+      return;
+    }
+    float x = table.getX() + (table.getWidth() - PORTRAIT_SIZE) / 2f;
+    float y = table.getY() + table.getHeight() - PORTRAIT_SIZE * PORTRAIT_OVERLAP;
+    portraitImage.setPosition(x, y);
+    portraitImage.setVisible(table.isVisible());
+  }
+
+  /** Repositions the textbox table, e.g. to track a responsive layout each frame. */
+  public void setPosition(float x, float y) {
+    setPosition(x, y, Align.top);
+  }
+
+  /**
+   * Repositions the textbox table with an explicit alignment so it pins the box's bottom edge above
+   * another entity. The alignment survives redraws.
+   */
+  public void setPosition(float x, float y, int align) {
+    posX = x;
+    posY = y;
+    posAlign = align;
+    if (table != null) {
+      table.setPosition(x, y, align);
+    }
+  }
+
+  /** Brings the textbox table above other stage actors. */
+  public void toFront() {
+    if (table != null) {
+      table.toFront();
     }
   }
 
@@ -267,7 +383,7 @@ public class TextBoxComponent extends UIComponent {
   public void create() {
     super.create();
     this.table = new Table();
-    this.table.setPosition(xPos, yPos);
+    this.table.setPosition(posX, posY);
     this.table.setVisible(false);
     this.table.setBackground(getBackgroundDrawable());
 
@@ -295,6 +411,9 @@ public class TextBoxComponent extends UIComponent {
 
     if (content == null || content.isEmpty()) {
       table.setVisible(false);
+      if (portraitImage != null) {
+        portraitImage.setVisible(false);
+      }
       return;
     }
 
@@ -303,6 +422,7 @@ public class TextBoxComponent extends UIComponent {
       this.fullContent = content;
       this.revealedChars = 0;
       this.typeTimer = 0f;
+      updatePortraitForPage(this.currentPageIndex);
     }
 
     boolean fullyRevealed = this.revealedChars >= this.fullContent.length();
@@ -320,8 +440,9 @@ public class TextBoxComponent extends UIComponent {
     }
 
     // On TAB: skip to the full page if it's still typing; otherwise move to the next page,
-    // or dismiss the box entirely if this was the last page
-    if (Gdx.input.isKeyJustPressed(Keys.TAB)) {
+    // or dismiss the box entirely if this was the last page. Externally controlled boxes (e.g.
+    // cutscenes, game-end screens) own advancement themselves, so TAB must not dismiss them.
+    if (!externallyControlled && Gdx.input.isKeyJustPressed(Keys.TAB)) {
       if (!fullyRevealed) {
         this.revealedChars = fullContent.length();
         this.label.setText(fullContent);
@@ -337,8 +458,8 @@ public class TextBoxComponent extends UIComponent {
       }
     }
 
-    float x = this.xPos;
-    float y = this.yPos;
+    float x = this.posX;
+    float y = this.posY;
     if (entity != null) {
       Vector2 worldPos = entity.getCenterPosition();
       float screenWidth = Gdx.graphics.getWidth();
@@ -347,10 +468,11 @@ public class TextBoxComponent extends UIComponent {
       y = (worldPos.y / 20f) * screenHeight + 18f;
     }
 
-    // alignment = 2 for top to bottom effect
-    table.setPosition(x, y, 2);
+    // Position with the stored alignment (top by default, see setPosition).
+    table.setPosition(x, y, posAlign);
     table.setVisible(true);
     label.setVisible(true);
+    layoutPortrait();
   }
 
   @Override
@@ -361,6 +483,14 @@ public class TextBoxComponent extends UIComponent {
     }
     if (table != null) {
       table.remove();
+    }
+    if (portraitImage != null) {
+      portraitImage.remove();
+      portraitImage = null;
+    }
+    if (portraitTexture != null) {
+      portraitTexture.dispose();
+      portraitTexture = null;
     }
     if (customFont != null) {
       customFont.dispose();

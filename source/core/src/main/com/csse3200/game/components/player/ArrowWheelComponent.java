@@ -23,6 +23,8 @@ public class ArrowWheelComponent extends Component {
   private boolean open = false;
   private ArrowType highlighted;
   private ArrowType selected = ArrowType.STANDARD;
+  private final Vector2 screenCentre = new Vector2();
+  private boolean hasScreenCentre = false;
 
   @Override
   public void create() {
@@ -37,6 +39,26 @@ public class ArrowWheelComponent extends Component {
   /** Returns whether the wheel should currently be drawn. */
   public boolean isOpen() {
     return open;
+  }
+
+  /**
+   * Records where the wheel is drawn, so the pointer can be measured from its centre rather than
+   * the screen's.
+   *
+   * @param x centre in screen pixels from the left edge
+   * @param yFromTop centre in screen pixels from the top edge
+   */
+  public void setScreenCentre(float x, float yFromTop) {
+    screenCentre.set(x, yFromTop);
+    hasScreenCentre = true;
+  }
+
+  /**
+   * @return the wheel's centre in screen pixels (x from the left, y from the top), or null if the
+   *     wheel hasn't been placed on screen
+   */
+  public Vector2 getScreenCentre() {
+    return hasScreenCentre ? screenCentre : null;
   }
 
   /** Returns the arrow type under the pointer, or null when closed or aimed at the centre. */

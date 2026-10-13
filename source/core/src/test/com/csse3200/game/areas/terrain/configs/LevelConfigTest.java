@@ -14,6 +14,8 @@ import com.csse3200.game.components.item.weapons.bow.arrow.*;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.entities.factories.ItemFactory;
 import com.csse3200.game.extensions.GameExtension;
+import com.csse3200.game.lighting.LightingEngine;
+import com.csse3200.game.lighting.LightingService;
 import com.csse3200.game.physics.PhysicsService;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
@@ -29,6 +31,12 @@ class LevelConfigTest {
   public void setUp() {
     ServiceLocator.registerEntityService(new EntityService());
     ServiceLocator.registerPhysicsService(new PhysicsService());
+
+    LightingEngine lightingEngine = mock(LightingEngine.class);
+    when(lightingEngine.getRayHandler()).thenReturn(mock(box2dLight.RayHandler.class));
+    LightingService lightingService = mock(LightingService.class);
+    when(lightingService.getEngine()).thenReturn(lightingEngine);
+    ServiceLocator.registerLightingService(lightingService);
 
     ResourceService resourceService = mock(ResourceService.class);
     ServiceLocator.registerResourceService(resourceService);

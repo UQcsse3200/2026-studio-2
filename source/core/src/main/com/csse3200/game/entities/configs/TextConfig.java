@@ -47,6 +47,9 @@ public class TextConfig {
   // good after the last one.
   public List<String> pages = new ArrayList<>(List.of("Test text"));
 
+  // Optional per-page portrait image paths (asset-relative JPEG/PNG), parallel to pages.
+  public List<String> portraitPaths = new ArrayList<>();
+
   public Color getTextColour() {
     return parseColor(textColour, Color.BLACK);
   }

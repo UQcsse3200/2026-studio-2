@@ -26,6 +26,8 @@ import com.csse3200.game.events.EventHandler;
 import com.csse3200.game.input.InputComponent;
 import com.csse3200.game.input.InputDecorator;
 import com.csse3200.game.input.InputService;
+import com.csse3200.game.lighting.LightingEngine;
+import com.csse3200.game.lighting.LightingService;
 import com.csse3200.game.physics.PhysicsEngine;
 import com.csse3200.game.physics.PhysicsService;
 import com.csse3200.game.rendering.RenderService;
@@ -58,10 +60,12 @@ public class MainGameScreen extends ScreenAdapter {
   private final Renderer renderer;
   private final PhysicsEngine physicsEngine;
   private Entity player;
+  private Terminal terminal;
   private final SpinTheWheelOverlay wheelOverlay;
   private final BlackjackOverlay blackjackOverlay;
   private final MinigameOverlayManager minigameOverlayManager;
   private final PauseMenuOverlay pauseOverlay;
+  private final LightingEngine lightingEngine;
 
   public MainGameScreen(GdxGame game) {
     this.game = game;
@@ -83,6 +87,11 @@ public class MainGameScreen extends ScreenAdapter {
     renderer = RenderFactory.createRenderer();
     renderer.getCamera().getEntity().setPosition(CAMERA_POSITION);
     renderer.getDebug().renderPhysicsWorld(physicsEngine.getWorld());
+
+    LightingService lightingService =
+        new LightingService(renderer.getCamera(), physicsEngine.getWorld());
+    ServiceLocator.registerLightingService(lightingService);
+    lightingEngine = lightingService.getEngine();
 
     loadAssets();
     createUI();
@@ -108,17 +117,24 @@ public class MainGameScreen extends ScreenAdapter {
 
   @Override
   public void render(float delta) {
-    if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)
+    // Overlay shortcuts bypass the input handler chain, so ignore them while the terminal is
+    // open. F1 still toggles the terminal itself.
+    boolean terminalOpen = terminal != null && terminal.isOpen();
+    if (!terminalOpen
+        && Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)
         && !ServiceLocator.getEntityService().getSettingsOpen()) {
       pauseOverlay.request();
     }
+    /*
     if (Gdx.input.isKeyJustPressed(Input.Keys.L)) {
       blackjackOverlay.request();
     }
+     */
 
     physicsEngine.update();
     ServiceLocator.getEntityService().update();
     renderer.render();
+    renderer.render(lightingEngine);
     wheelOverlay.afterRender();
     blackjackOverlay.afterRender();
     pauseOverlay.afterRender();
@@ -148,6 +164,7 @@ public class MainGameScreen extends ScreenAdapter {
     unloadAssets();
 
     ServiceLocator.getEntityService().dispose();
+    lightingEngine.dispose();
     ServiceLocator.getRenderService().dispose();
     ServiceLocator.getResourceService().dispose();
 
@@ -221,13 +238,14 @@ public class MainGameScreen extends ScreenAdapter {
         ServiceLocator.getInputService().getInputFactory().createForTerminal();
 
     Entity ui = new Entity();
+    terminal = new Terminal(game, GdxGame.ScreenType.MAIN_GAME);
     ui.addComponent(new InputDecorator(stage, 10))
         .addComponent(new PerformanceDisplay())
         .addComponent(new MainGameActions(this.game))
         .addComponent(new MainGameExitDisplay())
         .addComponent(new GameEndDisplay(GameEndState.LOSE))
         .addComponent(new GameEndActions(this.game))
-        .addComponent(new Terminal(game, GdxGame.ScreenType.MAIN_GAME))
+        .addComponent(terminal)
         .addComponent(inputComponent)
         .addComponent(new TerminalDisplay());
 

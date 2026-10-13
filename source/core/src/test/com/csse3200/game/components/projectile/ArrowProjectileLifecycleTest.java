@@ -101,15 +101,18 @@ class ArrowProjectileLifecycleTest {
   }
 
   @Test
-  void shouldRotateWithVelocityAndPreservePosition() {
+  void shouldRotateWithVelocityAboutItsCentre() {
     Entity arrow = arrow(null, true);
     Body body = arrow.getComponent(PhysicsComponent.class).getBody();
     body.setTransform(2f, 3f, 0f);
     body.setLinearVelocity(0f, 10f);
     ArrowProjectileComponent projectile = arrow.getComponent(ArrowProjectileComponent.class);
+    Vector2 centreBefore = projectile.getWorldCenter();
     projectile.update();
     assertEquals(MathUtils.PI / 2f, body.getAngle(), 0.0001f);
-    assertEquals(new Vector2(2f, 3f), body.getPosition());
+    // It turns about the middle of its box, not the body origin (the box's corner), so the hitbox
+    // stays where the sprite is drawn.
+    assertTrue(projectile.getWorldCenter().epsilonEquals(centreBefore, 0.0001f));
     Vector2 current = projectile.getCurrentDirection();
     assertTrue(current.epsilonEquals(Vector2.Y));
     current.setZero();

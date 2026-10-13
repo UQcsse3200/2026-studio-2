@@ -1,6 +1,8 @@
 package com.csse3200.game.components;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.csse3200.game.entities.Entity;
@@ -8,6 +10,7 @@ import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.physics.PhysicsService;
 import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.physics.components.PhysicsComponent;
+import com.csse3200.game.services.GameTime;
 import com.csse3200.game.services.ServiceLocator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,6 +21,9 @@ class TouchAttackComponentTest {
   @BeforeEach
   void beforeEach() {
     ServiceLocator.registerPhysicsService(new PhysicsService());
+    GameTime gameTime = mock(GameTime.class);
+    when(gameTime.getDeltaTime()).thenReturn(0.3f);
+    ServiceLocator.registerTimeSource(gameTime);
   }
 
   @Test
@@ -29,6 +35,8 @@ class TouchAttackComponentTest {
     Fixture entityFixture = entity.getComponent(HitboxComponent.class).getFixture();
     Fixture targetFixture = target.getComponent(HitboxComponent.class).getFixture();
     entity.getEvents().trigger("collisionStart", entityFixture, targetFixture);
+
+    entity.update();
 
     assertEquals(0, target.getComponent(CombatStatsComponent.class).getHealth());
   }

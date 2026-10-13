@@ -265,6 +265,18 @@ public class PlayerStatsDisplay extends UIComponent {
                 })));
   }
 
+  public void hide() {
+    if (root != null) {
+      root.setVisible(false);
+    }
+  }
+
+  public void show() {
+    if (root != null) {
+      root.setVisible(true);
+    }
+  }
+
   @Override
   public void dispose() {
     super.dispose();

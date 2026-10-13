@@ -1,0 +1,89 @@
+{
+  "fadeDuration": 0.4,
+  "music": "sounds/Main_menu_sound.mp3",
+  "scenes": [
+    {
+      "image": "scene1.jpeg",
+      "text": {
+        "xPos": 600,
+        "yPos": 150,
+        "charsPerSecond": 20,
+        "maxWidth": 600,
+        "padding": 16,
+        "borderThickness": 3,
+        "textAlignment": "center",
+        "pages": [
+          "After another day of scraping together the wreakage of a ship he barely remembered...",
+          "And like another day, Calypso brings him the lotus flower, coaxing him like a lover... ",
+          "The lotus, at first aided him in his recovery, making him forget about his home... his family....",
+          "But now Calypso, having grown to love this mortal, refuses to let him go..."
+        ]
+      }
+    },
+    {
+      "image": "scene2.jpeg",
+      "text": {
+        "xPos": 600,
+        "yPos": 150,
+        "charsPerSecond": 20,
+        "maxWidth": 600,
+        "padding": 16,
+        "borderThickness": 3,
+        "textAlignment": "center",
+        "pages": [
+          "His dream continues from the previous night, and he finds himself back on the harsh waters of Poseidon's domain, where he is once again at the mercy of the sea god's wrath.",
+          "Braving one wave after another, they finally reach succour..."
+        ]
+      }
+    },
+    {
+      "image": "scene3.jpeg",
+      "text": {
+        "xPos": 600,
+        "yPos": 150,
+        "charsPerSecond": 20,
+        "maxWidth": 600,
+        "padding": 16,
+        "borderThickness": 3,
+        "textAlignment": "center",
+        "pages": [
+          "The relief came in the form of an uninhabited island... uninhabited except for a single hut...",
+          "As they anchor their ship, the sheeps, deer, and goats stare silently at the men, as if trying to speak some warning to them..."        ]
+      }
+    },
+    {
+      "image": "scene4.jpeg",
+      "text": {
+        "xPos": 600,
+        "yPos": 150,
+        "charsPerSecond": 20,
+        "maxWidth": 600,
+        "padding": 16,
+        "borderThickness": 3,
+        "textAlignment": "center",
+        "pages": [
+          "As Odeysseus and his men approach the hut, they are greeted by a enchantress, who introduces herself as Circe, a humble rancher",
+          "Circe welcomes them into her home, and offers them food and drink, the soldiers enter a sort of hungry trance as they start devouring the food at the table",
+          "Odeysseus shaken by the sight of his men, tries to stop them, but it is too late as they morph into pigs..."
+        ]
+      }
+    },
+    {
+      "image": "scene5.jpeg",
+      "text": {
+        "xPos": 600,
+        "yPos": 150,
+        "charsPerSecond": 20,
+        "maxWidth": 600,
+        "padding": 16,
+        "borderThickness": 3,
+        "textAlignment": "center",
+        "pages": [
+          "Odeysseus, now alone, confronts Circe, and demanding Zeus' laws be upheld, chuckling, she tells him of her heritage... being the daughter of Sun God, Helio, and Goddess of witchcraft, Hecate",
+          "Circe, impressed by Odeysseus' bravery and cunning, agrees to help him, but only if he can best her in her game...",
+          "Odeysseus, determined to save his men, accepts the challenge as Circe already starts laying down the deck of cards..."
+        ]
+      }
+    }
+  ]
+}

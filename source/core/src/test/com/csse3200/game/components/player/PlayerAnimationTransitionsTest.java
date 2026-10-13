@@ -40,7 +40,9 @@ class PlayerAnimationTransitionsTest {
           "idle",
           "walk",
           "sprint",
-          "jump",
+          "jump_takeoff",
+          "jump_fall",
+          "jump_land",
           "air_dash",
           "hurt",
           "melee",
@@ -56,7 +58,8 @@ class PlayerAnimationTransitionsTest {
           name.equals("idle")
               || name.equals("walk")
               || name.equals("sprint")
-              || name.equals("bow_hold");
+              || name.equals("bow_hold")
+              || name.equals("jump_fall");
       animator.addAnimation(name, 1f, looping ? PlayMode.LOOP : PlayMode.NORMAL);
     }
     controller = new PlayerAnimationController();
@@ -87,15 +90,26 @@ class PlayerAnimationTransitionsTest {
   }
 
   @Test
-  void shouldKeepJumpUntilCompletionAndThenUseLatestMovementState() {
+  void shouldHoldTakeoffThroughTheAscentAndUseLatestMovementStateAfterLanding() {
     player.getEvents().trigger("jumpStart");
     controller.update();
-    assertEquals("jump", animator.getCurrentAnimation());
+    assertEquals("jump_takeoff", animator.getCurrentAnimation());
     player.getEvents().trigger("walk", Vector2.X);
     player.getEvents().trigger("sprint");
     player.getEvents().trigger("walkStop");
     player.getEvents().trigger("sprintStop");
-    assertEquals("jump", animator.getCurrentAnimation());
+    assertEquals("jump_takeoff", animator.getCurrentAnimation());
+
+    // The takeoff now holds its final frame for the rest of the ascent instead of dropping back
+    // to a movement animation mid-air.
+    finishClip();
+    assertEquals("jump_takeoff", animator.getCurrentAnimation());
+
+    player.getEvents().trigger("fallStart");
+    assertEquals("jump_fall", animator.getCurrentAnimation());
+
+    player.getEvents().trigger("landed");
+    assertEquals("jump_land", animator.getCurrentAnimation());
     finishClip();
     assertEquals("idle", animator.getCurrentAnimation());
   }
@@ -147,9 +161,9 @@ class PlayerAnimationTransitionsTest {
     player.getEvents().trigger("chargeRelease", Vector2.X);
     assertEquals("sprint", animator.getCurrentAnimation());
     player.getEvents().trigger("jumpStart");
-    assertEquals("jump", animator.getCurrentAnimation());
+    assertEquals("jump_takeoff", animator.getCurrentAnimation());
     player.getEvents().trigger("chargeCancel");
-    assertEquals("jump", animator.getCurrentAnimation());
+    assertEquals("jump_takeoff", animator.getCurrentAnimation());
   }
 
   @Test

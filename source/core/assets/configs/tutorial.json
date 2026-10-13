@@ -1,0 +1,18 @@
+{
+  "xPos": 20,
+  "yPos": 150,
+  "textColour": "Color.BLACK",
+  "backgroundColour": "Color.TAN",
+  "borderColour": "Color.BROWN",
+  "charsPerSecond": 30,
+  "maxWidth": 320,
+  "padding": 16,
+  "borderThickness": 3,
+  "fontPath": "flat-earth/skin/fonts/PixeloidSans.fnt",
+  "textAlignment": "left",
+  "pages": [
+    "Move around using A and D.",
+    "Jump using SPACE.",
+    "Dash using SHIFT."
+  ]
+}

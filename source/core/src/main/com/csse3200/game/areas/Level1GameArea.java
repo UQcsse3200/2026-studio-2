@@ -12,6 +12,7 @@ import com.csse3200.game.areas.terrain.configs.PlatformConfig;
 import com.csse3200.game.areas.terrain.configs.levelconfigs.Level1Config;
 import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.components.Component;
+import com.csse3200.game.components.GameVolume;
 import com.csse3200.game.components.gamearea.GameAreaDisplay;
 import com.csse3200.game.components.level.DesertHazardRecoveryComponent;
 import com.csse3200.game.components.level.RoomDoorComponent;
@@ -29,6 +30,7 @@ import com.csse3200.game.rendering.CaveEntranceRenderComponent;
 import com.csse3200.game.rendering.TextureRenderComponent;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,6 +54,10 @@ public class Level1GameArea extends GameArea {
     new GridPoint2(10, 2), new GridPoint2(20, 2), new GridPoint2(35, 2)
   };
 
+  private static final GridPoint2[] skeletonArcherTestSpawnLocations = {
+    new GridPoint2(4, 5),
+  };
+
   // Encounters are activated nearby so sentries do not wander away before the player arrives.
   private static final GridPoint2[] skeletonWarriorSpawnLocations = {
     new GridPoint2(21, 5),
@@ -67,9 +73,7 @@ public class Level1GameArea extends GameArea {
     new GridPoint2(23, 17), new GridPoint2(58, 11)
   };
 
-  // ======== ^^^^^^^^^^ ============================
-
-  public static final GridPoint2 PLAYER_SPAWN = new GridPoint2(1, 4);
+  private static final GridPoint2[] VultureSpawnLocations = new GridPoint2[] {};
 
   /** First floating platform is at (4, 2) and is 3 tiles wide; stand on its centre. */
   public static final GridPoint2 SHOPKEEPER_SPAWN = new GridPoint2(5, 3);
@@ -85,6 +89,8 @@ public class Level1GameArea extends GameArea {
   public static final GridPoint2[] GOLD_SPAWNS = {
     new GridPoint2(9, 5), new GridPoint2(15, 7), new GridPoint2(20, 8)
   };
+
+  private static final float WALL_WIDTH = 0.1f;
 
   /** Centre of the stepping-stone platform at (31, 2) */
   public static final GridPoint2 WHEEL_TOKEN_SPAWN = new GridPoint2(32, 3);
@@ -118,6 +124,27 @@ public class Level1GameArea extends GameArea {
     "images/terrain/Level_1/Level_1_platform.png",
     "images/terrain/Level_1/Level_1_Spike.png",
 
+    // Parallax background layers
+    "images/parallax/original_background.png",
+    "images/parallax/sky.png",
+    "images/parallax/Clouds.png",
+    "images/parallax/Mountains.png",
+    "images/parallax/ground.png",
+    "images/parallax/Rocks.png",
+    "images/parallax/level_1_background.png",
+    "images/parallax/level_1_clouds.png",
+    "images/parallax/level_1_furthest.png",
+    "images/parallax/white_box.png",
+    "images/parallax/lightning_1.png",
+    "images/parallax/lightning_2.png",
+    "images/parallax/lightning_3.png",
+    "images/parallax/lightning_4.png",
+    "images/parallax/rain_small.png",
+    "images/parallax/rain_medium.png",
+    "images/parallax/rain_large.png",
+    "images/parallax/rain_xl.png",
+    "images/parallax/rain_xxl.png",
+
     // Enemy textures
     "images/enemies/skeleton_warrior.png",
     "images/enemies/skeleton_archer.png",
@@ -145,6 +172,7 @@ public class Level1GameArea extends GameArea {
     "images/enemies/skeleton_warrior.atlas",
     "images/enemies/necromancer.atlas",
     "images/enemies/vulture.atlas",
+    "images/enemies/calypso.atlas",
   };
 
   private static final String[] forestSounds = {"sounds/Impact4.ogg"};
@@ -184,7 +212,6 @@ public class Level1GameArea extends GameArea {
     //// spawnWinCondition();
     spawnShopkeeper();
     spawnGold();
-    spawnWheelToken();
     spawnSkeletonArcher();
     spawnSkeletonWarrior();
     spawnWhenApproaching(
@@ -200,7 +227,9 @@ public class Level1GameArea extends GameArea {
     // spawnTestSkeletonArcher();
     // spawnTestVulture();
     // spawnTestNecromancer();
+    // spawnTestCalypso();
 
+    // spawnVulture();
     // spawnNecromancer();
 
     // spawnTestWinCondition(); // Temporary test win condition near player spawn for quick testing
@@ -238,8 +267,7 @@ public class Level1GameArea extends GameArea {
    */
   private void spawnBackground() {
     final Vector2 backgroundPos = new Vector2(-10f, -10f);
-    BackgroundRenderComponent backgroundComponent =
-        new BackgroundRenderComponent(camera, backgroundPos, worldBounds);
+    backgroundComponent = new BackgroundRenderComponent(camera, backgroundPos, worldBounds);
 
     // Base layer: the whole scene.
     backgroundComponent.addLayer(
@@ -248,11 +276,13 @@ public class Level1GameArea extends GameArea {
         36f,
         20.2f,
         new Vector2(0f, 5f),
-        BackgroundType.DEPENDENT,
         new Vector2(0f, 0f),
-        false,
+        RepeatMode.NONE,
         0.7f,
-        1f);
+        1f,
+        false,
+        0,
+        -1);
 
     // Create the background entity.
     Entity background = new Entity().addComponent(backgroundComponent);
@@ -304,11 +334,12 @@ public class Level1GameArea extends GameArea {
     }
   }
 
+  /*
   private void spawnWheelToken() {
     Entity token = ItemFactory.createWheelToken();
     spawnEntityAt(token, WHEEL_TOKEN_SPAWN, true, false);
     token.setPosition(token.getPosition().add(0f, 0.3f));
-  }
+  }*/
 
   private void spawnSkeletonWarrior() {
     for (GridPoint2 spawnLocation : skeletonWarriorSpawnLocations) {
@@ -357,12 +388,12 @@ public class Level1GameArea extends GameArea {
   //   }
   // }
 
-  // private void spawnTestSkeletonArcher() {
-  //   for (GridPoint2 spawnLocation : skeletonArcherTestSpawnLocations) {
-  //     Entity enemy = EnemyFactory.createSkeletonArcher(player);
-  //     spawnEntityAt(enemy, spawnLocation, true, true);
-  //   }
-  // }
+  private void spawnTestSkeletonArcher() {
+    for (GridPoint2 spawnLocation : skeletonArcherTestSpawnLocations) {
+      Entity enemy = EnemyFactory.createSkeletonArcher(player);
+      spawnEntityAt(enemy, spawnLocation, true, true);
+    }
+  }
 
   // private void spawnTestVulture() {
   //   for (GridPoint2 spawnLocation : VultureTestSpawnLocations) {
@@ -474,13 +505,24 @@ public class Level1GameArea extends GameArea {
     spawnEntity(ceiling);
   }
 
+  List<Vector2> testCalypsoTpPositions =
+      List.of(new Vector2(5f, 3f), new Vector2(10f, 7f), new Vector2(15f, 2f));
+
+  /**
+   * private void spawnTestCalypso() { for (GridPoint2 spawnLocation : testSpawnLocations) { Entity
+   * enemy = EnemyFactory.createCalypso(player, testCalypsoTpPositions); spawnEntityAt(enemy,
+   * spawnLocation, true, true); } }*
+   */
+
+  // ======== ^^^^^ ============
+
   /** Plays the background music. */
   private void playMusic() {
 
     Music music = ServiceLocator.getResourceService().getAsset(backgroundMusic, Music.class);
 
     music.setLooping(true);
-    music.setVolume(0.3f);
+    GameVolume.setMusicVolume(music, 0.3f);
     music.play();
   }
 
@@ -510,9 +552,15 @@ public class Level1GameArea extends GameArea {
     resourceService.unloadAssets(forestMusic);
   }
 
+  @Override
+  public void toggleLevelMap() {
+    toggleMap(worldBounds, camera, backgroundComponent, "level1");
+  }
+
   /** Dispose of the game area. */
   @Override
   public void dispose() {
+    // MAY CAUSE ISSUE
     player.getComponent(DesertHazardRecoveryComponent.class).setEnabled(false);
     player.getEvents().trigger("grappleRelease");
     super.dispose();

@@ -9,6 +9,7 @@ import com.badlogic.gdx.utils.Array;
 import com.csse3200.game.components.player.PlayerActions;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
+import com.csse3200.game.rendering.TextureRenderComponent;
 import com.csse3200.game.services.ServiceLocator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,17 +22,22 @@ public class CheckpointComponentTest {
   private Entity player;
   private Entity checkpointEntity;
   CheckpointComponent checkpointComponent;
+  TextureRenderComponent textureRenderComponent;
+  EntityService entityService;
 
   @BeforeEach
   void beforeEach() {
     Array<Entity> entities = new Array<>();
     checkpointComponent = new CheckpointComponent(false, new GridPoint2(10, 10));
+    textureRenderComponent = mock(TextureRenderComponent.class);
     checkpointEntity = new Entity();
     checkpointEntity.addComponent(checkpointComponent);
+    checkpointEntity.addComponent(textureRenderComponent);
+
     player = new Entity();
     player.addComponent(new PlayerActions());
     entities.add(player);
-    EntityService entityService = mock(EntityService.class);
+    entityService = mock(EntityService.class);
     when(entityService.getEntities()).thenReturn(entities);
     ServiceLocator.registerEntityService(entityService);
   }
@@ -91,5 +97,27 @@ public class CheckpointComponentTest {
     player.setPosition(11, 9);
     checkpointComponent.update();
     assertFalse(checkpointComponent.isActive());
+  }
+
+  @Test
+  void shouldNotActivatedCollectedCheckpoint() {
+    checkpointComponent = new CheckpointComponent(true, new GridPoint2(0, 0));
+    assertTrue(checkpointComponent.isActive());
+    checkpointComponent.activate();
+    assertTrue(checkpointComponent.isActive());
+
+    // ensure activate method doesn't attempt to spawn another lit checkpoint entity
+    // ensures early return
+    verify(entityService, never()).register(any(Entity.class));
+  }
+
+  @Test
+  void shouldRepeatPlayerFindingIfNoPlayerFound() {
+    entityService.scheduleForDisposal(player);
+
+    checkpointComponent.update();
+    verify(entityService, atLeastOnce()).getEntities();
+    checkpointComponent.update();
+    verify(entityService, atLeastOnce()).getEntities();
   }
 }

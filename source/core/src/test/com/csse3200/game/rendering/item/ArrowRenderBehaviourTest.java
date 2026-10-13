@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
@@ -55,7 +54,23 @@ class ArrowRenderBehaviourTest {
     Texture texture = texture(200, 100);
     renderer(2f, null).render(batch);
     verify(batch)
-        .draw(texture, 0f, 0.5f, 1f, 0.5f, 2f, 1f, 1f, 1f, 0f, 0, 0, 200, 100, false, false);
+        .draw(
+            eq(texture),
+            eq(0f),
+            eq(0.5f),
+            eq(1f),
+            eq(0.5f),
+            eq(2f),
+            eq(1f),
+            eq(1f),
+            eq(1f),
+            floatThat(angle -> Math.abs(angle + 26.56505f) < 0.001f),
+            eq(0),
+            eq(0),
+            eq(200),
+            eq(100),
+            eq(false),
+            eq(false));
   }
 
   @Test
@@ -63,7 +78,23 @@ class ArrowRenderBehaviourTest {
     Texture texture = texture(100, 200);
     renderer(2f, null).render(batch);
     verify(batch)
-        .draw(texture, 0.5f, 0f, 0.5f, 1f, 1f, 2f, 1f, 1f, 0f, 0, 0, 100, 200, false, false);
+        .draw(
+            eq(texture),
+            eq(0.5f),
+            eq(0f),
+            eq(0.5f),
+            eq(1f),
+            eq(1f),
+            eq(2f),
+            eq(1f),
+            eq(1f),
+            floatThat(angle -> Math.abs(angle + 63.43495f) < 0.001f),
+            eq(0),
+            eq(0),
+            eq(100),
+            eq(200),
+            eq(false),
+            eq(false));
   }
 
   @Test
@@ -71,7 +102,7 @@ class ArrowRenderBehaviourTest {
     Texture texture = texture(100, 100);
     ArrowProjectileComponent projectile = new ArrowProjectileComponent(Vector2.Y, 10f, 20f);
     renderer(null, projectile).render(batch);
-    verify(batch).draw(texture, 0f, 0f, 1f, 1f, 2f, 2f, 1f, 1f, 90f, 0, 0, 100, 100, false, false);
+    verify(batch).draw(texture, 0f, 0f, 1f, 1f, 2f, 2f, 1f, 1f, 45f, 0, 0, 100, 100, false, false);
   }
 
   @Test
@@ -84,7 +115,7 @@ class ArrowRenderBehaviourTest {
     renderer.render(batch);
     verifyNoInteractions(batch);
     renderer.render(batch);
-    verify(batch).draw(texture, 0f, 0f, 1f, 1f, 2f, 2f, 1f, 1f, 0f, 0, 0, 100, 100, false, false);
+    verify(batch).draw(texture, 0f, 0f, 1f, 1f, 2f, 2f, 1f, 1f, -45f, 0, 0, 100, 100, false, false);
   }
 
   @Test
@@ -95,7 +126,7 @@ class ArrowRenderBehaviourTest {
     renderer.render(batch);
     verify(resources, times(1)).getAsset("images/projectiles/arrow.png", Texture.class);
     verify(batch, times(2))
-        .draw(texture, 0f, 0f, 1f, 1f, 2f, 2f, 1f, 1f, 0f, 0, 0, 100, 100, false, false);
+        .draw(texture, 0f, 0f, 1f, 1f, 2f, 2f, 1f, 1f, -45f, 0, 0, 100, 100, false, false);
   }
 
   @Test
@@ -107,47 +138,22 @@ class ArrowRenderBehaviourTest {
   }
 
   @Test
-  void shouldCreateAndShareGrapplePixelTextureAndRestoreBatchColour() throws Exception {
-    var cache = ArrowRenderComponent.class.getDeclaredField("pixelTexture");
-    cache.setAccessible(true);
-    Object previous = cache.get(null);
-    cache.set(null, null);
-    try (var pixmaps = mockConstruction(Pixmap.class);
-        var textures =
-            mockConstruction(
-                Texture.class,
-                (texture, context) -> {
-                  assertSame(pixmaps.constructed().getFirst(), context.arguments().getFirst());
-                  when(texture.getWidth()).thenReturn(1);
-                  when(texture.getHeight()).thenReturn(1);
-                })) {
-      ArrowRenderComponent first = new ArrowRenderComponent(ArrowType.GRAPPLE).setRenderSize(2f);
-      Entity entity = new Entity().addComponent(first);
-      entity.setPosition(0f, 0f);
-      entity.setScale(2f, 2f);
-      first.render(batch);
-      ArrowRenderComponent second = new ArrowRenderComponent(ArrowType.GRAPPLE).setRenderSize(2f);
-      new Entity().addComponent(second).setScale(2f, 2f);
-      second.render(batch);
+  void shouldDrawTheGrappleArrowWithTheArrowSpriteInsteadOfAPlainBox() {
+    Texture texture = mock(Texture.class);
+    when(texture.getWidth()).thenReturn(26);
+    when(texture.getHeight()).thenReturn(26);
+    when(resources.getAsset(ArrowType.GRAPPLE.getTexturePath(), Texture.class)).thenReturn(texture);
+    ArrowRenderComponent renderer = new ArrowRenderComponent(ArrowType.GRAPPLE).setRenderSize(2f);
+    Entity entity = new Entity().addComponent(renderer);
+    entity.setPosition(0f, 0f);
+    entity.setScale(2f, 2f);
 
-      assertEquals(1, pixmaps.constructed().size());
-      assertEquals(1, textures.constructed().size());
-      Pixmap pixmap = pixmaps.constructed().getFirst();
-      verify(pixmap).setColor(Color.WHITE);
-      verify(pixmap).fill();
-      verify(pixmap).dispose();
-      Texture texture = textures.constructed().getFirst();
-      var drawing = inOrder(batch);
-      for (int frame = 0; frame < 2; frame++) {
-        drawing.verify(batch).setColor(Color.LIGHT_GRAY);
-        drawing
-            .verify(batch)
-            .draw(texture, 0f, 0.75f, 1f, 0.25f, 2f, 0.5f, 1f, 1f, 0f, 0, 0, 1, 1, false, false);
-        drawing.verify(batch).setColor(Color.WHITE);
-      }
-      verifyNoInteractions(resources);
-    } finally {
-      cache.set(null, previous);
-    }
+    renderer.render(batch);
+
+    // It used to be a one-pixel texture stretched into a light-grey box. Now it's the arrow sprite,
+    // untinted, sized like any other arrow.
+    verify(batch).setColor(Color.WHITE);
+    verify(batch, never()).setColor(Color.LIGHT_GRAY);
+    verify(batch).draw(texture, 0f, 0f, 1f, 1f, 2f, 2f, 1f, 1f, -45f, 0, 0, 26, 26, false, false);
   }
 }

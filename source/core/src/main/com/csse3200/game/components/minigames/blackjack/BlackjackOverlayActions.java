@@ -2,7 +2,7 @@ package com.csse3200.game.components.minigames.blackjack;
 
 import com.csse3200.game.components.Component;
 
-/** Closes Blackjack when it is being displayed as an overlay. */
+/** Handles commands for the Blackjack overlay. */
 public class BlackjackOverlayActions extends Component {
   private final Runnable onClose;
 

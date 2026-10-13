@@ -39,6 +39,7 @@ public class KeyboardPlayerInputComponent extends InputComponent {
     super.create();
     entity.getEvents().addListener("togglePause", this::unpause);
     entity.getEvents().addListener("death", () -> dead = true);
+    entity.getEvents().addListener("revive", () -> dead = false);
     entity.getEvents().addListener("openShop", this::releaseHeldGameplayInput);
     entity.getEvents().addListener("backpackOpened", this::releaseHeldGameplayInput);
     entity.getEvents().addListener("dictionaryOpened", this::releaseHeldGameplayInput);
@@ -177,6 +178,15 @@ public class KeyboardPlayerInputComponent extends InputComponent {
           entity.getEvents().trigger("togglePause");
         }
         unpause();
+        return true;
+      case Keys.M:
+        entity.getEvents().trigger("toggleMap");
+        return true;
+      case Keys.Q:
+        if (!ServiceLocator.getEntityService().getPaused()) {
+          entity.getEvents().trigger("instrumentStart");
+        }
+        return true;
       default:
         return false;
     }
@@ -266,8 +276,8 @@ public class KeyboardPlayerInputComponent extends InputComponent {
   }
 
   /**
-   * Left click swings the melee weapon, right click fires the selected arrow. Both aim toward the
-   * clicked world position.
+   * Left click swings the melee weapon in the direction the player is facing. Right click fires the
+   * selected arrow toward the clicked world position.
    *
    * @return whether the input was processed
    * @see InputProcessor#touchDown(int, int, int, int)
@@ -284,6 +294,13 @@ public class KeyboardPlayerInputComponent extends InputComponent {
 
     if (dead || isArrowWheelOpen()) {
       return false;
+    }
+    if (button == Buttons.LEFT) {
+      if (rightMouseHeld || ServiceLocator.getEntityService().getPaused()) {
+        return false;
+      }
+      entity.getEvents().trigger("meleeStart");
+      return true;
     }
     if (button == Buttons.RIGHT) {
       rightMouseHeld = true;
@@ -330,14 +347,23 @@ public class KeyboardPlayerInputComponent extends InputComponent {
     return isShopOpen();
   }
 
-  /** Reports the pointer's offset from the centre of the screen, where the wheel is drawn. */
+  /**
+   * Reports the pointer's offset from the centre of the arrow wheel, or from the centre of the
+   * screen if the wheel hasn't been placed.
+   */
   @Override
   public boolean mouseMoved(int screenX, int screenY) {
     if (Gdx.graphics != null) {
       float centreX = Gdx.graphics.getWidth() / 2f;
-      float centreY = Gdx.graphics.getHeight() / 2f;
+      float centreYFromTop = Gdx.graphics.getHeight() / 2f;
+      ArrowWheelComponent wheel = entity.getComponent(ArrowWheelComponent.class);
+      Vector2 wheelCentre = wheel == null ? null : wheel.getScreenCentre();
+      if (wheelCentre != null) {
+        centreX = wheelCentre.x;
+        centreYFromTop = wheelCentre.y;
+      }
       // Screen y grows downwards, so flip it to match the wheel's y-up directions.
-      Vector2 offsetFromCentre = new Vector2(screenX - centreX, centreY - screenY);
+      Vector2 offsetFromCentre = new Vector2(screenX - centreX, centreYFromTop - screenY);
       entity.getEvents().trigger("arrowWheelPointerMoved", offsetFromCentre);
     }
 

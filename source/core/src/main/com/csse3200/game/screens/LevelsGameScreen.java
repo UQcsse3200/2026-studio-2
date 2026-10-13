@@ -9,8 +9,12 @@ import com.csse3200.game.GdxGame;
 import com.csse3200.game.areas.GameArea;
 import com.csse3200.game.areas.Level1GameArea;
 import com.csse3200.game.areas.Level2GameArea;
+import com.csse3200.game.areas.Level3GameArea;
+import com.csse3200.game.areas.LevelBossGameArea;
 import com.csse3200.game.areas.terrain.TerrainFactory;
 import com.csse3200.game.components.ButtonSound;
+import com.csse3200.game.components.GameVolume;
+import com.csse3200.game.components.SoundEffects;
 import com.csse3200.game.components.gamearea.CoordinateDisplay;
 import com.csse3200.game.components.gamearea.PerformanceDisplay;
 import com.csse3200.game.components.inventory.BackpackDisplay;
@@ -33,6 +37,8 @@ import com.csse3200.game.events.EventHandler;
 import com.csse3200.game.input.InputComponent;
 import com.csse3200.game.input.InputDecorator;
 import com.csse3200.game.input.InputService;
+import com.csse3200.game.lighting.LightingEngine;
+import com.csse3200.game.lighting.LightingService;
 import com.csse3200.game.physics.PhysicsEngine;
 import com.csse3200.game.physics.PhysicsService;
 import com.csse3200.game.physics.components.PhysicsComponent;
@@ -66,15 +72,19 @@ public class LevelsGameScreen extends ScreenAdapter {
   private boolean levelSwapQueued = false;
   private GameArea currentGameArea;
   private GameArea nextGameArea;
+  private String level = "level1";
 
   private final GdxGame game;
   private final Renderer renderer;
   private final PhysicsEngine physicsEngine;
   private final SpinTheWheelOverlay wheelOverlay;
   private final PauseMenuOverlay pauseOverlay;
+  private final LightingEngine lightingEngine;
   private final BlackjackOverlay blackjackOverlay;
   private final MinigameOverlayManager minigameOverlayManager;
   private Entity player;
+  private GameEndDisplay gameEndDisplay;
+  private Terminal terminal;
   private static final String gameplayMusic = "sounds/gameplay_bg.ogg";
   private static final String[] gameplayMusicFiles = {gameplayMusic};
   private static final String winMusic = "sounds/Win_music.mp3";
@@ -84,8 +94,11 @@ public class LevelsGameScreen extends ScreenAdapter {
     "sounds/hit.ogg", "sounds/Arrow_release.wav", "sounds/jump.ogg", "sounds/itempick.wav"
   };
   private final Level1GameArea level1GameArea;
+  // Cheat mode (Backspace): zero gravity plus free vertical movement. Starts off.
   private boolean cheats = false;
   private boolean inventoryPaused = false;
+  // Gravity scale to restore when cheat mode is switched off.
+  private float gravity = 1f;
 
   public LevelsGameScreen(GdxGame game) {
     this.game = game;
@@ -110,6 +123,11 @@ public class LevelsGameScreen extends ScreenAdapter {
     // renderer.getDebug().setActive(true);
     renderer.getDebug().renderPhysicsWorld(physicsEngine.getWorld());
 
+    LightingService lightingService =
+        new LightingService(renderer.getCamera(), physicsEngine.getWorld());
+    ServiceLocator.registerLightingService(lightingService);
+    lightingEngine = lightingService.getEngine();
+
     loadAssets();
     createUI();
     playMusic();
@@ -125,18 +143,19 @@ public class LevelsGameScreen extends ScreenAdapter {
     level1GameArea.create();
 
     currentGameArea = level1GameArea;
-    Entity levelChanger = currentGameArea.getLevelChanger();
-    if (levelChanger != null) {
-      levelChanger.getEvents().addListener("triggerNextLevel", this::queueAreaSwap);
-    }
+    registerLevelSwap();
 
     player = level1GameArea.getPlayer();
+    game.restorePlayerState(player);
     player.getEvents().addListener("respawnAtCheckpoint", () -> currentGameArea.respawn());
+    player.getEvents().addListener("toggleMap", () -> currentGameArea.toggleLevelMap());
 
     player
         .getEvents()
         .addListener(
-            "jump",
+            // "jumpStart", not the raw "jump" input event: PlayerActions discards a press made
+            // mid-air, during a wind-up, or after death, and the sound must not play for those.
+            "jumpStart",
             () -> {
               try {
                 com.badlogic.gdx.audio.Sound jumpSound =
@@ -185,6 +204,7 @@ public class LevelsGameScreen extends ScreenAdapter {
 
     minigameOverlayManager = new MinigameOverlayManager();
     blackjackOverlay = new BlackjackOverlay(player, minigameOverlayManager);
+    player.getEvents().addListener("openBlackjack", blackjackOverlay::request);
 
     if (cheats) {
       level1GameArea.getPlayer().getComponent(PhysicsComponent.class).getBody().setGravityScale(0);
@@ -193,9 +213,41 @@ public class LevelsGameScreen extends ScreenAdapter {
   }
 
   private void onPlayerDeath() {
-    ServiceLocator.getEntityService().scheduleRemoval(player);
+    // Keep the player entity so the restart button can revive at the last checkpoint.
     Gdx.app.postRunnable(
         () -> ServiceLocator.getGameEndEventHandler().trigger("gameEnd", GameEndState.LOSE));
+  }
+
+  /** Restart handler for the game-over panel: checkpoint respawn with health penalty. */
+  private void restartAtCheckpoint() {
+    if (currentGameArea != null) {
+      currentGameArea.restart();
+    }
+    if (gameEndDisplay != null) {
+      gameEndDisplay.hide();
+    }
+    try {
+      Music music = ServiceLocator.getResourceService().getAsset(gameplayMusic, Music.class);
+      if (!music.isPlaying()) {
+        music.setLooping(true);
+        GameVolume.setMusicVolume(music, 0.05f);
+        music.play();
+      }
+    } catch (Exception e) {
+      logger.warn("Could not resume gameplay music: {}", e.getMessage());
+    }
+  }
+
+  private void registerLevelSwap() {
+    Entity levelChanger = currentGameArea.getLevelChanger();
+    if (levelChanger != null) {
+      levelChanger.getEvents().addListener("triggerNextLevel", this::queueAreaSwap);
+      levelChanger
+          .getEvents()
+          .addListener(
+              "triggerNextLevel",
+              (String level) -> SoundEffects.play("sounds/level_complete.wav", 0.5f));
+    }
   }
 
   private boolean closeInventoryOverlay() {
@@ -267,6 +319,12 @@ public class LevelsGameScreen extends ScreenAdapter {
       case "level2":
         nextGameArea = new Level2GameArea(terrainFactory, renderer.getCamera(), player);
         break;
+      case "level3":
+        nextGameArea = new Level3GameArea(terrainFactory, renderer.getCamera(), player);
+        break;
+      case "boss":
+        nextGameArea = new LevelBossGameArea(terrainFactory, renderer.getCamera(), player);
+        break;
       default:
         return;
     }
@@ -280,10 +338,11 @@ public class LevelsGameScreen extends ScreenAdapter {
   private void performLevelSwap() {
     logger.info("Swapping level to new game area");
 
-    currentGameArea.dispose();
     nextGameArea.create();
+    currentGameArea.dispose();
     currentGameArea = nextGameArea;
     nextGameArea = null;
+    registerLevelSwap();
 
     renderer.getCamera().setTarget(currentGameArea.getPlayer());
   }
@@ -296,9 +355,14 @@ public class LevelsGameScreen extends ScreenAdapter {
       levelSwapQueued = false;
     }
 
-    // ESC closes the inventory UI before opening the pause menu.
-    if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
-      if (!closeInventoryOverlay() && !ServiceLocator.getEntityService().getSettingsOpen()) {
+    // Overlay shortcuts bypass the input handler chain, so ignore them while the terminal is
+    // open. F1 still toggles the terminal itself.
+    boolean terminalOpen = terminal != null && terminal.isOpen();
+    if (!terminalOpen
+            && !minigameOverlayManager.isActive()
+            && Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
+      if (!closeInventoryOverlay()
+              && !ServiceLocator.getEntityService().getSettingsOpen()) {
         pauseOverlay.request();
       }
     }
@@ -309,8 +373,34 @@ public class LevelsGameScreen extends ScreenAdapter {
       debug.setActive(!debug.getActive());
     }
 
+    /*
     if (Gdx.input.isKeyJustPressed(Input.Keys.L)) {
       blackjackOverlay.request();
+    } */
+
+    if (Gdx.input.isKeyJustPressed(Input.Keys.BACKSPACE)) {
+      cheats = !cheats;
+      if (cheats) {
+        gravity = player.getComponent(PhysicsComponent.class).getBody().getGravityScale();
+        player.getComponent(PhysicsComponent.class).getBody().setGravityScale(0);
+        player.getComponent(KeyboardPlayerInputComponent.class).toggleCheats();
+      } else {
+        player.getComponent(PhysicsComponent.class).getBody().setGravityScale(gravity);
+        player.getComponent(KeyboardPlayerInputComponent.class).toggleCheats();
+      }
+    }
+
+    if (!minigameOverlayManager.isActive() && Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
+      if (level.equals("level1")) {
+        level = "level2";
+      } else if (level.equals("level2")) {
+        level = "level3";
+      } else if (level.equals("level3")) {
+        level = "boss";
+      } else if (level.equals("boss")) {
+        level = "none";
+      }
+      queueAreaSwap(level);
     }
     // Apply pause before updating the game world.
     updateInventoryPauseState();
@@ -320,6 +410,7 @@ public class LevelsGameScreen extends ScreenAdapter {
     // Detect inventory UI opened during this frame.
     updateInventoryPauseState();
     renderer.render();
+    renderer.render(lightingEngine);
     wheelOverlay.afterRender();
     pauseOverlay.afterRender();
     blackjackOverlay.afterRender();
@@ -349,6 +440,7 @@ public class LevelsGameScreen extends ScreenAdapter {
     unloadAssets();
 
     ServiceLocator.getEntityService().dispose();
+    lightingEngine.dispose();
     ServiceLocator.getRenderService().dispose();
     ServiceLocator.getResourceService().dispose();
 
@@ -426,7 +518,7 @@ public class LevelsGameScreen extends ScreenAdapter {
     resourceService.loadTextureAtlases(mainGameAtlas);
     resourceService.loadSounds(WheelConfig.SOUNDS);
     resourceService.loadMusic(gameEndMusic);
-    resourceService.loadSounds(gameSounds);
+    SoundEffects.load(resourceService);
     resourceService.loadMusic(gameplayMusicFiles);
     ButtonSound.load(resourceService);
     resourceService.loadAll();
@@ -438,7 +530,7 @@ public class LevelsGameScreen extends ScreenAdapter {
     resourceService.unloadAssets(mainGameTextures);
     resourceService.unloadAssets(mainGameAtlas);
     resourceService.unloadAssets(WheelConfig.SOUNDS);
-    resourceService.unloadAssets(gameSounds);
+    SoundEffects.unload(resourceService);
     resourceService.unloadAssets(gameEndMusic);
     resourceService.unloadAssets(gameplayMusicFiles);
     ButtonSound.unload(resourceService);
@@ -447,7 +539,7 @@ public class LevelsGameScreen extends ScreenAdapter {
   private void playMusic() {
     Music music = ServiceLocator.getResourceService().getAsset(gameplayMusic, Music.class);
     music.setLooping(true);
-    music.setVolume(0.05f);
+    GameVolume.setMusicVolume(music, 0.05f);
     music.play();
   }
 
@@ -465,15 +557,16 @@ public class LevelsGameScreen extends ScreenAdapter {
 
     Entity ui = new Entity();
 
+    gameEndDisplay = new GameEndDisplay(GameEndState.LOSE);
+    terminal = new Terminal(game, GdxGame.ScreenType.LEVEL_1_GAME);
     ui.addComponent(new InputDecorator(stage, 10))
         .addComponent(new PerformanceDisplay())
         .addComponent(new CoordinateDisplay(renderer.getCamera()))
         .addComponent(new MainGameActions(this.game))
         .addComponent(new PauseButtonDisplay(() -> pauseOverlay.request()))
-        .addComponent(
-            new GameEndDisplay(GameEndState.LOSE)) // Add GameEndDisplay component to the UI entity
-        .addComponent(new GameEndActions(this.game))
-        .addComponent(new Terminal(game, GdxGame.ScreenType.LEVEL_1_GAME))
+        .addComponent(gameEndDisplay) // Add GameEndDisplay component to the UI entity
+        .addComponent(new GameEndActions(this.game, this::restartAtCheckpoint))
+        .addComponent(terminal)
         .addComponent(inputComponent)
         .addComponent(new TerminalDisplay());
 

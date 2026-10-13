@@ -7,4 +7,6 @@ public class EnemyConfigs {
   public SkeletonArcherConfig skeletonArcher = new SkeletonArcherConfig();
   public NecromancerConfig necromancer = new NecromancerConfig();
   public VultureConfig vulture = new VultureConfig();
+  public CyclopsConfig cyclops = new CyclopsConfig();
+  public CalypsoConfig calypso = new CalypsoConfig();
 }

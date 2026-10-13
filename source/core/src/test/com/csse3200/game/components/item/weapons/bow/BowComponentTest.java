@@ -24,8 +24,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 @ExtendWith(GameExtension.class)
 class BowComponentTest {
-  // These mirror BowComponent's private charge tuning constants - they are gameplay-feel knobs, so
-  // update them here whenever they are retuned there. Expected values below are derived from them
+  // These mirror BowCharge's tuning constants - they are gameplay-feel knobs, so update them here
+  // whenever they are retuned there. Expected values below are derived from them
   // rather than hardcoded, so a retune only needs changing in one place.
   private static final float MIN_CHARGE_SPEED_FACTOR = 0.3f;
   private static final float MAX_CHARGE_SPEED_FACTOR = 1.5f;
@@ -42,8 +42,8 @@ class BowComponentTest {
     attackSound = mock(Sound.class);
     gameTime = mock(GameTime.class);
 
-    when(resourceService.containsAsset("sounds/Impact4.ogg", Sound.class)).thenReturn(true);
-    when(resourceService.getAsset("sounds/Impact4.ogg", Sound.class)).thenReturn(attackSound);
+    when(resourceService.containsAsset("sounds/shoot.ogg", Sound.class)).thenReturn(true);
+    when(resourceService.getAsset("sounds/shoot.ogg", Sound.class)).thenReturn(attackSound);
 
     ServiceLocator.registerEntityService(entityService);
     ServiceLocator.registerResourceService(resourceService);
@@ -86,7 +86,7 @@ class BowComponentTest {
     assertTrue(animationDirection.get().epsilonEquals(expectedDirection));
     assertEquals(1f, speedMultiplierRef.get());
     verify(entityService).register(projectile);
-    verify(attackSound).play();
+    verify(attackSound).play(1f);
   }
 
   @Test
@@ -180,6 +180,30 @@ class BowComponentTest {
     float expected =
         MIN_CHARGE_SPEED_FACTOR + (MAX_CHARGE_SPEED_FACTOR - MIN_CHARGE_SPEED_FACTOR) * 0.5f;
     assertEquals(expected, speedMultiplierRef.get(), 1e-5f);
+  }
+
+  @Test
+  void shouldReportDrawStateAndLiveSpeedMultiplierForTheAimPreview() {
+    AtomicReference<Float> speedMultiplierRef = new AtomicReference<>();
+    BowComponent component = createChargeComponent(speedMultiplierRef);
+
+    // Not drawing: nothing to preview, and the multiplier just reports the weakest a shot can be.
+    assertFalse(component.isCharging());
+    assertEquals(MIN_CHARGE_SPEED_FACTOR, component.getChargeSpeedMultiplier(), 1e-5f);
+
+    // Start at t=0, then read the live multiplier at the start, halfway, and past full draw.
+    when(gameTime.getTime()).thenReturn(0L, 0L, MAX_CHARGE_MS / 2, MAX_CHARGE_MS * 4);
+    component.startCharge(new Vector2(1f, 0f));
+    assertTrue(component.isCharging());
+    assertEquals(MIN_CHARGE_SPEED_FACTOR, component.getChargeSpeedMultiplier(), 1e-5f);
+    float halfway =
+        MIN_CHARGE_SPEED_FACTOR + (MAX_CHARGE_SPEED_FACTOR - MIN_CHARGE_SPEED_FACTOR) * 0.5f;
+    assertEquals(halfway, component.getChargeSpeedMultiplier(), 1e-5f);
+    assertEquals(MAX_CHARGE_SPEED_FACTOR, component.getChargeSpeedMultiplier(), 1e-5f);
+
+    component.releaseCharge(new Vector2(1f, 0f));
+    assertFalse(component.isCharging());
+    assertEquals(MIN_CHARGE_SPEED_FACTOR, component.getChargeSpeedMultiplier(), 1e-5f);
   }
 
   @Test
