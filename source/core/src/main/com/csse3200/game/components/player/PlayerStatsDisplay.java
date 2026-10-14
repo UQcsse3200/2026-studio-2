@@ -1,14 +1,18 @@
 package com.csse3200.game.components.player;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.utils.Align;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.inventory.InventoryComponent;
 import com.csse3200.game.physics.components.PhysicsComponent;
@@ -26,7 +30,21 @@ public class PlayerStatsDisplay extends UIComponent {
   private static final String DAMAGED_HEART_TEXTURE = "images/health/Damaged_heart.png";
   private static final String LAST_HEALTH_TEXTURE = "images/health/Last_Health.png";
   private static final String GOLD_COIN_TEXTURE = "images/items/gold_coin.png";
-  private static final float GOLD_FONT_SCALE = 1.8f;
+  private static final String GOLD_BAR_BACKGROUND = "images/backgrounds/coin_bg.png";
+  private static final float GOLD_OFFSET_DOWN = 20f;
+  private static final float GOLD_OFFSET_LEFT = 60f;
+  private static final float GOLD_FONT_SCALE = 1f;
+  private static final Color GOLD_TEXT_COLOR = new Color(246 / 255f, 194 / 255f, 88 / 255f, 1f);
+  // Centre of the coin ring in coin_bg.png, as a fraction of the image width (102 / 557 px).
+  private static final float GOLD_RING_CENTER_X = 0.183f;
+  private static final float GOLD_COIN_SIZE = 37f;
+  // Transparent interior of coin_bg.png (557x144), in pixels.
+  private static final float GOLD_INTERIOR_LEFT = 66f;
+  // Left edge of the slot that holds the amount (right of the coin ring), in pixels.
+  private static final float GOLD_SLOT_LEFT = 164f;
+  private static final float GOLD_INTERIOR_RIGHT = 508f;
+  private static final float GOLD_INTERIOR_TOP = 32f;
+  private static final float GOLD_INTERIOR_BOTTOM = 110f;
 
   private static final float HEART_SIDE_LENGTH = 35f;
   private static final float HEART_SIDE_HEIGHT = 35f;
@@ -54,6 +72,10 @@ public class PlayerStatsDisplay extends UIComponent {
   private Label speedLabel;
   private Image background;
   private boolean showStatText;
+  private static final Color TEAL = new Color(0f, 0.25f, 0.28f, 1f);
+  private Table goldContainer;
+  private Texture tealTexture;
+  private Stack goldStack;
   private Table goldTable;
   private Label goldLabel;
 
@@ -114,28 +136,85 @@ public class PlayerStatsDisplay extends UIComponent {
       root.add(speedLabel).left();
     }
 
+    goldContainer = new Table();
+
+    goldStack = new Stack();
+    goldStack.setWidth(20f);
+    goldStack.setHeight(10f);
+
+    Texture goldBgTexture =
+        ServiceLocator.getResourceService().getAsset(GOLD_BAR_BACKGROUND, Texture.class);
+    Image gold_bg = new Image(goldBgTexture);
+    float goldBarWidth = 200f;
+    float goldBarHeight = goldBarWidth * goldBgTexture.getHeight() / goldBgTexture.getWidth();
+
+    // Teal layer behind the bar, limited to its transparent interior (the ring and the slot) so
+    // it doesn't show through the bar's outer corners.
+    Pixmap tealPixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
+    tealPixmap.setColor(TEAL);
+    tealPixmap.fill();
+    tealTexture = new Texture(tealPixmap);
+    tealPixmap.dispose();
+    float imgW = goldBgTexture.getWidth();
+    float imgH = goldBgTexture.getHeight();
+    Table tealFill = new Table();
+    tealFill.setBackground(new TextureRegionDrawable(new TextureRegion(tealTexture)));
+    Table tealLayer = new Table();
+    tealLayer
+        .add(tealFill)
+        .grow()
+        .padLeft(GOLD_INTERIOR_LEFT / imgW * goldBarWidth)
+        .padRight((imgW - GOLD_INTERIOR_RIGHT) / imgW * goldBarWidth)
+        .padTop(GOLD_INTERIOR_TOP / imgH * goldBarHeight)
+        .padBottom((imgH - GOLD_INTERIOR_BOTTOM) / imgH * goldBarHeight);
+
+    goldStack.add(tealLayer);
+    goldStack.add(gold_bg);
+
     goldTable = new Table();
     InventoryComponent inventory = entity.getComponent(InventoryComponent.class);
     if (inventory != null) {
-      goldLabel = new Label("" + inventory.getGold(), skin);
-      // goldLabel.getStyle().fontColor = goldColor;
+      Label.LabelStyle goldLabelStyle = new Label.LabelStyle(skin.get(Label.LabelStyle.class));
+      goldLabelStyle.fontColor = GOLD_TEXT_COLOR;
+      goldLabel = new Label("" + inventory.getGold(), goldLabelStyle);
       goldLabel.setFontScale(GOLD_FONT_SCALE);
-      goldTable.add(goldLabel).left().padLeft(20f);
 
+      // The coin sits in the ring at the left of the bar; the amount fills the slot to its right.
+      float ringCenterX = GOLD_RING_CENTER_X * goldBarWidth;
+      float coinPadLeft = ringCenterX - GOLD_COIN_SIZE / 2f;
       goldTable
           .add(
               new Image(
                   ServiceLocator.getResourceService().getAsset(GOLD_COIN_TEXTURE, Texture.class)))
-          .size(40f, 40f)
-          .right()
-          .padRight(5f);
+          .size(GOLD_COIN_SIZE)
+          .left()
+          .padLeft(coinPadLeft);
+
+      // Give the label a cell exactly the size of the slot and centre the text within it.
+      float slotLeft = GOLD_SLOT_LEFT / imgW * goldBarWidth;
+      float slotWidth = (GOLD_INTERIOR_RIGHT - GOLD_SLOT_LEFT) / imgW * goldBarWidth;
+      goldLabel.setAlignment(Align.center);
+      goldTable
+          .add(goldLabel)
+          .width(slotWidth)
+          .left()
+          .padLeft(slotLeft - (coinPadLeft + GOLD_COIN_SIZE));
+      goldTable.add().expandX();
 
       entity
           .getEvents()
           .addListener("goldChanged", () -> goldLabel.setText("" + inventory.getGold()));
+
+      goldStack.add(goldTable);
     }
 
-    root.add(goldTable).left();
+    // Match the container to the image's aspect ratio so the teal doesn't spill outside gold_bg.
+    goldContainer.add(goldStack).width(goldBarWidth).height(goldBarHeight);
+
+    root.add(goldContainer)
+        .left()
+        .padLeft(100f)
+        .padTop(-45f);
 
     stage.addActor(root);
   }
@@ -284,5 +363,9 @@ public class PlayerStatsDisplay extends UIComponent {
       root.remove();
     }
     heartImages.clear();
+    if (tealTexture != null) {
+      tealTexture.dispose();
+      tealTexture = null;
+    }
   }
 }

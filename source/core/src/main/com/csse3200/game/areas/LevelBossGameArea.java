@@ -40,6 +40,7 @@ public class LevelBossGameArea extends GameArea {
 
   /** Textures used by the level boss game area. */
   private static final String[] level3Textures = {
+    "images/backgrounds/coin_bg.png",
     "images/backgrounds/Background-2.png",
     "images/terrain/Level_3/Platform_level-3.png",
     "images/terrain/Level_3/tile-level3.png",

@@ -34,6 +34,7 @@ public class Level2GameArea extends GameArea {
     "images/ui/scroll_bg.png",
 
     // Level 2 background
+    "images/backgrounds/coin_bg.png",
     "images/backgrounds/Background-2.png",
     "images/backgrounds/Platform_level-2.png",
     "images/parallax/Clouds-birds.png",

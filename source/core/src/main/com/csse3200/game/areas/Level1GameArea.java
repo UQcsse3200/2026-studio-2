@@ -110,6 +110,7 @@ public class Level1GameArea extends GameArea {
     "images/health/red_heart.png",
     "images/health/PixelArt_HeartBack.png",
     "images/ui/transparent.png",
+    "images/backgrounds/coin_bg.png",
     "images/backgrounds/level_1_bg.png",
     "images/backgrounds/level_1_idea.png",
     "images/terrain/Others/closed_door.png",
