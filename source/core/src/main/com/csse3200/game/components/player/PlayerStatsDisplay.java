@@ -22,29 +22,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-/** A UI component that displays the player's health as a row of hearts. */
+/** A UI component that displays the player's health as a row of hearts, and their gold. */
 public class PlayerStatsDisplay extends UIComponent {
+  // Health bar
   private static final String HEART_TEXTURE = "images/health/red_heart.png";
   private static final String HEALTH_BAR_BACKGROUND_TEXTURE =
       "images/health/PixelArt_HeartBack.png";
   private static final String DAMAGED_HEART_TEXTURE = "images/health/Damaged_heart.png";
   private static final String LAST_HEALTH_TEXTURE = "images/health/Last_Health.png";
-  private static final String GOLD_COIN_TEXTURE = "images/items/gold_coin.png";
-  private static final String GOLD_BAR_BACKGROUND = "images/backgrounds/coin_bg.png";
-  private static final float GOLD_OFFSET_DOWN = 20f;
-  private static final float GOLD_OFFSET_LEFT = 60f;
-  private static final float GOLD_FONT_SCALE = 1f;
-  private static final Color GOLD_TEXT_COLOR = new Color(246 / 255f, 194 / 255f, 88 / 255f, 1f);
-  // Centre of the coin ring in coin_bg.png, as a fraction of the image width (102 / 557 px).
-  private static final float GOLD_RING_CENTER_X = 0.183f;
-  private static final float GOLD_COIN_SIZE = 37f;
-  // Transparent interior of coin_bg.png (557x144), in pixels.
-  private static final float GOLD_INTERIOR_LEFT = 66f;
-  // Left edge of the slot that holds the amount (right of the coin ring), in pixels.
-  private static final float GOLD_SLOT_LEFT = 164f;
-  private static final float GOLD_INTERIOR_RIGHT = 508f;
-  private static final float GOLD_INTERIOR_TOP = 32f;
-  private static final float GOLD_INTERIOR_BOTTOM = 110f;
+  private static final float HEALTH_BAR_WIDTH = 400f;
+  private static final float HEALTH_BAR_HEIGHT = 150f;
 
   private static final float HEART_SIDE_LENGTH = 35f;
   private static final float HEART_SIDE_HEIGHT = 35f;
@@ -52,8 +39,6 @@ public class PlayerStatsDisplay extends UIComponent {
   private static final int HP_PER_HEART = 2;
   private static final int FLICKER_COUNT = 3;
   private static final float FLICKER_DURATION = 0.1f;
-  private static final String HEALTH_LABEL_NAME = "player-health-label";
-  private static final String SPEED_LABEL_NAME = "player-speed-label";
 
   private static final float NORMAL_HEART_X = 124f;
   private static final float NORMAL_HEART_Y = 55f;
@@ -61,6 +46,29 @@ public class PlayerStatsDisplay extends UIComponent {
   private static final float DAMAGED_HEART_Y = 56f;
   private static final float LAST_HEART_X = 124f;
   private static final float LAST_HEART_Y = 58f;
+
+  private static final String HEALTH_LABEL_NAME = "player-health-label";
+  private static final String SPEED_LABEL_NAME = "player-speed-label";
+
+  // Gold bar
+  private static final String GOLD_COIN_TEXTURE = "images/items/gold_coin.png";
+  private static final String GOLD_BAR_BACKGROUND = "images/backgrounds/coin_bg.png";
+  private static final float GOLD_BAR_WIDTH = 200f;
+  private static final float GOLD_COIN_SIZE = 37f;
+  private static final float GOLD_FONT_SCALE = 1f;
+  private static final Color GOLD_TEXT_COLOR = new Color(246 / 255f, 194 / 255f, 88 / 255f, 1f);
+  private static final Color GOLD_BAR_FILL_COLOR = new Color(0f, 0.25f, 0.28f, 1f);
+
+  // Measurements of coin_bg.png (557x144), in pixels.
+  // Centre of the coin ring, as a fraction of the image width (102 / 557 px).
+  private static final float GOLD_RING_CENTER_X = 0.183f;
+  // Left edge of the slot that holds the amount (right of the coin ring).
+  private static final float GOLD_SLOT_LEFT = 164f;
+  // Transparent interior of the bar (the ring and the slot).
+  private static final float GOLD_INTERIOR_LEFT = 66f;
+  private static final float GOLD_INTERIOR_RIGHT = 508f;
+  private static final float GOLD_INTERIOR_TOP = 32f;
+  private static final float GOLD_INTERIOR_BOTTOM = 110f;
 
   private Table root;
   private Group heartGroup;
@@ -71,15 +79,9 @@ public class PlayerStatsDisplay extends UIComponent {
   private Label healthLabel;
   private Label speedLabel;
   private Image background;
-  private boolean showStatText;
-  private static final Color TEAL = new Color(0f, 0.25f, 0.28f, 1f);
-  private Table goldContainer;
-  private Texture tealTexture;
-  private Stack goldStack;
-  private Table goldTable;
   private Label goldLabel;
-
-  private Color goldColor = new Color(0.0f, 0.47f, 0.47f, 1.0f);
+  private Texture goldBarFillTexture;
+  private boolean showStatText;
 
   /**
    * Sets whether to show the health and speed text labels above the health bar.
@@ -106,18 +108,33 @@ public class PlayerStatsDisplay extends UIComponent {
       root.add(healthLabel).left().row();
     }
 
+    root.add(createHealthBar()).size(HEALTH_BAR_WIDTH, HEALTH_BAR_HEIGHT).left().row();
+
+    if (showStatText) {
+      speedLabel = new Label("Speed: 0.00", skin);
+      speedLabel.setName(SPEED_LABEL_NAME);
+      root.add(speedLabel).left();
+    }
+
+    root.add(createGoldBar()).left().padLeft(100f).padTop(-45f);
+
+    stage.addActor(root);
+  }
+
+  /** Builds the heart bar: its background art with the hearts layered on top. */
+  private Stack createHealthBar() {
     Stack stack = new Stack();
     Texture backgroundTexture =
         ServiceLocator.getResourceService().getAsset(HEALTH_BAR_BACKGROUND_TEXTURE, Texture.class);
     background = new Image(backgroundTexture);
 
     Table backgroundContainer = new Table();
-    backgroundContainer.add(background).size(400f, 150f).center();
+    backgroundContainer.add(background).size(HEALTH_BAR_WIDTH, HEALTH_BAR_HEIGHT).center();
     stack.add(backgroundContainer);
 
     heartTexture = ServiceLocator.getResourceService().getAsset(HEART_TEXTURE, Texture.class);
     heartGroup = new Group();
-    heartGroup.setSize(400f, 150f);
+    heartGroup.setSize(HEALTH_BAR_WIDTH, HEALTH_BAR_HEIGHT);
     stack.add(heartGroup);
 
     combatStats = entity.getComponent(CombatStatsComponent.class);
@@ -127,93 +144,92 @@ public class PlayerStatsDisplay extends UIComponent {
     if (combatStats != null) {
       updatePlayerHealthUI(combatStats.getHealth());
     }
+    return stack;
+  }
 
-    root.add(stack).size(400f, 150f).left().row();
-
-    if (showStatText) {
-      speedLabel = new Label("Speed: 0.00", skin);
-      speedLabel.setName(SPEED_LABEL_NAME);
-      root.add(speedLabel).left();
-    }
-
-    goldContainer = new Table();
-
-    goldStack = new Stack();
-    goldStack.setWidth(20f);
-    goldStack.setHeight(10f);
-
-    Texture goldBgTexture =
+  /**
+   * Builds the gold bar: a fill behind the bar art, the art itself, then the coin in its ring and
+   * the gold amount centred in its slot.
+   */
+  private Table createGoldBar() {
+    Texture barTexture =
         ServiceLocator.getResourceService().getAsset(GOLD_BAR_BACKGROUND, Texture.class);
-    Image gold_bg = new Image(goldBgTexture);
-    float goldBarWidth = 200f;
-    float goldBarHeight = goldBarWidth * goldBgTexture.getHeight() / goldBgTexture.getWidth();
+    float imageWidth = barTexture.getWidth();
+    float imageHeight = barTexture.getHeight();
+    float barWidth = GOLD_BAR_WIDTH;
+    float barHeight = barWidth * imageHeight / imageWidth;
 
-    // Teal layer behind the bar, limited to its transparent interior (the ring and the slot) so
-    // it doesn't show through the bar's outer corners.
-    Pixmap tealPixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
-    tealPixmap.setColor(TEAL);
-    tealPixmap.fill();
-    tealTexture = new Texture(tealPixmap);
-    tealPixmap.dispose();
-    float imgW = goldBgTexture.getWidth();
-    float imgH = goldBgTexture.getHeight();
-    Table tealFill = new Table();
-    tealFill.setBackground(new TextureRegionDrawable(new TextureRegion(tealTexture)));
-    Table tealLayer = new Table();
-    tealLayer
-        .add(tealFill)
-        .grow()
-        .padLeft(GOLD_INTERIOR_LEFT / imgW * goldBarWidth)
-        .padRight((imgW - GOLD_INTERIOR_RIGHT) / imgW * goldBarWidth)
-        .padTop(GOLD_INTERIOR_TOP / imgH * goldBarHeight)
-        .padBottom((imgH - GOLD_INTERIOR_BOTTOM) / imgH * goldBarHeight);
+    Stack goldStack = new Stack();
+    goldStack.add(createGoldBarFill(imageWidth, imageHeight, barWidth, barHeight));
+    goldStack.add(new Image(barTexture));
 
-    goldStack.add(tealLayer);
-    goldStack.add(gold_bg);
-
-    goldTable = new Table();
     InventoryComponent inventory = entity.getComponent(InventoryComponent.class);
     if (inventory != null) {
-      Label.LabelStyle goldLabelStyle = new Label.LabelStyle(skin.get(Label.LabelStyle.class));
-      goldLabelStyle.fontColor = GOLD_TEXT_COLOR;
-      goldLabel = new Label("" + inventory.getGold(), goldLabelStyle);
-      goldLabel.setFontScale(GOLD_FONT_SCALE);
-
-      // The coin sits in the ring at the left of the bar; the amount fills the slot to its right.
-      float ringCenterX = GOLD_RING_CENTER_X * goldBarWidth;
-      float coinPadLeft = ringCenterX - GOLD_COIN_SIZE / 2f;
-      goldTable
-          .add(
-              new Image(
-                  ServiceLocator.getResourceService().getAsset(GOLD_COIN_TEXTURE, Texture.class)))
-          .size(GOLD_COIN_SIZE)
-          .left()
-          .padLeft(coinPadLeft);
-
-      // Give the label a cell exactly the size of the slot and centre the text within it.
-      float slotLeft = GOLD_SLOT_LEFT / imgW * goldBarWidth;
-      float slotWidth = (GOLD_INTERIOR_RIGHT - GOLD_SLOT_LEFT) / imgW * goldBarWidth;
-      goldLabel.setAlignment(Align.center);
-      goldTable
-          .add(goldLabel)
-          .width(slotWidth)
-          .left()
-          .padLeft(slotLeft - (coinPadLeft + GOLD_COIN_SIZE));
-      goldTable.add().expandX();
-
-      entity
-          .getEvents()
-          .addListener("goldChanged", () -> goldLabel.setText("" + inventory.getGold()));
-
-      goldStack.add(goldTable);
+      goldStack.add(createGoldContents(inventory, imageWidth, barWidth));
     }
 
-    // Match the container to the image's aspect ratio so the teal doesn't spill outside gold_bg.
-    goldContainer.add(goldStack).width(goldBarWidth).height(goldBarHeight);
+    // Match the container to the image's aspect ratio so nothing spills outside the bar.
+    Table goldContainer = new Table();
+    goldContainer.add(goldStack).width(barWidth).height(barHeight);
+    return goldContainer;
+  }
 
-    root.add(goldContainer).left().padLeft(100f).padTop(-45f);
+  /**
+   * Builds the coloured fill behind the bar art, limited to the bar's transparent interior so it
+   * doesn't show through the outer corners.
+   */
+  private Table createGoldBarFill(
+      float imageWidth, float imageHeight, float barWidth, float barHeight) {
+    Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
+    pixmap.setColor(GOLD_BAR_FILL_COLOR);
+    pixmap.fill();
+    goldBarFillTexture = new Texture(pixmap);
+    pixmap.dispose();
 
-    stage.addActor(root);
+    Table fill = new Table();
+    fill.setBackground(new TextureRegionDrawable(new TextureRegion(goldBarFillTexture)));
+
+    Table layer = new Table();
+    layer
+        .add(fill)
+        .grow()
+        .padLeft(GOLD_INTERIOR_LEFT / imageWidth * barWidth)
+        .padRight((imageWidth - GOLD_INTERIOR_RIGHT) / imageWidth * barWidth)
+        .padTop(GOLD_INTERIOR_TOP / imageHeight * barHeight)
+        .padBottom((imageHeight - GOLD_INTERIOR_BOTTOM) / imageHeight * barHeight);
+    return layer;
+  }
+
+  /** Builds the coin and the gold amount, positioned over the ring and the slot of the bar art. */
+  private Table createGoldContents(InventoryComponent inventory, float imageWidth, float barWidth) {
+    Label.LabelStyle labelStyle = new Label.LabelStyle(skin.get(Label.LabelStyle.class));
+    labelStyle.fontColor = GOLD_TEXT_COLOR;
+    goldLabel = new Label("" + inventory.getGold(), labelStyle);
+    goldLabel.setFontScale(GOLD_FONT_SCALE);
+    goldLabel.setAlignment(Align.center);
+
+    Table contents = new Table();
+
+    // The coin sits in the ring at the left of the bar.
+    float coinPadLeft = GOLD_RING_CENTER_X * barWidth - GOLD_COIN_SIZE / 2f;
+    Texture coinTexture =
+        ServiceLocator.getResourceService().getAsset(GOLD_COIN_TEXTURE, Texture.class);
+    contents.add(new Image(coinTexture)).size(GOLD_COIN_SIZE).left().padLeft(coinPadLeft);
+
+    // The amount gets a cell exactly the size of the slot, with its text centred inside.
+    float slotLeft = GOLD_SLOT_LEFT / imageWidth * barWidth;
+    float slotWidth = (GOLD_INTERIOR_RIGHT - GOLD_SLOT_LEFT) / imageWidth * barWidth;
+    contents
+        .add(goldLabel)
+        .width(slotWidth)
+        .left()
+        .padLeft(slotLeft - (coinPadLeft + GOLD_COIN_SIZE));
+    contents.add().expandX();
+
+    entity
+        .getEvents()
+        .addListener("goldChanged", () -> goldLabel.setText("" + inventory.getGold()));
+    return contents;
   }
 
   @Override
@@ -360,9 +376,9 @@ public class PlayerStatsDisplay extends UIComponent {
       root.remove();
     }
     heartImages.clear();
-    if (tealTexture != null) {
-      tealTexture.dispose();
-      tealTexture = null;
+    if (goldBarFillTexture != null) {
+      goldBarFillTexture.dispose();
+      goldBarFillTexture = null;
     }
   }
 }

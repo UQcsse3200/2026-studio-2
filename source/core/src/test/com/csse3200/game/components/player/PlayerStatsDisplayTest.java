@@ -51,6 +51,13 @@ class PlayerStatsDisplayTest {
         .thenReturn(mock(Texture.class));
     when(resourceService.getAsset("images/health/Last_Health.png", Texture.class))
         .thenReturn(mock(Texture.class));
+    Texture goldBar = mock(Texture.class);
+    when(goldBar.getWidth()).thenReturn(557);
+    when(goldBar.getHeight()).thenReturn(144);
+    when(resourceService.getAsset("images/backgrounds/coin_bg.png", Texture.class))
+        .thenReturn(goldBar);
+    when(resourceService.getAsset("images/items/gold_coin.png", Texture.class))
+        .thenReturn(mock(Texture.class));
     ServiceLocator.registerResourceService(resourceService);
 
     entityService = new EntityService();
