@@ -211,10 +211,7 @@ public class PlayerStatsDisplay extends UIComponent {
     // Match the container to the image's aspect ratio so the teal doesn't spill outside gold_bg.
     goldContainer.add(goldStack).width(goldBarWidth).height(goldBarHeight);
 
-    root.add(goldContainer)
-        .left()
-        .padLeft(100f)
-        .padTop(-45f);
+    root.add(goldContainer).left().padLeft(100f).padTop(-45f);
 
     stage.addActor(root);
   }
