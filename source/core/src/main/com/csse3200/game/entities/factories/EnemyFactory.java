@@ -7,6 +7,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.csse3200.game.ai.tasks.AITaskComponent;
 import com.csse3200.game.components.BurnStatsComponent;
+import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.EnemyDeathComponent;
 import com.csse3200.game.components.EnemyItemDropComponent;
@@ -16,7 +17,6 @@ import com.csse3200.game.components.SlowStatsComponent;
 import com.csse3200.game.components.TouchAttackComponent;
 import com.csse3200.game.components.lighting.PointLightComponent;
 import com.csse3200.game.components.npc.ChaseSoundComponent;
-// import com.csse3200.game.components.npc.SkeletonAnimationController;
 import com.csse3200.game.components.npc.EnemyAnimationController;
 import com.csse3200.game.components.tasks.ChaseTask;
 import com.csse3200.game.components.tasks.DelayedAttackTask;
@@ -40,6 +40,7 @@ import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.physics.components.PhysicsMovementComponent;
 import com.csse3200.game.rendering.AnimationRenderComponent;
+import com.csse3200.game.rendering.BossHealthRenderComponent;
 import com.csse3200.game.rendering.EnemyHealthRenderComponent;
 import com.csse3200.game.rendering.ParticleEffectsRenderingComponent;
 import com.csse3200.game.rendering.StatusEffectRenderComponent;
@@ -217,7 +218,8 @@ public class EnemyFactory {
    * @param target entity the enemy will chase and attack
    * @return cyclops entity
    */
-  public static Entity createCalypso(Entity target, List<Vector2> tpPositions) {
+  public static Entity createCalypso(
+      Entity target, List<Vector2> tpPositions, CameraComponent camera) {
     EnemyConfig config = configs.calypso;
     Entity calypso = createEnemy(target, config);
 
@@ -244,6 +246,7 @@ public class EnemyFactory {
     calypso.addComponent(new EnemyAnimationController(target));
     calypso.addComponent(animator);
     calypso.addComponent(new EnemyTeleportComponent(tpPositions, 500L, 10000L));
+    calypso.addComponent(new BossHealthRenderComponent(camera));
 
     animator.scaleEntity();
     float targetHeight = target.getScale().y;
@@ -310,10 +313,13 @@ public class EnemyFactory {
                     LightingDefaults.DIST))
             .addComponent(new ParticleEffectsRenderingComponent())
             .addComponent(new EnemyItemDropComponent(config.itemDrops))
-            .addComponent(new EnemyHealthRenderComponent())
             .addComponent(aiComponent)
             .addComponent(new SlowStatsComponent())
             .addComponent(new StatusEffectRenderComponent());
+
+    if (config != configs.calypso) {
+      enemy.addComponent(new EnemyHealthRenderComponent());
+    }
 
     PhysicsUtils.setScaledCollider(enemy, 0.9f, 0.4f); // 0.4f seems small: any reason?
 

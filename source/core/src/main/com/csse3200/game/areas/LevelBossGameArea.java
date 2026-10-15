@@ -8,6 +8,7 @@ import com.csse3200.game.areas.terrain.configs.levelconfigs.BossArenaConfig;
 import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.EnemyFactory;
+import com.csse3200.game.entities.factories.NPCFactory;
 import com.csse3200.game.rendering.BackgroundRenderComponent;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
@@ -22,6 +23,8 @@ public class LevelBossGameArea extends GameArea {
   private static final float WALL_WIDTH = 0.1f;
 
   private static final GridPoint2 CALYPSO_SPAWN = new GridPoint2(15, 1);
+
+  public static final GridPoint2 SHOPKEEPER_SPAWN = new GridPoint2(15, 3);
 
   private static final List<Vector2> CALYPSO_TP_POSITIONS =
       List.of(
@@ -81,12 +84,18 @@ public class LevelBossGameArea extends GameArea {
     player.setPosition(new Vector2(config.getPlayerSpawn().x, config.getPlayerSpawn().y));
 
     spawnCalypso();
+    spawnShopkeeper();
   }
 
   private void spawnCalypso() {
-    Entity calypso = EnemyFactory.createCalypso(player, CALYPSO_TP_POSITIONS);
+    Entity calypso = EnemyFactory.createCalypso(player, CALYPSO_TP_POSITIONS, camera);
 
     spawnEntityAt(calypso, CALYPSO_SPAWN, true, true);
+  }
+
+  private void spawnShopkeeper() {
+    Entity shopkeeper = NPCFactory.createShopkeeper();
+    spawnEntityAt(shopkeeper, SHOPKEEPER_SPAWN, true, false);
   }
 
   /** Creates the Level 2 background. */
