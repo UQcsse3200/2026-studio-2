@@ -50,6 +50,8 @@ public class ShopDisplay extends UIComponent {
   private static final float SCENE_PLAQUE_GAP = 0.024f;
   private static final int LISTING_COLUMNS = 3;
   private static final float REFERENCE_HEIGHT = 720f;
+  // How much of the screen the shop window fills, leaving a margin around it.
+  private static final float SCENE_SCREEN_FRACTION = 0.85f;
   private static final Color DIM_COLOR = new Color(0f, 0f, 0f, 0.8f);
 
   private Table table;
@@ -165,8 +167,10 @@ public class ShopDisplay extends UIComponent {
   /** Fits shop_bg.png to the stage and places the shop widgets over its panels. */
   private void buildThemedLayout(Texture background) {
     float scale =
-        Math.min(
-            stage.getWidth() / background.getWidth(), stage.getHeight() / background.getHeight());
+        SCENE_SCREEN_FRACTION
+            * Math.min(
+                stage.getWidth() / background.getWidth(),
+                stage.getHeight() / background.getHeight());
     float w = background.getWidth() * scale;
     float h = background.getHeight() * scale;
     uiScale = h / REFERENCE_HEIGHT;
