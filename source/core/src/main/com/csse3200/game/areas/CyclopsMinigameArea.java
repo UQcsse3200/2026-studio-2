@@ -90,7 +90,9 @@ public class CyclopsMinigameArea extends GameArea {
     "sounds/minigames/cyclops/cave_background_noise.mp3"
   };
 
-  // Indexed by hearts remaining after a hit. 0 hearts is the fatal hit, which uses placeholder 4.
+  // Indexed by whole hearts left after a non-fatal hit (health / 2, rounded down). A miss costs 3
+  // HP, so the misses land on 3, 2 then 0 (1 HP left) and each sounds heavier. The fatal hit plays
+  // the separate death voice.
   public static final String[] HURT_VOICE_PATH_BY_HEARTS = {
     "sounds/hurt_player_4.wav",
     "sounds/hurt_player_2.wav",

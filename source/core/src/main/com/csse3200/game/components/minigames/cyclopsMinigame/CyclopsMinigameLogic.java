@@ -45,7 +45,8 @@ public class CyclopsMinigameLogic extends Component {
   static final float TRANSITION_DELAY = 0.8f;
   static final float HURT_PAUSE_DELAY = 0.6f;
   static final float DEATH_DISPLAY_DELAY = 1.5f;
-  static final int MISS_DAMAGE = 2;
+  // 1.5 hearts per miss: 10 HP goes 7, 4, 1, then the fourth miss is fatal.
+  static final int MISS_DAMAGE = 3;
   public static final String CYCLOPS_WAKE_EVENT = "cyclopsWake";
   public static final String CYCLOPS_SLEEP_EVENT = "cyclopsSleep";
   public static final String CYCLOPS_HIT_EVENT = "cyclopsHit";
@@ -274,7 +275,7 @@ public class CyclopsMinigameLogic extends Component {
       combatStats.addHealth(-MISS_DAMAGE);
     }
     playerEntity.getEvents().trigger(playerLossAnimation);
-    // A miss costs a heart and retries the current statue; losing all hearts restarts the
+    // A miss costs a heart and a half and retries the current statue; losing all hearts ends the
     // minigame.
     changeState(playerIsDead() ? State.DEATH : State.LOSS);
   }

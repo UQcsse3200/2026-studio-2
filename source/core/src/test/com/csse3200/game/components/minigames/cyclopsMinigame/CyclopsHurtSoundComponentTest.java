@@ -63,6 +63,32 @@ class CyclopsHurtSoundComponentTest {
   }
 
   @Test
+  void cyclopsMissesEscalateTheHurtVoiceUntilDeath() {
+    Sound[] voices = mockVoices();
+    Sound deathVoice = mock(Sound.class);
+    CombatStatsComponent stats = new CombatStatsComponent(10, 1);
+    Entity player = new Entity().addComponent(stats);
+    CyclopsHurtSoundComponent component =
+        new CyclopsHurtSoundComponent(voices, VOLUMES_BY_HEARTS, deathVoice);
+    player.addComponent(component);
+    component.create();
+
+    // Each miss costs 3 HP: 7, 4 and 1 HP left map to voices 3, 2 and 0, then death.
+    int[] voiceAfterEachMiss = {3, 2, 0};
+    for (int index : voiceAfterEachMiss) {
+      stats.addHealth(-CyclopsMinigameLogic.MISS_DAMAGE);
+      player.getEvents().trigger(CyclopsHurtSoundComponent.HURT_EVENT);
+      verify(voices[index]).play(VOLUMES_BY_HEARTS[index]);
+    }
+    assertEquals(3, totalPlays(voices));
+
+    stats.addHealth(-CyclopsMinigameLogic.MISS_DAMAGE);
+    player.getEvents().trigger(CyclopsHurtSoundComponent.HURT_EVENT);
+    verify(deathVoice).play(0.8f, 0.75f, 0f);
+    assertEquals(3, totalPlays(voices));
+  }
+
+  @Test
   void fatalHitPlaysDeathVoiceAndNotTheNormalHurtSound() {
     Sound[] voices = mockVoices();
     Sound deathVoice = mock(Sound.class);
