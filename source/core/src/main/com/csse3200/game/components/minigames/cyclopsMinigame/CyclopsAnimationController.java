@@ -76,6 +76,18 @@ public class CyclopsAnimationController extends Component {
     return state;
   }
 
+  /**
+   * Draw depth for his renderer. Awake, he keeps the floor's depth for the whole jump, attack and
+   * return, so he never drops behind a rock mid-air and pops in front of it on landing. Asleep, he
+   * sorts by position as usual, which keeps him behind the rocks on his perch. The switch only
+   * happens at home, where he doesn't overlap any rock.
+   *
+   * @return the z index to draw the cyclops at
+   */
+  public float getZIndex() {
+    return state == State.ASLEEP ? -entity.getPosition().y : -groundY;
+  }
+
   private void windUp() {
     if (animator.isFinished()) {
       jumpTo(attackPosition(), State.JUMPING);

@@ -45,6 +45,19 @@ class CyclopsMinigameAreaTest {
   }
 
   @Test
+  void awakeCyclopsDrawsInFrontOfEveryStatueAndBehindThePlayer() {
+    List<Entity> statues = spawnStatues();
+    Entity player = entityAt(new Vector2(STATUE_X.getFirst(), STATUE_BASE_Y));
+    // The awake cyclops draws at -groundY (see CyclopsAnimationController#getZIndex).
+    float cyclopsZ = -CyclopsMinigameArea.cyclopsGroundY(STATUE_BASE_Y);
+
+    for (Entity statue : statues) {
+      assertTrue(cyclopsZ > zIndex(statue));
+    }
+    assertTrue(zIndex(player) > cyclopsZ);
+  }
+
+  @Test
   void playerDrawsInFrontOfEveryStatueAfterMoving() {
     List<Entity> statues = spawnStatues();
     Entity player = entityAt(new Vector2(STATUE_X.getFirst(), STATUE_BASE_Y));

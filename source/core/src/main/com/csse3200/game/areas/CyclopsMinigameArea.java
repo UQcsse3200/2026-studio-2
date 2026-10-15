@@ -264,6 +264,14 @@ public class CyclopsMinigameArea extends GameArea {
     return CAVE_FORMATION_TEXTURES[(statueNumber - 1) % CAVE_FORMATION_TEXTURES.length];
   }
 
+  /**
+   * Where the awake cyclops stands, which also sets his draw depth: half a depth offset above the
+   * floor, so he draws in front of the formations but behind the player.
+   */
+  static float cyclopsGroundY(float floorY) {
+    return floorY + STATUE_DEPTH_OFFSET / 2f;
+  }
+
   static float formationHeightFor(float playerHeight) {
     return FORMATION_HEIGHT_PER_PLAYER_HEIGHT * playerHeight;
   }
@@ -301,7 +309,8 @@ public class CyclopsMinigameArea extends GameArea {
   /**
    * Spawns the cyclops dozing on his feet, club on his shoulder, on a rock in the middle of the
    * room. Both sit just behind the cave formations so the player and formations draw in front of
-   * them.
+   * them. Once awake, he draws in front of the formations and behind the player until he's back
+   * asleep.
    */
   private Entity spawnSleepingCyclops() {
     Vector2 middle = terrain.tileToWorldPosition(MAP_SIZE.x / 2, statueYLevel);
@@ -320,9 +329,17 @@ public class CyclopsMinigameArea extends GameArea {
     rock.setPosition(middle.x - CAVE_ROCK_WIDTH / 2f, middle.y + 2f * STATUE_DEPTH_OFFSET);
     spawnEntity(rock);
 
+    CyclopsAnimationController cyclopsController =
+        new CyclopsAnimationController(player, cyclopsGroundY(middle.y));
     AnimationRenderComponent cyclopsAnimator =
         new AnimationRenderComponent(
-            ServiceLocator.getResourceService().getAsset(CYCLOPS_ATLAS, TextureAtlas.class));
+            ServiceLocator.getResourceService().getAsset(CYCLOPS_ATLAS, TextureAtlas.class)) {
+          // Awake, he holds one depth in front of the rocks so he can't flip depth mid-jump.
+          @Override
+          public float getZIndex() {
+            return cyclopsController.getZIndex();
+          }
+        };
     cyclopsAnimator.addAnimation("sleep", 0.1f, Animation.PlayMode.LOOP, CYCLOPS_BODY_COLUMN, 0f);
     cyclopsAnimator.addAnimation("idle", 0.083f, Animation.PlayMode.LOOP, CYCLOPS_BODY_COLUMN, 0f);
     cyclopsAnimator.addAnimation(
@@ -337,8 +354,7 @@ public class CyclopsMinigameArea extends GameArea {
     Entity cyclops =
         new Entity()
             .addComponent(cyclopsAnimator)
-            .addComponent(
-                new CyclopsAnimationController(player, middle.y + STATUE_DEPTH_OFFSET / 2f))
+            .addComponent(cyclopsController)
             .addComponent(new CyclopsSoundComponent());
     cyclopsAnimator.scaleEntity();
     cyclops.scaleWidth(CYCLOPS_FRAME_WIDTH);

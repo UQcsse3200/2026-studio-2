@@ -201,6 +201,51 @@ class CyclopsAnimationControllerTest {
   }
 
   @Test
+  void asleepHeSortsByHisPositionOnHisRock() {
+    assertEquals(-HOME.y, controller.getZIndex(), 0.001f);
+  }
+
+  @Test
+  void keepsTheFloorDepthForTheWholeJump() {
+    minigameEvents.trigger(CyclopsMinigameLogic.CYCLOPS_WAKE_EVENT);
+    assertEquals(-GROUND_Y, controller.getZIndex(), 0.001f);
+
+    step(2f);
+    int steps = 10;
+    for (int i = 0; i < steps; i++) {
+      step(CyclopsAnimationController.JUMP_DURATION / steps / 2f);
+      assertTrue(cyclops.getPosition().y > GROUND_Y);
+      assertEquals(-GROUND_Y, controller.getZIndex(), 0.001f);
+    }
+  }
+
+  @Test
+  void keepsTheFloorDepthWhileAttackingAndJumpingHome() {
+    runToPlayer();
+    assertEquals(-GROUND_Y, controller.getZIndex(), 0.001f);
+    step(1f);
+    step(1f);
+    assertEquals(CyclopsAnimationController.State.AWAKE, controller.getState());
+    assertEquals(-GROUND_Y, controller.getZIndex(), 0.001f);
+
+    minigameEvents.trigger(CyclopsMinigameLogic.CYCLOPS_SLEEP_EVENT);
+    step(CyclopsAnimationController.JUMP_DURATION / 2f);
+    assertTrue(cyclops.getPosition().y > HOME.y);
+    assertEquals(-GROUND_Y, controller.getZIndex(), 0.001f);
+  }
+
+  @Test
+  void returnsToSortingByPositionOnceBackAsleep() {
+    runToPlayer();
+    step(1f);
+    minigameEvents.trigger(CyclopsMinigameLogic.CYCLOPS_SLEEP_EVENT);
+    step(100f);
+
+    assertEquals(CyclopsAnimationController.State.ASLEEP, controller.getState());
+    assertEquals(-HOME.y, controller.getZIndex(), 0.001f);
+  }
+
+  @Test
   void sleepEventWhileAsleepLeavesHimOnHisRock() {
     minigameEvents.trigger(CyclopsMinigameLogic.CYCLOPS_SLEEP_EVENT);
     step(1f);
