@@ -36,7 +36,7 @@ public class TextConfig {
   public int padding = 16;
   public int borderThickness = 3;
 
-  // Bitmap font (.fnt), relative to assets, e.g. "flat-earth/skin/fonts/PixeloidSans.fnt".
+  // Bitmap font (.fnt), relative to assets, e.g. "flat-earth/skin/fonts/alagard.fnt".
   public String fontPath = "flat-earth/skin/fonts/alagard.fnt";
 
   // Horizontal alignment of the text within the box: "left", "center"/"centre", or "right".
@@ -109,7 +109,7 @@ public class TextConfig {
 
   public BitmapFont loadFont() {
     if (fontPath == null || fontPath.isBlank()) {
-      return new BitmapFont(Gdx.files.internal("flat-earth/skin/fonts/PixeloidSans.fnt"));
+      return new BitmapFont(Gdx.files.internal("flat-earth/skin/fonts/alagard.fnt"));
     }
     try {
       return new BitmapFont(Gdx.files.internal(fontPath));
