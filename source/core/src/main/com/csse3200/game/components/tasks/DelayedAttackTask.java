@@ -8,18 +8,18 @@ import com.csse3200.game.entities.factories.AttackFactory;
 import com.csse3200.game.services.ServiceLocator;
 
 public class DelayedAttackTask extends DefaultTask implements PriorityTask {
-  private final Entity target;
-  private final int priority;
-  private final float attackRange;
-  private final float attackDelay;
-  private final int attackDamage;
-  private final float attackKnockback;
+  protected final Entity target;
+  protected final int priority;
+  protected final float attackRange;
+  protected final float attackDelay;
+  protected final int attackDamage;
+  protected final float attackKnockback;
   // Can add attack Duration if necessary
 
-  private float attackStartTime;
-  private Entity attack;
-  private boolean isAttacking = false;
-  private float attackDuration = 1;
+  protected float attackStartTime;
+  protected Entity attack;
+  protected boolean isAttacking = false;
+  protected float attackDuration = 1;
 
   public DelayedAttackTask(Entity target, int priority, float attackRange) {
     this(target, priority, attackRange, 0, 2, 0f);

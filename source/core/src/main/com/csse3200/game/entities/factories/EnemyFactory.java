@@ -18,6 +18,7 @@ import com.csse3200.game.components.TouchAttackComponent;
 import com.csse3200.game.components.lighting.PointLightComponent;
 import com.csse3200.game.components.npc.ChaseSoundComponent;
 import com.csse3200.game.components.npc.EnemyAnimationController;
+import com.csse3200.game.components.tasks.*;
 import com.csse3200.game.components.tasks.ChaseTask;
 import com.csse3200.game.components.tasks.DelayedAttackTask;
 import com.csse3200.game.components.tasks.FlyingRepositionTask;
@@ -269,7 +270,8 @@ public class EnemyFactory {
                 CALYPSO_SWEEP_HEIGHT,
                 sweepWindUp,
                 CALYPSO_SWEEP_DURATION,
-                CALYPSO_SWEEP_COOLDOWN));
+                CALYPSO_SWEEP_COOLDOWN))
+        .addTask(new TimerAttackTask(target, 25, 100, 0, 1, 0, 15));
 
     return calypso;
   }
