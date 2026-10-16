@@ -49,6 +49,9 @@ public class Level3GameArea extends GameArea {
     "images/terrain/Level_3/tile-level3.png",
     "images/terrain/Level_3/water tile.png",
 
+    // Torches
+    "images/terrain/Level_3/water tile.png",
+
     // Transparent texture used for the physics-only floor
     "images/ui/transparent.png",
 
@@ -105,6 +108,7 @@ public class Level3GameArea extends GameArea {
     spawnBackground();
 
     spawnConfigEntities();
+    spawnTorches();
     spawnRisingWater();
     spawnForeground();
     activateWeather();
@@ -309,6 +313,18 @@ public class Level3GameArea extends GameArea {
       spawnEntityAt(risingWater.hitbox, c.getRisingWaterSpawn(), true, true);
 
       risingWater.hitbox.getEvents().addListener("collisionStart", this::waterCollided);
+    }
+  }
+
+  /** Spawns torches that guide the player upward. */
+  private void spawnTorches() {
+    GridPoint2[] guideTorches = {
+      new GridPoint2(11, 6), // on P1
+      new GridPoint2(15, 8), // on P2
+    };
+
+    for (GridPoint2 pos : guideTorches) {
+      spawnEntityAt(ObstacleFactory.createTorch(), pos, true, false);
     }
   }
 

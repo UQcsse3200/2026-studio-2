@@ -329,6 +329,17 @@ public class ObstacleFactory {
         .addComponent(new ColliderComponent().setLayer(PhysicsLayer.NONE));
   }
 
+  public static Entity createTorch() {
+    Entity torch =
+        new Entity()
+            .addComponent(
+                new TextureRenderComponent("images/terrain/Level_3/water tile.png")); // placeholder
+
+    torch.setScale(0.5f, 1.2f);
+
+    return torch;
+  }
+
   /**
    * Creates a default upward-facing spike hazard entity.
    *
