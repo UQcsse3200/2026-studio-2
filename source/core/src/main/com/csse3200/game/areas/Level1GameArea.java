@@ -395,12 +395,10 @@ public class Level1GameArea extends GameArea {
     }
   }
 
-  // private void spawnTestVulture() {
-  //   for (GridPoint2 spawnLocation : VultureTestSpawnLocations) {
-  //     Entity enemy = EnemyFactory.createVulture(player);
-  //     spawnEntityAt(enemy, spawnLocation, true, true);
-  //   }
-  // }
+  private void spawnTestVulture() {
+    Entity enemy = EnemyFactory.createVulture(player);
+    spawnEntityAt(enemy, new GridPoint2(8, 8), true, true);
+  }
 
   // ======== ^^^^^ ============
 
