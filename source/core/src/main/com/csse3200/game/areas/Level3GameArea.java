@@ -316,11 +316,28 @@ public class Level3GameArea extends GameArea {
     }
   }
 
-  /** Spawns torches that guide the player upward. */
+  /** Spawns torches that guide the player along the route up the level. */
   private void spawnTorches() {
     GridPoint2[] guideTorches = {
-      new GridPoint2(11, 6), // on P1
-      new GridPoint2(15, 8), // on P2
+      new GridPoint2(19, 11),
+      new GridPoint2(14, 13),
+      new GridPoint2(18, 16),
+      new GridPoint2(8, 19),
+      new GridPoint2(5, 22),
+      new GridPoint2(7, 28),
+      new GridPoint2(11, 37),
+      new GridPoint2(14, 43),
+      new GridPoint2(18, 46),
+      new GridPoint2(14, 52),
+      new GridPoint2(8, 59),
+      new GridPoint2(17, 68),
+      new GridPoint2(9, 71),
+      new GridPoint2(14, 81),
+      new GridPoint2(26, 85),
+      new GridPoint2(11, 85),
+      new GridPoint2(11, 95),
+      new GridPoint2(9, 98),
+      new GridPoint2(24, 98),
     };
 
     for (GridPoint2 pos : guideTorches) {
