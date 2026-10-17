@@ -390,6 +390,13 @@ public class ObstacleFactory {
 
     PhysicsUtils.setScaledCollider(spike, 0.8f, 0.5f);
 
+    spike
+        .getComponent(HitboxComponent.class)
+        .setAsBoxAligned(
+            spike.getScale().cpy().scl(0.9f, 0.7f),
+            PhysicsComponent.AlignX.CENTER,
+            PhysicsComponent.AlignY.BOTTOM);
+
     return spike;
   }
 
