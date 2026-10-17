@@ -1,5 +1,6 @@
 package com.csse3200.game.components.player;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -89,9 +90,12 @@ class GrappleComponentTest {
   void shouldIgnoreSwingWhenNotAttached() {
     GrappleComponent grapple = new GrappleComponent();
     // Would throw on the null body if the guard were missing
-    grapple.swing(1f);
-    grapple.swing(-1f);
-    grapple.swing(0f);
+    assertDoesNotThrow(
+        () -> {
+          grapple.swing(1f);
+          grapple.swing(-1f);
+          grapple.swing(0f);
+        });
   }
 
   @Test
@@ -108,8 +112,11 @@ class GrappleComponentTest {
     GrappleComponent grapple = player.getComponent(GrappleComponent.class);
 
     // Would reach ProjectileFactory and fail without a registered service
-    grapple.fire(null);
-    grapple.fire(Vector2.Zero.cpy());
+    assertDoesNotThrow(
+        () -> {
+          grapple.fire(null);
+          grapple.fire(Vector2.Zero.cpy());
+        });
   }
 
   @Test

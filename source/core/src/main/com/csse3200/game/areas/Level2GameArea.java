@@ -21,8 +21,6 @@ public class Level2GameArea extends GameArea {
 
   private static final Logger logger = LoggerFactory.getLogger(Level2GameArea.class);
 
-  private static final float WALL_WIDTH = 0.1f;
-
   private Vector2 worldBounds;
 
   private static final GridPoint2[] skeletonWarriorSpawnLocations =
@@ -82,9 +80,9 @@ public class Level2GameArea extends GameArea {
 
   private static final String[] level2Sounds = {"sounds/Impact4.ogg"};
 
-  private static final String backgroundMusic = "sounds/BGM_03_mp3.mp3";
+  private static final String BACKGROUND_MUSIC = "sounds/BGM_03_mp3.mp3";
 
-  private static final String[] level2Music = {backgroundMusic};
+  private static final String[] level2Music = {BACKGROUND_MUSIC};
 
   private final TerrainFactory terrainFactory;
   private final CameraComponent camera;
@@ -148,9 +146,6 @@ public class Level2GameArea extends GameArea {
   private void spawnTerrain() {
     terrain = terrainFactory.createTerrain(TerrainFactory.TerrainType.BACKGROUND_DESERT);
     spawnEntity(new Entity().addComponent(terrain));
-    float tileSize = terrain.getTileSize();
-    GridPoint2 tileBounds = terrain.getMapBounds(0);
-    // worldBounds = new Vector2(tileBounds.x * tileSize, tileBounds.y * tileSize);
     worldBounds = new Vector2(50f, 45f);
   }
 
@@ -163,7 +158,7 @@ public class Level2GameArea extends GameArea {
 
   /** Plays the background music. */
   private void playMusic() {
-    Music music = ServiceLocator.getResourceService().getAsset(backgroundMusic, Music.class);
+    Music music = ServiceLocator.getResourceService().getAsset(BACKGROUND_MUSIC, Music.class);
 
     music.setLooping(true);
     GameVolume.setMusicVolume(music, 0.3f);
@@ -205,7 +200,7 @@ public class Level2GameArea extends GameArea {
   @Override
   public void dispose() {
     super.dispose();
-    ServiceLocator.getResourceService().getAsset(backgroundMusic, Music.class).stop();
+    ServiceLocator.getResourceService().getAsset(BACKGROUND_MUSIC, Music.class).stop();
     this.unloadAssets();
   }
 }

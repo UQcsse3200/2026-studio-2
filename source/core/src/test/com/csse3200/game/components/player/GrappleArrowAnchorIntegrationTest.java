@@ -6,6 +6,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockingDetails;
 import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.badlogic.gdx.math.Vector2;
@@ -93,7 +94,7 @@ class GrappleArrowAnchorIntegrationTest {
       if (attached) {
         org.mockito.ArgumentCaptor<Vector2> point =
             org.mockito.ArgumentCaptor.forClass(Vector2.class);
-        org.mockito.Mockito.verify(grapple).attachTo(any(Body.class), point.capture());
+        verify(grapple).attachTo(any(Body.class), point.capture());
         return point.getValue();
       }
     }

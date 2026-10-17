@@ -35,7 +35,8 @@ class ProjectileFactoryTest {
     ServiceLocator.registerPhysicsService(new PhysicsService());
 
     LightingEngine lightingEngine = mock(LightingEngine.class);
-    when(lightingEngine.getRayHandler()).thenReturn(mock(box2dLight.RayHandler.class));
+    box2dLight.RayHandler rayHandlerMock = mock(box2dLight.RayHandler.class);
+    when(lightingEngine.getRayHandler()).thenReturn(rayHandlerMock);
     LightingService lightingService = mock(LightingService.class);
     when(lightingService.getEngine()).thenReturn(lightingEngine);
     ServiceLocator.registerLightingService(lightingService);

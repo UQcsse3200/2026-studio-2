@@ -106,7 +106,7 @@ public class MainGameScreen extends ScreenAdapter {
     wheelOverlay = new SpinTheWheelOverlay(WheelConfig.ITEMS, player, minigameOverlayManager);
     player.getEvents().addListener("spinTheWheel", wheelOverlay::request);
     blackjackOverlay = new BlackjackOverlay(player, minigameOverlayManager);
-    pauseOverlay = new PauseMenuOverlay(game, forestGameArea);
+    pauseOverlay = new PauseMenuOverlay(game);
   }
 
   private void onPlayerDeath() {
@@ -125,11 +125,6 @@ public class MainGameScreen extends ScreenAdapter {
         && !ServiceLocator.getEntityService().getSettingsOpen()) {
       pauseOverlay.request();
     }
-    /*
-    if (Gdx.input.isKeyJustPressed(Input.Keys.L)) {
-      blackjackOverlay.request();
-    }
-     */
 
     physicsEngine.update();
     ServiceLocator.getEntityService().update();
@@ -207,8 +202,8 @@ public class MainGameScreen extends ScreenAdapter {
                 "images/Buttons/x_down_btn.png"));
 
     paths.addAll(List.of(ItemAssets.getTextures()));
-    paths.addAll(List.of(WheelConfig.TEXTURES));
-    paths.addAll(List.of(BlackjackConfig.TEXTURES));
+    paths.addAll(WheelConfig.TEXTURES);
+    paths.addAll(BlackjackConfig.TEXTURES);
     return paths.toArray(new String[0]);
   }
 
@@ -216,7 +211,7 @@ public class MainGameScreen extends ScreenAdapter {
     logger.debug("Loading assets");
     ResourceService resourceService = ServiceLocator.getResourceService();
     resourceService.loadTextures(mainGameTextures);
-    resourceService.loadSounds(WheelConfig.SOUNDS);
+    resourceService.loadSounds(WheelConfig.SOUNDS.toArray(String[]::new));
     ButtonSound.load(resourceService);
     ServiceLocator.getResourceService().loadAll();
   }
@@ -225,7 +220,7 @@ public class MainGameScreen extends ScreenAdapter {
     logger.debug("Unloading assets");
     ResourceService resourceService = ServiceLocator.getResourceService();
     resourceService.unloadAssets(mainGameTextures);
-    resourceService.unloadAssets(WheelConfig.SOUNDS);
+    resourceService.unloadAssets(WheelConfig.SOUNDS.toArray(String[]::new));
     ButtonSound.unload(resourceService);
   }
 

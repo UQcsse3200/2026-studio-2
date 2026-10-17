@@ -10,7 +10,6 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.components.item.ItemComponent;
-import com.csse3200.game.components.item.weapons.bow.arrow.*;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.entities.factories.ItemFactory;
 import com.csse3200.game.extensions.GameExtension;
@@ -28,12 +27,13 @@ import org.junit.jupiter.api.extension.ExtendWith;
 @ExtendWith(GameExtension.class)
 class LevelConfigTest {
   @BeforeEach
-  public void setUp() {
+  void setUp() {
     ServiceLocator.registerEntityService(new EntityService());
     ServiceLocator.registerPhysicsService(new PhysicsService());
 
     LightingEngine lightingEngine = mock(LightingEngine.class);
-    when(lightingEngine.getRayHandler()).thenReturn(mock(box2dLight.RayHandler.class));
+    box2dLight.RayHandler rayHandlerMock = mock(box2dLight.RayHandler.class);
+    when(lightingEngine.getRayHandler()).thenReturn(rayHandlerMock);
     LightingService lightingService = mock(LightingService.class);
     when(lightingService.getEngine()).thenReturn(lightingEngine);
     ServiceLocator.registerLightingService(lightingService);

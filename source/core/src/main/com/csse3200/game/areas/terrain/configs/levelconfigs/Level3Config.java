@@ -16,17 +16,33 @@ import java.util.List;
 import java.util.Map;
 
 public class Level3Config extends LevelConfig {
+  private static final String WATER_STOP = "waterStop";
+
+  private static final String WATER_START = "waterStart";
+
+  private static final String SEC3_TPS = "sec3 tps";
+
+  private static final String ENEMY_ARENA2_COMPLETE = "enemyArena2Complete";
+
+  private static final String ENEMY_ARENA2 = "enemyArena2";
+
+  private static final String ENEMY_ARENA1_COMPLETE = "enemyArena1Complete";
+
+  private static final String ENEMY_ARENA1 = "enemyArena1";
+
+  private static final String PLATFORM_TEXTURE = "images/terrain/Level_3/Platform_level-3.png";
+
   GridPoint2 risingWaterSpawn;
   float risingWaterSpeed;
 
   public Level3Config(Entity player) {
     // Textures
     // TFP = Texture File Path
-    platformTFP = "images/terrain/Level_3/Platform_level-3.png";
-    movingPlatformTFP = "images/terrain/Level_3/Platform_level-3.png";
+    platformTFP = PLATFORM_TEXTURE;
+    movingPlatformTFP = PLATFORM_TEXTURE;
     crumblingPlatformTFP = "images/terrain/Level_3/Platform-crumbling-level-3.png";
-    triggerablePlatformTFP = "images/terrain/Level_3/Platform_level-3.png";
-    ledgesTFP = "images/terrain/Level_3/Platform_level-3.png";
+    triggerablePlatformTFP = PLATFORM_TEXTURE;
+    ledgesTFP = PLATFORM_TEXTURE;
     groundTFP = "images/terrain/Level_3/tile-level3.png";
     checkpointAtlas = "images/terrain/Level_1/Level_1_checkpoint.atlas";
     // Smaller than the other levels' statues, which look oversized against the narrow platforms.
@@ -166,7 +182,7 @@ public class Level3Config extends LevelConfig {
               1,
               0,
               triggerablePlatformTFP,
-              new String[] {"enemyArena1"},
+              new String[] {ENEMY_ARENA1},
               false), // TP1
           new TriggerablePlatformConfig(
               new GridPoint2(3, 33),
@@ -174,7 +190,7 @@ public class Level3Config extends LevelConfig {
               1,
               0,
               triggerablePlatformTFP,
-              new String[] {"enemyArena1Complete"},
+              new String[] {ENEMY_ARENA1_COMPLETE},
               false), // TP2
           new TriggerablePlatformConfig(
               new GridPoint2(12, 33),
@@ -182,7 +198,7 @@ public class Level3Config extends LevelConfig {
               1,
               0,
               triggerablePlatformTFP,
-              new String[] {"enemyArena1Complete"},
+              new String[] {ENEMY_ARENA1_COMPLETE},
               false), // TP3
           new TriggerablePlatformConfig(
               new GridPoint2(18, 33),
@@ -190,7 +206,7 @@ public class Level3Config extends LevelConfig {
               1,
               0,
               triggerablePlatformTFP,
-              new String[] {"enemyArena1Complete"},
+              new String[] {ENEMY_ARENA1_COMPLETE},
               false), // TP4
           new TriggerablePlatformConfig(
               new GridPoint2(12, 58),
@@ -198,7 +214,7 @@ public class Level3Config extends LevelConfig {
               1,
               0,
               triggerablePlatformTFP,
-              new String[] {"tp5", "enemyArena2"},
+              new String[] {"tp5", ENEMY_ARENA2},
               true), // TP5
           new TriggerablePlatformConfig(
               new GridPoint2(5, 64),
@@ -206,7 +222,7 @@ public class Level3Config extends LevelConfig {
               1,
               0,
               triggerablePlatformTFP,
-              new String[] {"enemyArena2Complete"},
+              new String[] {ENEMY_ARENA2_COMPLETE},
               false), // TP6
           new TriggerablePlatformConfig(
               new GridPoint2(12, 64),
@@ -214,7 +230,7 @@ public class Level3Config extends LevelConfig {
               1,
               0,
               triggerablePlatformTFP,
-              new String[] {"enemyArena2Complete"},
+              new String[] {ENEMY_ARENA2_COMPLETE},
               false), // TP7
           new TriggerablePlatformConfig(
               new GridPoint2(17, 64),
@@ -222,7 +238,7 @@ public class Level3Config extends LevelConfig {
               1,
               0,
               triggerablePlatformTFP,
-              new String[] {"enemyArena2Complete"},
+              new String[] {ENEMY_ARENA2_COMPLETE},
               false), // TP8
           new TriggerablePlatformConfig(
               new GridPoint2(9, 87),
@@ -230,7 +246,7 @@ public class Level3Config extends LevelConfig {
               1,
               0,
               triggerablePlatformTFP,
-              new String[] {"sec3 tps"},
+              new String[] {SEC3_TPS},
               false), // TP9
           new TriggerablePlatformConfig(
               new GridPoint2(3, 90),
@@ -238,7 +254,7 @@ public class Level3Config extends LevelConfig {
               1,
               0,
               triggerablePlatformTFP,
-              new String[] {"sec3 tps"},
+              new String[] {SEC3_TPS},
               true), // TP10
           new TriggerablePlatformConfig(
               new GridPoint2(2, 93),
@@ -246,7 +262,7 @@ public class Level3Config extends LevelConfig {
               1,
               1,
               triggerablePlatformTFP,
-              new String[] {"sec3 tps"},
+              new String[] {SEC3_TPS},
               false), // TP11
           new TriggerablePlatformConfig(
               new GridPoint2(12, 97),
@@ -254,7 +270,7 @@ public class Level3Config extends LevelConfig {
               1,
               0,
               triggerablePlatformTFP,
-              new String[] {"sec3 tps", "bossArena"},
+              new String[] {SEC3_TPS, "bossArena"},
               true), // TP12
         };
 
@@ -312,7 +328,7 @@ public class Level3Config extends LevelConfig {
           new TriggerButtonConfig(new GridPoint2(8, 57), 180f, false, new String[] {"tp5"}), // B1
           new TriggerButtonConfig(new GridPoint2(18, 57), 180f, false, new String[] {"tp5"}), // B2
           new TriggerButtonConfig(
-              new GridPoint2(12, 89), 90f, false, new String[] {"sec3 tps"}), // B3
+              new GridPoint2(12, 89), 90f, false, new String[] {SEC3_TPS}), // B3
         };
 
     spikes =
@@ -343,7 +359,7 @@ public class Level3Config extends LevelConfig {
           new SpikyBallTrapConfig(
               new GridPoint2(16, 83),
               180f,
-              new String[] {"enemyArena2Complete"},
+              new String[] {ENEMY_ARENA2_COMPLETE},
               4f,
               false,
               SpawnerComponent.ACTIVATION_MODE.TOGGLE), // SBT2
@@ -392,28 +408,28 @@ public class Level3Config extends LevelConfig {
           new EnemySpawnerConfig(
               new GridPoint2(3, 29),
               spawnerConfig[0],
-              new String[] {"enemyArena1"},
-              new String[] {"enemyArena1Complete", "waterStart"}), // ES1
+              new String[] {ENEMY_ARENA1},
+              new String[] {ENEMY_ARENA1_COMPLETE, WATER_START}), // ES1
           new EnemySpawnerConfig(
               new GridPoint2(24, 29),
               spawnerConfig[1],
-              new String[] {"enemyArena1"},
-              new String[] {"enemyArena1Complete", "waterStart"}), // ES2
+              new String[] {ENEMY_ARENA1},
+              new String[] {ENEMY_ARENA1_COMPLETE, WATER_START}), // ES2
           new EnemySpawnerConfig(
               new GridPoint2(13, 60),
               spawnerConfig[2],
-              new String[] {"enemyArena2"},
-              new String[] {"enemyArena2Complete", "waterStart"}), // ES3
+              new String[] {ENEMY_ARENA2},
+              new String[] {ENEMY_ARENA2_COMPLETE, WATER_START}), // ES3
           new EnemySpawnerConfig(
               new GridPoint2(3, 63),
               spawnerConfig[3],
-              new String[] {"enemyArena2"},
-              new String[] {"enemyArena2Complete", "waterStart"}), // ES4
+              new String[] {ENEMY_ARENA2},
+              new String[] {ENEMY_ARENA2_COMPLETE, WATER_START}), // ES4
           new EnemySpawnerConfig(
               new GridPoint2(23, 63),
               spawnerConfig[3],
-              new String[] {"enemyArena2"},
-              new String[] {"enemyArena2Complete", "waterStart"}), // ES5
+              new String[] {ENEMY_ARENA2},
+              new String[] {ENEMY_ARENA2_COMPLETE, WATER_START}), // ES5
         };
 
     mapTriggers =
@@ -421,17 +437,17 @@ public class Level3Config extends LevelConfig {
           new TriggerConfig(
               new GridPoint2(12, 29),
               new Vector2(3f, 1f),
-              new String[] {"enemyArena1", "waterStop"},
+              new String[] {ENEMY_ARENA1, WATER_STOP},
               true),
           new TriggerConfig(
               new GridPoint2(12, 60),
               new Vector2(3f, 1f),
-              new String[] {"enemyArena2", "waterStop"},
+              new String[] {ENEMY_ARENA2, WATER_STOP},
               true),
           new TriggerConfig(
               new GridPoint2(12, 99),
               new Vector2(3f, 1f),
-              new String[] {"bossArena", "waterStop"},
+              new String[] {"bossArena", WATER_STOP},
               true)
         };
 

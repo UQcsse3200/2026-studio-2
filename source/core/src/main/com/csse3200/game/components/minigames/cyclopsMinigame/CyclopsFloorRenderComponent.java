@@ -39,6 +39,11 @@ public class CyclopsFloorRenderComponent extends RenderComponent {
   }
 
   @Override
+  public float getZIndex() {
+    return 0f;
+  }
+
+  @Override
   protected void draw(SpriteBatch batch) {
     Vector2 top = entity.getPosition();
     float stripBottom = top.y - stripHeight;

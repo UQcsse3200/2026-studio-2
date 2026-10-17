@@ -1,5 +1,6 @@
 package com.csse3200.game.components.player;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -46,7 +47,8 @@ class GrappleArrowComponentTest {
     filter.categoryBits = layer;
     Fixture fixture = mock(Fixture.class);
     when(fixture.getFilterData()).thenReturn(filter);
-    when(fixture.getBody()).thenReturn(mock(Body.class));
+    Body bodyMock = mock(Body.class);
+    when(fixture.getBody()).thenReturn(bodyMock);
     return fixture;
   }
 
@@ -132,9 +134,12 @@ class GrappleArrowComponentTest {
   void shouldNotCrashWhenShooterHasNoGrapple() {
     Entity arrow = arrowFiredBy(new Entity());
 
-    arrow
-        .getEvents()
-        .trigger("collisionStart", mock(Fixture.class), fixtureOnLayer(PhysicsLayer.GROUND));
+    assertDoesNotThrow(
+        () ->
+            arrow
+                .getEvents()
+                .trigger(
+                    "collisionStart", mock(Fixture.class), fixtureOnLayer(PhysicsLayer.GROUND)));
   }
 
   @Test

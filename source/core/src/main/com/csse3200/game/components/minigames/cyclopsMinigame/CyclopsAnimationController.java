@@ -1,0 +1,166 @@
+package com.csse3200.game.components.minigames.cyclopsMinigame;
+
+import com.badlogic.gdx.math.Vector2;
+import com.csse3200.game.components.Component;
+import com.csse3200.game.entities.Entity;
+import com.csse3200.game.events.EventHandler;
+import com.csse3200.game.rendering.AnimationRenderComponent;
+import com.csse3200.game.services.ServiceLocator;
+
+/** Plays the cyclops's animations and moves him when the player is caught. */
+public class CyclopsAnimationController extends Component {
+  public static final float ATTACK_FRAME_TIME = 0.08f;
+
+  static final int IMPACT_FRAME = 8;
+
+  static final float CLUB_REACH = 78f / 180f;
+
+  static final float JUMP_DURATION = 0.7f;
+
+  static final float JUMP_HEIGHT = 3f;
+
+  static final String WOKE_UP_EVENT = "wokeUp";
+  public static final String LANDED_EVENT = "landed";
+  static final String CLUB_LANDED_EVENT = "clubLanded";
+  static final String FELL_ASLEEP_EVENT = "fellAsleep";
+
+  enum State {
+    ASLEEP,
+    CHARGING,
+    JUMPING,
+    ATTACKING,
+    AWAKE,
+    RETURNING
+  }
+
+  private final Entity target;
+  private final float groundY;
+  private AnimationRenderComponent animator;
+  private Vector2 home;
+  private Vector2 jumpStart;
+  private Vector2 destination;
+  private float jumpTime;
+  private State state = State.ASLEEP;
+  private float attackTime;
+  private boolean hitLanded;
+
+  public CyclopsAnimationController(Entity target, float groundY) {
+    this.target = target;
+    this.groundY = groundY;
+  }
+
+  @Override
+  public void create() {
+    super.create();
+    animator = this.entity.getComponent(AnimationRenderComponent.class);
+    home = entity.getPosition();
+    animator.startAnimation("sleep");
+
+    EventHandler minigameEvents = ServiceLocator.getCyclopsMinigameEventHandler();
+    minigameEvents.addListener(CyclopsMinigameLogic.CYCLOPS_WAKE_EVENT, this::chargeAtTarget);
+    minigameEvents.addListener(CyclopsMinigameLogic.CYCLOPS_SLEEP_EVENT, this::returnHome);
+  }
+
+  @Override
+  public void update() {
+    float delta = ServiceLocator.getTimeSource().getDeltaTime();
+    switch (state) {
+      case CHARGING -> windUp();
+      case JUMPING, RETURNING -> jump(delta);
+      case ATTACKING -> swing(delta);
+      default -> {
+        // Other states leave the current animation unchanged.
+      }
+    }
+  }
+
+  State getState() {
+    return state;
+  }
+
+  private void windUp() {
+    if (animator.isFinished()) {
+      jumpTo(attackPosition(), State.JUMPING);
+    }
+  }
+
+  private void chargeAtTarget() {
+    face(target.getCenterPosition().x);
+    animator.startAnimation("charge_start");
+    state = State.CHARGING;
+    entity.getEvents().trigger(WOKE_UP_EVENT);
+  }
+
+  private void returnHome() {
+    if (state != State.ASLEEP) {
+      jumpTo(home, State.RETURNING);
+    }
+  }
+
+  private Vector2 attackPosition() {
+    float width = entity.getScale().x;
+    float playerX = target.getCenterPosition().x;
+    float reach = CLUB_REACH * width;
+    float bodyX = bodyX() > playerX ? playerX + reach : playerX - reach;
+    return new Vector2(bodyX - width / 2f, groundY);
+  }
+
+  private void jumpTo(Vector2 position, State next) {
+    jumpStart = entity.getPosition();
+    destination = position;
+    jumpTime = 0f;
+    face(position.x + entity.getScale().x / 2f);
+    animator.startAnimation("jump");
+    state = next;
+  }
+
+  private void jump(float delta) {
+    jumpTime += delta;
+    float progress = Math.min(jumpTime / JUMP_DURATION, 1f);
+    Vector2 position = jumpStart.cpy().lerp(destination, progress);
+    position.y += 4f * JUMP_HEIGHT * progress * (1f - progress);
+    entity.setPosition(position);
+    if (progress < 1f) {
+      return;
+    }
+    entity.getEvents().trigger(LANDED_EVENT);
+    if (state == State.JUMPING) {
+      startSwing();
+    } else {
+      animator.setFlipX(false);
+      animator.startAnimation("sleep");
+      state = State.ASLEEP;
+      entity.getEvents().trigger(FELL_ASLEEP_EVENT);
+    }
+  }
+
+  private void startSwing() {
+    face(target.getCenterPosition().x);
+    animator.startAnimation("attack");
+    attackTime = 0f;
+    hitLanded = false;
+    state = State.ATTACKING;
+  }
+
+  private void swing(float delta) {
+    attackTime += delta;
+    if (!hitLanded && attackTime >= IMPACT_FRAME * ATTACK_FRAME_TIME) {
+      hitLanded = true;
+      entity.getEvents().trigger(CLUB_LANDED_EVENT);
+      ServiceLocator.getCyclopsMinigameEventHandler()
+          .trigger(CyclopsMinigameLogic.CYCLOPS_HIT_EVENT);
+    }
+    if (animator.isFinished()) {
+      animator.startAnimation("idle");
+      state = State.AWAKE;
+    }
+  }
+
+  private float bodyX() {
+    return entity.getCenterPosition().x;
+  }
+
+  private void face(float x) {
+    animator.setFlipX(x > bodyX());
+  }
+}

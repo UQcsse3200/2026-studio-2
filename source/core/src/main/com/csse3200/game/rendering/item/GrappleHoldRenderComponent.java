@@ -113,7 +113,7 @@ public class GrappleHoldRenderComponent extends RenderComponent {
     float minDistanceSquared = MIN_ROPE_LENGTH * MIN_ROPE_LENGTH;
 
     for (int k = 1; k <= last; k++) {
-      Vector2 point = startsAtPlayer ? path.get(k) : path.get(last - k);
+      Vector2 point = path.get(startsAtPlayer ? k : last - k);
       if (point.dst2(centre) >= minDistanceSquared) {
         return point;
       }

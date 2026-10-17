@@ -124,7 +124,7 @@ class RenderComponentTest {
     renderComponent.toggleWeather();
     renderComponent.update();
     float newDarkness = renderComponent.getDarkness();
-    assertTrue(prevDarkness != newDarkness);
+    assertNotEquals(prevDarkness, newDarkness);
   }
 
   @Test
@@ -152,7 +152,7 @@ class RenderComponentTest {
     renderComponent.toggleWeather();
     renderComponent.update();
     float newBackgroundLight = renderComponent.getBackgroundLight();
-    assertTrue(prevBackgroundLight != newBackgroundLight);
+    assertNotEquals(prevBackgroundLight, newBackgroundLight);
   }
 
   @Test

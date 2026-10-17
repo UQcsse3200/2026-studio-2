@@ -22,7 +22,6 @@ public class RangedAttackTask extends DefaultTask implements PriorityTask {
   private final String attackType;
 
   private long lastAttackTime;
-  private long currentTime;
 
   /**
    * Creates a ranged attack task.
@@ -72,7 +71,7 @@ public class RangedAttackTask extends DefaultTask implements PriorityTask {
   @Override
   public int getPriority() {
     float distance = owner.getEntity().getPosition().dst(target.getPosition());
-    currentTime = ServiceLocator.getTimeSource().getTime();
+    long currentTime = ServiceLocator.getTimeSource().getTime();
 
     if (distance <= attackRange && currentTime - lastAttackTime >= cooldown * 1000) {
       return priority;

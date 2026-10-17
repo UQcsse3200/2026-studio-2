@@ -9,13 +9,14 @@ import com.badlogic.gdx.audio.Sound;
 import com.csse3200.game.areas.CyclopsMinigameArea;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.entities.Entity;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 
 class CyclopsHurtSoundComponentTest {
-  private static final float[] VOLUMES_BY_HEARTS = {0.6f, 0.3f, 0.3f, 0.3f, 0.3f};
+  private static final List<Float> VOLUMES_BY_HEARTS = List.of(0.6f, 0.3f, 0.3f, 0.3f, 0.3f);
 
   private static Sound[] mockVoices() {
-    Sound[] voices = new Sound[VOLUMES_BY_HEARTS.length];
+    Sound[] voices = new Sound[VOLUMES_BY_HEARTS.size()];
     for (int i = 0; i < voices.length; i++) {
       voices[i] = mock(Sound.class);
     }
@@ -32,14 +33,14 @@ class CyclopsHurtSoundComponentTest {
 
   @Test
   void heartLevelsMapToTheExpectedFileAndVolume() {
-    assertEquals("sounds/hurt_player_1.wav", CyclopsMinigameArea.HURT_VOICE_PATH_BY_HEARTS[4]);
-    assertEquals(0.3f, CyclopsMinigameArea.HURT_VOLUME_BY_HEARTS[4]);
-    assertEquals("sounds/hurt_player_1.wav", CyclopsMinigameArea.HURT_VOICE_PATH_BY_HEARTS[3]);
-    assertEquals(0.3f, CyclopsMinigameArea.HURT_VOLUME_BY_HEARTS[3]);
-    assertEquals("sounds/hurt_player_2.wav", CyclopsMinigameArea.HURT_VOICE_PATH_BY_HEARTS[2]);
-    assertEquals(0.3f, CyclopsMinigameArea.HURT_VOLUME_BY_HEARTS[2]);
-    assertEquals("sounds/hurt_player_2.wav", CyclopsMinigameArea.HURT_VOICE_PATH_BY_HEARTS[1]);
-    assertEquals(0.3f, CyclopsMinigameArea.HURT_VOLUME_BY_HEARTS[1]);
+    assertEquals("sounds/hurt_player_1.wav", CyclopsMinigameArea.HURT_VOICE_PATH_BY_HEARTS.get(4));
+    assertEquals(0.3f, CyclopsMinigameArea.HURT_VOLUME_BY_HEARTS.get(4));
+    assertEquals("sounds/hurt_player_1.wav", CyclopsMinigameArea.HURT_VOICE_PATH_BY_HEARTS.get(3));
+    assertEquals(0.3f, CyclopsMinigameArea.HURT_VOLUME_BY_HEARTS.get(3));
+    assertEquals("sounds/hurt_player_2.wav", CyclopsMinigameArea.HURT_VOICE_PATH_BY_HEARTS.get(2));
+    assertEquals(0.3f, CyclopsMinigameArea.HURT_VOLUME_BY_HEARTS.get(2));
+    assertEquals("sounds/hurt_player_2.wav", CyclopsMinigameArea.HURT_VOICE_PATH_BY_HEARTS.get(1));
+    assertEquals(0.3f, CyclopsMinigameArea.HURT_VOLUME_BY_HEARTS.get(1));
   }
 
   @Test
@@ -57,7 +58,7 @@ class CyclopsHurtSoundComponentTest {
 
       player.getEvents().trigger(CyclopsHurtSoundComponent.HURT_EVENT);
 
-      verify(voices[pair[1]]).play(VOLUMES_BY_HEARTS[pair[1]]);
+      verify(voices[pair[1]]).play(VOLUMES_BY_HEARTS.get(pair[1]));
       assertEquals(1, totalPlays(voices));
     }
   }

@@ -177,7 +177,9 @@ public class MainMenuDisplay extends UIComponent {
   }
 
   @Override
-  public void draw(SpriteBatch batch) {}
+  public void draw(SpriteBatch batch) {
+    // Scene2D actors on the stage render this UI.
+  }
 
   @Override
   public float getZIndex() {

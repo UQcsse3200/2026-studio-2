@@ -39,7 +39,8 @@ class CyclopsMinigameDisplayTest {
     ServiceLocator.registerRenderService(renderService);
 
     ResourceService resourceService = mock(ResourceService.class);
-    when(resourceService.getAsset(anyString(), eq(Texture.class))).thenReturn(mock(Texture.class));
+    Texture textureMock = mock(Texture.class);
+    when(resourceService.getAsset(anyString(), eq(Texture.class))).thenReturn(textureMock);
     ServiceLocator.registerResourceService(resourceService);
   }
 

@@ -13,7 +13,8 @@ import org.junit.jupiter.api.Test;
 class BlackjackTest {
   @Test
   void testRejectsInvalidStartingBalance() {
-    assertThrows(IllegalArgumentException.class, () -> new Blackjack(-1, new Random(1)));
+    Random random = new Random(1);
+    assertThrows(IllegalArgumentException.class, () -> new Blackjack(-1, random));
   }
 
   @Test

@@ -7,7 +7,7 @@ import com.csse3200.game.rendering.RenderService;
 import com.csse3200.game.services.ServiceLocator;
 
 public class RisingWaterComponent extends Component {
-  float CHECKPOINT_LENIENCE = 7f;
+  float checkpointLenience = 7f;
   float storedHeight;
 
   float initialSpeed;
@@ -119,7 +119,7 @@ public class RisingWaterComponent extends Component {
     // calculate the smallest between the current water surface level and the lenience water level
     // and convert it into a height relative to the entity's bottom left position
     float lenientSurfaceLevel =
-        Math.min(entity.getPosition().y + currentHeight, checkpointY - CHECKPOINT_LENIENCE);
+        Math.min(entity.getPosition().y + currentHeight, checkpointY - checkpointLenience);
     float lenientHeight = lenientSurfaceLevel - entity.getPosition().y;
 
     // store the initial height if the lenient height is calculated below the starting height

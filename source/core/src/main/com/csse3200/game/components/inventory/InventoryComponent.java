@@ -120,7 +120,7 @@ public class InventoryComponent extends Component {
    */
   public void addGold(int gold) {
     long total = (long) this.gold + gold;
-    setGold((int) Math.max(0L, Math.min(Integer.MAX_VALUE, total)));
+    setGold((int) Math.clamp(total, 0L, Integer.MAX_VALUE));
   }
 
   // ---------

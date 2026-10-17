@@ -15,7 +15,9 @@ class CyclopsMinigameAreaTest {
 
   private static class TestRender extends RenderComponent {
     @Override
-    protected void draw(SpriteBatch batch) {}
+    protected void draw(SpriteBatch batch) {
+      // This test double does not create or render game content.
+    }
   }
 
   private static Entity entityAt(Vector2 position) {

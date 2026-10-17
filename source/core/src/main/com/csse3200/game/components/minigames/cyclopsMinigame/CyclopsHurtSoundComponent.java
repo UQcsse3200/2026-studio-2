@@ -4,6 +4,7 @@ import com.badlogic.gdx.audio.Sound;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.Component;
 import com.csse3200.game.components.GameVolume;
+import java.util.List;
 
 /**
  * Plays a hurt voice each time its entity fires "hurt". The voice is picked by hearts remaining, so
@@ -16,11 +17,11 @@ public class CyclopsHurtSoundComponent extends Component {
   static final float DEATH_PITCH = 0.75f;
 
   private final Sound[] voicesByHearts;
-  private final float[] volumesByHearts;
+  private final List<Float> volumesByHearts;
   private final Sound deathVoice;
 
   public CyclopsHurtSoundComponent(
-      Sound[] voicesByHearts, float[] volumesByHearts, Sound deathVoice) {
+      Sound[] voicesByHearts, List<Float> volumesByHearts, Sound deathVoice) {
     this.voicesByHearts = voicesByHearts;
     this.volumesByHearts = volumesByHearts;
     this.deathVoice = deathVoice;
@@ -39,6 +40,6 @@ public class CyclopsHurtSoundComponent extends Component {
     }
     int hearts = combatStats == null ? 0 : combatStats.getHealth() / HEALTH_PER_HEART;
     int index = Math.min(hearts, voicesByHearts.length - 1);
-    voicesByHearts[index].play(GameVolume.scale(volumesByHearts[index]));
+    voicesByHearts[index].play(GameVolume.scale(volumesByHearts.get(index)));
   }
 }

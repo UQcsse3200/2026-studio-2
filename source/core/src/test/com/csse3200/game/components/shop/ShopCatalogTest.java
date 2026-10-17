@@ -27,8 +27,8 @@ class ShopCatalogTest {
     assertEquals(15, ShopCatalog.getListing(ItemType.FIRE_ARROW).getPrice());
     assertEquals(15, ShopCatalog.getListing(ItemType.ICE_ARROW).getPrice());
     assertEquals(8, ShopCatalog.getListing(ItemType.HEALTH_POTION).getPrice());
-    assertEquals(12, ShopCatalog.getListing(ItemType.SpeedPotion).getPrice());
-    assertEquals(12, ShopCatalog.getListing(ItemType.PoisonPotion).getPrice());
+    assertEquals(12, ShopCatalog.getListing(ItemType.SPEED_POTION).getPrice());
+    assertEquals(12, ShopCatalog.getListing(ItemType.POISON_POTION).getPrice());
   }
 
   @Test

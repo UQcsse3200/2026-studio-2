@@ -12,7 +12,6 @@ public class DynamicTextureRenderComponent extends RenderComponent {
   private Texture texture;
   private TextureRegion textureRegion;
   private RotatableMapComponent rotateComponent;
-  private float rotation;
   private boolean keepAspectRatio;
 
   public DynamicTextureRenderComponent(String texturePath) {
@@ -86,9 +85,9 @@ public class DynamicTextureRenderComponent extends RenderComponent {
     }
     float drawX = position.x + (scale.x - width) / 2f;
     float drawY = position.y + (scale.y - height) / 2f;
-    rotation = rotateComponent != null ? rotateComponent.getRotation() : 0f;
+    float rotation = rotateComponent != null ? rotateComponent.getRotation() : 0f;
     Color prevColor = batch.getColor().cpy();
-    float light = getDarkness();
+
     batch.draw(
         textureRegion, drawX, drawY, width / 2f, height / 2f, width, height, 1f, 1f, rotation);
     batch.setColor(prevColor);

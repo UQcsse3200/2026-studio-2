@@ -37,8 +37,9 @@ class NPCFactoryTest {
   void setUp() {
     ServiceLocator.registerPhysicsService(new PhysicsService());
     RenderService renderService = mock(RenderService.class);
-    when(renderService.getDebug())
-        .thenReturn(mock(com.csse3200.game.rendering.DebugRenderer.class));
+    com.csse3200.game.rendering.DebugRenderer debugRendererMock =
+        mock(com.csse3200.game.rendering.DebugRenderer.class);
+    when(renderService.getDebug()).thenReturn(debugRendererMock);
     ServiceLocator.registerRenderService(renderService);
 
     ResourceService resources = mock(ResourceService.class);

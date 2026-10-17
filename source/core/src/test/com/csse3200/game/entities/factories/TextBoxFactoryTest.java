@@ -2,6 +2,7 @@ package com.csse3200.game.entities.factories;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -22,7 +23,8 @@ class TextBoxFactoryTest {
   @BeforeEach
   void setUp() {
     renderService = mock(RenderService.class);
-    when(renderService.getStage()).thenReturn(mock(Stage.class));
+    Stage stageMock = mock(Stage.class);
+    when(renderService.getStage()).thenReturn(stageMock);
     ServiceLocator.registerRenderService(renderService);
   }
 
@@ -44,6 +46,6 @@ class TextBoxFactoryTest {
   void shouldRegisterOnlyOneTextBoxForOneConfig() {
     new TextBoxFactory().createTextBox("configs/textBoxes.json");
 
-    verify(renderService, org.mockito.Mockito.times(1)).register(any(TextBoxComponent.class));
+    verify(renderService, times(1)).register(any(TextBoxComponent.class));
   }
 }

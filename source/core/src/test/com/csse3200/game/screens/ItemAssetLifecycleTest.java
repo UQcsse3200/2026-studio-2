@@ -58,10 +58,6 @@ class ItemAssetLifecycleTest {
       for (ArrowType arrow : ArrowType.values()) {
         assertNotNull(resources.getAsset(arrow.getTexturePath(), Texture.class));
       }
-      assertNotNull(
-          resources.getAsset("images/items/effects/fire_status_effect.png", Texture.class));
-      assertNotNull(
-          resources.getAsset("images/items/effects/ice_status_effect.png", Texture.class));
       assertNotNull(resources.getAsset("images/items/gold_coin.png", Texture.class));
     } finally {
       resources.dispose();

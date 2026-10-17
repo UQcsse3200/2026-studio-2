@@ -29,25 +29,6 @@ public class Level1GameArea extends GameArea {
   private static final Logger logger = LoggerFactory.getLogger(Level1GameArea.class);
   private KeyboardPlayerInputComponent input;
 
-  /*
-  private static final PlatformConfig[] floors = {
-    // borders
-    new PlatformConfig(new GridPoint2(0, 0), 100, 1, 0),
-    new PlatformConfig(new GridPoint2(0, 22), 50, 5, 0),
-    new PlatformConfig(new GridPoint2(50, 25), 40, 5, 1),
-    new PlatformConfig(new GridPoint2(0, 0), 1, 30, 1),
-    new PlatformConfig(new GridPoint2(90, 0), 1, 30, 1),
-  };
-  */
-
-  private static final GridPoint2[] spikes = {
-    new GridPoint2(10, 2), new GridPoint2(20, 2), new GridPoint2(35, 2)
-  };
-
-  private static final GridPoint2[] skeletonArcherTestSpawnLocations = {
-    new GridPoint2(4, 5),
-  };
-
   // Encounters are activated nearby so sentries do not wander away before the player arrives.
   private static final GridPoint2[] skeletonWarriorSpawnLocations = {
     new GridPoint2(21, 5),
@@ -58,12 +39,9 @@ public class Level1GameArea extends GameArea {
     new GridPoint2(79, 17),
     new GridPoint2(82, 17)
   };
-  private static final GridPoint2[] NecromancerSpawnLocations = {};
   private static final GridPoint2[] skeletonArcherSpawnLocations = {
     new GridPoint2(23, 17), new GridPoint2(58, 11)
   };
-
-  private static final GridPoint2[] VultureSpawnLocations = new GridPoint2[] {};
 
   /** First floating platform is at (4, 2) and is 3 tiles wide; stand on its centre. */
   public static final GridPoint2 SHOPKEEPER_SPAWN = new GridPoint2(5, 3);
@@ -76,11 +54,8 @@ public class Level1GameArea extends GameArea {
   public static final GridPoint2 HEALTH_POTION_SPAWN = new GridPoint2(12, 5);
 
   /** Sit on top of the 1-tile-tall floating platforms (skip the first, which has the shop). */
-  public static final GridPoint2[] GOLD_SPAWNS = {
-    new GridPoint2(9, 5), new GridPoint2(15, 7), new GridPoint2(20, 8)
-  };
-
-  private static final float WALL_WIDTH = 0.1f;
+  public static final List<GridPoint2> GOLD_SPAWNS =
+      List.of(new GridPoint2(9, 5), new GridPoint2(15, 7), new GridPoint2(20, 8));
 
   /** Centre of the stepping-stone platform at (31, 2) */
   public static final GridPoint2 WHEEL_TOKEN_SPAWN = new GridPoint2(32, 3);
@@ -162,9 +137,9 @@ public class Level1GameArea extends GameArea {
 
   private static final String[] forestSounds = {"sounds/Impact4.ogg"};
 
-  private static final String backgroundMusic = "sounds/BGM_03_mp3.mp3";
+  private static final String BACKGROUND_MUSIC = "sounds/BGM_03_mp3.mp3";
 
-  private static final String[] forestMusic = {backgroundMusic};
+  private static final String[] forestMusic = {BACKGROUND_MUSIC};
 
   private final TerrainFactory terrainFactory;
   private final CameraComponent camera;
@@ -193,8 +168,6 @@ public class Level1GameArea extends GameArea {
     spawnBackground();
     spawnConfigEntities();
     player = spawnPlayer();
-    //// spawnItems(); // test items
-    //// spawnWinCondition();
     spawnShopkeeper();
     spawnGold();
     spawnSkeletonArcher();
@@ -202,28 +175,9 @@ public class Level1GameArea extends GameArea {
     spawnWhenApproaching(
         new GridPoint2(74, 9),
         () -> spawnEntityAt(EnemyFactory.createVulture(player), new GridPoint2(74, 9), true, true));
-
-    // Test enemy functionalitys
-    // spawnTestSkeletonWarrior();
-    // spawnTestSkeletonArcher();
-    // spawnTestVulture();
-    // spawnTestNecromancer();
-    // spawnTestCalypso();
-
-    // spawnVulture();
-    // spawnNecromancer();
-
-    // spawnTestWinCondition(); // Temporary test win condition near player spawn for quick testing
-
-    //// spawnTestEnemyNearPlayer(); // Temporary enemy near player spawn for quick HUD/flicker
-    // testing
-    // testing
-    // spawnTestWinCondition(); // Temporary test win condition near player spawn for quick testing
-
-    // playMusic();
-
   }
 
+  @Override
   public KeyboardPlayerInputComponent getInput() {
     return input;
   }
@@ -292,14 +246,14 @@ public class Level1GameArea extends GameArea {
 
     input = newPlayer.getComponent(KeyboardPlayerInputComponent.class);
     if (input != null) {
-      System.out.println("input is not null");
+      logger.debug("input is not null");
       input.setCameraComponent(cameraComponent);
     }
     spawnEntityAt(newPlayer, config.getPlayerSpawn(), true, true);
     PlayerFactory.giveStartingLoadout(newPlayer);
 
-    System.out.println("player spawned");
-    System.out.println(input);
+    logger.debug("player spawned");
+    logger.debug("Player input: {}", input);
 
     return newPlayer;
   }
@@ -315,26 +269,12 @@ public class Level1GameArea extends GameArea {
     }
   }
 
-  /*
-  private void spawnWheelToken() {
-    Entity token = ItemFactory.createWheelToken();
-    spawnEntityAt(token, WHEEL_TOKEN_SPAWN, true, false);
-    token.setPosition(token.getPosition().add(0f, 0.3f));
-  }*/
-
   private void spawnSkeletonWarrior() {
     for (GridPoint2 spawnLocation : skeletonWarriorSpawnLocations) {
       spawnWhenApproaching(
           spawnLocation,
           () ->
               spawnEntityAt(EnemyFactory.createSkeletonWarrior(player), spawnLocation, true, true));
-    }
-  }
-
-  private void spawnNecromancer() {
-    for (GridPoint2 spawnLocation : NecromancerSpawnLocations) {
-      Entity enemy = EnemyFactory.createNecromancer(player);
-      spawnEntityAt(enemy, spawnLocation, true, true);
     }
   }
 
@@ -346,44 +286,6 @@ public class Level1GameArea extends GameArea {
               spawnEntityAt(EnemyFactory.createSkeletonArcher(player), spawnLocation, true, true));
     }
   }
-
-  // private void spawnVulture() {
-  //   for (GridPoint2 spawnLocation : VultureSpawnLocations) {
-  //     Entity enemy = EnemyFactory.createVulture(player);
-  //     spawnEntityAt(enemy, spawnLocation, true, true);
-  //   }
-  // }
-
-  // // ======== TEST ENEMY SPAWN FUNCTIONS. ============
-  // private void spawnTestSkeletonWarrior() {
-  //   for (GridPoint2 spawnLocation : testSpawnLocations) {
-  //     Entity enemy = EnemyFactory.createSkeletonWarrior(player);
-  //     spawnEntityAt(enemy, spawnLocation, true, true);
-  //   }
-  // }
-
-  // private void spawnTestNecromancer() {
-  //   for (GridPoint2 spawnLocation : testSpawnLocations) {
-  //     Entity enemy = EnemyFactory.createNecromancer(player);
-  //     spawnEntityAt(enemy, spawnLocation, true, true);
-  //   }
-  // }
-
-  private void spawnTestSkeletonArcher() {
-    for (GridPoint2 spawnLocation : skeletonArcherTestSpawnLocations) {
-      Entity enemy = EnemyFactory.createSkeletonArcher(player);
-      spawnEntityAt(enemy, spawnLocation, true, true);
-    }
-  }
-
-  // private void spawnTestVulture() {
-  //   for (GridPoint2 spawnLocation : VultureTestSpawnLocations) {
-  //     Entity enemy = EnemyFactory.createVulture(player);
-  //     spawnEntityAt(enemy, spawnLocation, true, true);
-  //   }
-  // }
-
-  // ======== ^^^^^ ============
 
   private void spawnWhenApproaching(GridPoint2 location, Runnable spawn) {
     spawnEntity(
@@ -413,12 +315,10 @@ public class Level1GameArea extends GameArea {
    * spawnLocation, true, true); } }*
    */
 
-  // ======== ^^^^^ ============
-
   /** Plays the background music. */
   private void playMusic() {
 
-    Music music = ServiceLocator.getResourceService().getAsset(backgroundMusic, Music.class);
+    Music music = ServiceLocator.getResourceService().getAsset(BACKGROUND_MUSIC, Music.class);
 
     music.setLooping(true);
     GameVolume.setMusicVolume(music, 0.3f);
@@ -463,21 +363,7 @@ public class Level1GameArea extends GameArea {
     player.getComponent(DesertHazardRecoveryComponent.class).setEnabled(false);
     player.getEvents().trigger("grappleRelease");
     super.dispose();
-    ServiceLocator.getResourceService().getAsset(backgroundMusic, Music.class).stop();
+    ServiceLocator.getResourceService().getAsset(BACKGROUND_MUSIC, Music.class).stop();
     this.unloadAssets();
   }
-
-  /** generate items */
-  /*
-  private void spawnItems() {
-    List.of(
-            Map.entry(ItemFactory.createRopeArrow(), ROPE_ARROW_SPAWN),
-            Map.entry(
-                ItemFactory.createStandardArrow(STANDARD_ARROW_QUANTITY), STANDARD_ARROW_SPAWN),
-            Map.entry(ItemFactory.createHealthPotion(HEALTH_POTION_QUANTITY), HEALTH_POTION_SPAWN),
-            Map.entry(ItemFactory.createFireArrow(FIRE_ARROW_QUANTITY), FIRE_ARROW_SPAWN),
-            Map.entry(ItemFactory.createColdArrow(COLD_ARROW_QUANTITY), COLD_ARROW_SPAWN))
-        .forEach(entry -> spawnEntityAt(entry.getKey(), entry.getValue(), true, false));
-  }
-   */
 }

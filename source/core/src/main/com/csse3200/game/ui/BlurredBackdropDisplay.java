@@ -35,7 +35,9 @@ public class BlurredBackdropDisplay extends UIComponent {
   }
 
   @Override
-  public void draw(SpriteBatch batch) {}
+  public void draw(SpriteBatch batch) {
+    // Scene2D actors on the stage render this UI.
+  }
 
   @Override
   public void dispose() {

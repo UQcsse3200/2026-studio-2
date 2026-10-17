@@ -10,7 +10,7 @@ import com.csse3200.game.services.ServiceLocator;
 public class TiledRenderComponent extends RenderComponent {
   private final TextureRegion textureRegion;
   private final float tileWorldSize;
-  private final int WATER_LAYER = 11;
+  private static final int WATER_LAYER = 11;
 
   public TiledRenderComponent(String texturePath, float tileWorldSize) {
     Texture texture = ServiceLocator.getResourceService().getAsset(texturePath, Texture.class);
@@ -33,7 +33,7 @@ public class TiledRenderComponent extends RenderComponent {
     textureRegion.setV2(tilesY);
 
     Color prevColor = batch.getColor().cpy();
-    float light = getDarkness();
+
     batch.draw(textureRegion, position.x, position.y, scale.x, scale.y);
     batch.setColor(prevColor);
   }

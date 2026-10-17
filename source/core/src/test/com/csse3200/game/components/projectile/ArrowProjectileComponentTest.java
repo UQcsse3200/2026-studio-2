@@ -1,8 +1,10 @@
 package com.csse3200.game.components.projectile;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 
 import com.badlogic.gdx.math.MathUtils;
@@ -31,6 +33,63 @@ class ArrowProjectileComponentTest {
     ServiceLocator.registerPhysicsService(new PhysicsService());
     entityService = new EntityService();
     ServiceLocator.registerEntityService(entityService);
+  }
+
+  @Test
+  void missingPhysicsComponentSkipsRotationAndWarnsWithoutExpiringArrow() {
+    assertMissingPhysicsIsReported(null);
+  }
+
+  @Test
+  void missingPhysicsBodySkipsRotationAndWarnsWithoutExpiringArrow() {
+    assertMissingPhysicsIsReported(mock(PhysicsComponent.class));
+  }
+
+  private void assertMissingPhysicsIsReported(PhysicsComponent physics) {
+    ArrowProjectileComponent projectile =
+        new ArrowProjectileComponent(Vector2.X, 10f, 15f, ArrowType.STANDARD);
+    Entity arrow = new Entity().addComponent(projectile);
+    if (physics != null) {
+      arrow.addComponent(physics);
+    }
+    java.util.List<java.util.logging.LogRecord> warnings = new java.util.ArrayList<>();
+    java.util.logging.Logger logger =
+        java.util.logging.Logger.getLogger(ArrowProjectileComponent.class.getName());
+    java.util.logging.Handler handler =
+        new java.util.logging.Handler() {
+          @Override
+          public void publish(java.util.logging.LogRecord logRecord) {
+            warnings.add(logRecord);
+          }
+
+          @Override
+          public void flush() {
+            // The records are stored directly in memory.
+          }
+
+          @Override
+          public void close() {
+            // This handler owns no external resources.
+          }
+        };
+    logger.addHandler(handler);
+    try {
+      assertDoesNotThrow(arrow::create);
+      arrow.setPosition(1f, 0f);
+
+      assertDoesNotThrow(projectile::update);
+
+      assertFalse(projectile.isSpent());
+      assertEquals(new Vector2(1f, 0f), arrow.getPosition());
+      assertTrue(
+          warnings.stream()
+              .anyMatch(
+                  logRecord ->
+                      logRecord.getLevel().intValue() >= java.util.logging.Level.WARNING.intValue()
+                          && logRecord.getMessage().contains("physics body")));
+    } finally {
+      logger.removeHandler(handler);
+    }
   }
 
   @Test
@@ -203,8 +262,8 @@ class ArrowProjectileComponentTest {
                     12f,
                     20f,
                     ArrowType.POTION,
-                    ItemType.PoisonPotion.getPoisonDamagePerSecond(),
-                    ItemType.PoisonPotion.getPoisonDuration()));
+                    ItemType.POISON_POTION.getPoisonDamagePerSecond(),
+                    ItemType.POISON_POTION.getPoisonDuration()));
     potion.setPosition(0f, 0f);
     entityService.register(potion);
 
@@ -223,8 +282,8 @@ class ArrowProjectileComponentTest {
     triggerCollision(potion, target);
 
     assertEquals(20, target.getComponent(CombatStatsComponent.class).getHealth());
-    assertEquals(ItemType.PoisonPotion.getPoisonDamagePerSecond(), dps.get());
-    assertEquals(ItemType.PoisonPotion.getPoisonDuration(), duration.get());
+    assertEquals(ItemType.POISON_POTION.getPoisonDamagePerSecond(), dps.get());
+    assertEquals(ItemType.POISON_POTION.getPoisonDuration(), duration.get());
     assertTrue(potion.getComponent(ArrowProjectileComponent.class).isSpent());
   }
 

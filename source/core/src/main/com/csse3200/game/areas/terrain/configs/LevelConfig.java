@@ -12,6 +12,7 @@ import com.csse3200.game.entities.factories.ObstacleFactory;
 import com.csse3200.game.rendering.AnimationRenderComponent;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 public class LevelConfig {
@@ -58,7 +59,7 @@ public class LevelConfig {
   protected GridPoint2 winConditionSpawn;
   protected GridPoint2[] wheelSpinSpawns;
 
-  protected ArrayList<SpawnData> entities = new ArrayList<>();
+  protected List<SpawnData> entities = new ArrayList<>();
 
   /**
    * Creates all entities as specified by the config file and returns the created entities in a Map
@@ -67,7 +68,7 @@ public class LevelConfig {
    * @return A list of SpawnData objects that contain an entity and a coordinate position to spawn
    *     that entity in
    */
-  public ArrayList<SpawnData> createEntities() {
+  public List<SpawnData> createEntities() {
     entities = new ArrayList<>();
 
     createFloors();
@@ -102,16 +103,16 @@ public class LevelConfig {
   /**
    * Public getter to access checkpoint components for levels
    *
-   * @return an ArrayList of the CheckpointComponents of a level
+   * @return a list of the CheckpointComponents of a level
    */
-  public ArrayList<CheckpointComponent> getCheckpoints() {
-    ArrayList<CheckpointComponent> checkpointComponents = new ArrayList<>();
+  public List<CheckpointComponent> getCheckpoints() {
+    List<CheckpointComponent> checkpointComponents = new ArrayList<>();
     if (checkpoints == null) {
       return checkpointComponents;
     }
-    for (CheckpointConfig c : checkpoints) {
-      checkpointComponents.add(c.getEntity().getComponent(CheckpointComponent.class));
-    }
+    java.util.Arrays.stream(checkpoints)
+        .map(c -> c.getEntity().getComponent(CheckpointComponent.class))
+        .forEach(checkpointComponents::add);
     return checkpointComponents;
   }
 

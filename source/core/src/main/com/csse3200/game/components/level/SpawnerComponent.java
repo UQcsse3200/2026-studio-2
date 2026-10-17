@@ -7,11 +7,13 @@ import com.csse3200.game.entities.Entity;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.function.Supplier;
 
 public class SpawnerComponent extends Component {
   // each spawn will pick a random supplier method to spawn a new entity
-  private final ArrayList<Supplier<Entity>> spawnableEntities;
+  private final List<Supplier<Entity>> spawnableEntities;
+  private final Random random = new Random();
 
   private final float spawnInterval; // specify -1 for trigger based spawning only
   private float timeSinceLastSpawn;
@@ -29,7 +31,7 @@ public class SpawnerComponent extends Component {
   /**
    * @param spawnableEntities all viable entities that can be spawned by this component. the
    *     presence of an entity in this list does not guarantee they will spawn. it's at the mercy of
-   *     Math.random()!
+   *     the spawner's random selection.
    * @param spawnInterval how frequently to attempt to spawn enemies. if the component should only
    *     spawn enemies when triggered by a trigger button, set to -1
    * @param maxSpawns how many enemies should be spawned total by this component. if the component
@@ -37,7 +39,7 @@ public class SpawnerComponent extends Component {
    * @param active the initial activation state of this component
    */
   public SpawnerComponent(
-      ArrayList<Supplier<Entity>> spawnableEntities,
+      List<Supplier<Entity>> spawnableEntities,
       float spawnInterval,
       int maxSpawns,
       boolean active,
@@ -95,7 +97,7 @@ public class SpawnerComponent extends Component {
    */
   private void spawnChild() {
     // get a random child from the list of potential spawn entities
-    int randIndex = (int) (Math.random() * spawnableEntities.size());
+    int randIndex = random.nextInt(spawnableEntities.size());
     Supplier<Entity> child = spawnableEntities.get(randIndex);
     Entity childEntity = child.get();
 

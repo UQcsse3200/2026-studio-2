@@ -268,14 +268,12 @@ public class PlayerActions extends Component {
     if (grounded && hit.fixture != null) {
       // get raw data and check if it's user data is a proper BodyUserData
       Object userData = hit.fixture.getBody().getUserData();
-      if (userData instanceof BodyUserData data) {
+      if (userData instanceof BodyUserData data && data.entity != null) {
         // check the entity variable is set and access component data
-        if (data.entity != null) {
-          SlipperyPlatformComponent slipperyPlatform =
-              data.entity.getComponent(SlipperyPlatformComponent.class);
-          if (slipperyPlatform != null) {
-            decelerationTraction = slipperyPlatform.getSlipperiness();
-          }
+        SlipperyPlatformComponent slipperyPlatform =
+            data.entity.getComponent(SlipperyPlatformComponent.class);
+        if (slipperyPlatform != null) {
+          decelerationTraction = slipperyPlatform.getSlipperiness();
         }
       }
     }

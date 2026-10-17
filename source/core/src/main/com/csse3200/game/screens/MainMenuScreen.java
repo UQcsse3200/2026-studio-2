@@ -38,11 +38,8 @@ public class MainMenuScreen extends ScreenAdapter {
     "images/Buttons/quit_down_btn.png",
     "images/ui/scroll_bg.png"
   };
-  private static final String mainMenuMusic = "sounds/Main_menu_sound.mp3";
-  private static final String[] mainMenuMusicFiles = {mainMenuMusic};
-  private static final String[] mainMenuSounds = {
-    "sounds/mouse-click-press.wav", "sounds/mouse-click-release.wav"
-  };
+  private static final String MAIN_MENU_MUSIC = "sounds/Main_menu_sound.mp3";
+  private static final String[] mainMenuMusicFiles = {MAIN_MENU_MUSIC};
 
   public MainMenuScreen(GdxGame game) {
     this.game = game;
@@ -84,7 +81,7 @@ public class MainMenuScreen extends ScreenAdapter {
   public void dispose() {
     logger.debug("Disposing main menu screen");
     renderer.dispose();
-    ServiceLocator.getResourceService().getAsset(mainMenuMusic, Music.class).stop();
+    ServiceLocator.getResourceService().getAsset(MAIN_MENU_MUSIC, Music.class).stop();
     unloadAssets();
     ServiceLocator.getRenderService().dispose();
     ServiceLocator.getEntityService().dispose();
@@ -110,7 +107,7 @@ public class MainMenuScreen extends ScreenAdapter {
   }
 
   private void playMusic() {
-    Music music = ServiceLocator.getResourceService().getAsset(mainMenuMusic, Music.class);
+    Music music = ServiceLocator.getResourceService().getAsset(MAIN_MENU_MUSIC, Music.class);
     music.setLooping(true);
     GameVolume.setMusicVolume(music, 0.1f);
     music.play();

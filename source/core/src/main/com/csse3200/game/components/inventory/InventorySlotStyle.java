@@ -30,7 +30,9 @@ public final class InventorySlotStyle implements Disposable {
   private NinePatchDrawable cachedSelectedBox;
   private NinePatchDrawable cachedDarkerBox;
 
-  public InventorySlotStyle() {}
+  public InventorySlotStyle() {
+    // Drawables are created lazily by the getters.
+  }
 
   public NinePatchDrawable getNormalBox() {
     if (cachedNormalBox == null) {

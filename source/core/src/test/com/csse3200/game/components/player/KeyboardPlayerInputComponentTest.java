@@ -200,7 +200,7 @@ class KeyboardPlayerInputComponentTest {
     AtomicInteger sprints = new AtomicInteger();
     AtomicInteger sprintStops = new AtomicInteger();
 
-    player.getEvents().addListener("walk", (Vector2 direction) -> walkDirection.set(direction));
+    player.getEvents().<Vector2>addListener("walk", walkDirection::set);
     player.getEvents().addListener("walkStop", walkStops::incrementAndGet);
     player.getEvents().addListener("jump", jumps::incrementAndGet);
     player.getEvents().addListener("sprint", sprints::incrementAndGet);
@@ -360,7 +360,7 @@ class KeyboardPlayerInputComponentTest {
   void shouldOpenAndCloseTheArrowWheelWithTab() {
     KeyboardPlayerInputComponent component = new KeyboardPlayerInputComponent();
     ArrowWheelComponent wheel = new ArrowWheelComponent();
-    Entity player = new Entity().addComponent(component).addComponent(wheel);
+    new Entity().addComponent(component).addComponent(wheel);
     wheel.create();
 
     assertTrue(component.keyDown(Keys.TAB));
@@ -378,7 +378,7 @@ class KeyboardPlayerInputComponentTest {
     Gdx.graphics = graphics;
     KeyboardPlayerInputComponent component = new KeyboardPlayerInputComponent();
     ArrowWheelComponent wheel = new ArrowWheelComponent();
-    Entity player = new Entity().addComponent(component).addComponent(wheel);
+    new Entity().addComponent(component).addComponent(wheel);
     wheel.create();
     component.keyDown(Keys.TAB);
 
@@ -395,7 +395,7 @@ class KeyboardPlayerInputComponentTest {
     Gdx.graphics = graphics;
     KeyboardPlayerInputComponent component = new KeyboardPlayerInputComponent();
     ArrowWheelComponent wheel = new ArrowWheelComponent();
-    Entity player = new Entity().addComponent(component).addComponent(wheel);
+    new Entity().addComponent(component).addComponent(wheel);
     wheel.create();
     component.keyDown(Keys.TAB);
     // Wheel in the bottom-left corner: 150px from the left and 450px from the top.

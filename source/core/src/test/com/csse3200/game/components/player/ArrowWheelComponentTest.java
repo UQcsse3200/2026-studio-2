@@ -69,7 +69,7 @@ class ArrowWheelComponentTest {
   @Test
   void shouldHighlightTheTypeUnderThePointer() {
     AtomicReference<ArrowType> announced = new AtomicReference<>();
-    player.getEvents().addListener("arrowHighlighted", (ArrowType type) -> announced.set(type));
+    player.getEvents().<ArrowType>addListener("arrowHighlighted", announced::set);
 
     wheel.open();
     assertTrue(wheel.highlightFromPointer(TOWARDS_COLD));
@@ -96,7 +96,7 @@ class ArrowWheelComponentTest {
   @Test
   void shouldApplyTheHighlightedTypeOnClose() {
     AtomicReference<ArrowType> applied = new AtomicReference<>();
-    player.getEvents().addListener("arrowSelected", (ArrowType type) -> applied.set(type));
+    player.getEvents().<ArrowType>addListener("arrowSelected", applied::set);
 
     wheel.open();
     wheel.highlightFromPointer(TOWARDS_FIRE);
@@ -138,9 +138,7 @@ class ArrowWheelComponentTest {
     inventory.addItem(ItemType.STANDARD_ARROW, 5);
     inventory.selectSlot(0);
     AtomicReference<ArrowType> rejected = new AtomicReference<>();
-    player
-        .getEvents()
-        .addListener("arrowSelectionRejected", (ArrowType type) -> rejected.set(type));
+    player.getEvents().<ArrowType>addListener("arrowSelectionRejected", rejected::set);
 
     wheel.open();
     wheel.highlightFromPointer(TOWARDS_FIRE);
@@ -161,9 +159,7 @@ class ArrowWheelComponentTest {
   @Test
   void shouldKeepThePreviousTypeWhenTheHighlightIsUnavailable() {
     AtomicReference<ArrowType> rejected = new AtomicReference<>();
-    player
-        .getEvents()
-        .addListener("arrowSelectionRejected", (ArrowType type) -> rejected.set(type));
+    player.getEvents().<ArrowType>addListener("arrowSelectionRejected", rejected::set);
     wheel.setAvailable(ArrowType.ICE, false);
 
     wheel.open();
@@ -285,7 +281,7 @@ class ArrowWheelComponentTest {
     wheel.highlightFromPointer(TOWARDS_FIRE);
     wheel.close();
     AtomicReference<ArrowType> announced = new AtomicReference<>();
-    player.getEvents().addListener("arrowSelected", (ArrowType type) -> announced.set(type));
+    player.getEvents().<ArrowType>addListener("arrowSelected", announced::set);
 
     inventory.removeItem(ItemType.FIRE_ARROW, 1);
 
@@ -318,12 +314,12 @@ class ArrowWheelComponentTest {
 
   @Test
   void shouldRememberWhereTheWheelIsOnScreen() {
-    ArrowWheelComponent wheel = new ArrowWheelComponent();
-    assertNull(wheel.getScreenCentre());
+    ArrowWheelComponent screenWheel = new ArrowWheelComponent();
+    assertNull(screenWheel.getScreenCentre());
 
-    wheel.setScreenCentre(150f, 450f);
+    screenWheel.setScreenCentre(150f, 450f);
 
-    assertEquals(150f, wheel.getScreenCentre().x);
-    assertEquals(450f, wheel.getScreenCentre().y);
+    assertEquals(150f, screenWheel.getScreenCentre().x);
+    assertEquals(450f, screenWheel.getScreenCentre().y);
   }
 }

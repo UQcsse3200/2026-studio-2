@@ -52,6 +52,7 @@ public class PointLightComponent extends Component implements Disposable {
     circleLight.setContactFilter(categoryBits, groupIndex, maskBits);
   }
 
+  @Override
   public void update() {
     if (circleLight == null) return;
     if (circleLight.isActive() != isActive) {

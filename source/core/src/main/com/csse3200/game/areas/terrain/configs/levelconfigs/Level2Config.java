@@ -1,12 +1,8 @@
 package com.csse3200.game.areas.terrain.configs.levelconfigs;
 
-import static com.csse3200.game.areas.Level1GameArea.*;
-
 import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.areas.terrain.configs.*;
-// import com.csse3200.game.components.item.weapons.RopeArr;
-// import com.csse3200.game.components.item.weapons.StandardArr;
 import com.csse3200.game.components.item.*;
 import com.csse3200.game.components.item.weapons.bow.arrow.*;
 import com.csse3200.game.components.level.SpawnerComponent;
@@ -18,15 +14,22 @@ import java.util.List;
 import java.util.Map;
 
 public class Level2Config extends LevelConfig {
+  private static final String TRIGGER_WHEEL_SPIN_PLATFORM = "triggerWheelSpinPlatform";
+
+  private static final String PLATFORM_TEXTURE = "images/terrain/Level_2/level_2_platform.png";
+
+  private static final String ENEMY_ARENA = "enemyArena";
+
+  private static final String ENEMY_ARENA_COMPLETE = "enemyArenaComplete";
 
   public Level2Config(Entity player) {
     // Textures
     // TFP = Texture File Path
-    platformTFP = "images/terrain/Level_2/level_2_platform.png";
-    movingPlatformTFP = "images/terrain/Level_2/level_2_platform.png";
-    crumblingPlatformTFP = "images/terrain/Level_2/level_2_platform.png";
-    triggerablePlatformTFP = "images/terrain/Level_2/level_2_platform.png";
-    ledgesTFP = "images/terrain/Level_2/level_2_platform.png";
+    platformTFP = PLATFORM_TEXTURE;
+    movingPlatformTFP = PLATFORM_TEXTURE;
+    crumblingPlatformTFP = PLATFORM_TEXTURE;
+    triggerablePlatformTFP = PLATFORM_TEXTURE;
+    ledgesTFP = PLATFORM_TEXTURE;
     groundTFP = "images/terrain/Level_2/level_2_tile.png";
     spikeTFP = "images/terrain/Level_2/level_2_spikes.png";
     checkpointAtlas = "images/terrain/Level_2/level_2_checkpoint.atlas";
@@ -84,7 +87,7 @@ public class Level2Config extends LevelConfig {
               new Vector2(50, 27),
               new Vector2(50, 43),
               new Vector2(0, 4),
-              new String[] {"triggerWheelSpinPlatform"}), // MP3
+              new String[] {TRIGGER_WHEEL_SPIN_PLATFORM}), // MP3
           new MovingPlatformConfig(
               new GridPoint2(50, 7),
               1,
@@ -117,7 +120,7 @@ public class Level2Config extends LevelConfig {
               1,
               2,
               triggerablePlatformTFP,
-              new String[] {"enemyArenaComplete"},
+              new String[] {ENEMY_ARENA_COMPLETE},
               false), // P7
           new TriggerablePlatformConfig(
               new GridPoint2(33, 25),
@@ -125,7 +128,7 @@ public class Level2Config extends LevelConfig {
               1,
               8,
               triggerablePlatformTFP,
-              new String[] {"enemyArenaComplete"},
+              new String[] {ENEMY_ARENA_COMPLETE},
               false), // P8
           new TriggerablePlatformConfig(
               new GridPoint2(28, 40),
@@ -133,7 +136,7 @@ public class Level2Config extends LevelConfig {
               1,
               0,
               triggerablePlatformTFP,
-              new String[] {"triggerWheelSpinPlatform"},
+              new String[] {TRIGGER_WHEEL_SPIN_PLATFORM},
               false), // TP1
           new TriggerablePlatformConfig(
               new GridPoint2(36, 43),
@@ -141,7 +144,7 @@ public class Level2Config extends LevelConfig {
               1,
               1,
               triggerablePlatformTFP,
-              new String[] {"triggerWheelSpinPlatform"},
+              new String[] {TRIGGER_WHEEL_SPIN_PLATFORM},
               false), // TP2
         };
 
@@ -168,7 +171,10 @@ public class Level2Config extends LevelConfig {
     triggerButtons =
         new TriggerButtonConfig[] {
           new TriggerButtonConfig(
-              new GridPoint2(25, 42), 180f, false, new String[] {"triggerWheelSpinPlatform"}), // B1
+              new GridPoint2(25, 42),
+              180f,
+              false,
+              new String[] {TRIGGER_WHEEL_SPIN_PLATFORM}), // B1
           new TriggerButtonConfig(new GridPoint2(49, 10), 90f, true, new String[] {"b2"}), // B2 (A)
           new TriggerButtonConfig(new GridPoint2(49, 9), 90f, true, new String[] {"b3"}), // B3 (B)
           new TriggerButtonConfig(new GridPoint2(49, 8), 90f, true, new String[] {"b4"}), // B4 (C)
@@ -306,19 +312,19 @@ public class Level2Config extends LevelConfig {
           new EnemySpawnerConfig(
               new GridPoint2(24, 17),
               spawnerConfig[0],
-              new String[] {"enemyArena"},
-              new String[] {"enemyArenaComplete"}), // ES1
+              new String[] {ENEMY_ARENA},
+              new String[] {ENEMY_ARENA_COMPLETE}), // ES1
           new EnemySpawnerConfig(
               new GridPoint2(34, 17),
               spawnerConfig[0],
-              new String[] {"enemyArena"},
-              new String[] {"enemyArenaComplete"}), // ES2
+              new String[] {ENEMY_ARENA},
+              new String[] {ENEMY_ARENA_COMPLETE}), // ES2
         };
 
     mapTriggers =
         new TriggerConfig[] {
           new TriggerConfig(
-              new GridPoint2(30, 16), new Vector2(3f, 1f), new String[] {"enemyArena"}, true),
+              new GridPoint2(30, 16), new Vector2(3f, 1f), new String[] {ENEMY_ARENA}, true),
         };
 
     // Five checkpoints on stable platforms (never moving, crumbling or trap-adjacent ones),

@@ -325,14 +325,13 @@ public class CutsceneScreen extends ScreenAdapter {
           game.transitionTo(destination);
         }
         break;
-      case TEXT_ACTIVE:
-      case COMPLETE:
+      case TEXT_ACTIVE, COMPLETE:
         break;
     }
   }
 
   private void setFadeAlpha(float alpha) {
-    fadeOverlay.setColor(1f, 1f, 1f, Math.max(0f, Math.min(1f, alpha)));
+    fadeOverlay.setColor(1f, 1f, 1f, Math.clamp(alpha, 0f, 1f));
   }
 
   @Override

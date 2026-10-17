@@ -17,7 +17,6 @@ public class BackgroundRenderComponent extends RenderComponent {
 
   private final Vector2 backgroundPos;
   private final Vector2 worldBounds;
-  private boolean weather;
   private Vector2 lastCameraPos;
   private int flashOrder = 0;
 
@@ -68,7 +67,6 @@ public class BackgroundRenderComponent extends RenderComponent {
   }
 
   private ArrayList<ArrayList<Float>> rainOffsets = null;
-  private ArrayList<Vector2> rainPositions = new ArrayList<>();
   private final List<ParallaxLayer> layers = new ArrayList<>();
   private final CameraComponent camera;
 
@@ -198,24 +196,22 @@ public class BackgroundRenderComponent extends RenderComponent {
   private void getPosUpdate(ParallaxLayer layer) {
     layer.position.x += layer.velocity.x * ServiceLocator.getTimeSource().getDeltaTime();
     layer.position.y += layer.velocity.y * ServiceLocator.getTimeSource().getDeltaTime();
-    weather = getWeather();
-    if (weather) {
+    boolean weather = getWeather();
+    if (weather && layer.flash) {
       // Flash layers that flash during lightning
-      if (layer.flash) {
-        float lightning = getLightning();
-        // Get lightning order
-        if (lightning > 5f && lightning < 5.8f) {
-          flashOrder = 0;
-        } else if (lightning > 13f && lightning < 13.3f) {
-          flashOrder = 1;
-        }
-        // Flash single lightning layer
-        if (layer.lightningOrder == flashOrder) {
-          if (darkness == 1f) {
-            layer.transparency = 1f;
-          } else {
-            layer.transparency = 0f;
-          }
+      float lightning = getLightning();
+      // Get lightning order
+      if (lightning > 5f && lightning < 5.8f) {
+        flashOrder = 0;
+      } else if (lightning > 13f && lightning < 13.3f) {
+        flashOrder = 1;
+      }
+      // Flash single lightning layer
+      if (layer.lightningOrder == flashOrder) {
+        if (darkness == 1f) {
+          layer.transparency = 1f;
+        } else {
+          layer.transparency = 0f;
         }
       }
     }
@@ -290,9 +286,7 @@ public class BackgroundRenderComponent extends RenderComponent {
         // if left most x coord of layer >= left most x coord of background pos
         // backgroundPos is used over worldBound.x since backgroundPos extends beyond worldBound
         while (newLeftDrawPosX >= backgroundPos.x - layer.width) {
-          // batch.setColor(1f, 1f, 1f, layer.transparency);
           batch.draw(layer.texture, newLeftDrawPosX, layerY, layer.width, layer.height);
-          // batch.setColor(Color.WHITE);
           newLeftDrawPosX -= layer.width;
         }
 
@@ -300,9 +294,7 @@ public class BackgroundRenderComponent extends RenderComponent {
         // NOTE: this relies on backgroudPos starting at a negative value, which will always be
         // true if player starts at x = 0
         while (newRightDrawPosX <= worldBounds.x - backgroundPos.x) {
-          // batch.setColor(1f, 1f, 1f, layer.transparency);
           batch.draw(layer.texture, newRightDrawPosX, layerY, layer.width, layer.height);
-          // batch.setColor(Color.WHITE);
           newRightDrawPosX += layer.width;
         }
       } else if (layer.repeat == RepeatMode.CHAOTIC) {

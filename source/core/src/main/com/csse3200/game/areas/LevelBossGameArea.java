@@ -17,9 +17,7 @@ import org.slf4j.LoggerFactory;
 
 public class LevelBossGameArea extends GameArea {
 
-  private static final Logger logger = LoggerFactory.getLogger(Level3GameArea.class);
-
-  private static final float WALL_WIDTH = 0.1f;
+  private static final Logger logger = LoggerFactory.getLogger(LevelBossGameArea.class);
 
   private static final GridPoint2 CALYPSO_SPAWN = new GridPoint2(15, 1);
 
@@ -54,9 +52,9 @@ public class LevelBossGameArea extends GameArea {
 
   private static final String[] level3Sounds = {"sounds/Impact4.ogg"};
 
-  private static final String backgroundMusic = "sounds/BGM_03_mp3.mp3";
+  private static final String BACKGROUND_MUSIC = "sounds/BGM_03_mp3.mp3";
 
-  private static final String[] level3Music = {backgroundMusic};
+  private static final String[] level3Music = {BACKGROUND_MUSIC};
 
   private final TerrainFactory terrainFactory;
   private final CameraComponent camera;
@@ -130,15 +128,6 @@ public class LevelBossGameArea extends GameArea {
     water.getEvents().trigger("checkpointEncountered", position.y);
   }
 
-  /** Plays the background music. */
-  private void playMusic() {
-    Music music = ServiceLocator.getResourceService().getAsset(backgroundMusic, Music.class);
-
-    music.setLooping(true);
-    music.setVolume(0.3f);
-    music.play();
-  }
-
   /** Loads all Level 2 assets. */
   private void loadAssets() {
     logger.debug("Loading assets");
@@ -169,7 +158,7 @@ public class LevelBossGameArea extends GameArea {
   @Override
   public void dispose() {
     super.dispose();
-    ServiceLocator.getResourceService().getAsset(backgroundMusic, Music.class).stop();
+    ServiceLocator.getResourceService().getAsset(BACKGROUND_MUSIC, Music.class).stop();
     this.unloadAssets();
   }
 }

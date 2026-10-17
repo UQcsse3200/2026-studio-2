@@ -25,6 +25,7 @@ public class ItemFactory {
   private static final float ITEM_HEIGHT = 0.85f;
   public static final String GOLD_TEXTURE = "images/items/gold_coin.png";
   public static final String WHEEL_TOKEN_TEXTURE = "images/minigames/spinthewheel/wheel-token.png";
+  private static final float WHEEL_TOKEN_GLOW_DIST = 2f;
 
   /**
    * Creates a world entity for an item using the texture from its {@code ItemType}.
@@ -66,8 +67,8 @@ public class ItemFactory {
       case HEALTH_POTION -> createHealthPotion(quantity);
       case FIRE_ARROW -> createFireArrow(quantity);
       case ICE_ARROW -> createIceArrow(quantity);
-      case SpeedPotion -> createSpeedPotion(quantity);
-      case PoisonPotion -> createPoisonPotion(quantity);
+      case SPEED_POTION -> createSpeedPotion(quantity);
+      case POISON_POTION -> createPoisonPotion(quantity);
     };
   }
 
@@ -85,8 +86,8 @@ public class ItemFactory {
       case "healthPotion" -> createItem(ItemType.HEALTH_POTION, quantity);
       case "fireArrow" -> createItem(ItemType.FIRE_ARROW, quantity);
       case "iceArrow", "coldArrow" -> createItem(ItemType.ICE_ARROW, quantity);
-      case "speedPotion" -> createItem(ItemType.SpeedPotion, quantity);
-      case "poisonPotion" -> createItem(ItemType.PoisonPotion, quantity);
+      case "speedPotion" -> createItem(ItemType.SPEED_POTION, quantity);
+      case "poisonPotion" -> createItem(ItemType.POISON_POTION, quantity);
       default -> throw new IllegalArgumentException("Unknown item type: " + itemName);
     };
   }
@@ -164,12 +165,19 @@ public class ItemFactory {
    * @return wheel token pickup entity
    */
   public static Entity createWheelToken() {
+    Color tokenGlowColour = new Color(1f, 0.84f, 0f, 0.7f);
     Entity token =
         new Entity()
             .addComponent(new TextureRenderComponent(WHEEL_TOKEN_TEXTURE))
             .addComponent(new PhysicsComponent().setBodyType(BodyType.StaticBody))
             .addComponent(new HitboxComponent().setLayer(PhysicsLayer.DEFAULT))
-            .addComponent(new WheelTokenPickupComponent());
+            .addComponent(new WheelTokenPickupComponent())
+            .addComponent(
+                new PointLightComponent(
+                    ServiceLocator.getLightingService().getEngine().getRayHandler(),
+                    LightingDefaults.RAYS,
+                    tokenGlowColour,
+                    WHEEL_TOKEN_GLOW_DIST));
 
     token.getComponent(TextureRenderComponent.class).scaleEntity();
     token.scaleHeight(ITEM_HEIGHT);

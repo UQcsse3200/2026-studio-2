@@ -6,10 +6,10 @@ import static org.mockito.Mockito.*;
 import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.areas.terrain.TerrainComponent;
-import com.csse3200.game.areas.terrain.TerrainFactory;
 import com.csse3200.game.areas.terrain.configs.LevelConfig;
 import com.csse3200.game.areas.terrain.configs.SpawnData;
 import com.csse3200.game.components.CameraComponent;
+import com.csse3200.game.components.inventory.InventoryBarDisplay;
 import com.csse3200.game.components.inventory.InventoryComponent;
 import com.csse3200.game.components.item.ItemComponent;
 import com.csse3200.game.components.item.ItemType;
@@ -17,11 +17,13 @@ import com.csse3200.game.components.item.weapons.bow.arrow.Arrow;
 import com.csse3200.game.components.level.ActivatableComponent;
 import com.csse3200.game.components.level.LevelTriggerComponent;
 import com.csse3200.game.components.level.PlatformGrappleComponent;
+import com.csse3200.game.components.player.PlayerStatsDisplay;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.events.EventHandler;
 import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.input.InputService;
+import com.csse3200.game.rendering.BackgroundRenderComponent;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.ArrayList;
 import org.junit.jupiter.api.Test;
@@ -30,13 +32,36 @@ import org.junit.jupiter.api.extension.ExtendWith;
 @ExtendWith(GameExtension.class)
 class GameAreaTest {
   @Test
+  void mapWidthDoesNotOverflowWhenAddingCameraPadding() {
+    CameraComponent camera = new CameraComponent();
+    GameArea area =
+        new GameArea(camera) {
+          @Override
+          public void create() {
+            // The map calculation needs no level assets.
+          }
+        };
+    area.player =
+        new Entity()
+            .addComponent(mock(InventoryBarDisplay.class))
+            .addComponent(mock(PlayerStatsDisplay.class));
+
+    area.toggleMap(
+        new Vector2(2147483648f, 100f), camera, mock(BackgroundRenderComponent.class), "level1");
+
+    assertEquals(2147483648f, camera.getCamera().viewportWidth);
+  }
+
+  @Test
   void shouldNotDisposeCollectedItemsAgainWhenLeavingArea() {
     EntityService entities = new EntityService();
     ServiceLocator.registerEntityService(entities);
     GameArea area =
         new GameArea(new CameraComponent()) {
           @Override
-          public void create() {}
+          public void create() {
+            // This test double does not create or render game content.
+          }
         };
     ItemComponent item = spy(new ItemComponent(new Arrow(ItemType.ICE_ARROW, 3)));
     Entity pickup = new Entity().addComponent(item);
@@ -58,7 +83,9 @@ class GameAreaTest {
     GameArea area =
         new GameArea(new CameraComponent()) {
           @Override
-          public void create() {}
+          public void create() {
+            // This test double does not create or render game content.
+          }
         };
     InventoryComponent inventory = new InventoryComponent(50);
     inventory.addItem(ItemType.FIRE_ARROW, 5);
@@ -80,12 +107,13 @@ class GameAreaTest {
 
   @Test
   void shouldSpawnEntities() {
-    TerrainFactory factory = mock(TerrainFactory.class);
 
     GameArea gameArea =
         new GameArea(new CameraComponent()) {
           @Override
-          public void create() {}
+          public void create() {
+            // This test double does not create or render game content.
+          }
         };
 
     ServiceLocator.registerEntityService(new EntityService());
@@ -106,7 +134,9 @@ class GameAreaTest {
     GameArea gameArea =
         new GameArea(new CameraComponent()) {
           @Override
-          public void create() {}
+          public void create() {
+            // This test double does not create or render game content.
+          }
         };
 
     ServiceLocator.registerEntityService(new EntityService());
@@ -135,7 +165,9 @@ class GameAreaTest {
     GameArea gameArea =
         new GameArea(new CameraComponent()) {
           @Override
-          public void create() {}
+          public void create() {
+            // This test double does not create or render game content.
+          }
         };
 
     ServiceLocator.registerEntityService(new EntityService());
@@ -168,7 +200,9 @@ class GameAreaTest {
     GameArea gameArea =
         new GameArea(new CameraComponent()) {
           @Override
-          public void create() {}
+          public void create() {
+            // This test double does not create or render game content.
+          }
         };
 
     ServiceLocator.registerEntityService(new EntityService());
@@ -197,7 +231,9 @@ class GameAreaTest {
     GameArea gameArea =
         new GameArea(new CameraComponent()) {
           @Override
-          public void create() {}
+          public void create() {
+            // This test double does not create or render game content.
+          }
         };
 
     ServiceLocator.registerEntityService(new EntityService());
@@ -226,7 +262,9 @@ class GameAreaTest {
     GameArea gameArea =
         new GameArea(new CameraComponent()) {
           @Override
-          public void create() {}
+          public void create() {
+            // This test double does not create or render game content.
+          }
         };
 
     ServiceLocator.registerEntityService(new EntityService());
