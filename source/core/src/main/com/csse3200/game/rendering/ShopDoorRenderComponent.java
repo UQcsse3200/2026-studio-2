@@ -18,6 +18,15 @@ public class ShopDoorRenderComponent extends RenderComponent {
   private static final int CLOSED_FRAME = 0;
   private static final int OPEN_FRAME = 1;
 
+  // Measurements of shop_door.png (1259 px wide), in pixels. The two frames aren't drawn in the
+  // same place within their halves of the image: the open door sits about 80 px further right. So
+  // each frame is cropped to its drawing (the same 553 px window around it), which keeps the door
+  // from jumping sideways as it opens, and the arrow is centred on the shop's sign.
+  private static final float REFERENCE_WIDTH = 1259f;
+  private static final float[] FRAME_X = {0f, 706f};
+  private static final float FRAME_WIDTH = 553f;
+  private static final float SIGN_CENTRE_X = 243f;
+
   private final Texture texture;
   private final TextureRegion[] frames = new TextureRegion[FRAME_COUNT];
   private final BobbingArrowIndicator indicator = new BobbingArrowIndicator("SHOP");
@@ -35,9 +44,15 @@ public class ShopDoorRenderComponent extends RenderComponent {
    */
   public ShopDoorRenderComponent(Texture texture) {
     this.texture = texture;
-    int frameWidth = texture.getWidth() / FRAME_COUNT;
+    float pixelsPerReferencePixel = texture.getWidth() / REFERENCE_WIDTH;
     for (int i = 0; i < FRAME_COUNT; i++) {
-      frames[i] = new TextureRegion(texture, i * frameWidth, 0, frameWidth, texture.getHeight());
+      frames[i] =
+          new TextureRegion(
+              texture,
+              Math.round(FRAME_X[i] * pixelsPerReferencePixel),
+              0,
+              Math.round(FRAME_WIDTH * pixelsPerReferencePixel),
+              texture.getHeight());
     }
   }
 
@@ -64,9 +79,13 @@ public class ShopDoorRenderComponent extends RenderComponent {
     Vector2 position = entity.getPosition();
     Vector2 scale = entity.getScale();
 
+    // The entity is as wide as one half of the image, but only the cropped window is drawn, from
+    // the same left edge for both frames.
+    float unitsPerReferencePixel = scale.x / (REFERENCE_WIDTH / FRAME_COUNT);
     TextureRegion frame = frames[open ? OPEN_FRAME : CLOSED_FRAME];
-    batch.draw(frame, position.x, position.y, scale.x, scale.y);
-    indicator.draw(batch, position.x + scale.x / 2f, position.y + scale.y);
+    batch.draw(frame, position.x, position.y, FRAME_WIDTH * unitsPerReferencePixel, scale.y);
+    indicator.draw(
+        batch, position.x + SIGN_CENTRE_X * unitsPerReferencePixel, position.y + scale.y);
   }
 
   @Override
