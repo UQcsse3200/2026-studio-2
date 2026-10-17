@@ -130,7 +130,7 @@ loadScripts(document, 'script');</script>
 <div class="summary-table two-column-summary">
 <div class="table-header col-first">Constructor</div>
 <div class="table-header col-last">Description</div>
-<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(java.util.ArrayList,float,int,boolean,com.csse3200.game.components.level.SpawnerComponent.ACTIVATION_MODE)" class="member-name-link">SpawnerComponent</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/ArrayList.html" title="class or interface in java.util" class="external-link">ArrayList</a>&lt;<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/function/Supplier.html" title="class or interface in java.util.function" class="external-link">Supplier</a>&lt;<a href="../../entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a>&gt;&gt;&nbsp;spawnableEntities,
+<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(java.util.List,float,int,boolean,com.csse3200.game.components.level.SpawnerComponent.ACTIVATION_MODE)" class="member-name-link">SpawnerComponent</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/function/Supplier.html" title="class or interface in java.util.function" class="external-link">Supplier</a>&lt;<a href="../../entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a>&gt;&gt;&nbsp;spawnableEntities,
  float&nbsp;spawnInterval,
  int&nbsp;maxSpawns,
  boolean&nbsp;active,
@@ -186,9 +186,9 @@ loadScripts(document, 'script');</script>
 <h2>Constructor Details</h2>
 <ul class="member-list">
 <li>
-<section class="detail" id="&lt;init&gt;(java.util.ArrayList,float,int,boolean,com.csse3200.game.components.level.SpawnerComponent.ACTIVATION_MODE)">
+<section class="detail" id="&lt;init&gt;(java.util.List,float,int,boolean,com.csse3200.game.components.level.SpawnerComponent.ACTIVATION_MODE)">
 <h3>SpawnerComponent</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">SpawnerComponent</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/ArrayList.html" title="class or interface in java.util" class="external-link">ArrayList</a>&lt;<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/function/Supplier.html" title="class or interface in java.util.function" class="external-link">Supplier</a>&lt;<a href="../../entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a>&gt;&gt;&nbsp;spawnableEntities,
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">SpawnerComponent</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/function/Supplier.html" title="class or interface in java.util.function" class="external-link">Supplier</a>&lt;<a href="../../entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a>&gt;&gt;&nbsp;spawnableEntities,
  float&nbsp;spawnInterval,
  int&nbsp;maxSpawns,
  boolean&nbsp;active,
@@ -197,7 +197,7 @@ loadScripts(document, 'script');</script>
 <dt>Parameters:</dt>
 <dd><code>spawnableEntities</code> - all viable entities that can be spawned by this component. the
      presence of an entity in this list does not guarantee they will spawn. it's at the mercy of
-     Math.random()!</dd>
+     the spawner's random selection.</dd>
 <dd><code>spawnInterval</code> - how frequently to attempt to spawn enemies. if the component should only
      spawn enemies when triggered by a trigger button, set to -1</dd>
 <dd><code>maxSpawns</code> - how many enemies should be spawned total by this component. if the component
