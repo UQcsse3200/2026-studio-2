@@ -389,6 +389,10 @@ public abstract class GameArea implements Disposable {
     mapToggled = !mapToggled;
   }
 
+  public boolean isMapToggled() {
+    return mapToggled;
+  }
+
   public KeyboardPlayerInputComponent getInput() {
     return input;
   }

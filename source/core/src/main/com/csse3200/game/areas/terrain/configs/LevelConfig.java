@@ -335,7 +335,6 @@ public class LevelConfig {
                   Color.CLEAR,
                   LightingDefaults.DIST));
 
-
       checkpoint.setScale(CheckpointComponent.ATLAS_WIDTH, CheckpointComponent.ATLAS_HEIGHT);
 
       // The torch art comes from the checkpoint atlas. Without one the checkpoint still works but

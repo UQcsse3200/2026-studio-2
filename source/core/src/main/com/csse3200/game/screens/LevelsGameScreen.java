@@ -282,6 +282,12 @@ public class LevelsGameScreen extends ScreenAdapter {
   private void performLevelSwap() {
     logger.info("Swapping level to new game area");
 
+    boolean wasMapToggled = false;
+    if (currentGameArea.isMapToggled()) {
+      wasMapToggled = true;
+      currentGameArea.toggleLevelMap();
+    }
+
     nextGameArea.create();
     currentGameArea.dispose();
     currentGameArea = nextGameArea;
@@ -289,6 +295,9 @@ public class LevelsGameScreen extends ScreenAdapter {
     registerLevelSwap();
 
     renderer.getCamera().setTarget(currentGameArea.getPlayer());
+    if (wasMapToggled) {
+      currentGameArea.toggleLevelMap();
+    }
   }
 
   @Override
