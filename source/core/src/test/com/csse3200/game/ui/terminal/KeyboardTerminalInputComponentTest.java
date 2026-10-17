@@ -10,16 +10,34 @@ import com.csse3200.game.components.player.KeyboardPlayerInputComponent;
 import com.csse3200.game.components.player.PlayerInteractionComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
-import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.input.InputService;
 import com.csse3200.game.physics.PhysicsService;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.concurrent.atomic.AtomicBoolean;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 
-@ExtendWith(GameExtension.class)
-class KeyboardTerminalInputComponentTest {
+class KeyboardTerminalInputComponentTest extends AbstractTerminalInputComponentTest {
+  @Override
+  TerminalInputComponent createInput(Terminal terminal) {
+    return new KeyboardTerminalInputComponent(terminal);
+  }
+
+  @Test
+  void shouldSwallowScrollingWhenTerminalOpen() {
+    Terminal terminal = mock(Terminal.class);
+    when(terminal.isOpen()).thenReturn(true);
+
+    assertTrue(createInput(terminal).scrolled(0f, 1f));
+  }
+
+  @Test
+  void shouldNotSwallowScrollingWhenTerminalClosed() {
+    Terminal terminal = mock(Terminal.class);
+    when(terminal.isOpen()).thenReturn(false);
+
+    assertFalse(createInput(terminal).scrolled(0f, 1f));
+  }
+
   @Test
   void shouldToggleTerminalOpenClose() {
     Terminal terminal = spy(Terminal.class);
@@ -38,71 +56,12 @@ class KeyboardTerminalInputComponentTest {
     verify(terminal, times(2)).setClosed();
   }
 
-  @Test
-  void shouldUpdateMessageOnKeyTyped() {
-    Terminal terminal = mock(Terminal.class);
-    when(terminal.isOpen()).thenReturn(true);
-    KeyboardTerminalInputComponent terminalInput = new KeyboardTerminalInputComponent(terminal);
-
-    terminalInput.keyTyped('a');
-    terminalInput.keyTyped('b');
-    verify(terminal).appendToMessage('a');
-    verify(terminal).appendToMessage('b');
-
-    terminalInput.keyTyped('\b');
-    verify(terminal).handleBackspace();
-
-    terminalInput.keyTyped('\n');
-    verify(terminal).processMessage();
-  }
-
-  @Test
-  void shouldHandleMessageWhenTerminalOpen() {
-    Terminal terminal = mock(Terminal.class);
-    KeyboardTerminalInputComponent terminalInput = new KeyboardTerminalInputComponent(terminal);
-
-    when(terminal.isOpen()).thenReturn(true);
-    assertTrue(terminalInput.keyDown('a'));
-    assertTrue(terminalInput.keyUp('a'));
-
-    when(terminal.isOpen()).thenReturn(false);
-    assertFalse(terminalInput.keyDown('a'));
-    assertFalse(terminalInput.keyUp('a'));
-  }
-
-  @Test
-  void shouldSwallowPointerInputWhenTerminalOpen() {
-    Terminal terminal = mock(Terminal.class);
-    when(terminal.isOpen()).thenReturn(true);
-    KeyboardTerminalInputComponent terminalInput = new KeyboardTerminalInputComponent(terminal);
-
-    assertTrue(terminalInput.touchDown(100, 100, 0, Input.Buttons.LEFT));
-    assertTrue(terminalInput.touchUp(100, 100, 0, Input.Buttons.LEFT));
-    assertTrue(terminalInput.touchDragged(100, 100, 0));
-    assertTrue(terminalInput.mouseMoved(100, 100));
-    assertTrue(terminalInput.scrolled(0f, 1f));
-  }
-
-  @Test
-  void shouldNotSwallowPointerInputWhenTerminalClosed() {
-    Terminal terminal = mock(Terminal.class);
-    when(terminal.isOpen()).thenReturn(false);
-    KeyboardTerminalInputComponent terminalInput = new KeyboardTerminalInputComponent(terminal);
-
-    assertFalse(terminalInput.touchDown(100, 100, 0, Input.Buttons.LEFT));
-    assertFalse(terminalInput.touchUp(100, 100, 0, Input.Buttons.LEFT));
-    assertFalse(terminalInput.touchDragged(100, 100, 0));
-    assertFalse(terminalInput.mouseMoved(100, 100));
-    assertFalse(terminalInput.scrolled(0f, 1f));
-  }
-
-  @Test
-  void shouldSwallowEscapeWithoutClosingShopWhenTerminalOpen() {
+  /** Registers the services, and has a player beside a shop NPC open the shop. */
+  private EntityService openShopWith(PlayerInteractionComponent interaction) {
     EntityService entityService = new EntityService();
     ServiceLocator.registerEntityService(entityService);
     ServiceLocator.registerPhysicsService(new PhysicsService());
 
-    PlayerInteractionComponent interaction = new PlayerInteractionComponent();
     Entity player = new Entity().addComponent(new InventoryComponent(0)).addComponent(interaction);
     player.setPosition(0f, 0f);
     entityService.register(player);
@@ -113,6 +72,13 @@ class KeyboardTerminalInputComponentTest {
 
     player.getEvents().trigger("interact");
     assertTrue(interaction.isShopOpen());
+    return entityService;
+  }
+
+  @Test
+  void shouldSwallowEscapeWithoutClosingShopWhenTerminalOpen() {
+    PlayerInteractionComponent interaction = new PlayerInteractionComponent();
+    openShopWith(interaction);
 
     Terminal terminal = new Terminal();
     terminal.setOpen();
@@ -149,21 +115,8 @@ class KeyboardTerminalInputComponentTest {
 
   @Test
   void escapeShouldCloseShopInsteadOfTogglingPause() {
-    EntityService entityService = new EntityService();
-    ServiceLocator.registerEntityService(entityService);
-    ServiceLocator.registerPhysicsService(new PhysicsService());
-
     PlayerInteractionComponent interaction = new PlayerInteractionComponent();
-    Entity player = new Entity().addComponent(new InventoryComponent(0)).addComponent(interaction);
-    player.setPosition(0f, 0f);
-    entityService.register(player);
-
-    Entity shopNpc = new Entity().addComponent(new ShopNpcComponent());
-    shopNpc.setPosition(0.5f, 0f);
-    entityService.register(shopNpc);
-
-    player.getEvents().trigger("interact");
-    assertTrue(interaction.isShopOpen());
+    EntityService entityService = openShopWith(interaction);
     assertFalse(entityService.getPaused());
 
     Terminal terminal = new Terminal();

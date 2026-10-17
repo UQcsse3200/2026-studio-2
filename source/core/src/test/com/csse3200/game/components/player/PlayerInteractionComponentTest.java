@@ -4,13 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockConstruction;
-import static org.mockito.Mockito.when;
 
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.components.inventory.InventoryComponent;
 import com.csse3200.game.components.item.GoldPickupComponent;
@@ -24,13 +19,11 @@ import com.csse3200.game.components.npc.ShopNpcComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.extensions.GameExtension;
-import com.csse3200.game.lighting.LightingEngine;
-import com.csse3200.game.lighting.LightingService;
 import com.csse3200.game.physics.PhysicsService;
 import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.rendering.RenderService;
-import com.csse3200.game.services.ResourceService;
+import com.csse3200.game.services.MockServices;
 import com.csse3200.game.services.ServiceLocator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -45,21 +38,11 @@ class PlayerInteractionComponentTest {
     ServiceLocator.registerEntityService(new EntityService());
     ServiceLocator.registerRenderService(new RenderService());
 
-    LightingEngine lightingEngine = mock(LightingEngine.class);
-    box2dLight.RayHandler rayHandlerMock = mock(box2dLight.RayHandler.class);
-    when(lightingEngine.getRayHandler()).thenReturn(rayHandlerMock);
-    LightingService lightingService = mock(LightingService.class);
-    when(lightingService.getEngine()).thenReturn(lightingEngine);
-    ServiceLocator.registerLightingService(lightingService);
+    MockServices.registerLighting();
 
     // Dropping an item spawns a world entity via ItemFactory, which loads a texture. Mock the
     // resource service so drop tests don't depend on real asset loading in a headless test.
-    Texture texture = mock(Texture.class);
-    when(texture.getWidth()).thenReturn(1);
-    when(texture.getHeight()).thenReturn(1);
-    ResourceService resourceService = mock(ResourceService.class);
-    when(resourceService.getAsset(anyString(), eq(Texture.class))).thenReturn(texture);
-    ServiceLocator.registerResourceService(resourceService);
+    MockServices.registerTextures();
   }
 
   @Test

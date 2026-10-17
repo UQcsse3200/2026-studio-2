@@ -2,12 +2,7 @@ package com.csse3200.game.entities.factories;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.ProjectileComponent;
@@ -16,12 +11,10 @@ import com.csse3200.game.components.projectile.ArrowType;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.extensions.GameExtension;
-import com.csse3200.game.lighting.LightingEngine;
-import com.csse3200.game.lighting.LightingService;
 import com.csse3200.game.physics.PhysicsService;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.rendering.RenderService;
-import com.csse3200.game.services.ResourceService;
+import com.csse3200.game.services.MockServices;
 import com.csse3200.game.services.ServiceLocator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -34,19 +27,8 @@ class ProjectileFactoryTest {
     ServiceLocator.registerPhysicsService(new PhysicsService());
     ServiceLocator.registerPhysicsService(new PhysicsService());
 
-    LightingEngine lightingEngine = mock(LightingEngine.class);
-    box2dLight.RayHandler rayHandlerMock = mock(box2dLight.RayHandler.class);
-    when(lightingEngine.getRayHandler()).thenReturn(rayHandlerMock);
-    LightingService lightingService = mock(LightingService.class);
-    when(lightingService.getEngine()).thenReturn(lightingEngine);
-    ServiceLocator.registerLightingService(lightingService);
-
-    Texture texture = mock(Texture.class);
-    when(texture.getWidth()).thenReturn(1);
-    when(texture.getHeight()).thenReturn(1);
-    ResourceService resources = mock(ResourceService.class);
-    when(resources.getAsset(anyString(), eq(Texture.class))).thenReturn(texture);
-    ServiceLocator.registerResourceService(resources);
+    MockServices.registerLighting();
+    MockServices.registerTextures();
   }
 
   @Test
