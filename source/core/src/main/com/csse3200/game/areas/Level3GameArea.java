@@ -7,6 +7,7 @@ import com.badlogic.gdx.physics.box2d.Fixture;
 import com.csse3200.game.areas.terrain.TerrainFactory;
 import com.csse3200.game.areas.terrain.configs.levelconfigs.Level3Config;
 import com.csse3200.game.components.CameraComponent;
+import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.GameVolume;
 import com.csse3200.game.components.level.RisingWaterComponent;
 import com.csse3200.game.components.player.PlayerActions;
@@ -343,6 +344,11 @@ public class Level3GameArea extends GameArea {
     if (data == null
         || data.entity == null
         || data.entity.getComponent(PlayerActions.class) == null) {
+      return;
+    }
+
+    CombatStatsComponent stats = data.entity.getComponent(CombatStatsComponent.class);
+    if (stats != null && stats.isGodMode()) {
       return;
     }
 
