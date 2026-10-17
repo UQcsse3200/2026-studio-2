@@ -145,10 +145,10 @@ public class BackgroundRenderComponent extends RenderComponent {
     for (ParallaxLayer layer : layers) {
       if (up) {
         if (level.equals("level2")) {
-          layer.position.x -= worldBounds.x / 2;
-          layer.position.y -= factor.y * layer.height / 1.4f;
-          layer.width *= factor.x;
-          layer.height *= factor.y * 1.15f;
+          layer.position.x -= worldBounds.x / 2 - 10;
+          layer.position.y -= factor.y * layer.height / 2.4f;
+          layer.width *= factor.x / 1.25f;
+          layer.height *= factor.y / 1.25f;
         } else if (level.equals("level3")) {
           layer.position.x -= worldBounds.x / 2 - 5;
           layer.position.y -= worldBounds.y * 0.87f + factor.y;
@@ -166,11 +166,11 @@ public class BackgroundRenderComponent extends RenderComponent {
         layer.velocity.y *= factor.y;
       } else {
         if (level.equals("level2")) {
-          layer.position.x += worldBounds.x / 2;
-          // layer.height already multiplied by factor.y, negate 1.1 multiplied before
-          layer.position.y += layer.height / 1.4f / 1.15f;
-          layer.width /= factor.x;
-          layer.height /= factor.y * 1.15f;
+          layer.position.x += worldBounds.x / 2 - 10;
+          // layer.height already multiplied by factor.y, negate 1.25 divided before
+          layer.position.y += layer.height / 2.4f * 1.25f;
+          layer.width /= factor.x / 1.25f;
+          layer.height /= factor.y / 1.25f;
         } else if (level.equals("level3")) {
           layer.position.x += worldBounds.x / 2 - 5;
           layer.position.y += worldBounds.y * 0.87f + factor.y;

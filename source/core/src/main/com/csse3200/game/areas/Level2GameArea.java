@@ -117,13 +117,13 @@ public class Level2GameArea extends GameArea {
     // Main background
     backgroundComponent.addLayer(
         "images/backgrounds/Background-2.png",
-        new Vector2(0.10f, 0f),
-        30f,
-        15f,
-        new Vector2(0f, 3.5f),
+        new Vector2(0.1f, 0f),
+        31.5f,
+        17.2f,
+        new Vector2(0f, 3.25f),
         new Vector2(0f, 0f),
         RepeatMode.NONE,
-        1f,
+        0.9f,
         1f,
         false,
         0,
