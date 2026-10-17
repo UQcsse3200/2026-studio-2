@@ -436,9 +436,9 @@ public class Level3Config extends LevelConfig {
         new CheckpointConfig[] {
           new CheckpointConfig(new GridPoint2(10, 6)),
           new CheckpointConfig(new GridPoint2(13, 21)),
-          new CheckpointConfig(new GridPoint2(13, 34)),
+          new CheckpointConfig(new GridPoint2(16, 37)), // on P12
           new CheckpointConfig(new GridPoint2(13, 52)),
-          new CheckpointConfig(new GridPoint2(13, 65)),
+          new CheckpointConfig(new GridPoint2(16, 68)), // on ledge above EA2
           new CheckpointConfig(new GridPoint2(13, 85)),
           new CheckpointConfig(new GridPoint2(13, 98)),
         };

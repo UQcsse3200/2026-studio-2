@@ -1,3 +1,4 @@
+
 package com.csse3200.game;
 
 import static com.badlogic.gdx.Gdx.app;
@@ -25,16 +26,21 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Entry point of the non-platform-specific game logic. Controls which screen is currently running.
- * The current screen triggers transitions to other screens. This works similarly to a finite state
- * machine (See the State Pattern).
+ * Entry point of the non-platform-specific game logic.
+ * Controls which screen is currently running.
+ *
+ * The current screen triggers transitions to other screens.
+ * This works similarly to a finite state machine (State Pattern).
  */
 public class GdxGame extends Game {
-  private static final Logger logger = LoggerFactory.getLogger(GdxGame.class);
+
+  private static final Logger logger =
+      LoggerFactory.getLogger(GdxGame.class);
 
   private boolean transitioning = false;
 
-  // Prevents the intro cutscene from triggering multiple times in one game session.
+  // Prevents the intro cutscene from triggering multiple times
+  // in one game session.
   private boolean introStarted = false;
 
   private PlayerSnapshot playerSnapshot;
@@ -42,29 +48,36 @@ public class GdxGame extends Game {
   @Override
   public void create() {
     logger.info("Creating game");
-    loadSettings();
 
+    loadSettings();
     applyDefaultClearColor();
 
-    // Open Level 2 directly to inspect checkpoints.
+    // TEMPORARY: Open Level 3 directly to debug checkpoints.
+    logger.info("Opening Level 3 directly for checkpoint debugging");
     setScreen(ScreenType.LEVEL_1_GAME);
   }
 
   /**
-   * Restores the default light-yellow clear colour used behind transparent terrain (e.g. Sandbox).
-   *
-   * <p>Cutscenes set a black clear colour while they are on screen; this puts the game colour back.
+   * Restores the default light-yellow clear colour used behind
+   * transparent terrain (e.g. Sandbox).
    */
   public static void applyDefaultClearColor() {
     if (Gdx.gl == null) {
       return;
     }
-    Gdx.gl.glClearColor(248f / 255f, 249 / 255f, 178 / 255f, 1);
+
+    Gdx.gl.glClearColor(
+        248f / 255f,
+        249f / 255f,
+        178f / 255f,
+        1
+    );
   }
 
   /** Loads the game's settings. */
   private void loadSettings() {
     logger.debug("Loading game settings");
+
     UserSettings.Settings settings = UserSettings.get();
     UserSettings.applySettings(settings);
   }
@@ -76,16 +89,19 @@ public class GdxGame extends Game {
    */
   public void setScreen(ScreenType screenType) {
     logger.info("Setting game screen to {}", screenType);
+
     Screen currentScreen = getScreen();
+
     if (currentScreen != null) {
       currentScreen.dispose();
     }
+
     setScreen(createScreen(screenType));
   }
 
   /**
-   * Fades the current screen to black, swaps to the target screen, then fades back in. Ignored if a
-   * transition is already in progress.
+   * Fades the current screen to black, swaps to the target screen,
+   * then fades back in. Ignored if a transition is already in progress.
    *
    * @param screenType screen type to transition to
    */
@@ -93,31 +109,51 @@ public class GdxGame extends Game {
     if (transitioning) {
       return;
     }
+
     logger.info("Transitioning game screen to {}", screenType);
     transitioning = true;
+
     setScreen(new TransitionScreen(this, getScreen(), screenType));
   }
 
-  /** Starts a validated cutscene and creates the destination level after it completes. */
-  public void startCutscene(CutsceneLoader.LoadedCutscene cutscene, ScreenType destination) {
+  /**
+   * Starts a validated cutscene and creates the destination level
+   * after it completes.
+   */
+  public void startCutscene(
+      CutsceneLoader.LoadedCutscene cutscene,
+      ScreenType destination
+  ) {
     logger.info("Starting cutscene {}", cutscene.getName());
+
     Screen currentScreen = getScreen();
+
     if (currentScreen != null) {
       currentScreen.dispose();
     }
+
     setScreen(new CutsceneScreen(this, cutscene, destination));
   }
 
-  /** Starts the initial cutscene once per game session, then falls back to Level 1. */
+  /**
+   * Starts the initial cutscene once per game session,
+   * then falls back to Level 1.
+   */
   public void startInitialCutscene() {
     if (introStarted) {
       transitionTo(ScreenType.LEVEL_1_GAME);
       return;
     }
 
-    CutsceneLoader.Result result = new CutsceneLoader().load("cutscene1");
+    CutsceneLoader.Result result =
+        new CutsceneLoader().load("cutscene1");
+
     if (!result.isSuccess()) {
-      logger.debug("Initial cutscene unavailable: {}", result.getError());
+      logger.debug(
+          "Initial cutscene unavailable: {}",
+          result.getError()
+      );
+
       transitionTo(ScreenType.LEVEL_1_GAME);
       return;
     }
@@ -127,22 +163,25 @@ public class GdxGame extends Game {
   }
 
   /**
-   * Called by TransitionScreen once its fade-in has finished, handing control to the screen it
-   * faded into.
+   * Called by TransitionScreen once its fade-in has finished,
+   * handing control to the screen it faded into.
    *
    * @param toScreen the screen the transition faded into
    */
   public void finishTransition(Screen toScreen) {
     Screen transitionScreen = getScreen();
+
     transitioning = false;
     setScreen(toScreen);
+
     if (transitionScreen != null) {
       transitionScreen.dispose();
     }
   }
 
   /**
-   * Collects a snapshot of the player's state components (gold, health, inventory).
+   * Collects a snapshot of the player's state components
+   * (gold, health, inventory).
    *
    * @param player the player entity to save
    */
@@ -151,6 +190,7 @@ public class GdxGame extends Game {
       logger.warn("Attempting to save a null player");
       return;
     }
+
     playerSnapshot = PlayerSnapshot.capture(player);
   }
 
@@ -163,6 +203,7 @@ public class GdxGame extends Game {
     if (playerSnapshot == null) {
       return;
     }
+
     playerSnapshot.applyTo(player);
     playerSnapshot = null;
   }
@@ -170,6 +211,7 @@ public class GdxGame extends Game {
   @Override
   public void dispose() {
     logger.debug("Disposing of current screen");
+
     if (getScreen() != null) {
       getScreen().dispose();
     }
@@ -185,37 +227,51 @@ public class GdxGame extends Game {
     switch (screenType) {
       case MAIN_MENU:
         return new MainMenuScreen(this);
+
       case MAIN_GAME:
         return new MainGameScreen(this);
+
       case LEVEL_1_GAME:
         return new LevelsGameScreen(this);
+
       case SANDBOX:
         return new SandboxGameScreen(this);
+
       case LEVEL_2_GAME:
         LevelsGameScreen screen2 = new LevelsGameScreen(this);
         screen2.queueAreaSwap("level2");
         return screen2;
+
       case LEVEL_3_GAME:
         LevelsGameScreen screen3 = new LevelsGameScreen(this);
         screen3.queueAreaSwap("level3");
         return screen3;
+
       case LEVEL_BOSS_GAME:
         LevelsGameScreen bossScreen = new LevelsGameScreen(this);
         bossScreen.queueAreaSwap("boss");
         return bossScreen;
+
       case SETTINGS:
         return new SettingsScreen(this);
+
       case SETTINGS_FROM_PAUSE:
         return new SettingsFromPauseScreen(this);
+
       case MINIGAME_SELECT:
         return new MinigameSelectScreen(this);
+
       case CYCLOPS_MINIGAME:
         return new CyclopsMinigameRoomScreen(this);
+
       case MINIGAME_SPIN_THE_WHEEL:
         return new SpinTheWheelScreen(this);
+
       case MINIGAME_BLACKJACK:
         return new BlackjackScreen(this);
+
       default:
+        logger.error("Unknown screen type: {}", screenType);
         return null;
     }
   }
