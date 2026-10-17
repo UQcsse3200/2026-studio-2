@@ -10,6 +10,7 @@ import com.csse3200.game.components.GameVolume;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.EnemyFactory;
 import com.csse3200.game.entities.factories.ItemFactory;
+import com.csse3200.game.entities.factories.ObstacleFactory;
 import com.csse3200.game.rendering.BackgroundRenderComponent;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
@@ -53,6 +54,7 @@ public class Level2GameArea extends GameArea {
     "images/health/purple_heart.png",
     "images/traps/spiky_ball.png",
     "images/traps/spiky_ball_trap.png",
+    "images/terrain/Level_3/water tile.png", // torches
     ItemFactory.WHEEL_TOKEN_TEXTURE,
 
     // Enemy textures
@@ -101,6 +103,7 @@ public class Level2GameArea extends GameArea {
     loadAssets();
 
     spawnTerrain();
+    spawnTorches();
     spawnBackground();
     spawnConfigEntities();
     spawnSkeletonWarrior();
@@ -148,6 +151,23 @@ public class Level2GameArea extends GameArea {
     for (GridPoint2 spawnLocation : skeletonWarriorSpawnLocations) {
       Entity enemy = EnemyFactory.createSkeletonWarrior(player);
       spawnEntityAt(enemy, spawnLocation, true, true);
+    }
+  }
+
+  private void spawnTorches() {
+    GridPoint2[] torchSpawns = {
+      new GridPoint2(2, 41),
+      new GridPoint2(10, 41),
+      new GridPoint2(11, 37),
+      new GridPoint2(2, 8),
+      new GridPoint2(10, 8),
+      new GridPoint2(37, 28),
+      new GridPoint2(43, 8),
+      new GridPoint2(34, 8),
+    };
+
+    for (GridPoint2 pos : torchSpawns) {
+      spawnEntityAt(ObstacleFactory.createTorch(), pos, true, false);
     }
   }
 
