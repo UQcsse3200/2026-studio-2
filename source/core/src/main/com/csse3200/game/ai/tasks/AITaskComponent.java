@@ -1,5 +1,6 @@
 package com.csse3200.game.ai.tasks;
 
+import com.csse3200.game.components.BossPhaseComponent;
 import com.csse3200.game.components.Component;
 import java.util.*;
 import org.slf4j.Logger;
@@ -40,6 +41,17 @@ public class AITaskComponent extends Component implements TaskRunner {
    */
   @Override
   public void update() {
+
+    BossPhaseComponent phase = entity.getComponent(BossPhaseComponent.class);
+
+    if (phase != null && phase.isTransitioning()) {
+      if (currentTask != null) {
+        currentTask.stop();
+        currentTask = null;
+      }
+      return;
+    }
+
     PriorityTask desiredtask = getHighestPriorityTask();
     if (desiredtask == null || desiredtask.getPriority() < 0) {
       return;

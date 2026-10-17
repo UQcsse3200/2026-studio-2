@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.csse3200.game.ai.tasks.AITaskComponent;
+import com.csse3200.game.components.BossPhaseComponent;
 import com.csse3200.game.components.BurnStatsComponent;
 import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.components.CombatStatsComponent;
@@ -19,6 +20,7 @@ import com.csse3200.game.components.lighting.PointLightComponent;
 import com.csse3200.game.components.npc.ChaseSoundComponent;
 import com.csse3200.game.components.npc.EnemyAnimationController;
 import com.csse3200.game.components.tasks.*;
+import com.csse3200.game.components.tasks.BossSummonTask;
 import com.csse3200.game.components.tasks.ChaseTask;
 import com.csse3200.game.components.tasks.DelayedAttackTask;
 import com.csse3200.game.components.tasks.FlyingRepositionTask;
@@ -247,6 +249,7 @@ public class EnemyFactory {
     calypso.addComponent(animator);
     calypso.addComponent(new EnemyTeleportComponent(tpPositions, 500L, 10000L));
     calypso.addComponent(new BossHealthRenderComponent(camera));
+    calypso.addComponent(new BossPhaseComponent());
 
     animator.scaleEntity();
     float targetHeight = target.getScale().y;
@@ -272,6 +275,11 @@ public class EnemyFactory {
                 CALYPSO_SWEEP_DURATION,
                 CALYPSO_SWEEP_COOLDOWN))
         .addTask(new TimerAttackTask(target, 25, 100, 0, 1, 0, 15));
+
+    // phase2
+    calypso
+        .getComponent(AITaskComponent.class)
+        .addTask(new BossSummonTask(target, 30, config.attackRange, 5f));
 
     return calypso;
   }
@@ -369,8 +377,6 @@ public class EnemyFactory {
                   5f,
                   config.attackType))
           .addTask(new SummonTask(target, 30, config.attackRange, 5f));
-    } else if (config.attackType.equals("cyclops")) {
-      // add melee sweep attack and throwing boulder range attack
     } else if (config.attackType.equals("calypso")) {
       // Standard projectile attack. Other Calypso attacks are added separately.
       aiComponent.addTask(

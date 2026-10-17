@@ -1,5 +1,6 @@
 package com.csse3200.game.components.tasks;
 
+import com.csse3200.game.components.BossPhaseComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.services.ServiceLocator;
 
@@ -22,6 +23,11 @@ public class TimerAttackTask extends DelayedAttackTask {
   public int getPriority() {
     float distance = owner.getEntity().getCenterPosition().dst(target.getCenterPosition());
     long currentTime = ServiceLocator.getTimeSource().getTime();
+
+    BossPhaseComponent phase = owner.getEntity().getComponent(BossPhaseComponent.class);
+    if (phase.getCurrentPhase() < 2) {
+      return -1;
+    }
 
     boolean cooldownComplete = currentTime > attackStartTime + attackInterval * 1000;
 
