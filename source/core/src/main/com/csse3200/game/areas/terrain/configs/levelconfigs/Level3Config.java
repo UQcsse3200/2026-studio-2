@@ -299,9 +299,9 @@ public class Level3Config extends LevelConfig {
           new PlatformConfig(new GridPoint2(15, 67), 3, 1, 0, ledgesTFP), // new: above EA2
           new PlatformConfig(new GridPoint2(12, 84), 3, 1, 0, ledgesTFP), // L5
           new PlatformConfig(new GridPoint2(9, 94), 3, 1, 0, ledgesTFP), // L6
-          new PlatformConfig(new GridPoint2(0, 100), 27, 1, 0, ledgesTFP), // BA1
-          new PlatformConfig(new GridPoint2(0, 103), 27, 1, 0, ledgesTFP), // BA2
-          new PlatformConfig(new GridPoint2(0, 106), 27, 1, 0, ledgesTFP), // BA3
+          new PlatformConfig(new GridPoint2(2, 100), 23, 1, 0, ledgesTFP), // BA1
+          new PlatformConfig(new GridPoint2(2, 103), 23, 1, 0, ledgesTFP), // BA2
+          new PlatformConfig(new GridPoint2(2, 106), 23, 1, 0, ledgesTFP), // BA3
         };
 
     triggerButtons =
