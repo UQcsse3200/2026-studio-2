@@ -2,6 +2,7 @@ package com.csse3200.game.components.player;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockingDetails;
@@ -112,12 +113,15 @@ class GrappleArrowAnchorIntegrationTest {
   }
 
   @Test
-  void shouldAnchorOnTheWallFaceForAnArrowFlyingNearlyStraightUp() {
-    // Shallow approaches to a wall need the longest reach to find the surface from.
-    Vector2 anchor = fireAndGetAnchor(new Vector2(-1f, 6f), 1f);
+  void shouldAnchorOnTheWallFaceForAnArrowComingDownSteeplyOntoIt() {
+    // A steep shot climbs, then drops almost alongside the wall: the shallowest approach to the
+    // face, which needs the longest reach to find the surface from. It still lands above the
+    // shooter's feet, so it hooks.
+    Vector2 anchor = fireAndGetAnchor(new Vector2(-1f, 2.5f), 1f);
 
     assertNotNull(anchor, "the arrow should have reached the wall and attached");
     assertEquals(WALL_FACE_X, anchor.x, 0.05f);
+    assertTrue(anchor.y > 0.1f, "it should have landed above the shooter's feet, not below");
   }
 
   @Test

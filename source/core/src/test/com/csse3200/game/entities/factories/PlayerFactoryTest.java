@@ -31,6 +31,7 @@ import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.rendering.AnimationRenderComponent;
 import com.csse3200.game.rendering.ParticleEffectsRenderingComponent;
+import com.csse3200.game.rendering.item.GrappleFailedIndicatorRenderComponent;
 import com.csse3200.game.services.GameTime;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
@@ -88,6 +89,7 @@ class PlayerFactoryTest {
       assertNotNull(bow);
       assertSame(bow, player.getComponent(WeaponComponent.class).getPrimaryWeapon());
       assertNotNull(player.getComponent(GrappleComponent.class));
+      assertNotNull(player.getComponent(GrappleFailedIndicatorRenderComponent.class));
       assertNotNull(player.getComponent(PlayerActions.class));
       AnimationRenderComponent animator = player.getComponent(AnimationRenderComponent.class);
       for (String clip :

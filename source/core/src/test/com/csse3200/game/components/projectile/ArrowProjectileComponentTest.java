@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
 
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
@@ -18,7 +19,10 @@ import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.physics.PhysicsService;
 import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.physics.components.PhysicsComponent;
+import com.csse3200.game.services.GameTime;
 import com.csse3200.game.services.ServiceLocator;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -299,6 +303,40 @@ class ArrowProjectileComponentTest {
   }
 
   @Test
+  void shouldAnnounceWhereItRanOutOfRange() {
+    Entity arrow = createArrow(Vector2.X, 10f, 15f);
+    ArrowProjectileComponent projectile = arrow.getComponent(ArrowProjectileComponent.class);
+    arrow.getComponent(PhysicsComponent.class).getBody().setTransform(15f, 3f, 0f);
+    List<Vector2> announced = new ArrayList<>();
+    arrow
+        .getEvents()
+        .addListener(
+            ArrowProjectileComponent.RANGE_EXCEEDED_EVENT, (Vector2 point) -> announced.add(point));
+    Vector2 centre = projectile.getWorldCenter();
+
+    projectile.update();
+    projectile.update(); // already spent: it must not announce a second time
+
+    assertEquals(1, announced.size());
+    assertTrue(announced.get(0).epsilonEquals(centre, 1e-4f));
+  }
+
+  @Test
+  void shouldNotAnnounceRangeBeforeItIsReached() {
+    Entity arrow = createArrow(Vector2.X, 10f, 15f);
+    List<Vector2> announced = new ArrayList<>();
+    arrow
+        .getEvents()
+        .addListener(
+            ArrowProjectileComponent.RANGE_EXCEEDED_EVENT, (Vector2 point) -> announced.add(point));
+    arrow.getComponent(PhysicsComponent.class).getBody().setTransform(10f, 0f, 0f);
+
+    arrow.getComponent(ArrowProjectileComponent.class).update();
+
+    assertEquals(0, announced.size());
+  }
+
+  @Test
   void shouldMeasureRangeFromTheShootersCurrentPositionNotTheSpawnPoint() {
     Entity shooter = new Entity();
     shooter.setPosition(0f, 0f);
@@ -325,6 +363,185 @@ class ArrowProjectileComponentTest {
     shooter.setPosition(-10f, 0f);
     projectile.update();
     assertTrue(projectile.isSpent());
+  }
+
+  private Entity createEnemyArrow(Vector2 direction, float speed, float range) {
+    Entity arrow =
+        new Entity()
+            .addComponent(new PhysicsComponent())
+            .addComponent(new HitboxComponent().setLayer(PhysicsLayer.ENEMY_PROJECTILE))
+            .addComponent(new CombatStatsComponent(1, 10))
+            .addComponent(new ArrowProjectileComponent(direction, speed, range).hurtsPlayer());
+    arrow.setPosition(0f, 0f);
+    entityService.register(arrow);
+    return arrow;
+  }
+
+  @Test
+  void anEnemysArrowShouldDamageThePlayerAndBeSpent() {
+    Entity arrow = createEnemyArrow(Vector2.X, 10f, 15f);
+    Entity player = createTarget(PhysicsLayer.PLAYER, true);
+
+    triggerCollision(arrow, player);
+
+    assertEquals(10, player.getComponent(CombatStatsComponent.class).getHealth());
+    assertTrue(arrow.getComponent(ArrowProjectileComponent.class).isSpent());
+  }
+
+  @Test
+  void anEnemysArrowShouldFlyStraightThroughOtherEnemies() {
+    Entity arrow = createEnemyArrow(Vector2.X, 10f, 15f);
+    Entity otherEnemy = createTarget(PhysicsLayer.NPC, true);
+
+    triggerCollision(arrow, otherEnemy);
+
+    assertEquals(20, otherEnemy.getComponent(CombatStatsComponent.class).getHealth());
+    assertFalse(arrow.getComponent(ArrowProjectileComponent.class).isSpent());
+  }
+
+  @Test
+  void anEnemysArrowShouldStillBreakOnTerrain() {
+    Entity arrow = createEnemyArrow(Vector2.X, 10f, 15f);
+    Entity terrain = createTarget(PhysicsLayer.GROUND, false);
+    arrow.getComponent(PhysicsComponent.class).getBody().setTransform(2f, 0f, 0f);
+
+    triggerCollision(arrow, terrain);
+
+    assertTrue(arrow.getComponent(ArrowProjectileComponent.class).isSpent());
+  }
+
+  @Test
+  void eachKindOfArrowShouldOnlyCollideWithWhatItCanHit() {
+    short playersArrowMask =
+        createArrow(Vector2.X, 10f, 15f)
+            .getComponent(HitboxComponent.class)
+            .getFixture()
+            .getFilterData()
+            .maskBits;
+    short enemysArrowMask =
+        createEnemyArrow(Vector2.X, 10f, 15f)
+            .getComponent(HitboxComponent.class)
+            .getFixture()
+            .getFilterData()
+            .maskBits;
+
+    assertEquals(0, playersArrowMask & PhysicsLayer.PLAYER);
+    assertTrue((playersArrowMask & PhysicsLayer.NPC) != 0);
+    assertEquals(0, enemysArrowMask & PhysicsLayer.NPC);
+    assertTrue((enemysArrowMask & PhysicsLayer.PLAYER) != 0);
+  }
+
+  @Test
+  void shouldBeRemovedOnceClearOfTheSpawnIfItIsStillInTerrainItStartedIn() {
+    Entity arrow = createArrow(Vector2.X, 10f, 15f);
+    Entity terrain = createTarget(PhysicsLayer.GROUND, false);
+    ArrowProjectileComponent projectile = arrow.getComponent(ArrowProjectileComponent.class);
+
+    // Touching the terrain on the spawn frame is ignored, but it never stopped touching it.
+    triggerCollision(arrow, terrain);
+    projectile.update();
+    assertFalse(projectile.isSpent());
+
+    // Once it has moved clear of where it spawned, it has plainly flown into that terrain.
+    arrow.getComponent(PhysicsComponent.class).getBody().setTransform(1f, 0f, 0f);
+    projectile.update();
+
+    assertTrue(projectile.isSpent());
+  }
+
+  @Test
+  void shouldSurviveTerrainItOnlyTouchedAtTheSpawnIfItFliesAwayFromIt() {
+    Entity arrow = createArrow(Vector2.X, 10f, 15f);
+    Entity terrain = createTarget(PhysicsLayer.GROUND, false);
+    ArrowProjectileComponent projectile = arrow.getComponent(ArrowProjectileComponent.class);
+
+    triggerCollision(arrow, terrain);
+    arrow
+        .getEvents()
+        .trigger(
+            "collisionEnd",
+            arrow.getComponent(HitboxComponent.class).getFixture(),
+            terrain.getComponent(HitboxComponent.class).getFixture());
+    arrow.getComponent(PhysicsComponent.class).getBody().setTransform(1f, 0f, 0f);
+    projectile.update();
+
+    assertFalse(projectile.isSpent());
+  }
+
+  @Test
+  void aStoppedArrowShouldBeStillAndWeightless() {
+    Entity arrow = createArrow(Vector2.X, 10f, 15f);
+    PhysicsComponent physics = arrow.getComponent(PhysicsComponent.class);
+
+    arrow.getComponent(ArrowProjectileComponent.class).stop();
+
+    assertEquals(0f, physics.getBody().getLinearVelocity().len(), 1e-6f);
+    assertEquals(0f, physics.getBody().getGravityScale());
+  }
+
+  @Test
+  void aStoppedArrowShouldKeepFacingTheWayItWasFlyingNotItsLaunchDirection() {
+    Entity arrow = createArrow(Vector2.X, 10f, 15f); // launched to the right...
+    ArrowProjectileComponent projectile = arrow.getComponent(ArrowProjectileComponent.class);
+    arrow.getComponent(PhysicsComponent.class).getBody().setLinearVelocity(0f, -10f);
+    // ...but by the time it lands it is falling straight down.
+    assertTrue(projectile.getCurrentDirection().epsilonEquals(new Vector2(0f, -1f), 1e-5f));
+
+    projectile.stop();
+
+    assertTrue(projectile.getCurrentDirection().epsilonEquals(new Vector2(0f, -1f), 1e-5f));
+  }
+
+  @Test
+  void anArrowAtRestThatWasNeverStoppedStillFallsBackToItsLaunchDirection() {
+    Entity arrow = createArrow(new Vector2(0f, 1f), 10f, 15f);
+    arrow.getComponent(PhysicsComponent.class).getBody().setLinearVelocity(Vector2.Zero);
+
+    assertTrue(
+        arrow
+            .getComponent(ArrowProjectileComponent.class)
+            .getCurrentDirection()
+            .epsilonEquals(new Vector2(0f, 1f), 1e-5f));
+  }
+
+  @Test
+  void aStoppedArrowShouldStayWhereItIsWhileTheWorldTurns() {
+    // This one steps real physics, so it needs a clock and a world of its own.
+    GameTime time = mock(GameTime.class);
+    when(time.getDeltaTime()).thenReturn(0.016f);
+    ServiceLocator.registerTimeSource(time);
+    PhysicsService physics = new PhysicsService();
+    ServiceLocator.registerPhysicsService(physics);
+    entityService = new EntityService();
+    ServiceLocator.registerEntityService(entityService);
+    Entity arrow = createArrow(Vector2.X, 10f, 15f);
+    ArrowProjectileComponent projectile = arrow.getComponent(ArrowProjectileComponent.class);
+    arrow.getComponent(PhysicsComponent.class).getBody().setTransform(3f, 2f, 0f);
+    projectile.stop();
+    Vector2 stoppedAt = projectile.getWorldCenter();
+
+    for (int i = 0; i < 30; i++) {
+      physics.getPhysics().update();
+      projectile.update();
+    }
+
+    assertTrue(projectile.getWorldCenter().epsilonEquals(stoppedAt, 1e-4f));
+    physics.getPhysics().dispose();
+  }
+
+  @Test
+  void moveCentreToShouldPutTheMiddleOfTheArrowThereAndKeepItsAngle() {
+    Entity arrow = createArrow(new Vector2(0f, 1f), 10f, 15f);
+    ArrowProjectileComponent projectile = arrow.getComponent(ArrowProjectileComponent.class);
+    PhysicsComponent physics = arrow.getComponent(PhysicsComponent.class);
+    projectile.update(); // turns it to face straight up
+    float angle = physics.getBody().getAngle();
+    projectile.stop();
+
+    projectile.moveCentreTo(new Vector2(5f, 6f));
+
+    assertTrue(projectile.getWorldCenter().epsilonEquals(new Vector2(5f, 6f), 1e-4f));
+    assertEquals(angle, physics.getBody().getAngle(), 1e-6f);
   }
 
   private Entity createArrow(Vector2 direction, float speed, float range) {
