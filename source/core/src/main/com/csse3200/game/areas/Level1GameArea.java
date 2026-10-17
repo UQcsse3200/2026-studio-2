@@ -123,6 +123,7 @@ public class Level1GameArea extends GameArea {
     "images/terrain/Level_1/Level_1_tile.png",
     "images/terrain/Level_1/Level_1_platform.png",
     "images/terrain/Level_1/Level_1_Spike.png",
+    "images/terrain/Level_3/water tile.png",
 
     // Parallax background layers
     "images/parallax/original_background.png",
@@ -207,6 +208,7 @@ public class Level1GameArea extends GameArea {
     spawnTerrain();
     spawnBackground();
     spawnConfigEntities();
+    spawnTorches();
     player = spawnPlayer();
     //// spawnItems(); // test items
     //// spawnWinCondition();
@@ -331,6 +333,23 @@ public class Level1GameArea extends GameArea {
   private void spawnGold() {
     for (GridPoint2 goldSpawn : GOLD_SPAWNS) {
       spawnEntityAt(ItemFactory.createGold(), goldSpawn, true, false);
+    }
+  }
+
+  private void spawnTorches() {
+    GridPoint2[] torchSpawns = {
+      new GridPoint2(23, 5),
+      new GridPoint2(7, 16),
+      new GridPoint2(19, 17),
+      new GridPoint2(43, 17),
+      new GridPoint2(57, 11),
+      new GridPoint2(58, 1),
+      new GridPoint2(69, 1),
+      new GridPoint2(83, 17),
+    };
+
+    for (GridPoint2 pos : torchSpawns) {
+      spawnEntityAt(ObstacleFactory.createTorch(), pos, true, false);
     }
   }
 
