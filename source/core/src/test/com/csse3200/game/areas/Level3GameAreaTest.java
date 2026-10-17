@@ -163,8 +163,8 @@ class Level3GameAreaTest {
 
     Vector2 bounds = (Vector2) field.get(area);
 
-    assertEquals(30f, bounds.x);
-    assertEquals(100f, bounds.y);
+    assertEquals(40f, bounds.x);
+    assertEquals(35f, bounds.y);
   }
 
   @Test

@@ -179,7 +179,7 @@ public class Level3GameArea extends GameArea {
         new Vector2(0.1f, 0f), // Parallax factor
         30f,
         13f,
-        new Vector2(0f, 4.25f), // Positional offset
+        new Vector2(-1.5f, 4.25f), // Positional offset
         new Vector2(0f, 0f), // Independent velocity
         RepeatMode.NONE,
         1f,
@@ -294,7 +294,7 @@ public class Level3GameArea extends GameArea {
     float tileSize = terrain.getTileSize();
     GridPoint2 tileBounds = terrain.getMapBounds(0);
     // worldBounds = new Vector2(tileBounds.x * tileSize, tileBounds.y * tileSize);
-    worldBounds = new Vector2(30f, 100f);
+    worldBounds = new Vector2(40f, 35f);
   }
 
   private void spawnRisingWater() {

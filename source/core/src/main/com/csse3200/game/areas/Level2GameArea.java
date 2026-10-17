@@ -119,7 +119,7 @@ public class Level2GameArea extends GameArea {
         "images/backgrounds/Background-2.png",
         new Vector2(0.1f, 0f),
         31.5f,
-        17.2f,
+        17.3f,
         new Vector2(0f, 3.25f),
         new Vector2(0f, 0f),
         RepeatMode.NONE,

@@ -367,9 +367,15 @@ public abstract class GameArea implements Disposable {
       viewportWidth = cameraComponent.getCamera().viewportWidth;
       viewportHeight = cameraComponent.getCamera().viewportHeight;
 
-      cameraComponent.resize(worldBoundX, worldBoundY, worldBoundX + 10);
       Entity camera = new Entity();
-      camera.setPosition(worldBounds.x / 2, worldBounds.y / 2);
+      if (level.equals("level3")) {
+        float cameraPosY = cameraComponent.getCamera().position.y;
+        cameraComponent.resize(worldBoundX, worldBoundY, worldBoundX + 5);
+        camera.setPosition(worldBounds.x / 2 - 5, worldBounds.y / 2 + cameraPosY / 1.3f);
+      } else {
+        cameraComponent.resize(worldBoundX, worldBoundY, worldBoundX + 10);
+        camera.setPosition(worldBounds.x / 2, worldBounds.y / 2);
+      }
       cameraComponent.setTarget(camera);
 
       float scaleX = worldBoundX / viewportWidth;
