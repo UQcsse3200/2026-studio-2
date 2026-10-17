@@ -11,16 +11,18 @@ public class RepositionTask extends DefaultTask implements PriorityTask {
   private final Entity target;
   private final int priority;
   private final float repositionDistance;
+  private final String behaviour;
 
   private MovementTask movementTask;
   private boolean repositionRequired;
 
   private EdgeDetectTask edgeDetector;
 
-  public RepositionTask(Entity target, int priority, float repositionDistance) {
+  public RepositionTask(Entity target, int priority, float repositionDistance, String behaviour) {
     this.target = target;
     this.priority = priority;
     this.repositionDistance = repositionDistance;
+    this.behaviour = behaviour;
   }
 
   @Override
@@ -37,7 +39,9 @@ public class RepositionTask extends DefaultTask implements PriorityTask {
   public void start() {
     super.start();
 
-    edgeDetector = new EdgeDetectTask(0.3f);
+    if (!behaviour.equals("flying")) {
+      edgeDetector = new EdgeDetectTask(0.3f);
+    }
 
     Vector2 enemyPos = owner.getEntity().getPosition();
     Vector2 targetPos = target.getPosition();
@@ -59,13 +63,14 @@ public class RepositionTask extends DefaultTask implements PriorityTask {
     Vector2 enemyPos = owner.getEntity().getPosition();
     Vector2 targetPos = target.getPosition();
     float direction = Math.signum(enemyPos.x - targetPos.x);
-    if (!edgeDetector.isGroundAhead(owner.getEntity(), direction)) {
-      movementTask.stop();
-      status = Status.FINISHED;
-      repositionRequired = false;
-      return;
+    if (!behaviour.equals("flying")) {
+      if (!edgeDetector.isGroundAhead(owner.getEntity(), direction)) {
+        movementTask.stop();
+        status = Status.FINISHED;
+        repositionRequired = false;
+        return;
+      }
     }
-
     movementTask.update();
 
     if (movementTask.getStatus() != Status.ACTIVE) {

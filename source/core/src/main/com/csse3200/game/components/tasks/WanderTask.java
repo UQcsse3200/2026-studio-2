@@ -17,6 +17,7 @@ public class WanderTask extends DefaultTask implements PriorityTask {
 
   private final Vector2 wanderRange;
   private final float waitTime;
+  private final String behaviour;
   private Vector2 startPos;
   private MovementTask movementTask;
   private WaitTask waitTask;
@@ -28,10 +29,12 @@ public class WanderTask extends DefaultTask implements PriorityTask {
    * @param wanderRange Distance in X and Y the entity can move from its position when start() is
    *     called.
    * @param waitTime How long in seconds to wait between wandering.
+   * @param behaviour Entity movement behaviour (flying vs non-flying)
    */
-  public WanderTask(Vector2 wanderRange, float waitTime) {
+  public WanderTask(Vector2 wanderRange, float waitTime, String behaviour) {
     this.wanderRange = wanderRange;
     this.waitTime = waitTime;
+    this.behaviour = behaviour;
   }
 
   @Override
@@ -45,7 +48,9 @@ public class WanderTask extends DefaultTask implements PriorityTask {
 
     startPos = owner.getEntity().getPosition();
 
-    edgeDetector = new EdgeDetectTask(0.3f);
+    if (!behaviour.equals("flying")) {
+      edgeDetector = new EdgeDetectTask(0.3f);
+    }
 
     waitTask = new WaitTask(waitTime);
     waitTask.create(owner);
@@ -70,15 +75,17 @@ public class WanderTask extends DefaultTask implements PriorityTask {
     }
 
     // Edge detection
-    if (currentTask == movementTask) {
-      Vector2 currentPos = owner.getEntity().getPosition();
+    if (!behaviour.equals("flying")) {
+      if (currentTask == movementTask) {
+        Vector2 currentPos = owner.getEntity().getPosition();
 
-      float direction = Math.signum(wanderTarget.x - currentPos.x);
+        float direction = Math.signum(wanderTarget.x - currentPos.x);
 
-      if (direction != 0 && !edgeDetector.isGroundAhead(owner.getEntity(), direction)) {
-        movementTask.stop();
-        startWaiting();
-        return;
+        if (direction != 0 && !edgeDetector.isGroundAhead(owner.getEntity(), direction)) {
+          movementTask.stop();
+          startWaiting();
+          return;
+        }
       }
     }
 

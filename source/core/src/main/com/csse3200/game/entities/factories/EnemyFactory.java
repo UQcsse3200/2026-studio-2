@@ -20,8 +20,6 @@ import com.csse3200.game.components.npc.ChaseSoundComponent;
 import com.csse3200.game.components.npc.EnemyAnimationController;
 import com.csse3200.game.components.tasks.ChaseTask;
 import com.csse3200.game.components.tasks.DelayedAttackTask;
-import com.csse3200.game.components.tasks.FlyingRepositionTask;
-import com.csse3200.game.components.tasks.FlyingWanderTask;
 import com.csse3200.game.components.tasks.RangedAttackTask;
 import com.csse3200.game.components.tasks.RepositionTask;
 import com.csse3200.game.components.tasks.SummonTask;
@@ -323,29 +321,20 @@ public class EnemyFactory {
     PhysicsUtils.setScaledCollider(enemy, 0.9f, 0.4f); // 0.4f seems small: any reason?
 
     // Enemy chasing AI
-    aiComponent.addTask(
-        new ChaseTask(
-            target, config.chasePriority, viewDistance, maxChaseDistance, config.behaviour));
+    aiComponent
+        .addTask(
+            new ChaseTask(
+                target, config.chasePriority, viewDistance, maxChaseDistance, config.behaviour))
+        .addTask(
+            new WanderTask(
+                new Vector2(config.wanderRangeX, config.wanderRangeY),
+                config.wanderWaitTime,
+                config.behaviour));
 
-    if (config.attackType.equals("calypso")) {
+    if (!config.attackType.equals("calypso")) {
       aiComponent.addTask(
-          new WanderTask(
-              new Vector2(config.wanderRangeX, config.wanderRangeY), config.wanderWaitTime));
-    } else if (config.behaviour.equals("flying")) {
-      aiComponent
-          .addTask(
-              new FlyingWanderTask(
-                  new Vector2(config.wanderRangeX, config.wanderRangeY), config.wanderWaitTime))
-          .addTask(
-              new FlyingRepositionTask(
-                  target, config.repositionPriority, config.repositionDistance));
-    } else {
-      aiComponent
-          .addTask(
-              new WanderTask(
-                  new Vector2(config.wanderRangeX, config.wanderRangeY), config.wanderWaitTime))
-          .addTask(
-              new RepositionTask(target, config.repositionPriority, config.repositionDistance));
+          new RepositionTask(
+              target, config.repositionPriority, config.repositionDistance, config.behaviour));
     }
 
     // If the enemy is a range type, add a range task.

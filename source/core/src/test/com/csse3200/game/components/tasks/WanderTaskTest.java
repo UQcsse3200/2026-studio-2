@@ -35,7 +35,7 @@ class WanderTaskTest {
 
   @Test
   void shouldTriggerEvent() {
-    WanderTask wanderTask = new WanderTask(Vector2Utils.ONE, 1f);
+    WanderTask wanderTask = new WanderTask(Vector2Utils.ONE, 1f, "chase");
 
     AITaskComponent aiTaskComponent = new AITaskComponent().addTask(wanderTask);
     Entity entity =
@@ -51,3 +51,5 @@ class WanderTaskTest {
     verify(callback, times(1)).handle();
   }
 }
+
+// TEST FOR FLYING ENEMY
