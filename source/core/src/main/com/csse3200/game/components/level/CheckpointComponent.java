@@ -1,4 +1,3 @@
-
 package com.csse3200.game.components.level;
 
 import com.badlogic.gdx.graphics.Color;
@@ -52,7 +51,7 @@ public class CheckpointComponent extends Component {
     }
 
     if (pointLightComponent != null) {
-      pointLightComponent.setColor(new Color(0.55f, 0.05f, 0.02f, 1f));
+      pointLightComponent.setColor(new Color((228f / 255f), (112f / 255f), (37f / 255f), 1f));
     }
   }
 
@@ -95,8 +94,10 @@ public class CheckpointComponent extends Component {
     float playerPosX = player.getPosition().x;
     float playerPosY = player.getPosition().y;
 
-    if (position.x - 1 < playerPosX && position.x + 1 > playerPosX
-        && position.y - 1 < playerPosY && position.y + 1 > playerPosY) {
+    if (position.x - 1 < playerPosX
+        && position.x + 1 > playerPosX
+        && position.y - 1 < playerPosY
+        && position.y + 1 > playerPosY) {
       activate();
     }
   }

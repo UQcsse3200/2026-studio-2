@@ -1,5 +1,6 @@
 package com.csse3200.game.entities.factories;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
@@ -8,7 +9,9 @@ import com.csse3200.game.areas.terrain.configs.*;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.TouchAttackComponent;
 import com.csse3200.game.components.level.*;
+import com.csse3200.game.components.lighting.PointLightComponent;
 import com.csse3200.game.entities.Entity;
+import com.csse3200.game.lighting.LightingDefaults;
 import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.physics.PhysicsUtils;
 import com.csse3200.game.physics.components.ColliderComponent;
@@ -333,7 +336,13 @@ public class ObstacleFactory {
     Entity torch =
         new Entity()
             .addComponent(
-                new TextureRenderComponent("images/terrain/Level_3/water tile.png")); // placeholder
+                new TextureRenderComponent("images/terrain/Level_3/water tile.png")) // placeholder
+            .addComponent(
+                new PointLightComponent(
+                    ServiceLocator.getLightingService().getEngine().getRayHandler(),
+                    LightingDefaults.RAYS,
+                    new Color((228f / 255f), (112f / 255f), (37f / 255f), 1f),
+                    LightingDefaults.DIST));
 
     torch.setScale(0.5f, 1.2f);
 

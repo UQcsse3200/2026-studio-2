@@ -16,5 +16,4 @@ public final class LightingDefaults {
   // Colours
   public static final Color NORMAL_COLOR =
       new Color(230f / 255f, 210f / 255f, 140f / 255f, 70f / 100f);
-  // Security Camera
 }

@@ -1,15 +1,17 @@
-
 package com.csse3200.game.areas.terrain.configs;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.GridPoint2;
 import com.csse3200.game.components.item.Item;
 import com.csse3200.game.components.level.CheckpointComponent;
+import com.csse3200.game.components.lighting.PointLightComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.EnemyConfig;
 import com.csse3200.game.entities.factories.ItemFactory;
 import com.csse3200.game.entities.factories.ObstacleFactory;
+import com.csse3200.game.lighting.LightingDefaults;
 import com.csse3200.game.rendering.AnimationRenderComponent;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.ArrayList;
@@ -95,8 +97,7 @@ public class LevelConfig {
 
     for (CheckpointConfig c : checkpoints) {
       if (c.getEntity() != null) {
-        CheckpointComponent component =
-            c.getEntity().getComponent(CheckpointComponent.class);
+        CheckpointComponent component = c.getEntity().getComponent(CheckpointComponent.class);
 
         if (component != null) {
           checkpointComponents.add(component);
@@ -211,10 +212,7 @@ public class LevelConfig {
         for (int j = s.yMin; j <= s.yMax; j++) {
           Entity spike =
               ObstacleFactory.createSpike(
-                  s,
-                  spikeTFP != null
-                      ? spikeTFP
-                      : "images/terrain/Level_1/Level_1_Spike.png");
+                  s, spikeTFP != null ? spikeTFP : "images/terrain/Level_1/Level_1_Spike.png");
 
           entities.add(new SpawnData(new GridPoint2(i, j), spike));
         }
@@ -258,8 +256,7 @@ public class LevelConfig {
       return;
     }
 
-    Entity trigger =
-        ObstacleFactory.createNextLevelTriggerEntity(nextLevelName);
+    Entity trigger = ObstacleFactory.createNextLevelTriggerEntity(nextLevelName);
     entities.add(new SpawnData(nextLevelTriggerSpawn, trigger));
   }
 
@@ -274,9 +271,7 @@ public class LevelConfig {
     }
   }
 
-  /**
-   * Creates checkpoints using a single entity for both logic and rendering.
-   */
+  /** Creates checkpoints using a single entity for both logic and rendering. */
   private void createCheckpoints() {
     if (checkpoints == null) {
       return;
@@ -285,25 +280,26 @@ public class LevelConfig {
     for (CheckpointConfig c : checkpoints) {
       Entity checkpoint = new Entity();
 
-      checkpoint.addComponent(
-          new CheckpointComponent(false, c.getPosition(), checkpointAtlas));
+      checkpoint
+          .addComponent(new CheckpointComponent(false, c.getPosition(), checkpointAtlas))
+          .addComponent(
+              new PointLightComponent(
+                  ServiceLocator.getLightingService().getEngine().getRayHandler(),
+                  LightingDefaults.RAYS,
+                  Color.CLEAR,
+                  LightingDefaults.DIST));
+      ;
 
-      checkpoint.setScale(
-          CheckpointComponent.ATLAS_WIDTH,
-          CheckpointComponent.ATLAS_HEIGHT);
+      checkpoint.setScale(CheckpointComponent.ATLAS_WIDTH, CheckpointComponent.ATLAS_HEIGHT);
 
       if (checkpointAtlas != null) {
         TextureAtlas atlas =
-            ServiceLocator.getResourceService()
-                .getAsset(checkpointAtlas, TextureAtlas.class);
+            ServiceLocator.getResourceService().getAsset(checkpointAtlas, TextureAtlas.class);
 
-        AnimationRenderComponent animator =
-            new AnimationRenderComponent(atlas);
+        AnimationRenderComponent animator = new AnimationRenderComponent(atlas);
 
-        animator.addAnimation(
-            "unlit", 0.2f, Animation.PlayMode.LOOP);
-        animator.addAnimation(
-            "lit", 0.2f, Animation.PlayMode.LOOP);
+        animator.addAnimation("unlit", 0.2f, Animation.PlayMode.LOOP);
+        animator.addAnimation("lit", 0.2f, Animation.PlayMode.LOOP);
 
         checkpoint.addComponent(animator);
         animator.startAnimation("unlit");

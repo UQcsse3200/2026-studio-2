@@ -1,4 +1,3 @@
-
 package com.csse3200.game;
 
 import static com.badlogic.gdx.Gdx.app;
@@ -85,8 +84,8 @@ public class GdxGame extends Game {
   }
 
   /**
-   * Fades the current screen to black, swaps to the target screen, then fades back in.
-   * Ignored if a transition is already in progress.
+   * Fades the current screen to black, swaps to the target screen, then fades back in. Ignored if a
+   * transition is already in progress.
    *
    * @param screenType screen type to transition to
    */
@@ -128,8 +127,8 @@ public class GdxGame extends Game {
   }
 
   /**
-   * Called by TransitionScreen once its fade-in has finished, handing control to the screen
-   * it faded into.
+   * Called by TransitionScreen once its fade-in has finished, handing control to the screen it
+   * faded into.
    *
    * @param toScreen the screen the transition faded into
    */
