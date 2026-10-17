@@ -1,3 +1,4 @@
+
 package com.csse3200.game;
 
 import static com.badlogic.gdx.Gdx.app;
@@ -34,8 +35,7 @@ public class GdxGame extends Game {
 
   private boolean transitioning = false;
 
-  // a check for if the intro cutscene has been triggered, once per game session, to prevent the
-  // cutscene from being triggered multiple times.
+  // Prevents the intro cutscene from triggering multiple times in one game session.
   private boolean introStarted = false;
 
   private PlayerSnapshot playerSnapshot;
@@ -47,8 +47,8 @@ public class GdxGame extends Game {
 
     applyDefaultClearColor();
 
-    // setScreen(ScreenType.LEVEL_BOSS_GAME);
-    setScreen(ScreenType.MAIN_MENU);
+    // Open Level 2 directly to inspect checkpoints.
+    setScreen(ScreenType.LEVEL_1_GAME);
   }
 
   /**
@@ -85,8 +85,8 @@ public class GdxGame extends Game {
   }
 
   /**
-   * Fades the current screen to black, swaps to the target screen, then fades back in. Ignored if a
-   * transition is already in progress.
+   * Fades the current screen to black, swaps to the target screen, then fades back in.
+   * Ignored if a transition is already in progress.
    *
    * @param screenType screen type to transition to
    */
@@ -109,14 +109,13 @@ public class GdxGame extends Game {
     setScreen(new CutsceneScreen(this, cutscene, destination));
   }
 
-  /** Starts the initial cutscene once per game session, then falls back to level 1. */
+  /** Starts the initial cutscene once per game session, then falls back to Level 1. */
   public void startInitialCutscene() {
     if (introStarted) {
       transitionTo(ScreenType.LEVEL_1_GAME);
       return;
     }
 
-    // logging for if the cutscene is not available, and fallback to level 1
     CutsceneLoader.Result result = new CutsceneLoader().load("cutscene1");
     if (!result.isSuccess()) {
       logger.debug("Initial cutscene unavailable: {}", result.getError());
@@ -124,14 +123,12 @@ public class GdxGame extends Game {
       return;
     }
 
-    // For now, the intro cutscene will be recorded as a bool until a proper save state is
-    // implemented
     introStarted = true;
     startCutscene(result.getCutscene(), ScreenType.LEVEL_1_GAME);
   }
 
   /**
-   * Called by {@link TransitionScreen} once its fade-in has finished, handing control to the screen
+   * Called by TransitionScreen once its fade-in has finished, handing control to the screen
    * it faded into.
    *
    * @param toScreen the screen the transition faded into
@@ -146,9 +143,9 @@ public class GdxGame extends Game {
   }
 
   /**
-   * Collects a snapshot of the player's state components (gold, health, inventory)
+   * Collects a snapshot of the player's state components (gold, health, inventory).
    *
-   * @param player - the player entity to save
+   * @param player the player entity to save
    */
   public void savePlayerState(Entity player) {
     if (player == null) {
@@ -159,13 +156,14 @@ public class GdxGame extends Game {
   }
 
   /**
-   * If a player snapshot is available then update the given player entity to match the stored
-   * snapshot data (gold, health, inventory)
+   * Restores the player's state if a snapshot is available.
    *
-   * @param player - the player to update with the stored snapshot
+   * @param player the player to update with the stored snapshot
    */
   public void restorePlayerState(Entity player) {
-    if (playerSnapshot == null) return;
+    if (playerSnapshot == null) {
+      return;
+    }
     playerSnapshot.applyTo(player);
     playerSnapshot = null;
   }
@@ -173,14 +171,16 @@ public class GdxGame extends Game {
   @Override
   public void dispose() {
     logger.debug("Disposing of current screen");
-    getScreen().dispose();
+    if (getScreen() != null) {
+      getScreen().dispose();
+    }
   }
 
   /**
-   * Create a new screen of the provided type.
+   * Creates a screen of the provided type.
    *
    * @param screenType screen type
-   * @return new screen
+   * @return the created screen
    */
   public Screen createScreen(ScreenType screenType) {
     switch (screenType) {
