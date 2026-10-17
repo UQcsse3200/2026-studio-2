@@ -213,7 +213,7 @@ public class BackgroundRenderComponent extends RenderComponent {
         }
         // Flash single lightning layer
         if (layer.lightningOrder == flashOrder) {
-          if (darkness == 1f) {
+          if (darkness == 1.1f) {
             layer.transparency = 1f;
           } else {
             layer.transparency = 0f;
@@ -349,6 +349,17 @@ public class BackgroundRenderComponent extends RenderComponent {
         int lengthX = rainOffsets.getFirst().size();
 
         batch.setColor(0.65f, 0.65f, 0.65f, layer.transparency);
+        // batch.setColor(1f, 1f, 1f, layer.transparency); //maybe this one
+        // batch.setColor(0.65f, 0.65f, 0.65f, 1f);
+        // batch.setColor(1f, 1f, 1f, 1f); NOT THIS ONE
+
+        // batch.setColor(0.4f, 0.4f, 1f, 0.5f); //GREAT
+        // batch.setColor(0.5f, 0.5f, 1f, 0.5f); //GREAT
+        // batch.setColor(0.4f, 0.4f, 1f, 0.4f); //doesnt flash white enough
+        // batch.setColor(0.5f, 0.5f, 1f, 0.4f); //mmmm idk
+        // batch.setColor(0.6f, 0.6f, 1f, 0.5f); //BEST SO FAR
+        // batch.setColor(0.55f, 0.55f, 1f, 0.5f); //ALSO VERY GOOD
+        batch.setColor(0.575f, 0.575f, 1f, 0.5f); // 0.5, 0.6, 0.4
 
         int randomOffsetX;
         int randomOffsetY = 0;

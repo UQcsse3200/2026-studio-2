@@ -46,6 +46,8 @@ public class Level3GameArea extends GameArea {
     "images/parallax/lightning_3.png",
     "images/parallax/lightning_4.png",
     "images/parallax/rain_small.png",
+    "images/parallax/rain_small_grey.png",
+    "images/parallax/rain_small_white.png",
 
     // Level 3 ground tile
     "images/terrain/Level_3/tile-level3.png",
@@ -150,7 +152,7 @@ public class Level3GameArea extends GameArea {
     ForegroundRenderComponent foregroundComponent =
         new ForegroundRenderComponent(camera, foregroundPos, worldBounds);
     foregroundComponent.addLayer(
-        "images/parallax/rain_small.png", // 0.2,0.4 for xxl
+        "images/parallax/rain_small_white.png", // 0.2,0.4 for xxl
         new Vector2(0f, 0f),
         0.1f,
         0.2f,
