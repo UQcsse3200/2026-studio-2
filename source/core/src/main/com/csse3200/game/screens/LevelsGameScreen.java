@@ -147,50 +147,6 @@ public class LevelsGameScreen extends ScreenAdapter {
     player.getEvents().addListener("respawnAtCheckpoint", () -> currentGameArea.respawn());
     player.getEvents().addListener("toggleMap", () -> currentGameArea.toggleLevelMap());
 
-    player
-        .getEvents()
-        .addListener(
-            // "jumpStart", not the raw "jump" input event: PlayerActions discards a press made
-            // mid-air, during a wind-up, or after death, and the sound must not play for those.
-            "jumpStart",
-            () -> {
-              try {
-                com.badlogic.gdx.audio.Sound jumpSound =
-                    ServiceLocator.getResourceService()
-                        .getAsset("sounds/jump.ogg", com.badlogic.gdx.audio.Sound.class);
-                jumpSound.play(0.5f);
-              } catch (Exception e) {
-                // skip
-              }
-            });
-    player
-        .getEvents()
-        .addListener(
-            "hurt",
-            () -> {
-              try {
-                com.badlogic.gdx.audio.Sound hurtSound =
-                    ServiceLocator.getResourceService()
-                        .getAsset("sounds/hit.ogg", com.badlogic.gdx.audio.Sound.class);
-                hurtSound.play(0.2f);
-              } catch (Exception e) {
-                // skip
-              }
-            });
-    player
-        .getEvents()
-        .addListener(
-            "itemPickedUp",
-            (Object item) -> {
-              try {
-                com.badlogic.gdx.audio.Sound pickupSound =
-                    ServiceLocator.getResourceService()
-                        .getAsset("sounds/itempick.wav", com.badlogic.gdx.audio.Sound.class);
-                pickupSound.play(0.2f);
-              } catch (Exception e) {
-                // skip
-              }
-            });
     // Follow the player with the camera.
     renderer.getCamera().setTarget(player);
     player.getEvents().addListener("deathAnimationFinished", this::onPlayerDeath);

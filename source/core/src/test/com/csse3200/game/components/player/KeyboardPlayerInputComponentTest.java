@@ -5,7 +5,9 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.clearInvocations;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -200,7 +202,7 @@ class KeyboardPlayerInputComponentTest {
     AtomicInteger sprints = new AtomicInteger();
     AtomicInteger sprintStops = new AtomicInteger();
 
-    player.getEvents().addListener("walk", (Vector2 direction) -> walkDirection.set(direction));
+    player.getEvents().addListener("walk", walkDirection::set);
     player.getEvents().addListener("walkStop", walkStops::incrementAndGet);
     player.getEvents().addListener("jump", jumps::incrementAndGet);
     player.getEvents().addListener("sprint", sprints::incrementAndGet);
@@ -329,6 +331,11 @@ class KeyboardPlayerInputComponentTest {
     component.keyDown(Keys.D);
     component.keyUp(Keys.D);
     verifyNoMoreInteractions(body);
+
+    component.toggleCheats();
+    component.keyDown(Keys.W);
+    component.keyDown(Keys.S);
+    verifyNoMoreInteractions(body);
   }
 
   @Test
@@ -360,7 +367,7 @@ class KeyboardPlayerInputComponentTest {
   void shouldOpenAndCloseTheArrowWheelWithTab() {
     KeyboardPlayerInputComponent component = new KeyboardPlayerInputComponent();
     ArrowWheelComponent wheel = new ArrowWheelComponent();
-    Entity player = new Entity().addComponent(component).addComponent(wheel);
+    new Entity().addComponent(component).addComponent(wheel);
     wheel.create();
 
     assertTrue(component.keyDown(Keys.TAB));
@@ -378,7 +385,7 @@ class KeyboardPlayerInputComponentTest {
     Gdx.graphics = graphics;
     KeyboardPlayerInputComponent component = new KeyboardPlayerInputComponent();
     ArrowWheelComponent wheel = new ArrowWheelComponent();
-    Entity player = new Entity().addComponent(component).addComponent(wheel);
+    new Entity().addComponent(component).addComponent(wheel);
     wheel.create();
     component.keyDown(Keys.TAB);
 
@@ -395,7 +402,7 @@ class KeyboardPlayerInputComponentTest {
     Gdx.graphics = graphics;
     KeyboardPlayerInputComponent component = new KeyboardPlayerInputComponent();
     ArrowWheelComponent wheel = new ArrowWheelComponent();
-    Entity player = new Entity().addComponent(component).addComponent(wheel);
+    new Entity().addComponent(component).addComponent(wheel);
     wheel.create();
     component.keyDown(Keys.TAB);
     // Wheel in the bottom-left corner: 150px from the left and 450px from the top.
@@ -412,7 +419,8 @@ class KeyboardPlayerInputComponentTest {
 
   @Test
   void shouldIgnoreGameplayKeysWhileShopIsOpen() {
-    ServiceLocator.registerEntityService(new EntityService());
+    EntityService shopEntities = spy(new EntityService());
+    ServiceLocator.registerEntityService(shopEntities);
     KeyboardPlayerInputComponent component = new KeyboardPlayerInputComponent();
     InventoryComponent inventory = new InventoryComponent(0);
     PlayerInteractionComponent interaction = new PlayerInteractionComponent();
@@ -435,7 +443,13 @@ class KeyboardPlayerInputComponentTest {
     AtomicInteger jumps = new AtomicInteger();
     player.getEvents().addListener("jump", jumps::incrementAndGet);
 
+    // ShopDisplay pauses on open and resumes on close. Model those events without its UI.
+    player.getEvents().addListener("openShop", () -> doReturn(true).when(shopEntities).getPaused());
+    player
+        .getEvents()
+        .addListener("closeShop", () -> doReturn(false).when(shopEntities).getPaused());
     assertTrue(interaction.interact());
+    assertTrue(shopEntities.getPaused());
     assertTrue(interaction.isShopOpen());
 
     assertTrue(component.keyDown(Keys.E));
@@ -446,6 +460,7 @@ class KeyboardPlayerInputComponentTest {
 
     assertTrue(component.keyDown(Keys.F));
     assertFalse(interaction.isShopOpen());
+    assertFalse(shopEntities.getPaused());
   }
 
   @Test
@@ -577,5 +592,29 @@ class KeyboardPlayerInputComponentTest {
     assertFalse(component.touchDown(4, 2, 0, Buttons.LEFT));
 
     assertEquals(0, swings.get());
+  }
+
+  @Test
+  void shouldConsumeMouseReleaseAfterDeathWhileShopStillOwnsInput() {
+    ServiceLocator.registerInputService(mock(InputService.class));
+    ServiceLocator.registerEntityService(new EntityService());
+    KeyboardPlayerInputComponent component = new KeyboardPlayerInputComponent();
+    PlayerInteractionComponent interaction = new PlayerInteractionComponent();
+    Entity player =
+        new Entity()
+            .addComponent(component)
+            .addComponent(new InventoryComponent(0))
+            .addComponent(interaction);
+    player.create();
+    Entity shop = new Entity().addComponent(new ShopNpcComponent());
+    ServiceLocator.getEntityService().register(shop);
+    assertTrue(interaction.interact());
+    player.getEvents().trigger("death");
+    AtomicInteger shots = new AtomicInteger();
+    player.getEvents().addListener("stopShoot", shots::incrementAndGet);
+    assertTrue(component.touchUp(1, 1, 0, Buttons.RIGHT));
+    assertTrue(component.touchUp(1, 1, 0, Buttons.LEFT));
+    assertEquals(0, shots.get());
+    assertFalse(component.isRightMouseHeld());
   }
 }

@@ -69,7 +69,7 @@ class ArrowWheelComponentTest {
   @Test
   void shouldHighlightTheTypeUnderThePointer() {
     AtomicReference<ArrowType> announced = new AtomicReference<>();
-    player.getEvents().addListener("arrowHighlighted", (ArrowType type) -> announced.set(type));
+    player.getEvents().addListener("arrowHighlighted", announced::set);
 
     wheel.open();
     assertTrue(wheel.highlightFromPointer(TOWARDS_COLD));
@@ -96,7 +96,7 @@ class ArrowWheelComponentTest {
   @Test
   void shouldApplyTheHighlightedTypeOnClose() {
     AtomicReference<ArrowType> applied = new AtomicReference<>();
-    player.getEvents().addListener("arrowSelected", (ArrowType type) -> applied.set(type));
+    player.getEvents().addListener("arrowSelected", applied::set);
 
     wheel.open();
     wheel.highlightFromPointer(TOWARDS_FIRE);
@@ -138,9 +138,7 @@ class ArrowWheelComponentTest {
     inventory.addItem(ItemType.STANDARD_ARROW, 5);
     inventory.selectSlot(0);
     AtomicReference<ArrowType> rejected = new AtomicReference<>();
-    player
-        .getEvents()
-        .addListener("arrowSelectionRejected", (ArrowType type) -> rejected.set(type));
+    player.getEvents().addListener("arrowSelectionRejected", rejected::set);
 
     wheel.open();
     wheel.highlightFromPointer(TOWARDS_FIRE);
@@ -161,9 +159,7 @@ class ArrowWheelComponentTest {
   @Test
   void shouldKeepThePreviousTypeWhenTheHighlightIsUnavailable() {
     AtomicReference<ArrowType> rejected = new AtomicReference<>();
-    player
-        .getEvents()
-        .addListener("arrowSelectionRejected", (ArrowType type) -> rejected.set(type));
+    player.getEvents().addListener("arrowSelectionRejected", rejected::set);
     wheel.setAvailable(ArrowType.ICE, false);
 
     wheel.open();
@@ -285,7 +281,7 @@ class ArrowWheelComponentTest {
     wheel.highlightFromPointer(TOWARDS_FIRE);
     wheel.close();
     AtomicReference<ArrowType> announced = new AtomicReference<>();
-    player.getEvents().addListener("arrowSelected", (ArrowType type) -> announced.set(type));
+    player.getEvents().addListener("arrowSelected", announced::set);
 
     inventory.removeItem(ItemType.FIRE_ARROW, 1);
 
@@ -318,12 +314,112 @@ class ArrowWheelComponentTest {
 
   @Test
   void shouldRememberWhereTheWheelIsOnScreen() {
-    ArrowWheelComponent wheel = new ArrowWheelComponent();
-    assertNull(wheel.getScreenCentre());
+    ArrowWheelComponent positionedWheel = new ArrowWheelComponent();
+    assertNull(positionedWheel.getScreenCentre());
 
-    wheel.setScreenCentre(150f, 450f);
+    positionedWheel.setScreenCentre(150f, 450f);
 
-    assertEquals(150f, wheel.getScreenCentre().x);
-    assertEquals(450f, wheel.getScreenCentre().y);
+    assertEquals(150f, positionedWheel.getScreenCentre().x);
+    assertEquals(450f, positionedWheel.getScreenCentre().y);
+  }
+
+  @Test
+  void shouldFallBackAcrossPotionSlotsWithoutReenteringSelectionEvents() {
+    InventoryComponent inventory = givePlayerAnInventory();
+    inventory.addItem(ItemType.STANDARD_ARROW, 1);
+    inventory.addItem(ItemType.HEALTH_POTION, 1);
+    inventory.addItem(ItemType.FIRE_ARROW, 2);
+    AtomicInteger selections = new AtomicInteger();
+    player.getEvents().addListener("inventorySelectionChanged", selections::incrementAndGet);
+
+    assertTrue(inventory.removeItem(ItemType.STANDARD_ARROW, 1));
+
+    assertEquals(ItemType.FIRE_ARROW, inventory.getSelectedItem());
+    assertEquals(ArrowType.FIRE, wheel.getSelected());
+    assertEquals(2, inventory.getItemCount(ItemType.FIRE_ARROW));
+    assertEquals(2, selections.get());
+  }
+
+  @Test
+  void shouldFollowExplicitHotbarArrowSelection() {
+    InventoryComponent inventory = givePlayerAnInventory();
+    inventory.addItem(ItemType.STANDARD_ARROW, 2);
+    inventory.addItem(ItemType.FIRE_ARROW, 2);
+
+    inventory.selectSlot(1);
+
+    assertEquals(ArrowType.FIRE, wheel.getSelected());
+    assertEquals(ItemType.FIRE_ARROW, inventory.getSelectedItem());
+  }
+
+  @Test
+  void shouldRespectExplicitPotionSelectionWhileArrowsRemain() {
+    InventoryComponent inventory = givePlayerAnInventory();
+    inventory.addItem(ItemType.STANDARD_ARROW, 2);
+    inventory.addItem(ItemType.HEALTH_POTION, 1);
+
+    inventory.selectSlot(1);
+
+    assertEquals(ItemType.HEALTH_POTION, inventory.getSelectedItem());
+    assertEquals(ArrowType.STANDARD, wheel.getSelected());
+  }
+
+  @Test
+  void shouldPreservePotionSelectionWhenPickingUpTheFirstArrow() {
+    InventoryComponent potionInventory = new InventoryComponent(0);
+    potionInventory.addItem(ItemType.HEALTH_POTION, 1);
+    ArrowWheelComponent potionWheel = new ArrowWheelComponent();
+    new Entity().addComponent(potionInventory).addComponent(potionWheel);
+    potionWheel.create();
+
+    potionInventory.addItem(ItemType.FIRE_ARROW, 1);
+
+    assertEquals(ItemType.HEALTH_POTION, potionInventory.getSelectedItem());
+    assertTrue(potionWheel.isAvailable(ArrowType.FIRE));
+  }
+
+  @Test
+  void shouldIgnoreInventoryNotificationsWhenNoInventoryIsAttached() {
+    AtomicInteger changes = new AtomicInteger();
+    player
+        .getEvents()
+        .<ArrowType>addListener("arrowSelected", ignored -> changes.incrementAndGet());
+    player.getEvents().trigger("inventorySelectionChanged");
+    player.getEvents().trigger("inventoryChanged");
+    assertEquals(0, changes.get());
+    assertEquals(ArrowType.STANDARD, wheel.getSelected());
+  }
+
+  @Test
+  void shouldRejectNullTypesWithoutChangingAvailableArrows() {
+    wheel.setAvailable(null, false);
+    assertFalse(wheel.isAvailable(null));
+    assertTrue(wheel.isAvailable(ArrowType.STANDARD));
+    assertTrue(wheel.isAvailable(ArrowType.FIRE));
+    assertTrue(wheel.isAvailable(ArrowType.ICE));
+  }
+
+  @Test
+  void shouldNotFallBackWhenThePlayerSwitchesFromRopeToPotion() {
+    InventoryComponent inventory = givePlayerAnInventory();
+    inventory.addItem(ItemType.ROPE_ARROW, 1);
+    inventory.addItem(ItemType.HEALTH_POTION, 1);
+    inventory.addItem(ItemType.FIRE_ARROW, 1);
+    inventory.selectSlot(1);
+    inventory.removeItem(ItemType.ROPE_ARROW, 1);
+    assertEquals(ItemType.HEALTH_POTION, inventory.getSelectedItem());
+    assertEquals(ArrowType.STANDARD, wheel.getSelected());
+  }
+
+  @Test
+  void shouldRejectSelectionIfBowIsRemovedByWheelCloseListener() {
+    AtomicReference<ArrowType> rejected = new AtomicReference<>();
+    player.getEvents().addListener("arrowWheelClosed", () -> wheel.setBowEquipped(false));
+    player.getEvents().<ArrowType>addListener("arrowSelectionRejected", rejected::set);
+    wheel.open();
+    wheel.highlightFromPointer(TOWARDS_FIRE);
+    assertFalse(wheel.close());
+    assertEquals(ArrowType.FIRE, rejected.get());
+    assertEquals(ArrowType.STANDARD, wheel.getSelected());
   }
 }

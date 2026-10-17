@@ -45,7 +45,8 @@ class PlayerProjectileIntegrationTest {
     ServiceLocator.registerRenderService(mock(RenderService.class));
 
     LightingEngine lightingEngine = mock(LightingEngine.class);
-    when(lightingEngine.getRayHandler()).thenReturn(mock(box2dLight.RayHandler.class));
+    box2dLight.RayHandler rayHandler = mock(box2dLight.RayHandler.class);
+    when(lightingEngine.getRayHandler()).thenReturn(rayHandler);
     LightingService lightingService = mock(LightingService.class);
     when(lightingService.getEngine()).thenReturn(lightingEngine);
     ServiceLocator.registerLightingService(lightingService);
@@ -189,5 +190,27 @@ class PlayerProjectileIntegrationTest {
     impact(arrow, shooter);
     assertEquals(30, shooter.getComponent(CombatStatsComponent.class).getHealth());
     assertFalse(arrow.getComponent(ArrowProjectileComponent.class).isSpent());
+  }
+
+  @Test
+  void legacyPoisonArrowFactoryConfiguresMotionAndAppliesItsDebuff() {
+    try (var lights = mockConstruction(PointLightComponent.class)) {
+      Entity arrow = ProjectileFactory.createPoisonArrow(new Vector2(2f, 3f), Vector2.X);
+      entities.register(arrow);
+      assertEquals(
+          new Vector2(18f, 0f),
+          arrow.getComponent(PhysicsComponent.class).getBody().getLinearVelocity());
+      Entity target = enemy();
+      List<Vector2> poison = new ArrayList<>();
+      target
+          .getEvents()
+          .addListener(
+              "applyPoison",
+              (Float damage, Float duration) -> poison.add(new Vector2(damage, duration)));
+      impact(arrow, target);
+      assertEquals(List.of(new Vector2(5f, 3f)), poison);
+      assertTrue(arrow.getComponent(ArrowProjectileComponent.class).isSpent());
+      assertEquals(1, lights.constructed().size());
+    }
   }
 }

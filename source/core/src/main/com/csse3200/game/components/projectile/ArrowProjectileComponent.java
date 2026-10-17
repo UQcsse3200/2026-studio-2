@@ -123,6 +123,9 @@ public class ArrowProjectileComponent extends Component {
     }
 
     Body body = physicsComponent.getBody();
+    if (body == null) {
+      return;
+    }
     Vector2 origin = rangeOrigin();
     Vector2 position = getWorldCenter();
     if (position.dst2(origin) >= maximumRange * maximumRange) {
