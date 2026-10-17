@@ -288,7 +288,7 @@ public class LevelConfig {
                   LightingDefaults.RAYS,
                   Color.CLEAR,
                   LightingDefaults.DIST));
-      ;
+
 
       checkpoint.setScale(CheckpointComponent.ATLAS_WIDTH, CheckpointComponent.ATLAS_HEIGHT);
 
