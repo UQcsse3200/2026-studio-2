@@ -58,6 +58,9 @@ class ObstacleFactoryTest {
         .thenReturn(texture);
     TextureAtlas atlas = mock(TextureAtlas.class);
     AtlasRegion region = mock(AtlasRegion.class);
+    when(region.getRegionWidth()).thenReturn(1);
+    when(region.getRegionHeight()).thenReturn(1);
+    when(atlas.findRegion(org.mockito.ArgumentMatchers.anyString())).thenReturn(region);
     when(atlas.findRegions(org.mockito.ArgumentMatchers.anyString()))
         .thenReturn(new com.badlogic.gdx.utils.Array<>(new AtlasRegion[] {region}));
     when(resources.getAsset(

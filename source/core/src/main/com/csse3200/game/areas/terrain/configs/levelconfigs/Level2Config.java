@@ -34,6 +34,8 @@ public class Level2Config extends LevelConfig {
     playerSpawn = new GridPoint2(0, 42);
     nextLevelTriggerSpawn = new GridPoint2(33, 8);
     nextLevelName = "level3";
+    // The platform under the portal is only 2 wide, so the portal is sized to fit it.
+    nextLevelPortalHeight = 1.9f;
 
     platforms =
         new PlatformConfig[] {

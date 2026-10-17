@@ -43,6 +43,10 @@ class LevelConfigTest {
 
     Texture mockTexture = mock(Texture.class);
     TextureAtlas mockAtlas = mock(TextureAtlas.class);
+    TextureAtlas.AtlasRegion mockRegion = mock(TextureAtlas.AtlasRegion.class);
+    when(mockRegion.getRegionWidth()).thenReturn(1);
+    when(mockRegion.getRegionHeight()).thenReturn(1);
+    when(mockAtlas.findRegion(anyString())).thenReturn(mockRegion);
 
     when(resourceService.getAsset(anyString(), eq(Texture.class))).thenReturn(mockTexture);
     when(resourceService.getAsset(anyString(), eq(TextureAtlas.class))).thenReturn(mockAtlas);

@@ -1,19 +1,21 @@
 package com.csse3200.game.components.level;
 
+import com.badlogic.gdx.physics.box2d.Fixture;
+import com.csse3200.game.components.Component;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.GameEndState;
 
-/**
- * Wins the game. The player has to stand in the entity's sensor and press F, see {@link
- * LevelEndComponent}.
- */
-public class WinConditionComponent extends LevelEndComponent {
+public class WinConditionComponent extends Component {
   public WinConditionComponent() {
     super();
   }
 
   @Override
-  protected void activate() {
+  public void create() {
+    entity.getEvents().addListener("collisionStart", this::onCollisionStart);
+  }
+
+  private void onCollisionStart(Fixture me, Fixture other) {
     ServiceLocator.getGameEndEventHandler().trigger("gameEnd", GameEndState.WIN);
   }
 }

@@ -29,6 +29,8 @@ public class Level3Config extends LevelConfig {
     ledgesTFP = "images/terrain/Level_3/Platform_level-3.png";
     groundTFP = "images/terrain/Level_3/tile-level3.png";
     checkpointAtlas = "images/terrain/Level_1/Level_1_checkpoint.atlas";
+    // Smaller than the other levels' statues, which look oversized against the narrow platforms.
+    checkpointHeight = 1.4f;
 
     playerSpawn = new GridPoint2(9, 6);
     winConditionSpawn = new GridPoint2(33, 8);
@@ -299,9 +301,10 @@ public class Level3Config extends LevelConfig {
           new PlatformConfig(new GridPoint2(15, 67), 3, 1, 0, ledgesTFP), // new: above EA2
           new PlatformConfig(new GridPoint2(12, 84), 3, 1, 0, ledgesTFP), // L5
           new PlatformConfig(new GridPoint2(9, 94), 3, 1, 0, ledgesTFP), // L6
-          new PlatformConfig(new GridPoint2(0, 100), 27, 1, 0, ledgesTFP), // BA1
-          new PlatformConfig(new GridPoint2(0, 103), 27, 1, 0, ledgesTFP), // BA2
-          new PlatformConfig(new GridPoint2(0, 106), 27, 1, 0, ledgesTFP), // BA3
+          // The boss-arena ledges are long, so they use the repeating ground tile.
+          new PlatformConfig(new GridPoint2(0, 100), 27, 1, 0, groundTFP), // BA1
+          new PlatformConfig(new GridPoint2(0, 103), 27, 1, 0, groundTFP), // BA2
+          new PlatformConfig(new GridPoint2(0, 106), 27, 1, 0, groundTFP), // BA3
         };
 
     triggerButtons =

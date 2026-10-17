@@ -35,7 +35,6 @@ public class Level3GameArea extends GameArea {
     "images/ui/scroll_bg.png",
     "images/backgrounds/coin_bg.png",
     "images/backgrounds/shop_bg.png",
-    "images/backgrounds/Level_end.png",
     // Level 3 background
     "images/terrain/Level_3/Platform_level-3.png",
     "images/terrain/Level_3/Platform-crumbling-level-3.png",
