@@ -155,10 +155,10 @@ public class BackgroundRenderComponent extends RenderComponent {
           layer.width *= factor.x;
           layer.height *= factor.y * 1.17f;
         } else {
-          layer.position.x -= worldBounds.x / 2;
-          layer.position.y -= worldBounds.y / 2 + factor.y; // factor is a glue-on fix
-          layer.width *= factor.x;
-          layer.height *= factor.y;
+          layer.position.x -= worldBounds.x / 2 - 10;
+          layer.position.y -= worldBounds.y * factor.y / 5.1f;
+          layer.width *= factor.x / 1.57f;
+          layer.height *= factor.y / 1.4f;
         }
         layer.offset.x *= factor.x;
         layer.offset.y *= factor.y;
@@ -177,10 +177,10 @@ public class BackgroundRenderComponent extends RenderComponent {
           layer.width /= factor.x;
           layer.height /= factor.y * 1.17f;
         } else {
-          layer.position.x += worldBounds.x / 2;
-          layer.position.y += worldBounds.y / 2 + factor.y; // factor is a glue-on fix
-          layer.width /= factor.x;
-          layer.height /= factor.y;
+          layer.position.x += worldBounds.x / 2 - 10;
+          layer.position.y += worldBounds.y * factor.y / 5.1f; // factor is a glue-on fix
+          layer.width /= factor.x / 1.57f;
+          layer.height /= factor.y / 1.4f;
         }
         layer.offset.x /= factor.x;
         layer.offset.y /= factor.y;
