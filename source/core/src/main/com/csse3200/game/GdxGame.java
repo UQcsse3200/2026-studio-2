@@ -1,4 +1,3 @@
-
 package com.csse3200.game;
 
 import static com.badlogic.gdx.Gdx.app;
@@ -26,16 +25,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Entry point of the non-platform-specific game logic.
- * Controls which screen is currently running.
+ * Entry point of the non-platform-specific game logic. Controls which screen is currently running.
  *
- * The current screen triggers transitions to other screens.
- * This works similarly to a finite state machine (State Pattern).
+ * <p>The current screen triggers transitions to other screens. This works similarly to a finite
+ * state machine (State Pattern).
  */
 public class GdxGame extends Game {
 
-  private static final Logger logger =
-      LoggerFactory.getLogger(GdxGame.class);
+  private static final Logger logger = LoggerFactory.getLogger(GdxGame.class);
 
   private boolean transitioning = false;
 
@@ -58,20 +55,14 @@ public class GdxGame extends Game {
   }
 
   /**
-   * Restores the default light-yellow clear colour used behind
-   * transparent terrain (e.g. Sandbox).
+   * Restores the default light-yellow clear colour used behind transparent terrain (e.g. Sandbox).
    */
   public static void applyDefaultClearColor() {
     if (Gdx.gl == null) {
       return;
     }
 
-    Gdx.gl.glClearColor(
-        248f / 255f,
-        249f / 255f,
-        178f / 255f,
-        1
-    );
+    Gdx.gl.glClearColor(248f / 255f, 249f / 255f, 178f / 255f, 1);
   }
 
   /** Loads the game's settings. */
@@ -100,8 +91,8 @@ public class GdxGame extends Game {
   }
 
   /**
-   * Fades the current screen to black, swaps to the target screen,
-   * then fades back in. Ignored if a transition is already in progress.
+   * Fades the current screen to black, swaps to the target screen, then fades back in. Ignored if a
+   * transition is already in progress.
    *
    * @param screenType screen type to transition to
    */
@@ -116,14 +107,8 @@ public class GdxGame extends Game {
     setScreen(new TransitionScreen(this, getScreen(), screenType));
   }
 
-  /**
-   * Starts a validated cutscene and creates the destination level
-   * after it completes.
-   */
-  public void startCutscene(
-      CutsceneLoader.LoadedCutscene cutscene,
-      ScreenType destination
-  ) {
+  /** Starts a validated cutscene and creates the destination level after it completes. */
+  public void startCutscene(CutsceneLoader.LoadedCutscene cutscene, ScreenType destination) {
     logger.info("Starting cutscene {}", cutscene.getName());
 
     Screen currentScreen = getScreen();
@@ -135,24 +120,17 @@ public class GdxGame extends Game {
     setScreen(new CutsceneScreen(this, cutscene, destination));
   }
 
-  /**
-   * Starts the initial cutscene once per game session,
-   * then falls back to Level 1.
-   */
+  /** Starts the initial cutscene once per game session, then falls back to Level 1. */
   public void startInitialCutscene() {
     if (introStarted) {
       transitionTo(ScreenType.LEVEL_1_GAME);
       return;
     }
 
-    CutsceneLoader.Result result =
-        new CutsceneLoader().load("cutscene1");
+    CutsceneLoader.Result result = new CutsceneLoader().load("cutscene1");
 
     if (!result.isSuccess()) {
-      logger.debug(
-          "Initial cutscene unavailable: {}",
-          result.getError()
-      );
+      logger.debug("Initial cutscene unavailable: {}", result.getError());
 
       transitionTo(ScreenType.LEVEL_1_GAME);
       return;
@@ -163,8 +141,8 @@ public class GdxGame extends Game {
   }
 
   /**
-   * Called by TransitionScreen once its fade-in has finished,
-   * handing control to the screen it faded into.
+   * Called by TransitionScreen once its fade-in has finished, handing control to the screen it
+   * faded into.
    *
    * @param toScreen the screen the transition faded into
    */
@@ -180,8 +158,7 @@ public class GdxGame extends Game {
   }
 
   /**
-   * Collects a snapshot of the player's state components
-   * (gold, health, inventory).
+   * Collects a snapshot of the player's state components (gold, health, inventory).
    *
    * @param player the player entity to save
    */
