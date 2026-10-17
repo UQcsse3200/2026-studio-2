@@ -18,13 +18,28 @@ public class CheckpointComponent extends Component {
   private AnimationRenderComponent torchAnimator;
   private PointLightComponent pointLightComponent;
 
+  /** World size of an atlas-based checkpoint (each frame is 709 x 890, about 4:5). */
   public static final float ATLAS_WIDTH = 1.6f;
+
   public static final float ATLAS_HEIGHT = 2f;
 
+  /**
+   * Constructor for a new CheckpointComponent
+   *
+   * @param collected if the checkpoint has been collected or not
+   * @param position the position of the checkpoint
+   */
   public CheckpointComponent(boolean collected, GridPoint2 position) {
     this(collected, position, null);
   }
 
+  /**
+   * Constructor for a checkpoint with a level-specific animated design.
+   *
+   * @param collected if the checkpoint has been collected or not
+   * @param position the position of the checkpoint
+   * @param atlas atlas with "unlit" and "lit" regions, or null to use the default textures
+   */
   public CheckpointComponent(boolean collected, GridPoint2 position, String atlas) {
     this.collected = collected;
     this.position = position;
@@ -47,6 +62,7 @@ public class CheckpointComponent extends Component {
     entity.getEvents().trigger("checkpointActivated", position);
 
     if (torchAnimator != null) {
+      // Swap the existing statue to its lit frame so the unlit frame isn't left behind it.
       torchAnimator.startAnimation("lit");
     }
 
@@ -75,6 +91,7 @@ public class CheckpointComponent extends Component {
     return position;
   }
 
+  /** Check if player position comes in range of checkpoint position. */
   @Override
   public void update() {
     if (player == null) {
