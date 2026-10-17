@@ -5,12 +5,17 @@ import static com.badlogic.gdx.Gdx.app;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.math.GridPoint2;
+import com.csse3200.game.areas.GameArea;
 import com.csse3200.game.components.player.PlayerSnapshot;
 import com.csse3200.game.cutscene.CutsceneLoader;
 import com.csse3200.game.entities.Entity;
+import com.csse3200.game.files.SaveFile;
+import com.csse3200.game.files.SaveManager;
 import com.csse3200.game.files.UserSettings;
 import com.csse3200.game.screens.CutsceneScreen;
 import com.csse3200.game.screens.LevelsGameScreen;
+import com.csse3200.game.screens.LoadSaveScreen;
 import com.csse3200.game.screens.MainGameScreen;
 import com.csse3200.game.screens.MainMenuScreen;
 import com.csse3200.game.screens.SandboxGameScreen;
@@ -21,6 +26,9 @@ import com.csse3200.game.screens.minigames.BlackjackScreen;
 import com.csse3200.game.screens.minigames.CyclopsMinigameRoomScreen;
 import com.csse3200.game.screens.minigames.MinigameSelectScreen;
 import com.csse3200.game.screens.minigames.spinthewheel.SpinTheWheelScreen;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,6 +47,21 @@ public class GdxGame extends Game {
   private boolean introStarted = false;
 
   private PlayerSnapshot playerSnapshot;
+
+  /**
+   * Slot being written to during this play session; -1 when no save is active (e.g. Sandbox or a
+   * session started without going through Play/Continue), in which case autosaves are skipped.
+   */
+  private int activeSaveSlot = -1;
+
+  /**
+   * Save loaded from disk, waiting to be applied to the world once its level's game area exists.
+   * Consumed by {@link #applyPendingSaveWorld(GameArea, String)}.
+   */
+  private SaveFile pendingSave;
+
+  /** Levels a save file may name; anything else is rejected and treated as level 1. */
+  private static final Set<String> VALID_LEVELS = Set.of("level1", "level2", "level3", "boss");
 
   @Override
   public void create() {
@@ -130,6 +153,150 @@ public class GdxGame extends Game {
   }
 
   /**
+   * Starts a brand-new game in the first empty save slot, then runs the normal new-game flow (intro
+   * cutscene, then level 1). When every slot is filled the save-select screen is shown instead, so
+   * the player can delete a save to make room.
+   */
+  public void startNewGame() {
+    int slot = SaveManager.findEmptySlot(SaveManager.listAll());
+    if (slot < 0) {
+      logger.info("No empty save slots, showing the save-select screen");
+      transitionTo(ScreenType.LOAD_SAVE);
+      return;
+    }
+    logger.info("Starting a new game in save slot {}", slot);
+    playerSnapshot = null;
+    pendingSave = null;
+    activeSaveSlot = slot;
+    introStarted = false;
+    SaveManager.write(slot, SaveManager.newGameSave(slot));
+    startInitialCutscene();
+  }
+
+  /**
+   * Loads a save slot: records it as the active slot, queues its state for the gameplay screen and
+   * transitions to the saved level, skipping the intro cutscene.
+   *
+   * @param slot slot index to load
+   */
+  public void loadSave(int slot) {
+    SaveFile save = SaveManager.read(slot);
+    if (save == null) {
+      logger.warn("Cannot load save slot {}: no readable file", slot);
+      return;
+    }
+    if (!VALID_LEVELS.contains(save.currentLevel)) {
+      logger.warn("Save slot {} names unknown level {}, loading level 1", slot, save.currentLevel);
+      save.currentLevel = "level1";
+    }
+    logger.info("Loading save slot {} at level {}", slot, save.currentLevel);
+    playerSnapshot = null;
+    pendingSave = save;
+    activeSaveSlot = slot;
+    introStarted = true;
+    transitionTo(levelScreenType(save.currentLevel));
+  }
+
+  /**
+   * Writes the active save slot from the live game state. Called whenever a checkpoint is activated
+   * (the game's only save point); does nothing without an active slot.
+   *
+   * @param level current level name
+   * @param area the current game area
+   */
+  public void autosave(String level, GameArea area) {
+    if (activeSaveSlot < 0 || area == null || area.getPlayer() == null) {
+      return;
+    }
+    try {
+      SaveFile save =
+          SaveManager.capture(
+              activeSaveSlot, level, area.getPlayer(), area.getActiveCheckpointPositions());
+      SaveManager.write(activeSaveSlot, save);
+    } catch (RuntimeException e) {
+      logger.warn("Autosave of slot {} failed: {}", activeSaveSlot, e.getMessage());
+    }
+  }
+
+  /** Flags the active save as completed (won the game) so the save-select screen can show it. */
+  public void markSaveCompleted() {
+    if (activeSaveSlot < 0) {
+      return;
+    }
+    SaveFile save = SaveManager.read(activeSaveSlot);
+    if (save == null) {
+      return;
+    }
+    save.completed = true;
+    SaveManager.write(activeSaveSlot, save);
+  }
+
+  /**
+   * Applies the loaded save's player stats (health, max health, gold, inventory) to the player
+   * entity as soon as it exists. No-op when no save is being loaded or the save has no recorded
+   * player state (a brand-new game keeps the level defaults).
+   *
+   * @param player the player entity
+   */
+  public void applyPendingSavePlayer(Entity player) {
+    if (pendingSave == null || pendingSave.player == null || player == null) {
+      return;
+    }
+    pendingSave.player.applyTo(player);
+  }
+
+  /**
+   * Applies the loaded save's world state (activated checkpoints, and with them the respawn point)
+   * to the given level. Only applies when the area is the save's level; otherwise the pending save
+   * is kept for a later swap. Consumes the pending save once applied.
+   *
+   * When the save recorded checkpoints the player is placed at the last one. A save without
+   * checkpoints (a game that has not reached a checkpoint yet) keeps the level's own spawn point.
+   *
+   * @param area the freshly created game area
+   * @param level the level that area represents
+   * @return true if the pending save was applied
+   */
+  public boolean applyPendingSaveWorld(GameArea area, String level) {
+    if (pendingSave == null || area == null || !level.equals(pendingSave.currentLevel)) {
+      return false;
+    }
+    logger.info("Restoring saved progress for level {}", level);
+    List<GridPoint2> positions = new ArrayList<>();
+    if (pendingSave.activatedCheckpoints != null) {
+      for (SaveFile.CheckpointSave checkpoint : pendingSave.activatedCheckpoints) {
+        positions.add(checkpoint.toGridPoint2());
+      }
+    }
+    if (!positions.isEmpty()) {
+      area.restoreCheckpoints(positions);
+      // Re-activating checkpoints moved the respawn point: place the player there.
+      area.respawn();
+    }
+    pendingSave = null;
+    return true;
+  }
+
+  /** The slot currently being written to, or -1 when no save is active. */
+  public int getActiveSaveSlot() {
+    return activeSaveSlot;
+  }
+
+  /** Screen type for a saved level name. */
+  private static ScreenType levelScreenType(String level) {
+    switch (level) {
+      case "level2":
+        return ScreenType.LEVEL_2_GAME;
+      case "level3":
+        return ScreenType.LEVEL_3_GAME;
+      case "boss":
+        return ScreenType.LEVEL_BOSS_GAME;
+      default:
+        return ScreenType.LEVEL_1_GAME;
+    }
+  }
+
+  /**
    * Called by {@link TransitionScreen} once its fade-in has finished, handing control to the screen
    * it faded into.
    *
@@ -185,6 +352,8 @@ public class GdxGame extends Game {
     switch (screenType) {
       case MAIN_MENU:
         return new MainMenuScreen(this);
+      case LOAD_SAVE:
+        return new LoadSaveScreen(this);
       case MAIN_GAME:
         return new MainGameScreen(this);
       case LEVEL_1_GAME:
@@ -222,6 +391,7 @@ public class GdxGame extends Game {
 
   public enum ScreenType {
     MAIN_MENU,
+    LOAD_SAVE,
     MAIN_GAME,
     LEVEL_1_GAME,
     SANDBOX,
