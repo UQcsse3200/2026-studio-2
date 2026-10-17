@@ -118,54 +118,64 @@ loadScripts(document, 'script');</script>
 <div class="col-last even-row-color">
 <div class="block">Optional atlas with "unlit" and "lit" regions for this level's checkpoints.</div>
 </div>
-<div class="col-first odd-row-color"><code>protected <a href="CheckpointConfig.html" title="class in com.csse3200.game.areas.terrain.configs">CheckpointConfig</a>[]</code></div>
-<div class="col-second odd-row-color"><code><a href="#checkpoints" class="member-name-link">checkpoints</a></code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
-<div class="col-first even-row-color"><code>protected <a href="CrumblingPlatformConfig.html" title="class in com.csse3200.game.areas.terrain.configs">CrumblingPlatformConfig</a>[]</code></div>
-<div class="col-second even-row-color"><code><a href="#crumblingPlatforms" class="member-name-link">crumblingPlatforms</a></code></div>
+<div class="col-first odd-row-color"><code>protected float</code></div>
+<div class="col-second odd-row-color"><code><a href="#checkpointHeight" class="member-name-link">checkpointHeight</a></code></div>
+<div class="col-last odd-row-color">
+<div class="block">World height of this level's checkpoint statues; their width follows the art.</div>
+</div>
+<div class="col-first even-row-color"><code>protected <a href="CheckpointConfig.html" title="class in com.csse3200.game.areas.terrain.configs">CheckpointConfig</a>[]</code></div>
+<div class="col-second even-row-color"><code><a href="#checkpoints" class="member-name-link">checkpoints</a></code></div>
 <div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><code>protected <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
-<div class="col-second odd-row-color"><code><a href="#crumblingPlatformTFP" class="member-name-link">crumblingPlatformTFP</a></code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
-<div class="col-first even-row-color"><code>protected <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a><wbr>&lt;com.badlogic.gdx.math.GridPoint2,<wbr><a href="../../../entities/configs/EnemyConfig.html" title="class in com.csse3200.game.entities.configs">EnemyConfig</a>&gt;</code></div>
-<div class="col-second even-row-color"><code><a href="#enemies" class="member-name-link">enemies</a></code></div>
-<div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><code>protected <a href="EnemySpawnerConfig.html" title="class in com.csse3200.game.areas.terrain.configs">EnemySpawnerConfig</a>[]</code></div>
-<div class="col-second odd-row-color"><code><a href="#enemySpawners" class="member-name-link">enemySpawners</a></code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
-<div class="col-first even-row-color"><code>protected <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="SpawnData.html" title="class in com.csse3200.game.areas.terrain.configs">SpawnData</a>&gt;</code></div>
-<div class="col-second even-row-color"><code><a href="#entities" class="member-name-link">entities</a></code></div>
-<div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><code>protected <a href="PlatformConfig.html" title="class in com.csse3200.game.areas.terrain.configs">PlatformConfig</a>[]</code></div>
-<div class="col-second odd-row-color"><code><a href="#floors" class="member-name-link">floors</a></code></div>
+<div class="col-first odd-row-color"><code>protected <a href="CrumblingPlatformConfig.html" title="class in com.csse3200.game.areas.terrain.configs">CrumblingPlatformConfig</a>[]</code></div>
+<div class="col-second odd-row-color"><code><a href="#crumblingPlatforms" class="member-name-link">crumblingPlatforms</a></code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code>protected <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
-<div class="col-second even-row-color"><code><a href="#groundTFP" class="member-name-link">groundTFP</a></code></div>
+<div class="col-second even-row-color"><code><a href="#crumblingPlatformTFP" class="member-name-link">crumblingPlatformTFP</a></code></div>
 <div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><code>protected <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a><wbr>&lt;com.badlogic.gdx.math.GridPoint2,<wbr><a href="../../../components/item/Item.html" title="class in com.csse3200.game.components.item">Item</a>&gt;</code></div>
-<div class="col-second odd-row-color"><code><a href="#items" class="member-name-link">items</a></code></div>
+<div class="col-first odd-row-color"><code>protected <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a><wbr>&lt;com.badlogic.gdx.math.GridPoint2,<wbr><a href="../../../entities/configs/EnemyConfig.html" title="class in com.csse3200.game.entities.configs">EnemyConfig</a>&gt;</code></div>
+<div class="col-second odd-row-color"><code><a href="#enemies" class="member-name-link">enemies</a></code></div>
+<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><code>protected <a href="EnemySpawnerConfig.html" title="class in com.csse3200.game.areas.terrain.configs">EnemySpawnerConfig</a>[]</code></div>
+<div class="col-second even-row-color"><code><a href="#enemySpawners" class="member-name-link">enemySpawners</a></code></div>
+<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><code>protected <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="SpawnData.html" title="class in com.csse3200.game.areas.terrain.configs">SpawnData</a>&gt;</code></div>
+<div class="col-second odd-row-color"><code><a href="#entities" class="member-name-link">entities</a></code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code>protected <a href="PlatformConfig.html" title="class in com.csse3200.game.areas.terrain.configs">PlatformConfig</a>[]</code></div>
-<div class="col-second even-row-color"><code><a href="#ledges" class="member-name-link">ledges</a></code></div>
+<div class="col-second even-row-color"><code><a href="#floors" class="member-name-link">floors</a></code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code>protected <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
-<div class="col-second odd-row-color"><code><a href="#ledgesTFP" class="member-name-link">ledgesTFP</a></code></div>
+<div class="col-second odd-row-color"><code><a href="#groundTFP" class="member-name-link">groundTFP</a></code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
-<div class="col-first even-row-color"><code>protected <a href="TriggerConfig.html" title="class in com.csse3200.game.areas.terrain.configs">TriggerConfig</a>[]</code></div>
-<div class="col-second even-row-color"><code><a href="#mapTriggers" class="member-name-link">mapTriggers</a></code></div>
+<div class="col-first even-row-color"><code>protected <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a><wbr>&lt;com.badlogic.gdx.math.GridPoint2,<wbr><a href="../../../components/item/Item.html" title="class in com.csse3200.game.components.item">Item</a>&gt;</code></div>
+<div class="col-second even-row-color"><code><a href="#items" class="member-name-link">items</a></code></div>
 <div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><code>protected <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
-<div class="col-second odd-row-color"><code><a href="#mossyPlatformTFP" class="member-name-link">mossyPlatformTFP</a></code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
-<div class="col-first even-row-color"><code>protected <a href="MovingPlatformConfig.html" title="class in com.csse3200.game.areas.terrain.configs">MovingPlatformConfig</a>[]</code></div>
-<div class="col-second even-row-color"><code><a href="#movingPlatforms" class="member-name-link">movingPlatforms</a></code></div>
-<div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><code>protected <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
-<div class="col-second odd-row-color"><code><a href="#movingPlatformTFP" class="member-name-link">movingPlatformTFP</a></code></div>
+<div class="col-first odd-row-color"><code>protected <a href="PlatformConfig.html" title="class in com.csse3200.game.areas.terrain.configs">PlatformConfig</a>[]</code></div>
+<div class="col-second odd-row-color"><code><a href="#ledges" class="member-name-link">ledges</a></code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code>protected <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
-<div class="col-second even-row-color"><code><a href="#nextLevelName" class="member-name-link">nextLevelName</a></code></div>
+<div class="col-second even-row-color"><code><a href="#ledgesTFP" class="member-name-link">ledgesTFP</a></code></div>
 <div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><code>protected <a href="TriggerConfig.html" title="class in com.csse3200.game.areas.terrain.configs">TriggerConfig</a>[]</code></div>
+<div class="col-second odd-row-color"><code><a href="#mapTriggers" class="member-name-link">mapTriggers</a></code></div>
+<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><code>protected <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second even-row-color"><code><a href="#mossyPlatformTFP" class="member-name-link">mossyPlatformTFP</a></code></div>
+<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><code>protected <a href="MovingPlatformConfig.html" title="class in com.csse3200.game.areas.terrain.configs">MovingPlatformConfig</a>[]</code></div>
+<div class="col-second odd-row-color"><code><a href="#movingPlatforms" class="member-name-link">movingPlatforms</a></code></div>
+<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><code>protected <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second even-row-color"><code><a href="#movingPlatformTFP" class="member-name-link">movingPlatformTFP</a></code></div>
+<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><code>protected <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second odd-row-color"><code><a href="#nextLevelName" class="member-name-link">nextLevelName</a></code></div>
+<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><code>protected float</code></div>
+<div class="col-second even-row-color"><code><a href="#nextLevelPortalHeight" class="member-name-link">nextLevelPortalHeight</a></code></div>
+<div class="col-last even-row-color">
+<div class="block">Height of the portal at the end of the level, so it can be fitted to the platform below.</div>
+</div>
 <div class="col-first odd-row-color"><code>protected com.badlogic.gdx.math.GridPoint2</code></div>
 <div class="col-second odd-row-color"><code><a href="#nextLevelTriggerSpawn" class="member-name-link">nextLevelTriggerSpawn</a></code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
@@ -321,6 +331,13 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li>
+<section class="detail" id="checkpointHeight">
+<h3>checkpointHeight</h3>
+<div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type">float</span>&nbsp;<span class="element-name">checkpointHeight</span></div>
+<div class="block">World height of this level's checkpoint statues; their width follows the art.</div>
+</section>
+</li>
+<li>
 <section class="detail" id="platforms">
 <h3>platforms</h3>
 <div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type"><a href="PlatformConfig.html" title="class in com.csse3200.game.areas.terrain.configs">PlatformConfig</a>[]</span>&nbsp;<span class="element-name">platforms</span></div>
@@ -432,6 +449,13 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="nextLevelName">
 <h3>nextLevelName</h3>
 <div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">nextLevelName</span></div>
+</section>
+</li>
+<li>
+<section class="detail" id="nextLevelPortalHeight">
+<h3>nextLevelPortalHeight</h3>
+<div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type">float</span>&nbsp;<span class="element-name">nextLevelPortalHeight</span></div>
+<div class="block">Height of the portal at the end of the level, so it can be fitted to the platform below.</div>
 </section>
 </li>
 <li>
