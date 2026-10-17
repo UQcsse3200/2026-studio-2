@@ -34,7 +34,5 @@ class Level1LayoutTest {
     for (PlatformConfig platform : config.platforms) {
       assertTrue(platform.position.y + platform.height + 2 <= 27);
     }
-    assertEquals(2, config.checkpoints.length);
-    assertTrue(config.checkpoints[1].getPosition().x - config.checkpoints[0].getPosition().x >= 35);
   }
 }

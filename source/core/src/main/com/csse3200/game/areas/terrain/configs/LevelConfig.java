@@ -16,6 +16,9 @@ import java.util.List;
 import java.util.Map;
 
 public class LevelConfig {
+  /** Draw depth of checkpoint statues: behind the player and the level's platforms. */
+  private static final float CHECKPOINT_Z_INDEX = -100f;
+
   protected String platformTFP;
   protected String mossyPlatformTFP;
   protected String movingPlatformTFP;
@@ -28,12 +31,16 @@ public class LevelConfig {
   /** Optional atlas with "unlit" and "lit" regions for this level's checkpoints. */
   protected String checkpointAtlas;
 
+  /** World height of this level's checkpoint statues; their width follows the art. */
+  protected float checkpointHeight = CheckpointComponent.ATLAS_HEIGHT;
+
   protected PlatformConfig[] platforms;
   protected MovingPlatformConfig[] movingPlatforms;
   protected CrumblingPlatformConfig[] crumblingPlatforms;
   protected TriggerablePlatformConfig[] triggerablePlatforms;
   protected SlipperyPlatformConfig[] slipperyPlatforms;
   protected PlatformConfig[] ledges;
+
   protected SpikeClusterConfig[] spikes;
   protected SpikyBallTrapConfig[] ballTraps;
   protected TriggerButtonConfig[] triggerButtons;
@@ -48,6 +55,10 @@ public class LevelConfig {
   protected GridPoint2 playerSpawn;
   protected GridPoint2 nextLevelTriggerSpawn;
   protected String nextLevelName;
+
+  /** Height of the portal at the end of the level, so it can be fitted to the platform below. */
+  protected float nextLevelPortalHeight = ObstacleFactory.DEFAULT_LEVEL_END_HEIGHT;
+
   protected GridPoint2 winConditionSpawn;
   protected GridPoint2[] wheelSpinSpawns;
 
@@ -197,7 +208,9 @@ public class LevelConfig {
     }
 
     for (PlatformConfig p : ledges) {
-      Entity ledge = ObstacleFactory.createLedge(p);
+      // A ledge that uses the ground tile repeats it, as floors do, instead of stretching it.
+      boolean tiled = p.textureFilepath != null && p.textureFilepath.equals(groundTFP);
+      Entity ledge = ObstacleFactory.createLedge(p, tiled);
       ledge.setScale(p.width, p.height);
       entities.add(new SpawnData(p.position, ledge));
     }
@@ -231,13 +244,11 @@ public class LevelConfig {
       return;
     }
 
-    // CLEAN THIS UP
+    String texture = spikeTFP != null ? spikeTFP : "images/terrain/Level_1/Level_1_Spike.png";
     for (SpikeClusterConfig s : spikes) {
       for (int i = s.xMin; i <= s.xMax; i++) {
         for (int j = s.yMin; j <= s.yMax; j++) {
-          Entity spike =
-              ObstacleFactory.createSpike(
-                  s, spikeTFP != null ? spikeTFP : "images/terrain/Level_1/Level_1_Spike.png");
+          Entity spike = ObstacleFactory.createSpike(s, texture, i - s.xMin, s.xMax - s.xMin + 1);
           entities.add(new SpawnData(new GridPoint2(i, j), spike));
         }
       }
@@ -285,7 +296,8 @@ public class LevelConfig {
       return;
     }
 
-    Entity trigger = ObstacleFactory.createNextLevelTriggerEntity(nextLevelName);
+    Entity trigger =
+        ObstacleFactory.createNextLevelTriggerEntity(nextLevelName, nextLevelPortalHeight);
     entities.add(new SpawnData(nextLevelTriggerSpawn, trigger));
   }
 
@@ -318,21 +330,23 @@ public class LevelConfig {
 
       c.setEntity(checkpoint);
 
-      // The torch art comes from the checkpoint atlas. Without one the checkpoint still works but
-      // has nothing to draw.
-      if (checkpointAtlas == null) {
-        continue;
+      // The statue art comes from the checkpoint atlas and is drawn by the checkpoint entity
+      // itself. Without an atlas the checkpoint still works but has nothing to draw.
+      if (checkpointAtlas != null) {
+        AnimationRenderComponent animator =
+            new AnimationRenderComponent(
+                ServiceLocator.getResourceService().getAsset(checkpointAtlas, TextureAtlas.class));
+        animator.addAnimation("unlit", 0.2f, Animation.PlayMode.LOOP);
+        animator.addAnimation("lit", 0.2f, Animation.PlayMode.LOOP);
+        // Behind the player, so they walk in front of the statue instead of disappearing behind it.
+        animator.setFixedZIndex(CHECKPOINT_Z_INDEX);
+        checkpoint.addComponent(animator);
+        animator.startAnimation("unlit");
+        // Keep the statue's proportions, whatever the atlas's frame shape is.
+        animator.scaleEntity();
+        checkpoint.scaleHeight(checkpointHeight);
+        checkpoint.getComponent(CheckpointComponent.class).setTorch(checkpoint);
       }
-
-      AnimationRenderComponent animator =
-          new AnimationRenderComponent(
-              ServiceLocator.getResourceService().getAsset(checkpointAtlas, TextureAtlas.class));
-      animator.addAnimation("unlit", 0.2f, Animation.PlayMode.LOOP);
-      animator.addAnimation("lit", 0.2f, Animation.PlayMode.LOOP);
-      Entity torch = new Entity().addComponent(animator);
-      animator.startAnimation("unlit");
-      torch.setScale(CheckpointComponent.ATLAS_WIDTH, CheckpointComponent.ATLAS_HEIGHT);
-      checkpoint.getComponent(CheckpointComponent.class).setTorch(torch);
 
       GridPoint2 pos = c.getPosition();
       checkpoint.setPosition(pos.x, pos.y - 1.3f);

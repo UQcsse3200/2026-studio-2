@@ -38,15 +38,16 @@ public class LevelBossGameArea extends GameArea {
 
   /** Textures used by the level boss game area. */
   private static final String[] level3Textures = {
+    "images/backgrounds/coin_bg.png",
+    "images/backgrounds/shop_bg.png",
     "images/backgrounds/Background-2.png",
-    "images/terrain/Level_3/Platform_level-3.png",
     "images/terrain/Level_3/tile-level3.png",
     "images/ui/transparent.png",
     "images/projectiles/necromancer_projectile.png"
   };
 
   private static final String[] level3TexturesAtlas = {
-    "images/in_level_button.atlas", "images/enemies/calypso.atlas"
+    "images/ui/in_level_button.atlas", "images/enemies/calypso.atlas"
   };
 
   private static final String[] level3Sounds = {"sounds/Impact4.ogg"};

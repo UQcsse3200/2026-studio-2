@@ -25,6 +25,7 @@ public class MainMenuScreen extends ScreenAdapter {
   private static final Logger logger = LoggerFactory.getLogger(MainMenuScreen.class);
   private final GdxGame game;
   private final Renderer renderer;
+  private Entity ui;
   private static final String[] mainMenuTextures = {
     "images/ui/title_odysseus_logo.png",
     "images/backgrounds/main_menu_bg.png",
@@ -32,8 +33,6 @@ public class MainMenuScreen extends ScreenAdapter {
     "images/Buttons/play_down_button.png",
     "images/Buttons/continue_up_btn.png",
     "images/Buttons/continue_down_btn.png",
-    "images/Buttons/sandBox_up_btn.png",
-    "images/Buttons/sandBox_down.png",
     "images/Buttons/settings_up_btn.png",
     "images/Buttons/settings_down_btn.png",
     "images/Buttons/quit_up_btn.png",
@@ -66,6 +65,10 @@ public class MainMenuScreen extends ScreenAdapter {
   @Override
   public void resize(int width, int height) {
     renderer.resize(width, height);
+    MainMenuDisplay display = ui == null ? null : ui.getComponent(MainMenuDisplay.class);
+    if (display != null) {
+      display.resize();
+    }
     logger.trace("Resized renderer: ({} x {})", width, height);
   }
 
@@ -122,7 +125,7 @@ public class MainMenuScreen extends ScreenAdapter {
   private void createUI() {
     logger.debug("Creating ui");
     Stage stage = ServiceLocator.getRenderService().getStage();
-    Entity ui = new Entity();
+    ui = new Entity();
     ui.addComponent(new MainMenuDisplay())
         .addComponent(new InputDecorator(stage, 10))
         .addComponent(new MainMenuActions(game));
