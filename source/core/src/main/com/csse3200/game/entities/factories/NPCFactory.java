@@ -23,7 +23,7 @@ import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.physics.components.PhysicsMovementComponent;
 import com.csse3200.game.rendering.AnimationRenderComponent;
-import com.csse3200.game.rendering.TextureRenderComponent;
+import com.csse3200.game.rendering.ShopDoorRenderComponent;
 import com.csse3200.game.services.ServiceLocator;
 
 /**
@@ -41,8 +41,11 @@ public class NPCFactory {
 
   private static final String ANGRY_FLOAT = "angry_float";
 
-  /** Placeholder shopkeeper sprite until dedicated shopkeeper art is added. */
-  public static final String SHOPKEEPER_TEXTURE = "images/Greek Statues Pack I/Leonid.png";
+  /** Shop door sprite sheet: two frames side by side (closed, open). */
+  public static final String SHOPKEEPER_TEXTURE = "images/backgrounds/shop_door.png";
+
+  /** Height of the shop door in world units. */
+  private static final float SHOP_DOOR_HEIGHT = 3f;
 
   private static final NPCConfigs configs =
       FileLoader.readClass(NPCConfigs.class, "configs/NPCs.json");
@@ -126,20 +129,20 @@ public class NPCFactory {
   }
 
   /**
-   * Creates a stationary shopkeeper the player can interact with to open the shop page.
+   * Creates the animated shop door the player can interact with to open the shop page.
    *
-   * <p>The shopkeeper has no physics collider, so the player can walk through it.
+   * <p>The door has no physics collider, so the player can walk through it.
    *
    * @return shopkeeper entity
    */
   public static Entity createShopkeeper() {
     Entity shopkeeper =
         new Entity()
-            .addComponent(new TextureRenderComponent(SHOPKEEPER_TEXTURE))
+            .addComponent(new ShopDoorRenderComponent(SHOPKEEPER_TEXTURE))
             .addComponent(new ShopNpcComponent());
 
-    shopkeeper.getComponent(TextureRenderComponent.class).scaleEntity();
-    shopkeeper.scaleHeight(1.5f);
+    shopkeeper.getComponent(ShopDoorRenderComponent.class).scaleEntity();
+    shopkeeper.scaleHeight(SHOP_DOOR_HEIGHT);
     return shopkeeper;
   }
 
