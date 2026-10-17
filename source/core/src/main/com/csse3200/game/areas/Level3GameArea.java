@@ -406,6 +406,11 @@ public class Level3GameArea extends GameArea {
     toggleMap(worldBounds, camera, backgroundComponent, "level3");
   }
 
+  @Override
+  public void updateLevelMap() {
+    updateMap(worldBounds, camera);
+  }
+
   /** Dispose of the game area. */
   @Override
   public void dispose() {

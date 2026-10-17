@@ -353,6 +353,7 @@ public class LevelsGameScreen extends ScreenAdapter {
       }
       queueAreaSwap(level);
     }
+    currentGameArea.updateLevelMap();
 
     physicsEngine.update();
     ServiceLocator.getEntityService().update();

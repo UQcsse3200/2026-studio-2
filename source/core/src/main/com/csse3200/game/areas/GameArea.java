@@ -356,6 +356,17 @@ public abstract class GameArea implements Disposable {
 
   public void toggleLevelMap() {}
 
+  public void updateLevelMap() {}
+
+  public void updateMap(Vector2 worldBounds, CameraComponent cameraComponent) {
+    if (mapToggled) {
+      Entity camera = new Entity();
+      float playerPosY = getPlayer().getPosition().y;
+      camera.setPosition(worldBounds.x / 2 - 5, worldBounds.y / 2 + playerPosY / 1.3f);
+      cameraComponent.setTarget(camera);
+    }
+  }
+
   public void toggleMap(
       Vector2 worldBounds,
       CameraComponent cameraComponent,
