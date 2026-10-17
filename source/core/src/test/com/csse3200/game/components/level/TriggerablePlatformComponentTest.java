@@ -20,6 +20,8 @@ class TriggerablePlatformComponentTest {
   private ResourceService resourceService;
   private Texture normalTexture;
   private Texture transparentTexture;
+  private ColliderComponent collider;
+  private DynamicTextureRenderComponent textureComponent;
 
   @BeforeEach
   void setUp() {
@@ -33,25 +35,29 @@ class TriggerablePlatformComponentTest {
         .thenReturn(transparentTexture);
   }
 
-  @Test
-  void shouldCreateActivePlatform() {
-    ColliderComponent collider = mock(ColliderComponent.class);
-    DynamicTextureRenderComponent textureComponent = mock(DynamicTextureRenderComponent.class);
+  /** Creates a platform that starts out active or inactive, with mock collider and texture. */
+  private Entity createPlatform(boolean active) {
+    collider = mock(ColliderComponent.class);
+    textureComponent = mock(DynamicTextureRenderComponent.class);
     ActivatableComponent activatable = mock(ActivatableComponent.class);
 
     when(textureComponent.getTexture()).thenReturn(normalTexture);
-    when(activatable.isActive()).thenReturn(true);
-
-    TriggerablePlatformComponent component = new TriggerablePlatformComponent();
+    when(activatable.isActive()).thenReturn(active);
 
     Entity entity =
         new Entity()
             .addComponent(collider)
             .addComponent(textureComponent)
             .addComponent(activatable)
-            .addComponent(component);
+            .addComponent(new TriggerablePlatformComponent());
 
     entity.create();
+    return entity;
+  }
+
+  @Test
+  void shouldCreateActivePlatform() {
+    Entity entity = createPlatform(true);
 
     verify(collider).setLayer(PhysicsLayer.GROUND);
     verify(textureComponent).setTexture(normalTexture);
@@ -59,23 +65,7 @@ class TriggerablePlatformComponentTest {
 
   @Test
   void shouldCreateInactivePlatform() {
-    ColliderComponent collider = mock(ColliderComponent.class);
-    DynamicTextureRenderComponent textureComponent = mock(DynamicTextureRenderComponent.class);
-    ActivatableComponent activatable = mock(ActivatableComponent.class);
-
-    when(textureComponent.getTexture()).thenReturn(normalTexture);
-    when(activatable.isActive()).thenReturn(false);
-
-    TriggerablePlatformComponent component = new TriggerablePlatformComponent();
-
-    Entity entity =
-        new Entity()
-            .addComponent(collider)
-            .addComponent(textureComponent)
-            .addComponent(activatable)
-            .addComponent(component);
-
-    entity.create();
+    Entity entity = createPlatform(false);
 
     verify(collider).setLayer(PhysicsLayer.NONE);
     verify(textureComponent).setTexture(transparentTexture);
@@ -83,23 +73,7 @@ class TriggerablePlatformComponentTest {
 
   @Test
   void shouldActivatePlatformFromEvent() {
-    ColliderComponent collider = mock(ColliderComponent.class);
-    DynamicTextureRenderComponent textureComponent = mock(DynamicTextureRenderComponent.class);
-    ActivatableComponent activatable = mock(ActivatableComponent.class);
-
-    when(textureComponent.getTexture()).thenReturn(normalTexture);
-    when(activatable.isActive()).thenReturn(false);
-
-    TriggerablePlatformComponent component = new TriggerablePlatformComponent();
-
-    Entity entity =
-        new Entity()
-            .addComponent(collider)
-            .addComponent(textureComponent)
-            .addComponent(activatable)
-            .addComponent(component);
-
-    entity.create();
+    Entity entity = createPlatform(false);
 
     entity.getEvents().trigger("activatedMapComponent", true);
 
@@ -109,23 +83,7 @@ class TriggerablePlatformComponentTest {
 
   @Test
   void shouldDeactivatePlatformFromEvent() {
-    ColliderComponent collider = mock(ColliderComponent.class);
-    DynamicTextureRenderComponent textureComponent = mock(DynamicTextureRenderComponent.class);
-    ActivatableComponent activatable = mock(ActivatableComponent.class);
-
-    when(textureComponent.getTexture()).thenReturn(normalTexture);
-    when(activatable.isActive()).thenReturn(true);
-
-    TriggerablePlatformComponent component = new TriggerablePlatformComponent();
-
-    Entity entity =
-        new Entity()
-            .addComponent(collider)
-            .addComponent(textureComponent)
-            .addComponent(activatable)
-            .addComponent(component);
-
-    entity.create();
+    Entity entity = createPlatform(true);
 
     entity.getEvents().trigger("activatedMapComponent", false);
 
@@ -135,23 +93,7 @@ class TriggerablePlatformComponentTest {
 
   @Test
   void shouldOnlyLoadTexturesOnce() {
-    ColliderComponent collider = mock(ColliderComponent.class);
-    DynamicTextureRenderComponent textureComponent = mock(DynamicTextureRenderComponent.class);
-    ActivatableComponent activatable = mock(ActivatableComponent.class);
-
-    when(textureComponent.getTexture()).thenReturn(normalTexture);
-    when(activatable.isActive()).thenReturn(true);
-
-    TriggerablePlatformComponent component = new TriggerablePlatformComponent();
-
-    Entity entity =
-        new Entity()
-            .addComponent(collider)
-            .addComponent(textureComponent)
-            .addComponent(activatable)
-            .addComponent(component);
-
-    entity.create();
+    Entity entity = createPlatform(true);
 
     entity.getEvents().trigger("activatedMapComponent", false);
     entity.getEvents().trigger("activatedMapComponent", true);
