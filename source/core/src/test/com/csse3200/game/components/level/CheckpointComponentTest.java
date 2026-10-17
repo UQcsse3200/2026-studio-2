@@ -1,14 +1,20 @@
 package com.csse3200.game.components.level;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 
+import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
 import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.utils.Array;
 import com.csse3200.game.components.player.PlayerActions;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
+import com.csse3200.game.rendering.AnimationRenderComponent;
+import com.csse3200.game.rendering.RenderService;
 import com.csse3200.game.rendering.TextureRenderComponent;
 import com.csse3200.game.services.ServiceLocator;
 import org.junit.jupiter.api.BeforeEach;
@@ -119,5 +125,27 @@ public class CheckpointComponentTest {
     verify(entityService, atLeastOnce()).getEntities();
     checkpointComponent.update();
     verify(entityService, atLeastOnce()).getEntities();
+  }
+
+  @Test
+  void shouldSwitchOwnAnimationOnActivateAndDeactivate() {
+    TextureAtlas atlas = mock(TextureAtlas.class);
+    Array<AtlasRegion> regions = new Array<>();
+    regions.add(mock(AtlasRegion.class));
+    when(atlas.findRegions(anyString())).thenReturn(regions);
+    ServiceLocator.registerRenderService(new RenderService());
+
+    AnimationRenderComponent animator = new AnimationRenderComponent(atlas);
+    animator.addAnimation("unlit", 0.2f, Animation.PlayMode.LOOP);
+    animator.addAnimation("lit", 0.2f, Animation.PlayMode.LOOP);
+    CheckpointComponent checkpoint = new CheckpointComponent(false, new GridPoint2(0, 0));
+    Entity entity = new Entity().addComponent(checkpoint).addComponent(animator);
+    entity.create();
+    animator.startAnimation("unlit");
+
+    checkpoint.activate();
+    assertEquals("lit", animator.getCurrentAnimation());
+    checkpoint.deactivate();
+    assertEquals("unlit", animator.getCurrentAnimation());
   }
 }

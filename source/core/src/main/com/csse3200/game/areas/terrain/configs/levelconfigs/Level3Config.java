@@ -28,6 +28,7 @@ public class Level3Config extends LevelConfig {
     triggerablePlatformTFP = "images/terrain/Level_3/Platform_level-3.png";
     ledgesTFP = "images/terrain/Level_3/Platform_level-3.png";
     groundTFP = "images/terrain/Level_3/tile-level3.png";
+    checkpointAtlas = "images/terrain/Level_1/Level_1_checkpoint.atlas";
 
     playerSpawn = new GridPoint2(9, 6);
     winConditionSpawn = new GridPoint2(33, 8);

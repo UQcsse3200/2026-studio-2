@@ -1,3 +1,4 @@
+
 package com.csse3200.game.components.level;
 
 import com.badlogic.gdx.graphics.Color;
@@ -12,34 +13,19 @@ import com.csse3200.game.services.ServiceLocator;
 public class CheckpointComponent extends Component {
 
   private boolean collected;
-  private GridPoint2 position;
-  private Entity player = null;
+  private final GridPoint2 position;
+  private Entity player;
   private final String atlas;
   private AnimationRenderComponent torchAnimator;
   private PointLightComponent pointLightComponent;
 
-  /** World size of an atlas-based checkpoint (each frame is 709 x 890, about 4:5). */
   public static final float ATLAS_WIDTH = 1.6f;
-
   public static final float ATLAS_HEIGHT = 2f;
 
-  /**
-   * Constructor for a new CheckpointComponent
-   *
-   * @param collected if the checkpoint has been collected or not
-   * @param position the position of the checkpoint
-   */
   public CheckpointComponent(boolean collected, GridPoint2 position) {
     this(collected, position, null);
   }
 
-  /**
-   * Constructor for a checkpoint with a level-specific animated design.
-   *
-   * @param collected if the checkpoint has been collected or not
-   * @param position the position of the checkpoint
-   * @param atlas atlas with "unlit" and "lit" regions, or null to use the default textures
-   */
   public CheckpointComponent(boolean collected, GridPoint2 position, String atlas) {
     this.collected = collected;
     this.position = position;
@@ -48,34 +34,23 @@ public class CheckpointComponent extends Component {
 
   @Override
   public void create() {
-    try {
-      pointLightComponent = entity.getComponent(PointLightComponent.class);
-    } catch (Exception e) {
-      pointLightComponent = null;
-    }
-  }
-
-  /**
-   * Gives this checkpoint the statue entity that represents it, so activating the checkpoint can
-   * switch that same entity to its lit frame rather than drawing a second entity over the top.
-   *
-   * @param torch entity with an {@link AnimationRenderComponent} that has "unlit" and "lit"
-   */
-  public void setTorch(Entity torch) {
-    this.torchAnimator = torch.getComponent(AnimationRenderComponent.class);
+    pointLightComponent = entity.getComponent(PointLightComponent.class);
+    // The checkpoint entity draws itself; null when the level has no checkpoint atlas.
+    torchAnimator = entity.getComponent(AnimationRenderComponent.class);
   }
 
   public void activate() {
     if (collected) {
       return;
     }
-    this.collected = true;
+
+    collected = true;
     entity.getEvents().trigger("checkpointActivated", position);
 
     if (torchAnimator != null) {
-      // Swap the existing statue to its lit frame so the unlit frame isn't left behind it.
       torchAnimator.startAnimation("lit");
     }
+
     if (pointLightComponent != null) {
       pointLightComponent.setColor(new Color(0.55f, 0.05f, 0.02f, 1f));
     }
@@ -85,34 +60,44 @@ public class CheckpointComponent extends Component {
     if (pointLightComponent != null) {
       pointLightComponent.setColor(Color.CLEAR);
     }
-    this.collected = false;
+
+    collected = false;
+
+    if (torchAnimator != null) {
+      torchAnimator.startAnimation("unlit");
+    }
   }
 
   public boolean isActive() {
-    return this.collected;
+    return collected;
   }
 
   public GridPoint2 getPosition() {
     return position;
   }
 
-  /** Check if player position comes in range of checkpoint position. */
   @Override
   public void update() {
     if (player == null) {
-      for (Entity entity : ServiceLocator.getEntityService().getEntities()) {
-        if (entity.getComponent(PlayerActions.class) != null) {
-          player = entity;
+      for (Entity candidate : ServiceLocator.getEntityService().getEntities()) {
+        if (candidate.getComponent(PlayerActions.class) != null) {
+          player = candidate;
           break;
         }
       }
     }
+
+    // The player may not have been registered yet.
+    if (player == null) {
+      return;
+    }
+
     float playerPosX = player.getPosition().x;
     float playerPosY = player.getPosition().y;
-    if (position.x - 1 < playerPosX && position.x + 1 > playerPosX) {
-      if (position.y - 1 < playerPosY && position.y + 1 > playerPosY) {
-        activate();
-      }
+
+    if (position.x - 1 < playerPosX && position.x + 1 > playerPosX
+        && position.y - 1 < playerPosY && position.y + 1 > playerPosY) {
+      activate();
     }
   }
 }
