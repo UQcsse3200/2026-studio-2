@@ -42,7 +42,13 @@ public class AITaskComponent extends Component implements TaskRunner {
   @Override
   public void update() {
 
-    BossPhaseComponent phase = entity.getComponent(BossPhaseComponent.class);
+    // Boss transitioning will stop all tasks for the boss
+    BossPhaseComponent phase;
+    if (entity == null) {
+      phase = null;
+    } else {
+      phase = entity.getComponent(BossPhaseComponent.class);
+    }
 
     if (phase != null && phase.isTransitioning()) {
       if (currentTask != null) {

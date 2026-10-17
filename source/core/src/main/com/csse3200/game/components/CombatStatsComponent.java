@@ -163,7 +163,12 @@ public class CombatStatsComponent extends Component {
 
   public void hit(CombatStatsComponent attacker) {
 
-    BossPhaseComponent phase = entity.getComponent(BossPhaseComponent.class);
+    BossPhaseComponent phase;
+    if (entity == null) {
+      phase = null;
+    } else {
+      phase = entity.getComponent(BossPhaseComponent.class);
+    }
 
     if (phase != null && phase.isTransitioning()) {
       return;
