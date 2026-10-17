@@ -215,8 +215,7 @@ public class LoadSaveDisplay extends UIComponent {
 
     Table info = new Table();
     Label titleLabel =
-        textLabel(
-            String.format("Slot %d - %s", slot + 1, levelName(save.currentLevel)), TEXT_DARK);
+        textLabel(String.format("Slot %d - %s", slot + 1, levelName(save.currentLevel)), TEXT_DARK);
     info.add(titleLabel).left().growX().row();
 
     Label timeLabel =
@@ -252,8 +251,7 @@ public class LoadSaveDisplay extends UIComponent {
     deleteStyle.fontColor = TEXT_DARK;
     deleteStyle.overFontColor = TEXT_COMPLETED;
     deleteStyle.downFontColor = TEXT_DARK;
-    TextButton deleteButton =
-        new TextButton(armedDeleteSlot == slot ? "SURE?" : "X", deleteStyle);
+    TextButton deleteButton = new TextButton(armedDeleteSlot == slot ? "SURE?" : "X", deleteStyle);
     deleteButton.addListener(
         new ChangeListener() {
           @Override

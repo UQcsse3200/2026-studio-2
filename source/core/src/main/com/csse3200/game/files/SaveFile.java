@@ -13,45 +13,47 @@ import org.slf4j.LoggerFactory;
 
 /**
  * A single save slot's contents, serialised to JSON by {@link SaveManager} through {@link
- * FileLoader}. Follows the same convention as {@link UserSettings.Settings}: public fields and an implicit constructor so libGDX can use it
- * A null {@link #player} means the save was created by starting a new game and no checkpoint has been reached yet
- * so the level's own defaults should be used on load.
+ * FileLoader}. Follows the same convention as {@link UserSettings.Settings}: public fields and an
+ * implicit constructor so libGDX can use it A null {@link #player} means the save was created by
+ * starting a new game and no checkpoint has been reached yet so the level's own defaults should be
+ * used on load.
  */
 public class SaveFile {
   private static final Logger logger = LoggerFactory.getLogger(SaveFile.class);
 
-// Slot this save occupies (0..SaveManager.SLOT_COUNT - 1)
+  // Slot this save occupies (0..SaveManager.SLOT_COUNT - 1)
   public int slotIndex;
 
-// Real-world time of the last write, shown on the save-select screen.
+  // Real-world time of the last write, shown on the save-select screen.
   public long lastModifiedEpochMs;
 
-// True once the player has won the game (level 3 win condition)
+  // True once the player has won the game (level 3 win condition)
   public boolean completed;
 
-// Level the save resumes in: "level1", "level2", "level3" or "boss"
+  // Level the save resumes in: "level1", "level2", "level3" or "boss"
   public String currentLevel = "level1";
 
-// Player stats at the last checkpoint, or null for a brand-new game
+  // Player stats at the last checkpoint, or null for a brand-new game
   public PlayerSaveData player;
 
-// Checkpoints activated in {@link #currentLevel}, so respawn and lit torches match
+  // Checkpoints activated in {@link #currentLevel}, so respawn and lit torches match
   public List<CheckpointSave> activatedCheckpoints = new ArrayList<>();
 
-// Player state captured at a checkpoint
+  // Player state captured at a checkpoint
   public static class PlayerSaveData {
     public int health;
     public int maxHealth;
     public int gold;
 
-// Total inventory positions when captured, so expanded inventories keep their size
+    // Total inventory positions when captured, so expanded inventories keep their size
     public int slotCount;
 
-// Only occupied slots; empty positions are rebuilt from the default inventory
+    // Only occupied slots; empty positions are rebuilt from the default inventory
     public List<ItemSave> inventory = new ArrayList<>();
 
     /**
      * Records health, max health, gold and inventory from the given player.
+     *
      * @param player player entity to capture from
      * @return captured player data, or null if the player has no saveable components
      */

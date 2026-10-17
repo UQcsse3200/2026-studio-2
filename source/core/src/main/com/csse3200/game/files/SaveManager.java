@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
  * Reading, writing and listing save files, one JSON file per fixed slot in the user's home
  * directory (mirrors {@link UserSettings}, which stores settings the same way).
  *
- * Slots live at {@code DECO2800Game/saves/slot_n.json}. A slot with no readable file is simply
+ * <p>Slots live at {@code DECO2800Game/saves/slot_n.json}. A slot with no readable file is simply
  * empty; a corrupt file is treated the same way rather than failing the game.
  */
 public class SaveManager {

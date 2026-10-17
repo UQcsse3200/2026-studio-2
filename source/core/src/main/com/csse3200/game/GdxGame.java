@@ -250,7 +250,7 @@ public class GdxGame extends Game {
    * to the given level. Only applies when the area is the save's level; otherwise the pending save
    * is kept for a later swap. Consumes the pending save once applied.
    *
-   * When the save recorded checkpoints the player is placed at the last one. A save without
+   * <p>When the save recorded checkpoints the player is placed at the last one. A save without
    * checkpoints (a game that has not reached a checkpoint yet) keeps the level's own spawn point.
    *
    * @param area the freshly created game area
