@@ -317,21 +317,21 @@ public class LevelConfig {
 
       c.setEntity(checkpoint);
 
-      // The torch art comes from the checkpoint atlas. Without one the checkpoint still works but
-      // has nothing to draw.
-      if (checkpointAtlas == null) {
-        continue;
+      // The statue art comes from the checkpoint atlas and is drawn by the checkpoint entity
+      // itself. Without an atlas the checkpoint still works but has nothing to draw.
+      if (checkpointAtlas != null) {
+        AnimationRenderComponent animator =
+            new AnimationRenderComponent(
+                ServiceLocator.getResourceService().getAsset(checkpointAtlas, TextureAtlas.class));
+        animator.addAnimation("unlit", 0.2f, Animation.PlayMode.LOOP);
+        animator.addAnimation("lit", 0.2f, Animation.PlayMode.LOOP);
+        checkpoint.addComponent(animator);
+        animator.startAnimation("unlit");
+        // Keep the statue's proportions, whatever the atlas's frame shape is.
+        animator.scaleEntity();
+        checkpoint.scaleHeight(CheckpointComponent.ATLAS_HEIGHT);
+        checkpoint.getComponent(CheckpointComponent.class).setTorch(checkpoint);
       }
-
-      AnimationRenderComponent animator =
-          new AnimationRenderComponent(
-              ServiceLocator.getResourceService().getAsset(checkpointAtlas, TextureAtlas.class));
-      animator.addAnimation("unlit", 0.2f, Animation.PlayMode.LOOP);
-      animator.addAnimation("lit", 0.2f, Animation.PlayMode.LOOP);
-      Entity torch = new Entity().addComponent(animator);
-      animator.startAnimation("unlit");
-      torch.setScale(CheckpointComponent.ATLAS_WIDTH, CheckpointComponent.ATLAS_HEIGHT);
-      checkpoint.getComponent(CheckpointComponent.class).setTorch(torch);
 
       GridPoint2 pos = c.getPosition();
       checkpoint.setPosition(pos.x, pos.y - 1.3f);

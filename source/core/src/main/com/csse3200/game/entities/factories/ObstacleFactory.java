@@ -28,6 +28,11 @@ import java.util.List;
  * <p>Each obstacle entity type should have a creation method that returns a corresponding entity.
  */
 public class ObstacleFactory {
+  /** Portal sprite sheet: two frames side by side (dark, glowing). */
+  public static final String LEVEL_END_TEXTURE = "images/backgrounds/Level_end.png";
+
+  /** Height of the level-end portal in world units. */
+  private static final float LEVEL_END_HEIGHT = 3.5f;
 
   /**
    * Creates a tree entity.
@@ -216,48 +221,52 @@ public class ObstacleFactory {
   }
 
   /**
-   * Creates a win condition entity.
+   * Creates a win condition entity: a portal the player enters by pressing F, which ends the game
+   * with a win.
    *
    * @return win condition entity
    */
   public static Entity createWinConEntity() {
-    ColliderComponent collider = new ColliderComponent();
-    collider.setLayer(PhysicsLayer.NPC);
-    collider.setSensor(true);
-
-    Entity winCon =
-        new Entity()
-            .addComponent(new PhysicsComponent())
-            .addComponent(collider)
-            .addComponent(new WinConditionComponent());
-
-    winCon.getComponent(PhysicsComponent.class).setBodyType(BodyType.StaticBody);
-    winCon.getComponent(ColliderComponent.class).setAsBox(new Vector2(2f, 2f));
-
-    return winCon;
+    return createLevelEndPortal(new WinConditionComponent());
   }
 
   /**
-   * Creates a new sensor entity that detects a collision from the player and triggers a level swap
+   * Creates a portal at the end of a level. The player swaps to the next level by standing in it
+   * and pressing F.
    *
    * @param nextLevelName a String representing the name of the level this component should force
    *     the game screen to swap to
    * @return a level trigger entity
    */
   public static Entity createNextLevelTriggerEntity(String nextLevelName) {
+    return createLevelEndPortal(new LevelTriggerComponent(nextLevelName));
+  }
+
+  /**
+   * Builds the animated portal that marks the end of a level, with a sensor the size of the portal
+   * that detects the player standing in front of it.
+   *
+   * @param levelEnd what happens when the player uses the portal
+   * @return portal entity
+   */
+  private static Entity createLevelEndPortal(LevelEndComponent levelEnd) {
     ColliderComponent collider = new ColliderComponent();
     collider.setLayer(PhysicsLayer.NPC);
     collider.setSensor(true);
 
-    Entity trigger =
+    LevelPortalRenderComponent render = new LevelPortalRenderComponent(LEVEL_END_TEXTURE);
+    Entity portal =
         new Entity()
             .addComponent(new PhysicsComponent().setBodyType(BodyType.StaticBody))
             .addComponent(collider)
-            .addComponent(new LevelTriggerComponent(nextLevelName));
+            .addComponent(levelEnd)
+            .addComponent(render);
 
-    trigger.getComponent(ColliderComponent.class).setAsBox(new Vector2(2f, 3f));
+    render.scaleEntity();
+    portal.scaleHeight(LEVEL_END_HEIGHT);
+    portal.getComponent(ColliderComponent.class).setAsBox(portal.getScale());
 
-    return trigger;
+    return portal;
   }
 
   /**

@@ -29,7 +29,7 @@ public class Level2Config extends LevelConfig {
     ledgesTFP = "images/terrain/Level_2/level_2_platform.png";
     groundTFP = "images/terrain/Level_2/level_2_tile.png";
     spikeTFP = "images/terrain/Level_2/level_2_spikes.png";
-    checkpointAtlas = "images/terrain/Level_1/Level_1_checkpoint.atlas";
+    checkpointAtlas = "images/terrain/Level_2/level_2_checkpoint.atlas";
 
     playerSpawn = new GridPoint2(0, 42);
     nextLevelTriggerSpawn = new GridPoint2(33, 8);
@@ -319,12 +319,17 @@ public class Level2Config extends LevelConfig {
               new GridPoint2(30, 16), new Vector2(3f, 1f), new String[] {"enemyArena"}, true),
         };
 
+    // Five checkpoints on stable platforms (never moving, crumbling or trap-adjacent ones),
+    // spread over the level: past the start platforms, the bridge between the two pillars, the
+    // bottom-left ledge before the crumbling crossing, the right-hand tower, and the bottom-right
+    // ledge.
     checkpoints =
         new CheckpointConfig[] {
-          new CheckpointConfig(new GridPoint2(0, 41)),
-          new CheckpointConfig(new GridPoint2(0, 8)),
-          new CheckpointConfig(new GridPoint2(39, 28)),
-          new CheckpointConfig(new GridPoint2(45, 8)),
+          new CheckpointConfig(new GridPoint2(8, 41)),
+          new CheckpointConfig(new GridPoint2(11, 23)),
+          new CheckpointConfig(new GridPoint2(8, 8)),
+          new CheckpointConfig(new GridPoint2(38, 28)),
+          new CheckpointConfig(new GridPoint2(44, 8)),
         };
 
     wheelSpinSpawns = new GridPoint2[] {new GridPoint2(29, 41)};

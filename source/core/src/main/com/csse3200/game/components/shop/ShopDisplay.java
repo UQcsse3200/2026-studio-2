@@ -6,6 +6,8 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.ButtonGroup;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -32,23 +34,34 @@ public class ShopDisplay extends UIComponent {
   private static final float Z_INDEX = 3f;
   private static final float ICON_SIZE = 40f;
   private static final String SHOP_BACKGROUND = "images/backgrounds/shop_bg.png";
-  private static final Color PRICE_TEXT_COLOR = new Color(1f, 0.78f, 0.1f, 1f);
+  private static final Color GOLD_TEXT_COLOR = new Color(1f, 0.78f, 0.1f, 1f);
+  // Text on the wooden plaques is dark brown; text in the dark panel is light.
   private static final Color COUNTER_TEXT_COLOR = new Color(0.25f, 0.12f, 0.05f, 1f);
+  private static final Color DESCRIPTION_TEXT_COLOR = new Color(0.8f, 0.8f, 0.8f, 1f);
+  private static final String GREETING = "Welcome, traveller! What can I get for you?";
+  private static final String SELECT_HINT = "Select an item on the counter to see its details.";
+  // Share of the dark panel taken by the gold and message column, the rest shows item details.
+  private static final float PANEL_MESSAGE_SHARE = 0.36f;
+  // Size of an item's icon on the counter, as a share of its slot.
+  private static final float ITEM_ICON_SHARE = 0.9f;
 
-  // Layout of shop_bg.png as fractions of its width/height: the counter band that holds the gold
-  // and status text, the dark panel that holds the listings, and the plaques for the buttons.
-  private static final float SCENE_COUNTER_TOP = 0.60f;
-  private static final float SCENE_COUNTER_HEIGHT = 0.165f;
+  // Layout of shop_bg.png as fractions of its width/height: the counter the items are laid out on,
+  // the dark panel that shows the gold and the merchant's messages, and the plaques for the
+  // buttons.
+  private static final float SCENE_TABLE_TOP = 0.535f;
+  private static final float SCENE_TABLE_HEIGHT = 0.228f;
+  // Height of one item's slot. It is about the icon's size, so the icons rest on the tabletop.
+  private static final float SCENE_ITEM_HEIGHT = 0.14f;
+  private static final float SCENE_TABLE_LEFT = 0.09f;
+  private static final float SCENE_TABLE_WIDTH = 0.82f;
   private static final float SCENE_PANEL_LEFT = 0.075f;
-  private static final float SCENE_GOLD_WIDTH = 0.25f;
-  private static final float SCENE_COUNTER_RIGHT_MARGIN = 0.07f;
   private static final float SCENE_PANEL_WIDTH = 0.625f;
   private static final float SCENE_PANEL_HEIGHT = 0.18f;
   private static final float SCENE_PLAQUE_COLUMN_LEFT = 0.744f;
   private static final float SCENE_PLAQUE_WIDTH = 0.186f;
   private static final float SCENE_PLAQUE_HEIGHT = 0.077f;
   private static final float SCENE_PLAQUE_GAP = 0.024f;
-  private static final int LISTING_COLUMNS = 3;
+  private static final int LISTING_COLUMNS = 6;
   private static final float REFERENCE_HEIGHT = 720f;
   // How much of the screen the shop window fills, leaving a margin around it.
   private static final float SCENE_SCREEN_FRACTION = 0.85f;
@@ -58,6 +71,10 @@ public class ShopDisplay extends UIComponent {
   private Table listingsTable;
   private Label goldLabel;
   private Label statusLabel;
+  private Table detailsTable;
+  private ShopListing selectedListing;
+  private float detailsBuyWidth;
+  private float detailsBuyHeight;
   private TextButton closeBtn;
   private TextButton blackjackBtn;
   private Texture backgroundTexture;
@@ -177,12 +194,13 @@ public class ShopDisplay extends UIComponent {
 
     table.setBackground(getDimDrawable());
 
-    Label.LabelStyle counterStyle = new Label.LabelStyle(white);
-    counterStyle.fontColor = COUNTER_TEXT_COLOR;
-    goldLabel.setStyle(counterStyle);
-    goldLabel.setFontScale(1.1f * uiScale);
-    statusLabel.setStyle(counterStyle);
-    statusLabel.setFontScale(1.1f * uiScale);
+    Label.LabelStyle goldStyle = new Label.LabelStyle(white);
+    goldStyle.fontColor = GOLD_TEXT_COLOR;
+    goldLabel.setStyle(goldStyle);
+    goldLabel.setFontScale(1.2f * uiScale);
+    statusLabel.setStyle(white);
+    statusLabel.setFontScale(0.9f * uiScale);
+    statusLabel.setWrap(true);
 
     styleButtonAsPlaque(closeBtn);
     styleButtonAsPlaque(blackjackBtn);
@@ -191,26 +209,49 @@ public class ShopDisplay extends UIComponent {
     float panelLeft = SCENE_PANEL_LEFT * w;
     float panelWidth = SCENE_PANEL_WIDTH * w;
     float panelHeight = SCENE_PANEL_HEIGHT * h;
+    float panelPadding = 0.02f * h;
     float plaqueColumnLeft = SCENE_PLAQUE_COLUMN_LEFT * w;
+    float tableWidth = SCENE_TABLE_WIDTH * w;
+    float tableHeight = SCENE_TABLE_HEIGHT * h;
     Table scene = new Table();
     scene.setBackground(new TextureRegionDrawable(new TextureRegion(background)));
     scene.top().left();
 
-    scene.add().height(SCENE_COUNTER_TOP * h).colspan(2).row();
+    scene.add().height(SCENE_TABLE_TOP * h).colspan(2).row();
 
-    // Gold on the left and the status message beside it, both kept inside the counter.
-    float counterRight = w - SCENE_COUNTER_RIGHT_MARGIN * w;
-    float goldWidth = SCENE_GOLD_WIDTH * w;
-    statusLabel.setWrap(true);
-    Table counter = new Table();
-    counter.left();
-    counter.add(goldLabel).width(goldWidth).left();
-    counter.add(statusLabel).width(counterRight - panelLeft - goldWidth).left();
-    scene.add(counter).colspan(2).height(SCENE_COUNTER_HEIGHT * h).padLeft(panelLeft).left();
-    scene.row();
-
+    // The items are laid out in a row along the counter the merchant is leaning on.
     scene
         .add(listingsTable)
+        .colspan(2)
+        .width(tableWidth)
+        .height(tableHeight)
+        .padLeft(SCENE_TABLE_LEFT * w)
+        .top()
+        .left();
+    scene.row();
+
+    // The dark panel shows the player's gold and the merchant's messages on the left, and the
+    // details of the selected item, with its price and buy button, on the right.
+    float innerWidth = panelWidth - panelPadding * 2f;
+    float messageWidth = innerWidth * PANEL_MESSAGE_SHARE;
+    float detailsWidth = innerWidth - messageWidth - panelPadding;
+    detailsBuyWidth = detailsWidth * 0.3f;
+    detailsBuyHeight = panelHeight * 0.22f;
+
+    Table messageColumn = new Table();
+    messageColumn.top().left();
+    messageColumn.add(goldLabel).left().row();
+    messageColumn.add(statusLabel).width(messageWidth).left().padTop(panelPadding / 2f);
+
+    detailsTable = new Table();
+    detailsTable.top().left();
+
+    Table infoPanel = new Table();
+    infoPanel.top().left().pad(panelPadding);
+    infoPanel.add(messageColumn).width(messageWidth).top().left().padRight(panelPadding);
+    infoPanel.add(detailsTable).width(detailsWidth).top().left();
+    scene
+        .add(infoPanel)
         .width(panelWidth)
         .height(panelHeight)
         .padLeft(panelLeft)
@@ -231,8 +272,8 @@ public class ShopDisplay extends UIComponent {
     table.add(scene).size(w, h);
     listingsTable.clear();
     listingsTable.top().left();
-    listingTileWidth = panelWidth / LISTING_COLUMNS;
-    listingTileHeight = panelHeight / 2f;
+    listingTileWidth = tableWidth / LISTING_COLUMNS;
+    listingTileHeight = SCENE_ITEM_HEIGHT * h;
   }
 
   private Drawable getDimDrawable() {
@@ -267,8 +308,9 @@ public class ShopDisplay extends UIComponent {
       return;
     }
     open = true;
-    statusLabel.setText("");
+    selectedListing = null;
     buildLayout();
+    statusLabel.setText(backgroundTexture != null ? GREETING : "");
     refresh();
     table.setVisible(true);
     setGamePaused(true);
@@ -325,66 +367,108 @@ public class ShopDisplay extends UIComponent {
     darkStyle.disabled = slotStyle.getDarkerBox(); // see below
     darkStyle.fontColor = Color.WHITE;
 
-    boolean themed = backgroundTexture != null;
-    int index = 0;
-    for (ShopListing listing : ShopCatalog.getListings()) {
-      if (themed) {
-        listingsTable
-            .add(createListingTile(listing, shop))
-            .size(listingTileWidth, listingTileHeight);
-        index++;
-        if (index % LISTING_COLUMNS == 0) {
-          listingsTable.row();
-        }
-      } else {
+    if (backgroundTexture == null) {
+      for (ShopListing listing : ShopCatalog.getListings()) {
         listingsTable.add(createListingRow(listing, shop)).growX().padBottom(8f);
         listingsTable.row();
       }
+      return;
     }
+
+    ButtonGroup<Button> group = new ButtonGroup<>();
+    group.setMinCheckCount(0);
+    group.setMaxCheckCount(1);
+    int index = 0;
+    for (ShopListing listing : ShopCatalog.getListings()) {
+      Button item = createListingItem(listing);
+      group.add(item);
+      listingsTable.add(item).size(listingTileWidth, listingTileHeight);
+      index++;
+      if (index % LISTING_COLUMNS == 0) {
+        listingsTable.row();
+      }
+    }
+    updateDetails();
   }
 
   /**
-   * Compact listing used over the shop background: the icon beside the name, quantity and price,
-   * with the buy button underneath and lined up with the name.
+   * An item laid out on the counter: just its icon, which can be clicked to select it. The selected
+   * item is highlighted and its details are shown in the dark panel.
    */
-  private Table createListingTile(ShopListing listing, ShopComponent shop) {
-    float iconSize = listingTileHeight * 0.4f;
-    float buyWidth = listingTileWidth * 0.24f;
-    float buyHeight = listingTileHeight * 0.3f;
-    float gap = 8f * uiScale;
+  private Button createListingItem(ShopListing listing) {
+    Button.ButtonStyle style = new Button.ButtonStyle();
+    style.checked = slotStyle.getSelectedBox();
 
-    Label name = new Label(listing.getItemType().getDisplayName(), white);
-    name.setFontScale(0.55f * uiScale);
-    name.setEllipsis(true);
-    Label quantity = new Label("x" + listing.getQuantity(), white);
-    quantity.setFontScale(0.5f * uiScale);
-    Label.LabelStyle priceStyle = new Label.LabelStyle(white);
-    priceStyle.fontColor = PRICE_TEXT_COLOR;
-    Label price = new Label(listing.getPrice() + "g", priceStyle);
-    price.setFontScale(0.5f * uiScale);
-
-    Table details = new Table();
-    details.add(name).colspan(2).left().growX().row();
-    details.add(quantity).left().padRight(gap * 1.5f);
-    details.add(price).left().expandX().left();
-
-    Table header = new Table();
+    Button item = new Button(style);
     Texture texture = getItemTexture(listing.getItemType());
     if (texture != null) {
-      header.add(new Image(texture)).size(iconSize).padRight(gap);
-    } else {
-      header.add().width(iconSize).padRight(gap);
+      float iconSize = ITEM_ICON_SHARE * Math.min(listingTileWidth, listingTileHeight);
+      item.add(new Image(texture)).size(iconSize).expand().center();
     }
-    header.add(details).left().growX();
 
-    TextButton buyBtn = createBuyButton(listing, shop);
-    buyBtn.getLabel().setFontScale(0.6f * uiScale);
+    // Restore the selection after the items are rebuilt without announcing it as a new click.
+    if (listing.equals(selectedListing)) {
+      item.setProgrammaticChangeEvents(false);
+      item.setChecked(true);
+      item.setProgrammaticChangeEvents(true);
+    }
+    item.addListener(
+        new ChangeListener() {
+          @Override
+          public void changed(ChangeEvent changeEvent, Actor actor) {
+            selectedListing = item.isChecked() ? listing : null;
+            updateDetails();
+          }
+        });
+    return item;
+  }
 
-    Table tile = new Table();
-    tile.pad(gap);
-    tile.add(header).left().growX().row();
-    tile.add(buyBtn).size(buyWidth, buyHeight).left().padLeft(iconSize + gap).padTop(gap / 2f);
-    return tile;
+  /**
+   * Shows the selected item's name, description, quantity, price and buy button in the dark panel,
+   * or a hint to pick an item when nothing is selected.
+   */
+  private void updateDetails() {
+    if (detailsTable == null || backgroundTexture == null) {
+      return;
+    }
+    detailsTable.clearChildren();
+
+    if (selectedListing == null) {
+      Label hint = new Label(SELECT_HINT, white);
+      hint.setFontScale(0.75f * uiScale);
+      hint.setWrap(true);
+      detailsTable.add(hint).growX();
+      return;
+    }
+
+    ItemType itemType = selectedListing.getItemType();
+    float gap = 6f * uiScale;
+
+    Label name = new Label(itemType.getDisplayName(), white);
+    name.setFontScale(1f * uiScale);
+    Label.LabelStyle descriptionStyle = new Label.LabelStyle(white);
+    descriptionStyle.fontColor = DESCRIPTION_TEXT_COLOR;
+    Label description = new Label(itemType.getDescription(), descriptionStyle);
+    description.setFontScale(0.7f * uiScale);
+    description.setWrap(true);
+
+    Label.LabelStyle priceStyle = new Label.LabelStyle(white);
+    priceStyle.fontColor = GOLD_TEXT_COLOR;
+    Label quantity = new Label("Quantity: x" + selectedListing.getQuantity(), white);
+    quantity.setFontScale(0.8f * uiScale);
+    Label price = new Label("Price: " + selectedListing.getPrice() + "g", priceStyle);
+    price.setFontScale(0.8f * uiScale);
+    Table stats = new Table();
+    stats.add(quantity).left().row();
+    stats.add(price).left();
+
+    TextButton buyBtn = createBuyButton(selectedListing, entity.getComponent(ShopComponent.class));
+    buyBtn.getLabel().setFontScale(0.8f * uiScale);
+
+    detailsTable.add(name).left().colspan(2).row();
+    detailsTable.add(description).growX().left().colspan(2).padTop(gap).row();
+    detailsTable.add(stats).left().expandX().padTop(gap);
+    detailsTable.add(buyBtn).size(detailsBuyWidth, detailsBuyHeight).right().padTop(gap);
   }
 
   private TextButton createBuyButton(ShopListing listing, ShopComponent shop) {

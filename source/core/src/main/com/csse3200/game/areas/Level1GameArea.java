@@ -1,33 +1,23 @@
 package com.csse3200.game.areas;
 
 import com.badlogic.gdx.audio.Music;
-import com.badlogic.gdx.graphics.g2d.Animation;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.GridPoint2;
-import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.areas.terrain.TerrainFactory;
 import com.csse3200.game.areas.terrain.TerrainFactory.TerrainType;
-import com.csse3200.game.areas.terrain.configs.PlatformConfig;
 import com.csse3200.game.areas.terrain.configs.levelconfigs.Level1Config;
 import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.components.Component;
 import com.csse3200.game.components.GameVolume;
 import com.csse3200.game.components.gamearea.GameAreaDisplay;
 import com.csse3200.game.components.level.DesertHazardRecoveryComponent;
-import com.csse3200.game.components.level.RoomDoorComponent;
-import com.csse3200.game.components.level.RoomDoorDisplay;
 import com.csse3200.game.components.player.KeyboardPlayerInputComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.EnemyFactory;
 import com.csse3200.game.entities.factories.ItemFactory;
 import com.csse3200.game.entities.factories.NPCFactory;
-import com.csse3200.game.entities.factories.ObstacleFactory;
 import com.csse3200.game.entities.factories.PlayerFactory;
-import com.csse3200.game.rendering.AnimationRenderComponent;
 import com.csse3200.game.rendering.BackgroundRenderComponent;
-import com.csse3200.game.rendering.CaveEntranceRenderComponent;
-import com.csse3200.game.rendering.TextureRenderComponent;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.List;
@@ -112,16 +102,10 @@ public class Level1GameArea extends GameArea {
     "images/ui/transparent.png",
     "images/backgrounds/coin_bg.png",
     "images/backgrounds/shop_bg.png",
+    "images/backgrounds/Level_end.png",
     "images/backgrounds/level_1_bg.png",
     "images/backgrounds/level_1_idea.png",
-    "images/terrain/Others/closed_door.png",
-    "images/terrain/Others/open_door.png",
-    "images/terrain/Level_1/sheeps_cave.png",
-    "images/terrain/Others/treasure_room.png",
-    "images/terrain/Others/npc_room.png",
     "images/ui/menu_box.png",
-    "images/terrain/Level_1/Level_1_door.png",
-    "images/terrain/Others/normal_cave.png",
     "images/terrain/Level_1/Level_1_tile.png",
     "images/terrain/Level_1/Level_1_platform.png",
     "images/terrain/Level_1/Level_1_Spike.png",
@@ -168,7 +152,6 @@ public class Level1GameArea extends GameArea {
 
   private static final String[] forestTextureAtlases = {
     "images/player/player.atlas",
-    "images/terrain/Level_1/sheep.atlas",
     "images/terrain/Level_1/Level_1_checkpoint.atlas",
     "images/enemies/skeleton_archer.atlas",
     "images/enemies/skeleton_warrior.atlas",
@@ -219,10 +202,6 @@ public class Level1GameArea extends GameArea {
     spawnWhenApproaching(
         new GridPoint2(74, 9),
         () -> spawnEntityAt(EnemyFactory.createVulture(player), new GridPoint2(74, 9), true, true));
-    spawnSideRooms();
-    Entity exit = new Entity().addComponent(new CaveEntranceRenderComponent());
-    exit.setScale(3f, 4f);
-    spawnEntityAt(exit, new GridPoint2(87, 17), false, false);
 
     // Test enemy functionalitys
     // spawnTestSkeletonWarrior();
@@ -423,88 +402,6 @@ public class Level1GameArea extends GameArea {
                     }
                   }
                 }));
-  }
-
-  /** Optional rooms leave every platform, pickup and checkpoint on the original route intact. */
-  private void spawnSideRooms() {
-    spawnRoom(110, "images/terrain/Others/npc_room.png");
-    spawnRoom(140, "images/terrain/Others/normal_cave.png");
-    Rectangle mainBounds = new Rectangle(0, 0, worldBounds.x, worldBounds.y);
-    // Only one entrance on the main map: a reverse climb onto the original roof.
-    spawnDoor(
-        3,
-        23,
-        "Enter the hidden refuge",
-        new Vector2(115, 2.1f),
-        new Rectangle(110, 0, 20, 11.25f));
-    spawnDoor(112, 2, "Return to the desert", new Vector2(6, 23.1f), mainBounds);
-    // The Easter egg is a second discovery inside the refuge, not another main-route door.
-    Entity alcove =
-        ObstacleFactory.createPlatform(
-            new PlatformConfig(
-                new GridPoint2(125, 4), 4, 1, 0, "images/terrain/Level_1/Level_1_platform.png"));
-    alcove.setScale(4, 1);
-    alcove.setPosition(125, 4);
-    spawnEntity(alcove);
-    spawnDoor(
-        127,
-        5,
-        "Explore the quiet cave",
-        new Vector2(145, 2.1f),
-        new Rectangle(140, 0, 20, 11.25f));
-    spawnDoor(
-        142, 2, "Return to the refuge", new Vector2(125, 5.1f), new Rectangle(110, 0, 20, 11.25f));
-
-    for (int i = 0; i < 3; i++) {
-      AnimationRenderComponent sheepAnimator =
-          new AnimationRenderComponent(
-              ServiceLocator.getResourceService()
-                  .getAsset("images/terrain/Level_1/sheep.atlas", TextureAtlas.class));
-      sheepAnimator.addAnimation("idle", 0.5f + i * 0.12f, Animation.PlayMode.LOOP);
-      Entity sheep = new Entity().addComponent(sheepAnimator);
-      sheepAnimator.scaleEntity();
-      sheep.scaleWidth(1.7f);
-      sheepAnimator.startAnimation("idle");
-      sheep.setPosition(150 + i * 2.5f, 2);
-      spawnEntity(sheep);
-    }
-  }
-
-  private void spawnDoor(float x, float y, String label, Vector2 destination, Rectangle bounds) {
-    Entity door =
-        new Entity()
-            .addComponent(new CaveEntranceRenderComponent())
-            .addComponent(new RoomDoorComponent(player, camera, destination, bounds, label))
-            .addComponent(new RoomDoorDisplay());
-    door.setScale(2f, 2.67f);
-    door.setPosition(x, y);
-    spawnEntity(door);
-  }
-
-  private void spawnRoom(float x, String texture) {
-    Entity room =
-        new Entity()
-            .addComponent(
-                new TextureRenderComponent(texture) {
-                  @Override
-                  public float getZIndex() {
-                    return -200f;
-                  }
-                });
-    room.setScale(20, 11.25f);
-    room.setPosition(x, 0.2f);
-    spawnEntity(room);
-    Entity floor = ObstacleFactory.createWall(20, 2);
-    floor.setPosition(x, 0);
-    spawnEntity(floor);
-    for (float wallX : new float[] {x, x + 19.5f}) {
-      Entity wall = ObstacleFactory.createWall(0.5f, 11.25f);
-      wall.setPosition(wallX, 0);
-      spawnEntity(wall);
-    }
-    Entity ceiling = ObstacleFactory.createWall(20, 1);
-    ceiling.setPosition(x, 11.25f);
-    spawnEntity(ceiling);
   }
 
   List<Vector2> testCalypsoTpPositions =

@@ -18,9 +18,7 @@ public class CheckpointComponent extends Component {
   private AnimationRenderComponent torchAnimator;
   private PointLightComponent pointLightComponent;
 
-  /** World size of an atlas-based checkpoint (each frame is 709 x 890, about 4:5). */
-  public static final float ATLAS_WIDTH = 1.6f;
-
+  /** World height of an atlas-based checkpoint; its width follows the atlas frame's ratio. */
   public static final float ATLAS_HEIGHT = 2f;
 
   /**

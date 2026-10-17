@@ -28,6 +28,7 @@ public class Level3Config extends LevelConfig {
     triggerablePlatformTFP = "images/terrain/Level_3/Platform_level-3.png";
     ledgesTFP = "images/terrain/Level_3/Platform_level-3.png";
     groundTFP = "images/terrain/Level_3/tile-level3.png";
+    checkpointAtlas = "images/terrain/Level_1/Level_1_checkpoint.atlas";
 
     playerSpawn = new GridPoint2(9, 6);
     winConditionSpawn = new GridPoint2(33, 8);
@@ -431,15 +432,15 @@ public class Level3Config extends LevelConfig {
               true)
         };
 
+    // Five checkpoints, one on each of the wide resting floors up the climb (never on a slippery,
+    // crumbling or moving platform), so the rising water can reset from each of them.
     checkpoints =
         new CheckpointConfig[] {
-          new CheckpointConfig(new GridPoint2(10, 6)),
-          new CheckpointConfig(new GridPoint2(13, 21)),
-          new CheckpointConfig(new GridPoint2(13, 34)),
+          new CheckpointConfig(new GridPoint2(19, 28)),
           new CheckpointConfig(new GridPoint2(13, 52)),
-          new CheckpointConfig(new GridPoint2(13, 65)),
-          new CheckpointConfig(new GridPoint2(13, 85)),
-          new CheckpointConfig(new GridPoint2(13, 98)),
+          new CheckpointConfig(new GridPoint2(19, 59)),
+          new CheckpointConfig(new GridPoint2(17, 85)),
+          new CheckpointConfig(new GridPoint2(19, 98)),
         };
 
     items =

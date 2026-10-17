@@ -7,6 +7,7 @@ import com.csse3200.game.areas.terrain.TerrainFactory;
 import com.csse3200.game.areas.terrain.configs.levelconfigs.Level2Config;
 import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.components.GameVolume;
+import com.csse3200.game.components.gamearea.GameAreaDisplay;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.EnemyFactory;
 import com.csse3200.game.entities.factories.ItemFactory;
@@ -36,8 +37,8 @@ public class Level2GameArea extends GameArea {
     // Level 2 background
     "images/backgrounds/coin_bg.png",
     "images/backgrounds/shop_bg.png",
+    "images/backgrounds/Level_end.png",
     "images/backgrounds/Background-2.png",
-    "images/backgrounds/Platform_level-2.png",
     "images/parallax/Clouds-birds.png",
     "images/parallax/Mountains-layer.png",
     "images/parallax/level_2_clouds.png",
@@ -76,7 +77,7 @@ public class Level2GameArea extends GameArea {
     "images/enemies/skeleton_warrior.atlas",
     "images/enemies/necromancer.atlas",
     "images/enemies/vulture.atlas",
-    "images/terrain/Level_1/Level_1_checkpoint.atlas"
+    "images/terrain/Level_2/level_2_checkpoint.atlas"
   };
 
   private static final String[] level2Sounds = {"sounds/Impact4.ogg"};
@@ -101,6 +102,7 @@ public class Level2GameArea extends GameArea {
   @Override
   public void create() {
     loadAssets();
+    displayUI();
 
     spawnTerrain();
     spawnBackground();
@@ -108,6 +110,12 @@ public class Level2GameArea extends GameArea {
     spawnSkeletonWarrior();
 
     player.setPosition(new Vector2(config.getPlayerSpawn().x, config.getPlayerSpawn().y));
+  }
+
+  private void displayUI() {
+    Entity ui = new Entity();
+    ui.addComponent(new GameAreaDisplay("Level 2"));
+    spawnEntity(ui);
   }
 
   /** Creates the Level 2 parallax background. */

@@ -32,8 +32,6 @@ public class MainMenuScreen extends ScreenAdapter {
     "images/Buttons/play_down_button.png",
     "images/Buttons/continue_up_btn.png",
     "images/Buttons/continue_down_btn.png",
-    "images/Buttons/sandBox_up_btn.png",
-    "images/Buttons/sandBox_down.png",
     "images/Buttons/settings_up_btn.png",
     "images/Buttons/settings_down_btn.png",
     "images/Buttons/quit_up_btn.png",

@@ -89,19 +89,6 @@ public class MainMenuDisplay extends UIComponent {
 
     ImageButton continueButton = new ImageButton(continueButtonStyle);
 
-    Texture sandBoxgamesUpTexture =
-        ServiceLocator.getResourceService()
-            .getAsset("images/Buttons/sandBox_up_btn.png", Texture.class);
-    Texture sandBoxgamesDownTexture =
-        ServiceLocator.getResourceService()
-            .getAsset("images/Buttons/sandBox_down.png", Texture.class);
-
-    ImageButton.ImageButtonStyle sandBoxgamesButtonStyle = new ImageButton.ImageButtonStyle();
-    sandBoxgamesButtonStyle.up = new TextureRegionDrawable(sandBoxgamesUpTexture);
-    sandBoxgamesButtonStyle.down = new TextureRegionDrawable(sandBoxgamesDownTexture);
-
-    ImageButton sandBoxgamesButton = new ImageButton(sandBoxgamesButtonStyle);
-
     Texture settingsUpTexture =
         ServiceLocator.getResourceService()
             .getAsset("images/Buttons/settings_up_btn.png", Texture.class);
@@ -149,15 +136,6 @@ public class MainMenuDisplay extends UIComponent {
           }
         });
 
-    sandBoxgamesButton.addListener(
-        new ChangeListener() {
-          @Override
-          public void changed(ChangeEvent changeEvent, Actor actor) {
-            logger.debug("Sandbox button clicked");
-            ButtonSound.playClickThen(() -> entity.getEvents().trigger("Sandbox"));
-          }
-        });
-
     settingsButton.addListener(
         new ChangeListener() {
           @Override
@@ -176,41 +154,24 @@ public class MainMenuDisplay extends UIComponent {
           }
         });
 
-    float buttonWidth = screenWidth * 0.12f;
-    float buttonHeight = screenHeight * 0.06f;
+    float buttonWidth = screenWidth * 0.14f;
+    float buttonHeight = screenHeight * 0.07f;
 
-    // Left column: Play, Continue.
-    Table leftColumn = new Table();
-    leftColumn.add(playButton).width(buttonWidth).height(buttonHeight);
-    leftColumn.row();
-    leftColumn.add(continueButton).width(buttonWidth).height(buttonHeight).padTop(pad);
+    // One centred column under the logo: Play, Continue, Settings, then Exit.
+    Table buttons = new Table();
+    buttons.add(playButton).width(buttonWidth).height(buttonHeight).padBottom(pad);
+    buttons.row();
+    buttons.add(continueButton).width(buttonWidth).height(buttonHeight).padBottom(pad);
+    buttons.row();
+    buttons.add(settingsButton).width(buttonWidth).height(buttonHeight).padBottom(pad);
+    buttons.row();
+    buttons.add(exitButton).width(buttonWidth).height(buttonHeight);
 
-    // Right column: Sandbox, Exit.
-    Table rightColumn = new Table();
-    rightColumn.add(sandBoxgamesButton).width(buttonWidth).height(buttonHeight);
-    rightColumn.row();
-    rightColumn.add(settingsButton).width(buttonWidth).height(buttonHeight).padTop(pad);
-
-    // Left and right columns sit together as one centered pair, with a fixed gap between them
-    // instead of being pushed out to the screen edges.
-    Table columnPair = new Table();
-    columnPair.add(leftColumn).padRight(screenWidth * 0.05f);
-    columnPair.add(rightColumn).padLeft(screenWidth * 0.05f);
-
-    table.add().expandY(); // pushes the logo down from the very top, as far as it can go
+    table.add().expandY(); // pushes the logo and buttons down from the very top
     table.row();
-    table.add(title).width(screenWidth * 0.3f).height(screenHeight * 0.18f).padBottom(pad);
+    table.add(title).width(screenWidth * 0.3f).height(screenHeight * 0.18f).padBottom(pad * 2f);
     table.row();
-    table.add(columnPair).center().padTop(screenHeight * 0.02f);
-    table.row();
-    table.row();
-    table
-        .add(exitButton)
-        .center()
-        .width(buttonWidth)
-        .height(buttonHeight)
-        .padTop(screenHeight * 0.05f)
-        .padBottom(screenHeight * 0.06f);
+    table.add(buttons).center().padBottom(screenHeight * 0.08f);
 
     stage.addActor(table);
   }
