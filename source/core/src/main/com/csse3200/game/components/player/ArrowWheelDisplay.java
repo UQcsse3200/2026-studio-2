@@ -189,30 +189,47 @@ public class ArrowWheelDisplay extends UIComponent {
     Pixmap pixmap = new Pixmap(size, size, Pixmap.Format.RGBA8888);
     for (int y = 0; y < size; y++) {
       for (int x = 0; x < size; x++) {
-        float dx = x + 0.5f - TEXTURE_RADIUS;
-        float dy = TEXTURE_RADIUS - (y + 0.5f);
-        float radius = (float) Math.sqrt(dx * dx + dy * dy);
-        if (radius > TEXTURE_RADIUS || radius < innerRadius) {
-          continue;
+        Color color = slicePixelColor(x, y, innerRadius, halfWedge, centreAngle, fill, border);
+        if (color != null) {
+          pixmap.setColor(color);
+          pixmap.drawPixel(x, y);
         }
-
-        float clockwise = (MathUtils.atan2(dx, dy) * MathUtils.radiansToDegrees + 360f) % 360f;
-        float fromCentre = Math.abs(((clockwise - centreAngle + 540f) % 360f) - 180f);
-        float toEdge =
-            radius * MathUtils.sin((halfWedge - fromCentre) * MathUtils.degreesToRadians);
-        if (fromCentre > halfWedge || toEdge < SLICE_GAP_PIXELS) {
-          continue;
-        }
-
-        boolean onBorder =
-            TEXTURE_RADIUS - radius < BORDER_PIXELS
-                || radius - innerRadius < BORDER_PIXELS
-                || toEdge < SLICE_GAP_PIXELS + BORDER_PIXELS;
-        pixmap.setColor(onBorder ? border : fill);
-        pixmap.drawPixel(x, y);
       }
     }
     return toDrawable(pixmap);
+  }
+
+  /**
+   * The colour of one pixel of a slice's texture: the fill, the border, or null where the slice is
+   * transparent (outside the wheel, in the centre hole, or in the gap beside a neighbouring slice).
+   */
+  private static Color slicePixelColor(
+      int x,
+      int y,
+      float innerRadius,
+      float halfWedge,
+      float centreAngle,
+      Color fill,
+      Color border) {
+    float dx = x + 0.5f - TEXTURE_RADIUS;
+    float dy = TEXTURE_RADIUS - (y + 0.5f);
+    float radius = (float) Math.sqrt(dx * dx + dy * dy);
+    if (radius > TEXTURE_RADIUS || radius < innerRadius) {
+      return null;
+    }
+
+    float clockwise = (MathUtils.atan2(dx, dy) * MathUtils.radiansToDegrees + 360f) % 360f;
+    float fromCentre = Math.abs(((clockwise - centreAngle + 540f) % 360f) - 180f);
+    float toEdge = radius * MathUtils.sin((halfWedge - fromCentre) * MathUtils.degreesToRadians);
+    if (fromCentre > halfWedge || toEdge < SLICE_GAP_PIXELS) {
+      return null;
+    }
+
+    boolean onBorder =
+        TEXTURE_RADIUS - radius < BORDER_PIXELS
+            || radius - innerRadius < BORDER_PIXELS
+            || toEdge < SLICE_GAP_PIXELS + BORDER_PIXELS;
+    return onBorder ? border : fill;
   }
 
   /** Draws the disc in the middle of the pie, with the same border as the slices. */

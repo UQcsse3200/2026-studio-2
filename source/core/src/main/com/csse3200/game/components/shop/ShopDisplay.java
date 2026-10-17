@@ -34,6 +34,7 @@ public class ShopDisplay extends UIComponent {
   private static final float Z_INDEX = 3f;
   private static final float ICON_SIZE = 40f;
   private static final String SHOP_BACKGROUND = "images/backgrounds/shop_bg.png";
+  private static final int BACKGROUND_EDGE_PIXELS = 1;
   private static final Color GOLD_TEXT_COLOR = new Color(1f, 0.78f, 0.1f, 1f);
   // Text on the wooden plaques is dark brown; text in the dark panel is light.
   private static final Color COUNTER_TEXT_COLOR = new Color(0.25f, 0.12f, 0.05f, 1f);
@@ -78,7 +79,6 @@ public class ShopDisplay extends UIComponent {
   private TextButton closeBtn;
   private TextButton blackjackBtn;
   private Texture backgroundTexture;
-  private Table panel;
   private Texture dimTexture;
   private float uiScale = 1f;
   private float listingTileWidth;
@@ -163,7 +163,7 @@ public class ShopDisplay extends UIComponent {
     listingsTable.clear();
     table.setBackground((Drawable) null);
 
-    panel = new Table();
+    Table panel = new Table();
     panel.setBackground(slotStyle.getDarkerBox());
     panel.pad(30f);
     panel.add(title);
@@ -183,12 +183,12 @@ public class ShopDisplay extends UIComponent {
 
   /** Fits shop_bg.png to the stage and places the shop widgets over its panels. */
   private void buildThemedLayout(Texture background) {
+    // The first pixel column of the image is a near-white edge, so it's left out of the window.
+    int artWidth = background.getWidth() - BACKGROUND_EDGE_PIXELS;
     float scale =
         SCENE_SCREEN_FRACTION
-            * Math.min(
-                stage.getWidth() / background.getWidth(),
-                stage.getHeight() / background.getHeight());
-    float w = background.getWidth() * scale;
+            * Math.min(stage.getWidth() / artWidth, stage.getHeight() / background.getHeight());
+    float w = artWidth * scale;
     float h = background.getHeight() * scale;
     uiScale = h / REFERENCE_HEIGHT;
 
@@ -214,7 +214,10 @@ public class ShopDisplay extends UIComponent {
     float tableWidth = SCENE_TABLE_WIDTH * w;
     float tableHeight = SCENE_TABLE_HEIGHT * h;
     Table scene = new Table();
-    scene.setBackground(new TextureRegionDrawable(new TextureRegion(background)));
+    scene.setBackground(
+        new TextureRegionDrawable(
+            new TextureRegion(
+                background, BACKGROUND_EDGE_PIXELS, 0, artWidth, background.getHeight())));
     scene.top().left();
 
     scene.add().height(SCENE_TABLE_TOP * h).colspan(2).row();

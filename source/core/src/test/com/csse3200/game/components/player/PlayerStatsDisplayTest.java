@@ -60,8 +60,9 @@ class PlayerStatsDisplayTest {
     when(goldBar.getHeight()).thenReturn(144);
     when(resourceService.getAsset("images/backgrounds/coin_bg.png", Texture.class))
         .thenReturn(goldBar);
+    Texture goldCoin = mock(Texture.class);
     when(resourceService.getAsset("images/items/gold_coin.png", Texture.class))
-        .thenReturn(mock(Texture.class));
+        .thenReturn(goldCoin);
     ServiceLocator.registerResourceService(resourceService);
 
     entityService = new EntityService();

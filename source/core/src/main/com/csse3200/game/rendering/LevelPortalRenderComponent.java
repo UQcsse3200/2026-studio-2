@@ -43,7 +43,7 @@ public class LevelPortalRenderComponent extends RenderComponent {
 
   /** Scale the entity to a width of 1 and a height matching a single frame's ratio. */
   public void scaleEntity() {
-    entity.setScale(1f, (float) texture.getHeight() / (texture.getWidth() / (float) FRAME_COUNT));
+    entity.setScale(1f, texture.getHeight() / (texture.getWidth() / (float) FRAME_COUNT));
   }
 
   @Override

@@ -33,11 +33,12 @@ public class BobbingArrowIndicator {
   private static final float BOB_SPEED = 4f;
 
   // Pixel-art arrow pointing down, '#' is the outline and 'o' the fill.
+  private static final String ARROW_SHAFT_ROW = "#ooooooo#";
   private static final String[] ARROW_PIXELS = {
     "#########",
-    "#ooooooo#",
-    "#ooooooo#",
-    "#ooooooo#",
+    ARROW_SHAFT_ROW,
+    ARROW_SHAFT_ROW,
+    ARROW_SHAFT_ROW,
     "###ooo###",
     "  #ooo#  ",
     "   #o#   ",

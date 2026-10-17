@@ -79,7 +79,6 @@ public class PlayerStatsDisplay extends UIComponent {
   private Label healthLabel;
   private Label speedLabel;
   private Image background;
-  private Label goldLabel;
   private Texture goldBarFillTexture;
   private boolean showStatText;
 
@@ -204,7 +203,7 @@ public class PlayerStatsDisplay extends UIComponent {
   private Table createGoldContents(InventoryComponent inventory, float imageWidth, float barWidth) {
     Label.LabelStyle labelStyle = new Label.LabelStyle(skin.get(Label.LabelStyle.class));
     labelStyle.fontColor = GOLD_TEXT_COLOR;
-    goldLabel = new Label("" + inventory.getGold(), labelStyle);
+    Label goldLabel = new Label("" + inventory.getGold(), labelStyle);
     goldLabel.setFontScale(GOLD_FONT_SCALE);
     goldLabel.setAlignment(Align.center);
 

@@ -21,6 +21,7 @@ public class MainMenuDisplay extends UIComponent {
   private static final Logger logger = LoggerFactory.getLogger(MainMenuDisplay.class);
   private static final float Z_INDEX = 2f;
   private Table table;
+  private Image backgroundImage;
 
   @Override
   public void create() {
@@ -45,6 +46,7 @@ public class MainMenuDisplay extends UIComponent {
     float bgHeight = screenHeight * overscan;
     background.setSize(bgWidth, bgHeight);
     background.setPosition(-(bgWidth - screenWidth) / 2f, -(bgHeight - screenHeight) / 2f);
+    backgroundImage = background;
     stage.addActor(background);
 
     // Subtle continuous shake so the background feels a bit alive.
@@ -174,6 +176,21 @@ public class MainMenuDisplay extends UIComponent {
     table.add(buttons).center().padBottom(screenHeight * 0.08f);
 
     stage.addActor(table);
+  }
+
+  /**
+   * Lays the page out again for a new window size. The background and the buttons are sized from
+   * the window when they are built, so without this they no longer fit after a resize.
+   */
+  public void resize() {
+    if (table == null) {
+      return;
+    }
+    table.remove();
+    if (backgroundImage != null) {
+      backgroundImage.remove();
+    }
+    addActors();
   }
 
   @Override

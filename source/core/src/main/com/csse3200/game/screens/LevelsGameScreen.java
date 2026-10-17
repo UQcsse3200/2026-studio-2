@@ -27,6 +27,7 @@ import com.csse3200.game.components.minigames.blackjack.BlackjackOverlay;
 import com.csse3200.game.components.minigames.spinthewheel.SpinTheWheelOverlay;
 import com.csse3200.game.components.minigames.spinthewheel.WheelConfig;
 import com.csse3200.game.components.player.KeyboardPlayerInputComponent;
+import com.csse3200.game.components.player.PlayerInteractionComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.entities.factories.ItemFactory;
@@ -294,6 +295,18 @@ public class LevelsGameScreen extends ScreenAdapter {
     renderer.getCamera().setTarget(currentGameArea.getPlayer());
   }
 
+  /**
+   * Whether the shop closed since the last frame. An Esc press that closes the shop is handled by
+   * the input chain, but the pause menu polls the key itself, so without this one press would do
+   * both.
+   */
+  private boolean consumeShopClosed() {
+    Entity current = currentGameArea == null ? null : currentGameArea.getPlayer();
+    PlayerInteractionComponent interaction =
+        current == null ? null : current.getComponent(PlayerInteractionComponent.class);
+    return interaction != null && interaction.consumeShopClosed();
+  }
+
   @Override
   public void render(float delta) {
     // at the start of the render, if there's been a level swap queued, safely perform the swap
@@ -305,7 +318,9 @@ public class LevelsGameScreen extends ScreenAdapter {
     // Overlay shortcuts bypass the input handler chain, so ignore them while the terminal is
     // open. F1 still toggles the terminal itself.
     boolean terminalOpen = terminal != null && terminal.isOpen();
+    boolean shopJustClosed = consumeShopClosed();
     if (!terminalOpen
+        && !shopJustClosed
         && !minigameOverlayManager.isActive()
         && Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)
         && !ServiceLocator.getEntityService().getSettingsOpen()) {

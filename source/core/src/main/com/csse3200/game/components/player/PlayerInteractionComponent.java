@@ -31,6 +31,7 @@ public class PlayerInteractionComponent extends Component {
 
   private InventoryComponent inventory;
   private boolean shopOpen;
+  private boolean shopClosedSinceLastCheck;
   private Entity activeShopNpc;
 
   @Override
@@ -95,8 +96,21 @@ public class PlayerInteractionComponent extends Component {
     return shopOpen;
   }
 
+  /**
+   * Reports whether the shop has closed since this was last called, and clears the answer. The
+   * screens use it so that an Esc press that closed the shop doesn't also open the pause menu.
+   *
+   * @return true if the shop closed since the last call
+   */
+  public boolean consumeShopClosed() {
+    boolean closed = shopClosedSinceLastCheck;
+    shopClosedSinceLastCheck = false;
+    return closed;
+  }
+
   private void onShopClosed() {
     shopOpen = false;
+    shopClosedSinceLastCheck = true;
     setShopDoorOpen(false);
   }
 

@@ -16,6 +16,9 @@ import java.util.List;
 import java.util.Map;
 
 public class LevelConfig {
+  /** Draw depth of checkpoint statues: behind the player and the level's platforms. */
+  private static final float CHECKPOINT_Z_INDEX = -100f;
+
   protected String platformTFP;
   protected String mossyPlatformTFP;
   protected String movingPlatformTFP;
@@ -335,6 +338,8 @@ public class LevelConfig {
                 ServiceLocator.getResourceService().getAsset(checkpointAtlas, TextureAtlas.class));
         animator.addAnimation("unlit", 0.2f, Animation.PlayMode.LOOP);
         animator.addAnimation("lit", 0.2f, Animation.PlayMode.LOOP);
+        // Behind the player, so they walk in front of the statue instead of disappearing behind it.
+        animator.setFixedZIndex(CHECKPOINT_Z_INDEX);
         checkpoint.addComponent(animator);
         animator.startAnimation("unlit");
         // Keep the statue's proportions, whatever the atlas's frame shape is.

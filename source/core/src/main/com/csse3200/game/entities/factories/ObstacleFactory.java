@@ -29,13 +29,13 @@ import java.util.List;
  * <p>Each obstacle entity type should have a creation method that returns a corresponding entity.
  */
 public class ObstacleFactory {
-  /** Portal sprite sheet: two frames side by side (dark, glowing). */
   /** A spike texture at least this many times wider than tall is treated as a strip of spikes. */
   private static final float WIDE_STRIP_RATIO = 3f;
 
   /** How tall strip-style spikes are drawn, as a share of a normal spike tile. */
   private static final float STRIP_SPIKE_HEIGHT_SCALE = 0.7f;
 
+  /** Portal sprite sheet: two frames side by side (dark, glowing). */
   public static final String LEVEL_END_TEXTURE = "images/backgrounds/Level_end.png";
 
   /** Default height of the level-end portal in world units. */
@@ -305,12 +305,6 @@ public class ObstacleFactory {
   }
 
   /**
-   * Creates the normal floor used by the other levels.
-   *
-   * @param config configuration object for the floor
-   * @return floor entity
-   */
-  /**
    * Picks which square slice of a wide spike strip a tile shows. The slices are whole multiples of
    * the strip's spike spacing apart, so neighbouring tiles line up.
    */
@@ -327,6 +321,12 @@ public class ObstacleFactory {
     return Math.round((1 + tileIndex % interiorSlices) * (float) lastSliceX / (interiorSlices + 1));
   }
 
+  /**
+   * Creates the normal floor used by the other levels.
+   *
+   * @param config configuration object for the floor
+   * @return floor entity
+   */
   public static Entity createFloor(PlatformConfig config) {
     Entity floor =
         new Entity()
@@ -378,17 +378,14 @@ public class ObstacleFactory {
    * @return ledge entity
    */
   public static Entity createLedge(PlatformConfig config, boolean tiled) {
-    Entity ledge =
-        new Entity()
-            .addComponent(
-                tiled
-                    ? new TiledRenderComponent(config.textureFilepath, 0.75f)
-                    : new TextureRenderComponent(config.textureFilepath))
-            .addComponent(new LedgeComponent())
-            .addComponent(new PhysicsComponent().setBodyType(BodyType.StaticBody))
-            .addComponent(new ColliderComponent().setLayer(PhysicsLayer.OBSTACLE));
-
-    return ledge;
+    return new Entity()
+        .addComponent(
+            tiled
+                ? new TiledRenderComponent(config.textureFilepath, 0.75f)
+                : new TextureRenderComponent(config.textureFilepath))
+        .addComponent(new LedgeComponent())
+        .addComponent(new PhysicsComponent().setBodyType(BodyType.StaticBody))
+        .addComponent(new ColliderComponent().setLayer(PhysicsLayer.OBSTACLE));
   }
 
   /**
@@ -493,23 +490,19 @@ public class ObstacleFactory {
           default -> new Vector2(0, 0);
         };
 
-    Entity trap =
-        new Entity()
-            .addComponent(
-                new DynamicTextureRenderComponent("images/traps/spiky_ball_trap.png")
-                    .keepAspectRatio())
-            .addComponent(new PhysicsComponent().setBodyType(BodyType.StaticBody))
-            .addComponent(new ActivatableComponent(config.getIds()))
-            .addComponent(
-                new SpawnerComponent(
-                    new ArrayList<>(List.of(() -> ObstacleFactory.createSpikyBall(direction))),
-                    config.getSpawnInterval(),
-                    -1,
-                    config.getInitialState(),
-                    config.getMode()))
-            .addComponent(new RotatableMapComponent(config.getRotation()));
-
-    return trap;
+    return new Entity()
+        .addComponent(
+            new DynamicTextureRenderComponent("images/traps/spiky_ball_trap.png").keepAspectRatio())
+        .addComponent(new PhysicsComponent().setBodyType(BodyType.StaticBody))
+        .addComponent(new ActivatableComponent(config.getIds()))
+        .addComponent(
+            new SpawnerComponent(
+                new ArrayList<>(List.of(() -> ObstacleFactory.createSpikyBall(direction))),
+                config.getSpawnInterval(),
+                -1,
+                config.getInitialState(),
+                config.getMode()))
+        .addComponent(new RotatableMapComponent(config.getRotation()));
   }
 
   /**
