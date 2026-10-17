@@ -118,6 +118,7 @@ public class LevelsGameScreen extends ScreenAdapter {
     ServiceLocator.registerEntityService(new EntityService());
     ServiceLocator.registerRenderService(new RenderService());
     ServiceLocator.registerGameEndEventHandler(new EventHandler());
+    ServiceLocator.registerGameSaveEventHandler(new EventHandler());
 
     renderer = RenderFactory.createRenderer();
 
@@ -145,8 +146,25 @@ public class LevelsGameScreen extends ScreenAdapter {
     currentGameArea = level1GameArea;
     registerLevelSwap();
 
+    // Checkpoints are the game's save points: GameArea forwards every activation here.
+    ServiceLocator.getGameSaveEventHandler()
+        .addListener("autosave", () -> game.autosave(level, currentGameArea));
+    // Winning marks the active save as completed (shown on the save-select screen).
+    ServiceLocator.getGameEndEventHandler()
+        .addListener(
+            "gameEnd",
+            (GameEndState state) -> {
+              if (state == GameEndState.WIN) {
+                game.markSaveCompleted();
+              }
+            });
+
     player = level1GameArea.getPlayer();
     game.restorePlayerState(player);
+    // A save loaded from disk contributes its player state here, and its world state too when the
+    // save is in level 1; saves in other levels are restored after their area swap instead.
+    game.applyPendingSavePlayer(player);
+    game.applyPendingSaveWorld(currentGameArea, level);
     player.getEvents().addListener("respawnAtCheckpoint", () -> currentGameArea.respawn());
     player.getEvents().addListener("toggleMap", () -> currentGameArea.toggleLevelMap());
 
@@ -275,6 +293,7 @@ public class LevelsGameScreen extends ScreenAdapter {
       default:
         return;
     }
+    this.level = level;
     levelSwapQueued = true;
   }
 
@@ -292,6 +311,8 @@ public class LevelsGameScreen extends ScreenAdapter {
     registerLevelSwap();
 
     renderer.getCamera().setTarget(currentGameArea.getPlayer());
+    // Finish applying a loaded save now that its level's area exists (no-op otherwise).
+    game.applyPendingSaveWorld(currentGameArea, level);
   }
 
   @Override
