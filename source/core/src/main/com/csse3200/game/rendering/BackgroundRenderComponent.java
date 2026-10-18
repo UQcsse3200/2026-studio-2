@@ -26,10 +26,7 @@ public class BackgroundRenderComponent extends RenderComponent {
   private float originalWidth;
   private float originalHeight;
   private int originalRotation;
-  private final Vector2 finalVelocity = new Vector2(4, -4);
-  private final float finalWidth = 0.1f;
-  private final float finalHeight = 0.35f;
-  private final int finalRotation = 35;
+  private final Vector2 finalVelocity = new Vector2(4.5f, -4.5f);
 
   /** A single parallax background layer. */
   private static class ParallaxLayer {
@@ -38,14 +35,14 @@ public class BackgroundRenderComponent extends RenderComponent {
     private float width;
     private float height;
     private final Vector2 offset;
-    private Vector2 velocity;
-    private Vector2 position;
+    private final Vector2 velocity;
+    private final Vector2 position;
     private final RepeatMode repeat;
     private final float distance;
     private float transparency;
     private final boolean flash;
     private int rotation;
-    private int lightningOrder;
+    private final int lightningOrder;
 
     ParallaxLayer(
         Texture texture,
@@ -78,7 +75,7 @@ public class BackgroundRenderComponent extends RenderComponent {
   }
 
   private ArrayList<ArrayList<Float>> rainOffsets = null;
-  private ArrayList<Vector2> rainPositions = new ArrayList<>();
+  private final ArrayList<Vector2> rainPositions = new ArrayList<>();
   private final List<ParallaxLayer> layers = new ArrayList<>();
   private final CameraComponent camera;
 
@@ -246,6 +243,9 @@ public class BackgroundRenderComponent extends RenderComponent {
       if (layer.repeat == CHAOTIC) {
         if (rainIntensity < 1f) {
           float intensity = 1f - rainIntensity;
+          float finalWidth = 0.1f;
+          float finalHeight = 0.4f;
+          int finalRotation = 35;
           layer.velocity.x =
               originalVelocity.x + (finalVelocity.x - originalVelocity.x) * intensity;
           layer.velocity.y =
@@ -349,7 +349,7 @@ public class BackgroundRenderComponent extends RenderComponent {
         float gap = 0.5f;
         // random vertical offset applied to each rain drop in range -verticalOffset to
         // verticalOffset
-        float verticalOffset = 0.05f;
+        float verticalOffset = 0.075f;
         float cameraWidth = (float) (int) camera.getCamera().viewportWidth + 4;
         float cameraHeight = (float) (int) camera.getCamera().viewportHeight + 6;
         float centerX = (float) (int) camera.getCamera().position.x;
