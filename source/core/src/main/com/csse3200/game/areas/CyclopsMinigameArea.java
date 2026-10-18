@@ -87,6 +87,8 @@ public class CyclopsMinigameArea extends GameArea {
     "images/health/PixelArt_HeartBack.png",
     "images/health/Damaged_heart.png",
     "images/health/Last_Health.png",
+    "images/items/gold_coin.png",
+    "images/backgrounds/coin_bg.png",
     "images/minigames/Cyclops/timing_bar_frame.png"
   };
 

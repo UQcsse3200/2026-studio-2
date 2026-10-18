@@ -15,8 +15,8 @@ public class Level1Config extends LevelConfig {
     checkpointAtlas = "images/terrain/Level_1/Level_1_checkpoint.atlas";
 
     // TEMP
-    playerSpawn = new GridPoint2(2, 5);
-    nextLevelTriggerSpawn = new GridPoint2(88, 18);
+    playerSpawn = new GridPoint2(1, 4);
+    nextLevelTriggerSpawn = new GridPoint2(87, 17);
     nextLevelName = "level2";
 
     // Retain the original switchbacks, floors and shafts; add pacing around that structure.
@@ -106,11 +106,16 @@ public class Level1Config extends LevelConfig {
 
     // The rope arrow starts in the player's inventory instead of the world.
 
-    // Both are earned after a substantial climb/combat section, not grouped at the start.
+    // Five checkpoints spread along the route, each on a wide, stable platform: the first floor,
+    // the platform after the left-hand climb, the top shelf, the approach to the spike crossing,
+    // and the final block just before the exit portal.
     checkpoints =
         new CheckpointConfig[] {
-          new CheckpointConfig(new GridPoint2(47, 22)),
-          new CheckpointConfig(new GridPoint2(85, 17)),
+          new CheckpointConfig(new GridPoint2(16, 5)),
+          new CheckpointConfig(new GridPoint2(19, 17)),
+          new CheckpointConfig(new GridPoint2(44, 22)),
+          new CheckpointConfig(new GridPoint2(54, 21)),
+          new CheckpointConfig(new GridPoint2(81, 17)),
         };
 
     wheelSpinSpawns = new GridPoint2[] {new GridPoint2(32, 3)};

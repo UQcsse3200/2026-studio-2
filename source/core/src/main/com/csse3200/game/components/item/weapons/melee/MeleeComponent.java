@@ -57,7 +57,25 @@ public class MeleeComponent extends Component {
   public void create() {
     super.create();
     entity.getEvents().addListener("meleeStart", this::startSwing);
-    entity.getEvents().addListener("death", () -> dead = true);
+    entity.getEvents().addListener("death", this::die);
+    entity.getEvents().addListener("revive", this::revive);
+  }
+
+  private void die() {
+    dead = true;
+    resetSwing();
+  }
+
+  private void revive() {
+    dead = false;
+    resetSwing();
+  }
+
+  private void resetSwing() {
+    swinging = false;
+    hitApplied = false;
+    elapsed = 0f;
+    cooldownTimer = 0f;
   }
 
   @Override

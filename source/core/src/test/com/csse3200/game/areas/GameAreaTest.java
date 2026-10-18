@@ -22,6 +22,7 @@ import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.events.EventHandler;
 import com.csse3200.game.extensions.GameExtension;
+import com.csse3200.game.input.InputService;
 import com.csse3200.game.rendering.BackgroundRenderComponent;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.ArrayList;
@@ -236,6 +237,7 @@ class GameAreaTest {
         };
 
     ServiceLocator.registerEntityService(new EntityService());
+    ServiceLocator.registerInputService(new InputService());
 
     Entity p1 = spy(Entity.class);
     gameArea.spawnEntity(p1);

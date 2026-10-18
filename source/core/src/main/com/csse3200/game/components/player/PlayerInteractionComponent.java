@@ -23,7 +23,6 @@ import org.slf4j.LoggerFactory;
  */
 public class PlayerInteractionComponent extends Component {
   private static final String INTERACTION_FAILED = "interactionFailed";
-
   private static final Logger logger = LoggerFactory.getLogger(PlayerInteractionComponent.class);
 
   /** Maximum distance, in metres, at which the player can interact with an item or NPC. */
@@ -31,6 +30,8 @@ public class PlayerInteractionComponent extends Component {
 
   private InventoryComponent inventory;
   private boolean shopOpen;
+  private boolean shopClosedSinceLastCheck;
+  private Entity activeShopNpc;
 
   @Override
   public void create() {
@@ -40,6 +41,9 @@ public class PlayerInteractionComponent extends Component {
     entity.getEvents().addListener("deleteItem", this::deleteItem);
     entity.getEvents().addListener("switchItem", this::switchItem);
     entity.getEvents().addListener("closeShop", this::onShopClosed);
+    // The shop can also be reopened from, or closed in favour of, the blackjack minigame.
+    entity.getEvents().addListener("openShop", () -> setShopDoorOpen(true));
+    entity.getEvents().addListener("openBlackjack", () -> setShopDoorOpen(false));
   }
 
   public InventoryComponent getInventory() {
@@ -61,6 +65,7 @@ public class PlayerInteractionComponent extends Component {
     Entity shopNpc = findNearestShopNpc();
     if (shopNpc != null) {
       shopOpen = true;
+      activeShopNpc = shopNpc;
       entity.getEvents().trigger("openShop");
       return true;
     }
@@ -90,8 +95,29 @@ public class PlayerInteractionComponent extends Component {
     return shopOpen;
   }
 
+  /**
+   * Reports whether the shop has closed since this was last called, and clears the answer. The
+   * screens use it so that an Esc press that closed the shop doesn't also open the pause menu.
+   *
+   * @return true if the shop closed since the last call
+   */
+  public boolean consumeShopClosed() {
+    boolean closed = shopClosedSinceLastCheck;
+    shopClosedSinceLastCheck = false;
+    return closed;
+  }
+
   private void onShopClosed() {
     shopOpen = false;
+    shopClosedSinceLastCheck = true;
+    setShopDoorOpen(false);
+  }
+
+  /** Tells the shopkeeper the player is using, so its door can open and close with the shop. */
+  private void setShopDoorOpen(boolean open) {
+    if (activeShopNpc != null) {
+      activeShopNpc.getEvents().trigger(open ? "shopOpened" : "shopClosed");
+    }
   }
 
   /**

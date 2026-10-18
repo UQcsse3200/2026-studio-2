@@ -196,4 +196,25 @@ class PlayerFactoryTest {
   void giveStartingLoadoutIgnoresNullPlayer() {
     assertDoesNotThrow(() -> PlayerFactory.giveStartingLoadout(null));
   }
+
+  @Test
+  void loadoutSupportsPlayersWithoutInventoryOrDictionary() {
+    Entity noInventory = new Entity();
+    assertDoesNotThrow(() -> PlayerFactory.giveStartingLoadout(noInventory));
+    InventoryComponent inventory = new InventoryComponent(0);
+    Entity noDictionary = new Entity().addComponent(inventory);
+    PlayerFactory.giveStartingLoadout(noDictionary);
+    assertEquals(1, inventory.getItemCount(ItemType.ROPE_ARROW));
+  }
+
+  @Test
+  void factoriesRejectReflectiveInstantiation() throws Exception {
+    for (Class<?> utility : new Class<?>[] {PlayerFactory.class, ProjectileFactory.class}) {
+      var constructor = utility.getDeclaredConstructor();
+      constructor.setAccessible(true);
+      var exception =
+          assertThrows(java.lang.reflect.InvocationTargetException.class, constructor::newInstance);
+      assertInstanceOf(IllegalStateException.class, exception.getCause());
+    }
+  }
 }

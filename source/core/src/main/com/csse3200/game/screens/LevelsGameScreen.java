@@ -27,6 +27,7 @@ import com.csse3200.game.components.minigames.blackjack.BlackjackOverlay;
 import com.csse3200.game.components.minigames.spinthewheel.SpinTheWheelOverlay;
 import com.csse3200.game.components.minigames.spinthewheel.WheelConfig;
 import com.csse3200.game.components.player.KeyboardPlayerInputComponent;
+import com.csse3200.game.components.player.PlayerInteractionComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.entities.factories.ItemFactory;
@@ -118,6 +119,7 @@ public class LevelsGameScreen extends ScreenAdapter {
     ServiceLocator.registerEntityService(new EntityService());
     ServiceLocator.registerRenderService(new RenderService());
     ServiceLocator.registerGameEndEventHandler(new EventHandler());
+    ServiceLocator.registerGameSaveEventHandler(new EventHandler());
 
     renderer = RenderFactory.createRenderer();
 
@@ -145,55 +147,28 @@ public class LevelsGameScreen extends ScreenAdapter {
     currentGameArea = level1GameArea;
     registerLevelSwap();
 
+    // Checkpoints are the game's save points: GameArea forwards every activation here.
+    ServiceLocator.getGameSaveEventHandler()
+        .addListener("autosave", () -> game.autosave(level, currentGameArea));
+    // Winning marks the active save as completed (shown on the save-select screen).
+    ServiceLocator.getGameEndEventHandler()
+        .addListener(
+            "gameEnd",
+            (GameEndState state) -> {
+              if (state == GameEndState.WIN) {
+                game.markSaveCompleted();
+              }
+            });
+
     player = level1GameArea.getPlayer();
     game.restorePlayerState(player);
+    // A save loaded from disk contributes its player state here, and its world state too when the
+    // save is in level 1; saves in other levels are restored after their area swap instead.
+    game.applyPendingSavePlayer(player);
+    game.applyPendingSaveWorld(currentGameArea, level);
     player.getEvents().addListener("respawnAtCheckpoint", () -> currentGameArea.respawn());
     player.getEvents().addListener("toggleMap", () -> currentGameArea.toggleLevelMap());
 
-    player
-        .getEvents()
-        .addListener(
-            // "jumpStart", not the raw "jump" input event: PlayerActions discards a press made
-            // mid-air, during a wind-up, or after death, and the sound must not play for those.
-            "jumpStart",
-            () -> {
-              try {
-                com.badlogic.gdx.audio.Sound jumpSound =
-                    ServiceLocator.getResourceService()
-                        .getAsset("sounds/jump.ogg", com.badlogic.gdx.audio.Sound.class);
-                jumpSound.play(0.5f);
-              } catch (Exception e) {
-                // skip
-              }
-            });
-    player
-        .getEvents()
-        .addListener(
-            "hurt",
-            () -> {
-              try {
-                com.badlogic.gdx.audio.Sound hurtSound =
-                    ServiceLocator.getResourceService()
-                        .getAsset("sounds/hit.ogg", com.badlogic.gdx.audio.Sound.class);
-                hurtSound.play(0.2f);
-              } catch (Exception e) {
-                // skip
-              }
-            });
-    player
-        .getEvents()
-        .addListener(
-            "itemPickedUp",
-            (Object item) -> {
-              try {
-                com.badlogic.gdx.audio.Sound pickupSound =
-                    ServiceLocator.getResourceService()
-                        .getAsset("sounds/itempick.wav", com.badlogic.gdx.audio.Sound.class);
-                pickupSound.play(0.2f);
-              } catch (Exception e) {
-                // skip
-              }
-            });
     // Follow the player with the camera.
     renderer.getCamera().setTarget(player);
     player.getEvents().addListener("deathAnimationFinished", this::onPlayerDeath);
@@ -275,6 +250,7 @@ public class LevelsGameScreen extends ScreenAdapter {
       default:
         return;
     }
+    this.level = level;
     levelSwapQueued = true;
   }
 
@@ -292,6 +268,20 @@ public class LevelsGameScreen extends ScreenAdapter {
     registerLevelSwap();
 
     renderer.getCamera().setTarget(currentGameArea.getPlayer());
+    // Finish applying a loaded save now that its level's area exists (no-op otherwise).
+    game.applyPendingSaveWorld(currentGameArea, level);
+  }
+
+  /**
+   * Whether the shop closed since the last frame. An Esc press that closes the shop is handled by
+   * the input chain, but the pause menu polls the key itself, so without this one press would do
+   * both.
+   */
+  private boolean consumeShopClosed() {
+    Entity current = currentGameArea == null ? null : currentGameArea.getPlayer();
+    PlayerInteractionComponent interaction =
+        current == null ? null : current.getComponent(PlayerInteractionComponent.class);
+    return interaction != null && interaction.consumeShopClosed();
   }
 
   @Override
@@ -305,7 +295,9 @@ public class LevelsGameScreen extends ScreenAdapter {
     // Overlay shortcuts bypass the input handler chain, so ignore them while the terminal is
     // open. F1 still toggles the terminal itself.
     boolean terminalOpen = terminal != null && terminal.isOpen();
+    boolean shopJustClosed = consumeShopClosed();
     if (!terminalOpen
+        && !shopJustClosed
         && !minigameOverlayManager.isActive()
         && Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)
         && !ServiceLocator.getEntityService().getSettingsOpen()) {
