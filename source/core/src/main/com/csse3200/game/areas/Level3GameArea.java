@@ -11,14 +11,12 @@ import com.csse3200.game.components.GameVolume;
 import com.csse3200.game.components.level.RisingWaterComponent;
 import com.csse3200.game.components.player.PlayerActions;
 import com.csse3200.game.entities.Entity;
-import com.csse3200.game.entities.factories.EnemyFactory;
 import com.csse3200.game.entities.factories.ItemFactory;
 import com.csse3200.game.entities.factories.ObstacleFactory;
 import com.csse3200.game.physics.BodyUserData;
 import com.csse3200.game.rendering.*;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
-import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -118,7 +116,6 @@ public class Level3GameArea extends GameArea {
     spawnForeground();
     activateWeather();
     player.setPosition(new Vector2(config.getPlayerSpawn().x, config.getPlayerSpawn().y));
-    spawnCalypso();
   }
 
   private void activateWeather() {
@@ -367,31 +364,6 @@ public class Level3GameArea extends GameArea {
         .getEvents()
         .trigger("setHeight", water.getComponent(RisingWaterComponent.class).getStoredHeight());
     player.getEvents().trigger("respawnAtCheckpoint");
-  }
-
-  // Calypso stuff temporarily here
-  List<Vector2> calypsoTpPositions =
-      List.of(
-          new Vector2(3f, 98f),
-          new Vector2(10.5f, 98f),
-          new Vector2(24f, 98f),
-          new Vector2(3f, 100f),
-          new Vector2(10.5f, 100f),
-          new Vector2(24f, 100f),
-          new Vector2(3f, 103f),
-          new Vector2(10.5f, 103f),
-          new Vector2(24f, 103f),
-          new Vector2(3f, 106f),
-          new Vector2(10.5f, 106f),
-          new Vector2(24f, 106f));
-
-  List<GridPoint2> calypsoSpawnLocations = List.of(new GridPoint2(0, 98));
-
-  private void spawnCalypso() {
-    for (GridPoint2 spawnLocation : calypsoSpawnLocations) {
-      Entity enemy = EnemyFactory.createCalypso(player, calypsoTpPositions);
-      spawnEntityAt(enemy, spawnLocation, true, true);
-    }
   }
 
   @Override

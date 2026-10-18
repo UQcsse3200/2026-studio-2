@@ -314,7 +314,7 @@ public class ObstacleFactory {
             .addComponent(new TextureRenderComponent(config.textureFilepath))
             .addComponent(new LedgeComponent())
             .addComponent(new PhysicsComponent().setBodyType(BodyType.StaticBody))
-            .addComponent(new ColliderComponent().setLayer(PhysicsLayer.OBSTACLE));
+            .addComponent(new ColliderComponent().setLayer(PhysicsLayer.LEDGE));
 
     return ledge;
   }

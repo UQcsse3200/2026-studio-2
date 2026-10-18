@@ -23,6 +23,7 @@ public class SpawnerComponent extends Component {
       new String[0]; // any activation ids to trigger when the spawner is finished spawning
 
   private boolean spawnsComplete = false;
+  private boolean initialSpawned = false;
   private boolean triggeredIds = false;
   private List<Integer> entityIds;
 
@@ -77,7 +78,7 @@ public class SpawnerComponent extends Component {
     float delta = ServiceLocator.getTimeSource().getDeltaTime();
     timeSinceLastSpawn += delta;
 
-    if (timeSinceLastSpawn >= spawnInterval) {
+    if (timeSinceLastSpawn >= spawnInterval || !initialSpawned) {
       spawnChild();
       timeSinceLastSpawn = 0;
     }
@@ -94,6 +95,8 @@ public class SpawnerComponent extends Component {
    * been spawned total
    */
   private void spawnChild() {
+    initialSpawned = true;
+
     // get a random child from the list of potential spawn entities
     int randIndex = (int) (Math.random() * spawnableEntities.size());
     Supplier<Entity> child = spawnableEntities.get(randIndex);
