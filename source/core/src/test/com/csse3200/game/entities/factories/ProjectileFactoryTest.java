@@ -91,7 +91,7 @@ class ProjectileFactoryTest {
   @Test
   void shouldCreateSkeletonArcherProjectileWithConfiguredDamageAndLifetime() {
     Entity projectile =
-        ProjectileFact.createSkeletonArcherProjectile(new Vector2(3f, 4f), 7, 5f, 2f);
+        EnemyProjectileFactory.createSkeletonArcherProjectile(new Vector2(3f, 4f), 7, 5f, 2f);
 
     assertEquals(7, projectile.getComponent(CombatStatsComponent.class).getBaseAttack());
     assertNotNull(projectile.getComponent(ProjectileComponent.class));
@@ -99,7 +99,8 @@ class ProjectileFactoryTest {
 
   @Test
   void shouldCreateNecromancerProjectileWithConfiguredDamageAndLifetime() {
-    Entity projectile = ProjectileFact.createNecromancerProjectile(new Vector2(3f, 4f), 9, 5f, 3f);
+    Entity projectile =
+        EnemyProjectileFactory.createNecromancerProjectile(new Vector2(3f, 4f), 9, 5f, 3f);
 
     assertEquals(9, projectile.getComponent(CombatStatsComponent.class).getBaseAttack());
     assertNotNull(projectile.getComponent(ProjectileComponent.class));

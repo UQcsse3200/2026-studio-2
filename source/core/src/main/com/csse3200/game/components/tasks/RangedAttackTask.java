@@ -4,7 +4,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.ai.tasks.DefaultTask;
 import com.csse3200.game.ai.tasks.PriorityTask;
 import com.csse3200.game.entities.Entity;
-import com.csse3200.game.entities.factories.ProjectileFact;
+import com.csse3200.game.entities.factories.EnemyProjectileFactory;
 import com.csse3200.game.rendering.TextureRenderComponent;
 import com.csse3200.game.services.ServiceLocator;
 
@@ -95,15 +95,15 @@ public class RangedAttackTask extends DefaultTask implements PriorityTask {
 
     if (attackType.equals("calypso")) {
       projectile =
-          ProjectileFact.createCalypsoProjectile(
+          EnemyProjectileFactory.createCalypsoProjectile(
               targetCenter, damage, projectileSpeed, projectileLifetime);
     } else if (attackType.equals("summon")) {
       projectile =
-          ProjectileFact.createNecromancerProjectile(
+          EnemyProjectileFactory.createNecromancerProjectile(
               targetCenter, damage, projectileSpeed, projectileLifetime);
     } else {
       projectile =
-          ProjectileFact.createSkeletonArcherProjectile(
+          EnemyProjectileFactory.createSkeletonArcherProjectile(
               targetCenter, damage, projectileSpeed, projectileLifetime);
     }
     // setPosition() uses the bottom-left corner, so offset by half the

@@ -13,8 +13,8 @@ import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.physics.components.PhysicsMovementComponent;
 import com.csse3200.game.rendering.TextureRenderComponent;
 
-/** Factory for creating enemy projectiles. */
-public class ProjectileFact {
+/** Factory for creating enemy projectiles. The player's are made by {@link ProjectileFactory}. */
+public class EnemyProjectileFactory {
 
   /**
    * Creates a projectile that travels towards a target position.
@@ -109,7 +109,7 @@ public class ProjectileFact {
     return projectile;
   }
 
-  private ProjectileFact() {
+  private EnemyProjectileFactory() {
     throw new IllegalStateException("Instantiating static util class");
   }
 }
