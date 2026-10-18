@@ -1,4 +1,3 @@
-
 package com.csse3200.game;
 
 import static com.badlogic.gdx.Gdx.app;
@@ -37,7 +36,8 @@ public class GdxGame extends Game {
 
   private boolean transitioning = false;
 
-  // Prevents the intro cutscene from triggering multiple times in one game session.
+  // Prevents the intro cutscene from triggering multiple times
+  // in one game session.
   private boolean introStarted = false;
 
   private PlayerSnapshot playerSnapshot;
@@ -50,7 +50,7 @@ public class GdxGame extends Game {
     applyDefaultClearColor();
 
     // TEMPORARY: Open Level 1 directly to debug checkpoints.
-  logger.info("Opening Level 1 directly for checkpoint debugging");
+    logger.info("Opening Level 1 directly for checkpoint debugging");
     setScreen(ScreenType.LEVEL_1_GAME);
   }
 
@@ -91,8 +91,8 @@ public class GdxGame extends Game {
   }
 
   /**
-   * Fades the current screen to black, swaps to the target screen, then fades back in.
-   * Ignored if a transition is already in progress.
+   * Fades the current screen to black, swaps to the target screen, then fades back in. Ignored if a
+   * transition is already in progress.
    *
    * @param screenType screen type to transition to
    */
@@ -141,13 +141,8 @@ public class GdxGame extends Game {
   }
 
   /**
-<<<<<<< HEAD
    * Called by TransitionScreen once its fade-in has finished, handing control to the screen it
    * faded into.
-=======
-   * Called by TransitionScreen once its fade-in has finished, handing control to the screen
-   * it faded into.
->>>>>>> 6c4c4baa (Fixed checkpoints)
    *
    * @param toScreen the screen the transition faded into
    */
@@ -185,6 +180,7 @@ public class GdxGame extends Game {
     if (playerSnapshot == null) {
       return;
     }
+
     playerSnapshot.applyTo(player);
     playerSnapshot = null;
   }
@@ -192,6 +188,7 @@ public class GdxGame extends Game {
   @Override
   public void dispose() {
     logger.debug("Disposing of current screen");
+
     if (getScreen() != null) {
       getScreen().dispose();
     }

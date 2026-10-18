@@ -1,4 +1,3 @@
-
 package com.csse3200.game.areas.terrain.configs;
 
 import com.badlogic.gdx.graphics.Color;
@@ -57,9 +56,11 @@ public class LevelConfig {
   protected ArrayList<SpawnData> entities = new ArrayList<>();
 
   /**
-   * Creates all entities as specified by the config file.
+   * Creates all entities as specified by the config file and returns the created entities in a Map
+   * for the level to spawn the objects at
    *
-   * @return a list of SpawnData objects containing entities and their spawn positions
+   * @return A list of SpawnData objects that contain an entity and a coordinate position to spawn
+   *     that entity in
    */
   public ArrayList<SpawnData> createEntities() {
     entities = new ArrayList<>();
@@ -84,11 +85,29 @@ public class LevelConfig {
     return entities;
   }
 
+  /**
+   * Public getter for the player spawn for a level config
+   *
+   * @return The spawn coordinates for the player stored by this config as a GridPoint2
+   */
   public GridPoint2 getPlayerSpawn() {
     return playerSpawn;
   }
 
-  /** Returns the checkpoint components configured for this level. */
+  /**
+   * Public getter for the name of the level this level transitions to
+   *
+   * @return the next level's name, or null if this level has no next level
+   */
+  public String getNextLevelName() {
+    return nextLevelName;
+  }
+
+  /**
+   * Public getter to access checkpoint components for levels
+   *
+   * @return an ArrayList of the CheckpointComponents of a level
+   */
   public ArrayList<CheckpointComponent> getCheckpoints() {
     ArrayList<CheckpointComponent> checkpointComponents = new ArrayList<>();
 
@@ -113,6 +132,9 @@ public class LevelConfig {
     return wheelSpinSpawns;
   }
 
+  /**
+   * Creates all platforms for this level and adds them to the entities Map for the level to spawn
+   */
   private void createPlatforms() {
     if (platforms == null) {
       return;
@@ -125,6 +147,10 @@ public class LevelConfig {
     }
   }
 
+  /**
+   * Creates all moving platforms for this level and adds them to the entities Map for the level to
+   * spawn
+   */
   private void createMovingPlatforms() {
     if (movingPlatforms == null) {
       return;
@@ -137,6 +163,10 @@ public class LevelConfig {
     }
   }
 
+  /**
+   * Creates all crumbling platforms for this level and adds them to the entities Map for the level
+   * to spawn
+   */
   private void createCrumblingPlatforms() {
     if (crumblingPlatforms == null) {
       return;
@@ -149,6 +179,10 @@ public class LevelConfig {
     }
   }
 
+  /**
+   * Creates all triggerable platforms and buttons associated with those platforms for this level
+   * and adds them to the entities Map for the level to spawn
+   */
   private void createTriggerablePlatforms() {
     if (triggerablePlatforms == null) {
       return;
@@ -161,6 +195,10 @@ public class LevelConfig {
     }
   }
 
+  /**
+   * Creates all slippery platforms for this level and adds them to the entities Map for the level
+   * to spawn
+   */
   private void createSlipperyPlatforms() {
     if (slipperyPlatforms == null) {
       return;
@@ -185,6 +223,10 @@ public class LevelConfig {
     }
   }
 
+  /**
+   * Creates the bounds and floors for the level and adds them to the entities Map for the level to
+   * spawn
+   */
   private void createFloors() {
     if (bounds != null) {
       for (PlatformConfig b : bounds) {
@@ -203,11 +245,13 @@ public class LevelConfig {
     }
   }
 
+  /** Creates all the spike clusters and adds them to the entities map for the level to spawn */
   private void createSpikes() {
     if (spikes == null) {
       return;
     }
 
+    // CLEAN THIS UP
     for (SpikeClusterConfig s : spikes) {
       for (int i = s.xMin; i <= s.xMax; i++) {
         for (int j = s.yMin; j <= s.yMax; j++) {
@@ -243,6 +287,7 @@ public class LevelConfig {
     }
   }
 
+  /** Creates the win condition entity and adds it to the entities Map for the level to spawn */
   private void createWinCondition() {
     if (winConditionSpawn == null) {
       return;
@@ -252,16 +297,22 @@ public class LevelConfig {
     entities.add(new SpawnData(winConditionSpawn, winCon));
   }
 
+  /**
+   * Creates a new entity that triggers the next level game area to be loaded by the current game
+   * screen
+   */
   private void createLevelTrigger() {
     if (nextLevelTriggerSpawn == null) {
       return;
     }
 
-    Entity trigger =
-        ObstacleFactory.createNextLevelTriggerEntity(nextLevelName);
+    Entity trigger = ObstacleFactory.createNextLevelTriggerEntity(nextLevelName);
     entities.add(new SpawnData(nextLevelTriggerSpawn, trigger));
   }
 
+  /**
+   * Creates all items specified for the level and adds them to the entity tracker when requested
+   */
   private void createItems() {
     if (items == null) {
       return;
@@ -274,7 +325,7 @@ public class LevelConfig {
   }
 
   /**
-   * Creates checkpoints using a single entity for both logic and rendering.
+   * Creates all checkpoints for the level and adds them to the entities map for the level to spawn.
    */
   private void createCheckpoints() {
     if (checkpoints == null) {
@@ -284,25 +335,27 @@ public class LevelConfig {
     for (CheckpointConfig c : checkpoints) {
       Entity checkpoint = new Entity();
 
-      checkpoint.addComponent(
-          new CheckpointComponent(false, c.getPosition(), checkpointAtlas));
+      checkpoint
+          .addComponent(new CheckpointComponent(false, c.getPosition(), checkpointAtlas))
+          .addComponent(
+              new PointLightComponent(
+                  ServiceLocator.getLightingService().getEngine().getRayHandler(),
+                  LightingDefaults.RAYS,
+                  Color.CLEAR,
+                  LightingDefaults.DIST));
 
-      checkpoint.setScale(
-          CheckpointComponent.ATLAS_WIDTH,
-          CheckpointComponent.ATLAS_HEIGHT);
+      checkpoint.setScale(CheckpointComponent.ATLAS_WIDTH, CheckpointComponent.ATLAS_HEIGHT);
 
+      // The torch art comes from the checkpoint atlas. Without one the checkpoint still works but
+      // has nothing to draw.
       if (checkpointAtlas != null) {
         TextureAtlas atlas =
-            ServiceLocator.getResourceService()
-                .getAsset(checkpointAtlas, TextureAtlas.class);
+            ServiceLocator.getResourceService().getAsset(checkpointAtlas, TextureAtlas.class);
 
-        AnimationRenderComponent animator =
-            new AnimationRenderComponent(atlas);
+        AnimationRenderComponent animator = new AnimationRenderComponent(atlas);
 
-        animator.addAnimation(
-            "unlit", 0.2f, Animation.PlayMode.LOOP);
-        animator.addAnimation(
-            "lit", 0.2f, Animation.PlayMode.LOOP);
+        animator.addAnimation("unlit", 0.2f, Animation.PlayMode.LOOP);
+        animator.addAnimation("lit", 0.2f, Animation.PlayMode.LOOP);
 
         checkpoint.addComponent(animator);
         animator.startAnimation("unlit");
@@ -316,6 +369,7 @@ public class LevelConfig {
     }
   }
 
+  /** Creates all spawners in the level and adds them to the entities for the game area to spawn */
   private void createSpawners() {
     if (enemySpawners == null) {
       return;
@@ -327,6 +381,7 @@ public class LevelConfig {
     }
   }
 
+  /** Creates all map triggers and scales them to their correct size for the game area to spawn */
   private void createTriggers() {
     if (mapTriggers == null) {
       return;
