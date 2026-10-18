@@ -78,4 +78,55 @@ class ChaseSoundComponentTest {
 
     verify(sound, never()).play(anyFloat());
   }
+
+  @Test
+  void shouldNotPlayJustBeforeTheCooldownEnds() {
+    when(time.getTime()).thenReturn(0L, 9999L);
+
+    enemy.getEvents().trigger("chaseStart");
+    enemy.getEvents().trigger("chaseStart");
+
+    verify(sound, times(1)).play(0.15f);
+  }
+
+  @Test
+  void shouldRestartTheCooldownFromTheLastTimeItPlayed() {
+    when(time.getTime()).thenReturn(0L, 10000L, 15000L, 20000L);
+
+    enemy.getEvents().trigger("chaseStart"); // plays at 0
+    enemy.getEvents().trigger("chaseStart"); // plays at 10000
+    enemy.getEvents().trigger("chaseStart"); // 5000 later: too soon
+    enemy.getEvents().trigger("chaseStart"); // 10000 later: plays
+
+    verify(sound, times(3)).play(0.15f);
+  }
+
+  @Test
+  void shouldNotCountASkippedSoundAsHavingPlayed() {
+    when(time.getTime()).thenReturn(0L, 1L);
+    when(resources.containsAsset("sounds/osprey.ogg", Sound.class)).thenReturn(false, true);
+
+    enemy.getEvents().trigger("chaseStart"); // sound not loaded yet: skipped
+    enemy.getEvents().trigger("chaseStart"); // loaded now: plays, the skip started no cooldown
+
+    verify(sound, times(1)).play(0.15f);
+  }
+
+  @Test
+  void shouldDoNothingWithoutATimeSource() {
+    ServiceLocator.registerTimeSource(null);
+
+    enemy.getEvents().trigger("chaseStart");
+
+    verify(sound, never()).play(anyFloat());
+  }
+
+  @Test
+  void shouldDoNothingWithoutAResourceService() {
+    ServiceLocator.registerResourceService(null);
+
+    enemy.getEvents().trigger("chaseStart");
+
+    verify(sound, never()).play(anyFloat());
+  }
 }
