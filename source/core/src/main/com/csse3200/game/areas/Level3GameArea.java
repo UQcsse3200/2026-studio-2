@@ -29,6 +29,7 @@ public class Level3GameArea extends GameArea {
   private Vector2 worldBounds;
 
   private Entity water;
+  private boolean bossCamToggled = false;
 
   /** Textures used by the level 2 game area. */
   private static final String[] level3Textures = {
@@ -408,8 +409,31 @@ public class Level3GameArea extends GameArea {
   }
 
   @Override
+  public void toggleBossCamera() {
+    if (!bossCamToggled) {
+      if (mapToggled) {
+        toggleLevelMap();
+      }
+      Vector2 bossBounds = new Vector2(25f, 11f);
+      Vector2 bossResizeScale = new Vector2(0f, 0f);
+      int bossBoundX = (int) bossBounds.x;
+      int bossBoundY = (int) bossBounds.y;
+
+      Entity camera = new Entity();
+      cameraComponent.resize(bossBoundX, bossBoundY, bossBoundX + 4);
+      camera.setPosition(bossBounds.x / 2 + 1, bossBounds.y / 2 + 97);
+      cameraComponent.setTarget(camera);
+
+      backgroundComponent.scaleEntity(bossResizeScale, bossBounds, true, "bossArena");
+      bossCamToggled = true;
+    }
+  }
+
+  @Override
   public void toggleLevelMap() {
-    toggleMap(worldBounds, camera, backgroundComponent, "level3");
+    if (!bossCamToggled) {
+      toggleMap(worldBounds, camera, backgroundComponent, "level3");
+    }
   }
 
   @Override

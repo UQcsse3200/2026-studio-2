@@ -145,6 +145,7 @@ public class LevelsGameScreen extends ScreenAdapter {
     game.restorePlayerState(player);
     player.getEvents().addListener("respawnAtCheckpoint", () -> currentGameArea.respawn());
     player.getEvents().addListener("toggleMap", () -> currentGameArea.toggleLevelMap());
+    player.getEvents().addListener("toggleBossView", () -> currentGameArea.toggleBossCamera());
 
     player
         .getEvents()
@@ -348,6 +349,10 @@ public class LevelsGameScreen extends ScreenAdapter {
       queueAreaSwap(level);
     }
     currentGameArea.updateLevelMap();
+
+    if (player.getPosition().y > 98) {
+      player.getEvents().trigger("toggleBossView");
+    }
 
     physicsEngine.update();
     ServiceLocator.getEntityService().update();

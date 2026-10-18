@@ -157,51 +157,56 @@ public class BackgroundRenderComponent extends RenderComponent {
   /** Scale is controlled individually for each layer. */
   public void scaleEntity(Vector2 factor, Vector2 worldBounds, boolean up, String level) {
     for (ParallaxLayer layer : layers) {
-      if (up) {
-        if (level.equals("level2")) {
-          layer.position.x -= worldBounds.x / 2 - 10;
-          layer.position.y -= factor.y * layer.height / 2.4f;
-          layer.width *= factor.x / 1.25f;
-          layer.height *= factor.y / 1.25f;
-        } else if (level.equals("level3")) {
-          layer.position.x -= worldBounds.x / 2 - 5;
-          layer.position.y -= worldBounds.y * 0.77f + factor.y;
-          layer.width *= factor.x;
-          layer.height *= factor.y * 1.17f;
-          layer.offset.y *= 1.15f;
-        } else {
-          layer.position.x -= worldBounds.x / 2 - 10;
-          layer.position.y -= worldBounds.y * factor.y / 5.1f;
-          layer.width *= factor.x / 1.57f;
-          layer.height *= factor.y / 1.4f;
-        }
-        layer.offset.x *= factor.x;
-        layer.offset.y *= factor.y;
-        layer.velocity.x *= factor.x;
-        layer.velocity.y *= factor.y;
+      if (level.equals("bossArena")) {
+        layer.position.x -= 1.7f;
+        layer.position.y -= 0.8f;
       } else {
-        if (level.equals("level2")) {
-          layer.position.x += worldBounds.x / 2 - 10;
-          // layer.height already multiplied by factor.y, negate 1.25 divided before
-          layer.position.y += layer.height / 2.4f * 1.25f;
-          layer.width /= factor.x / 1.25f;
-          layer.height /= factor.y / 1.25f;
-        } else if (level.equals("level3")) {
-          layer.position.x += worldBounds.x / 2 - 5;
-          layer.position.y += worldBounds.y * 0.77f + factor.y;
-          layer.width /= factor.x;
-          layer.height /= factor.y * 1.17f;
-          layer.offset.y /= 1.15f;
+        if (up) {
+          if (level.equals("level2")) {
+            layer.position.x -= worldBounds.x / 2 - 10;
+            layer.position.y -= factor.y * layer.height / 2.4f;
+            layer.width *= factor.x / 1.25f;
+            layer.height *= factor.y / 1.25f;
+          } else if (level.equals("level3")) {
+            layer.position.x -= worldBounds.x / 2 - 5;
+            layer.position.y -= worldBounds.y * 0.77f + factor.y;
+            layer.width *= factor.x;
+            layer.height *= factor.y * 1.17f;
+            layer.offset.y *= 1.15f;
+          } else {
+            layer.position.x -= worldBounds.x / 2 - 10;
+            layer.position.y -= worldBounds.y * factor.y / 5.1f;
+            layer.width *= factor.x / 1.57f;
+            layer.height *= factor.y / 1.4f;
+          }
+          layer.offset.x *= factor.x;
+          layer.offset.y *= factor.y;
+          layer.velocity.x *= factor.x;
+          layer.velocity.y *= factor.y;
         } else {
-          layer.position.x += worldBounds.x / 2 - 10;
-          layer.position.y += worldBounds.y * factor.y / 5.1f; // factor is a glue-on fix
-          layer.width /= factor.x / 1.57f;
-          layer.height /= factor.y / 1.4f;
+          if (level.equals("level2")) {
+            layer.position.x += worldBounds.x / 2 - 10;
+            // layer.height already multiplied by factor.y, negate 1.25 divided before
+            layer.position.y += layer.height / 2.4f * 1.25f;
+            layer.width /= factor.x / 1.25f;
+            layer.height /= factor.y / 1.25f;
+          } else if (level.equals("level3")) {
+            layer.position.x += worldBounds.x / 2 - 5;
+            layer.position.y += worldBounds.y * 0.77f + factor.y;
+            layer.width /= factor.x;
+            layer.height /= factor.y * 1.17f;
+            layer.offset.y /= 1.15f;
+          } else {
+            layer.position.x += worldBounds.x / 2 - 10;
+            layer.position.y += worldBounds.y * factor.y / 5.1f; // factor is a glue-on fix
+            layer.width /= factor.x / 1.57f;
+            layer.height /= factor.y / 1.4f;
+          }
+          layer.offset.x /= factor.x;
+          layer.offset.y /= factor.y;
+          layer.velocity.x /= factor.x;
+          layer.velocity.y /= factor.y;
         }
-        layer.offset.x /= factor.x;
-        layer.offset.y /= factor.y;
-        layer.velocity.x /= factor.x;
-        layer.velocity.y /= factor.y;
       }
     }
   }

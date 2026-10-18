@@ -354,6 +354,8 @@ public abstract class GameArea implements Disposable {
     }
   }
 
+  public void toggleBossCamera() {}
+
   public void toggleLevelMap() {}
 
   public void updateLevelMap() {}
