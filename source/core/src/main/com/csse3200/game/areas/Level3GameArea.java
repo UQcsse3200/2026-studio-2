@@ -144,6 +144,9 @@ public class Level3GameArea extends GameArea {
       if (entity.getComponent(GrappleSideRenderComponent.class) != null) {
         entity.getComponent(GrappleSideRenderComponent.class).toggleWeather();
       }
+      if (entity.getComponent(ForegroundRenderComponent.class) != null) {
+        entity.getComponent(ForegroundRenderComponent.class).toggleWeather();
+      }
     }
   }
 

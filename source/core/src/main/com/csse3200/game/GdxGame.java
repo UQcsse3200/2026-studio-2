@@ -46,8 +46,7 @@ public class GdxGame extends Game {
 
     applyDefaultClearColor();
 
-    // Open Level 2 directly to inspect checkpoints.
-    setScreen(ScreenType.LEVEL_3_GAME);
+    setScreen(ScreenType.LEVEL_1_GAME);
   }
 
   /**

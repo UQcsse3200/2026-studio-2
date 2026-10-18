@@ -21,6 +21,7 @@ public abstract class RenderComponent extends Component implements Renderable, D
   private float beforeFlash = 1f;
   private float beforeFlashBackground = 1f;
   private Entity player = null;
+  public float rainIntensity = 1f;
   private int updateInterval = 0;
   private float target = 1f;
 
@@ -118,13 +119,6 @@ public abstract class RenderComponent extends Component implements Renderable, D
 
   @Override
   public void update() {
-    // level3 pos starts at 6
-    // want MIN intensity at 6
-    // want MAX intensity at 98
-    // have set target between 0 and 1
-    // 0 at y=6, 1 at y=98
-    // TARGET = (y - 6) / 92
-
     if (player == null) {
       Array<Entity> entities = ServiceLocator.getEntityService().getEntities();
       for (Entity entity : entities) {
@@ -134,25 +128,27 @@ public abstract class RenderComponent extends Component implements Renderable, D
       }
     }
 
-    if (player != null) {
-      if (player.getPosition().y > 95) {
-        System.out.print(player.getPosition().y + ", ");
-      }
-    }
-
     if (weather) {
       if (ServiceLocator.getTimeSource() != null) {
         if (player != null) {
-          // 0.999... so lightning flashes
-          float currentTarget = ((player.getPosition().y - 6f) / 92f);
-          target = 1f - (currentTarget * 0.75f);
+          if (player.getPosition().y >= 98) {
+            if (target > 0f) {
+              // gradual increase to max intensity once at top
+              target -= 0.001f;
+            } else {
+              target = 0f;
+            }
+          } else {
+            float currentTarget = ((player.getPosition().y - 6f) / 92f);
+            target = 1f - (currentTarget * 0.75f);
+          }
+          rainIntensity = target;
         }
         float deltaTime = ServiceLocator.getTimeSource().getDeltaTime();
         darkness = beforeFlash;
         backgroundLight = beforeFlashBackground;
         updateDarkness(deltaTime);
         updateBackgroundLight(deltaTime);
-        // ServiceLocator.getLightingService().getEngine().setAmbientLight(darkness);
       }
     }
   }

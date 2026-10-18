@@ -1,5 +1,7 @@
 package com.csse3200.game.rendering;
 
+import static com.csse3200.game.areas.GameArea.RepeatMode.*;
+
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -20,6 +22,14 @@ public class BackgroundRenderComponent extends RenderComponent {
   private boolean weather;
   private Vector2 lastCameraPos;
   private int flashOrder = 0;
+  private Vector2 originalVelocity;
+  private float originalWidth;
+  private float originalHeight;
+  private int originalRotation;
+  private final Vector2 finalVelocity = new Vector2(4, -4);
+  private final float finalWidth = 0.1f;
+  private final float finalHeight = 0.35f;
+  private final int finalRotation = 35;
 
   /** A single parallax background layer. */
   private static class ParallaxLayer {
@@ -28,7 +38,7 @@ public class BackgroundRenderComponent extends RenderComponent {
     private float width;
     private float height;
     private final Vector2 offset;
-    private final Vector2 velocity;
+    private Vector2 velocity;
     private Vector2 position;
     private final RepeatMode repeat;
     private final float distance;
@@ -134,6 +144,13 @@ public class BackgroundRenderComponent extends RenderComponent {
             flash,
             rotation,
             lightningOrder));
+
+    if (repeat == RepeatMode.CHAOTIC) {
+      originalVelocity = new Vector2(velocity.x, velocity.y);
+      originalWidth = width;
+      originalHeight = height;
+      originalRotation = rotation;
+    }
   }
 
   public int getLayerCount() {
@@ -223,6 +240,25 @@ public class BackgroundRenderComponent extends RenderComponent {
     }
   }
 
+  private void updateWeather(ParallaxLayer layer) {
+    weather = getWeather();
+    if (weather) {
+      if (layer.repeat == CHAOTIC) {
+        if (rainIntensity < 1f) {
+          float intensity = 1f - rainIntensity;
+          layer.velocity.x =
+              originalVelocity.x + (finalVelocity.x - originalVelocity.x) * intensity;
+          layer.velocity.y =
+              originalVelocity.y + (finalVelocity.y - originalVelocity.y) * intensity;
+          layer.width = originalWidth + (finalWidth - originalWidth) * intensity;
+          layer.height = originalHeight + (finalHeight - originalHeight) * intensity;
+          layer.rotation =
+              (int) (originalRotation + (finalRotation - originalRotation) * intensity);
+        }
+      }
+    }
+  }
+
   /**
    * Get position for layers whose position depends on player movement e.g. mountains, ground,
    * ocean, clouds
@@ -265,6 +301,7 @@ public class BackgroundRenderComponent extends RenderComponent {
       float layerY;
 
       layerPos = getPosition(layer, cameraPos, position);
+      updateWeather(layer);
 
       layerX = layerPos.x;
       layerY = layerPos.y;
@@ -386,8 +423,8 @@ public class BackgroundRenderComponent extends RenderComponent {
             if ((int) ((currentY * (1 / gap)) % 2) == 0) {
               batch.draw(
                   layer.texture,
-                  drawPosX,
-                  drawPosY,
+                  drawPosX + rainOffsets.get(randomOffsetY).get(randomOffsetX),
+                  drawPosY + rainOffsets.get(randomOffsetY).get(randomOffsetX),
                   layer.width / 2,
                   layer.height / 2,
                   layer.width,
@@ -404,8 +441,8 @@ public class BackgroundRenderComponent extends RenderComponent {
             } else {
               batch.draw(
                   layer.texture,
-                  drawPosX + (gap / 2),
-                  drawPosY,
+                  drawPosX + (gap / 2) + rainOffsets.get(randomOffsetY).get(randomOffsetX),
+                  drawPosY + rainOffsets.get(randomOffsetY).get(randomOffsetX),
                   layer.width / 2,
                   layer.height / 2,
                   layer.width,
