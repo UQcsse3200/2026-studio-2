@@ -382,6 +382,29 @@ public class Level3Config extends LevelConfig {
           4,
           SpawnerComponent.ACTIVATION_MODE.NORMAL,
           false), // ES4+5
+      new SpawnerConfig(
+          new ArrayList<>(
+              List.of(
+                  () ->
+                      EnemyFactory.createCalypso(
+                          player,
+                          List.of(
+                              new Vector2(3f, 98f),
+                              new Vector2(10.5f, 98f),
+                              new Vector2(24f, 98f),
+                              new Vector2(3f, 100f),
+                              new Vector2(10.5f, 100f),
+                              new Vector2(24f, 100f),
+                              new Vector2(3f, 103f),
+                              new Vector2(10.5f, 103f),
+                              new Vector2(24f, 103f),
+                              new Vector2(3f, 106f),
+                              new Vector2(10.5f, 106f),
+                              new Vector2(24f, 106f))))),
+          0f,
+          1,
+          SpawnerComponent.ACTIVATION_MODE.NORMAL,
+          false)
     };
 
     enemySpawners =
@@ -411,22 +434,27 @@ public class Level3Config extends LevelConfig {
               spawnerConfig[3],
               new String[] {"enemyArena2"},
               new String[] {"enemyArena2Complete", "waterStart"}), // ES5
+          new EnemySpawnerConfig(
+              new GridPoint2(12, 100),
+              spawnerConfig[4],
+              new String[] {"bossArena"},
+              new String[] {}),
         };
 
     mapTriggers =
         new TriggerConfig[] {
           new TriggerConfig(
-              new GridPoint2(12, 29),
+              new GridPoint2(12, 30),
               new Vector2(3f, 1f),
               new String[] {"enemyArena1", "waterStop"},
               true),
           new TriggerConfig(
-              new GridPoint2(12, 60),
+              new GridPoint2(12, 61),
               new Vector2(3f, 1f),
               new String[] {"enemyArena2", "waterStop"},
               true),
           new TriggerConfig(
-              new GridPoint2(12, 99),
+              new GridPoint2(12, 100),
               new Vector2(3f, 1f),
               new String[] {"bossArena", "waterStop"},
               true)
