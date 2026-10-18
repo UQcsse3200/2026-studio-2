@@ -224,9 +224,9 @@ class GrappleFlightRopeTest {
     moveArrow(arrow, 8f, 4f);
     moveArrow(arrow, 8f, -4f);
     Fixture target = box(8.5f, -4f, 0.5f, 1f);
-    arrow
-        .getEvents()
-        .trigger("collisionStart", arrow.getComponent(HitboxComponent.class).getFixture(), target);
+    // This is about how the rope wraps the platforms, not about where a hook may land (one below
+    // the player's feet is refused when the arrow hits), so attach it directly.
+    grapple.attachTo(target.getBody(), new Vector2(8f, -4f));
     entities.update();
     assertTrue(grapple.isAttached());
     assertTrue(grapple.getAnchorPoint().x < 2f, "first platform initially supports the player");

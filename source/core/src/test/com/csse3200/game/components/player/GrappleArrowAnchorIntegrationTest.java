@@ -2,6 +2,7 @@ package com.csse3200.game.components.player;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.DynamicTest.dynamicTest;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -106,7 +107,10 @@ class GrappleArrowAnchorIntegrationTest {
   Stream<DynamicTest> shouldAnchorOnTheWallFaceAcrossFlightPaths() {
     return Stream.of(
             new FlightCase("up and left", 0.6f, 1f),
-            new FlightCase("nearly straight up", 6f, 1f),
+            // A steep shot climbs, then drops almost alongside the wall: the shallowest approach to
+            // the
+            // face. It still has to land above the shooter's feet, or it would not hook.
+            new FlightCase("steeply down onto the wall", 2.5f, 1f),
             new FlightCase("fully charged", 0.2f, 1.5f))
         .map(
             flight ->
@@ -122,6 +126,7 @@ class GrappleArrowAnchorIntegrationTest {
                         assertNotNull(
                             anchor, "the arrow should have reached the wall and attached");
                         assertEquals(WALL_FACE_X, anchor.x, 0.05f);
+                        assertTrue(anchor.y > 0.1f, "it should land above the shooter's feet");
                       } finally {
                         tearDown();
                       }
