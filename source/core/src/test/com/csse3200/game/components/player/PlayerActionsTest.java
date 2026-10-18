@@ -404,4 +404,78 @@ class PlayerActionsTest {
     player.update();
     verify(slippery, atLeastOnce()).getSlipperiness(); // ensure slipperiness is queried
   }
+
+  // ---- Ground detection at the edges of ledges and enemies ----
+
+  /**
+   * A static box on the given layer. The player in these tests sits at the origin with a 1x1 scale,
+   * so their feet span x = 0 to 1 at y = 0.
+   */
+  private void createBox(float x, float y, float halfWidth, float halfHeight, short layer) {
+    BodyDef bodyDef = new BodyDef();
+    bodyDef.type = BodyDef.BodyType.StaticBody;
+    bodyDef.position.set(x, y);
+    Body body = ServiceLocator.getPhysicsService().getPhysics().createBody(bodyDef);
+    PolygonShape box = new PolygonShape();
+    box.setAsBox(halfWidth, halfHeight);
+    FixtureDef fixtureDef = new FixtureDef();
+    fixtureDef.shape = box;
+    fixtureDef.filter.categoryBits = layer;
+    body.createFixture(fixtureDef);
+    box.dispose();
+  }
+
+  /** Falls for a frame, then lands with only part of the body over {@code surface}. */
+  private int landingsAfterLandingOn(Runnable surface) {
+    Entity player = createPlayer();
+    AtomicInteger landings = countEvent(player, "landed");
+    player.getComponent(PhysicsComponent.class).getBody().setLinearVelocity(0f, -5f);
+    player.update(); // airborne and falling
+
+    surface.run();
+    player.update();
+    return landings.get();
+  }
+
+  @Test
+  void shouldLandOnALedgeWithOnlyTheLeftFootOverIt() {
+    // The ledge ends at x = 0.25, so the centre of the body (x = 0.5) is past its edge.
+    int landings =
+        landingsAfterLandingOn(() -> createBox(0.1f, -0.2f, 0.15f, 0.1f, PhysicsLayer.OBSTACLE));
+
+    // Regression: only the centre was checked, so this read as still falling.
+    assertEquals(1, landings);
+  }
+
+  @Test
+  void shouldLandOnAnEnemyWithOnlyTheRightFootOverIt() {
+    // An enemy's collider is narrower than the enemy, so landing off-centre on one is common.
+    int landings =
+        landingsAfterLandingOn(() -> createBox(0.9f, -0.2f, 0.15f, 0.1f, PhysicsLayer.CHARACTER));
+
+    assertEquals(1, landings);
+  }
+
+  @Test
+  void shouldJumpFromTheEdgeOfALedge() {
+    Entity player = createPlayer();
+    createBox(0.1f, -0.2f, 0.15f, 0.1f, PhysicsLayer.OBSTACLE);
+    player.update(); // standing with only the left foot on the ledge
+    PhysicsComponent physics = player.getComponent(PhysicsComponent.class);
+
+    player.getEvents().trigger("jump");
+    when(gameTime.getTime()).thenReturn(1_000L);
+    player.update();
+
+    assertTrue(physics.getBody().getLinearVelocity().y > 0f, "standing on the edge counts");
+  }
+
+  @Test
+  void shouldNotTreatAWallBesideThePlayerAsGround() {
+    // A tall wall starting just past the right edge of the body, reaching well below the feet.
+    int landings =
+        landingsAfterLandingOn(() -> createBox(1.5f, -2f, 0.5f, 3f, PhysicsLayer.OBSTACLE));
+
+    assertEquals(0, landings, "sliding down a wall is not standing on it");
+  }
 }

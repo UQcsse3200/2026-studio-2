@@ -98,7 +98,7 @@ public class LevelsGameScreen extends ScreenAdapter {
   };
   private final Level1GameArea level1GameArea;
   // Cheat mode (Backspace): zero gravity plus free vertical movement. Starts off.
-  private boolean cheats = false;
+  private boolean cheats = true;
   // Gravity scale to restore when cheat mode is switched off.
   private float gravity = 1f;
 

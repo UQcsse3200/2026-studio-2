@@ -33,6 +33,10 @@ public class PlayerActions extends Component {
   // If a jump's impulse fires but the player never leaves the ground (jumping under a low ceiling),
   // give up waiting after this long and report a landing so the animation can recover.
   private static final long LIFTOFF_GRACE_MS = 200;
+  // How far below the feet the ground check looks.
+  private static final float GROUND_RAY_LENGTH = 0.15f;
+  // How far in from each side of the collider the foot rays sit, so walls don't read as floor.
+  private static final float FOOT_INSET = 0.05f;
 
   private float extraSpeedMultiplier = 1f; // The Speed multiplier
   private long speedPotionEndTimeMs = 0; // The time that speed_potion ends
@@ -252,15 +256,17 @@ public class PlayerActions extends Component {
    * instead of looping the fall animation on their head.
    */
   private boolean checkGrounded() {
-    Vector2 position = entity.getCenterPosition();
-    float halfHeight = entity.getScale().y / 2f;
-    Vector2 rayStart = position.cpy().sub(0, halfHeight);
-    Vector2 rayEnd = rayStart.cpy().sub(0, 0.15f);
+    Vector2 feet = entity.getCenterPosition().sub(0, entity.getScale().y / 2f);
+    // A ray at each foot as well as the centre. With only the centre ray, landing with the middle
+    // of the body past the edge of a ledge or an enemy left the player standing there but never
+    // "grounded": stuck in the fall animation and unable to jump. The feet are inset slightly so a
+    // wall the player is pressed against doesn't count as floor.
+    float footOffset = Math.max(0f, entity.getScale().x / 2f - FOOT_INSET);
     RaycastHit hit = new RaycastHit();
     boolean grounded =
-        ServiceLocator.getPhysicsService()
-            .getPhysics()
-            .raycast(rayStart, rayEnd, PhysicsLayer.STANDABLE, hit);
+        castGroundRay(feet, hit)
+            || castGroundRay(feet.cpy().sub(footOffset, 0f), hit)
+            || castGroundRay(feet.cpy().add(footOffset, 0f), hit);
 
     decelerationTraction = 1f;
     // if we're grounded, we need to check if we're on a slippery platform and update the player's
@@ -279,6 +285,14 @@ public class PlayerActions extends Component {
     }
 
     return grounded;
+  }
+
+  /** Casts a short ray straight down from {@code start}, recording what it hit in {@code hit}. */
+  private boolean castGroundRay(Vector2 start, RaycastHit hit) {
+    Vector2 end = start.cpy().sub(0, GROUND_RAY_LENGTH);
+    return ServiceLocator.getPhysicsService()
+        .getPhysics()
+        .raycast(start, end, PhysicsLayer.STANDABLE, hit);
   }
 
   /** Stops the player permanently reacting to input once they've died. */
