@@ -1,4 +1,4 @@
-package com.csse3200.game.components.minigames.cyclopsMinigame;
+package com.csse3200.game.components.minigames.cyclopsminigame;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
