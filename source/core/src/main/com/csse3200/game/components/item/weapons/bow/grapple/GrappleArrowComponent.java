@@ -54,7 +54,10 @@ public class GrappleArrowComponent extends Component {
     if (spent) {
       return;
     }
-    if (!PhysicsLayer.contains(GRAPPLE_TARGETS, other.getFilterData().categoryBits)) {
+    // Sensors share layers with real terrain (the rising water's surface is an OBSTACLE sensor)
+    // but have nothing solid to hook onto, so the layer alone isn't enough.
+    if (other.isSensor()
+        || !PhysicsLayer.contains(GRAPPLE_TARGETS, other.getFilterData().categoryBits)) {
       return;
     }
     if (arrowCenter().dst2(shooter.getCenterPosition()) < MIN_TRAVEL * MIN_TRAVEL) {

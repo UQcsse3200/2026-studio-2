@@ -80,6 +80,9 @@ public class GrappleComponent extends Component {
   // and attach a rope back to wherever the player died.
   private Entity pendingArrow;
 
+  // A release requested mid physics step, which Box2D forbids, carried out on the next update.
+  private boolean releasePending;
+
   // Reused when checking the joint is still alive, to avoid allocating every frame
   private final Array<Joint> liveJoints = new Array<>();
   private final Array<Body> liveBodies = new Array<>();
@@ -180,6 +183,10 @@ public class GrappleComponent extends Component {
 
   @Override
   public void update() {
+    if (releasePending) {
+      releasePending = false;
+      release();
+    }
     if (cooldownRemaining > 0f) {
       cooldownRemaining -= ServiceLocator.getTimeSource().getDeltaTime();
     }
@@ -512,7 +519,9 @@ public class GrappleComponent extends Component {
     RopeRayHit closest = new RopeRayHit();
     RayCastCallback callback =
         (fixture, point, normal, fraction) -> {
-          if (!PhysicsLayer.contains(PhysicsLayer.SOLID, fixture.getFilterData().categoryBits)) {
+          // Sensors (e.g. the rising water's surface) aren't solid, so the rope can't bend on them.
+          if (fixture.isSensor()
+              || !PhysicsLayer.contains(PhysicsLayer.SOLID, fixture.getFilterData().categoryBits)) {
             return -1f;
           }
           // The grapple anchor's own fixture is expected at the end of every ray.
@@ -620,11 +629,21 @@ public class GrappleComponent extends Component {
     return vertex;
   }
 
-  /** Detaches the rope, restoring free movement. Momentum carries over. */
+  /**
+   * Detaches the rope, restoring free movement. Momentum carries over.
+   *
+   * <p>Safe to call from a collision callback. Those run inside the physics step, where Box2D
+   * aborts the whole game if a joint is destroyed, so the rope is then let go on the next update
+   * instead. (Touching rising water used to do exactly that, by respawning the player mid-step.)
+   */
   public void release() {
     pendingAnchorBody = null;
     pendingAnchorPoint = null;
     cancelFlight();
+    if (isAttached() && ServiceLocator.getPhysicsService().getPhysics().getWorld().isLocked()) {
+      releasePending = true;
+      return;
+    }
     if (isAttached()) {
       ServiceLocator.getPhysicsService().getPhysics().getWorld().destroyJoint(ropeJoint);
       forgetJoint();
