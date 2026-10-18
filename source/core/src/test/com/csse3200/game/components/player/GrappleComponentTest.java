@@ -90,12 +90,10 @@ class GrappleComponentTest {
   void shouldIgnoreSwingWhenNotAttached() {
     GrappleComponent grapple = new GrappleComponent();
     // Would throw on the null body if the guard were missing
-    assertDoesNotThrow(
-        () -> {
-          grapple.swing(1f);
-          grapple.swing(-1f);
-          grapple.swing(0f);
-        });
+    assertDoesNotThrow(() -> grapple.swing(1f));
+    assertDoesNotThrow(() -> grapple.swing(-1f));
+    assertDoesNotThrow(() -> grapple.swing(0f));
+    assertFalse(grapple.isAttached());
   }
 
   @Test
@@ -112,11 +110,11 @@ class GrappleComponentTest {
     GrappleComponent grapple = player.getComponent(GrappleComponent.class);
 
     // Would reach ProjectileFactory and fail without a registered service
-    assertDoesNotThrow(
-        () -> {
-          grapple.fire(null);
-          grapple.fire(Vector2.Zero.cpy());
-        });
+    try (var factory = mockStatic(ProjectileFactory.class)) {
+      grapple.fire(null);
+      grapple.fire(Vector2.Zero.cpy());
+      factory.verifyNoInteractions();
+    }
   }
 
   @Test

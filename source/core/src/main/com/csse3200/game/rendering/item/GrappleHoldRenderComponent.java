@@ -73,7 +73,12 @@ public class GrappleHoldRenderComponent extends RenderComponent {
       return;
     }
 
-    // Let the hurt and death animations show instead of the rope pose.
+    // Action clips must finish before hiding the animator, otherwise their controller state
+    // cannot complete and the normal sprite cannot resume after detaching.
+    if (controller != null && controller.isPlayingActionAnimation()) {
+      return;
+    }
+    // Also protect hurt and death when no controller is present.
     String current = animator.getCurrentAnimation();
     if ("hurt".equals(current) || "death".equals(current)) {
       return;
