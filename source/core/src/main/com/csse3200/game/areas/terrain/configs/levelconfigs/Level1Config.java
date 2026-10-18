@@ -113,8 +113,8 @@ public class Level1Config extends LevelConfig {
         new CheckpointConfig[] {
           new CheckpointConfig(new GridPoint2(16, 5)),
           new CheckpointConfig(new GridPoint2(19, 17)),
-          new CheckpointConfig(new GridPoint2(44, 22)),
-          new CheckpointConfig(new GridPoint2(54, 21)),
+          new CheckpointConfig(new GridPoint2(44, 17)),
+          new CheckpointConfig(new GridPoint2(58, 10)),
           new CheckpointConfig(new GridPoint2(81, 17)),
         };
 
