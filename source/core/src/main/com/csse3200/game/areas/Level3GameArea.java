@@ -414,7 +414,7 @@ public class Level3GameArea extends GameArea {
       if (mapToggled) {
         toggleLevelMap();
       }
-      Vector2 bossBounds = new Vector2(25f, 11f);
+      Vector2 bossBounds = new Vector2(25f, 12f);
       Vector2 bossResizeScale = new Vector2(0f, 0f);
       int bossBoundX = (int) bossBounds.x;
       int bossBoundY = (int) bossBounds.y;

@@ -159,7 +159,11 @@ public class BackgroundRenderComponent extends RenderComponent {
     for (ParallaxLayer layer : layers) {
       if (level.equals("bossArena")) {
         layer.position.x -= 1.7f;
-        layer.position.y -= 0.8f;
+        layer.position.y -= 1.22f;
+        layer.height += 1;
+        if (layer.flash) {
+          layer.height += 3;
+        }
       } else {
         if (up) {
           if (level.equals("level2")) {
