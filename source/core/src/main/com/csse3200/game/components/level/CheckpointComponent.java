@@ -67,7 +67,7 @@ public class CheckpointComponent extends Component {
     }
 
     if (pointLightComponent != null) {
-      pointLightComponent.setColor(new Color((228f / 255f), (112f / 255f), (37f / 255f), 1f));
+      pointLightComponent.setColor(new Color(228f / 255f, 112f / 255f, 37f / 255f, 1f));
     }
   }
 

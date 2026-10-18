@@ -32,7 +32,8 @@ public class Level2Config extends LevelConfig {
     checkpointAtlas = "images/terrain/Level_1/Level_1_checkpoint.atlas";
 
     playerSpawn = new GridPoint2(0, 42);
-    nextLevelTriggerSpawn = new GridPoint2(33, 8);
+    // No nextLevelTriggerSpawn: the exit door spawned by Level2GameArea is the only Level 3
+    // trigger. A config trigger at (33, 8) reached down to P11's underside and fired from below.
     nextLevelName = "level3";
 
     platforms =
