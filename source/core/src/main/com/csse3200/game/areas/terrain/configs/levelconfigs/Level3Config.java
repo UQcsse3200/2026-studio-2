@@ -60,7 +60,6 @@ public class Level3Config extends LevelConfig {
           new PlatformConfig(new GridPoint2(25, 14), 3, 1, 0, platformTFP), // P6
           new PlatformConfig(new GridPoint2(29, 17), 3, 1, 0, platformTFP), // P6
           new PlatformConfig(new GridPoint2(25, 20), 3, 1, 0, platformTFP), // P6
-
           new PlatformConfig(new GridPoint2(7, 18), 3, 1, 0, platformTFP), // P7
           new PlatformConfig(new GridPoint2(20, 19), 3, 3, 8, groundTFP), // P9
           new PlatformConfig(new GridPoint2(3, 21), 3, 1, 3, platformTFP), // P10
@@ -287,11 +286,9 @@ public class Level3Config extends LevelConfig {
         new PlatformConfig[] {
           new PlatformConfig(new GridPoint2(16, 14), 3, 1, 0, platformTFP), // P6
           new PlatformConfig(new GridPoint2(12, 24), 3, 1, 0, platformTFP), // P6
-
           new PlatformConfig(new GridPoint2(20, 30), 3, 1, 0, ledgesTFP), // L1
           new PlatformConfig(new GridPoint2(9, 30), 3, 1, 0, ledgesTFP), // L2
           new PlatformConfig(new GridPoint2(12, 43), 3, 1, 8, platformTFP), // P14
-
           new PlatformConfig(new GridPoint2(5, 48), 3, 1, 0, ledgesTFP), // L3
           new PlatformConfig(new GridPoint2(2, 50), 3, 1, 0, ledgesTFP), // L3
           new PlatformConfig(new GridPoint2(12, 51), 3, 1, 0, ledgesTFP), // L4

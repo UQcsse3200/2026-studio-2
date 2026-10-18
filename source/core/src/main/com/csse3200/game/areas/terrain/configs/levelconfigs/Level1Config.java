@@ -17,7 +17,7 @@ public class Level1Config extends LevelConfig {
     // TEMP
     playerSpawn = new GridPoint2(2, 5);
     nextLevelTriggerSpawn = new GridPoint2(88, 18);
-    nextLevelName = "level2"; 
+    nextLevelName = "level2";
 
     // Retain the original switchbacks, floors and shafts; add pacing around that structure.
     platforms =
@@ -53,7 +53,7 @@ public class Level1Config extends LevelConfig {
           moving(25, 15, 25, 15, 36, 15, 3, 0, 0),
           moving(60, 9, 60, 2, 60, 9, 0, 2, 10),
           moving(60, 10, 60, 10, 60, 15, 0, 2, 0),
-          moving(75,1, 75, 1, 75, 17, 0, 2.5f, 10),
+          moving(75, 1, 75, 1, 75, 17, 0, 2.5f, 10),
         };
 
     spikes =
@@ -94,14 +94,12 @@ public class Level1Config extends LevelConfig {
           new PlatformConfig(new GridPoint2(56, 9), 4, 1, 0, groundTFP),
           new PlatformConfig(new GridPoint2(63, 0), 1, 18, 0, groundTFP),
           new PlatformConfig(new GridPoint2(71, 14), 3, 25, 0, groundTFP),
-          
-          //grapple prt 2
+
+          // grapple prt 2
           new PlatformConfig(new GridPoint2(66, 7), 8, 8, 8, groundTFP),
-
-
           new PlatformConfig(new GridPoint2(74, 25), 27, 14, 8, groundTFP),
 
-          //end wall
+          // end wall
           new PlatformConfig(new GridPoint2(90, 17), 11, 8, 8, groundTFP),
           new PlatformConfig(new GridPoint2(78, 0), 23, 17, 0, groundTFP),
         };

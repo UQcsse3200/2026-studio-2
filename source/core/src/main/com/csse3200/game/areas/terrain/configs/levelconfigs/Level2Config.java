@@ -43,17 +43,13 @@ public class Level2Config extends LevelConfig {
           new PlatformConfig(new GridPoint2(9, 26), 3, 1, 3, platformTFP),
           new PlatformConfig(new GridPoint2(14, 26), 3, 1, 3, platformTFP),
           new PlatformConfig(new GridPoint2(17, 31), 3, 1, 3, platformTFP),
-
           new PlatformConfig(new GridPoint2(17, 37), 3, 1, 11, platformTFP), // P3
           new PlatformConfig(new GridPoint2(0, 26), 2, 1, 2, platformTFP), // P4
-
           new PlatformConfig(new GridPoint2(0, 7), 3, 1, 0, platformTFP), // P5
           new PlatformConfig(new GridPoint2(5, 8), 3, 1, 0, platformTFP), // P6
           new PlatformConfig(new GridPoint2(11, 7), 3, 1, 0, platformTFP), // P6
           new PlatformConfig(new GridPoint2(20, 5), 3, 1, 0, ledgesTFP), // P6
           new PlatformConfig(new GridPoint2(29, 5), 3, 1, 0, ledgesTFP), // P6
-
-
           new PlatformConfig(new GridPoint2(42, 7), 7, 1, 0, platformTFP), // P9
           new PlatformConfig(new GridPoint2(38, 7), 1, 1, 0, platformTFP), // P10
           new PlatformConfig(new GridPoint2(33, 7), 2, 1, 0, platformTFP), // P11
@@ -61,15 +57,15 @@ public class Level2Config extends LevelConfig {
 
     movingPlatforms =
         new MovingPlatformConfig[] {
-         // new MovingPlatformConfig(
-         //     new GridPoint2(0, 11),
-         //     3,
-         //     1,
-         //     1,
-         //    movingPlatformTFP,
-         //     new Vector2(0, 11),
-         //     new Vector2(6, 11),
-         //     new Vector2(3, 0),
+          // new MovingPlatformConfig(
+          //     new GridPoint2(0, 11),
+          //     3,
+          //     1,
+          //     1,
+          //    movingPlatformTFP,
+          //     new Vector2(0, 11),
+          //     new Vector2(6, 11),
+          //     new Vector2(3, 0),
           //    new String[] {}), // MP1
           new MovingPlatformConfig(
               new GridPoint2(25, 28),
@@ -204,11 +200,10 @@ public class Level2Config extends LevelConfig {
           // new SpikeClusterConfig(0, 11, 37, 37, 0f, false), // SC1
           new SpikeClusterConfig(19, 21, 29, 29, 0f, false), // SC2
           new SpikeClusterConfig(4, 5, 25, 25, 0f, false), // SC3
-
           new SpikeClusterConfig(0, 1, 21, 21, 0f, false), // SC3
           new SpikeClusterConfig(3, 4, 15, 15, 0f, false), // SC3
 
-          //new SpikeClusterConfig(0, 2, 12, 12, 0f, true), // SC4
+          // new SpikeClusterConfig(0, 2, 12, 12, 0f, true), // SC4
           new SpikeClusterConfig(50, 50, 11, 11, 0f, true), // SC5
         };
 
