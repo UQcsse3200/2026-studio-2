@@ -401,9 +401,6 @@ public class CyclopsMinigameLogic extends Component {
     timeInState += delta;
 
     switch (state) {
-      case STOP -> {
-        // Wait for the intro or an external start event.
-      }
       case WIN -> finishMinigame();
       case CAUGHT -> waitForCyclopsHit();
       case LOSS -> waitBeforeRetreat();
@@ -414,6 +411,9 @@ public class CyclopsMinigameLogic extends Component {
       case HIDE_DELAY -> hideTimingBarWhenReady();
       case PRE_MOVE -> beginRunWhenReady();
       case MOVING -> updateRun();
+      default -> {
+        // STOP has no per-frame work: wait for the intro or an external start event.
+      }
     }
   }
 

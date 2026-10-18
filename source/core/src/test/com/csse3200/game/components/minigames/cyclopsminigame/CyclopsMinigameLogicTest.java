@@ -79,6 +79,17 @@ class CyclopsMinigameLogicTest {
   /* Checking Getters & Setters */
 
   @Test
+  void stoppedFramesWaitWithoutMovingThePlayerOrStartingTheTimingBar() {
+    when(gameTime.getDeltaTime()).thenReturn(1f);
+
+    minigameLogic.update();
+    minigameLogic.update();
+
+    assertEquals(CyclopsMinigameLogic.State.STOP, minigameLogic.state);
+    verifyNoInteractions(player, events, timingBarLogic, timingBarDisplay);
+  }
+
+  @Test
   void shouldSetWinLocation() {
     GridPoint2 win = new GridPoint2(6, 7);
     minigameLogic.setWinLocation(win);

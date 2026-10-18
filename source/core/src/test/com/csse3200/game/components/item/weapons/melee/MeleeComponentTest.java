@@ -31,6 +31,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 
 @ExtendWith(GameExtension.class)
 class MeleeComponentTest {
@@ -245,6 +246,35 @@ class MeleeComponentTest {
     when(actions.getFacingDirection()).thenReturn(1);
     player.getEvents().trigger("meleeStart");
     assertEquals(1, melee.getFacing());
+  }
+
+  @Test
+  void leftFacingSwingCastsTheDamageArcToTheLeftAtFullRange() {
+    PlayerActions actions = mock(PlayerActions.class);
+    when(actions.getFacingDirection()).thenReturn(-1);
+    player =
+        new Entity()
+            .addComponent(actions)
+            .addComponent(melee)
+            .addComponent(new CombatStatsComponent(100, 20));
+    melee.create();
+    player.setPosition(10f, 4f);
+    Vector2 origin = player.getCenterPosition();
+    enemyIsInArc();
+
+    player.getEvents().trigger("meleeStart");
+    run(4);
+
+    ArgumentCaptor<Vector2> endpoints = ArgumentCaptor.forClass(Vector2.class);
+    verify(physics, times(9)).raycastAll(eq(origin), endpoints.capture(), eq(PhysicsLayer.NPC));
+    for (Vector2 endpoint : endpoints.getAllValues()) {
+      assertTrue(endpoint.x < origin.x);
+      assertEquals(MeleeComponent.RANGE, endpoint.dst(origin), 0.0001f);
+    }
+    Vector2 centreRay = endpoints.getAllValues().get(4);
+    assertEquals(origin.x - MeleeComponent.RANGE, centreRay.x, 0.0001f);
+    assertEquals(origin.y, centreRay.y, 0.0001f);
+    assertEquals(80, enemy.getComponent(CombatStatsComponent.class).getHealth());
   }
 
   @Test
