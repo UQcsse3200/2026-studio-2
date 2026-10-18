@@ -57,16 +57,6 @@ public class Level2Config extends LevelConfig {
 
     movingPlatforms =
         new MovingPlatformConfig[] {
-          // new MovingPlatformConfig(
-          //     new GridPoint2(0, 11),
-          //     3,
-          //     1,
-          //     1,
-          //    movingPlatformTFP,
-          //     new Vector2(0, 11),
-          //     new Vector2(6, 11),
-          //     new Vector2(3, 0),
-          //    new String[] {}), // MP1
           new MovingPlatformConfig(
               new GridPoint2(25, 28),
               3,
