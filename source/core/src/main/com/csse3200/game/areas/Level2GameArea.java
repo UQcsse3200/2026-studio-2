@@ -12,6 +12,7 @@ import com.csse3200.game.entities.factories.EnemyFactory;
 import com.csse3200.game.entities.factories.ItemFactory;
 import com.csse3200.game.entities.factories.ObstacleFactory;
 import com.csse3200.game.rendering.BackgroundRenderComponent;
+import com.csse3200.game.rendering.CaveEntranceRenderComponent;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import org.slf4j.Logger;
@@ -29,6 +30,15 @@ public class Level2GameArea extends GameArea {
       new GridPoint2[] {
         new GridPoint2(6, 23), new GridPoint2(11, 23), new GridPoint2(17, 23),
       };
+
+  /**
+   * Exit door to Level 3. It stands on P11 against wall G14, covering the next-level trigger that
+   * Level2Config places at (33, 8). P11 is only two tiles wide, so the door uses the 2 x 2.67 room
+   * door size from Level 1 rather than the 3 x 4 Level 1 exit, which would overhang the gap.
+   */
+  private static final GridPoint2 EXIT_DOOR_SPAWN = new GridPoint2(33, 8);
+
+  private static final Vector2 EXIT_DOOR_SCALE = new Vector2(2f, 2.67f);
 
   /** Textures used by the level 2 game area. */
   private static final String[] level2Textures = {
@@ -55,6 +65,7 @@ public class Level2GameArea extends GameArea {
     "images/traps/spiky_ball.png",
     "images/traps/spiky_ball_trap.png",
     "images/terrain/Level_3/water tile.png", // torches
+    CaveEntranceRenderComponent.TEXTURE, // exit door
     ItemFactory.WHEEL_TOKEN_TEXTURE,
 
     // Enemy textures
@@ -106,9 +117,17 @@ public class Level2GameArea extends GameArea {
     spawnTorches();
     spawnBackground();
     spawnConfigEntities();
+    spawnExitDoor();
     spawnSkeletonWarrior();
 
     player.setPosition(new Vector2(config.getPlayerSpawn().x, config.getPlayerSpawn().y));
+  }
+
+  /** Spawns the visible exit door over the Level 3 trigger created from Level2Config. */
+  private void spawnExitDoor() {
+    Entity exit = new Entity().addComponent(new CaveEntranceRenderComponent());
+    exit.setScale(EXIT_DOOR_SCALE);
+    spawnEntityAt(exit, EXIT_DOOR_SPAWN, false, false);
   }
 
   /** Creates the Level 2 parallax background. */
@@ -163,7 +182,8 @@ public class Level2GameArea extends GameArea {
       new GridPoint2(10, 8),
       new GridPoint2(37, 28),
       new GridPoint2(43, 8),
-      new GridPoint2(34, 8),
+      // Guide torch on P10, just before the exit door (it previously stood in the doorway).
+      new GridPoint2(38, 8),
     };
 
     for (GridPoint2 pos : torchSpawns) {
