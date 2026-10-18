@@ -301,6 +301,15 @@ public class Level3GameArea extends GameArea {
     GridPoint2 tileBounds = terrain.getMapBounds(0);
     // worldBounds = new Vector2(tileBounds.x * tileSize, tileBounds.y * tileSize);
     worldBounds = new Vector2(40f, 35f);
+
+    // Left
+    spawnEntityAt(
+        ObstacleFactory.createWall(WALL_WIDTH, 130), new GridPoint2(0, -10), false, false);
+    spawnEntityAt(
+        ObstacleFactory.createWall(WALL_WIDTH, 130),
+        new GridPoint2(27, -10), // CHANGE THIS X VALUE FOR ELLA'S NEW LEVEL 3
+        false,
+        false);
   }
 
   private void spawnRisingWater() {
