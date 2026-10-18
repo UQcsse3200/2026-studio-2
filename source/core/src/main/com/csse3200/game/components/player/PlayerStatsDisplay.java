@@ -153,8 +153,8 @@ public class PlayerStatsDisplay extends UIComponent {
   private Table createGoldBar() {
     Texture barTexture =
         ServiceLocator.getResourceService().getAsset(GOLD_BAR_BACKGROUND, Texture.class);
-    float imageWidth = barTexture.getWidth();
-    float imageHeight = barTexture.getHeight();
+    float imageWidth = (float) barTexture.getWidth();
+    float imageHeight = (float) barTexture.getHeight();
     float barWidth = GOLD_BAR_WIDTH;
     float barHeight = barWidth * imageHeight / imageWidth;
 
@@ -253,7 +253,7 @@ public class PlayerStatsDisplay extends UIComponent {
     int maximumHearts = Math.max(1, (combatStats.getMaxHealth() + HP_PER_HEART - 1) / HP_PER_HEART);
     growHeartsTo(maximumHearts);
 
-    int cappedHealth = Math.max(0, Math.min(health, combatStats.getMaxHealth()));
+    int cappedHealth = Math.clamp(health, 0, combatStats.getMaxHealth());
     if (healthLabel != null) {
       healthLabel.setText("Health: " + cappedHealth + " / " + combatStats.getMaxHealth());
     }
