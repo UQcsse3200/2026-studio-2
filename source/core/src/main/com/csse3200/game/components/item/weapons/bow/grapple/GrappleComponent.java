@@ -160,7 +160,9 @@ public class GrappleComponent extends Component {
       return 1f;
     }
     long now = ServiceLocator.getTimeSource().getTime();
-    return BowCharge.speedMultiplier(now - chargeStartTimeMs);
+    // Counting the draw time faster is what makes the grapple reach full power sooner.
+    long effectiveDrawMs = (long) ((now - chargeStartTimeMs) * BowCharge.GRAPPLE_CHARGE_RATE);
+    return BowCharge.speedMultiplier(effectiveDrawMs);
   }
 
   /**
@@ -401,7 +403,7 @@ public class GrappleComponent extends Component {
   }
 
   private RopeContact activeContact() {
-    return ropeContacts.isEmpty() ? null : ropeContacts.get(ropeContacts.size() - 1);
+    return ropeContacts.isEmpty() ? null : ropeContacts.getLast();
   }
 
   private boolean sameContact(RopeContact first, RopeContact second) {

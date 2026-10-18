@@ -11,6 +11,7 @@ import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.csse3200.game.components.projectile.ArrowProjectileComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
+import com.csse3200.game.entities.factories.ProjectileFactory;
 import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.physics.PhysicsService;
@@ -58,6 +59,15 @@ class GrappleFlightRopeTest {
 
   private Entity fire() {
     grapple.fire(new Vector2(1f, 1f));
+    return entities.getEntities().get(1);
+  }
+
+  /**
+   * Fires at a fixed launch speed, whatever the grapple's tuning, for scenes whose obstacles were
+   * placed for one particular arc.
+   */
+  private Entity fireAtLaunchSpeed(float launchSpeed) {
+    grapple.fire(new Vector2(1f, 1f), launchSpeed / ProjectileFactory.GRAPPLE_ARROW_SPEED);
     return entities.getEntities().get(1);
   }
 
@@ -114,7 +124,8 @@ class GrappleFlightRopeTest {
   void realGravityArcShouldLeaveTheAnchoredRopeOverTheObstacle() {
     box(5f, 0f, 1f, 2f);
     box(30.5f, 0f, 0.5f, 20f);
-    Entity arrow = fire();
+    // The obstacle and far wall are laid out for an arc launched at 22.
+    Entity arrow = fireAtLaunchSpeed(22f);
     boolean bentDuringFlight = false;
     float peakY = arrowCenter(arrow).y;
     for (int i = 0; i < 200 && !grapple.isAttached(); i++) {
@@ -343,7 +354,7 @@ class GrappleFlightRopeTest {
   void expiredArrowShouldRemoveItsFlyingRopeAndLeaveThePlayerFree() {
     Entity arrow = curveOverObstacle();
     assertEquals(4, grapple.getRopePath().size(), "expiry should clear an existing bent rope");
-    moveArrow(arrow, 60f, 0f);
+    moveArrow(arrow, ProjectileFactory.GRAPPLE_ARROW_RANGE + 10f, 0f);
     entities.update();
     assertFalse(entities.getEntities().contains(arrow, true));
     assertTrue(grapple.getRopePath().isEmpty());

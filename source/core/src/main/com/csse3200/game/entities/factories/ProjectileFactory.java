@@ -5,6 +5,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.item.ItemType;
+import com.csse3200.game.components.item.weapons.bow.BowCharge;
 import com.csse3200.game.components.lighting.PointLightComponent;
 import com.csse3200.game.components.projectile.ArrowProjectileComponent;
 import com.csse3200.game.components.projectile.ArrowType;
@@ -27,8 +28,12 @@ public class ProjectileFactory {
   public static final float FIRE_ARROW_SPEED = 18f;
   public static final float FIRE_ARROW_RANGE = 50f;
 
-  public static final float GRAPPLE_ARROW_SPEED = 22f;
-  public static final float GRAPPLE_ARROW_RANGE = 50f;
+  // 20% slower than its 1.2x-reach tuning (22 * sqrt(1.2) = 24.1). The grapple has its own speed,
+  // separate from BowCharge.REACH_MULTIPLIER, so it can be tuned without moving the bow arrows.
+  public static final float GRAPPLE_ARROW_SPEED = 19.28f;
+  // Scales with BowCharge.REACH_MULTIPLIER, so raising reach can never be swallowed by this
+  // straight-line cap.
+  public static final float GRAPPLE_ARROW_RANGE = 50f * BowCharge.REACH_MULTIPLIER;
   public static final float PLAYER_ARROW_WIDTH = 0.6f;
   public static final float PLAYER_ARROW_HEIGHT = 0.3f;
 
