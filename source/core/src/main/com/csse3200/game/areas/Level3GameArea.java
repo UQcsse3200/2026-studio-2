@@ -241,7 +241,7 @@ public class Level3GameArea extends GameArea {
 
     // Lightning image 2
     backgroundComponent.addLayer(
-        "images/parallax/lightning_2.png",
+        "images/parallax/lightning_1.png",
         new Vector2(0f, 0f),
         2f,
         7f,

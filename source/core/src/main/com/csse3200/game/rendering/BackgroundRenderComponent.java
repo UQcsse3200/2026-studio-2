@@ -219,22 +219,22 @@ public class BackgroundRenderComponent extends RenderComponent {
       // Flash layers that flash during lightning
       if (layer.flash) {
         float lightning = getLightning();
+        // System.out.print(rainIntensity + ", ");
 
-        if (rainIntensity <= 0.5678) {
-          if (flashOrder == 0) {
+        if (rainIntensity <= 0.3559) {
+          if (layer.lightningOrder == 0) {
             layer.texture =
                 ServiceLocator.getResourceService()
                     .getAsset("images/parallax/lightning_4.png", Texture.class);
           }
-
-          if (flashOrder == 1) {
+        } else if (rainIntensity <= 0.5678) {
+          if (layer.lightningOrder == 1) {
             layer.texture =
                 ServiceLocator.getResourceService()
-                    .getAsset("images/parallax/lightning_3.png", Texture.class);
+                    .getAsset("images/parallax/lightning_2.png", Texture.class);
           }
-
         } else if (rainIntensity <= 0.8205) {
-          if (flashOrder == 0) {
+          if (layer.lightningOrder == 0) {
             layer.texture =
                 ServiceLocator.getResourceService()
                     .getAsset("images/parallax/lightning_3.png", Texture.class);
