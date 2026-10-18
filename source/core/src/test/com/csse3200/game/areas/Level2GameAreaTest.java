@@ -5,18 +5,22 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.areas.terrain.TerrainComponent;
 import com.csse3200.game.areas.terrain.TerrainFactory;
+import com.csse3200.game.areas.terrain.configs.LevelConfig;
 import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.extensions.GameExtension;
+import com.csse3200.game.rendering.CaveEntranceRenderComponent;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -184,6 +188,63 @@ class Level2GameAreaTest {
 
     assertEquals(50f, bounds.x);
     assertEquals(45f, bounds.y);
+  }
+
+  @Test
+  void level2TexturesIncludeExitDoorTexture() throws Exception {
+    Field field = Level2GameArea.class.getDeclaredField("level2Textures");
+    field.setAccessible(true);
+
+    String[] textures = (String[]) field.get(null);
+
+    assertTrue(Arrays.asList(textures).contains(CaveEntranceRenderComponent.TEXTURE));
+  }
+
+  @Test
+  void level2ConfigTriggerTargetsLevel3() throws Exception {
+    assertEquals("level3", getConfigField("nextLevelName"));
+    assertEquals(new GridPoint2(33, 8), getConfigField("nextLevelTriggerSpawn"));
+  }
+
+  @Test
+  void spawnExitDoorPlacesDoorOverLevel3Trigger() throws Exception {
+    Texture doorTexture = mock(Texture.class);
+    when(doorTexture.getWidth()).thenReturn(1536);
+    when(doorTexture.getHeight()).thenReturn(1024);
+    when(resourceService.getAsset(CaveEntranceRenderComponent.TEXTURE, Texture.class))
+        .thenReturn(doorTexture);
+    when(terrain.tileToWorldPosition(any(GridPoint2.class)))
+        .thenAnswer(
+            inv -> {
+              GridPoint2 tile = inv.getArgument(0);
+              return new Vector2(tile.x, tile.y);
+            });
+    area.terrain = terrain;
+
+    invokePrivate("spawnExitDoor");
+
+    Entity door =
+        area.areaEntities.stream()
+            .filter(e -> e.getComponent(CaveEntranceRenderComponent.class) != null)
+            .findFirst()
+            .orElseThrow();
+    verify(entityService).register(door);
+
+    Vector2 pos = door.getPosition();
+    Vector2 scale = door.getScale();
+    assertEquals(new Vector2(33f, 8f), pos);
+    assertEquals(new Vector2(2f, 2.67f), scale);
+
+    // The trigger tile must sit inside the door's footprint so walking into the door transitions.
+    GridPoint2 trigger = (GridPoint2) getConfigField("nextLevelTriggerSpawn");
+    assertTrue(trigger.x >= pos.x && trigger.x < pos.x + scale.x);
+    assertTrue(trigger.y >= pos.y && trigger.y < pos.y + scale.y);
+  }
+
+  private Object getConfigField(String name) throws Exception {
+    Field field = LevelConfig.class.getDeclaredField(name);
+    field.setAccessible(true);
+    return field.get(area.config);
   }
 
   @Test

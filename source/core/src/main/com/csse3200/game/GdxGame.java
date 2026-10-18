@@ -49,8 +49,8 @@ public class GdxGame extends Game {
     loadSettings();
     applyDefaultClearColor();
 
-    // TEMPORARY: Open Level 3 directly to debug checkpoints.
-    logger.info("Opening Level 3 directly for checkpoint debugging");
+    // TEMPORARY: Open Level 1 directly to debug checkpoints.
+    logger.info("Opening Level 1 directly for checkpoint debugging");
     setScreen(ScreenType.LEVEL_1_GAME);
   }
 
