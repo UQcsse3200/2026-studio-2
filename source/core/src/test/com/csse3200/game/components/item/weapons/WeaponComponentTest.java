@@ -79,7 +79,7 @@ class WeaponComponentTest {
     Entity player = new Entity().addComponent(component);
 
     AtomicReference<PrimaryWeapon> changedTo = new AtomicReference<>();
-    player.getEvents().addListener("weaponChanged", changedTo::set);
+    player.getEvents().<PrimaryWeapon>addListener("weaponChanged", changedTo::set);
 
     component.setPrimaryWeapon(second);
 

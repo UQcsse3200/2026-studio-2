@@ -48,7 +48,7 @@ public class PlayerSoundComponent extends Component {
   }
 
   private void playPotion(Object item) {
-    if (item != ItemType.HEALTH_POTION && item != ItemType.SpeedPotion) {
+    if (item != ItemType.HEALTH_POTION && item != ItemType.SPEED_POTION) {
       return;
     }
     SoundEffects.play("sounds/Drink_01.wav", 0.9f);

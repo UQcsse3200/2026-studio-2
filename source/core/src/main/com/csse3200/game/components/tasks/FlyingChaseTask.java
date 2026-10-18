@@ -21,7 +21,6 @@ public class FlyingChaseTask extends DefaultTask implements PriorityTask {
   private final DebugRenderer debugRenderer;
   private final RaycastHit hit = new RaycastHit();
   private MovementTask movementTask;
-  private EdgeDetectTask edgeDetector;
   private PhysicsMovementComponent movementComponent;
 
   /**

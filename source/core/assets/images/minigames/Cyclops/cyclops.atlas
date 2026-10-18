@@ -1,0 +1,715 @@
+cyclops_sleep.png
+size: 1440, 500
+format: RGBA8888
+filter: Nearest, Nearest
+repeat: none
+default
+  rotate: false
+  xy: 0, 0
+  size: 180, 99
+  orig: 180, 99
+  offset: 0, 0
+  index: -1
+sleep
+  rotate: false
+  xy: 0, 0
+  size: 180, 99
+  orig: 180, 99
+  offset: 0, 0
+  index: 0
+sleep
+  rotate: false
+  xy: 180, 0
+  size: 180, 99
+  orig: 180, 99
+  offset: 0, 0
+  index: 1
+sleep
+  rotate: false
+  xy: 360, 0
+  size: 180, 99
+  orig: 180, 99
+  offset: 0, 0
+  index: 2
+sleep
+  rotate: false
+  xy: 540, 0
+  size: 180, 99
+  orig: 180, 99
+  offset: 0, 0
+  index: 3
+sleep
+  rotate: false
+  xy: 720, 0
+  size: 180, 99
+  orig: 180, 99
+  offset: 0, 0
+  index: 4
+sleep
+  rotate: false
+  xy: 900, 0
+  size: 180, 99
+  orig: 180, 99
+  offset: 0, 0
+  index: 5
+sleep
+  rotate: false
+  xy: 1080, 0
+  size: 180, 99
+  orig: 180, 99
+  offset: 0, 0
+  index: 6
+sleep
+  rotate: false
+  xy: 1260, 0
+  size: 180, 99
+  orig: 180, 99
+  offset: 0, 0
+  index: 7
+sleep
+  rotate: false
+  xy: 0, 100
+  size: 180, 99
+  orig: 180, 99
+  offset: 0, 0
+  index: 8
+sleep
+  rotate: false
+  xy: 180, 100
+  size: 180, 99
+  orig: 180, 99
+  offset: 0, 0
+  index: 9
+sleep
+  rotate: false
+  xy: 360, 100
+  size: 180, 99
+  orig: 180, 99
+  offset: 0, 0
+  index: 10
+sleep
+  rotate: false
+  xy: 540, 100
+  size: 180, 99
+  orig: 180, 99
+  offset: 0, 0
+  index: 11
+sleep
+  rotate: false
+  xy: 720, 100
+  size: 180, 99
+  orig: 180, 99
+  offset: 0, 0
+  index: 12
+sleep
+  rotate: false
+  xy: 900, 100
+  size: 180, 99
+  orig: 180, 99
+  offset: 0, 0
+  index: 13
+sleep
+  rotate: false
+  xy: 1080, 100
+  size: 180, 99
+  orig: 180, 99
+  offset: 0, 0
+  index: 14
+sleep
+  rotate: false
+  xy: 1260, 100
+  size: 180, 99
+  orig: 180, 99
+  offset: 0, 0
+  index: 15
+sleep
+  rotate: false
+  xy: 0, 200
+  size: 180, 99
+  orig: 180, 99
+  offset: 0, 0
+  index: 16
+sleep
+  rotate: false
+  xy: 180, 200
+  size: 180, 99
+  orig: 180, 99
+  offset: 0, 0
+  index: 17
+sleep
+  rotate: false
+  xy: 360, 200
+  size: 180, 99
+  orig: 180, 99
+  offset: 0, 0
+  index: 18
+sleep
+  rotate: false
+  xy: 540, 200
+  size: 180, 99
+  orig: 180, 99
+  offset: 0, 0
+  index: 19
+sleep
+  rotate: false
+  xy: 720, 200
+  size: 180, 99
+  orig: 180, 99
+  offset: 0, 0
+  index: 20
+sleep
+  rotate: false
+  xy: 900, 200
+  size: 180, 99
+  orig: 180, 99
+  offset: 0, 0
+  index: 21
+sleep
+  rotate: false
+  xy: 1080, 200
+  size: 180, 99
+  orig: 180, 99
+  offset: 0, 0
+  index: 22
+sleep
+  rotate: false
+  xy: 1260, 200
+  size: 180, 99
+  orig: 180, 99
+  offset: 0, 0
+  index: 23
+sleep
+  rotate: false
+  xy: 0, 300
+  size: 180, 99
+  orig: 180, 99
+  offset: 0, 0
+  index: 24
+sleep
+  rotate: false
+  xy: 180, 300
+  size: 180, 99
+  orig: 180, 99
+  offset: 0, 0
+  index: 25
+sleep
+  rotate: false
+  xy: 360, 300
+  size: 180, 99
+  orig: 180, 99
+  offset: 0, 0
+  index: 26
+sleep
+  rotate: false
+  xy: 540, 300
+  size: 180, 99
+  orig: 180, 99
+  offset: 0, 0
+  index: 27
+sleep
+  rotate: false
+  xy: 720, 300
+  size: 180, 99
+  orig: 180, 99
+  offset: 0, 0
+  index: 28
+sleep
+  rotate: false
+  xy: 900, 300
+  size: 180, 99
+  orig: 180, 99
+  offset: 0, 0
+  index: 29
+sleep
+  rotate: false
+  xy: 1080, 300
+  size: 180, 99
+  orig: 180, 99
+  offset: 0, 0
+  index: 30
+sleep
+  rotate: false
+  xy: 1260, 300
+  size: 180, 99
+  orig: 180, 99
+  offset: 0, 0
+  index: 31
+sleep
+  rotate: false
+  xy: 0, 400
+  size: 180, 99
+  orig: 180, 99
+  offset: 0, 0
+  index: 32
+sleep
+  rotate: false
+  xy: 180, 400
+  size: 180, 99
+  orig: 180, 99
+  offset: 0, 0
+  index: 33
+sleep
+  rotate: false
+  xy: 360, 400
+  size: 180, 99
+  orig: 180, 99
+  offset: 0, 0
+  index: 34
+sleep
+  rotate: false
+  xy: 540, 400
+  size: 180, 99
+  orig: 180, 99
+  offset: 0, 0
+  index: 35
+
+cyclops_idle.png
+size: 1440, 500
+format: RGBA8888
+filter: Nearest, Nearest
+repeat: none
+idle
+  rotate: false
+  xy: 0, 0
+  size: 180, 99
+  orig: 180, 99
+  offset: 0, 0
+  index: 0
+idle
+  rotate: false
+  xy: 180, 0
+  size: 180, 99
+  orig: 180, 99
+  offset: 0, 0
+  index: 1
+idle
+  rotate: false
+  xy: 360, 0
+  size: 180, 99
+  orig: 180, 99
+  offset: 0, 0
+  index: 2
+idle
+  rotate: false
+  xy: 540, 0
+  size: 180, 99
+  orig: 180, 99
+  offset: 0, 0
+  index: 3
+idle
+  rotate: false
+  xy: 720, 0
+  size: 180, 99
+  orig: 180, 99
+  offset: 0, 0
+  index: 4
+idle
+  rotate: false
+  xy: 900, 0
+  size: 180, 99
+  orig: 180, 99
+  offset: 0, 0
+  index: 5
+idle
+  rotate: false
+  xy: 1080, 0
+  size: 180, 99
+  orig: 180, 99
+  offset: 0, 0
+  index: 6
+idle
+  rotate: false
+  xy: 1260, 0
+  size: 180, 99
+  orig: 180, 99
+  offset: 0, 0
+  index: 7
+idle
+  rotate: false
+  xy: 0, 100
+  size: 180, 99
+  orig: 180, 99
+  offset: 0, 0
+  index: 8
+idle
+  rotate: false
+  xy: 180, 100
+  size: 180, 99
+  orig: 180, 99
+  offset: 0, 0
+  index: 9
+idle
+  rotate: false
+  xy: 360, 100
+  size: 180, 99
+  orig: 180, 99
+  offset: 0, 0
+  index: 10
+idle
+  rotate: false
+  xy: 540, 100
+  size: 180, 99
+  orig: 180, 99
+  offset: 0, 0
+  index: 11
+idle
+  rotate: false
+  xy: 720, 100
+  size: 180, 99
+  orig: 180, 99
+  offset: 0, 0
+  index: 12
+idle
+  rotate: false
+  xy: 900, 100
+  size: 180, 99
+  orig: 180, 99
+  offset: 0, 0
+  index: 13
+idle
+  rotate: false
+  xy: 1080, 100
+  size: 180, 99
+  orig: 180, 99
+  offset: 0, 0
+  index: 14
+idle
+  rotate: false
+  xy: 1260, 100
+  size: 180, 99
+  orig: 180, 99
+  offset: 0, 0
+  index: 15
+idle
+  rotate: false
+  xy: 0, 200
+  size: 180, 99
+  orig: 180, 99
+  offset: 0, 0
+  index: 16
+idle
+  rotate: false
+  xy: 180, 200
+  size: 180, 99
+  orig: 180, 99
+  offset: 0, 0
+  index: 17
+idle
+  rotate: false
+  xy: 360, 200
+  size: 180, 99
+  orig: 180, 99
+  offset: 0, 0
+  index: 18
+idle
+  rotate: false
+  xy: 540, 200
+  size: 180, 99
+  orig: 180, 99
+  offset: 0, 0
+  index: 19
+idle
+  rotate: false
+  xy: 720, 200
+  size: 180, 99
+  orig: 180, 99
+  offset: 0, 0
+  index: 20
+idle
+  rotate: false
+  xy: 900, 200
+  size: 180, 99
+  orig: 180, 99
+  offset: 0, 0
+  index: 21
+idle
+  rotate: false
+  xy: 1080, 200
+  size: 180, 99
+  orig: 180, 99
+  offset: 0, 0
+  index: 22
+idle
+  rotate: false
+  xy: 1260, 200
+  size: 180, 99
+  orig: 180, 99
+  offset: 0, 0
+  index: 23
+idle
+  rotate: false
+  xy: 0, 300
+  size: 180, 99
+  orig: 180, 99
+  offset: 0, 0
+  index: 24
+idle
+  rotate: false
+  xy: 180, 300
+  size: 180, 99
+  orig: 180, 99
+  offset: 0, 0
+  index: 25
+idle
+  rotate: false
+  xy: 360, 300
+  size: 180, 99
+  orig: 180, 99
+  offset: 0, 0
+  index: 26
+idle
+  rotate: false
+  xy: 540, 300
+  size: 180, 99
+  orig: 180, 99
+  offset: 0, 0
+  index: 27
+idle
+  rotate: false
+  xy: 720, 300
+  size: 180, 99
+  orig: 180, 99
+  offset: 0, 0
+  index: 28
+idle
+  rotate: false
+  xy: 900, 300
+  size: 180, 99
+  orig: 180, 99
+  offset: 0, 0
+  index: 29
+idle
+  rotate: false
+  xy: 1080, 300
+  size: 180, 99
+  orig: 180, 99
+  offset: 0, 0
+  index: 30
+idle
+  rotate: false
+  xy: 1260, 300
+  size: 180, 99
+  orig: 180, 99
+  offset: 0, 0
+  index: 31
+idle
+  rotate: false
+  xy: 0, 400
+  size: 180, 99
+  orig: 180, 99
+  offset: 0, 0
+  index: 32
+idle
+  rotate: false
+  xy: 180, 400
+  size: 180, 99
+  orig: 180, 99
+  offset: 0, 0
+  index: 33
+idle
+  rotate: false
+  xy: 360, 400
+  size: 180, 99
+  orig: 180, 99
+  offset: 0, 0
+  index: 34
+idle
+  rotate: false
+  xy: 540, 400
+  size: 180, 99
+  orig: 180, 99
+  offset: 0, 0
+  index: 35
+
+cyclops_charge_start.png
+size: 1080, 100
+format: RGBA8888
+filter: Nearest, Nearest
+repeat: none
+charge_start
+  rotate: false
+  xy: 0, 0
+  size: 180, 99
+  orig: 180, 99
+  offset: 0, 0
+  index: 0
+charge_start
+  rotate: false
+  xy: 180, 0
+  size: 180, 99
+  orig: 180, 99
+  offset: 0, 0
+  index: 1
+charge_start
+  rotate: false
+  xy: 360, 0
+  size: 180, 99
+  orig: 180, 99
+  offset: 0, 0
+  index: 2
+charge_start
+  rotate: false
+  xy: 540, 0
+  size: 180, 99
+  orig: 180, 99
+  offset: 0, 0
+  index: 3
+charge_start
+  rotate: false
+  xy: 720, 0
+  size: 180, 99
+  orig: 180, 99
+  offset: 0, 0
+  index: 4
+charge_start
+  rotate: false
+  xy: 900, 0
+  size: 180, 99
+  orig: 180, 99
+  offset: 0, 0
+  index: 5
+
+cyclops_gallop.png
+size: 1260, 100
+format: RGBA8888
+filter: Nearest, Nearest
+repeat: none
+jump
+  rotate: false
+  xy: 720, 0
+  size: 180, 99
+  orig: 180, 99
+  offset: 0, 0
+  index: 0
+
+cyclops_attack.png
+size: 3240, 100
+format: RGBA8888
+filter: Nearest, Nearest
+repeat: none
+attack
+  rotate: false
+  xy: 0, 0
+  size: 180, 99
+  orig: 180, 99
+  offset: 0, 0
+  index: 0
+attack
+  rotate: false
+  xy: 180, 0
+  size: 180, 99
+  orig: 180, 99
+  offset: 0, 0
+  index: 1
+attack
+  rotate: false
+  xy: 360, 0
+  size: 180, 99
+  orig: 180, 99
+  offset: 0, 0
+  index: 2
+attack
+  rotate: false
+  xy: 540, 0
+  size: 180, 99
+  orig: 180, 99
+  offset: 0, 0
+  index: 3
+attack
+  rotate: false
+  xy: 720, 0
+  size: 180, 99
+  orig: 180, 99
+  offset: 0, 0
+  index: 4
+attack
+  rotate: false
+  xy: 900, 0
+  size: 180, 99
+  orig: 180, 99
+  offset: 0, 0
+  index: 5
+attack
+  rotate: false
+  xy: 1080, 0
+  size: 180, 99
+  orig: 180, 99
+  offset: 0, 0
+  index: 6
+attack
+  rotate: false
+  xy: 1260, 0
+  size: 180, 99
+  orig: 180, 99
+  offset: 0, 0
+  index: 7
+attack
+  rotate: false
+  xy: 1440, 0
+  size: 180, 99
+  orig: 180, 99
+  offset: 0, 0
+  index: 8
+attack
+  rotate: false
+  xy: 1620, 0
+  size: 180, 99
+  orig: 180, 99
+  offset: 0, 0
+  index: 9
+attack
+  rotate: false
+  xy: 1800, 0
+  size: 180, 99
+  orig: 180, 99
+  offset: 0, 0
+  index: 10
+attack
+  rotate: false
+  xy: 1980, 0
+  size: 180, 99
+  orig: 180, 99
+  offset: 0, 0
+  index: 11
+attack
+  rotate: false
+  xy: 2160, 0
+  size: 180, 99
+  orig: 180, 99
+  offset: 0, 0
+  index: 12
+attack
+  rotate: false
+  xy: 2340, 0
+  size: 180, 99
+  orig: 180, 99
+  offset: 0, 0
+  index: 13
+attack
+  rotate: false
+  xy: 2520, 0
+  size: 180, 99
+  orig: 180, 99
+  offset: 0, 0
+  index: 14
+attack
+  rotate: false
+  xy: 2700, 0
+  size: 180, 99
+  orig: 180, 99
+  offset: 0, 0
+  index: 15
+attack
+  rotate: false
+  xy: 2880, 0
+  size: 180, 99
+  orig: 180, 99
+  offset: 0, 0
+  index: 16
+attack
+  rotate: false
+  xy: 3060, 0
+  size: 180, 99
+  orig: 180, 99
+  offset: 0, 0
+  index: 17

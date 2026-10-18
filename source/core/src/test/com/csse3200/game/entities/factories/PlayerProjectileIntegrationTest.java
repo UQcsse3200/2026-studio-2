@@ -45,8 +45,8 @@ class PlayerProjectileIntegrationTest {
     ServiceLocator.registerRenderService(mock(RenderService.class));
 
     LightingEngine lightingEngine = mock(LightingEngine.class);
-    box2dLight.RayHandler rayHandler = mock(box2dLight.RayHandler.class);
-    when(lightingEngine.getRayHandler()).thenReturn(rayHandler);
+    box2dLight.RayHandler rayHandlerMock = mock(box2dLight.RayHandler.class);
+    when(lightingEngine.getRayHandler()).thenReturn(rayHandlerMock);
     LightingService lightingService = mock(LightingService.class);
     when(lightingService.getEngine()).thenReturn(lightingEngine);
     ServiceLocator.registerLightingService(lightingService);

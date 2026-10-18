@@ -73,7 +73,7 @@ class BowComponentTest {
     player.setScale(2f, 2f);
 
     AtomicReference<Vector2> animationDirection = new AtomicReference<>();
-    player.getEvents().addListener("attackAnimation", animationDirection::set);
+    player.getEvents().<Vector2>addListener("attackAnimation", animationDirection::set);
 
     component.attack(new Vector2(3f, 4f));
 

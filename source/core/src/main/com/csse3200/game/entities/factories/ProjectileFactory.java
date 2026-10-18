@@ -188,15 +188,15 @@ public class ProjectileFactory {
     Entity potion =
         createArrow(
                 position,
-                ItemType.PoisonPotion.getDamage(),
+                ItemType.POISON_POTION.getDamage(),
                 new ArrowProjectileComponent(
                     shooter,
                     direction.cpy().nor(),
                     POISON_POTION_SPEED,
                     POISON_POTION_RANGE,
                     ArrowType.POTION,
-                    ItemType.PoisonPotion.getPoisonDamagePerSecond(),
-                    ItemType.PoisonPotion.getPoisonDuration()),
+                    ItemType.POISON_POTION.getPoisonDamagePerSecond(),
+                    ItemType.POISON_POTION.getPoisonDuration()),
                 ArrowType.POTION)
             .addComponent(
                 new PointLightComponent(

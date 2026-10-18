@@ -202,7 +202,7 @@ class KeyboardPlayerInputComponentTest {
     AtomicInteger sprints = new AtomicInteger();
     AtomicInteger sprintStops = new AtomicInteger();
 
-    player.getEvents().addListener("walk", walkDirection::set);
+    player.getEvents().<Vector2>addListener("walk", walkDirection::set);
     player.getEvents().addListener("walkStop", walkStops::incrementAndGet);
     player.getEvents().addListener("jump", jumps::incrementAndGet);
     player.getEvents().addListener("sprint", sprints::incrementAndGet);

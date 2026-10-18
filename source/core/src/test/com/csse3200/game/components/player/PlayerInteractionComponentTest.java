@@ -48,8 +48,8 @@ class PlayerInteractionComponentTest {
     ServiceLocator.registerRenderService(new RenderService());
 
     LightingEngine lightingEngine = mock(LightingEngine.class);
-    box2dLight.RayHandler rayHandler = mock(box2dLight.RayHandler.class);
-    when(lightingEngine.getRayHandler()).thenReturn(rayHandler);
+    box2dLight.RayHandler rayHandlerMock = mock(box2dLight.RayHandler.class);
+    when(lightingEngine.getRayHandler()).thenReturn(rayHandlerMock);
     LightingService lightingService = mock(LightingService.class);
     when(lightingService.getEngine()).thenReturn(lightingEngine);
     ServiceLocator.registerLightingService(lightingService);
@@ -299,6 +299,20 @@ class PlayerInteractionComponentTest {
     assertTrue(interaction.interact());
     assertTrue(closed[0]);
     assertFalse(interaction.isShopOpen());
+  }
+
+  @Test
+  void shouldReportAShopClosureOnlyOnce() {
+    Entity player = createPlayer(new InventoryComponent(0));
+    spawnShopNpc(new Vector2(0.5f, 0f));
+    PlayerInteractionComponent interaction = player.getComponent(PlayerInteractionComponent.class);
+
+    interaction.interact();
+    assertFalse(interaction.consumeShopClosed(), "the shop is still open");
+
+    player.getEvents().trigger("closeShop");
+    assertTrue(interaction.consumeShopClosed());
+    assertFalse(interaction.consumeShopClosed(), "the closure is reported once");
   }
 
   @Test

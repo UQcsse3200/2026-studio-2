@@ -118,7 +118,7 @@ public class RisingWaterComponentTest {
 
     water.captureValues(20);
     // must equal the checkpoint y - the lenience + 10 from the position being -10
-    assertEquals(20 - water.CHECKPOINT_LENIENCE + 10, water.storedHeight);
+    assertEquals(20 - water.checkpointLenience + 10, water.storedHeight);
   }
 
   @Test

@@ -14,13 +14,10 @@ public class CheckpointComponent extends Component {
   private boolean collected;
   private GridPoint2 position;
   private Entity player = null;
-  private final String atlas;
   private AnimationRenderComponent torchAnimator;
   private PointLightComponent pointLightComponent;
 
-  /** World size of an atlas-based checkpoint (each frame is 709 x 890, about 4:5). */
-  public static final float ATLAS_WIDTH = 1.6f;
-
+  /** World height of an atlas-based checkpoint; its width follows the atlas frame's ratio. */
   public static final float ATLAS_HEIGHT = 2f;
 
   /**
@@ -43,7 +40,6 @@ public class CheckpointComponent extends Component {
   public CheckpointComponent(boolean collected, GridPoint2 position, String atlas) {
     this.collected = collected;
     this.position = position;
-    this.atlas = atlas;
   }
 
   @Override
@@ -109,10 +105,11 @@ public class CheckpointComponent extends Component {
     }
     float playerPosX = player.getPosition().x;
     float playerPosY = player.getPosition().y;
-    if (position.x - 1 < playerPosX && position.x + 1 > playerPosX) {
-      if (position.y - 1 < playerPosY && position.y + 1 > playerPosY) {
-        activate();
-      }
+    if (position.x - 1 < playerPosX
+        && position.x + 1 > playerPosX
+        && position.y - 1 < playerPosY
+        && position.y + 1 > playerPosY) {
+      activate();
     }
   }
 }

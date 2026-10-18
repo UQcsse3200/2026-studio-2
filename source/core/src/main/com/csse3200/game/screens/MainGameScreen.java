@@ -19,6 +19,7 @@ import com.csse3200.game.components.minigames.blackjack.BlackjackConfig;
 import com.csse3200.game.components.minigames.blackjack.BlackjackOverlay;
 import com.csse3200.game.components.minigames.spinthewheel.SpinTheWheelOverlay;
 import com.csse3200.game.components.minigames.spinthewheel.WheelConfig;
+import com.csse3200.game.components.player.PlayerInteractionComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.entities.factories.RenderFactory;
@@ -106,7 +107,7 @@ public class MainGameScreen extends ScreenAdapter {
     wheelOverlay = new SpinTheWheelOverlay(WheelConfig.ITEMS, player, minigameOverlayManager);
     player.getEvents().addListener("spinTheWheel", wheelOverlay::request);
     blackjackOverlay = new BlackjackOverlay(player, minigameOverlayManager);
-    pauseOverlay = new PauseMenuOverlay(game, forestGameArea);
+    pauseOverlay = new PauseMenuOverlay(game);
   }
 
   private void onPlayerDeath() {
@@ -115,21 +116,30 @@ public class MainGameScreen extends ScreenAdapter {
         () -> ServiceLocator.getGameEndEventHandler().trigger("gameEnd", GameEndState.LOSE));
   }
 
+  /**
+   * Whether the shop closed since the last frame. An Esc press that closes the shop is handled by
+   * the input chain, but the pause menu polls the key itself, so without this one press would do
+   * both.
+   */
+  private boolean consumeShopClosed() {
+    Entity current = player;
+    PlayerInteractionComponent interaction =
+        current == null ? null : current.getComponent(PlayerInteractionComponent.class);
+    return interaction != null && interaction.consumeShopClosed();
+  }
+
   @Override
   public void render(float delta) {
     // Overlay shortcuts bypass the input handler chain, so ignore them while the terminal is
     // open. F1 still toggles the terminal itself.
     boolean terminalOpen = terminal != null && terminal.isOpen();
+    boolean shopJustClosed = consumeShopClosed();
     if (!terminalOpen
+        && !shopJustClosed
         && Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)
         && !ServiceLocator.getEntityService().getSettingsOpen()) {
       pauseOverlay.request();
     }
-    /*
-    if (Gdx.input.isKeyJustPressed(Input.Keys.L)) {
-      blackjackOverlay.request();
-    }
-     */
 
     physicsEngine.update();
     ServiceLocator.getEntityService().update();
@@ -186,6 +196,8 @@ public class MainGameScreen extends ScreenAdapter {
                 "images/health/Damaged_heart.png",
                 "images/health/Last_Health.png",
                 "images/items/gold_coin.png",
+                "images/backgrounds/coin_bg.png",
+                "images/backgrounds/shop_bg.png",
                 "images/ui/scroll_bg.png",
                 "images/Buttons/continue_up_btn.png",
                 "images/Buttons/continue_down_btn.png",
@@ -205,8 +217,8 @@ public class MainGameScreen extends ScreenAdapter {
                 "images/Buttons/x_down_btn.png"));
 
     paths.addAll(List.of(ItemAssets.getTextures()));
-    paths.addAll(List.of(WheelConfig.TEXTURES));
-    paths.addAll(List.of(BlackjackConfig.TEXTURES));
+    paths.addAll(WheelConfig.TEXTURES);
+    paths.addAll(BlackjackConfig.TEXTURES);
     return paths.toArray(new String[0]);
   }
 
@@ -214,7 +226,7 @@ public class MainGameScreen extends ScreenAdapter {
     logger.debug("Loading assets");
     ResourceService resourceService = ServiceLocator.getResourceService();
     resourceService.loadTextures(mainGameTextures);
-    resourceService.loadSounds(WheelConfig.SOUNDS);
+    resourceService.loadSounds(WheelConfig.SOUNDS.toArray(String[]::new));
     ButtonSound.load(resourceService);
     ServiceLocator.getResourceService().loadAll();
   }
@@ -223,7 +235,7 @@ public class MainGameScreen extends ScreenAdapter {
     logger.debug("Unloading assets");
     ResourceService resourceService = ServiceLocator.getResourceService();
     resourceService.unloadAssets(mainGameTextures);
-    resourceService.unloadAssets(WheelConfig.SOUNDS);
+    resourceService.unloadAssets(WheelConfig.SOUNDS.toArray(String[]::new));
     ButtonSound.unload(resourceService);
   }
 

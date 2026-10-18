@@ -17,9 +17,7 @@ import org.slf4j.LoggerFactory;
 
 public class LevelBossGameArea extends GameArea {
 
-  private static final Logger logger = LoggerFactory.getLogger(Level3GameArea.class);
-
-  private static final float WALL_WIDTH = 0.1f;
+  private static final Logger logger = LoggerFactory.getLogger(LevelBossGameArea.class);
 
   private static final GridPoint2 CALYPSO_SPAWN = new GridPoint2(15, 1);
 
@@ -40,22 +38,23 @@ public class LevelBossGameArea extends GameArea {
 
   /** Textures used by the level boss game area. */
   private static final String[] level3Textures = {
+    "images/backgrounds/coin_bg.png",
+    "images/backgrounds/shop_bg.png",
     "images/backgrounds/Background-2.png",
-    "images/terrain/Level_3/Platform_level-3.png",
     "images/terrain/Level_3/tile-level3.png",
     "images/ui/transparent.png",
     "images/projectiles/necromancer_projectile.png"
   };
 
   private static final String[] level3TexturesAtlas = {
-    "images/in_level_button.atlas", "images/enemies/calypso.atlas"
+    "images/ui/in_level_button.atlas", "images/enemies/calypso.atlas"
   };
 
   private static final String[] level3Sounds = {"sounds/Impact4.ogg"};
 
-  private static final String backgroundMusic = "sounds/BGM_03_mp3.mp3";
+  private static final String BACKGROUND_MUSIC = "sounds/BGM_03_mp3.mp3";
 
-  private static final String[] level3Music = {backgroundMusic};
+  private static final String[] level3Music = {BACKGROUND_MUSIC};
 
   private final TerrainFactory terrainFactory;
   private final CameraComponent camera;
@@ -129,15 +128,6 @@ public class LevelBossGameArea extends GameArea {
     water.getEvents().trigger("checkpointEncountered", position.y);
   }
 
-  /** Plays the background music. */
-  private void playMusic() {
-    Music music = ServiceLocator.getResourceService().getAsset(backgroundMusic, Music.class);
-
-    music.setLooping(true);
-    music.setVolume(0.3f);
-    music.play();
-  }
-
   /** Loads all Level 2 assets. */
   private void loadAssets() {
     logger.debug("Loading assets");
@@ -168,7 +158,7 @@ public class LevelBossGameArea extends GameArea {
   @Override
   public void dispose() {
     super.dispose();
-    ServiceLocator.getResourceService().getAsset(backgroundMusic, Music.class).stop();
+    ServiceLocator.getResourceService().getAsset(BACKGROUND_MUSIC, Music.class).stop();
     this.unloadAssets();
   }
 }

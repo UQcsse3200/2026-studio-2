@@ -932,8 +932,10 @@ public class GrappleComponent extends Component {
     Vector2 anchor;
     if (pendingArrow != null) {
       anchor = arrowPoint();
+    } else if (pendingAnchorPoint != null) {
+      anchor = pendingAnchorPoint.cpy();
     } else {
-      anchor = pendingAnchorPoint != null ? pendingAnchorPoint.cpy() : getOriginalAnchorPoint();
+      anchor = getOriginalAnchorPoint();
     }
     if (anchor == null) {
       return points;

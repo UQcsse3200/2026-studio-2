@@ -61,7 +61,8 @@ class SpinTheWheelDisplayTest {
     ServiceLocator.registerRenderService(renderService);
 
     resources = mock(ResourceService.class);
-    when(resources.getAsset(anyString(), eq(Texture.class))).thenReturn(mock(Texture.class));
+    Texture textureMock = mock(Texture.class);
+    when(resources.getAsset(anyString(), eq(Texture.class))).thenReturn(textureMock);
     ServiceLocator.registerResourceService(resources);
   }
 

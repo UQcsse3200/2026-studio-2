@@ -211,7 +211,8 @@ class InventoryComponentTest {
     assertNull(inventory.getSlot(2));
     assertFalse(inventory.isSlotEmpty(-1));
     assertFalse(inventory.isSlotEmpty(2));
-    assertThrows(UnsupportedOperationException.class, () -> inventory.getSlots().clear());
+    var slots = inventory.getSlots();
+    assertThrows(UnsupportedOperationException.class, slots::clear);
   }
 
   @Test

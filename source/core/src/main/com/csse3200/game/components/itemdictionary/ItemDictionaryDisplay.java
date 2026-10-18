@@ -24,6 +24,8 @@ import com.csse3200.game.ui.terminal.Terminal;
  * be clicked to open a detailed information page. Undiscovered items remain locked.
  */
 public class ItemDictionaryDisplay extends UIComponent {
+  private static final String LARGE_FONT_STYLE = "large";
+
   private final InventorySlotStyle slotStyle = new InventorySlotStyle();
 
   private enum DictionaryPage {
@@ -34,7 +36,7 @@ public class ItemDictionaryDisplay extends UIComponent {
   private static final int GRID_COLUMNS = 5;
   private final Label.LabelStyle white = new Label.LabelStyle(skin.get(Label.LabelStyle.class));
   private final Label.LabelStyle whiteLarge =
-      new Label.LabelStyle(skin.get("large", Label.LabelStyle.class));
+      new Label.LabelStyle(skin.get(LARGE_FONT_STYLE, Label.LabelStyle.class));
 
   private Table table;
   private Table contentTable;
@@ -113,7 +115,7 @@ public class ItemDictionaryDisplay extends UIComponent {
       addDiscoveredSlotContent(slot, itemType);
       addSlotClickListener(slot, itemType);
     } else {
-      Label locked = new Label("?", skin, "large");
+      Label locked = new Label("?", skin, LARGE_FONT_STYLE);
       slot.add(locked).expand().center();
     }
 
@@ -136,7 +138,7 @@ public class ItemDictionaryDisplay extends UIComponent {
 
       slot.add(icon).size(75f, 75f).expand().center();
     } else {
-      Label missingIcon = new Label("?", skin, "large");
+      Label missingIcon = new Label("?", skin, LARGE_FONT_STYLE);
       slot.add(missingIcon).expand().center();
     }
   }
@@ -223,7 +225,7 @@ public class ItemDictionaryDisplay extends UIComponent {
 
       contentTable.add(icon).size(120f, 120f);
     } else {
-      contentTable.add(new Label("?", skin, "large")).size(120f, 120f);
+      contentTable.add(new Label("?", skin, LARGE_FONT_STYLE)).size(120f, 120f);
     }
   }
 

@@ -2,14 +2,12 @@ package com.csse3200.game.components;
 
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.csse3200.game.physics.PhysicsLayer;
-// import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.physics.components.PhysicsMovementComponent;
 import com.csse3200.game.services.ServiceLocator;
 
 /** Controls the lifetime and disposal behaviour of a projectile. */
 public class ProjectileComponent extends Component {
   private float remainingLifetime;
-  // private HitboxComponent hitboxComponent;
   private PhysicsMovementComponent movementComponent;
   private float previousDistanceToTarget = Float.MAX_VALUE;
   private float timeAlive = 0f;
@@ -26,7 +24,6 @@ public class ProjectileComponent extends Component {
 
   @Override
   public void create() {
-    // hitboxComponent = entity.getComponent(HitboxComponent.class);
     movementComponent = entity.getComponent(PhysicsMovementComponent.class);
     entity.getEvents().addListener("collisionStart", this::onCollisionStart);
   }

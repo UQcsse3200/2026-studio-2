@@ -87,7 +87,7 @@ class MeleeComponentTest {
   @Test
   void swingStartsAndAnnouncesFacing() {
     AtomicInteger swings = new AtomicInteger();
-    player.getEvents().addListener("meleeSwing", swings::set);
+    player.getEvents().<Integer>addListener("meleeSwing", swings::set);
 
     player.getEvents().trigger("meleeStart");
 

@@ -21,10 +21,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class Level3GameArea extends GameArea {
+  private static final String CLOUDS_TEXTURE = "images/parallax/level_1_clouds.png";
+
+  private static final String FURTHEST_BACKGROUND_TEXTURE = "images/parallax/level_1_furthest.png";
 
   private static final Logger logger = LoggerFactory.getLogger(Level3GameArea.class);
-
-  private static final float WALL_WIDTH = 0.1f;
 
   private Vector2 worldBounds;
 
@@ -33,12 +34,14 @@ public class Level3GameArea extends GameArea {
   /** Textures used by the level 2 game area. */
   private static final String[] level3Textures = {
     "images/ui/scroll_bg.png",
+    "images/backgrounds/coin_bg.png",
+    "images/backgrounds/shop_bg.png",
     // Level 3 background
     "images/terrain/Level_3/Platform_level-3.png",
     "images/terrain/Level_3/Platform-crumbling-level-3.png",
     "images/parallax/level_1_background.png",
-    "images/parallax/level_1_furthest.png",
-    "images/parallax/level_1_clouds.png",
+    FURTHEST_BACKGROUND_TEXTURE,
+    CLOUDS_TEXTURE,
     "images/parallax/lightning_1.png",
     "images/parallax/lightning_2.png",
     "images/parallax/lightning_3.png",
@@ -80,9 +83,9 @@ public class Level3GameArea extends GameArea {
 
   private static final String[] level3Sounds = {"sounds/Impact4.ogg"};
 
-  private static final String backgroundMusic = "sounds/BGM_03_mp3.mp3";
+  private static final String BACKGROUND_MUSIC = "sounds/BGM_03_mp3.mp3";
 
-  private static final String[] level3Music = {backgroundMusic};
+  private static final String[] level3Music = {BACKGROUND_MUSIC};
 
   private final TerrainFactory terrainFactory;
   private final CameraComponent camera;
@@ -186,7 +189,7 @@ public class Level3GameArea extends GameArea {
 
     // Furthest clouds image
     backgroundComponent.addLayer(
-        "images/parallax/level_1_clouds.png",
+        CLOUDS_TEXTURE,
         new Vector2(0.1f, 0f), // Parallax factor
         30f,
         4f,
@@ -201,7 +204,7 @@ public class Level3GameArea extends GameArea {
 
     // Second-furthest clouds image
     backgroundComponent.addLayer(
-        "images/parallax/level_1_clouds.png",
+        CLOUDS_TEXTURE,
         new Vector2(0.1f, 0f), // Parallax factor
         30f,
         15f,
@@ -246,7 +249,7 @@ public class Level3GameArea extends GameArea {
 
     // Furthest mountains image
     backgroundComponent.addLayer(
-        "images/parallax/level_1_furthest.png",
+        FURTHEST_BACKGROUND_TEXTURE,
         new Vector2(0.06f, 0f), // Parallax factor 0.12
         30f,
         7f,
@@ -261,7 +264,7 @@ public class Level3GameArea extends GameArea {
 
     // Second-furthest mountains image
     backgroundComponent.addLayer(
-        "images/parallax/level_1_furthest.png",
+        FURTHEST_BACKGROUND_TEXTURE,
         new Vector2(0.11f, 0f), // Parallax factor 0.12
         30f,
         10f,
@@ -287,9 +290,6 @@ public class Level3GameArea extends GameArea {
   private void spawnTerrain() {
     terrain = terrainFactory.createTerrain(TerrainFactory.TerrainType.BACKGROUND_DESERT);
     spawnEntity(new Entity().addComponent(terrain));
-    float tileSize = terrain.getTileSize();
-    GridPoint2 tileBounds = terrain.getMapBounds(0);
-    // worldBounds = new Vector2(tileBounds.x * tileSize, tileBounds.y * tileSize);
     worldBounds = new Vector2(30f, 100f);
   }
 
@@ -335,7 +335,7 @@ public class Level3GameArea extends GameArea {
 
   /** Plays the background music. */
   private void playMusic() {
-    Music music = ServiceLocator.getResourceService().getAsset(backgroundMusic, Music.class);
+    Music music = ServiceLocator.getResourceService().getAsset(BACKGROUND_MUSIC, Music.class);
 
     music.setLooping(true);
     GameVolume.setMusicVolume(music, 0.3f);
@@ -377,7 +377,7 @@ public class Level3GameArea extends GameArea {
   @Override
   public void dispose() {
     super.dispose();
-    ServiceLocator.getResourceService().getAsset(backgroundMusic, Music.class).stop();
+    ServiceLocator.getResourceService().getAsset(BACKGROUND_MUSIC, Music.class).stop();
     this.unloadAssets();
   }
 }

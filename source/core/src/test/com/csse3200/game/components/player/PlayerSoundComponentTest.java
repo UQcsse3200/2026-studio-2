@@ -151,7 +151,7 @@ class PlayerSoundComponentTest {
   @Test
   void speedPotionSchedulesTheSecondGulpAfterTheFirst() {
     try (var timer = mockStatic(Timer.class)) {
-      player.getEvents().trigger("itemUsed", ItemType.SpeedPotion);
+      player.getEvents().trigger("itemUsed", ItemType.SPEED_POTION);
       verify(resources).getAsset("sounds/Drink_01.wav", Sound.class);
       verify(resources, never()).getAsset("sounds/Drink_02.wav", Sound.class);
       ArgumentCaptor<Timer.Task> task = ArgumentCaptor.forClass(Timer.Task.class);

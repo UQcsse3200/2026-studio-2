@@ -11,6 +11,10 @@ import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.physics.components.PhysicsComponent;
 
 public class AttackFactory {
+  private AttackFactory() {
+    // Utility class; all operations are static.
+  }
+
   public static Entity createNewAttack(
       Vector2 size,
       Vector2 position,
@@ -19,14 +23,11 @@ public class AttackFactory {
       float knockback,
       Entity ownerEnemy) {
 
-    Entity attack =
-        new Entity()
-            .addComponent(new PhysicsComponent().setBodyType(BodyDef.BodyType.KinematicBody))
-            .addComponent(new HitboxComponent().setLayer(PhysicsLayer.NPC).setAsBox(size, position))
-            .addComponent(new CombatStatsComponent(1, damage))
-            .addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER, knockback, ownerEnemy))
-            .addComponent(new DurationComponent(duration));
-
-    return attack;
+    return new Entity()
+        .addComponent(new PhysicsComponent().setBodyType(BodyDef.BodyType.KinematicBody))
+        .addComponent(new HitboxComponent().setLayer(PhysicsLayer.NPC).setAsBox(size, position))
+        .addComponent(new CombatStatsComponent(1, damage))
+        .addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER, knockback, ownerEnemy))
+        .addComponent(new DurationComponent(duration));
   }
 }

@@ -47,8 +47,8 @@ class GrappleArrowComponentTest {
     filter.categoryBits = layer;
     Fixture fixture = mock(Fixture.class);
     when(fixture.getFilterData()).thenReturn(filter);
-    Body body = mock(Body.class);
-    when(fixture.getBody()).thenReturn(body);
+    Body bodyMock = mock(Body.class);
+    when(fixture.getBody()).thenReturn(bodyMock);
     return fixture;
   }
 
@@ -136,6 +136,20 @@ class GrappleArrowComponentTest {
     Fixture arrowFixture = mock(Fixture.class);
     Fixture ground = fixtureOnLayer(PhysicsLayer.GROUND);
     assertDoesNotThrow(() -> arrow.getEvents().trigger("collisionStart", arrowFixture, ground));
+  }
+
+  @Test
+  void shouldAlwaysAttachOnLandingRegardlessOfMouseState() {
+    // The shot only fires once the button is released, so by the time the arrow lands the button
+    // has already been let go - there's no "was it still held" state left to check.
+    GrappleComponent grapple = spy(new GrappleComponent());
+    Entity arrow = arrowFiredBy(new Entity().addComponent(grapple));
+
+    arrow
+        .getEvents()
+        .trigger("collisionStart", mock(Fixture.class), fixtureOnLayer(PhysicsLayer.GROUND));
+
+    verify(grapple).attachTo(any(Body.class), any(Vector2.class));
   }
 
   @Test

@@ -10,11 +10,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.UIComponent;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class TimingBarDisplay extends UIComponent {
-  private static final Logger logger = LoggerFactory.getLogger(TimingBarDisplay.class);
 
   static final float MARKER_WIDTH = 10f;
   static final float BAR_WIDTH = 400f;

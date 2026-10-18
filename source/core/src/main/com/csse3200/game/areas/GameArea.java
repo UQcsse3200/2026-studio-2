@@ -29,6 +29,8 @@ import java.util.List;
  * <p>Support for enabling/disabling game areas could be added by making this a Component instead.
  */
 public abstract class GameArea implements Disposable {
+  private static final String ACTIVATE_BY_KEY = "activateByKey";
+
   /** Camera used by this game area. */
   protected final CameraComponent cameraComponent;
 
@@ -126,20 +128,20 @@ public abstract class GameArea implements Disposable {
       // listen for trigger buttons' activation event call
       TriggerButtonComponent trigger = entity.getComponent(TriggerButtonComponent.class);
       if (trigger != null) {
-        entity.getEvents().addListener("activateByKey", this::onButtonActivated);
+        entity.getEvents().addListener(ACTIVATE_BY_KEY, this::onButtonActivated);
       }
     }
 
     // listen for trigger entity activation events
     TriggerComponent trigger = entity.getComponent(TriggerComponent.class);
     if (trigger != null) {
-      entity.getEvents().addListener("activateByKey", this::onButtonActivated);
+      entity.getEvents().addListener(ACTIVATE_BY_KEY, this::onButtonActivated);
     }
 
     // listen for any spawner completion activation events
     SpawnerComponent spawner = entity.getComponent(SpawnerComponent.class);
     if (spawner != null) {
-      entity.getEvents().addListener("activateByKey", this::onButtonActivated);
+      entity.getEvents().addListener(ACTIVATE_BY_KEY, this::onButtonActivated);
     }
 
     // listen for checkpoint activations
@@ -199,7 +201,7 @@ public abstract class GameArea implements Disposable {
    * specified position
    */
   protected void spawnConfigEntities() {
-    ArrayList<SpawnData> entities = config.createEntities();
+    List<SpawnData> entities = config.createEntities();
 
     for (SpawnData data : entities) {
       spawnEntityAt(data.entity, data.pos, false, false);
@@ -329,7 +331,7 @@ public abstract class GameArea implements Disposable {
 
   /** Last collected checkpoint position, or the level spawn if none collected. */
   public GridPoint2 getRespawnPoint() {
-    ArrayList<CheckpointComponent> checkpoints = config.getCheckpoints();
+    List<CheckpointComponent> checkpoints = config.getCheckpoints();
     // If no checkpoints collected use playerSpawn as respawnPoint
     GridPoint2 respawnPoint = config.getPlayerSpawn();
 
@@ -367,7 +369,7 @@ public abstract class GameArea implements Disposable {
       viewportWidth = cameraComponent.getCamera().viewportWidth;
       viewportHeight = cameraComponent.getCamera().viewportHeight;
 
-      cameraComponent.resize(worldBoundX, worldBoundY, worldBoundX + 10);
+      cameraComponent.resize(worldBoundX, worldBoundY, (float) worldBoundX + 10);
       Entity camera = new Entity();
       camera.setPosition(worldBounds.x / 2, worldBounds.y / 2);
       cameraComponent.setTarget(camera);

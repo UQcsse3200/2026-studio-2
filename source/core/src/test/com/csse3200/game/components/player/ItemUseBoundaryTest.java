@@ -107,22 +107,22 @@ class ItemUseBoundaryTest {
   void shouldRejectPoisonThrowWithoutPhysicsEvenWhenEntityServiceExists() {
     ServiceLocator.registerEntityService(new EntityService());
     InventoryComponent inventory = new InventoryComponent(0);
-    inventory.addItem(ItemType.PoisonPotion, 1);
+    inventory.addItem(ItemType.POISON_POTION, 1);
     ItemUseComponent use = new ItemUseComponent();
     Entity player = new Entity().addComponent(inventory).addComponent(use);
     player.create();
     List<ItemType> failed = new ArrayList<>();
     player.getEvents().<ItemType>addListener("itemUseFailed", failed::add);
     assertFalse(use.useSelectedItem());
-    assertEquals(List.of(ItemType.PoisonPotion), failed);
-    assertEquals(1, inventory.getItemCount(ItemType.PoisonPotion));
+    assertEquals(List.of(ItemType.POISON_POTION), failed);
+    assertEquals(1, inventory.getItemCount(ItemType.POISON_POTION));
     assertTrue(ServiceLocator.getEntityService().getEntities().isEmpty());
   }
 
   @Test
   void shouldApplySpeedBuffWhenPlayerActionsExistsWithoutAnActiveBuff() {
     InventoryComponent inventory = new InventoryComponent(0);
-    inventory.addItem(ItemType.SpeedPotion, 1);
+    inventory.addItem(ItemType.SPEED_POTION, 1);
     ItemUseComponent use = new ItemUseComponent();
     // PlayerActions owns physics/input state; this test isolates its inactive-buff query.
     PlayerActions actions = mock(PlayerActions.class);
@@ -136,7 +136,7 @@ class ItemUseBoundaryTest {
             (Float boost, Float duration) -> buffs.add(new Vector2(boost, duration)));
     assertTrue(use.useSelectedItem());
     assertEquals(List.of(new Vector2(0.7f, 3f)), buffs);
-    assertEquals(0, inventory.getItemCount(ItemType.SpeedPotion));
+    assertEquals(0, inventory.getItemCount(ItemType.SPEED_POTION));
   }
 
   @Test

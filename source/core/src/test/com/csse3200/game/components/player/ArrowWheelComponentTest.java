@@ -69,7 +69,7 @@ class ArrowWheelComponentTest {
   @Test
   void shouldHighlightTheTypeUnderThePointer() {
     AtomicReference<ArrowType> announced = new AtomicReference<>();
-    player.getEvents().addListener("arrowHighlighted", announced::set);
+    player.getEvents().<ArrowType>addListener("arrowHighlighted", announced::set);
 
     wheel.open();
     assertTrue(wheel.highlightFromPointer(TOWARDS_COLD));
@@ -96,7 +96,7 @@ class ArrowWheelComponentTest {
   @Test
   void shouldApplyTheHighlightedTypeOnClose() {
     AtomicReference<ArrowType> applied = new AtomicReference<>();
-    player.getEvents().addListener("arrowSelected", applied::set);
+    player.getEvents().<ArrowType>addListener("arrowSelected", applied::set);
 
     wheel.open();
     wheel.highlightFromPointer(TOWARDS_FIRE);
@@ -138,7 +138,7 @@ class ArrowWheelComponentTest {
     inventory.addItem(ItemType.STANDARD_ARROW, 5);
     inventory.selectSlot(0);
     AtomicReference<ArrowType> rejected = new AtomicReference<>();
-    player.getEvents().addListener("arrowSelectionRejected", rejected::set);
+    player.getEvents().<ArrowType>addListener("arrowSelectionRejected", rejected::set);
 
     wheel.open();
     wheel.highlightFromPointer(TOWARDS_FIRE);
@@ -159,7 +159,7 @@ class ArrowWheelComponentTest {
   @Test
   void shouldKeepThePreviousTypeWhenTheHighlightIsUnavailable() {
     AtomicReference<ArrowType> rejected = new AtomicReference<>();
-    player.getEvents().addListener("arrowSelectionRejected", rejected::set);
+    player.getEvents().<ArrowType>addListener("arrowSelectionRejected", rejected::set);
     wheel.setAvailable(ArrowType.ICE, false);
 
     wheel.open();
@@ -281,7 +281,7 @@ class ArrowWheelComponentTest {
     wheel.highlightFromPointer(TOWARDS_FIRE);
     wheel.close();
     AtomicReference<ArrowType> announced = new AtomicReference<>();
-    player.getEvents().addListener("arrowSelected", announced::set);
+    player.getEvents().<ArrowType>addListener("arrowSelected", announced::set);
 
     inventory.removeItem(ItemType.FIRE_ARROW, 1);
 
@@ -314,13 +314,13 @@ class ArrowWheelComponentTest {
 
   @Test
   void shouldRememberWhereTheWheelIsOnScreen() {
-    ArrowWheelComponent positionedWheel = new ArrowWheelComponent();
-    assertNull(positionedWheel.getScreenCentre());
+    ArrowWheelComponent screenWheel = new ArrowWheelComponent();
+    assertNull(screenWheel.getScreenCentre());
 
-    positionedWheel.setScreenCentre(150f, 450f);
+    screenWheel.setScreenCentre(150f, 450f);
 
-    assertEquals(150f, positionedWheel.getScreenCentre().x);
-    assertEquals(450f, positionedWheel.getScreenCentre().y);
+    assertEquals(150f, screenWheel.getScreenCentre().x);
+    assertEquals(450f, screenWheel.getScreenCentre().y);
   }
 
   @Test

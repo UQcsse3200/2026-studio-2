@@ -9,6 +9,8 @@ import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.services.GameTime;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.function.Supplier;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,6 +31,27 @@ class SpawnerComponentTest {
     ArrayList<Supplier<Entity>> spawnables = new ArrayList<>();
     spawnables.add(() -> child);
     return spawnables;
+  }
+
+  @Test
+  void acceptsOtherListImplementationsAndSpawnsOnlyConfiguredChildren() {
+    List<Entity> children = List.of(new Entity(), new Entity(), new Entity());
+    List<Supplier<Entity>> choices = new LinkedList<>();
+    children.forEach(child -> choices.add(() -> child));
+    SpawnerComponent component =
+        new SpawnerComponent(choices, 1f, 100, true, SpawnerComponent.ACTIVATION_MODE.NORMAL);
+    Entity spawner = new Entity().addComponent(component);
+    spawner.create();
+    List<Entity> spawned = new ArrayList<>();
+    spawner.getEvents().<Entity>addListener("spawnEntity", spawned::add);
+    when(timeSource.getDeltaTime()).thenReturn(1f);
+
+    for (int i = 0; i < 100; i++) {
+      component.update();
+    }
+
+    assertEquals(100, spawned.size());
+    assertTrue(children.containsAll(spawned));
   }
 
   @Test
