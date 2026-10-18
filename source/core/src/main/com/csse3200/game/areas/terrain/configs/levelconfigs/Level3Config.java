@@ -435,7 +435,7 @@ public class Level3Config extends LevelConfig {
               new String[] {"enemyArena2"},
               new String[] {"enemyArena2Complete", "waterStart"}), // ES5
           new EnemySpawnerConfig(
-              new GridPoint2(12, 100),
+              new GridPoint2(18, 100),
               spawnerConfig[4],
               new String[] {"bossArena"},
               new String[] {}),
