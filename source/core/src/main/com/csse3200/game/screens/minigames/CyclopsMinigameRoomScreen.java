@@ -117,6 +117,7 @@ public class CyclopsMinigameRoomScreen extends ScreenAdapter {
   public void dispose() {
     logger.debug("Disposing minigame screen");
 
+    intro.dispose();
     renderer.dispose();
     cyclopsMinigameArea.dispose();
     unloadAssets();
