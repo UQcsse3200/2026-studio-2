@@ -17,6 +17,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.extensions.GameExtension;
+import com.csse3200.game.lighting.LightingEngine;
 import com.csse3200.game.physics.PhysicsEngine;
 import com.csse3200.game.physics.PhysicsService;
 import org.junit.jupiter.api.BeforeEach;
@@ -103,6 +104,25 @@ class RendererTest {
 
       assertDoesNotThrow(() -> renderer.render());
       verify(renderService).render(spriteBatch);
+    } finally {
+      Gdx.gl = originalGl;
+    }
+  }
+
+  @Test
+  void shouldRenderWithLightingWithoutGlContext() {
+    // Same as above, for the version of render() that also draws the lighting.
+    GL20 originalGl = Gdx.gl;
+    Gdx.gl = null;
+    try {
+      CameraComponent cameraComponent = makeCameraEntity(camera);
+      Renderer renderer =
+          new Renderer(cameraComponent, 10, spriteBatch, stage, renderService, debugRenderer);
+      LightingEngine lightingEngine = mock(LightingEngine.class);
+
+      assertDoesNotThrow(() -> renderer.render(lightingEngine));
+      verify(renderService).render(spriteBatch);
+      verify(lightingEngine).render();
     } finally {
       Gdx.gl = originalGl;
     }
