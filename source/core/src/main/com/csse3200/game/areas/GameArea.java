@@ -298,6 +298,46 @@ public abstract class GameArea implements Disposable {
     // here as it allows the checkpoint system to bind to the current game area's respective
     // onCheckpointActivated method. For any level specific behaviour for checkpoint activation,
     // such as level 3's rising water saving, that game area should override this method
+    // (calling super) so checkpoint saves happen for every level.
+    if (ServiceLocator.getGameSaveEventHandler() != null) {
+      ServiceLocator.getGameSaveEventHandler().trigger("autosave");
+    }
+  }
+
+  /**
+   * Positions of every checkpoint currently activated in this area, captured when saving.
+   *
+   * @return activated checkpoint positions in level configuration order
+   */
+  public List<GridPoint2> getActiveCheckpointPositions() {
+    List<GridPoint2> positions = new ArrayList<>();
+    for (CheckpointComponent checkpoint : config.getCheckpoints()) {
+      if (checkpoint.isActive()) {
+        positions.add(checkpoint.getPosition());
+      }
+    }
+    return positions;
+  }
+
+  /**
+   * Re-activates the checkpoints recorded in a save, so respawn resolution, lit torches and level
+   * specific checkpoint behaviour (e.g. level 3's rising water) match the saved progress. Called
+   * after the area has been created.
+   *
+   * @param positions checkpoint positions to activate, or null/empty for none
+   */
+  public void restoreCheckpoints(List<GridPoint2> positions) {
+    if (positions == null || positions.isEmpty()) {
+      return;
+    }
+    for (CheckpointComponent checkpoint : config.getCheckpoints()) {
+      for (GridPoint2 position : positions) {
+        if (checkpoint.getPosition().equals(position)) {
+          checkpoint.activate();
+          break;
+        }
+      }
+    }
   }
 
   /** Layer repeat behaviour for background layers */
