@@ -20,9 +20,7 @@ import org.slf4j.LoggerFactory;
  */
 public class ItemUseComponent extends Component {
   private static final String ITEM_USED = "itemUsed";
-
   private static final String ITEM_USE_FAILED = "itemUseFailed";
-
   private static final Logger logger = LoggerFactory.getLogger(ItemUseComponent.class);
   private static final Vector2 DEFAULT_AIM = new Vector2(1f, 0f);
 
@@ -81,9 +79,7 @@ public class ItemUseComponent extends Component {
     }
 
     entity.getEvents().trigger("setArrowType", selected.toArrowType());
-    if (selected.consumesAmmo()) {
-      inventory.removeItem(selected, 1);
-    }
+    inventory.removeItem(selected, 1);
     entity.getEvents().trigger(ITEM_USED, selected);
     entity.getEvents().trigger("chargeStart", direction);
   }
@@ -133,7 +129,7 @@ public class ItemUseComponent extends Component {
   }
 
   private boolean useArrow(ItemType arrowItem, Vector2 direction) {
-    if (direction == null || direction.isZero() || !inventory.hasItem(arrowItem)) {
+    if (!inventory.hasItem(arrowItem)) {
       entity.getEvents().trigger(ITEM_USE_FAILED, arrowItem);
       return false;
     }
@@ -153,9 +149,7 @@ public class ItemUseComponent extends Component {
       entity.getEvents().trigger("setArrowType", arrowItem.toArrowType());
       entity.getEvents().trigger("primaryAttack", direction);
 
-      if (arrowItem.consumesAmmo()) {
-        inventory.removeItem(arrowItem, 1);
-      }
+      inventory.removeItem(arrowItem, 1);
     }
 
     entity.getEvents().trigger(ITEM_USED, arrowItem);
@@ -216,10 +210,7 @@ public class ItemUseComponent extends Component {
     }
 
     Vector2 direction = getAimDirection();
-    if (direction == null
-        || direction.isZero()
-        || ServiceLocator.getEntityService() == null
-        || ServiceLocator.getPhysicsService() == null) {
+    if (ServiceLocator.getEntityService() == null || ServiceLocator.getPhysicsService() == null) {
       entity.getEvents().trigger(ITEM_USE_FAILED, ItemType.POISON_POTION);
       return false;
     }
