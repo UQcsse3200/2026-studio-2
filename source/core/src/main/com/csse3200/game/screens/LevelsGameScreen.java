@@ -29,6 +29,7 @@ import com.csse3200.game.components.player.KeyboardPlayerInputComponent;
 import com.csse3200.game.components.player.PlayerInteractionComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.ItemFactory;
+import com.csse3200.game.events.EventHandler;
 import com.csse3200.game.input.InputComponent;
 import com.csse3200.game.input.InputDecorator;
 import com.csse3200.game.physics.components.PhysicsComponent;
@@ -91,30 +92,9 @@ public class LevelsGameScreen extends BaseGameScreen {
     super();
     this.game = game;
 
-    logger.debug("Initialising main game screen services");
-
-    ServiceLocator.registerTimeSource(new GameTime());
-
-    PhysicsService physicsService = new PhysicsService();
-    ServiceLocator.registerPhysicsService(physicsService);
-    physicsEngine = physicsService.getPhysics();
-
-    ServiceLocator.registerInputService(new InputService());
-    ServiceLocator.registerResourceService(new ResourceService());
-
-    ServiceLocator.registerEntityService(new EntityService());
-    ServiceLocator.registerRenderService(new RenderService());
-    ServiceLocator.registerGameEndEventHandler(new EventHandler());
+    // Only this screen uses the save handler, so it is registered here; BaseGameScreen sets up
+    // everything the game screens share
     ServiceLocator.registerGameSaveEventHandler(new EventHandler());
-
-    renderer = RenderFactory.createRenderer();
-
-    renderer.getDebug().renderPhysicsWorld(physicsEngine.getWorld());
-
-    LightingService lightingService =
-        new LightingService(renderer.getCamera(), physicsEngine.getWorld());
-    ServiceLocator.registerLightingService(lightingService);
-    lightingEngine = lightingService.getEngine();
 
     loadAssets();
     createUI();
