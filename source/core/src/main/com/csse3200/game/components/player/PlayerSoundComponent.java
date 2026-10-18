@@ -21,7 +21,10 @@ public class PlayerSoundComponent extends Component {
 
   @Override
   public void create() {
-    entity.getEvents().addListener("jump", () -> SoundEffects.play("sounds/jump.ogg", 0.5f));
+    // Both ground and grapple jumps report acceptance; raw input can be rejected.
+    entity
+        .getEvents()
+        .addListener("jumpAccepted", () -> SoundEffects.play("sounds/jump.ogg", 0.5f));
     entity.getEvents().addListener("hurt", this::playHurt);
     entity
         .getEvents()
@@ -45,7 +48,7 @@ public class PlayerSoundComponent extends Component {
   }
 
   private void playPotion(Object item) {
-    if (item != ItemType.HEALTH_POTION && item != ItemType.SpeedPotion) {
+    if (item != ItemType.HEALTH_POTION && item != ItemType.SPEED_POTION) {
       return;
     }
     SoundEffects.play("sounds/Drink_01.wav", 0.9f);

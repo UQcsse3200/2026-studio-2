@@ -238,7 +238,7 @@ class Level3GameAreaTest {
   }
 
   @Test
-  void activateWeatherIgnoresEntitiesWithoutRenderComponents() throws Exception {
+  void activateWeatherIgnoresEntitiesWithoutRenderComponents() {
     Array<Entity> entities = new Array<>();
     entities.add(new Entity());
 
@@ -248,7 +248,7 @@ class Level3GameAreaTest {
   }
 
   @Test
-  void waterCollisionIgnoresMissingBodyUserData() throws Exception {
+  void waterCollisionIgnoresMissingBodyUserData() {
     Fixture me = mock(Fixture.class);
     Fixture other = mock(Fixture.class);
     Body body = mock(Body.class);
@@ -260,7 +260,7 @@ class Level3GameAreaTest {
   }
 
   @Test
-  void waterCollisionIgnoresMissingEntity() throws Exception {
+  void waterCollisionIgnoresMissingEntity() {
     Fixture me = mock(Fixture.class);
     Fixture other = mock(Fixture.class);
     Body body = mock(Body.class);
@@ -274,7 +274,7 @@ class Level3GameAreaTest {
   }
 
   @Test
-  void waterCollisionIgnoresNonPlayerEntity() throws Exception {
+  void waterCollisionIgnoresNonPlayerEntity() {
     Fixture me = mock(Fixture.class);
     Fixture other = mock(Fixture.class);
     Body body = mock(Body.class);

@@ -28,7 +28,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InOrder;
 
 @ExtendWith(GameExtension.class)
-public class CyclopsMinigameLogicTest {
+class CyclopsMinigameLogicTest {
   CyclopsMinigameLogic minigameLogic;
   TimingBarLogic timingBarLogic;
   TimingBarDisplay timingBarDisplay;
@@ -112,6 +112,48 @@ public class CyclopsMinigameLogicTest {
 
   /* Checking Movement Function Logic */
 
+  @Test
+  void restartRejectsATileWithoutWorldCoordinates() {
+    GridPoint2 start = new GridPoint2(1, 2);
+    minigameLogic.setSafeLocations(List.of(start));
+    when(terrainComponent.tileToWorldPosition(start)).thenReturn(null);
+
+    IllegalStateException error =
+        assertThrows(IllegalStateException.class, minigameLogic::restartMinigame);
+
+    assertTrue(error.getMessage().contains(start.toString()));
+    verify(player, never()).setPosition(any(Vector2.class));
+  }
+
+  @Test
+  void runRejectsATileWithoutWorldCoordinates() {
+    GridPoint2 next = new GridPoint2(3, 4);
+    minigameLogic.setSafeLocations(List.of(new GridPoint2(1, 2), next));
+    when(terrainComponent.tileToWorldPosition(next)).thenReturn(null);
+    when(timingBarLogic.checkHit()).thenReturn(true);
+    when(gameTime.getDeltaTime()).thenReturn(1f);
+    minigameLogic.changeState(CyclopsMinigameLogic.State.PRE_MOVE);
+
+    IllegalStateException error = assertThrows(IllegalStateException.class, minigameLogic::update);
+
+    assertTrue(error.getMessage().contains(next.toString()));
+    verify(player, never()).setPosition(any(Vector2.class));
+  }
+
+  @Test
+  void retreatRejectsATileWithoutWorldCoordinates() {
+    GridPoint2 start = new GridPoint2(1, 2);
+    minigameLogic.setSafeLocations(List.of(start));
+    when(terrainComponent.tileToWorldPosition(start)).thenReturn(null);
+    when(gameTime.getDeltaTime()).thenReturn(1f);
+    minigameLogic.changeState(CyclopsMinigameLogic.State.LOSS);
+
+    IllegalStateException error = assertThrows(IllegalStateException.class, minigameLogic::update);
+
+    assertTrue(error.getMessage().contains(start.toString()));
+    verify(player, never()).setPosition(any(Vector2.class));
+  }
+
   private void runMove(boolean hit) {
     when(timingBarLogic.checkHit()).thenReturn(hit);
     when(gameTime.getDeltaTime()).thenReturn(10f);
@@ -172,7 +214,7 @@ public class CyclopsMinigameLogicTest {
   }
 
   @Test
-  public void restartMinigameMovesPlayerBackToFirstLocation() {
+  void restartMinigameMovesPlayerBackToFirstLocation() {
     GridPoint2 start = new GridPoint2(1, 0);
     GridPoint2 next = new GridPoint2(2, 0);
 

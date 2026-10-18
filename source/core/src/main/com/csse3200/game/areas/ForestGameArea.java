@@ -12,7 +12,6 @@ import com.csse3200.game.components.player.KeyboardPlayerInputComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.EnemyFactory;
 import com.csse3200.game.entities.factories.ItemFactory;
-import com.csse3200.game.entities.factories.NPCFactory;
 import com.csse3200.game.entities.factories.ObstacleFactory;
 import com.csse3200.game.entities.factories.PlayerFactory;
 import com.csse3200.game.services.ResourceService;
@@ -26,7 +25,6 @@ import org.slf4j.LoggerFactory;
 public class ForestGameArea extends GameArea {
   private static final Logger logger = LoggerFactory.getLogger(ForestGameArea.class);
   private static final int NUM_TREES = 7;
-  private static final int NUM_GHOSTS = 2;
   private static final GridPoint2 PLAYER_SPAWN = new GridPoint2(10, 10);
   private static final GridPoint2 STANDARD_ARROW_SPAWN = new GridPoint2(8, 10);
   private static final GridPoint2 FIRE_ARROW_SPAWN = new GridPoint2(6, 6);
@@ -51,8 +49,8 @@ public class ForestGameArea extends GameArea {
   };
   private static final String[] forestTextureAtlases = {"images/player/player.atlas"};
   private static final String[] forestSounds = {"sounds/Impact4.ogg"};
-  private static final String backgroundMusic = "sounds/BGM_03_mp3.mp3";
-  private static final String[] forestMusic = {backgroundMusic};
+  private static final String BACKGROUND_MUSIC = "sounds/BGM_03_mp3.mp3";
+  private static final String[] forestMusic = {BACKGROUND_MUSIC};
 
   private final TerrainFactory terrainFactory;
 
@@ -73,6 +71,7 @@ public class ForestGameArea extends GameArea {
   /**
    * @return the player entity after this area has been created
    */
+  @Override
   public Entity getPlayer() {
     return player;
   }
@@ -91,9 +90,6 @@ public class ForestGameArea extends GameArea {
     spawnSkeletonWarrior();
     spawnSkeletonArcher();
     spawnItems();
-    // spawnGhosts();
-
-    // spawnGhostKing();
 
     playMusic();
   }
@@ -146,9 +142,7 @@ public class ForestGameArea extends GameArea {
   }
 
   private void spawnPlatforms() {
-    // GridPoint2 platformPos = new GridPoint2(10, 7);
-    // Entity platform = ObstacleFactory.createPlatform(p);
-    // spawnEntityAt(platform, platformPos, true, false);
+    // This demo area currently spawns no additional platforms.
   }
 
   private Entity spawnPlayer() {
@@ -177,45 +171,19 @@ public class ForestGameArea extends GameArea {
         ItemFactory.createHealthPotion(HEALTH_POTION_QUANTITY), HEALTH_POTION_SPAWN, true, false);
   }
 
-  private void spawnGhosts() {
-    GridPoint2 minPos = new GridPoint2(0, 0);
-    GridPoint2 maxPos = terrain.getMapBounds(0).sub(2, 2);
-
-    for (int i = 0; i < NUM_GHOSTS; i++) {
-      GridPoint2 randomPos = RandomUtils.random(minPos, maxPos);
-      Entity ghost = NPCFactory.createGhost(player);
-      spawnEntityAt(ghost, randomPos, true, true);
-    }
-  }
-
   private void spawnSkeletonWarrior() {
-    GridPoint2 minPos = new GridPoint2(0, 0);
-    GridPoint2 maxPos = terrain.getMapBounds(0).sub(2, 2);
-
     Entity skeletonWarrior = EnemyFactory.createSkeletonWarrior(player);
     spawnEntityAt(skeletonWarrior, new GridPoint2(5, 16), true, true);
   }
 
   private void spawnSkeletonArcher() {
-    GridPoint2 minPos = new GridPoint2(0, 0);
-    GridPoint2 maxPos = terrain.getMapBounds(0).sub(2, 2);
-
     Entity skeletonArcher = EnemyFactory.createSkeletonArcher(player);
 
     spawnEntityAt(skeletonArcher, new GridPoint2(5, 16), true, true);
   }
 
-  private void spawnGhostKing() {
-    GridPoint2 minPos = new GridPoint2(0, 0);
-    GridPoint2 maxPos = terrain.getMapBounds(0).sub(2, 2);
-
-    GridPoint2 randomPos = RandomUtils.random(minPos, maxPos);
-    Entity ghostKing = NPCFactory.createGhostKing(player);
-    spawnEntityAt(ghostKing, randomPos, true, true);
-  }
-
   private void playMusic() {
-    Music music = ServiceLocator.getResourceService().getAsset(backgroundMusic, Music.class);
+    Music music = ServiceLocator.getResourceService().getAsset(BACKGROUND_MUSIC, Music.class);
     music.setLooping(true);
     GameVolume.setMusicVolume(music, 0.3f);
     music.play();
@@ -247,7 +215,7 @@ public class ForestGameArea extends GameArea {
   @Override
   public void dispose() {
     super.dispose();
-    ServiceLocator.getResourceService().getAsset(backgroundMusic, Music.class).stop();
+    ServiceLocator.getResourceService().getAsset(BACKGROUND_MUSIC, Music.class).stop();
     this.unloadAssets();
   }
 }

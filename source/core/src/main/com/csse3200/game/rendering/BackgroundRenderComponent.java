@@ -19,7 +19,6 @@ public class BackgroundRenderComponent extends RenderComponent {
 
   private final Vector2 backgroundPos;
   private final Vector2 worldBounds;
-  private boolean weather;
   private Vector2 lastCameraPos;
   private int flashOrder = 0;
   private Vector2 originalVelocity;
@@ -223,10 +222,9 @@ public class BackgroundRenderComponent extends RenderComponent {
   private void getPosUpdate(ParallaxLayer layer) {
     layer.position.x += layer.velocity.x * ServiceLocator.getTimeSource().getDeltaTime();
     layer.position.y += layer.velocity.y * ServiceLocator.getTimeSource().getDeltaTime();
-    weather = getWeather();
-    if (weather) {
+    boolean weather = getWeather();
+    if (weather && layer.flash) {
       // Flash layers that flash during lightning
-      if (layer.flash) {
         float lightning = getLightning();
         // System.out.print(rainIntensity + ", ");
 
@@ -263,13 +261,12 @@ public class BackgroundRenderComponent extends RenderComponent {
           } else {
             layer.transparency = 0f;
           }
-        }
       }
     }
   }
 
   private void updateWeather(ParallaxLayer layer) {
-    weather = getWeather();
+    boolean weather = getWeather();
     if (weather) {
       if (layer.repeat == CHAOTIC) {
         if (rainIntensity < 1f) {
@@ -287,7 +284,6 @@ public class BackgroundRenderComponent extends RenderComponent {
               (int) (originalRotation + (finalRotation - originalRotation) * intensity);
         }
       }
-      if (layer.flash) {}
     }
   }
 
@@ -361,9 +357,7 @@ public class BackgroundRenderComponent extends RenderComponent {
         // if left most x coord of layer >= left most x coord of background pos
         // backgroundPos is used over worldBound.x since backgroundPos extends beyond worldBound
         while (newLeftDrawPosX >= backgroundPos.x - layer.width) {
-          // batch.setColor(1f, 1f, 1f, layer.transparency);
           batch.draw(layer.texture, newLeftDrawPosX, layerY, layer.width, layer.height);
-          // batch.setColor(Color.WHITE);
           newLeftDrawPosX -= layer.width;
         }
 
@@ -371,9 +365,7 @@ public class BackgroundRenderComponent extends RenderComponent {
         // NOTE: this relies on backgroudPos starting at a negative value, which will always be
         // true if player starts at x = 0
         while (newRightDrawPosX <= worldBounds.x - backgroundPos.x) {
-          // batch.setColor(1f, 1f, 1f, layer.transparency);
           batch.draw(layer.texture, newRightDrawPosX, layerY, layer.width, layer.height);
-          // batch.setColor(Color.WHITE);
           newRightDrawPosX += layer.width;
         }
       } else if (layer.repeat == RepeatMode.CHAOTIC) {
@@ -417,18 +409,7 @@ public class BackgroundRenderComponent extends RenderComponent {
         int lengthY = rainOffsets.size();
         int lengthX = rainOffsets.getFirst().size();
 
-        batch.setColor(0.65f, 0.65f, 0.65f, layer.transparency);
-        // batch.setColor(1f, 1f, 1f, layer.transparency); //maybe this one
-        // batch.setColor(0.65f, 0.65f, 0.65f, 1f);
-        // batch.setColor(1f, 1f, 1f, 1f); NOT THIS ONE
-
-        // batch.setColor(0.4f, 0.4f, 1f, 0.5f); //GREAT
-        // batch.setColor(0.5f, 0.5f, 1f, 0.5f); //GREAT
-        // batch.setColor(0.4f, 0.4f, 1f, 0.4f); //doesnt flash white enough
-        // batch.setColor(0.5f, 0.5f, 1f, 0.4f); //mmmm idk
-        // batch.setColor(0.6f, 0.6f, 1f, 0.5f); //BEST SO FAR
-        // batch.setColor(0.55f, 0.55f, 1f, 0.5f); //ALSO VERY GOOD
-        batch.setColor(0.575f, 0.575f, 1f, 0.5f); // 0.5, 0.6, 0.4
+        batch.setColor(0.575f, 0.575f, 1f, 0.5f);
 
         int randomOffsetX;
         int randomOffsetY = 0;

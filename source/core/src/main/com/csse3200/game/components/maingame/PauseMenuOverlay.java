@@ -2,26 +2,27 @@ package com.csse3200.game.components.maingame;
 
 import com.badlogic.gdx.audio.Music;
 import com.csse3200.game.GdxGame;
-import com.csse3200.game.areas.GameArea;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.BlurredBackdropDisplay;
 import com.csse3200.game.ui.ScreenBlur;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Shows the spin the wheel minigame over the game, pausing it and blurring the frame the wheel
  * opened on. Owned by the screen showing the game, not by an entity.
  */
 public class PauseMenuOverlay {
+  private static final Logger logger = LoggerFactory.getLogger(PauseMenuOverlay.class);
+
   private boolean open = false;
   private boolean openRequested = false;
   private Entity overlay;
   private GdxGame game;
-  private GameArea area;
 
-  public PauseMenuOverlay(GdxGame game, GameArea area) {
+  public PauseMenuOverlay(GdxGame game) {
     this.game = game;
-    this.area = area;
   }
 
   /** Asks for the wheel to open. It appears at the end of the current frame. */
@@ -52,7 +53,7 @@ public class PauseMenuOverlay {
   private void open() {
     open = true;
     BlurredBackdropDisplay backdrop = new BlurredBackdropDisplay(ScreenBlur.capture());
-    PauseMenuDisplay display = new PauseMenuDisplay(game, area);
+    PauseMenuDisplay display = new PauseMenuDisplay(game);
 
     overlay =
         new Entity()
@@ -79,6 +80,7 @@ public class PauseMenuOverlay {
           ServiceLocator.getResourceService().getAsset("sounds/gameplay_bg.ogg", Music.class);
       gameplay.play();
     } catch (Exception ignored) {
+      logger.warn("Could not switch pause menu music", ignored);
     }
   }
 }

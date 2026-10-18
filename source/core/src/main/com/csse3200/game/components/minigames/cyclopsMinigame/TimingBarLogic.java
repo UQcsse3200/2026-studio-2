@@ -10,14 +10,14 @@ import org.slf4j.LoggerFactory;
 public class TimingBarLogic {
   private static final Logger logger = LoggerFactory.getLogger(TimingBarLogic.class);
 
-  final float barStart = 0f;
-  final float barWidth = 1f; // Acts as 100% etc.
+  static final float BAR_START = 0f;
+  static final float BAR_WIDTH = 1f; // Acts as 100% etc.
   private float scoringAreaSize;
 
-  static final float markerSpeed = 1f;
+  static final float MARKER_SPEED = 1f;
   int direction = 1;
 
-  private float markerX = barStart;
+  private float markerX = BAR_START;
   float greenStart;
   float greenEnd;
 
@@ -45,7 +45,7 @@ public class TimingBarLogic {
    * @param width - float value as a percentage, 0-100%
    */
   public void changeScoringAreaWidth(float width) {
-    float barCenter = barWidth / 2;
+    float barCenter = BAR_WIDTH / 2;
 
     float coveredArea = width / 100;
     scoringAreaSize = coveredArea;
@@ -66,10 +66,10 @@ public class TimingBarLogic {
       return;
     }
 
-    markerX += markerSpeed * direction * deltaTime;
+    markerX += MARKER_SPEED * direction * deltaTime;
 
-    if (markerX >= barWidth) {
-      markerX = barWidth;
+    if (markerX >= BAR_WIDTH) {
+      markerX = BAR_WIDTH;
       direction = -1;
     } else if (markerX <= 0) {
       markerX = 0;

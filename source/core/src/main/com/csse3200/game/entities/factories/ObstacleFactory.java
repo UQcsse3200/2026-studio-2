@@ -1,6 +1,7 @@
 package com.csse3200.game.entities.factories;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
@@ -31,6 +32,17 @@ import java.util.List;
  * <p>Each obstacle entity type should have a creation method that returns a corresponding entity.
  */
 public class ObstacleFactory {
+  /** A spike texture at least this many times wider than tall is treated as a strip of spikes. */
+  private static final float WIDE_STRIP_RATIO = 3f;
+
+  /** How tall strip-style spikes are drawn, as a share of a normal spike tile. */
+  private static final float STRIP_SPIKE_HEIGHT_SCALE = 0.7f;
+
+  /** Portal sprite sheet: two frames side by side (dark, glowing). */
+  public static final String LEVEL_END_TEXTURE = "images/backgrounds/Level_end.png";
+
+  /** Default height of the level-end portal in world units. */
+  public static final float DEFAULT_LEVEL_END_HEIGHT = 3.5f;
 
   /**
    * Creates a tree entity.
@@ -192,6 +204,9 @@ public class ObstacleFactory {
             .addComponent(new TriggerButtonComponent())
             .addComponent(new RotatableMapComponent(config.getRotation()));
 
+    // Keep the art's proportions: the button is one tile wide and as tall as its frame needs.
+    animator.scaleEntity();
+
     // If attach is requested, add component.
     if (config.getAttached()) {
       button.addComponent(new AttachableMapComponent());
@@ -219,7 +234,8 @@ public class ObstacleFactory {
   }
 
   /**
-   * Creates a win condition entity.
+   * Creates a win condition entity: an invisible sensor that wins the game when the player touches
+   * it.
    *
    * @return win condition entity
    */
@@ -241,26 +257,71 @@ public class ObstacleFactory {
   }
 
   /**
-   * Creates a new sensor entity that detects a collision from the player and triggers a level swap
+   * Creates a portal at the end of a level. The player swaps to the next level by standing in it
+   * and pressing F.
    *
    * @param nextLevelName a String representing the name of the level this component should force
    *     the game screen to swap to
    * @return a level trigger entity
    */
   public static Entity createNextLevelTriggerEntity(String nextLevelName) {
+    return createNextLevelTriggerEntity(nextLevelName, DEFAULT_LEVEL_END_HEIGHT);
+  }
+
+  /**
+   * Creates a portal at the end of a level, of a given size.
+   *
+   * @param nextLevelName the name of the level to swap to
+   * @param height height of the portal in world units; its width follows the art's proportions
+   * @return a level trigger entity
+   */
+  public static Entity createNextLevelTriggerEntity(String nextLevelName, float height) {
+    return createLevelEndPortal(new LevelTriggerComponent(nextLevelName), height);
+  }
+
+  /**
+   * Builds the animated portal that marks the end of a level, with a sensor the size of the portal
+   * that detects the player standing in front of it.
+   *
+   * @param levelEnd what happens when the player uses the portal
+   * @param height height of the portal in world units
+   * @return portal entity
+   */
+  private static Entity createLevelEndPortal(LevelEndComponent levelEnd, float height) {
     ColliderComponent collider = new ColliderComponent();
     collider.setLayer(PhysicsLayer.NPC);
     collider.setSensor(true);
 
-    Entity trigger =
+    LevelPortalRenderComponent render = new LevelPortalRenderComponent(LEVEL_END_TEXTURE);
+    Entity portal =
         new Entity()
             .addComponent(new PhysicsComponent().setBodyType(BodyType.StaticBody))
             .addComponent(collider)
-            .addComponent(new LevelTriggerComponent(nextLevelName));
+            .addComponent(levelEnd)
+            .addComponent(render);
 
-    trigger.getComponent(ColliderComponent.class).setAsBox(new Vector2(2f, 3f));
+    render.scaleEntity();
+    portal.scaleHeight(height);
+    portal.getComponent(ColliderComponent.class).setAsBox(portal.getScale());
 
-    return trigger;
+    return portal;
+  }
+
+  /**
+   * Picks which square slice of a wide spike strip a tile shows. The slices are whole multiples of
+   * the strip's spike spacing apart, so neighbouring tiles line up.
+   */
+  private static int stripSliceX(int stripWidth, int sliceSize, int tileIndex, int tileCount) {
+    int lastSliceX = stripWidth - sliceSize;
+    if (tileCount > 1 && tileIndex == 0) {
+      return 0;
+    }
+    if (tileCount > 1 && tileIndex == tileCount - 1) {
+      return lastSliceX;
+    }
+    // Interior tiles step through the middle of the strip, one slice at a time.
+    int interiorSlices = Math.max(1, lastSliceX / sliceSize - 1);
+    return Math.round((1 + tileIndex % interiorSlices) * (float) lastSliceX / (interiorSlices + 1));
   }
 
   /**
@@ -296,7 +357,6 @@ public class ObstacleFactory {
         new Entity()
             .addComponent(new PhysicsComponent().setBodyType(BodyType.StaticBody))
             .addComponent(new ColliderComponent().setLayer(PhysicsLayer.OBSTACLE));
-    //// .addComponent(new ColliderComponent().setLayer(PhysicsLayer.WALL));
     wall.setScale(width, height);
 
     return wall;
@@ -309,14 +369,26 @@ public class ObstacleFactory {
    * @return ledge entity
    */
   public static Entity createLedge(PlatformConfig config) {
-    Entity ledge =
-        new Entity()
-            .addComponent(new TextureRenderComponent(config.textureFilepath))
-            .addComponent(new LedgeComponent())
-            .addComponent(new PhysicsComponent().setBodyType(BodyType.StaticBody))
-            .addComponent(new ColliderComponent().setLayer(PhysicsLayer.LEDGE));
+    return createLedge(config, false);
+  }
 
-    return ledge;
+  /**
+   * Creates a ledge.
+   *
+   * @param config the ledge's size, position and texture
+   * @param tiled true to repeat the texture across the ledge, as floors do, instead of stretching
+   *     it; needed for long ledges
+   * @return ledge entity
+   */
+  public static Entity createLedge(PlatformConfig config, boolean tiled) {
+    return new Entity()
+        .addComponent(
+            tiled
+                ? new TiledRenderComponent(config.textureFilepath, 0.75f)
+                : new TextureRenderComponent(config.textureFilepath))
+        .addComponent(new LedgeComponent())
+        .addComponent(new PhysicsComponent().setBodyType(BodyType.StaticBody))
+        .addComponent(new ColliderComponent().setLayer(PhysicsLayer.LEDGE));
   }
 
   /**
@@ -368,9 +440,34 @@ public class ObstacleFactory {
    * @return spike entity
    */
   public static Entity createSpike(SpikeClusterConfig config, String texturePath) {
+    return createSpike(config, texturePath, 0, 1);
+  }
+
+  /**
+   * Creates one tile of a spike cluster. If the spike texture is a wide strip, each tile shows its
+   * own square slice of it, rather than the whole strip squashed into one tile, so a row of tiles
+   * reads as one continuous spiked platform: the left end, the middle, then the right end.
+   *
+   * @param config the cluster this tile belongs to
+   * @param texturePath the spike texture
+   * @param tileIndex the position of this tile along the cluster's width, from 0
+   * @param tileCount how many tiles wide the cluster is
+   * @return spike entity
+   */
+  public static Entity createSpike(
+      SpikeClusterConfig config, String texturePath, int tileIndex, int tileCount) {
+    DynamicTextureRenderComponent render = new DynamicTextureRenderComponent(texturePath);
+    Texture spikeTexture = render.getTexture();
+    int height = spikeTexture.getHeight();
+    boolean isStrip = height > 0 && spikeTexture.getWidth() >= WIDE_STRIP_RATIO * height;
+    if (isStrip) {
+      render.setRegion(
+          stripSliceX(spikeTexture.getWidth(), height, tileIndex, tileCount), 0, height, height);
+    }
+
     Entity spike =
         new Entity()
-            .addComponent(new DynamicTextureRenderComponent(texturePath))
+            .addComponent(render)
             .addComponent(new PhysicsComponent())
             .addComponent(new ColliderComponent().setLayer(PhysicsLayer.OBSTACLE))
             .addComponent(new CombatStatsComponent(100, 2))
@@ -385,8 +482,9 @@ public class ObstacleFactory {
 
     spike.getComponent(PhysicsComponent.class).setBodyType(BodyType.KinematicBody);
 
-    // Scale slightly larger to close grid gaps
-    spike.setScale(1.25f, 1.25f);
+    // Scale slightly larger to close grid gaps. Strip-style spikes are drawn shorter, so the
+    // spikes don't tower over the platforms they sit on; their base stays on the tile's floor.
+    spike.setScale(1.25f, isStrip ? 1.25f * STRIP_SPIKE_HEIGHT_SCALE : 1.25f);
 
     PhysicsUtils.setScaledCollider(spike, 0.8f, 0.5f);
 
@@ -419,21 +517,19 @@ public class ObstacleFactory {
           default -> new Vector2(0, 0);
         };
 
-    Entity trap =
-        new Entity()
-            .addComponent(new DynamicTextureRenderComponent("images/traps/spiky_ball_trap.png"))
-            .addComponent(new PhysicsComponent().setBodyType(BodyType.StaticBody))
-            .addComponent(new ActivatableComponent(config.getIds()))
-            .addComponent(
-                new SpawnerComponent(
-                    new ArrayList<>(List.of(() -> ObstacleFactory.createSpikyBall(direction))),
-                    config.getSpawnInterval(),
-                    -1,
-                    config.getInitialState(),
-                    config.getMode()))
-            .addComponent(new RotatableMapComponent(config.getRotation()));
-
-    return trap;
+    return new Entity()
+        .addComponent(
+            new DynamicTextureRenderComponent("images/traps/spiky_ball_trap.png").keepAspectRatio())
+        .addComponent(new PhysicsComponent().setBodyType(BodyType.StaticBody))
+        .addComponent(new ActivatableComponent(config.getIds()))
+        .addComponent(
+            new SpawnerComponent(
+                new ArrayList<>(List.of(() -> ObstacleFactory.createSpikyBall(direction))),
+                config.getSpawnInterval(),
+                -1,
+                config.getInitialState(),
+                config.getMode()))
+        .addComponent(new RotatableMapComponent(config.getRotation()));
   }
 
   /**
@@ -481,14 +577,11 @@ public class ObstacleFactory {
     // ensure the hitbox always tries to collide with the player
     waterHitbox.getComponent(PhysicsComponent.class).getBody().setSleepingAllowed(false);
 
-    Entity water =
-        new Entity()
-            .addComponent(new TiledRenderComponent("images/terrain/Level_3/water tile.png", 1f))
-            .addComponent(new PhysicsComponent().setBodyType(BodyType.KinematicBody))
-            .addComponent(new ActivatableComponent(true, new String[] {"waterStop", "waterStart"}))
-            .addComponent(new RisingWaterComponent(speed, initialHeight, waterHitbox));
-
-    return water;
+    return new Entity()
+        .addComponent(new TiledRenderComponent("images/terrain/Level_3/water tile.png", 1f))
+        .addComponent(new PhysicsComponent().setBodyType(BodyType.KinematicBody))
+        .addComponent(new ActivatableComponent(true, new String[] {"waterStop", "waterStart"}))
+        .addComponent(new RisingWaterComponent(speed, initialHeight, waterHitbox));
   }
 
   /**
@@ -505,13 +598,10 @@ public class ObstacleFactory {
             sData.spawns, sData.spawnInterval, sData.maxSpawns, sData.active, sData.mode);
     spawnerComp.setIds(config.completionIds);
 
-    Entity spawner =
-        new Entity()
-            .addComponent(new PhysicsComponent().setBodyType(BodyType.StaticBody))
-            .addComponent(spawnerComp)
-            .addComponent(new ActivatableComponent(sData.active, config.ids));
-
-    return spawner;
+    return new Entity()
+        .addComponent(new PhysicsComponent().setBodyType(BodyType.StaticBody))
+        .addComponent(spawnerComp)
+        .addComponent(new ActivatableComponent(sData.active, config.ids));
   }
 
   /**
@@ -525,13 +615,10 @@ public class ObstacleFactory {
     collider.setLayer(PhysicsLayer.NPC);
     collider.setSensor(true);
 
-    Entity trigger =
-        new Entity()
-            .addComponent(new PhysicsComponent().setBodyType(BodyType.StaticBody))
-            .addComponent(collider)
-            .addComponent(new TriggerComponent(c.ids, c.oneTimeActivation));
-
-    return trigger;
+    return new Entity()
+        .addComponent(new PhysicsComponent().setBodyType(BodyType.StaticBody))
+        .addComponent(collider)
+        .addComponent(new TriggerComponent(c.ids, c.oneTimeActivation));
   }
 
   private ObstacleFactory() {

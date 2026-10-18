@@ -91,13 +91,15 @@ public class ArrowProjectileComponent extends Component {
     hitboxComponent = entity.getComponent(HitboxComponent.class);
     combatStats = entity.getComponent(CombatStatsComponent.class);
 
-    Body body = physicsComponent.getBody();
-    body.setFixedRotation(true);
-    body.setGravityScale(ARC_GRAVITY_SCALE);
-    body.setLinearDamping(0f);
-    body.setBullet(true);
-    body.setLinearVelocity(direction.cpy().scl(speed));
-    ignorePlayerCollisions(body);
+    Body body = physicsComponent == null ? null : physicsComponent.getBody();
+    if (body != null) {
+      body.setFixedRotation(true);
+      body.setGravityScale(ARC_GRAVITY_SCALE);
+      body.setLinearDamping(0f);
+      body.setBullet(true);
+      body.setLinearVelocity(direction.cpy().scl(speed));
+      ignorePlayerCollisions(body);
+    }
     startPosition = getWorldCenter();
 
     entity.getEvents().addListener("collisionStart", this::onCollisionStart);
@@ -122,7 +124,7 @@ public class ArrowProjectileComponent extends Component {
       return;
     }
 
-    Body body = physicsComponent.getBody();
+    Body body = physicsComponent == null ? null : physicsComponent.getBody();
     Vector2 origin = rangeOrigin();
     Vector2 position = getWorldCenter();
     if (position.dst2(origin) >= maximumRange * maximumRange) {
@@ -172,6 +174,11 @@ public class ArrowProjectileComponent extends Component {
    * the box's own centre: keep the centre where it is and move the origin to suit.
    */
   private void updateRotation(Body body) {
+    if (body == null) {
+      logger.warn(
+          "Arrow was created without an attached physics body; skipping its rotation update");
+      return;
+    }
     Vector2 velocity = body.getLinearVelocity();
     if (velocity.isZero()) {
       return;

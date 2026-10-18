@@ -238,4 +238,11 @@ class GrappleIndicatorRenderComponentTest {
     }
     verify(renderService).unregister(renderer);
   }
+
+  @Test
+  void missingInventoryOrInputPreventsThePreview() {
+    renderer(grapple, null, input).render(batch);
+    renderer(grapple, inventory, null).render(batch);
+    verifyNoInteractions(batch);
+  }
 }

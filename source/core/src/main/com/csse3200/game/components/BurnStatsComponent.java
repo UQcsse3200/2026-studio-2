@@ -36,7 +36,7 @@ public class BurnStatsComponent extends Component {
       nextDamageTime += DAMAGE_INTERVAL;
     }
 
-    if (currentTime >= burnEndTime && nextDamageTime > burnEndTime) {
+    if (currentTime >= burnEndTime) {
       damagePerSecond = 0f;
     }
   }

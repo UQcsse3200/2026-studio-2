@@ -36,10 +36,6 @@ public class EdgeDetectTask {
       return true;
     }
 
-    if (physics.raycast(start, end, PhysicsLayer.OBSTACLE, hit)) {
-      return true;
-    }
-
-    return false;
+    return physics.raycast(start, end, PhysicsLayer.OBSTACLE, hit);
   }
 }

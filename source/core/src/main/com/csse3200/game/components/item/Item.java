@@ -8,7 +8,7 @@ public abstract class Item {
   private final ItemType itemType;
   private int quantity;
 
-  public Item(ItemType itemType, int quantity) {
+  protected Item(ItemType itemType, int quantity) {
     this.itemType = itemType;
     this.quantity = quantity;
   }

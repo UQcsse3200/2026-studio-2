@@ -54,7 +54,7 @@ public class RotatableAnimationRenderComponent extends AnimationRenderComponent 
       height = scale.y;
     }
 
-    rotation = rotateComponent.getRotation();
+    float rotation = rotateComponent.getRotation();
 
     // recreate the adjustments in a local texture region so we can use the correct overload
     renderRegion.setRegion(region);
@@ -62,7 +62,6 @@ public class RotatableAnimationRenderComponent extends AnimationRenderComponent 
       renderRegion.flip(true, false);
     }
 
-    float light = getDarkness();
     Color prevColor = batch.getColor().cpy();
     if (flashing) {
       float pulse = 0.65f + 0.35f * (0.5f + 0.5f * (float) Math.sin(flashTime * 6f));

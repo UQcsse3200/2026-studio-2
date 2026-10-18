@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 /** Controls the game time */
 public class GameTime {
   private static Logger logger = LoggerFactory.getLogger(GameTime.class);
-  private long gameTime;
+  private long elapsedTime;
   private long lastUpdateTime;
   private float timeScale = 1f;
 
@@ -16,13 +16,13 @@ public class GameTime {
     long currentTime = TimeUtils.millis();
     long elapsed = currentTime - lastUpdateTime;
 
-    gameTime += (long) (elapsed * timeScale);
+    elapsedTime += (long) (elapsed * timeScale);
     lastUpdateTime = currentTime;
   }
 
   public GameTime() {
     lastUpdateTime = TimeUtils.millis();
-    gameTime = 0L;
+    elapsedTime = 0L;
     logger.debug("Setting game start time to {}", lastUpdateTime);
   }
 
@@ -56,7 +56,7 @@ public class GameTime {
    */
   public long getTime() {
     updateGameTime();
-    return gameTime;
+    return elapsedTime;
   }
 
   public long getTimeSince(long lastTime) {

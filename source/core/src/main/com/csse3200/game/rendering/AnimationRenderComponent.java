@@ -55,11 +55,11 @@ public class AnimationRenderComponent extends RenderComponent {
    */
   public AnimationRenderComponent(TextureAtlas atlas) {
     this.atlas = atlas;
-    this.animations = new HashMap<>(4);
+    this.animations = HashMap.newHashMap(4);
     timeSource = ServiceLocator.getTimeSource();
   }
 
-  private final Map<String, Vector2> animationAnchors = new HashMap<>(4);
+  private final Map<String, Vector2> animationAnchors = HashMap.newHashMap(4);
 
   /**
    * Register an animation from the texture atlas. Will play once when called with startAnimation()
@@ -274,20 +274,14 @@ public class AnimationRenderComponent extends RenderComponent {
       u = u2;
       u2 = tmp;
     }
-    // Color prevColor = batch.getColor().cpy();
-    float light = getDarkness();
+
     batch.draw(region.getTexture(), drawX, drawY, width, height, u, v, u2, v2);
-    // batch.setColor(prevColor);
     batch.setColor(Color.WHITE);
     if (!ServiceLocator.getEntityService().getPaused()) {
       animationPlayTime += timeSource.getDeltaTime();
     }
   }
 
-  @Override
-  public void dispose() {
-    // Atlases belong to ResourceService and are shared by all entities of the same type.
-    // Disposing one enemy must not invalidate the textures used by surviving/new enemies.
-    super.dispose();
-  }
+  // Atlases are shared and owned by ResourceService; inherit disposal without releasing them.
+
 }

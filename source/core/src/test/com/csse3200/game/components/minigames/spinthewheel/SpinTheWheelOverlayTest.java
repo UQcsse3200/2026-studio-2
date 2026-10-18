@@ -54,11 +54,13 @@ class SpinTheWheelOverlayTest {
     ServiceLocator.registerRenderService(renderService);
 
     ResourceService resources = mock(ResourceService.class);
-    when(resources.getAsset(anyString(), eq(Texture.class))).thenReturn(mock(Texture.class));
+    Texture textureMock = mock(Texture.class);
+    when(resources.getAsset(anyString(), eq(Texture.class))).thenReturn(textureMock);
     ServiceLocator.registerResourceService(resources);
 
     PhysicsService physicsService = mock(PhysicsService.class);
-    when(physicsService.getPhysics()).thenReturn(mock(PhysicsEngine.class));
+    PhysicsEngine physicsEngineMock = mock(PhysicsEngine.class);
+    when(physicsService.getPhysics()).thenReturn(physicsEngineMock);
     ServiceLocator.registerPhysicsService(physicsService);
     ServiceLocator.registerTimeSource(new GameTime());
     ServiceLocator.registerInputService(new InputService());

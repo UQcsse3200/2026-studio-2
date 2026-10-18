@@ -120,7 +120,7 @@ public class InventoryComponent extends Component {
    */
   public void addGold(int gold) {
     long total = (long) this.gold + gold;
-    setGold((int) Math.max(0L, Math.min(Integer.MAX_VALUE, total)));
+    setGold((int) Math.clamp(total, 0L, Integer.MAX_VALUE));
   }
 
   // ---------
@@ -367,7 +367,9 @@ public class InventoryComponent extends Component {
   }
 
   public void setSlots(List<InventorySlot> slots) {
-    this.slots = List.copyOf(slots);
+    // Stored mutable so internal operations (e.g. removeItem) can update slots in place.
+    // External callers still receive an immutable snapshot via getSlots().
+    this.slots = new ArrayList<>(slots);
   }
 
   /**

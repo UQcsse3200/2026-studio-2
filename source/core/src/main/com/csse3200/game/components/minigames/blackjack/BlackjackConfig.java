@@ -1,15 +1,16 @@
 package com.csse3200.game.components.minigames.blackjack;
 
 import com.csse3200.game.components.item.ItemType;
+import java.util.List;
 
 public final class BlackjackConfig {
-  public static final String[] TEXTURES = createTextures();
+  public static final List<String> TEXTURES = List.of(createTextures());
 
-  public static final String[] SOUNDS = {
-    "sounds/minigames/blackjack/card-deal.mp3",
-    "sounds/minigames/blackjack/win.mp3",
-    "sounds/minigames/blackjack/lose.mp3"
-  };
+  public static final List<String> SOUNDS =
+      List.of(
+          "sounds/minigames/blackjack/card-deal.mp3",
+          "sounds/minigames/blackjack/win.mp3",
+          "sounds/minigames/blackjack/lose.mp3");
   public static final ItemType WIN_REWARD = ItemType.STANDARD_ARROW;
   public static final int WIN_REWARD_QUANTITY = 1;
 

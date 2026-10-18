@@ -16,6 +16,7 @@ import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -91,8 +92,8 @@ class Level1GameAreaTest {
 
   @Test
   void shouldHaveCorrectGoldSpawns() {
-    assertArrayEquals(
-        new GridPoint2[] {new GridPoint2(9, 5), new GridPoint2(15, 7), new GridPoint2(20, 8)},
+    assertEquals(
+        List.of(new GridPoint2(9, 5), new GridPoint2(15, 7), new GridPoint2(20, 8)),
         Level1GameArea.GOLD_SPAWNS);
   }
 

@@ -7,6 +7,7 @@ import com.csse3200.game.areas.terrain.TerrainFactory;
 import com.csse3200.game.areas.terrain.configs.levelconfigs.Level2Config;
 import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.components.GameVolume;
+import com.csse3200.game.components.gamearea.GameAreaDisplay;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.EnemyFactory;
 import com.csse3200.game.entities.factories.ItemFactory;
@@ -24,8 +25,6 @@ import org.slf4j.LoggerFactory;
 public class Level2GameArea extends GameArea {
 
   private static final Logger logger = LoggerFactory.getLogger(Level2GameArea.class);
-
-  private static final float WALL_WIDTH = 0.1f;
 
   private Vector2 worldBounds;
 
@@ -54,8 +53,10 @@ public class Level2GameArea extends GameArea {
     "images/ui/scroll_bg.png",
 
     // Level 2 background
+    "images/backgrounds/coin_bg.png",
+    "images/backgrounds/shop_bg.png",
+    "images/backgrounds/Level_end.png",
     "images/backgrounds/Background-2.png",
-    "images/backgrounds/Platform_level-2.png",
     "images/parallax/Clouds-birds.png",
     "images/parallax/Mountains-layer.png",
     "images/parallax/level_2_clouds.png",
@@ -96,14 +97,14 @@ public class Level2GameArea extends GameArea {
     "images/enemies/skeleton_warrior.atlas",
     "images/enemies/necromancer.atlas",
     "images/enemies/vulture.atlas",
-    "images/terrain/Level_1/Level_1_checkpoint.atlas"
+    "images/terrain/Level_2/level_2_checkpoint.atlas"
   };
 
   private static final String[] level2Sounds = {"sounds/Impact4.ogg"};
 
-  private static final String backgroundMusic = "sounds/BGM_03_mp3.mp3";
+  private static final String BACKGROUND_MUSIC = "sounds/BGM_03_mp3.mp3";
 
-  private static final String[] level2Music = {backgroundMusic};
+  private static final String[] level2Music = {BACKGROUND_MUSIC};
 
   private final TerrainFactory terrainFactory;
   private final CameraComponent camera;
@@ -121,6 +122,7 @@ public class Level2GameArea extends GameArea {
   @Override
   public void create() {
     loadAssets();
+    displayUI();
 
     spawnTerrain();
     spawnTorches();
@@ -130,6 +132,12 @@ public class Level2GameArea extends GameArea {
     spawnSkeletonWarrior();
 
     player.setPosition(new Vector2(config.getPlayerSpawn().x, config.getPlayerSpawn().y));
+  }
+
+  private void displayUI() {
+    Entity ui = new Entity();
+    ui.addComponent(new GameAreaDisplay("Level 2"));
+    spawnEntity(ui);
   }
 
   /**
@@ -176,9 +184,6 @@ public class Level2GameArea extends GameArea {
   private void spawnTerrain() {
     terrain = terrainFactory.createTerrain(TerrainFactory.TerrainType.BACKGROUND_DESERT);
     spawnEntity(new Entity().addComponent(terrain));
-    float tileSize = terrain.getTileSize();
-    GridPoint2 tileBounds = terrain.getMapBounds(0);
-    // worldBounds = new Vector2(tileBounds.x * tileSize, tileBounds.y * tileSize);
     worldBounds = new Vector2(50f, 45f);
   }
 
@@ -206,7 +211,7 @@ public class Level2GameArea extends GameArea {
 
   /** Plays the background music. */
   private void playMusic() {
-    Music music = ServiceLocator.getResourceService().getAsset(backgroundMusic, Music.class);
+    Music music = ServiceLocator.getResourceService().getAsset(BACKGROUND_MUSIC, Music.class);
 
     music.setLooping(true);
     GameVolume.setMusicVolume(music, 0.3f);
@@ -248,7 +253,7 @@ public class Level2GameArea extends GameArea {
   @Override
   public void dispose() {
     super.dispose();
-    ServiceLocator.getResourceService().getAsset(backgroundMusic, Music.class).stop();
+    ServiceLocator.getResourceService().getAsset(BACKGROUND_MUSIC, Music.class).stop();
     this.unloadAssets();
   }
 }

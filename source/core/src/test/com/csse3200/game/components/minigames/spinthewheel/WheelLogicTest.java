@@ -59,7 +59,8 @@ class WheelLogicTest {
     WheelLogic wheel = new WheelLogic(THREE_ITEMS);
 
     assertEquals(THREE_ITEMS, wheel.getItems());
-    assertThrows(UnsupportedOperationException.class, () -> wheel.getItems().clear());
+    var items = wheel.getItems();
+    assertThrows(UnsupportedOperationException.class, items::clear);
   }
 
   @Test

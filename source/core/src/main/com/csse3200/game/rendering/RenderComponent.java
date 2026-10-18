@@ -18,6 +18,7 @@ public abstract class RenderComponent extends Component implements Renderable, D
   public float lightning = 0f;
   public float backgroundLight = 1f;
   private boolean weather = false;
+  private Float fixedZIndex;
   private float beforeFlash = 1f;
   private float beforeFlashBackground = 1f;
   private Entity player = null;
@@ -128,33 +129,44 @@ public abstract class RenderComponent extends Component implements Renderable, D
       }
     }
 
-    if (weather) {
-      if (ServiceLocator.getTimeSource() != null) {
-        if (player != null) {
-          if (player.getPosition().y >= 98) {
-            if (target > 0f) {
-              // gradual increase to max intensity once at top
-              target -= 0.001f;
-            } else {
-              target = 0f;
-            }
+    if (weather && ServiceLocator.getTimeSource() != null) {
+      if (player != null) {
+        if (player.getPosition().y >= 98) {
+          if (target > 0f) {
+            // gradual increase to max intensity once at top
+            target -= 0.001f;
           } else {
-            float currentTarget = ((player.getPosition().y - 6f) / 92f);
-            target = 1f - (currentTarget * 0.75f);
+            target = 0f;
           }
-          rainIntensity = target;
+        } else {
+          float currentTarget = ((player.getPosition().y - 6f) / 92f);
+          target = 1f - (currentTarget * 0.75f);
         }
-        float deltaTime = ServiceLocator.getTimeSource().getDeltaTime();
-        darkness = beforeFlash;
-        backgroundLight = beforeFlashBackground;
-        updateDarkness(deltaTime);
-        updateBackgroundLight(deltaTime);
+        rainIntensity = target;
       }
+      float deltaTime = ServiceLocator.getTimeSource().getDeltaTime();
+      darkness = beforeFlash;
+      backgroundLight = beforeFlashBackground;
+      updateDarkness(deltaTime);
+      updateBackgroundLight(deltaTime);
     }
+  }
+
+  /**
+   * Draws this component at a fixed depth instead of by the entity's height, for scenery the player
+   * should always walk in front of. Lower values are drawn first, further back.
+   *
+   * @param zIndex the fixed depth to draw at
+   */
+  public void setFixedZIndex(float zIndex) {
+    this.fixedZIndex = zIndex;
   }
 
   @Override
   public float getZIndex() {
+    if (fixedZIndex != null) {
+      return fixedZIndex;
+    }
     // The smaller the Y value, the higher the Z index, so that closer entities are drawn in front
     return -entity.getPosition().y;
   }

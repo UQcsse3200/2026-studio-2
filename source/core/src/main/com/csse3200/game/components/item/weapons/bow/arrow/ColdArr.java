@@ -7,10 +7,12 @@ public class ColdArr extends Arrow {
     super(ItemType.ICE_ARROW, quantity);
   }
 
+  @Override
   public float getSlowSpeed() {
     return getItemType().getSlowSpeed();
   }
 
+  @Override
   public float getSlowTime() {
     return getItemType().getSlowTime();
   }

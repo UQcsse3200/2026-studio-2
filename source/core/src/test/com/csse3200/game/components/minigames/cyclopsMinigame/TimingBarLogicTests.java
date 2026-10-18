@@ -51,7 +51,7 @@ class TimingBarLogicTests {
     float deltaTime = 0.5f; // Smaller number to avoid bounce
     float previousLocation = logic.getMarkerX();
     float expectedNextLocation =
-        previousLocation + (TimingBarLogic.markerSpeed * logic.direction * deltaTime);
+        previousLocation + (TimingBarLogic.MARKER_SPEED * logic.direction * deltaTime);
 
     logic.update(deltaTime);
     assertEquals(expectedNextLocation, logic.getMarkerX(), 0.001f);
@@ -64,7 +64,7 @@ class TimingBarLogicTests {
 
     float deltaTime = 5f;
     logic.update(deltaTime);
-    assertEquals(logic.barWidth, logic.getMarkerX(), 0.001f);
+    assertEquals(TimingBarLogic.BAR_WIDTH, logic.getMarkerX(), 0.001f);
     assertEquals(-1, logic.direction);
 
     logic.update(deltaTime);

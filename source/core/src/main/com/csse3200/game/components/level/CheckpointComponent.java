@@ -110,7 +110,6 @@ public class CheckpointComponent extends Component {
 
     float playerPosX = player.getPosition().x;
     float playerPosY = player.getPosition().y;
-
     if (position.x - 1 < playerPosX
         && position.x + 1 > playerPosX
         && position.y - 1 < playerPosY

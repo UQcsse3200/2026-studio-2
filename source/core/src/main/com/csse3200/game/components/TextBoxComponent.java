@@ -276,7 +276,7 @@ public class TextBoxComponent extends UIComponent {
 
   /** Sets the opacity of the textbox while it remains mounted. */
   public void setOpacity(float opacity) {
-    float clampedOpacity = Math.max(0f, Math.min(1f, opacity));
+    float clampedOpacity = Math.clamp(opacity, 0f, 1f);
     if (table != null) {
       table.getColor().a = clampedOpacity;
     }

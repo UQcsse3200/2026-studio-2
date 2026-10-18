@@ -29,6 +29,9 @@ import com.csse3200.game.ui.UIComponent;
 
 /** Displays the Blackjack game and its cards. */
 public class BlackjackDisplay extends UIComponent {
+  private static final String EMPTY_BALANCE_MESSAGE = "Your balance is 0 - grind hard!";
+
+  private static final String PLACE_BET = "PLACE BET";
 
   private static final float Z_INDEX = 2f;
   private static final float CARD_WIDTH = 100f;
@@ -46,7 +49,6 @@ public class BlackjackDisplay extends UIComponent {
 
   private final Blackjack blackjack;
   private final InventoryComponent inventory;
-  private boolean rewardGranted;
   private boolean resultSoundPlayed;
   private boolean soundEnabled = true;
   private final java.util.function.Consumer<Boolean> soundToggleCallback;
@@ -54,7 +56,6 @@ public class BlackjackDisplay extends UIComponent {
 
   private Table table;
   private Image deckImage;
-  private Group deckGroup;
   private Table dealerCards;
   private Table playerCards;
   private Table resultOverlay;
@@ -138,7 +139,7 @@ public class BlackjackDisplay extends UIComponent {
     playerTotalLabel = new Label("", skin);
     balanceLabel = new Label("", skin);
     resultLabel = new Label("", skin);
-    statusLabel = new Label("PLACE BET", skin);
+    statusLabel = new Label(PLACE_BET, skin);
 
     betField = new TextField("", skin);
     betField.setMessageText("Enter bet");
@@ -283,7 +284,7 @@ public class BlackjackDisplay extends UIComponent {
     dealerRegion.add(dealerTotalLabel).padTop(4f);
 
     Table centerRegion = new Table();
-    deckGroup = new Group();
+    Group deckGroup = new Group();
     deckGroup.setSize(CARD_WIDTH + 12f, CARD_HEIGHT + 8f);
     Image deckBack = createCardBackImage();
     Image deckMiddle = createCardBackImage();
@@ -374,8 +375,8 @@ public class BlackjackDisplay extends UIComponent {
               resultLabel.setText("");
               statusLabel.setText(
                   inventory != null && inventory.getGold() <= 0
-                      ? "Your balance is 0 - grind hard!"
-                      : "PLACE BET");
+                      ? EMPTY_BALANCE_MESSAGE
+                      : PLACE_BET);
               refreshLabels();
             }
           }
@@ -567,7 +568,7 @@ public class BlackjackDisplay extends UIComponent {
     balanceLabel.setText("Gold: " + getDisplayedGold() + "    Bet: " + blackjack.getBet());
 
     if (inventory != null && inventory.getGold() <= 0) {
-      resultLabel.setText("Your balance is 0 - grind hard!");
+      resultLabel.setText(EMPTY_BALANCE_MESSAGE);
     } else {
       resultLabel.setText(blackjack.getResultMessage());
     }
@@ -581,7 +582,7 @@ public class BlackjackDisplay extends UIComponent {
     } else if (blackjack.isRoundInProgress()) {
       statusLabel.setText("YOUR TURN");
     } else {
-      statusLabel.setText("PLACE BET");
+      statusLabel.setText(PLACE_BET);
     }
 
     if (blackjack.getDealerHand().isEmpty()) {
@@ -598,7 +599,7 @@ public class BlackjackDisplay extends UIComponent {
             : "Player total: " + blackjack.getPlayerTotal());
     balanceLabel.setText("Gold: " + getDisplayedGold() + "    Bet: " + blackjack.getBet());
     if (inventory != null && inventory.getGold() <= 0) {
-      resultLabel.setText("Your balance is 0 - grind hard!");
+      resultLabel.setText(EMPTY_BALANCE_MESSAGE);
     } else {
       resultLabel.setText(blackjack.getResultMessage());
     }
@@ -741,7 +742,7 @@ public class BlackjackDisplay extends UIComponent {
     int availableGold = inventory.getGold();
 
     if (availableGold <= 0) {
-      resultLabel.setText("Your balance is 0 - grind hard!");
+      resultLabel.setText(EMPTY_BALANCE_MESSAGE);
       statusLabel.setText("NO GOLD");
       betField.setText("");
       refreshLabels();
@@ -752,7 +753,7 @@ public class BlackjackDisplay extends UIComponent {
 
     if (betText.isEmpty()) {
       resultLabel.setText("Enter a bet amount.");
-      statusLabel.setText("PLACE BET");
+      statusLabel.setText(PLACE_BET);
       return;
     }
 
@@ -772,7 +773,7 @@ public class BlackjackDisplay extends UIComponent {
 
     if (!inventory.hasGold(amount)) {
       resultLabel.setText("Insufficient balance.");
-      statusLabel.setText("PLACE BET");
+      statusLabel.setText(PLACE_BET);
       return;
     }
 
@@ -787,7 +788,6 @@ public class BlackjackDisplay extends UIComponent {
     inventory.addGold(-amount);
 
     goldSettled = false;
-    rewardGranted = false;
     resultSoundPlayed = false;
     revealDealerCard = false;
 
@@ -889,7 +889,9 @@ public class BlackjackDisplay extends UIComponent {
   }
 
   @Override
-  public void draw(SpriteBatch batch) {}
+  public void draw(SpriteBatch batch) {
+    // Scene2D actors on the stage render this UI.
+  }
 
   /** Brings the Blackjack UI above the blurred backdrop. */
   public void toFront() {
