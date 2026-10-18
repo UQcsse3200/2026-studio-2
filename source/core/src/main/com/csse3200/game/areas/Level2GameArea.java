@@ -191,14 +191,11 @@ public class Level2GameArea extends GameArea {
 
   private void spawnTorches() {
     GridPoint2[] torchSpawns = {
-      new GridPoint2(2, 41),
       new GridPoint2(10, 41),
-      new GridPoint2(11, 37),
       new GridPoint2(2, 8),
       new GridPoint2(10, 8),
       new GridPoint2(37, 28),
       new GridPoint2(43, 8),
-      // Guide torch on P10, just before the exit door (it previously stood in the doorway).
       new GridPoint2(38, 8),
     };
 
