@@ -95,6 +95,15 @@ public class LevelConfig {
   }
 
   /**
+   * Public getter for the name of the level this level transitions to
+   *
+   * @return the next level's name, or null if this level has no next level
+   */
+  public String getNextLevelName() {
+    return nextLevelName;
+  }
+
+  /**
    * Public getter to access checkpoint components for levels
    *
    * @return an ArrayList of the CheckpointComponents of a level

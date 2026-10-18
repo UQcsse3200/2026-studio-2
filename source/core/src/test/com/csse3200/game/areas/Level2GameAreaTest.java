@@ -5,7 +5,6 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import com.badlogic.gdx.audio.Music;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.areas.terrain.TerrainComponent;
@@ -201,44 +200,10 @@ class Level2GameAreaTest {
   }
 
   @Test
-  void level2ConfigTriggerTargetsLevel3() throws Exception {
-    assertEquals("level3", getConfigField("nextLevelName"));
-    assertEquals(new GridPoint2(33, 8), getConfigField("nextLevelTriggerSpawn"));
-  }
-
-  @Test
-  void spawnExitDoorPlacesDoorOverLevel3Trigger() throws Exception {
-    Texture doorTexture = mock(Texture.class);
-    when(doorTexture.getWidth()).thenReturn(1536);
-    when(doorTexture.getHeight()).thenReturn(1024);
-    when(resourceService.getAsset(CaveEntranceRenderComponent.TEXTURE, Texture.class))
-        .thenReturn(doorTexture);
-    when(terrain.tileToWorldPosition(any(GridPoint2.class)))
-        .thenAnswer(
-            inv -> {
-              GridPoint2 tile = inv.getArgument(0);
-              return new Vector2(tile.x, tile.y);
-            });
-    area.terrain = terrain;
-
-    invokePrivate("spawnExitDoor");
-
-    Entity door =
-        area.areaEntities.stream()
-            .filter(e -> e.getComponent(CaveEntranceRenderComponent.class) != null)
-            .findFirst()
-            .orElseThrow();
-    verify(entityService).register(door);
-
-    Vector2 pos = door.getPosition();
-    Vector2 scale = door.getScale();
-    assertEquals(new Vector2(33f, 8f), pos);
-    assertEquals(new Vector2(2f, 2.67f), scale);
-
-    // The trigger tile must sit inside the door's footprint so walking into the door transitions.
-    GridPoint2 trigger = (GridPoint2) getConfigField("nextLevelTriggerSpawn");
-    assertTrue(trigger.x >= pos.x && trigger.x < pos.x + scale.x);
-    assertTrue(trigger.y >= pos.y && trigger.y < pos.y + scale.y);
+  void level2ConfigTargetsLevel3WithoutAStandaloneTrigger() throws Exception {
+    assertEquals("level3", area.config.getNextLevelName());
+    // The exit door is the only trigger; the config must not create a second one.
+    assertNull(getConfigField("nextLevelTriggerSpawn"));
   }
 
   private Object getConfigField(String name) throws Exception {
