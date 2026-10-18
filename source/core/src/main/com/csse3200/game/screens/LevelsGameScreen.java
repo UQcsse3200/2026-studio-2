@@ -288,7 +288,7 @@ public class LevelsGameScreen extends ScreenAdapter {
     PlayerInteractionComponent interaction =
         current == null ? null : current.getComponent(PlayerInteractionComponent.class);
     return interaction != null && interaction.consumeShopClosed();
-
+    
   }
 
   private void toggleCheatMode() {
@@ -367,8 +367,8 @@ public class LevelsGameScreen extends ScreenAdapter {
     wheelOverlay.afterRender();
     pauseOverlay.afterRender();
     blackjackOverlay.afterRender();
-  }
     }
+  }
 
   @Override
   public void resize(int width, int height) {
