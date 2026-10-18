@@ -841,6 +841,34 @@ class CyclopsMinigameLogicTest {
 
   /* Testing Creating and Dispose */
   @Test
+  void stoppingBeforeCreationStopsTheMarkerWithoutLoadedSounds() {
+    CyclopsMinigameLogic uncreated =
+        new CyclopsMinigameLogic(timingBarLogic, timingBarDisplay, terrainComponent, player);
+    uncreated.startMinigame();
+
+    assertDoesNotThrow(uncreated::stopMinigame);
+
+    assertEquals(CyclopsMinigameLogic.State.STOP, uncreated.state);
+    verify(timingBarLogic).stopMarker();
+  }
+
+  @Test
+  void restartAfterWinningRequiresCompletingTheCourseAgain() {
+    minigameLogic.setSafeLocations(List.of(new GridPoint2(1, 0), new GridPoint2(2, 0)));
+    minigameLogic.setWinLocation(new GridPoint2(3, 0));
+    runMove(true);
+    runMove(true);
+    assertEquals(CyclopsMinigameLogic.State.WIN, minigameLogic.state);
+
+    minigameLogic.restartMinigame();
+    runMove(true);
+
+    assertEquals(CyclopsMinigameLogic.State.SHOW_DELAY, minigameLogic.state);
+    runMove(true);
+    assertEquals(CyclopsMinigameLogic.State.WIN, minigameLogic.state);
+  }
+
+  @Test
   void disposeStopsAllSoundsAndDoesSuperCall() {
     minigameLogic.dispose();
     verify(minigameLogic.walkingSound).stop(anyLong());
