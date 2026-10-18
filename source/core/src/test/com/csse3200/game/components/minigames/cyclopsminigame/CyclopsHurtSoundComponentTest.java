@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockingDetails;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 import com.badlogic.gdx.audio.Sound;
 import com.csse3200.game.areas.CyclopsMinigameArea;
@@ -77,5 +78,38 @@ class CyclopsHurtSoundComponentTest {
 
     verify(deathVoice).play(0.8f, 0.75f, 0f);
     assertEquals(0, totalPlays(voices));
+  }
+
+  @Test
+  void missingCombatStatsUsesTheLowestHeartVoice() {
+    Sound[] voices = mockVoices();
+    Sound deathVoice = mock(Sound.class);
+    CyclopsHurtSoundComponent component =
+        new CyclopsHurtSoundComponent(voices, VOLUMES_BY_HEARTS, deathVoice);
+    Entity entity = new Entity().addComponent(component);
+    component.create();
+
+    entity.getEvents().trigger(CyclopsHurtSoundComponent.HURT_EVENT);
+
+    verify(voices[0]).play(VOLUMES_BY_HEARTS.getFirst());
+    assertEquals(1, totalPlays(voices));
+    verifyNoInteractions(deathVoice);
+  }
+
+  @Test
+  void healthAboveConfiguredHeartLevelsUsesTheHighestVoice() {
+    Sound[] voices = mockVoices();
+    Sound deathVoice = mock(Sound.class);
+    CyclopsHurtSoundComponent component =
+        new CyclopsHurtSoundComponent(voices, VOLUMES_BY_HEARTS, deathVoice);
+    Entity entity =
+        new Entity().addComponent(new CombatStatsComponent(20, 1)).addComponent(component);
+    component.create();
+
+    entity.getEvents().trigger(CyclopsHurtSoundComponent.HURT_EVENT);
+
+    verify(voices[voices.length - 1]).play(VOLUMES_BY_HEARTS.getLast());
+    assertEquals(1, totalPlays(voices));
+    verifyNoInteractions(deathVoice);
   }
 }

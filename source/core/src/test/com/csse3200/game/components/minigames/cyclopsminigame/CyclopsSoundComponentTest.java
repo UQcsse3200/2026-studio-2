@@ -75,4 +75,15 @@ class CyclopsSoundComponentTest {
 
     verify(snore, times(2)).loop(CyclopsSoundComponent.SNORE_VOLUME);
   }
+
+  @Test
+  void disposingStopsSnoringWithoutDisposingSharedSoundAssets() {
+    cyclops.getComponent(CyclopsSoundComponent.class).dispose();
+
+    verify(snore).stop();
+    verify(snore, never()).dispose();
+    verify(roar, never()).dispose();
+    verify(landing, never()).dispose();
+    verify(clubHit, never()).dispose();
+  }
 }
