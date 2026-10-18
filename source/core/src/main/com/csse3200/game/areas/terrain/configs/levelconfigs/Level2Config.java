@@ -164,10 +164,8 @@ public class Level2Config extends LevelConfig {
               180f,
               false,
               new String[] {TRIGGER_WHEEL_SPIN_PLATFORM}), // B1
-          new TriggerButtonConfig(new GridPoint2(49, 10), 90f, true, new String[] {"b2"}), // B2 (A)
-          new TriggerButtonConfig(new GridPoint2(49, 9), 90f, true, new String[] {"b3"}), // B3 (B)
-          new TriggerButtonConfig(new GridPoint2(49, 8), 90f, true, new String[] {"b4"}), // B4 (C)
-          new TriggerButtonConfig(new GridPoint2(49, 7), 90f, true, new String[] {"b5"}), // B5 (D)
+          new TriggerButtonConfig(
+              new GridPoint2(49, 9), 90f, true, new String[] {"endPuzzle"}), // B3 (B)
         };
 
     items = new HashMap<>(Map.of(new GridPoint2(40, 29), new Arrow(ItemType.STANDARD_ARROW, 99)));
@@ -216,70 +214,70 @@ public class Level2Config extends LevelConfig {
           new SpikyBallTrapConfig(
               new GridPoint2(42, 26),
               270f,
-              new String[] {"b2", "b4"},
+              new String[] {"endPuzzle"},
               1f,
               true,
               SpawnerComponent.ACTIVATION_MODE.TOGGLE), // SBT3
           new SpikyBallTrapConfig(
               new GridPoint2(42, 24),
               270f,
-              new String[] {"b3", "b4", "b5"},
+              new String[] {"endPuzzle"},
               0.75f,
               true,
               SpawnerComponent.ACTIVATION_MODE.TOGGLE), // SBT4
           new SpikyBallTrapConfig(
               new GridPoint2(42, 22),
               270f,
-              new String[] {"b2", "b5"},
+              new String[] {"endPuzzle"},
               0.5f,
-              false,
+              true,
               SpawnerComponent.ACTIVATION_MODE.TOGGLE), // SBT5
           new SpikyBallTrapConfig(
               new GridPoint2(42, 19),
               270f,
-              new String[] {"b3"},
+              new String[] {"endPuzzle"},
               0.5f,
-              true,
+              false,
               SpawnerComponent.ACTIVATION_MODE.TOGGLE), // SBT6
           new SpikyBallTrapConfig(
               new GridPoint2(42, 17),
               270f,
-              new String[] {"b2", "b5"},
+              new String[] {"endPuzzle"},
               0.75f,
-              true,
+              false,
               SpawnerComponent.ACTIVATION_MODE.TOGGLE), // SBT7
           new SpikyBallTrapConfig(
               new GridPoint2(42, 15),
               270f,
-              new String[] {"b3", "b4", "b5"},
+              new String[] {"endPuzzle"},
               1f,
-              true,
+              false,
               SpawnerComponent.ACTIVATION_MODE.TOGGLE), // SBT8
           new SpikyBallTrapConfig(
               new GridPoint2(41, 13),
               180f,
-              new String[] {"b2", "b4"},
+              new String[] {"endPuzzle"},
               0.3f,
-              false,
+              true,
               SpawnerComponent.ACTIVATION_MODE.TOGGLE), // SBT9
           new SpikyBallTrapConfig(
               new GridPoint2(39, 13),
               180f,
-              new String[] {"b3", "b5"},
+              new String[] {"endPuzzle"},
               0.2f,
-              false,
+              true,
               SpawnerComponent.ACTIVATION_MODE.TOGGLE), // SBT10
           new SpikyBallTrapConfig(
               new GridPoint2(37, 13),
               180f,
-              new String[] {"b2", "b5"},
+              new String[] {"endPuzzle"},
               0.35f,
-              true,
+              false,
               SpawnerComponent.ACTIVATION_MODE.TOGGLE), // SBT11
           new SpikyBallTrapConfig(
               new GridPoint2(35, 13),
               180f,
-              new String[] {"b3"},
+              new String[] {"endPuzzle"},
               0.25f,
               false,
               SpawnerComponent.ACTIVATION_MODE.TOGGLE), // SBT12
