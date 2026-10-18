@@ -26,7 +26,7 @@ public class BackgroundRenderComponent extends RenderComponent {
   private float originalWidth;
   private float originalHeight;
   private int originalRotation;
-  private final Vector2 finalVelocity = new Vector2(4.5f, -4.5f);
+  private final Vector2 finalVelocity = new Vector2(5.5f, -4.5f);
 
   /** A single parallax background layer. */
   private static class ParallaxLayer {
@@ -275,8 +275,8 @@ public class BackgroundRenderComponent extends RenderComponent {
         if (rainIntensity < 1f) {
           float intensity = 1f - rainIntensity;
           float finalWidth = 0.1f;
-          float finalHeight = 0.4f;
-          int finalRotation = 35;
+          float finalHeight = 0.45f;
+          int finalRotation = 40;
           layer.velocity.x =
               originalVelocity.x + (finalVelocity.x - originalVelocity.x) * intensity;
           layer.velocity.y =
