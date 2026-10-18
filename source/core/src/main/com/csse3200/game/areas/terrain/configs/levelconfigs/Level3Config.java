@@ -322,9 +322,7 @@ public class Level3Config extends LevelConfig {
     spikes =
         new SpikeClusterConfig[] {
           new SpikeClusterConfig(6, 6, 18, 18, 90f, false), // SC1
-          new SpikeClusterConfig(10, 10, 18, 18, 270f, false), // SC2
-          new SpikeClusterConfig(11, 11, 39, 39, 90f, true), // mp3
-          new SpikeClusterConfig(15, 15, 39, 39, 270f, true), // mp3
+          new SpikeClusterConfig(9, 9, 18, 18, 270f, false), // SC2
           new SpikeClusterConfig(22, 22, 84, 84, 270f, false), // G6
           new SpikeClusterConfig(24, 24, 84, 84, 90f, false), // P18
           new SpikeClusterConfig(0, 0, 68, 75, 270f, false),

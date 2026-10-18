@@ -4,6 +4,8 @@ import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.areas.terrain.configs.*;
 import com.csse3200.game.components.item.*;
+import com.csse3200.game.components.item.consumables.HealthPotion;
+import com.csse3200.game.components.item.consumables.PoisonPotion;
 import com.csse3200.game.components.item.weapons.bow.arrow.*;
 import com.csse3200.game.components.level.SpawnerComponent;
 import com.csse3200.game.entities.Entity;
@@ -170,7 +172,13 @@ public class Level2Config extends LevelConfig {
               new GridPoint2(49, 9), 90f, true, new String[] {"endPuzzle"}), // B3 (B)
         };
 
-    items = new HashMap<>(Map.of(new GridPoint2(40, 29), new Arrow(ItemType.STANDARD_ARROW, 99)));
+    items = new HashMap<>(Map.of(
+        new GridPoint2(40, 29), new Arrow(ItemType.STANDARD_ARROW, 99),
+        new GridPoint2(10, 27), new HealthPotion(5),
+        new GridPoint2(18, 32), new HealthPotion(5),
+        new GridPoint2(45, 8), new HealthPotion(5),
+        new GridPoint2(34, 20), new HealthPotion(5)
+    ));
 
     ledges =
         new PlatformConfig[] {
