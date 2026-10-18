@@ -171,13 +171,16 @@ class SpikyBallComponentTest {
   }
 
   private Entity createBall() {
-    Entity ball = new Entity().addComponent(new SpikyBallComponent(new Vector2(1f, 0f)));
+    Entity ball =
+        new Entity()
+            .addComponent(new SpikyBallComponent(new Vector2(1f, 0f)))
+            .addComponent(new CombatStatsComponent(100, 2));
     ball.create();
     return ball;
   }
 
   @Test
-  void shouldKillPlayerOnCollision() {
+  void shouldDamagePlayerByBallAttackOnCollision() {
     CombatStatsComponent stats = new CombatStatsComponent(10, 0, 1000L);
     Entity player = new Entity().addComponent(mock(PlayerActions.class)).addComponent(stats);
     EventListener0 death = mock(EventListener0.class);
@@ -188,14 +191,15 @@ class SpikyBallComponentTest {
 
     ball.getEvents().trigger("collisionStart", mock(Fixture.class), fixtureOf(player));
 
-    assertTrue(stats.isDead());
-    verify(death).handle();
+    assertEquals(8, stats.getHealth());
+    assertFalse(stats.isDead());
     verify(hurt).handle();
+    verify(death, never()).handle();
     verify(entityService).scheduleForDisposal(ball);
   }
 
   @Test
-  void shouldKillPlayerEvenWhileInvulnerable() {
+  void shouldNotDamagePlayerWhileInvulnerable() {
     when(timeSource.getTime()).thenReturn(0L);
     CombatStatsComponent stats = new CombatStatsComponent(10, 0, 1000L);
     Entity player = new Entity().addComponent(mock(PlayerActions.class)).addComponent(stats);
@@ -203,15 +207,13 @@ class SpikyBallComponentTest {
 
     createBall().getEvents().trigger("collisionStart", mock(Fixture.class), fixtureOf(player));
 
-    assertTrue(stats.isDead());
+    assertEquals(8, stats.getHealth());
   }
 
   @Test
-  void shouldTriggerDeathOnlyOnceForRepeatedContacts() {
+  void shouldOnlyDamagePlayerOnceForRepeatedContacts() {
     CombatStatsComponent stats = new CombatStatsComponent(10, 0, 1000L);
     Entity player = new Entity().addComponent(mock(PlayerActions.class)).addComponent(stats);
-    EventListener0 death = mock(EventListener0.class);
-    player.getEvents().addListener("death", death);
     Entity ball = createBall();
     Fixture playerFixture = fixtureOf(player);
 
@@ -219,7 +221,18 @@ class SpikyBallComponentTest {
     ball.getEvents().trigger("collisionStart", mock(Fixture.class), playerFixture);
     createBall().getEvents().trigger("collisionStart", mock(Fixture.class), playerFixture);
 
-    verify(death, times(1)).handle();
+    assertEquals(8, stats.getHealth());
+  }
+
+  @Test
+  void shouldNotDamagePlayerInGodMode() {
+    CombatStatsComponent stats = new CombatStatsComponent(10, 0, 1000L);
+    Entity player = new Entity().addComponent(mock(PlayerActions.class)).addComponent(stats);
+    stats.setGodMode(true);
+
+    createBall().getEvents().trigger("collisionStart", mock(Fixture.class), fixtureOf(player));
+
+    assertEquals(10, stats.getHealth());
   }
 
   @Test

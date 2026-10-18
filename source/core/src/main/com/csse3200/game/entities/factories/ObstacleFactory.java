@@ -449,7 +449,7 @@ public class ObstacleFactory {
             .addComponent(new PhysicsComponent().setBodyType(BodyType.DynamicBody))
             .addComponent(new ColliderComponent().setLayer(PhysicsLayer.OBSTACLE))
             .addComponent(new HitboxComponent().setLayer(PhysicsLayer.OBSTACLE))
-            .addComponent(new CombatStatsComponent(100, 4))
+            .addComponent(new CombatStatsComponent(100, 2))
             .addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER))
             .addComponent(new SpikyBallComponent(moveDirection));
 

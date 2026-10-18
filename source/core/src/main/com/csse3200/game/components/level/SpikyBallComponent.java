@@ -44,8 +44,9 @@ public class SpikyBallComponent extends Component {
   }
 
   /**
-   * Kills the player if the other fixture belongs to them. The ball is disposed on its first
-   * contact, before TouchAttackComponent's delayed hit can land, so the kill is applied here.
+   * Damages the player if the other fixture belongs to them. The ball is disposed on its first
+   * contact, before TouchAttackComponent's delayed hit can land, so the hit is applied here using
+   * the ball's own attack value.
    *
    * @param other the fixture this ball collided with
    */
@@ -58,13 +59,11 @@ public class SpikyBallComponent extends Component {
     }
 
     CombatStatsComponent stats = data.entity.getComponent(CombatStatsComponent.class);
-    if (stats == null || stats.isDead()) {
+    CombatStatsComponent ballStats = entity.getComponent(CombatStatsComponent.class);
+    if (stats == null || ballStats == null || stats.isDead()) {
       return;
     }
 
-    // Same events as a killing enemy hit in CombatStatsComponent.hit: updateHealth and death, then
-    // hurt.
-    stats.setHealth(0);
-    data.entity.getEvents().trigger("hurt");
+    stats.hit(ballStats);
   }
 }
