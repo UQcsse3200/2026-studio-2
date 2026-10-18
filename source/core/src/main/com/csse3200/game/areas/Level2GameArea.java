@@ -10,7 +10,12 @@ import com.csse3200.game.components.GameVolume;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.EnemyFactory;
 import com.csse3200.game.entities.factories.ItemFactory;
+import com.csse3200.game.entities.factories.ObstacleFactory;
+import com.csse3200.game.physics.components.ColliderComponent;
+import com.csse3200.game.physics.components.PhysicsComponent.AlignX;
+import com.csse3200.game.physics.components.PhysicsComponent.AlignY;
 import com.csse3200.game.rendering.BackgroundRenderComponent;
+import com.csse3200.game.rendering.CaveEntranceRenderComponent;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import org.slf4j.Logger;
@@ -28,6 +33,21 @@ public class Level2GameArea extends GameArea {
       new GridPoint2[] {
         new GridPoint2(6, 23), new GridPoint2(11, 23), new GridPoint2(17, 23),
       };
+
+  /**
+   * Exit door to Level 3. It stands on P11 against wall G14. P11 is only two tiles wide, so the
+   * door uses the 2 x 2.67 room door size from Level 1 rather than the 3 x 4 Level 1 exit, which
+   * would overhang the gap.
+   */
+  private static final GridPoint2 EXIT_DOOR_SPAWN = new GridPoint2(33, 8);
+
+  private static final Vector2 EXIT_DOOR_SCALE = new Vector2(2f, 2.67f);
+
+  /**
+   * Sensor covering only the doorway: centred in the door and resting on P11's top surface, so it
+   * lies entirely above solid platform and cannot be reached from below the ledge.
+   */
+  private static final Vector2 EXIT_DOOR_TRIGGER_SIZE = new Vector2(1f, 2f);
 
   /** Textures used by the level 2 game area. */
   private static final String[] level2Textures = {
@@ -53,6 +73,8 @@ public class Level2GameArea extends GameArea {
     "images/health/purple_heart.png",
     "images/traps/spiky_ball.png",
     "images/traps/spiky_ball_trap.png",
+    "images/terrain/Level_3/water tile.png", // torches
+    CaveEntranceRenderComponent.TEXTURE, // exit door
     ItemFactory.WHEEL_TOKEN_TEXTURE,
 
     // Enemy textures
@@ -101,11 +123,27 @@ public class Level2GameArea extends GameArea {
     loadAssets();
 
     spawnTerrain();
+    spawnTorches();
     spawnBackground();
     spawnConfigEntities();
+    spawnExitDoor();
     spawnSkeletonWarrior();
 
     player.setPosition(new Vector2(config.getPlayerSpawn().x, config.getPlayerSpawn().y));
+  }
+
+  /**
+   * Spawns the exit door, which is also Level 2's only next-level trigger. Walking into the doorway
+   * fires the existing "triggerNextLevel" event, which the game screen uses to load Level 3.
+   */
+  private void spawnExitDoor() {
+    Entity exit =
+        ObstacleFactory.createNextLevelTriggerEntity(config.getNextLevelName())
+            .addComponent(new CaveEntranceRenderComponent());
+    exit.setScale(EXIT_DOOR_SCALE);
+    exit.getComponent(ColliderComponent.class)
+        .setAsBoxAligned(EXIT_DOOR_TRIGGER_SIZE, AlignX.CENTER, AlignY.BOTTOM);
+    spawnEntityAt(exit, EXIT_DOOR_SPAWN, false, false);
   }
 
   /** Creates the Level 2 parallax background. */
@@ -148,6 +186,21 @@ public class Level2GameArea extends GameArea {
     for (GridPoint2 spawnLocation : skeletonWarriorSpawnLocations) {
       Entity enemy = EnemyFactory.createSkeletonWarrior(player);
       spawnEntityAt(enemy, spawnLocation, true, true);
+    }
+  }
+
+  private void spawnTorches() {
+    GridPoint2[] torchSpawns = {
+      new GridPoint2(10, 41),
+      new GridPoint2(2, 8),
+      new GridPoint2(10, 8),
+      new GridPoint2(37, 28),
+      new GridPoint2(43, 8),
+      new GridPoint2(38, 8),
+    };
+
+    for (GridPoint2 pos : torchSpawns) {
+      spawnEntityAt(ObstacleFactory.createTorch(), pos, true, false);
     }
   }
 

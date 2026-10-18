@@ -7,6 +7,7 @@ import com.badlogic.gdx.physics.box2d.Fixture;
 import com.csse3200.game.areas.terrain.TerrainFactory;
 import com.csse3200.game.areas.terrain.configs.levelconfigs.Level3Config;
 import com.csse3200.game.components.CameraComponent;
+import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.GameVolume;
 import com.csse3200.game.components.level.RisingWaterComponent;
 import com.csse3200.game.components.player.PlayerActions;
@@ -332,28 +333,24 @@ public class Level3GameArea extends GameArea {
     }
   }
 
-  /** Spawns torches that guide the player along the route up the level. */
   private void spawnTorches() {
     GridPoint2[] guideTorches = {
       new GridPoint2(19, 11),
-      new GridPoint2(14, 13),
       new GridPoint2(18, 16),
-      new GridPoint2(8, 19),
       new GridPoint2(5, 22),
       new GridPoint2(7, 28),
       new GridPoint2(11, 37),
-      new GridPoint2(14, 43),
       new GridPoint2(18, 46),
       new GridPoint2(14, 52),
-      new GridPoint2(8, 59),
       new GridPoint2(17, 68),
-      new GridPoint2(9, 71),
       new GridPoint2(14, 81),
       new GridPoint2(26, 85),
-      new GridPoint2(11, 85),
       new GridPoint2(11, 95),
-      new GridPoint2(9, 98),
       new GridPoint2(24, 98),
+      new GridPoint2(3, 107),
+      new GridPoint2(23, 107),
+      new GridPoint2(3, 101),
+      new GridPoint2(23, 101),
     };
 
     for (GridPoint2 pos : guideTorches) {
@@ -367,6 +364,11 @@ public class Level3GameArea extends GameArea {
     if (data == null
         || data.entity == null
         || data.entity.getComponent(PlayerActions.class) == null) {
+      return;
+    }
+
+    CombatStatsComponent stats = data.entity.getComponent(CombatStatsComponent.class);
+    if (stats != null && stats.isGodMode()) {
       return;
     }
 

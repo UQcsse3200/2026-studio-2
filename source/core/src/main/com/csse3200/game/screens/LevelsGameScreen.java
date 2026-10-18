@@ -297,6 +297,18 @@ public class LevelsGameScreen extends ScreenAdapter {
     }
   }
 
+  private void toggleCheatMode() {
+    cheats = !cheats;
+    PhysicsComponent physics = player.getComponent(PhysicsComponent.class);
+    if (cheats) {
+      gravity = physics.getBody().getGravityScale();
+      physics.getBody().setGravityScale(0);
+    } else {
+      physics.getBody().setGravityScale(gravity);
+    }
+    player.getComponent(KeyboardPlayerInputComponent.class).toggleCheats();
+  }
+
   @Override
   public void render(float delta) {
     // at the start of the render, if there's been a level swap queued, safely perform the swap
@@ -326,19 +338,11 @@ public class LevelsGameScreen extends ScreenAdapter {
       blackjackOverlay.request();
     } */
 
-    if (Gdx.input.isKeyJustPressed(Input.Keys.BACKSPACE)) {
-      cheats = !cheats;
-      if (cheats) {
-        gravity = player.getComponent(PhysicsComponent.class).getBody().getGravityScale();
-        player.getComponent(PhysicsComponent.class).getBody().setGravityScale(0);
-        player.getComponent(KeyboardPlayerInputComponent.class).toggleCheats();
-      } else {
-        player.getComponent(PhysicsComponent.class).getBody().setGravityScale(gravity);
-        player.getComponent(KeyboardPlayerInputComponent.class).toggleCheats();
-      }
+    if (!terminalOpen && Gdx.input.isKeyJustPressed(Input.Keys.BACKSPACE)) {
+      toggleCheatMode();
     }
 
-    if (!minigameOverlayManager.isActive() && Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
+    if (!minigameOverlayManager.isActive() && Gdx.input.isKeyJustPressed(Input.Keys.PAGE_UP)) {
       if (level.equals("level1")) {
         level = "level2";
       } else if (level.equals("level2")) {
@@ -506,6 +510,12 @@ public class LevelsGameScreen extends ScreenAdapter {
 
     gameEndDisplay = new GameEndDisplay(GameEndState.LOSE);
     terminal = new Terminal(game, GdxGame.ScreenType.LEVEL_1_GAME);
+    terminal.addCommand(
+        "cheats",
+        args -> {
+          toggleCheatMode();
+          return true;
+        });
     ui.addComponent(new InputDecorator(stage, 10))
         .addComponent(new PerformanceDisplay())
         .addComponent(new CoordinateDisplay(renderer.getCamera()))

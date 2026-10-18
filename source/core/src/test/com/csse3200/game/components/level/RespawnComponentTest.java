@@ -160,4 +160,25 @@ public class RespawnComponentTest {
     respawnComponent.update();
     assertEquals(1, grappleReleaseCount[0]);
   }
+
+  @Test
+  void shouldNotApplyHealthPenaltyInGodMode() {
+    CombatStatsComponent stats = player.getComponent(CombatStatsComponent.class);
+    stats.setGodMode(true);
+
+    RespawnComponent.applyHealthPenalty(player);
+
+    assertEquals(10, stats.getHealth());
+  }
+
+  @Test
+  void shouldNotApplyFallPenaltyInGodMode() {
+    player.addComponent(respawnComponent);
+    player.getComponent(CombatStatsComponent.class).setGodMode(true);
+    player.setPosition(0, -11);
+
+    respawnComponent.update();
+
+    assertEquals(10, player.getComponent(CombatStatsComponent.class).getHealth());
+  }
 }

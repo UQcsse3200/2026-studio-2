@@ -390,6 +390,13 @@ public class ObstacleFactory {
 
     PhysicsUtils.setScaledCollider(spike, 0.8f, 0.5f);
 
+    spike
+        .getComponent(HitboxComponent.class)
+        .setAsBoxAligned(
+            spike.getScale().cpy().scl(0.9f, 0.7f),
+            PhysicsComponent.AlignX.CENTER,
+            PhysicsComponent.AlignY.BOTTOM);
+
     return spike;
   }
 
@@ -442,7 +449,7 @@ public class ObstacleFactory {
             .addComponent(new PhysicsComponent().setBodyType(BodyType.DynamicBody))
             .addComponent(new ColliderComponent().setLayer(PhysicsLayer.OBSTACLE))
             .addComponent(new HitboxComponent().setLayer(PhysicsLayer.OBSTACLE))
-            .addComponent(new CombatStatsComponent(100, 4))
+            .addComponent(new CombatStatsComponent(100, 2))
             .addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER))
             .addComponent(new SpikyBallComponent(moveDirection));
 

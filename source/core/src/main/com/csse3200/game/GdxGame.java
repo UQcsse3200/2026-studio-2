@@ -34,7 +34,8 @@ public class GdxGame extends Game {
 
   private boolean transitioning = false;
 
-  // Prevents the intro cutscene from triggering multiple times in one game session.
+  // Prevents the intro cutscene from triggering multiple times
+  // in one game session.
   private boolean introStarted = false;
 
   private PlayerSnapshot playerSnapshot;
@@ -43,10 +44,9 @@ public class GdxGame extends Game {
   public void create() {
     logger.info("Creating game");
     loadSettings();
-
     applyDefaultClearColor();
 
-    setScreen(ScreenType.LEVEL_1_GAME);
+    setScreen(ScreenType.MAIN_MENU);
   }
 
   /**
@@ -58,7 +58,8 @@ public class GdxGame extends Game {
     if (Gdx.gl == null) {
       return;
     }
-    Gdx.gl.glClearColor(248f / 255f, 249 / 255f, 178 / 255f, 1);
+
+    Gdx.gl.glClearColor(248f / 255f, 249f / 255f, 178f / 255f, 1);
   }
 
   /** Loads the game's settings. */

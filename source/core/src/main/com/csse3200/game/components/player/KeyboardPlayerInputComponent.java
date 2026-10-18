@@ -9,6 +9,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.csse3200.game.components.CameraComponent;
+import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.input.InputComponent;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.services.ServiceLocator;
@@ -240,6 +241,10 @@ public class KeyboardPlayerInputComponent extends InputComponent {
 
   public void toggleCheats() {
     cheats = !cheats;
+    CombatStatsComponent stats = entity.getComponent(CombatStatsComponent.class);
+    if (stats != null) {
+      stats.setGodMode(cheats);
+    }
   }
 
   /**
