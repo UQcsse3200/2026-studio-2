@@ -283,6 +283,20 @@ class PlayerInteractionComponentTest {
   }
 
   @Test
+  void shouldReportAShopClosureOnlyOnce() {
+    Entity player = createPlayer(new InventoryComponent(0));
+    spawnShopNpc(new Vector2(0.5f, 0f));
+    PlayerInteractionComponent interaction = player.getComponent(PlayerInteractionComponent.class);
+
+    interaction.interact();
+    assertFalse(interaction.consumeShopClosed(), "the shop is still open");
+
+    player.getEvents().trigger("closeShop");
+    assertTrue(interaction.consumeShopClosed());
+    assertFalse(interaction.consumeShopClosed(), "the closure is reported once");
+  }
+
+  @Test
   void shouldFindGoldInRange() {
     Entity player = createPlayer(new InventoryComponent(0));
     Entity gold = spawnGold(new Vector2(0.5f, 0f));
