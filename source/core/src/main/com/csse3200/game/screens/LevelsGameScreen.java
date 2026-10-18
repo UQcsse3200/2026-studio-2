@@ -10,7 +10,6 @@ import com.csse3200.game.areas.GameArea;
 import com.csse3200.game.areas.Level1GameArea;
 import com.csse3200.game.areas.Level2GameArea;
 import com.csse3200.game.areas.Level3GameArea;
-import com.csse3200.game.areas.LevelBossGameArea;
 import com.csse3200.game.areas.terrain.TerrainFactory;
 import com.csse3200.game.components.ButtonSound;
 import com.csse3200.game.components.GameVolume;
@@ -266,9 +265,6 @@ public class LevelsGameScreen extends ScreenAdapter {
       case "level3":
         nextGameArea = new Level3GameArea(terrainFactory, renderer.getCamera(), player);
         break;
-      case "boss":
-        nextGameArea = new LevelBossGameArea(terrainFactory, renderer.getCamera(), player);
-        break;
       default:
         return;
     }
@@ -347,8 +343,6 @@ public class LevelsGameScreen extends ScreenAdapter {
       } else if (level.equals("level2")) {
         level = "level3";
       } else if (level.equals("level3")) {
-        level = "boss";
-      } else if (level.equals("boss")) {
         level = "none";
       }
       queueAreaSwap(level);
