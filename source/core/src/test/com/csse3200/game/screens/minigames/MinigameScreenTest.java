@@ -106,9 +106,10 @@ class MinigameScreenTest {
   @Test
   void silentMinigamesStillLoadAndUnloadButtonFeedback() {
     TestScreen screen = new TestScreen(new Entity());
+    Renderer renderer = mock(Renderer.class);
     assertArrayEquals(new String[0], screen.getSounds());
     try (var factory = mockStatic(RenderFactory.class)) {
-      factory.when(RenderFactory::createRenderer).thenReturn(mock(Renderer.class));
+      factory.when(RenderFactory::createRenderer).thenReturn(renderer);
       screen.show();
       ResourceService resources = ServiceLocator.getResourceService();
       assertTrue(resources.containsAsset(ButtonSound.SOUND_FILES.getFirst(), Sound.class));

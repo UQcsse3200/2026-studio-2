@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.inventory.InventoryComponent;
+import com.csse3200.game.components.inventory.InventorySlot;
 import com.csse3200.game.components.item.ItemType;
 import com.csse3200.game.entities.Entity;
 import org.junit.jupiter.api.Test;
@@ -80,7 +81,7 @@ class PlayerSnapshotTest {
     snapshot.applyTo(restored);
     assertEquals(0, restored.getComponent(CombatStatsComponent.class).getHealth());
     assertEquals(0, inventory.getGold());
-    assertTrue(inventory.getSlots().stream().allMatch(slot -> slot.isEmpty()));
+    assertTrue(inventory.getSlots().stream().allMatch(InventorySlot::isEmpty));
     assertTrue(inventory.addItem(ItemType.STANDARD_ARROW, 1));
     assertTrue(inventory.removeItem(ItemType.STANDARD_ARROW, 1));
   }

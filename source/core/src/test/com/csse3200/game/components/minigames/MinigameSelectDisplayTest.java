@@ -48,8 +48,8 @@ class MinigameSelectDisplayTest {
     Entity ui = new Entity().addComponent(display);
     List<MinigameType> selected = new ArrayList<>();
     AtomicInteger back = new AtomicInteger();
-    ui.getEvents().addListener("selectMinigame", (MinigameType type) -> selected.add(type));
-    ui.getEvents().addListener("back", () -> back.incrementAndGet());
+    ui.getEvents().<MinigameType>addListener("selectMinigame", selected::add);
+    ui.getEvents().addListener("back", back::incrementAndGet);
     display.create();
     ArgumentCaptor<Actor> actor = ArgumentCaptor.forClass(Actor.class);
     verify(stage).addActor(actor.capture());

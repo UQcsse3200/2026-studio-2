@@ -23,6 +23,7 @@ import com.csse3200.game.physics.PhysicsService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.function.Executable;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -105,7 +106,8 @@ class RendererTest {
     clearInvocations(renderService);
     try {
       Gdx.gl = null;
-      assertDoesNotThrow(() -> renderer.render());
+      Executable renderFrame = renderer::render;
+      assertDoesNotThrow(renderFrame);
       verifyNoInteractions(spriteBatch, stage, debugRenderer, renderService);
 
       Gdx.gl = originalGl;
