@@ -1,11 +1,13 @@
 package com.csse3200.game.rendering;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Graphics;
 import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector3;
@@ -15,6 +17,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.extensions.GameExtension;
+import com.csse3200.game.lighting.LightingEngine;
 import com.csse3200.game.physics.PhysicsEngine;
 import com.csse3200.game.physics.PhysicsService;
 import org.junit.jupiter.api.BeforeEach;
@@ -91,5 +94,49 @@ class RendererTest {
   private static CameraComponent makeCameraEntity(Camera camera) {
     Entity camEntity = new Entity().addComponent(new CameraComponent(camera));
     return camEntity.getComponent(CameraComponent.class);
+  }
+
+  @Test
+  void shouldSkipRenderingWithoutGlAndResumeWhenAvailable() {
+    Renderer renderer =
+        new Renderer(
+            makeCameraEntity(camera), 10, spriteBatch, stage, renderService, debugRenderer);
+    GL20 originalGl = Gdx.gl;
+    clearInvocations(renderService);
+    try {
+      Gdx.gl = null;
+      assertDoesNotThrow(() -> renderer.render());
+      verifyNoInteractions(spriteBatch, stage, debugRenderer, renderService);
+
+      Gdx.gl = originalGl;
+      renderer.render();
+      verify(renderService).render(spriteBatch);
+      verify(stage).draw();
+    } finally {
+      Gdx.gl = originalGl;
+    }
+  }
+
+  @Test
+  void shouldSkipLitRenderingWithoutGlAndResumeWhenAvailable() {
+    Renderer renderer =
+        new Renderer(
+            makeCameraEntity(camera), 10, spriteBatch, stage, renderService, debugRenderer);
+    LightingEngine lighting = mock(LightingEngine.class);
+    GL20 originalGl = Gdx.gl;
+    clearInvocations(renderService);
+    try {
+      Gdx.gl = null;
+      assertDoesNotThrow(() -> renderer.render(lighting));
+      verifyNoInteractions(spriteBatch, stage, debugRenderer, renderService, lighting);
+
+      Gdx.gl = originalGl;
+      renderer.render(lighting);
+      verify(renderService).render(spriteBatch);
+      verify(lighting).render();
+      verify(stage).draw();
+    } finally {
+      Gdx.gl = originalGl;
+    }
   }
 }
