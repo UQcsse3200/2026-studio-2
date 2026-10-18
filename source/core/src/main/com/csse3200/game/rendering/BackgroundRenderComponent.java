@@ -30,7 +30,7 @@ public class BackgroundRenderComponent extends RenderComponent {
 
   /** A single parallax background layer. */
   private static class ParallaxLayer {
-    private final Texture texture;
+    private Texture texture;
     private final Vector2 parallaxFactor;
     private float width;
     private float height;
@@ -219,6 +219,22 @@ public class BackgroundRenderComponent extends RenderComponent {
       // Flash layers that flash during lightning
       if (layer.flash) {
         float lightning = getLightning();
+
+        if (rainIntensity <= 0.5678) {
+          if (flashOrder == 0) {
+            layer.texture =
+                ServiceLocator.getResourceService()
+                    .getAsset("images/parallax/lightning_4.png", Texture.class);
+          }
+
+        } else if (rainIntensity <= 0.8205) {
+          if (flashOrder == 0) {
+            layer.texture =
+                ServiceLocator.getResourceService()
+                    .getAsset("images/parallax/lightning_3.png", Texture.class);
+          }
+        }
+
         // Get lightning order
         if (lightning > 5f && lightning < 5.8f) {
           flashOrder = 0;
@@ -256,6 +272,7 @@ public class BackgroundRenderComponent extends RenderComponent {
               (int) (originalRotation + (finalRotation - originalRotation) * intensity);
         }
       }
+      if (layer.flash) {}
     }
   }
 
