@@ -449,12 +449,12 @@ public class Level3Config extends LevelConfig {
                 new GridPoint2(18, 11), new Arrow(ItemType.STANDARD_ARROW, 25),
                 new GridPoint2(4, 22), new Arrow(ItemType.FIRE_ARROW, 10),
                 new GridPoint2(13, 25), new HealthPotion(5),
-                new GridPoint2(13, 35), new HealthPotion(5),
-                new GridPoint2(13, 43), new PoisonPotion(5),
+                new GridPoint2(13, 34), new HealthPotion(5),
+                new GridPoint2(13, 45), new PoisonPotion(5),
                 new GridPoint2(8, 54), new Arrow(ItemType.STANDARD_ARROW, 30),
                 new GridPoint2(19, 54), new Arrow(ItemType.ICE_ARROW, 20),
                 new GridPoint2(25, 85), new Arrow(ItemType.STANDARD_ARROW, 30),
-                new GridPoint2(23, 95), new HealthPotion(10)));
+                new GridPoint2(22, 94), new HealthPotion(10)));
 
     wheelSpinSpawns = new GridPoint2[] {new GridPoint2(20, 22)};
   }
