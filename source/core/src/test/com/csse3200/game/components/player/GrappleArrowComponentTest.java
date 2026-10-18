@@ -138,13 +138,9 @@ class GrappleArrowComponentTest {
   @Test
   void shouldNotCrashWhenShooterHasNoGrapple() {
     Entity arrow = arrowFiredBy(new Entity());
-
-    assertDoesNotThrow(
-        () ->
-            arrow
-                .getEvents()
-                .trigger(
-                    "collisionStart", mock(Fixture.class), fixtureOnLayer(PhysicsLayer.GROUND)));
+    Fixture arrowFixture = mock(Fixture.class);
+    Fixture ground = fixtureOnLayer(PhysicsLayer.GROUND);
+    assertDoesNotThrow(() -> arrow.getEvents().trigger("collisionStart", arrowFixture, ground));
   }
 
   @Test

@@ -367,7 +367,9 @@ public class InventoryComponent extends Component {
   }
 
   public void setSlots(List<InventorySlot> slots) {
-    this.slots = List.copyOf(slots);
+    // Stored mutable so internal operations (e.g. removeItem) can update slots in place.
+    // External callers still receive an immutable snapshot via getSlots().
+    this.slots = new ArrayList<>(slots);
   }
 
   /**

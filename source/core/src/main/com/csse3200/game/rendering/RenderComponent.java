@@ -15,6 +15,7 @@ public abstract class RenderComponent extends Component implements Renderable, D
   public float lightning = 0f;
   public float backgroundLight = 1f;
   private boolean weather = false;
+  private Float fixedZIndex;
   private float beforeFlash = 1f;
   private float beforeFlashBackground = 1f;
 
@@ -117,8 +118,21 @@ public abstract class RenderComponent extends Component implements Renderable, D
     }
   }
 
+  /**
+   * Draws this component at a fixed depth instead of by the entity's height, for scenery the player
+   * should always walk in front of. Lower values are drawn first, further back.
+   *
+   * @param zIndex the fixed depth to draw at
+   */
+  public void setFixedZIndex(float zIndex) {
+    this.fixedZIndex = zIndex;
+  }
+
   @Override
   public float getZIndex() {
+    if (fixedZIndex != null) {
+      return fixedZIndex;
+    }
     // The smaller the Y value, the higher the Z index, so that closer entities are drawn in front
     return -entity.getPosition().y;
   }

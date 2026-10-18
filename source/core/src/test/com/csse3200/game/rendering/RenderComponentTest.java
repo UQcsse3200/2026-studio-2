@@ -49,6 +49,26 @@ class RenderComponentTest {
   }
 
   @Test
+  void shouldDrawAtAFixedDepthRegardlessOfHeightWhenOneIsSet() {
+    RenderComponent scenery = spy(RenderComponent.class);
+    RenderComponent player = spy(RenderComponent.class);
+    Entity sceneryEntity = new Entity();
+    Entity playerEntity = new Entity();
+    scenery.setEntity(sceneryEntity);
+    player.setEntity(playerEntity);
+    scenery.setFixedZIndex(-100f);
+
+    // The player is higher up, which would normally put them behind the scenery.
+    sceneryEntity.setPosition(0f, 1f);
+    playerEntity.setPosition(0f, 50f);
+    assertTrue(scenery.getZIndex() < player.getZIndex());
+
+    // Moving the scenery doesn't change its depth.
+    sceneryEntity.setPosition(0f, -50f);
+    assertEquals(-100f, scenery.getZIndex());
+  }
+
+  @Test
   void shouldGiveCorrectRenderOrder() {
     RenderComponent component1 = spy(RenderComponent.class);
     RenderComponent component2 = spy(RenderComponent.class);

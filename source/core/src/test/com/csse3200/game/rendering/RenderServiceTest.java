@@ -6,6 +6,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.csse3200.game.extensions.GameExtension;
 import org.junit.jupiter.api.Test;
@@ -23,6 +24,22 @@ class RenderServiceTest {
     renderService.register(renderable);
     renderService.render(spriteBatch);
     verify(renderable).render(spriteBatch);
+
+    renderService.unregister(renderable);
+  }
+
+  @Test
+  void shouldResetTheBatchColourBeforeRenderingSoUiTintDoesNotLeakIntoTheWorld() {
+    RenderService renderService = new RenderService();
+    Renderable renderable = mock(Renderable.class);
+    SpriteBatch spriteBatch = mock(SpriteBatch.class);
+    renderService.register(renderable);
+
+    renderService.render(spriteBatch);
+
+    InOrder order = Mockito.inOrder(spriteBatch, renderable);
+    order.verify(spriteBatch).setColor(Color.WHITE);
+    order.verify(renderable).render(spriteBatch);
 
     renderService.unregister(renderable);
   }
