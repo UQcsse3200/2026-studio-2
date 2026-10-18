@@ -157,26 +157,61 @@ loadScripts(document, 'script');</script>
 <div class="block">Restores the default light-yellow clear colour used behind transparent terrain (e.g.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#create()" class="member-name-link">create</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>com.badlogic.gdx.Screen</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#createScreen(com.csse3200.game.GdxGame.ScreenType)" class="member-name-link">createScreen</a><wbr>(<a href="GdxGame.ScreenType.html" title="enum class in com.csse3200.game">GdxGame.ScreenType</a>&nbsp;screenType)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#applyPendingSavePlayer(com.csse3200.game.entities.Entity)" class="member-name-link">applyPendingSavePlayer</a><wbr>(<a href="entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;player)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Applies the loaded save's player stats (health, max health, gold, inventory) to the player
+ entity as soon as it exists.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#applyPendingSaveWorld(com.csse3200.game.areas.GameArea,java.lang.String)" class="member-name-link">applyPendingSaveWorld</a><wbr>(<a href="areas/GameArea.html" title="class in com.csse3200.game.areas">GameArea</a>&nbsp;area,
+ <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;level)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Applies the loaded save's world state (activated checkpoints, and with them the respawn point)
+ to the given level.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#autosave(java.lang.String,com.csse3200.game.areas.GameArea)" class="member-name-link">autosave</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;level,
+ <a href="areas/GameArea.html" title="class in com.csse3200.game.areas">GameArea</a>&nbsp;area)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Writes the active save slot from the live game state.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#create()" class="member-name-link">create</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>com.badlogic.gdx.Screen</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#createScreen(com.csse3200.game.GdxGame.ScreenType)" class="member-name-link">createScreen</a><wbr>(<a href="GdxGame.ScreenType.html" title="enum class in com.csse3200.game">GdxGame.ScreenType</a>&nbsp;screenType)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Create a new screen of the provided type.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#dispose()" class="member-name-link">dispose</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#exit()" class="member-name-link">exit</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#dispose()" class="member-name-link">dispose</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#exit()" class="member-name-link">exit</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Exit the game.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#finishTransition(com.badlogic.gdx.Screen)" class="member-name-link">finishTransition</a><wbr>(com.badlogic.gdx.Screen&nbsp;toScreen)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#finishTransition(com.badlogic.gdx.Screen)" class="member-name-link">finishTransition</a><wbr>(com.badlogic.gdx.Screen&nbsp;toScreen)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Called by <a href="screens/TransitionScreen.html" title="class in com.csse3200.game.screens"><code>TransitionScreen</code></a> once its fade-in has finished, handing control to the screen
  it faded into.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getActiveSaveSlot()" class="member-name-link">getActiveSaveSlot</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">The slot currently being written to, or -1 when no save is active.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#loadSave(int)" class="member-name-link">loadSave</a><wbr>(int&nbsp;slot)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Loads a save slot: records it as the active slot, queues its state for the gameplay screen and
+ transitions to the saved level, skipping the intro cutscene.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#markSaveCompleted()" class="member-name-link">markSaveCompleted</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Flags the active save as completed (won the game) so the save-select screen can show it.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#restorePlayerState(com.csse3200.game.entities.Entity)" class="member-name-link">restorePlayerState</a><wbr>(<a href="entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;player)</code></div>
@@ -206,8 +241,14 @@ loadScripts(document, 'script');</script>
 <div class="block">Starts the initial cutscene once per game session, then falls back to level 1.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#transitionTo(com.csse3200.game.GdxGame.ScreenType)" class="member-name-link">transitionTo</a><wbr>(<a href="GdxGame.ScreenType.html" title="enum class in com.csse3200.game">GdxGame.ScreenType</a>&nbsp;screenType)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#startNewGame()" class="member-name-link">startNewGame</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Starts a brand-new game in the first empty save slot, then runs the normal new-game flow (intro
+ cutscene, then level 1).</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#transitionTo(com.csse3200.game.GdxGame.ScreenType)" class="member-name-link">transitionTo</a><wbr>(<a href="GdxGame.ScreenType.html" title="enum class in com.csse3200.game">GdxGame.ScreenType</a>&nbsp;screenType)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Fades the current screen to black, swaps to the target screen, then fades back in.</div>
 </div>
 </div>
@@ -295,6 +336,88 @@ loadScripts(document, 'script');</script>
 <h3>startInitialCutscene</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">startInitialCutscene</span>()</div>
 <div class="block">Starts the initial cutscene once per game session, then falls back to level 1.</div>
+</section>
+</li>
+<li>
+<section class="detail" id="startNewGame()">
+<h3>startNewGame</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">startNewGame</span>()</div>
+<div class="block">Starts a brand-new game in the first empty save slot, then runs the normal new-game flow (intro
+ cutscene, then level 1). When every slot is filled the save-select screen is shown instead, so
+ the player can delete a save to make room.</div>
+</section>
+</li>
+<li>
+<section class="detail" id="loadSave(int)">
+<h3>loadSave</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">loadSave</span><wbr><span class="parameters">(int&nbsp;slot)</span></div>
+<div class="block">Loads a save slot: records it as the active slot, queues its state for the gameplay screen and
+ transitions to the saved level, skipping the intro cutscene.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>slot</code> - slot index to load</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="autosave(java.lang.String,com.csse3200.game.areas.GameArea)">
+<h3>autosave</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">autosave</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;level,
+ <a href="areas/GameArea.html" title="class in com.csse3200.game.areas">GameArea</a>&nbsp;area)</span></div>
+<div class="block">Writes the active save slot from the live game state. Called whenever a checkpoint is activated
+ (the game's only save point); does nothing without an active slot.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>level</code> - current level name</dd>
+<dd><code>area</code> - the current game area</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="markSaveCompleted()">
+<h3>markSaveCompleted</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">markSaveCompleted</span>()</div>
+<div class="block">Flags the active save as completed (won the game) so the save-select screen can show it.</div>
+</section>
+</li>
+<li>
+<section class="detail" id="applyPendingSavePlayer(com.csse3200.game.entities.Entity)">
+<h3>applyPendingSavePlayer</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">applyPendingSavePlayer</span><wbr><span class="parameters">(<a href="entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;player)</span></div>
+<div class="block">Applies the loaded save's player stats (health, max health, gold, inventory) to the player
+ entity as soon as it exists. No-op when no save is being loaded or the save has no recorded
+ player state (a brand-new game keeps the level defaults).</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>player</code> - the player entity</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="applyPendingSaveWorld(com.csse3200.game.areas.GameArea,java.lang.String)">
+<h3>applyPendingSaveWorld</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">applyPendingSaveWorld</span><wbr><span class="parameters">(<a href="areas/GameArea.html" title="class in com.csse3200.game.areas">GameArea</a>&nbsp;area,
+ <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;level)</span></div>
+<div class="block">Applies the loaded save's world state (activated checkpoints, and with them the respawn point)
+ to the given level. Only applies when the area is the save's level; otherwise the pending save
+ is kept for a later swap. Consumes the pending save once applied.
+
+ <p>When the save recorded checkpoints the player is placed at the last one. A save without
+ checkpoints (a game that has not reached a checkpoint yet) keeps the level's own spawn point.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>area</code> - the freshly created game area</dd>
+<dd><code>level</code> - the level that area represents</dd>
+<dt>Returns:</dt>
+<dd>true if the pending save was applied</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="getActiveSaveSlot()">
+<h3>getActiveSaveSlot</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">getActiveSaveSlot</span>()</div>
+<div class="block">The slot currently being written to, or -1 when no save is active.</div>
 </section>
 </li>
 <li>
