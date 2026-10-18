@@ -227,6 +227,12 @@ public class BackgroundRenderComponent extends RenderComponent {
                     .getAsset("images/parallax/lightning_4.png", Texture.class);
           }
 
+          if (flashOrder == 1) {
+            layer.texture =
+                ServiceLocator.getResourceService()
+                    .getAsset("images/parallax/lightning_3.png", Texture.class);
+          }
+
         } else if (rainIntensity <= 0.8205) {
           if (flashOrder == 0) {
             layer.texture =
