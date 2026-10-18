@@ -459,7 +459,11 @@ public class PlayerAnimationController extends Component {
 
   /** Re-picks the idle, walk or sprint animation, e.g. after the rope pose stops drawing. */
   public void refreshAnimation() {
-    updateAnimation();
+    // Only fill the gap the rope pose left. If something has already started a clip in the same
+    // frame (e.g. the landing crouch), replacing it would strand the flag waiting for it to end.
+    if (animator.getCurrentAnimation() == null) {
+      updateAnimation();
+    }
   }
 
   public void playAnimation(String animationName) {

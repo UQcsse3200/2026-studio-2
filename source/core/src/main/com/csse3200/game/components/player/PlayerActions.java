@@ -91,6 +91,7 @@ public class PlayerActions extends Component {
     entity.getEvents().addListener("speedPotionUsed", this::applySpeedPotion);
     entity.getEvents().addListener("death", this::die);
     entity.getEvents().addListener("revive", this::revive);
+    entity.getEvents().addListener("grappleAttached", this::onGrappleAttached);
   }
 
   @Override
@@ -116,7 +117,7 @@ public class PlayerActions extends Component {
 
     if (dashRecoveryRemaining > 0f) {
       dashRecoveryRemaining -= ServiceLocator.getTimeSource().getDeltaTime();
-      if (!isGrappling()) {
+      if (!isSwinging()) {
         updateSpeed();
       }
       return;
@@ -125,7 +126,7 @@ public class PlayerActions extends Component {
     if (!moving) {
       return;
     }
-    if (isGrappling()) {
+    if (isSwinging()) {
       // Walking is off while swinging, movement keys just add speed to the arc
       entity.getEvents().trigger("grappleSwing", walkDirection.x);
     } else {
@@ -169,6 +170,17 @@ public class PlayerActions extends Component {
     return grapple != null && grapple.isAttached();
   }
 
+  /**
+   * Hanging from the rope, as opposed to merely having one out. A player standing on a platform
+   * with a rope attached walks, sprints and jumps exactly as they would without it, so this - not
+   * {@link #isGrappling()} - is what switches movement over to swinging.
+   *
+   * @return true while a rope is attached and the player is off the ground
+   */
+  public boolean isSwinging() {
+    return isGrappling() && !isGrounded;
+  }
+
   /** Applies the queued ground-jump impulse once its short wind-up has elapsed. */
   private void checkJumpWindup() {
     if (jumpImpulseAt < 0) {
@@ -198,17 +210,10 @@ public class PlayerActions extends Component {
       return;
     }
 
-    if (isGrappling()) {
-      // Swinging is its own thing: not falling, and touching down mid-swing isn't a landing.
-      // Clearing the flag means letting go mid-air reports a fresh fall.
-      falling = false;
-      return;
-    }
-
     if (!isGrounded) {
       airborne = true;
       liftoffDeadline = -1;
-      if (!falling && !isGrappling() && !isDashing) {
+      if (!falling && !isDashing) {
         float verticalVelocity = physicsComponent.getBody().getLinearVelocity().y;
         if (verticalVelocity < -FALL_SPEED_THRESHOLD) {
           falling = true;
@@ -330,21 +335,21 @@ public class PlayerActions extends Component {
   /** Stops the player from walking. */
   void stopWalking() {
     this.walkDirection = Vector2.Zero.cpy();
-    if (!isDashing && !isGrappling()) {
+    if (!isDashing && !isSwinging()) {
       traction = decelerationTraction;
       updateSpeed();
     }
     moving = false;
   }
 
-  /** Jump off the ground, or let go of the rope with a kick upward. */
+  /** Jump off the ground, or let go of the rope with a kick upward while hanging from it. */
   void jump() {
     if (dead) {
       return;
     }
     Body body = physicsComponent.getBody();
 
-    if (isGrappling()) {
+    if (isSwinging()) {
       // A ground jump queued just before the rope latched on would otherwise still fire its
       // impulse on top of the rope kick. Drop it; this jump replaces it.
       jumpImpulseAt = -1;
@@ -394,7 +399,7 @@ public class PlayerActions extends Component {
 
     this.isSprinting = true;
     dash();
-    if (!isDashing && !isGrappling()) {
+    if (!isDashing && !isSwinging()) {
       updateSpeed();
     }
   }
@@ -413,7 +418,7 @@ public class PlayerActions extends Component {
   private void confirmStopSprinting() {
     sprintStopPending = false;
     isSprinting = false;
-    if (!isDashing && !isGrappling()) {
+    if (!isDashing && !isSwinging()) {
       updateSpeed();
     }
     entity.getEvents().trigger("sprintEnd");
@@ -469,6 +474,14 @@ public class PlayerActions extends Component {
     dashTimeRemaining = 0f;
     Body body = physicsComponent.getBody();
     body.setGravityScale(storedGravityScale);
+  }
+
+  /**
+   * Latching on resets the fall, so a descent on the rope is announced afresh: the animation
+   * controller forgets the air state on attachment, and the two must agree again by touchdown.
+   */
+  private void onGrappleAttached() {
+    falling = false;
   }
 
   private void onHurtInterruptDash() {
