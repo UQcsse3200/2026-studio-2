@@ -47,6 +47,7 @@ class GrappleRopePoseTest {
   private PlayerAnimationController controller;
   private GrappleHoldRenderComponent hold;
   private AnimationRenderComponent animator;
+  private TextureAtlas atlas;
 
   @BeforeEach
   void setUp() {
@@ -59,7 +60,7 @@ class GrappleRopePoseTest {
     when(time.getDeltaTime()).thenReturn(0.016f);
     ServiceLocator.registerTimeSource(time);
 
-    TextureAtlas atlas = mock(TextureAtlas.class);
+    atlas = mock(TextureAtlas.class);
     for (String name : new String[] {"idle", "walk", "jump_fall", "jump_land"}) {
       Array<AtlasRegion> regions = new Array<>(1);
       regions.add(mock(AtlasRegion.class));
@@ -179,5 +180,61 @@ class GrappleRopePoseTest {
     frame();
 
     assertEquals("idle", animator.getCurrentAnimation());
+  }
+
+  // ---- The pose must never cut off a one-shot clip ----
+
+  private void registerBowAndInstrumentClips() {
+    for (String name : new String[] {"bow_draw", "bow_shoot", "jump_takeoff", "instrument_draw"}) {
+      Array<AtlasRegion> regions = new Array<>(1);
+      regions.add(mock(AtlasRegion.class));
+      when(atlas.findRegions(name)).thenReturn(regions);
+    }
+    // Shorter than one render step, so a single render() finishes them.
+    animator.addAnimation("bow_draw", 0.01f, PlayMode.NORMAL);
+    animator.addAnimation("bow_shoot", 0.01f, PlayMode.NORMAL);
+    animator.addAnimation("jump_takeoff", 0.01f, PlayMode.NORMAL);
+    animator.addAnimation("instrument_draw", 0.01f, PlayMode.NORMAL);
+  }
+
+  @Test
+  void shouldLetTheGrappleShotFinishBeforeHangingFromItsRope() {
+    registerBowAndInstrumentClips();
+    // A grapple fired in mid-air plays the bow's shot, and the rope can land before it finishes.
+    player.getEvents().trigger("grappleChargeStart", new Vector2(1f, 1f));
+    player.getEvents().trigger("grappleChargeFire", new Vector2(1f, 1f));
+    assertEquals("bow_shoot", animator.getCurrentAnimation());
+    attachRopeTo(0.5f, 5f);
+
+    frame();
+    assertEquals("bow_shoot", animator.getCurrentAnimation(), "the shot plays out first");
+
+    animator.render(mock(SpriteBatch.class));
+    frame();
+    assertNull(animator.getCurrentAnimation(), "then the pose takes over");
+
+    grapple.release();
+    frame();
+    // Regression: the pose cut the shot off, so the bow state never cleared. Every jump, dash,
+    // hit and swing animation stayed blocked after letting go.
+    player.getEvents().trigger("jumpStart");
+    assertEquals("jump_takeoff", animator.getCurrentAnimation());
+  }
+
+  @Test
+  void shouldNotLeaveThePlayerInvisibleAfterTheInstrumentOnTheRope() {
+    registerBowAndInstrumentClips();
+    attachRopeTo(0.5f, 5f);
+    frame();
+    assertNull(animator.getCurrentAnimation());
+
+    player.getEvents().trigger("instrumentStart");
+    frame();
+    grapple.release();
+    frame();
+
+    // Regression: the pose cut the instrument's draw off, and with the instrument still "out" the
+    // controller refused to pick anything else - nothing was drawn at all after letting go.
+    org.junit.jupiter.api.Assertions.assertNotNull(animator.getCurrentAnimation());
   }
 }

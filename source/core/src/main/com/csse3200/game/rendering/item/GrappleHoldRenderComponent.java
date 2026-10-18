@@ -90,8 +90,8 @@ public class GrappleHoldRenderComponent extends RenderComponent {
     }
 
     // Let the hurt and death animations show instead of the rope pose.
-    String current = animator.getCurrentAnimation();
-    if ("hurt".equals(current) || "death".equals(current)) {
+    // Let a hit, death, shot, swing, dash or landing play out instead of cutting it off.
+    if (controller != null && !controller.canShowRopePose()) {
       return false;
     }
 

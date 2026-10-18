@@ -133,7 +133,7 @@ public class PlayerAnimationController extends Component {
       animator.setFlipX(direction.x < 0);
       cancelInstrument();
     }
-    if (!jumping && !dashing && !attacking && !landing) {
+    if (canSwitchMovementAnimation()) {
       updateAnimation();
     }
   }
@@ -143,7 +143,7 @@ public class PlayerAnimationController extends Component {
       return;
     }
     moving = false;
-    if (!jumping && !dashing && !attacking && !landing) {
+    if (canSwitchMovementAnimation()) {
       updateAnimation();
     }
   }
@@ -154,7 +154,7 @@ public class PlayerAnimationController extends Component {
     }
     cancelInstrument();
     sprinting = true;
-    if (!jumping && !dashing && !attacking && !landing) {
+    if (canSwitchMovementAnimation()) {
       updateAnimation();
     }
   }
@@ -164,7 +164,7 @@ public class PlayerAnimationController extends Component {
       return;
     }
     sprinting = false;
-    if (!jumping && !dashing && !attacking && !landing) {
+    if (canSwitchMovementAnimation()) {
       updateAnimation();
     }
   }
@@ -176,8 +176,7 @@ public class PlayerAnimationController extends Component {
     if (dashing) {
       return;
     }
-    landing = false;
-    cancelInstrument();
+    abandonInterruptedClips();
     jumping = true;
     animator.startAnimation("jump_takeoff");
   }
@@ -243,13 +242,41 @@ public class PlayerAnimationController extends Component {
     return bowActive || dashing || hurt || attacking;
   }
 
+  /**
+   * @return whether walking, sprinting or stopping may change the animation right now
+   */
+  private boolean canSwitchMovementAnimation() {
+    return !jumping && !landing && !isBusyWithHigherPriorityAnimation();
+  }
+
+  /**
+   * @return whether the rope pose may take over. Never while a one-shot clip is playing: the pose
+   *     hides the animation by stopping it, and a stopped clip never reports finishing, so its flag
+   *     would stay set and freeze every later animation change.
+   */
+  public boolean canShowRopePose() {
+    return !dead && !landing && !instrumentActive && !isBusyWithHigherPriorityAnimation();
+  }
+
+  /**
+   * Forgets every one-shot clip that is about to be replaced. Each of these flags is only cleared
+   * when its own clip finishes, and the animator can only finish the clip it is playing, so a flag
+   * left behind by a replaced clip stayed set forever and froze every later animation change.
+   */
+  private void abandonInterruptedClips() {
+    hurt = false;
+    dashing = false;
+    landing = false;
+    attacking = false;
+    cancelInstrument();
+  }
+
   void dashStart() {
     if (dead || bowActive) {
       return;
     }
-    cancelInstrument();
+    abandonInterruptedClips(); // a dash cancels whatever was playing, attacks included
     jumping = false;
-    attacking = false; // dash cancels the attack
     dashing = true;
     animator.startAnimation("air_dash");
   }
@@ -262,10 +289,8 @@ public class PlayerAnimationController extends Component {
     if (dead || bowActive) {
       return;
     }
-    cancelInstrument();
+    abandonInterruptedClips();
     jumping = false;
-    dashing = false;
-    attacking = false;
     hurt = true;
     animator.startAnimation("hurt");
   }
@@ -303,11 +328,9 @@ public class PlayerAnimationController extends Component {
       return;
     }
     // The draw replaces the previous animation. Its completion must not be handled as the
-    // end of a hurt, dash or jump that was still active when the shoot button was pressed.
-    hurt = false;
-    dashing = false;
+    // end of a hurt, dash, landing or jump that was still active when the shoot button was pressed.
+    abandonInterruptedClips();
     jumping = false;
-    cancelInstrument();
     charging = true;
     drawingIn = true;
     attacking = true;
@@ -350,7 +373,7 @@ public class PlayerAnimationController extends Component {
     if (dead || bowActive || dashing || hurt) {
       return;
     }
-    cancelInstrument();
+    abandonInterruptedClips();
     if (facing != null && facing != 0) {
       animator.setFlipX(facing < 0);
     }
@@ -360,7 +383,12 @@ public class PlayerAnimationController extends Component {
 
   /** Picks up the instrument and holds it, with music, until another action interrupts it. */
   void instrumentStart() {
-    if (dead || bowActive || jumping || dashing || hurt || attacking || instrumentActive) {
+    if (dead
+        || instrumentActive
+        || jumping
+        || falling
+        || landing
+        || isBusyWithHigherPriorityAnimation()) {
       return;
     }
     instrumentActive = true;
