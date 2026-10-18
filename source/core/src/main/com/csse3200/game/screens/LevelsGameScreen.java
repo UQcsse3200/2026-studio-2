@@ -91,6 +91,31 @@ public class LevelsGameScreen extends BaseGameScreen {
     super();
     this.game = game;
 
+    logger.debug("Initialising main game screen services");
+
+    ServiceLocator.registerTimeSource(new GameTime());
+
+    PhysicsService physicsService = new PhysicsService();
+    ServiceLocator.registerPhysicsService(physicsService);
+    physicsEngine = physicsService.getPhysics();
+
+    ServiceLocator.registerInputService(new InputService());
+    ServiceLocator.registerResourceService(new ResourceService());
+
+    ServiceLocator.registerEntityService(new EntityService());
+    ServiceLocator.registerRenderService(new RenderService());
+    ServiceLocator.registerGameEndEventHandler(new EventHandler());
+    ServiceLocator.registerGameSaveEventHandler(new EventHandler());
+
+    renderer = RenderFactory.createRenderer();
+
+    renderer.getDebug().renderPhysicsWorld(physicsEngine.getWorld());
+
+    LightingService lightingService =
+        new LightingService(renderer.getCamera(), physicsEngine.getWorld());
+    ServiceLocator.registerLightingService(lightingService);
+    lightingEngine = lightingService.getEngine();
+
     loadAssets();
     createUI();
     playMusic();
@@ -108,8 +133,25 @@ public class LevelsGameScreen extends BaseGameScreen {
     currentGameArea = level1GameArea;
     registerLevelSwap();
 
+    // Checkpoints are the game's save points: GameArea forwards every activation here.
+    ServiceLocator.getGameSaveEventHandler()
+        .addListener("autosave", () -> game.autosave(level, currentGameArea));
+    // Winning marks the active save as completed (shown on the save-select screen).
+    ServiceLocator.getGameEndEventHandler()
+        .addListener(
+            "gameEnd",
+            (GameEndState state) -> {
+              if (state == GameEndState.WIN) {
+                game.markSaveCompleted();
+              }
+            });
+
     player = level1GameArea.getPlayer();
     game.restorePlayerState(player);
+    // A save loaded from disk contributes its player state here, and its world state too when the
+    // save is in level 1; saves in other levels are restored after their area swap instead.
+    game.applyPendingSavePlayer(player);
+    game.applyPendingSaveWorld(currentGameArea, level);
     player.getEvents().addListener("respawnAtCheckpoint", () -> currentGameArea.respawn());
     player.getEvents().addListener("toggleMap", () -> currentGameArea.toggleLevelMap());
 
@@ -194,6 +236,7 @@ public class LevelsGameScreen extends BaseGameScreen {
       default:
         return;
     }
+    this.level = level;
     levelSwapQueued = true;
   }
 
@@ -211,6 +254,8 @@ public class LevelsGameScreen extends BaseGameScreen {
     registerLevelSwap();
 
     renderer.getCamera().setTarget(currentGameArea.getPlayer());
+    // Finish applying a loaded save now that its level's area exists (no-op otherwise).
+    game.applyPendingSaveWorld(currentGameArea, level);
   }
 
   /**
