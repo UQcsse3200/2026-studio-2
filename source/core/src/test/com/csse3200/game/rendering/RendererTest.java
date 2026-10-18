@@ -1,11 +1,13 @@
 package com.csse3200.game.rendering;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Graphics;
 import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector3;
@@ -86,6 +88,24 @@ class RendererTest {
         new Renderer(cameraComponent, 10, spriteBatch, stage, renderService, debugRenderer);
     renderer.render();
     verify(renderService).render(spriteBatch);
+  }
+
+  @Test
+  void shouldRenderWithoutGlContext() {
+    // Gdx.gl is null when there is no OpenGL context. Put the mock back afterwards so the other
+    // tests in this class still have one.
+    GL20 originalGl = Gdx.gl;
+    Gdx.gl = null;
+    try {
+      CameraComponent cameraComponent = makeCameraEntity(camera);
+      Renderer renderer =
+          new Renderer(cameraComponent, 10, spriteBatch, stage, renderService, debugRenderer);
+
+      assertDoesNotThrow(() -> renderer.render());
+      verify(renderService).render(spriteBatch);
+    } finally {
+      Gdx.gl = originalGl;
+    }
   }
 
   private static CameraComponent makeCameraEntity(Camera camera) {
