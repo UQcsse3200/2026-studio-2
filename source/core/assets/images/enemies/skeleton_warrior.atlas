@@ -1,33 +1,89 @@
 skeleton_warrior.png
-size: 32, 32
+size: 1730, 632
 format: RGBA8888
 filter: Nearest,Nearest
 repeat: none
 default
   rotate: false
-  xy: 0, 0
-  size: 32, 32
-  orig: 32, 32
+  xy: 692, 0
+  size: 346, 316
+  orig: 346, 316
   offset: 0, 0
   index: 0
 walk
   rotate: false
   xy: 0, 0
-  size: 32, 32
-  orig: 32, 32
+  size: 346, 316
+  orig: 346, 316
   offset: 0, 0
   index: 0
 walk
   rotate: false
-  xy: 0, 0
-  size: 32, 32
-  orig: 32, 32
+  xy: 346, 0
+  size: 346, 316
+  orig: 346, 316
   offset: 0, 0
   index: 1
+walk
+  rotate: false
+  xy: 692, 0
+  size: 346, 316
+  orig: 346, 316
+  offset: 0, 0
+  index: 2
+walk
+  rotate: false
+  xy: 1038, 0
+  size: 346, 316
+  orig: 346, 316
+  offset: 0, 0
+  index: 3
+walk
+  rotate: false
+  xy: 1384, 0
+  size: 346, 316
+  orig: 346, 316
+  offset: 0, 0
+  index: 4
 idle
   rotate: false
-  xy: 0, 0
-  size: 32, 32
-  orig: 32, 32
+  xy: 692, 0
+  size: 346, 316
+  orig: 346, 316
   offset: 0, 0
   index: 0
+attack
+  rotate: false
+  xy: 0, 316
+  size: 346, 316
+  orig: 346, 316
+  offset: 0, 0
+  index: 0
+attack
+  rotate: false
+  xy: 346, 316
+  size: 346, 316
+  orig: 346, 316
+  offset: 0, 0
+  index: 1
+attack
+  rotate: false
+  xy: 692, 316
+  size: 346, 316
+  orig: 346, 316
+  offset: 0, 0
+  index: 2
+attack
+  rotate: false
+  xy: 1038, 316
+  size: 346, 316
+  orig: 346, 316
+  offset: 0, 0
+  index: 3
+attack
+  rotate: false
+  xy: 1384, 316
+  size: 346, 316
+  orig: 346, 316
+  offset: 0, 0
+  index: 4

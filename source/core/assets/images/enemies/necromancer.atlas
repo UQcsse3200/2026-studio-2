@@ -1,40 +1,89 @@
-necromancer_walk.png
-size: 75, 32
+necromancer.png
+size: 1540, 784
 format: RGBA8888
 filter: Nearest,Nearest
 repeat: none
 default
   rotate: false
-  xy: 25, 0
-  size: 25, 32
-  orig: 25, 32
+  xy: 0, 392
+  size: 308, 392
+  orig: 308, 392
   offset: 0, 0
   index: 0
 walk
   rotate: false
   xy: 0, 0
-  size: 25, 32
-  orig: 25, 32
+  size: 308, 392
+  orig: 308, 392
   offset: 0, 0
   index: 0
 walk
   rotate: false
-  xy: 25, 0
-  size: 25, 32
-  orig: 25, 32
+  xy: 308, 0
+  size: 308, 392
+  orig: 308, 392
   offset: 0, 0
   index: 1
 walk
   rotate: false
-  xy: 50, 0
-  size: 25, 32
-  orig: 25, 32
+  xy: 616, 0
+  size: 308, 392
+  orig: 308, 392
   offset: 0, 0
   index: 2
+walk
+  rotate: false
+  xy: 924, 0
+  size: 308, 392
+  orig: 308, 392
+  offset: 0, 0
+  index: 3
+walk
+  rotate: false
+  xy: 1232, 0
+  size: 308, 392
+  orig: 308, 392
+  offset: 0, 0
+  index: 4
+walk
+  rotate: false
+  xy: 0, 392
+  size: 308, 392
+  orig: 308, 392
+  offset: 0, 0
+  index: 5
+walk
+  rotate: false
+  xy: 308, 392
+  size: 308, 392
+  orig: 308, 392
+  offset: 0, 0
+  index: 6
+walk
+  rotate: false
+  xy: 616, 392
+  size: 308, 392
+  orig: 308, 392
+  offset: 0, 0
+  index: 7
+walk
+  rotate: false
+  xy: 924, 392
+  size: 308, 392
+  orig: 308, 392
+  offset: 0, 0
+  index: 8
+walk
+  rotate: false
+  xy: 1232, 392
+  size: 308, 392
+  orig: 308, 392
+  offset: 0, 0
+  index: 9
 idle
   rotate: false
-  xy: 25, 0
-  size: 25, 32
-  orig: 25, 32
+  xy: 0, 392
+  size: 308, 392
+  orig: 308, 392
   offset: 0, 0
   index: 0
