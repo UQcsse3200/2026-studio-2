@@ -23,7 +23,6 @@ import org.slf4j.LoggerFactory;
  */
 public class PlayerInteractionComponent extends Component {
   private static final String INTERACTION_FAILED = "interactionFailed";
-
   private static final Logger logger = LoggerFactory.getLogger(PlayerInteractionComponent.class);
 
   /** Maximum distance, in metres, at which the player can interact with an item or NPC. */

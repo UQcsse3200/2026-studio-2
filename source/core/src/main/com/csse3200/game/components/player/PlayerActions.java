@@ -96,6 +96,9 @@ public class PlayerActions extends Component {
 
   @Override
   public void update() {
+    if (dead) {
+      return;
+    }
     boolean wasGrounded = isGrounded;
     isGrounded = checkGrounded();
     checkJumpWindup();
@@ -184,10 +187,6 @@ public class PlayerActions extends Component {
   /** Applies the queued ground-jump impulse once its short wind-up has elapsed. */
   private void checkJumpWindup() {
     if (jumpImpulseAt < 0) {
-      return;
-    }
-    if (dead) {
-      jumpImpulseAt = -1;
       return;
     }
     if (ServiceLocator.getTimeSource().getTime() >= jumpImpulseAt) {
@@ -280,7 +279,6 @@ public class PlayerActions extends Component {
       // get raw data and check if it's user data is a proper BodyUserData
       Object userData = hit.fixture.getBody().getUserData();
       if (userData instanceof BodyUserData data && data.entity != null) {
-        // check the entity variable is set and access component data
         SlipperyPlatformComponent slipperyPlatform =
             data.entity.getComponent(SlipperyPlatformComponent.class);
         if (slipperyPlatform != null) {
@@ -303,6 +301,7 @@ public class PlayerActions extends Component {
   /** Stops the player permanently reacting to input once they've died. */
   void die() {
     dead = true;
+    resetMovementState();
     Body body = physicsComponent.getBody();
     Vector2 velocity = body.getLinearVelocity();
     body.setLinearVelocity(0f, velocity.y);
@@ -312,7 +311,22 @@ public class PlayerActions extends Component {
   /** Revives the player after a checkpoint restart so input and movement work again. */
   void revive() {
     dead = false;
+    resetMovementState();
     stopWalking();
+  }
+
+  private void resetMovementState() {
+    onHurtInterruptDash();
+    isSprinting = false;
+    sprintStopPending = false;
+    sprintStopGraceRemaining = 0f;
+    dashCooldownRemaining = 0f;
+    airDashUsed = false;
+    jumpImpulseAt = -1;
+    liftoffDeadline = -1;
+    airborne = false;
+    falling = false;
+    droppingFromLedge = false;
   }
 
   /**
@@ -361,6 +375,7 @@ public class PlayerActions extends Component {
       dashCooldownRemaining = 0f;
       body.applyLinearImpulse(
           new Vector2(0, JUMP_FORCE * ROPE_JUMP_MULTIPLIER), body.getWorldCenter(), true);
+      entity.getEvents().trigger("jumpAccepted");
       return;
     }
 
@@ -376,6 +391,7 @@ public class PlayerActions extends Component {
       isGrounded = false;
       jumpImpulseAt = ServiceLocator.getTimeSource().getTime() + JUMP_WINDUP_MS;
       entity.getEvents().trigger("jumpStart");
+      entity.getEvents().trigger("jumpAccepted");
     }
   }
 
@@ -425,7 +441,7 @@ public class PlayerActions extends Component {
   }
 
   void dash() {
-    if (isDashing || dashCooldownRemaining > 0f) {
+    if (dead || isDashing || dashCooldownRemaining > 0f) {
       return;
     }
     if (isGrappling()) {

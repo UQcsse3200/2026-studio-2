@@ -94,6 +94,11 @@ public class GrappleHoldRenderComponent extends RenderComponent {
     if (controller != null && !controller.canShowRopePose()) {
       return false;
     }
+    // Also protect hurt and death when no controller is present.
+    String current = animator.getCurrentAnimation();
+    if ("hurt".equals(current) || "death".equals(current)) {
+      return false;
+    }
 
     Vector2 centre = entity.getCenterPosition();
     Vector2 next = nextRopePoint(centre);
