@@ -102,16 +102,6 @@ class Level3GameAreaTest extends AbstractAreaAssetsTest {
   }
 
   @Test
-  void playMusicConfiguresAndStartsBackgroundMusic() throws Exception {
-    invokePrivate("playMusic");
-
-    verify(resourceService).getAsset("sounds/BGM_03_mp3.mp3", Music.class);
-    verify(music).setLooping(true);
-    verify(music).setVolume(0.3f);
-    verify(music).play();
-  }
-
-  @Test
   void spawnTerrainCreatesBackgroundDesertTerrain() throws Exception {
     PhysicsService physics = new PhysicsService();
     ServiceLocator.registerPhysicsService(physics);

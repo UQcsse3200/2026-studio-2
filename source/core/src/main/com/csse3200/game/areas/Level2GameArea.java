@@ -188,26 +188,6 @@ public class Level2GameArea extends GameArea {
     }
   }
 
-  private void spawnTorches() {
-    GridPoint2[] torchSpawns = {
-      new GridPoint2(10, 41),
-      new GridPoint2(2, 8),
-      new GridPoint2(10, 8),
-      new GridPoint2(37, 28),
-      new GridPoint2(43, 8),
-      new GridPoint2(38, 8),
-    };
-
-    for (GridPoint2 pos : torchSpawns) {
-      spawnEntityAt(ObstacleFactory.createTorch(), pos, true, false);
-    }
-  }
-
-  /** Plays the background music. */
-  private void playMusic() {
-    playLoopingMusic(BACKGROUND_MUSIC, 0.3f);
-  }
-
   /** Loads all Level 2 assets. */
   private void loadAssets() {
     loadAreaAssets(level2Textures, level2TexturesAtlas, level2Sounds, level2Music);

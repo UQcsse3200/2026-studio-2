@@ -81,6 +81,8 @@ class GrappleArrowComponentTest {
 
   @Test
   void shouldAttachWhenHittingGround() {
+    // The shot only fires once the button is released, so by the time the arrow lands the button
+    // has already been let go - there's no "was it still held" state left to check.
     GrappleComponent grapple = spy(new GrappleComponent());
     Entity arrow = arrowFiredBy(new Entity().addComponent(grapple));
 
@@ -141,20 +143,6 @@ class GrappleArrowComponentTest {
     Fixture arrowFixture = mock(Fixture.class);
     Fixture ground = fixtureOnLayer(PhysicsLayer.GROUND);
     assertDoesNotThrow(() -> arrow.getEvents().trigger("collisionStart", arrowFixture, ground));
-  }
-
-  @Test
-  void shouldAlwaysAttachOnLandingRegardlessOfMouseState() {
-    // The shot only fires once the button is released, so by the time the arrow lands the button
-    // has already been let go - there's no "was it still held" state left to check.
-    GrappleComponent grapple = spy(new GrappleComponent());
-    Entity arrow = arrowFiredBy(new Entity().addComponent(grapple));
-
-    arrow
-        .getEvents()
-        .trigger("collisionStart", mock(Fixture.class), fixtureOnLayer(PhysicsLayer.GROUND));
-
-    verify(grapple).attachTo(any(Body.class), any(Vector2.class));
   }
 
   @Test
@@ -331,7 +319,7 @@ class GrappleArrowComponentTest {
   /** Records every "grappleFailed" the shooter is sent. */
   private List<Vector2> failuresReportedTo(Entity shooter) {
     List<Vector2> failures = new ArrayList<>();
-    shooter.getEvents().addListener("grappleFailed", (Vector2 point) -> failures.add(point));
+    shooter.getEvents().<Vector2>addListener("grappleFailed", failures::add);
     return failures;
   }
 

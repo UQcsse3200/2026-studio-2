@@ -33,6 +33,9 @@ class TerrainComponentTest {
   @Test
   void shouldConvertPositionHexagonal() {
     TerrainComponent component = makeComponent(TerrainOrientation.HEXAGONAL, 3f);
+    assertEquals(new Vector2(0f, 1.5f), component.tileToWorldPosition(0, 0));
+    assertEquals(new Vector2(4.5f, 5.5f), component.tileToWorldPosition(2, 4));
+    assertEquals(new Vector2(-11.25f, -3f), component.tileToWorldPosition(-5, -3));
   }
 
   private static TerrainComponent makeComponent(TerrainOrientation orientation, float tileSize) {

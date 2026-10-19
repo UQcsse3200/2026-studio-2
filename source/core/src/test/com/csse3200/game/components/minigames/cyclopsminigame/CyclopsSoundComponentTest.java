@@ -1,4 +1,4 @@
-package com.csse3200.game.components.minigames.cyclopsMinigame;
+package com.csse3200.game.components.minigames.cyclopsminigame;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -74,5 +74,16 @@ class CyclopsSoundComponentTest {
     cyclops.getEvents().trigger(CyclopsAnimationController.FELL_ASLEEP_EVENT);
 
     verify(snore, times(2)).loop(CyclopsSoundComponent.SNORE_VOLUME);
+  }
+
+  @Test
+  void disposingStopsSnoringWithoutDisposingSharedSoundAssets() {
+    cyclops.getComponent(CyclopsSoundComponent.class).dispose();
+
+    verify(snore).stop();
+    verify(snore, never()).dispose();
+    verify(roar, never()).dispose();
+    verify(landing, never()).dispose();
+    verify(clubHit, never()).dispose();
   }
 }

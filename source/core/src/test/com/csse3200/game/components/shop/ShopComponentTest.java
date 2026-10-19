@@ -11,6 +11,8 @@ import com.csse3200.game.entities.Entity;
 import com.csse3200.game.extensions.GameExtension;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 @ExtendWith(GameExtension.class)
 class ShopComponentTest {
@@ -26,8 +28,8 @@ class ShopComponentTest {
 
     assertEquals(PurchaseResult.SUCCESS, shop.buy(ItemType.STANDARD_ARROW));
     assertTrue(purchased[0]);
-    assertEquals(50 - listing.getPrice(), inventory.getGold());
-    assertEquals(listing.getQuantity(), inventory.getItemCount(ItemType.STANDARD_ARROW));
+    assertEquals(50 - listing.price(), inventory.getGold());
+    assertEquals(listing.quantity(), inventory.getItemCount(ItemType.STANDARD_ARROW));
   }
 
   @Test
@@ -93,5 +95,33 @@ class ShopComponentTest {
         new Entity().addComponent(new InventoryComponent(gold)).addComponent(new ShopComponent());
     player.create();
     return player;
+  }
+
+  @Test
+  void rejectsEligibilityChecksWithoutInventoryOrValidListing() {
+    ShopComponent shop = new ShopComponent();
+    new Entity().addComponent(shop);
+    ShopListing arrows = ShopCatalog.getListing(ItemType.STANDARD_ARROW);
+    assertFalse(shop.canAfford(arrows));
+    assertFalse(shop.canStore(arrows));
+    assertFalse(shop.canBuy(arrows));
+
+    ShopComponent stockedShop = createPlayer(50).getComponent(ShopComponent.class);
+    assertFalse(stockedShop.canAfford(null));
+    assertFalse(stockedShop.canStore(null));
+    ShopListing unavailable = new ShopListing(ItemType.ROPE_ARROW, 1, 1);
+    assertFalse(stockedShop.canAfford(unavailable));
+    assertFalse(stockedShop.canStore(unavailable));
+  }
+
+  @ParameterizedTest
+  @CsvSource({"1, true", "2147483647, false"})
+  void existingStacksRespectQuantityOverflow(int quantity, boolean canStore) {
+    Entity player = createPlayer(50);
+    InventoryComponent inventory = player.getComponent(InventoryComponent.class);
+    assertTrue(inventory.addItem(ItemType.STANDARD_ARROW, quantity));
+    ShopComponent shop = player.getComponent(ShopComponent.class);
+    assertEquals(canStore, shop.canStore(ShopCatalog.getListing(ItemType.STANDARD_ARROW)));
+    assertEquals(quantity, inventory.getItemCount(ItemType.STANDARD_ARROW));
   }
 }

@@ -1,4 +1,4 @@
-package com.csse3200.game.components.minigames.cyclopsMinigame;
+package com.csse3200.game.components.minigames.cyclopsminigame;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -348,6 +348,7 @@ public class CyclopsMinigameLogic extends Component {
   }
 
   public void restartMinigame() {
+    hasWon = false;
     currentSafeLocation = 0;
     timingBarLogic.changeScoringAreaWidth(START_SCORING_PERCENT);
     movePlayer(safeLocations.getFirst());
@@ -400,70 +401,86 @@ public class CyclopsMinigameLogic extends Component {
     timeInState += delta;
 
     switch (state) {
-      case STOP -> {
-        /* Do Nothing / Wait for External Input */
-      }
-      case WIN -> {
-        /* TODO: Connect to next level / cutscene */
-        logger.info("Player has WON the cyclops minigame");
-        changeState(State.STOP);
-        Gdx.app.postRunnable(() -> ServiceLocator.getCyclopsMinigameEventHandler().trigger("win"));
-      }
+      case WIN -> finishMinigame();
       case CAUGHT -> waitForCyclopsHit();
-      case LOSS -> {
-        if (elapsed(HURT_PAUSE_DELAY)) {
-          beginRetreat();
-        }
-      }
-      case RETREAT -> {
-        if (elapsed(TRANSITION_DELAY)) {
-          finishRetreat();
-        } else {
-          float progress = timeInState / TRANSITION_DELAY;
-          playerEntity.setPosition(runStart.cpy().lerp(runTarget, progress));
-        }
-      }
-      case DEATH -> {
-        if (elapsed(DEATH_DISPLAY_DELAY)) {
-          logger.info("Player has DIED in the cyclops minigame");
-          transitionScreenCover.setVisible(true);
-          ServiceLocator.getCyclopsMinigameEventHandler().trigger("died");
-          changeState(State.STOP);
-        }
-      }
-      case SHOW_DELAY -> {
-        if (elapsed(SHOW_HIDE_DELAY)) {
-          timingBarDisplay.setVisible(true);
-          timingBarLogic.resetMarker();
-          timingBarLogic.startMarker();
-          changeState(State.PLAY);
-        }
-      }
+      case LOSS -> waitBeforeRetreat();
+      case RETREAT -> updateRetreat();
+      case DEATH -> updateDeath();
+      case SHOW_DELAY -> showTimingBarWhenReady();
       case PLAY -> handlePlaying(delta);
-      case HIDE_DELAY -> {
-        if (elapsed(SHOW_HIDE_DELAY)) {
-          timingBarDisplay.setVisible(false);
-          changeState(State.PRE_MOVE);
-        }
+      case HIDE_DELAY -> hideTimingBarWhenReady();
+      case PRE_MOVE -> beginRunWhenReady();
+      case MOVING -> updateRun();
+      default -> {
+        // STOP has no per-frame work: wait for the intro or an external start event.
       }
-      case PRE_MOVE -> {
-        if (elapsed(TRANSITION_DELAY_GAP)) {
-          beginRun(timingBarLogic.checkHit());
-          changeState(State.MOVING);
-        }
-      }
-      case MOVING -> {
-        if (elapsed(TRANSITION_DELAY)) {
-          playerEntity.setPosition(runTarget);
-          playerEntity.getEvents().trigger("sprintStop");
-          playerEntity.getEvents().trigger(WALK_STOP);
-          stopWalkingSound();
-          handleTimingOutcome(); /* Changes state itself */
-        } else {
-          float progress = timeInState / TRANSITION_DELAY;
-          playerEntity.setPosition(runStart.cpy().lerp(runTarget, progress));
-        }
-      }
+    }
+  }
+
+  private void finishMinigame() {
+    logger.info("Player has WON the cyclops minigame");
+    changeState(State.STOP);
+    // The room screen handles this event and starts the next cutscene.
+    Gdx.app.postRunnable(() -> ServiceLocator.getCyclopsMinigameEventHandler().trigger("win"));
+  }
+
+  private void waitBeforeRetreat() {
+    if (elapsed(HURT_PAUSE_DELAY)) {
+      beginRetreat();
+    }
+  }
+
+  private void updateRetreat() {
+    if (elapsed(TRANSITION_DELAY)) {
+      finishRetreat();
+    } else {
+      float progress = timeInState / TRANSITION_DELAY;
+      playerEntity.setPosition(runStart.cpy().lerp(runTarget, progress));
+    }
+  }
+
+  private void updateDeath() {
+    if (elapsed(DEATH_DISPLAY_DELAY)) {
+      logger.info("Player has DIED in the cyclops minigame");
+      transitionScreenCover.setVisible(true);
+      ServiceLocator.getCyclopsMinigameEventHandler().trigger("died");
+      changeState(State.STOP);
+    }
+  }
+
+  private void showTimingBarWhenReady() {
+    if (elapsed(SHOW_HIDE_DELAY)) {
+      timingBarDisplay.setVisible(true);
+      timingBarLogic.resetMarker();
+      timingBarLogic.startMarker();
+      changeState(State.PLAY);
+    }
+  }
+
+  private void hideTimingBarWhenReady() {
+    if (elapsed(SHOW_HIDE_DELAY)) {
+      timingBarDisplay.setVisible(false);
+      changeState(State.PRE_MOVE);
+    }
+  }
+
+  private void beginRunWhenReady() {
+    if (elapsed(TRANSITION_DELAY_GAP)) {
+      beginRun(timingBarLogic.checkHit());
+      changeState(State.MOVING);
+    }
+  }
+
+  private void updateRun() {
+    if (elapsed(TRANSITION_DELAY)) {
+      playerEntity.setPosition(runTarget);
+      playerEntity.getEvents().trigger("sprintStop");
+      playerEntity.getEvents().trigger(WALK_STOP);
+      stopWalkingSound();
+      handleTimingOutcome();
+    } else {
+      float progress = timeInState / TRANSITION_DELAY;
+      playerEntity.setPosition(runStart.cpy().lerp(runTarget, progress));
     }
   }
 

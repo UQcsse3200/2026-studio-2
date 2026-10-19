@@ -446,6 +446,9 @@ public class LevelsGameScreen extends BaseGameScreen {
         .addComponent(new PerformanceDisplay())
         .addComponent(new CoordinateDisplay(renderer.getCamera()))
         .addComponent(new MainGameActions(this.game))
+        // Keep this a lambda: pauseOverlay is assigned after createUI() runs in the constructor,
+        // and a
+        // method reference would read it (still null) immediately.
         .addComponent(new PauseButtonDisplay(() -> pauseOverlay.request()))
         .addComponent(gameEndDisplay) // Add GameEndDisplay component to the UI entity
         .addComponent(new GameEndActions(this.game, this::restartAtCheckpoint))

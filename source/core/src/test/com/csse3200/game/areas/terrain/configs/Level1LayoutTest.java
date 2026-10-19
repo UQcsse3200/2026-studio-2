@@ -22,7 +22,11 @@ class Level1LayoutTest {
       for (PlatformConfig floor : config.floors) {
         assertFalse(
             travel.overlaps(
-                new Rectangle(floor.position.x, floor.position.y, floor.width, floor.height)),
+                new Rectangle(
+                    (float) floor.position.x,
+                    (float) floor.position.y,
+                    (float) floor.width,
+                    (float) floor.height)),
             "Lift at " + lift.position + " intersects floor at " + floor.position);
       }
     }

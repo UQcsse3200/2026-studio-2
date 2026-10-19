@@ -12,9 +12,9 @@ import com.csse3200.game.areas.CyclopsMinigameArea;
 import com.csse3200.game.areas.terrain.TerrainFactory;
 import com.csse3200.game.components.TextBoxComponent;
 import com.csse3200.game.components.gamearea.PerformanceDisplay;
-import com.csse3200.game.components.minigames.cyclopsMinigame.CyclopsMinigameActions;
-import com.csse3200.game.components.minigames.cyclopsMinigame.CyclopsMinigameDisplay;
-import com.csse3200.game.components.minigames.cyclopsMinigame.CyclopsMinigameLogic;
+import com.csse3200.game.components.minigames.cyclopsminigame.CyclopsMinigameActions;
+import com.csse3200.game.components.minigames.cyclopsminigame.CyclopsMinigameDisplay;
+import com.csse3200.game.components.minigames.cyclopsminigame.CyclopsMinigameLogic;
 import com.csse3200.game.cutscene.CutsceneLoader;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
@@ -117,6 +117,7 @@ public class CyclopsMinigameRoomScreen extends ScreenAdapter {
   public void dispose() {
     logger.debug("Disposing minigame screen");
 
+    intro.dispose();
     renderer.dispose();
     cyclopsMinigameArea.dispose();
     unloadAssets();

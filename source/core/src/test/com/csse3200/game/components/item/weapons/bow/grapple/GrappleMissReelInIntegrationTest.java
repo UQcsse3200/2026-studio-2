@@ -61,7 +61,7 @@ class GrappleMissReelInIntegrationTest {
     player.setPosition(0f, 0f); // standing on the floor: their feet are at y = 0
     entities.register(player);
     player.getComponent(PhysicsComponent.class).getBody().setGravityScale(0f);
-    player.getEvents().addListener("grappleFailed", (Vector2 point) -> failures.add(point));
+    player.getEvents().<Vector2>addListener("grappleFailed", failures::add);
 
     // A long floor whose top surface is at y = 0.
     BodyDef def = new BodyDef();

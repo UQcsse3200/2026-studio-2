@@ -153,8 +153,8 @@ public class PlayerStatsDisplay extends UIComponent {
   private Table createGoldBar() {
     Texture barTexture =
         ServiceLocator.getResourceService().getAsset(GOLD_BAR_BACKGROUND, Texture.class);
-    float imageWidth = barTexture.getWidth();
-    float imageHeight = barTexture.getHeight();
+    int imageWidth = barTexture.getWidth();
+    int imageHeight = barTexture.getHeight();
     float barWidth = GOLD_BAR_WIDTH;
     float barHeight = barWidth * imageHeight / imageWidth;
 
@@ -178,7 +178,7 @@ public class PlayerStatsDisplay extends UIComponent {
    * doesn't show through the outer corners.
    */
   private Table createGoldBarFill(
-      float imageWidth, float imageHeight, float barWidth, float barHeight) {
+      int imageWidth, int imageHeight, float barWidth, float barHeight) {
     Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
     pixmap.setColor(GOLD_BAR_FILL_COLOR);
     pixmap.fill();
@@ -200,7 +200,7 @@ public class PlayerStatsDisplay extends UIComponent {
   }
 
   /** Builds the coin and the gold amount, positioned over the ring and the slot of the bar art. */
-  private Table createGoldContents(InventoryComponent inventory, float imageWidth, float barWidth) {
+  private Table createGoldContents(InventoryComponent inventory, int imageWidth, float barWidth) {
     Label.LabelStyle labelStyle = new Label.LabelStyle(skin.get(Label.LabelStyle.class));
     labelStyle.fontColor = GOLD_TEXT_COLOR;
     Label goldLabel = new Label("" + inventory.getGold(), labelStyle);
@@ -253,7 +253,7 @@ public class PlayerStatsDisplay extends UIComponent {
     int maximumHearts = Math.max(1, (combatStats.getMaxHealth() + HP_PER_HEART - 1) / HP_PER_HEART);
     growHeartsTo(maximumHearts);
 
-    int cappedHealth = Math.max(0, Math.min(health, combatStats.getMaxHealth()));
+    int cappedHealth = Math.clamp(health, 0, combatStats.getMaxHealth());
     if (healthLabel != null) {
       healthLabel.setText("Health: " + cappedHealth + " / " + combatStats.getMaxHealth());
     }

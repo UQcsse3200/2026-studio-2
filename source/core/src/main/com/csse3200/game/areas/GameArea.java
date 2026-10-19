@@ -317,13 +317,10 @@ public abstract class GameArea implements Disposable {
    * @return activated checkpoint positions in level configuration order
    */
   public List<GridPoint2> getActiveCheckpointPositions() {
-    List<GridPoint2> positions = new ArrayList<>();
-    for (CheckpointComponent checkpoint : config.getCheckpoints()) {
-      if (checkpoint.isActive()) {
-        positions.add(checkpoint.getPosition());
-      }
-    }
-    return positions;
+    return config.getCheckpoints().stream()
+        .filter(CheckpointComponent::isActive)
+        .map(CheckpointComponent::getPosition)
+        .toList();
   }
 
   /**

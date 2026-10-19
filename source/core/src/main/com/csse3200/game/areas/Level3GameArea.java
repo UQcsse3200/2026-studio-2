@@ -382,11 +382,6 @@ public class Level3GameArea extends GameArea {
     water.getEvents().trigger("checkpointEncountered", position.y);
   }
 
-  /** Plays the background music. */
-  private void playMusic() {
-    playLoopingMusic(BACKGROUND_MUSIC, 0.3f);
-  }
-
   /** Loads all Level 2 assets. */
   private void loadAssets() {
     loadAreaAssets(level3Textures, level3TexturesAtlas, level3Sounds, level3Music);

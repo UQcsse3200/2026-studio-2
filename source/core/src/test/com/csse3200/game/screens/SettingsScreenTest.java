@@ -99,13 +99,17 @@ class SettingsScreenTest {
       assertNotNull(settingsUi.getComponent(SettingsMenuDisplay.class));
 
       // Verify that settings textures were loaded.
-      assertTrue(resourceService.containsAsset("images/Buttons/exit_up_btn.png", Texture.class));
-      assertTrue(resourceService.containsAsset("images/Buttons/exit_down_btn.png", Texture.class));
-      assertTrue(resourceService.containsAsset("images/Buttons/apply_up_btn.png", Texture.class));
-      assertTrue(resourceService.containsAsset("images/Buttons/apply_down_btn.png", Texture.class));
-      assertTrue(
-          resourceService.containsAsset("images/backgrounds/main_menu_bg_2.png", Texture.class));
-      assertTrue(resourceService.containsAsset("images/ui/settings_box.png", Texture.class));
+      String[] settingsTextures = {
+        "images/Buttons/exit_up_btn.png",
+        "images/Buttons/exit_down_btn.png",
+        "images/Buttons/apply_up_btn.png",
+        "images/Buttons/apply_down_btn.png",
+        "images/backgrounds/main_menu_bg_2.png",
+        "images/ui/settings_box.png"
+      };
+      for (String texture : settingsTextures) {
+        assertTrue(resourceService.containsAsset(texture, Texture.class), texture);
+      }
 
       // Render the screen.
       screen.render(1f / 60f);

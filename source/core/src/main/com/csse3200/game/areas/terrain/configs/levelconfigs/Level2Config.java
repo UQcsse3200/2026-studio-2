@@ -23,6 +23,8 @@ public class Level2Config extends LevelConfig {
 
   private static final String ENEMY_ARENA_COMPLETE = "enemyArenaComplete";
 
+  private static final String END_PUZZLE = "endPuzzle";
+
   public Level2Config(Entity player) {
     // Textures
     // TFP = Texture File Path
@@ -173,7 +175,7 @@ public class Level2Config extends LevelConfig {
               false,
               new String[] {TRIGGER_WHEEL_SPIN_PLATFORM}), // B1
           new TriggerButtonConfig(
-              new GridPoint2(49, 9), 90f, true, new String[] {"endPuzzle"}), // B3 (B)
+              new GridPoint2(49, 9), 90f, true, new String[] {END_PUZZLE}), // B3 (B)
         };
 
     items =
@@ -229,70 +231,70 @@ public class Level2Config extends LevelConfig {
           new SpikyBallTrapConfig(
               new GridPoint2(42, 26),
               270f,
-              new String[] {"endPuzzle"},
+              new String[] {END_PUZZLE},
               1f,
               true,
               SpawnerComponent.ACTIVATION_MODE.TOGGLE), // SBT3
           new SpikyBallTrapConfig(
               new GridPoint2(42, 24),
               270f,
-              new String[] {"endPuzzle"},
+              new String[] {END_PUZZLE},
               0.75f,
               true,
               SpawnerComponent.ACTIVATION_MODE.TOGGLE), // SBT4
           new SpikyBallTrapConfig(
               new GridPoint2(42, 22),
               270f,
-              new String[] {"endPuzzle"},
+              new String[] {END_PUZZLE},
               0.5f,
               true,
               SpawnerComponent.ACTIVATION_MODE.TOGGLE), // SBT5
           new SpikyBallTrapConfig(
               new GridPoint2(42, 19),
               270f,
-              new String[] {"endPuzzle"},
+              new String[] {END_PUZZLE},
               0.5f,
               false,
               SpawnerComponent.ACTIVATION_MODE.TOGGLE), // SBT6
           new SpikyBallTrapConfig(
               new GridPoint2(42, 17),
               270f,
-              new String[] {"endPuzzle"},
+              new String[] {END_PUZZLE},
               0.75f,
               false,
               SpawnerComponent.ACTIVATION_MODE.TOGGLE), // SBT7
           new SpikyBallTrapConfig(
               new GridPoint2(42, 15),
               270f,
-              new String[] {"endPuzzle"},
+              new String[] {END_PUZZLE},
               1f,
               false,
               SpawnerComponent.ACTIVATION_MODE.TOGGLE), // SBT8
           new SpikyBallTrapConfig(
               new GridPoint2(41, 13),
               180f,
-              new String[] {"endPuzzle"},
+              new String[] {END_PUZZLE},
               0.3f,
               true,
               SpawnerComponent.ACTIVATION_MODE.TOGGLE), // SBT9
           new SpikyBallTrapConfig(
               new GridPoint2(39, 13),
               180f,
-              new String[] {"endPuzzle"},
+              new String[] {END_PUZZLE},
               0.2f,
               true,
               SpawnerComponent.ACTIVATION_MODE.TOGGLE), // SBT10
           new SpikyBallTrapConfig(
               new GridPoint2(37, 13),
               180f,
-              new String[] {"endPuzzle"},
+              new String[] {END_PUZZLE},
               0.35f,
               false,
               SpawnerComponent.ACTIVATION_MODE.TOGGLE), // SBT11
           new SpikyBallTrapConfig(
               new GridPoint2(35, 13),
               180f,
-              new String[] {"endPuzzle"},
+              new String[] {END_PUZZLE},
               0.25f,
               false,
               SpawnerComponent.ACTIVATION_MODE.TOGGLE), // SBT12

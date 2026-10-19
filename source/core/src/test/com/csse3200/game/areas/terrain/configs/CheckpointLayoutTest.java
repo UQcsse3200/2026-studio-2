@@ -37,8 +37,13 @@ class CheckpointLayoutTest {
         String where =
             config.getClass().getSimpleName() + " checkpoint at " + checkpoint.getPosition();
 
-        assertFalse(
-            isInsideSolid(config, x, y, STATUE_WIDTH, CheckpointComponent.ATLAS_HEIGHT),
+        assertTrue(isSolidTopAt(config, x + 0.1f, y), where + " has no platform under its left");
+        assertTrue(
+            isSolidTopAt(config, x + STATUE_WIDTH - 0.1f, y),
+            where + " has no platform under its right");
+        assertTrue(
+            !isInsideSolid(
+                config, (float) x, (float) y, STATUE_WIDTH, CheckpointComponent.ATLAS_HEIGHT),
             where + " is inside a platform");
       }
     }
