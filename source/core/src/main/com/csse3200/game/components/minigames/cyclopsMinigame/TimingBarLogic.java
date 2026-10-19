@@ -24,23 +24,35 @@ public class TimingBarLogic {
   boolean isStopped = true;
 
   /**
-   * @param scoringAreaWidth Scoring area width is designed to be a float as a percentage (e.g 0 -
-   *     100%)
+   * Timing bar logic component to be the mathematical state of a timing bar and a sweeping marker
+   * A scoring area is centred in the area to act as the scoring zone
+   *
+   * @param scoringAreaWidth percentage of timing bar to cover with a "scoring zone" (0-100%)
    */
   public TimingBarLogic(float scoringAreaWidth) {
     this.changeScoringAreaWidth(scoringAreaWidth);
   }
 
+  /**
+   * Get the current X location of the marker that needs to be scaled
+   * to the visual width of the timing bar
+   * @return float - between 0 and 1 of the current position of the marker.
+   */
   public float getMarkerX() {
     return this.markerX;
   }
 
+  /**
+   * Get the current size of the scoring area
+   * @return float - percentage of timing bar covered
+   */
   public float getScoringAreaSize() {
     return this.scoringAreaSize;
   }
 
   /**
-   * Change the width of the scoring area to the given width
+   * Change the width of the scoring area to the given width.
+   * And centres it within the timing bar
    *
    * @param width - float value as a percentage, 0-100%
    */
@@ -59,7 +71,7 @@ public class TimingBarLogic {
   /**
    * Update the marker to move along the bar.
    *
-   * @param deltaTime
+   * @param deltaTime - time passed since last frame
    */
   public void update(float deltaTime) {
     if (isStopped) {
@@ -89,6 +101,7 @@ public class TimingBarLogic {
     logger.trace("sliding marker started");
   }
 
+  /** Resets the sliding marker to the start of the timing bar */
   public void resetMarker() {
     this.markerX = 0;
     logger.trace("sliding marker position set to 0");
@@ -97,7 +110,7 @@ public class TimingBarLogic {
   /**
    * Checks whether the marker is in the scoring green area.
    *
-   * @return True when the marker is in the scoring area, otherwise False.
+   * @return boolean - True when the marker is in the scoring area, otherwise False.
    */
   public boolean checkHit() {
     return (markerX >= greenStart && markerX <= greenEnd);
