@@ -150,10 +150,8 @@ public class BlackjackDisplay extends UIComponent {
     dealerLabel.setFontScale(1.55f);
     playerLabel.setFontScale(1.55f);
 
-    dealerLabel.setAlignment(
-        com.badlogic.gdx.utils.Align.center);
-    playerLabel.setAlignment(
-        com.badlogic.gdx.utils.Align.center);
+    dealerLabel.setAlignment(com.badlogic.gdx.utils.Align.center);
+    playerLabel.setAlignment(com.badlogic.gdx.utils.Align.center);
 
     dealerTotalLabel = new Label("", skin);
     playerTotalLabel = new Label("", skin);
@@ -657,9 +655,7 @@ public class BlackjackDisplay extends UIComponent {
     }
 
     playerTotalLabel.setText(
-        blackjack.getPlayerHand().isEmpty()
-            ? "TOTAL  --"
-            : "TOTAL  " + blackjack.getPlayerTotal());
+        blackjack.getPlayerHand().isEmpty() ? "TOTAL  --" : "TOTAL  " + blackjack.getPlayerTotal());
     balanceLabel.setText("GOLD  " + getDisplayedGold() + "     STAKE  " + blackjack.getBet());
     if (inventory != null && inventory.getGold() <= 0) {
       resultLabel.setText(EMPTY_BALANCE_MESSAGE);

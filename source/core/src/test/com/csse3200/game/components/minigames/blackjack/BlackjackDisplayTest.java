@@ -67,7 +67,7 @@ class BlackjackDisplayTest {
     assertNotNull(betField);
     assertTrue(table.isVisible());
     assertEquals("", betField.getText());
-    assertEquals("Enter bet", betField.getMessageText());
+    assertEquals("Amount", betField.getMessageText());
   }
 
   @Test
@@ -158,7 +158,7 @@ class BlackjackDisplayTest {
     invokeTryStartRound(display);
 
     assertEquals("Your balance is 0 - grind hard!", resultLabel.getText().toString());
-    assertEquals("PLACE BET", statusLabel.getText().toString());
+    assertEquals("READY", statusLabel.getText().toString());
     assertEquals("", betField.getText());
     assertEquals(0, inventory.getGold());
   }
@@ -175,7 +175,7 @@ class BlackjackDisplayTest {
     invokeTryStartRound(display);
 
     assertEquals("Enter a bet amount.", resultLabel.getText().toString());
-    assertEquals("PLACE BET", statusLabel.getText().toString());
+    assertEquals("READY", statusLabel.getText().toString());
     assertEquals(100, inventory.getGold());
   }
 
@@ -210,7 +210,7 @@ class BlackjackDisplayTest {
     invokeTryStartRound(display);
 
     assertEquals("Insufficient balance.", resultLabel.getText().toString());
-    assertEquals("PLACE BET", statusLabel.getText().toString());
+    assertEquals("READY", statusLabel.getText().toString());
     assertEquals(50, inventory.getGold());
     assertFalse(blackjack.isRoundInProgress());
   }
