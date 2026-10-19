@@ -309,8 +309,8 @@ public class Level2Config extends LevelConfig {
                   () -> EnemyFactory.createSkeletonWarrior(player),
                   () -> EnemyFactory.createSkeletonArcher(player),
                   () -> EnemyFactory.createNecromancer(player))),
-          5f,
-          7,
+          7f,
+          5,
           SpawnerComponent.ACTIVATION_MODE.NORMAL,
           false), // ES1+2
     };
