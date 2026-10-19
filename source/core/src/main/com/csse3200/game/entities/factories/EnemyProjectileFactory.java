@@ -19,8 +19,8 @@ import com.csse3200.game.physics.components.PhysicsMovementComponent;
 import com.csse3200.game.rendering.TextureRenderComponent;
 import com.csse3200.game.rendering.item.ArrowRenderComponent;
 
-/** Factory for creating enemy projectiles. */
-public class ProjectileFact {
+/** Factory for creating enemy projectiles. The player's are made by {@link ProjectileFactory}. */
+public class EnemyProjectileFactory {
 
   /**
    * Creates an arrow for a skeleton archer to fire at a target.
@@ -133,7 +133,7 @@ public class ProjectileFact {
     return projectile;
   }
 
-  private ProjectileFact() {
+  private EnemyProjectileFactory() {
     throw new IllegalStateException("Instantiating static util class");
   }
 }

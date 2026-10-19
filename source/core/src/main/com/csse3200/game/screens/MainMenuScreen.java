@@ -1,6 +1,5 @@
 package com.csse3200.game.screens;
 
-import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.csse3200.game.GdxGame;
@@ -9,22 +8,16 @@ import com.csse3200.game.components.GameVolume;
 import com.csse3200.game.components.mainmenu.MainMenuActions;
 import com.csse3200.game.components.mainmenu.MainMenuDisplay;
 import com.csse3200.game.entities.Entity;
-import com.csse3200.game.entities.EntityService;
-import com.csse3200.game.entities.factories.RenderFactory;
 import com.csse3200.game.input.InputDecorator;
-import com.csse3200.game.input.InputService;
-import com.csse3200.game.rendering.RenderService;
-import com.csse3200.game.rendering.Renderer;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /** The game screen containing the main menu. */
-public class MainMenuScreen extends ScreenAdapter {
+public class MainMenuScreen extends MenuScreen {
   private static final Logger logger = LoggerFactory.getLogger(MainMenuScreen.class);
   private final GdxGame game;
-  private final Renderer renderer;
   private Entity ui;
   private static final String[] mainMenuTextures = {
     "images/ui/title_odysseus_logo.png",
@@ -45,41 +38,17 @@ public class MainMenuScreen extends ScreenAdapter {
   public MainMenuScreen(GdxGame game) {
     this.game = game;
     logger.debug("Initialising main menu screen services");
-    ServiceLocator.registerInputService(new InputService());
-    ServiceLocator.registerResourceService(new ResourceService());
-    ServiceLocator.registerEntityService(new EntityService());
-    ServiceLocator.registerRenderService(new RenderService());
-
-    renderer = RenderFactory.createRenderer();
-
     loadAssets();
     createUI();
   }
 
   @Override
-  public void render(float delta) {
-    ServiceLocator.getEntityService().update();
-    renderer.render();
-  }
-
-  @Override
   public void resize(int width, int height) {
-    renderer.resize(width, height);
+    super.resize(width, height);
     MainMenuDisplay display = ui == null ? null : ui.getComponent(MainMenuDisplay.class);
     if (display != null) {
       display.resize();
     }
-    logger.trace("Resized renderer: ({} x {})", width, height);
-  }
-
-  @Override
-  public void pause() {
-    logger.info("Game paused");
-  }
-
-  @Override
-  public void resume() {
-    logger.info("Game resumed");
   }
 
   @Override

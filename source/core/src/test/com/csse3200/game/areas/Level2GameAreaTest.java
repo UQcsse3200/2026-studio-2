@@ -12,7 +12,6 @@ import com.csse3200.game.areas.terrain.TerrainFactory;
 import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
-import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import java.lang.reflect.Field;
@@ -20,10 +19,8 @@ import java.lang.reflect.Method;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 
-@ExtendWith(GameExtension.class)
-class Level2GameAreaTest {
+class Level2GameAreaTest extends AbstractAreaAssetsTest {
 
   private TerrainFactory terrainFactory;
   private CameraComponent camera;
@@ -86,28 +83,6 @@ class Level2GameAreaTest {
   }
 
   @Test
-  void loadAssetsLoadsLevel2Resources() throws Exception {
-    invokePrivate("loadAssets");
-
-    verify(resourceService).loadTextures(any(String[].class));
-    verify(resourceService).loadTextureAtlases(any(String[].class));
-    verify(resourceService).loadSounds(any(String[].class));
-    verify(resourceService).loadMusic(any(String[].class));
-    verify(resourceService).loadForMillis(10);
-  }
-
-  @Test
-  void loadAssetsWaitsUntilLoadingCompletes() throws Exception {
-    when(resourceService.loadForMillis(10)).thenReturn(false, false, true);
-    when(resourceService.getProgress()).thenReturn(25, 75);
-
-    invokePrivate("loadAssets");
-
-    verify(resourceService, times(3)).loadForMillis(10);
-    verify(resourceService, times(2)).getProgress();
-  }
-
-  @Test
   void unloadAssetsUnloadsAllLevel2Resources() throws Exception {
     invokePrivate("unloadAssets");
 
@@ -148,7 +123,13 @@ class Level2GameAreaTest {
     assertEquals(bounds, field.get(area));
   }
 
-  private void invokePrivate(String methodName) throws Exception {
+  @Override
+  ResourceService resourceService() {
+    return resourceService;
+  }
+
+  @Override
+  void invokePrivate(String methodName) throws Exception {
     Method method = Level2GameArea.class.getDeclaredMethod(methodName);
     method.setAccessible(true);
     method.invoke(area);

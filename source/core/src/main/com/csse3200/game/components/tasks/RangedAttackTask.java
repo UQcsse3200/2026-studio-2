@@ -4,7 +4,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.ai.tasks.DefaultTask;
 import com.csse3200.game.ai.tasks.PriorityTask;
 import com.csse3200.game.entities.Entity;
-import com.csse3200.game.entities.factories.ProjectileFact;
+import com.csse3200.game.entities.factories.EnemyProjectileFactory;
 import com.csse3200.game.rendering.TextureRenderComponent;
 import com.csse3200.game.services.ServiceLocator;
 
@@ -95,18 +95,18 @@ public class RangedAttackTask extends DefaultTask implements PriorityTask {
 
     if (attackType.equals("calypso")) {
       projectile =
-          ProjectileFact.createCalypsoProjectile(
+          EnemyProjectileFactory.createCalypsoProjectile(
               targetCenter, damage, projectileSpeed, projectileLifetime);
     } else if (attackType.equals("summon")) {
       projectile =
-          ProjectileFact.createNecromancerProjectile(
+          EnemyProjectileFactory.createNecromancerProjectile(
               targetCenter, damage, projectileSpeed, projectileLifetime);
     } else {
       // An archer's arrow flies like the player's, arcing under gravity, so the factory aims it to
       // come down on the target and places it at the spawn point itself.
       ServiceLocator.getEntityService()
           .register(
-              ProjectileFact.createSkeletonArcherProjectile(
+              EnemyProjectileFactory.createSkeletonArcherProjectile(
                   enemy, spawnCenter, targetCenter, damage, projectileSpeed, projectileLifetime));
       return;
     }
