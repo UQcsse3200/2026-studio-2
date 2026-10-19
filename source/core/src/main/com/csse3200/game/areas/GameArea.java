@@ -121,22 +121,7 @@ public abstract class GameArea implements Disposable {
     // keep track of all triggerable objects
     ActivatableComponent activate = entity.getComponent(ActivatableComponent.class);
     if (activate != null) {
-      String[] ids = activate.getIds();
-
-      for (String id : ids) {
-        // add new list to the map if the id is not present
-        if (!triggerableEntities.containsKey(id)) {
-          triggerableEntities.put(id, new ArrayList<>());
-        }
-        // add entity to the respective id's list
-        triggerableEntities.get(id).add(entity);
-      }
-
-      // listen for trigger buttons' activation event call
-      TriggerButtonComponent trigger = entity.getComponent(TriggerButtonComponent.class);
-      if (trigger != null) {
-        entity.getEvents().addListener(ACTIVATE_BY_KEY, this::onButtonActivated);
-      }
+      registerActivatable(entity, activate);
     }
 
     // listen for trigger entity activation events
@@ -177,6 +162,32 @@ public abstract class GameArea implements Disposable {
     }
 
     ServiceLocator.getEntityService().register(entity);
+  }
+
+  /**
+   * Tracks a triggerable entity under each of its ids, and listens for its activation if it is a
+   * trigger button.
+   *
+   * @param entity the entity being spawned
+   * @param activate the entity's activatable component
+   */
+  private void registerActivatable(Entity entity, ActivatableComponent activate) {
+    String[] ids = activate.getIds();
+
+    for (String id : ids) {
+      // add new list to the map if the id is not present
+      if (!triggerableEntities.containsKey(id)) {
+        triggerableEntities.put(id, new ArrayList<>());
+      }
+      // add entity to the respective id's list
+      triggerableEntities.get(id).add(entity);
+    }
+
+    // listen for trigger buttons' activation event call
+    TriggerButtonComponent trigger = entity.getComponent(TriggerButtonComponent.class);
+    if (trigger != null) {
+      entity.getEvents().addListener(ACTIVATE_BY_KEY, this::onButtonActivated);
+    }
   }
 
   /**
