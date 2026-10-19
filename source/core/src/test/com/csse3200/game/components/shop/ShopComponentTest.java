@@ -26,8 +26,8 @@ class ShopComponentTest {
 
     assertEquals(PurchaseResult.SUCCESS, shop.buy(ItemType.STANDARD_ARROW));
     assertTrue(purchased[0]);
-    assertEquals(50 - listing.getPrice(), inventory.getGold());
-    assertEquals(listing.getQuantity(), inventory.getItemCount(ItemType.STANDARD_ARROW));
+    assertEquals(50 - listing.price(), inventory.getGold());
+    assertEquals(listing.quantity(), inventory.getItemCount(ItemType.STANDARD_ARROW));
   }
 
   @Test

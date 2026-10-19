@@ -305,8 +305,8 @@ public class BackgroundRenderComponent extends RenderComponent {
         // random vertical offset applied to each rain drop in range -verticalOffset to
         // verticalOffset
         float verticalOffset = 0.05f;
-        float cameraWidth = (float) (int) camera.getCamera().viewportWidth + 4;
-        float cameraHeight = (float) (int) camera.getCamera().viewportHeight + 6;
+        float cameraWidth = truncate(camera.getCamera().viewportWidth) + 4;
+        float cameraHeight = truncate(camera.getCamera().viewportHeight) + 6;
         int centerX = (int) camera.getCamera().position.x;
         int centerY = (int) camera.getCamera().position.y;
         float startX = centerX - (cameraWidth / 2);
@@ -415,6 +415,11 @@ public class BackgroundRenderComponent extends RenderComponent {
       }
       batch.setColor(prevColor);
     }
+  }
+
+  /** Drops the fractional part of a value, rounding towards zero like an int cast. */
+  private static float truncate(float value) {
+    return (float) (value < 0 ? Math.ceil(value) : Math.floor(value));
   }
 
   @Override

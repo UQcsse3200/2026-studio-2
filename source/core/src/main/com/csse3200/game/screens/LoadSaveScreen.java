@@ -29,8 +29,8 @@ public class LoadSaveScreen extends MenuScreen {
     "images/Buttons/back_up_btn.png",
     "images/Buttons/back_down_btn.png"
   };
-  private static final String loadSaveMusic = "sounds/Main_menu_sound.mp3";
-  private static final String[] loadSaveMusicFiles = {loadSaveMusic};
+  private static final String LOAD_SAVE_MUSIC = "sounds/Main_menu_sound.mp3";
+  private static final String[] LOAD_SAVE_MUSIC_FILES = {LOAD_SAVE_MUSIC};
 
   public LoadSaveScreen(GdxGame game) {
     this.game = game;
@@ -44,7 +44,7 @@ public class LoadSaveScreen extends MenuScreen {
   public void dispose() {
     logger.debug("Disposing save-select screen");
     renderer.dispose();
-    ServiceLocator.getResourceService().getAsset(loadSaveMusic, Music.class).stop();
+    ServiceLocator.getResourceService().getAsset(LOAD_SAVE_MUSIC, Music.class).stop();
     unloadAssets();
     ServiceLocator.getRenderService().dispose();
     ServiceLocator.getEntityService().dispose();
@@ -56,7 +56,7 @@ public class LoadSaveScreen extends MenuScreen {
     logger.debug("Loading assets");
     ResourceService resourceService = ServiceLocator.getResourceService();
     resourceService.loadTextures(loadSaveTextures);
-    resourceService.loadMusic(loadSaveMusicFiles);
+    resourceService.loadMusic(LOAD_SAVE_MUSIC_FILES);
     ButtonSound.load(resourceService);
     resourceService.loadAll();
   }
@@ -65,12 +65,12 @@ public class LoadSaveScreen extends MenuScreen {
     logger.debug("Unloading assets");
     ResourceService resourceService = ServiceLocator.getResourceService();
     resourceService.unloadAssets(loadSaveTextures);
-    resourceService.unloadAssets(loadSaveMusicFiles);
+    resourceService.unloadAssets(LOAD_SAVE_MUSIC_FILES);
     ButtonSound.unload(resourceService);
   }
 
   private void playMusic() {
-    Music music = ServiceLocator.getResourceService().getAsset(loadSaveMusic, Music.class);
+    Music music = ServiceLocator.getResourceService().getAsset(LOAD_SAVE_MUSIC, Music.class);
     music.setLooping(true);
     GameVolume.setMusicVolume(music, 0.1f);
     music.play();

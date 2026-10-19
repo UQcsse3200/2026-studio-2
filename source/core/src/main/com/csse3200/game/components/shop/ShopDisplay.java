@@ -403,7 +403,7 @@ public class ShopDisplay extends UIComponent {
     style.checked = slotStyle.getSelectedBox();
 
     Button item = new Button(style);
-    Texture texture = getItemTexture(listing.getItemType());
+    Texture texture = getItemTexture(listing.itemType());
     if (texture != null) {
       float iconSize = ITEM_ICON_SHARE * Math.min(listingTileWidth, listingTileHeight);
       item.add(new Image(texture)).size(iconSize).expand().center();
@@ -444,7 +444,7 @@ public class ShopDisplay extends UIComponent {
       return;
     }
 
-    ItemType itemType = selectedListing.getItemType();
+    ItemType itemType = selectedListing.itemType();
     float gap = 6f * uiScale;
 
     Label name = new Label(itemType.getDisplayName(), white);
@@ -457,9 +457,9 @@ public class ShopDisplay extends UIComponent {
 
     Label.LabelStyle priceStyle = new Label.LabelStyle(white);
     priceStyle.fontColor = GOLD_TEXT_COLOR;
-    Label quantity = new Label("Quantity: x" + selectedListing.getQuantity(), white);
+    Label quantity = new Label("Quantity: x" + selectedListing.quantity(), white);
     quantity.setFontScale(0.8f * uiScale);
-    Label price = new Label("Price: " + selectedListing.getPrice() + "g", priceStyle);
+    Label price = new Label("Price: " + selectedListing.price() + "g", priceStyle);
     price.setFontScale(0.8f * uiScale);
     Table stats = new Table();
     stats.add(quantity).left().row();
@@ -494,16 +494,16 @@ public class ShopDisplay extends UIComponent {
     row.setBackground(slotStyle.getNormalBox());
     row.pad(8f);
 
-    Texture texture = getItemTexture(listing.getItemType());
+    Texture texture = getItemTexture(listing.itemType());
     if (texture != null) {
       row.add(new Image(texture)).size(ICON_SIZE, ICON_SIZE).padRight(12f);
     }
 
     white.fontColor = Color.WHITE;
 
-    row.add(new Label(listing.getItemType().getDisplayName(), white)).width(180f).left();
-    row.add(new Label("x" + listing.getQuantity(), white)).width(50f);
-    row.add(new Label(listing.getPrice() + "g", white)).width(60f).padRight(12f);
+    row.add(new Label(listing.itemType().getDisplayName(), white)).width(180f).left();
+    row.add(new Label("x" + listing.quantity(), white)).width(50f);
+    row.add(new Label(listing.price() + "g", white)).width(60f).padRight(12f);
 
     row.add(createBuyButton(listing, shop)).width(90f);
     return row;

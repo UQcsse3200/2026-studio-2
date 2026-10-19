@@ -168,6 +168,8 @@ class TextBoxComponentTest {
       invokeDraw(component);
     }
     int revealedChars = getField(component, "revealedChars");
+    assertTrue(revealedChars > revealedAfterOneFrame);
+    assertTrue(revealedChars <= "Hello world".length());
   }
 
   // --- setOpacity() tests ---

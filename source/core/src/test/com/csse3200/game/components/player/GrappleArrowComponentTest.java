@@ -81,6 +81,8 @@ class GrappleArrowComponentTest {
 
   @Test
   void shouldAttachWhenHittingGround() {
+    // The shot only fires once the button is released, so by the time the arrow lands the button
+    // has already been let go - there's no "was it still held" state left to check.
     GrappleComponent grapple = spy(new GrappleComponent());
     Entity arrow = arrowFiredBy(new Entity().addComponent(grapple));
 
