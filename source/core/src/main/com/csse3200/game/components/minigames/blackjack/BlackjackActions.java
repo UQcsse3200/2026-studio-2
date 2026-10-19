@@ -9,15 +9,9 @@ import org.slf4j.LoggerFactory;
 public class BlackjackActions extends Component {
   private static final Logger logger = LoggerFactory.getLogger(BlackjackActions.class);
   private final GdxGame game;
-  private final GdxGame.ScreenType returnScreen;
 
   public BlackjackActions(GdxGame game) {
-    this(game, GdxGame.ScreenType.MINIGAME_SELECT);
-  }
-
-  public BlackjackActions(GdxGame game, GdxGame.ScreenType returnScreen) {
     this.game = game;
-    this.returnScreen = returnScreen;
   }
 
   @Override
@@ -26,7 +20,7 @@ public class BlackjackActions extends Component {
   }
 
   private void onBack() {
-    logger.info("Returning to {}", returnScreen);
-    game.setScreen(returnScreen);
+    logger.info("Returning to minigame select");
+    game.setScreen(GdxGame.ScreenType.MINIGAME_SELECT);
   }
 }

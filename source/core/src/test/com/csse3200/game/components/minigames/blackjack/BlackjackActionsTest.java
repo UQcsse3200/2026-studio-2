@@ -21,16 +21,4 @@ class BlackjackActionsTest {
 
     verify(game).setScreen(GdxGame.ScreenType.MINIGAME_SELECT);
   }
-
-  @Test
-  void shouldReturnToTheProvidedLaunchScreenOnBack() {
-    GdxGame game = mock(GdxGame.class);
-    Entity ui =
-        new Entity().addComponent(new BlackjackActions(game, GdxGame.ScreenType.LEVEL_1_GAME));
-    ui.create();
-
-    ui.getEvents().trigger("back");
-
-    verify(game).setScreen(GdxGame.ScreenType.LEVEL_1_GAME);
-  }
 }

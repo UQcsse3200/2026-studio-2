@@ -14,12 +14,11 @@ class BlackjackMinigameCommandTest {
   @Test
   void shouldLoadBlackjackMinigame() {
     GdxGame game = mock(GdxGame.class);
-    BlackjackMinigameCommand command =
-        new BlackjackMinigameCommand(game, GdxGame.ScreenType.LEVEL_1_GAME);
+    BlackjackMinigameCommand command = new BlackjackMinigameCommand(game);
 
     assertTrue(command.action(new ArrayList<>(List.of("load"))));
 
-    verify(game).setScreen(GdxGame.ScreenType.MINIGAME_BLACKJACK, GdxGame.ScreenType.LEVEL_1_GAME);
+    verify(game).setScreen(GdxGame.ScreenType.MINIGAME_BLACKJACK);
   }
 
   @Test

@@ -44,7 +44,7 @@ public class Terminal extends Component {
     this();
     addCommand("cutscene", new CutsceneCommand(game, destination));
     addCommand("cyclopsMinigame", new CyclopsMinigameCommand(game));
-    addCommand("blackjackMinigame", new BlackjackMinigameCommand(game, destination));
+    addCommand("blackjackMinigame", new BlackjackMinigameCommand(game));
   }
 
   /**
