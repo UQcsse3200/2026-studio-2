@@ -100,7 +100,6 @@ public class EnemyProjectileFactory {
                     LightingDefaults.RAYS,
                     new Color(0.4f, 0f, 0.65f, 1f),
                     LightingDefaults.DIST));
-    ;
 
     projectile.getComponent(TextureRenderComponent.class).scaleEntity();
     projectile.setScale(projectile.getScale().scl(0.8f));
@@ -142,7 +141,6 @@ public class EnemyProjectileFactory {
                     LightingDefaults.RAYS,
                     new Color(0.4f, 0f, 0.65f, 1f),
                     LightingDefaults.DIST));
-    ;
 
     projectile.getComponent(TextureRenderComponent.class).scaleEntity();
     projectile.setScale(projectile.getScale().scl(0.8f));
