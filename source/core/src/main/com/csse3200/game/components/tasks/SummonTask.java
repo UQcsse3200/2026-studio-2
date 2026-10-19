@@ -3,6 +3,7 @@ package com.csse3200.game.components.tasks;
 import com.csse3200.game.ai.tasks.DefaultTask;
 import com.csse3200.game.ai.tasks.PriorityTask;
 import com.csse3200.game.ai.tasks.TaskRunner;
+import com.csse3200.game.components.BossPhaseComponent;
 import com.csse3200.game.components.EnemySummonComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.EnemyFactory;
@@ -14,6 +15,7 @@ public class SummonTask extends DefaultTask implements PriorityTask {
   private final int priority;
   private final float attackRange;
   private final float cooldown;
+  private final String summonerType;
 
   private long lastSummonTime;
   private int currentSummonCount = 0;
@@ -27,11 +29,13 @@ public class SummonTask extends DefaultTask implements PriorityTask {
    * @param attackRange maximum distance at which the enemy can fire
    * @param cooldown seconds between attacks
    */
-  public SummonTask(Entity target, int priority, float attackRange, float cooldown) {
+  public SummonTask(
+      Entity target, int priority, float attackRange, float cooldown, String summonerType) {
     this.target = target;
     this.priority = priority;
     this.attackRange = attackRange;
     this.cooldown = cooldown;
+    this.summonerType = summonerType;
   }
 
   @Override
@@ -57,7 +61,18 @@ public class SummonTask extends DefaultTask implements PriorityTask {
 
   @Override
   public int getPriority() {
-    float distance = owner.getEntity().getPosition().dst(target.getPosition());
+    Entity summoner = owner.getEntity();
+
+    // Summon behaviour if it is Calypso
+    if (summonerType.equals("Calypso")) {
+      BossPhaseComponent phase = summoner.getComponent(BossPhaseComponent.class);
+      // Only summon in phase 2
+      if (phase == null || phase.getCurrentPhase() < 2) {
+        return -1;
+      }
+    }
+
+    float distance = summoner.getPosition().dst(target.getPosition());
 
     long currentTime = ServiceLocator.getTimeSource().getTime();
 

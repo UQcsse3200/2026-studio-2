@@ -21,7 +21,6 @@ import com.csse3200.game.components.lighting.PointLightComponent;
 import com.csse3200.game.components.npc.ChaseSoundComponent;
 import com.csse3200.game.components.npc.EnemyAnimationController;
 import com.csse3200.game.components.tasks.*;
-import com.csse3200.game.components.tasks.BossSummonTask;
 import com.csse3200.game.components.tasks.ChaseTask;
 import com.csse3200.game.components.tasks.RangedAttackTask;
 import com.csse3200.game.components.tasks.RepositionTask;
@@ -364,13 +363,13 @@ public class EnemyFactory {
                 CALYPSO_SWEEP_HEIGHT,
                 sweepWindUp,
                 CALYPSO_SWEEP_DURATION,
-                CALYPSO_SWEEP_COOLDOWN))
-        .addTask(new TimerAttackTask(target, 25, 100, 0, 1, 0, 15));
+                CALYPSO_SWEEP_COOLDOWN));
 
     // phase2
     calypso
         .getComponent(AITaskComponent.class)
-        .addTask(new BossSummonTask(target, 30, config.attackRange, 5f));
+        .addTask(new TimerAttackTask(target, 25, 100, 0, 1, 0, 15))
+        .addTask(new SummonTask(target, 30, config.attackRange, 5f, "Calypso"));
 
     return calypso;
   }
@@ -459,7 +458,7 @@ public class EnemyFactory {
                   4.5f,
                   5f,
                   config.attackType))
-          .addTask(new SummonTask(target, 30, config.attackRange, 5f));
+          .addTask(new SummonTask(target, 30, config.attackRange, 5f, "Necromancer"));
     } else if (config.attackType.equals("calypso")) {
       // Standard projectile attack. Other Calypso attacks are added separately.
       aiComponent.addTask(

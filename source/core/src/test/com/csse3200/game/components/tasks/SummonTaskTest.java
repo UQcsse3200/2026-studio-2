@@ -72,7 +72,7 @@ class SummonTaskTest {
     Entity player = new Entity();
     player.setPosition(3f, 2f);
 
-    SummonTask summonTask = new SummonTask(player, 30, 10f, 5f);
+    SummonTask summonTask = new SummonTask(player, 30, 10f, 5f, "Necromancer");
 
     AITaskComponent aiTaskComponent = new AITaskComponent();
 
@@ -103,7 +103,7 @@ class SummonTaskTest {
     Entity player = new Entity();
     player.setPosition(3f, 2f);
 
-    SummonTask summonTask = new SummonTask(player, 30, 10f, 5f);
+    SummonTask summonTask = new SummonTask(player, 30, 10f, 5f, "Necromancer");
 
     AITaskComponent aiTaskComponent = new AITaskComponent();
 
