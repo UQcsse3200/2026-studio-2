@@ -105,7 +105,8 @@ public class Level3GameArea extends GameArea {
     spawnRisingWater();
     spawnForeground();
     activateWeather();
-    player.setPosition(new Vector2(config.getPlayerSpawn().x, config.getPlayerSpawn().y));
+    player.setPosition(
+        new Vector2((float) config.getPlayerSpawn().x, (float) config.getPlayerSpawn().y));
   }
 
   private void activateWeather() {

@@ -3,6 +3,7 @@ package com.csse3200.game.components.projectile;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -311,8 +312,7 @@ class ArrowProjectileComponentTest {
     List<Vector2> announced = new ArrayList<>();
     arrow
         .getEvents()
-        .addListener(
-            ArrowProjectileComponent.RANGE_EXCEEDED_EVENT, (Vector2 point) -> announced.add(point));
+        .<Vector2>addListener(ArrowProjectileComponent.RANGE_EXCEEDED_EVENT, announced::add);
     Vector2 centre = projectile.getWorldCenter();
 
     projectile.update();
@@ -328,8 +328,7 @@ class ArrowProjectileComponentTest {
     List<Vector2> announced = new ArrayList<>();
     arrow
         .getEvents()
-        .addListener(
-            ArrowProjectileComponent.RANGE_EXCEEDED_EVENT, (Vector2 point) -> announced.add(point));
+        .<Vector2>addListener(ArrowProjectileComponent.RANGE_EXCEEDED_EVENT, announced::add);
     arrow.getComponent(PhysicsComponent.class).getBody().setTransform(10f, 0f, 0f);
 
     arrow.getComponent(ArrowProjectileComponent.class).update();
@@ -427,9 +426,9 @@ class ArrowProjectileComponentTest {
             .maskBits;
 
     assertEquals(0, playersArrowMask & PhysicsLayer.PLAYER);
-    assertTrue((playersArrowMask & PhysicsLayer.NPC) != 0);
+    assertNotEquals(0, playersArrowMask & PhysicsLayer.NPC);
     assertEquals(0, enemysArrowMask & PhysicsLayer.NPC);
-    assertTrue((enemysArrowMask & PhysicsLayer.PLAYER) != 0);
+    assertNotEquals(0, enemysArrowMask & PhysicsLayer.PLAYER);
   }
 
   @Test

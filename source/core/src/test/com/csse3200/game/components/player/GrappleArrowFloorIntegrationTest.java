@@ -65,7 +65,7 @@ class GrappleArrowFloorIntegrationTest {
     grapple = spy(new GrappleComponent());
     shooter = new Entity().addComponent(grapple);
     shooter.setPosition(0f, 0f); // standing on the floor: their feet are at y = 0
-    shooter.getEvents().addListener("grappleFailed", (Vector2 point) -> failures.add(point));
+    shooter.getEvents().<Vector2>addListener("grappleFailed", failures::add);
 
     // A long floor whose top surface is at y = 0, and a tall wall whose right face is at x = -10.
     solid(0f, -1f, 100f, 1f);

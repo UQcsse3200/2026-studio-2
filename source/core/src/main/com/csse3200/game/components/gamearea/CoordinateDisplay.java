@@ -46,7 +46,9 @@ public class CoordinateDisplay extends UIComponent {
 
   private String getText() {
     Vector3 mouse =
-        camera.getCamera().unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0f));
+        camera
+            .getCamera()
+            .unproject(new Vector3((float) Gdx.input.getX(), (float) Gdx.input.getY(), 0f));
     String text = String.format("Mouse: %.1f, %.1f%n", mouse.x, mouse.y);
 
     Entity p = findPlayer();

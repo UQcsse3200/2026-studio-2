@@ -213,8 +213,8 @@ public class CutsceneScreen extends ScreenAdapter {
     TextConfig config = scene.text == null ? new TextConfig() : scene.text;
     textBox =
         new TextBoxComponent(
-            config.xPos,
-            config.yPos,
+            (float) config.xPos,
+            (float) config.yPos,
             config.getTextColour(),
             config.getBackgroundColour(),
             config.getBorderColour(),

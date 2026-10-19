@@ -42,7 +42,7 @@ public class DelayedAttackTask extends DefaultTask implements PriorityTask {
   @Override
   public void start() {
     super.start();
-    this.attackStartTime = ServiceLocator.getTimeSource().getTime();
+    this.attackStartTime = (float) ServiceLocator.getTimeSource().getTime();
   }
 
   @Override
@@ -59,7 +59,7 @@ public class DelayedAttackTask extends DefaultTask implements PriorityTask {
     if (isAttacking
         && currentTime >= attackStartTime + attackDelay * 1000 + attackDuration * 1000) {
       isAttacking = false;
-      attackStartTime = currentTime;
+      attackStartTime = (float) currentTime;
     }
   }
 

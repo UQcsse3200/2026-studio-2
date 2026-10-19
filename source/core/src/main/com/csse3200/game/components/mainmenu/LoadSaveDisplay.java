@@ -70,8 +70,8 @@ public class LoadSaveDisplay extends UIComponent {
   private void addActors() {
     table = new Table();
     table.setFillParent(true);
-    float screenWidth = Gdx.graphics.getWidth();
-    float screenHeight = Gdx.graphics.getHeight();
+    float screenWidth = (float) Gdx.graphics.getWidth();
+    float screenHeight = (float) Gdx.graphics.getHeight();
     float pad = screenHeight * 0.02f;
 
     Image background =
@@ -337,8 +337,8 @@ public class LoadSaveDisplay extends UIComponent {
       for (int x = 0; x < size; x++) {
         boolean inCornerBox = (x < r || x >= size - r) && (y < r || y >= size - r);
         if (inCornerBox) {
-          float cx = x < r ? r : size - r - 1;
-          float cy = y < r ? r : size - r - 1;
+          float cx = (float) (x < r ? r : size - r - 1);
+          float cy = (float) (y < r ? r : size - r - 1);
           double dist = Math.hypot(x - cx, y - cy);
           if (dist > r) {
             pixmap.drawPixel(x, y, Color.rgba8888(0f, 0f, 0f, 0f));
