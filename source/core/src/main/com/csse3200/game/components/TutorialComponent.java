@@ -25,10 +25,14 @@ public class TutorialComponent extends InputComponent {
 
   @Override
   public boolean keyDown(int keycode) {
-    if (finished || textBox == null || textBox.isDismissed() || Terminal.isAnyOpen()) {
-      return false;
+    if (!finished && textBox != null && !textBox.isDismissed() && !Terminal.isAnyOpen()) {
+      handleTutorialKey(keycode);
     }
+    // Never consume the key, so the player still moves while following the tutorial.
+    return false;
+  }
 
+  private void handleTutorialKey(int keycode) {
     switch (step) {
       case 0:
         if (keycode == Keys.A) {
@@ -53,7 +57,6 @@ public class TutorialComponent extends InputComponent {
       default:
         break;
     }
-    return false;
   }
 
   private void advanceStep() {

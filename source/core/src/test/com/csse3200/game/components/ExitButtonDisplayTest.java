@@ -8,7 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.csse3200.game.components.maingame.MainGameExitDisplay;
-import com.csse3200.game.components.minigames.cyclopsMinigame.CyclopsMinigameDisplay;
+import com.csse3200.game.components.minigames.cyclopsminigame.CyclopsMinigameDisplay;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.TopRightButtonDisplay;

@@ -150,11 +150,6 @@ public class Level2GameArea extends GameArea {
     }
   }
 
-  /** Plays the background music. */
-  private void playMusic() {
-    playLoopingMusic(BACKGROUND_MUSIC, 0.3f);
-  }
-
   /** Loads all Level 2 assets. */
   private void loadAssets() {
     loadAreaAssets(level2Textures, level2TexturesAtlas, level2Sounds, level2Music);

@@ -59,7 +59,11 @@ public class GdxGame extends Game {
   private SaveFile pendingSave;
 
   /** Levels a save file may name; anything else is rejected and treated as level 1. */
-  private static final Set<String> VALID_LEVELS = Set.of("level1", "level2", "level3", "boss");
+  private static final String LEVEL_1 = "level1";
+
+  private static final String LEVEL_2 = "level2";
+  private static final String LEVEL_3 = "level3";
+  private static final Set<String> VALID_LEVELS = Set.of(LEVEL_1, LEVEL_2, LEVEL_3, "boss");
 
   @Override
   public void create() {
@@ -185,7 +189,7 @@ public class GdxGame extends Game {
     }
     if (!VALID_LEVELS.contains(save.currentLevel)) {
       logger.warn("Save slot {} names unknown level {}, loading level 1", slot, save.currentLevel);
-      save.currentLevel = "level1";
+      save.currentLevel = LEVEL_1;
     }
     logger.info("Loading save slot {} at level {}", slot, save.currentLevel);
     playerSnapshot = null;
@@ -283,9 +287,9 @@ public class GdxGame extends Game {
   /** Screen type for a saved level name. */
   private static ScreenType levelScreenType(String level) {
     switch (level) {
-      case "level2":
+      case LEVEL_2:
         return ScreenType.LEVEL_2_GAME;
-      case "level3":
+      case LEVEL_3:
         return ScreenType.LEVEL_3_GAME;
       case "boss":
         return ScreenType.LEVEL_BOSS_GAME;
@@ -360,11 +364,11 @@ public class GdxGame extends Game {
         return new SandboxGameScreen(this);
       case LEVEL_2_GAME:
         LevelsGameScreen screen2 = new LevelsGameScreen(this);
-        screen2.queueAreaSwap("level2");
+        screen2.queueAreaSwap(LEVEL_2);
         return screen2;
       case LEVEL_3_GAME:
         LevelsGameScreen screen3 = new LevelsGameScreen(this);
-        screen3.queueAreaSwap("level3");
+        screen3.queueAreaSwap(LEVEL_3);
         return screen3;
       case LEVEL_BOSS_GAME:
         LevelsGameScreen bossScreen = new LevelsGameScreen(this);

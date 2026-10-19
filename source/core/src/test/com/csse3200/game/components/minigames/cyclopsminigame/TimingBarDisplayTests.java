@@ -1,10 +1,13 @@
-package com.csse3200.game.components.minigames.cyclopsMinigame;
+package com.csse3200.game.components.minigames.cyclopsminigame;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.csse3200.game.extensions.GameExtension;
@@ -14,6 +17,7 @@ import com.csse3200.game.services.ServiceLocator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.MockedConstruction;
 
 @ExtendWith(GameExtension.class)
 class TimingBarDisplayTests {
@@ -138,5 +142,101 @@ class TimingBarDisplayTests {
     assertEquals(-34f, realDisplay.frame.getY(), 1e-4f);
     assertEquals(478f, realDisplay.frame.getWidth(), 1e-4f);
     assertEquals(98f, realDisplay.frame.getHeight(), 1e-4f);
+  }
+
+  @Test
+  void visibilitySetBeforeCreationIsAppliedToTheTableAndCanBeChanged() {
+    assertFalse(display.isVisible());
+    display.setVisible(true);
+    display.update();
+    display.create();
+
+    assertTrue(display.isVisible());
+    assertTrue(display.table.isVisible());
+    display.setVisible(false);
+    assertFalse(display.isVisible());
+    assertFalse(display.table.isVisible());
+  }
+
+  @Test
+  void hiddenShrinkWaitsUntilVisibleThenBlinksAndReturnsToNormalColours() {
+    when(logic.getScoringAreaSize()).thenReturn(0.2f);
+    display.create();
+    when(logic.getScoringAreaSize()).thenReturn(0.1f);
+
+    for (int i = 0; i < TimingBarDisplay.FLASH_FRAMES; i++) {
+      display.update();
+    }
+    assertEquals(Color.valueOf("#E8B04A"), display.scoringZone.getColor());
+
+    display.setVisible(true);
+    display.update();
+    assertEquals(Color.WHITE, display.scoringZone.getColor());
+    assertEquals(Color.WHITE, display.zoneHighlight.getColor());
+    assertEquals(Color.WHITE, display.zoneShadow.getColor());
+    assertEquals(Color.WHITE, display.zoneLeftEdge.getColor());
+    assertEquals(Color.WHITE, display.zoneRightEdge.getColor());
+
+    for (int i = 1; i < TimingBarDisplay.FLASH_BLINK_FRAMES; i++) {
+      display.update();
+    }
+    assertEquals(Color.valueOf("#E8B04A"), display.scoringZone.getColor());
+    for (int i = 0; i < TimingBarDisplay.FLASH_FRAMES; i++) {
+      display.update();
+    }
+    assertEquals(Color.valueOf("#E8B04A"), display.scoringZone.getColor());
+    assertEquals(Color.valueOf("#FFD97A"), display.zoneHighlight.getColor());
+    assertEquals(Color.valueOf("#B07628"), display.zoneShadow.getColor());
+    assertEquals(Color.valueOf("#FFF0BE"), display.zoneLeftEdge.getColor());
+    assertEquals(Color.valueOf("#FFF0BE"), display.zoneRightEdge.getColor());
+  }
+
+  @Test
+  void growingTheScoringAreaResizesWithoutFlashing() {
+    when(logic.getScoringAreaSize()).thenReturn(0.1f);
+    display.create();
+    display.setVisible(true);
+    when(logic.getScoringAreaSize()).thenReturn(0.2f);
+
+    display.update();
+
+    assertEquals(80f, display.scoringZone.getWidth(), 0.001f);
+    assertEquals(160f, display.scoringZone.getX(), 0.001f);
+    assertEquals(Color.valueOf("#E8B04A"), display.scoringZone.getColor());
+  }
+
+  @Test
+  void renderRestoresTheBatchColourForStageDrawing() {
+    SpriteBatch batch = mock(SpriteBatch.class);
+
+    display.render(batch);
+
+    verify(batch).setColor(Color.WHITE);
+  }
+
+  @Test
+  void disposeReleasesOwnedTextureAndUnregistersDisplay() {
+    try (MockedConstruction<Texture> textures =
+        mockConstruction(
+            Texture.class,
+            (texture, context) -> {
+              when(texture.getWidth()).thenReturn(1);
+              when(texture.getHeight()).thenReturn(1);
+            })) {
+      display.create();
+
+      display.dispose();
+
+      assertEquals(1, textures.constructed().size());
+      verify(textures.constructed().getFirst()).dispose();
+      verify(mockRenderService).unregister(display);
+    }
+  }
+
+  @Test
+  void disposeBeforeCreateStillUnregistersDisplay() {
+    display.dispose();
+
+    verify(mockRenderService).unregister(display);
   }
 }

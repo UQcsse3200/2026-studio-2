@@ -1,15 +1,18 @@
-package com.csse3200.game.components.minigames.cyclopsMinigame;
+package com.csse3200.game.components.minigames.cyclopsminigame;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
@@ -86,5 +89,32 @@ class CyclopsMinigameDisplayTest {
     display.create();
 
     assertDoesNotThrow(display::dispose);
+  }
+
+  @Test
+  void rendersAboveOtherUiWithoutDrawingTheStageTwice() {
+    CyclopsMinigameDisplay display = new CyclopsMinigameDisplay();
+    SpriteBatch batch = mock(SpriteBatch.class);
+
+    display.render(batch);
+
+    assertEquals(2f, display.getZIndex());
+    verifyNoInteractions(batch);
+  }
+
+  @Test
+  void disposingClearsTheExitControlsAndUnregistersTheDisplay() {
+    CyclopsMinigameDisplay display = new CyclopsMinigameDisplay();
+    new Entity().addComponent(display);
+    display.create();
+    ArgumentCaptor<Actor> actors = ArgumentCaptor.forClass(Actor.class);
+    verify(stage).addActor(actors.capture());
+    Table table = (Table) actors.getValue();
+
+    display.dispose();
+
+    assertTrue(table.getChildren().isEmpty());
+    assertTrue(table.getCells().isEmpty());
+    verify(ServiceLocator.getRenderService()).unregister(display);
   }
 }

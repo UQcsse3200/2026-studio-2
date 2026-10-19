@@ -1,4 +1,4 @@
-package com.csse3200.game.components.minigames.cyclopsMinigame;
+package com.csse3200.game.components.minigames.cyclopsminigame;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -92,5 +92,31 @@ class TimingBarLogicTests {
     logic.stopMarker();
     logic.resetMarker();
     assertEquals(0f, logic.getMarkerX());
+  }
+
+  @Test
+  void scoringIncludesBothEdgesButRejectsMarkerBeyondTheRightEdge() {
+    TimingBarLogic logic = new TimingBarLogic(50f);
+    logic.startMarker();
+
+    logic.update(0.25f);
+    assertTrue(logic.checkHit());
+    logic.update(0.5f);
+    assertTrue(logic.checkHit());
+    logic.update(0.01f);
+    assertFalse(logic.checkHit());
+  }
+
+  @Test
+  void exactEndpointsReverseTheNextMovement() {
+    TimingBarLogic logic = new TimingBarLogic(50f);
+    logic.startMarker();
+
+    logic.update(1f);
+    logic.update(0.25f);
+    assertEquals(0.75f, logic.getMarkerX(), 0.001f);
+    logic.update(0.75f);
+    logic.update(0.25f);
+    assertEquals(0.25f, logic.getMarkerX(), 0.001f);
   }
 }

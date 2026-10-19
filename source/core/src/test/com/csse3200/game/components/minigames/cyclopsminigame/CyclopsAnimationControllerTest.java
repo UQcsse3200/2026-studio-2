@@ -1,4 +1,4 @@
-package com.csse3200.game.components.minigames.cyclopsMinigame;
+package com.csse3200.game.components.minigames.cyclopsminigame;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -207,5 +207,32 @@ class CyclopsAnimationControllerTest {
 
     assertEquals(HOME, cyclops.getPosition());
     assertEquals("sleep", animator.getCurrentAnimation());
+  }
+
+  @Test
+  void staysAtHomeUntilTheChargeAnimationFinishes() {
+    minigameEvents.trigger(CyclopsMinigameLogic.CYCLOPS_WAKE_EVENT);
+
+    step(0.25f);
+
+    assertEquals(CyclopsAnimationController.State.CHARGING, controller.getState());
+    assertEquals("charge_start", animator.getCurrentAnimation());
+    assertEquals(HOME, cyclops.getPosition());
+    assertEquals(0, hits.get());
+  }
+
+  @Test
+  void doesNotLandAHitBeforeTheImpactFrame() {
+    AtomicInteger clubLandings = new AtomicInteger();
+    cyclops
+        .getEvents()
+        .addListener(CyclopsAnimationController.CLUB_LANDED_EVENT, clubLandings::incrementAndGet);
+    runToPlayer();
+
+    step(CyclopsAnimationController.ATTACK_FRAME_TIME);
+
+    assertEquals(CyclopsAnimationController.State.ATTACKING, controller.getState());
+    assertEquals(0, hits.get());
+    assertEquals(0, clubLandings.get());
   }
 }
