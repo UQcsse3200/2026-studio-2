@@ -13,6 +13,10 @@ public class CyclopsMinigameActions extends Component {
     this.game = game;
   }
 
+  /**
+   * Adds the "exit" event to entity this component is attached to. Event will return to the
+   * MAIN_MENU screen on call
+   */
   @Override
   public void create() {
     entity.getEvents().addListener("exit", this::onExit);
