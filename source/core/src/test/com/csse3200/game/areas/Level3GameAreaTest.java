@@ -17,7 +17,6 @@ import com.csse3200.game.components.level.RisingWaterComponent;
 import com.csse3200.game.components.player.PlayerActions;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
-import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.physics.BodyUserData;
 import com.csse3200.game.physics.PhysicsService;
 import com.csse3200.game.rendering.AnimationRenderComponent;
@@ -33,10 +32,8 @@ import java.lang.reflect.Method;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 
-@ExtendWith(GameExtension.class)
-class Level3GameAreaTest {
+class Level3GameAreaTest extends AbstractAreaAssetsTest {
 
   private TerrainFactory terrainFactory;
   private CameraComponent camera;
@@ -95,28 +92,6 @@ class Level3GameAreaTest {
 
     assertNotNull(config);
     assertEquals("Level3Config", config.getClass().getSimpleName());
-  }
-
-  @Test
-  void loadAssetsLoadsLevel3Resources() throws Exception {
-    invokePrivate("loadAssets");
-
-    verify(resourceService).loadTextures(any(String[].class));
-    verify(resourceService).loadTextureAtlases(any(String[].class));
-    verify(resourceService).loadSounds(any(String[].class));
-    verify(resourceService).loadMusic(any(String[].class));
-    verify(resourceService).loadForMillis(10);
-  }
-
-  @Test
-  void loadAssetsWaitsUntilLoadingCompletes() throws Exception {
-    when(resourceService.loadForMillis(10)).thenReturn(false, false, true);
-    when(resourceService.getProgress()).thenReturn(25, 75);
-
-    invokePrivate("loadAssets");
-
-    verify(resourceService, times(3)).loadForMillis(10);
-    verify(resourceService, times(2)).getProgress();
   }
 
   @Test
@@ -191,7 +166,13 @@ class Level3GameAreaTest {
     verify(resourceService, times(4)).unloadAssets(any(String[].class));
   }
 
-  private void invokePrivate(String methodName) throws Exception {
+  @Override
+  ResourceService resourceService() {
+    return resourceService;
+  }
+
+  @Override
+  void invokePrivate(String methodName) throws Exception {
     Method method = Level3GameArea.class.getDeclaredMethod(methodName);
     method.setAccessible(true);
     method.invoke(area);

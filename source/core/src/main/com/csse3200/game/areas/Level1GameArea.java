@@ -8,7 +8,6 @@ import com.csse3200.game.areas.terrain.TerrainFactory.TerrainType;
 import com.csse3200.game.areas.terrain.configs.levelconfigs.Level1Config;
 import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.components.Component;
-import com.csse3200.game.components.GameVolume;
 import com.csse3200.game.components.gamearea.GameAreaDisplay;
 import com.csse3200.game.components.level.DesertHazardRecoveryComponent;
 import com.csse3200.game.components.player.KeyboardPlayerInputComponent;
@@ -19,7 +18,6 @@ import com.csse3200.game.entities.factories.NPCFactory;
 import com.csse3200.game.entities.factories.ObstacleFactory;
 import com.csse3200.game.entities.factories.PlayerFactory;
 import com.csse3200.game.rendering.BackgroundRenderComponent;
-import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.List;
 import org.slf4j.Logger;
@@ -337,38 +335,17 @@ public class Level1GameArea extends GameArea {
 
   /** Plays the background music. */
   private void playMusic() {
-
-    Music music = ServiceLocator.getResourceService().getAsset(BACKGROUND_MUSIC, Music.class);
-
-    music.setLooping(true);
-    GameVolume.setMusicVolume(music, 0.3f);
-    music.play();
+    playLoopingMusic(BACKGROUND_MUSIC, 0.3f);
   }
 
   /** Loads all assets. */
   private void loadAssets() {
-    logger.debug("Loading assets");
-
-    ResourceService resourceService = ServiceLocator.getResourceService();
-    resourceService.loadTextures(forestTextures);
-    resourceService.loadTextureAtlases(forestTextureAtlases);
-    resourceService.loadSounds(forestSounds);
-    resourceService.loadMusic(forestMusic);
-
-    while (!resourceService.loadForMillis(10)) {
-      logger.info("Loading... {}%", resourceService.getProgress());
-    }
+    loadAreaAssets(forestTextures, forestTextureAtlases, forestSounds, forestMusic);
   }
 
   /** Unloads all assets. */
   private void unloadAssets() {
-    logger.debug("Unloading assets");
-
-    ResourceService resourceService = ServiceLocator.getResourceService();
-    resourceService.unloadAssets(forestTextures);
-    resourceService.unloadAssets(forestTextureAtlases);
-    resourceService.unloadAssets(forestSounds);
-    resourceService.unloadAssets(forestMusic);
+    unloadAreaAssets(forestTextures, forestTextureAtlases, forestSounds, forestMusic);
   }
 
   @Override

@@ -51,14 +51,15 @@ class GrapplePlatformAttachmentTest {
     if (slippery) {
       platform.addComponent(new SlipperyPlatformComponent(0.5f, 0.5f));
     }
-    platform.setPosition(5f, 0f);
+    // Above the player's feet: a hook level with or below them is refused.
+    platform.setPosition(5f, 2f);
     entities.register(platform);
     return platform;
   }
 
   private Entity arrow(Entity shooter) {
     Entity arrow = new Entity().addComponent(new GrappleArrowComponent(shooter));
-    arrow.setPosition(5f, 0f);
+    arrow.setPosition(5f, 2f);
     entities.register(arrow);
     return arrow;
   }
@@ -98,12 +99,12 @@ class GrapplePlatformAttachmentTest {
 
     assertFalse(grapple.isAttached());
     assertEquals(2, grapple.getRopePath().size());
-    assertEquals(new Vector2(5.5f, 0f), grapple.getRopePath().getLast());
+    assertEquals(new Vector2(5.5f, 2f), grapple.getRopePath().getLast());
     grapple.fire(Vector2.X);
     assertEquals(3, entities.getEntities().size, "queued attachment prevents another shot");
     entities.update();
     assertTrue(grapple.isAttached());
-    assertEquals(new Vector2(5.5f, 0f), grapple.getAnchorPoint());
+    assertEquals(new Vector2(5.5f, 2f), grapple.getAnchorPoint());
   }
 
   @Test

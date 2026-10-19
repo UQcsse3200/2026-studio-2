@@ -74,6 +74,8 @@ public class BackgroundRenderComponent extends RenderComponent {
   }
 
   private ArrayList<ArrayList<Float>> rainOffsets = null;
+  // Created once and reused for the rain drop offsets.
+  private final Random random = new Random();
   private final ArrayList<Vector2> rainPositions = new ArrayList<>();
   private final List<ParallaxLayer> layers = new ArrayList<>();
   private final CameraComponent camera;
@@ -226,7 +228,6 @@ public class BackgroundRenderComponent extends RenderComponent {
     if (weather && layer.flash) {
       // Flash layers that flash during lightning
       float lightning = getLightning();
-      // System.out.print(rainIntensity + ", ");
 
       if (rainIntensity <= 0.3559) {
         if (layer.lightningOrder == 0) {
@@ -389,7 +390,6 @@ public class BackgroundRenderComponent extends RenderComponent {
 
         // Compute array of offsets, so each raindrop has a set offset
         if (rainOffsets == null) {
-          Random random = new Random();
           rainOffsets = new ArrayList<>();
           int y = 0;
           while (currentY > endY) {

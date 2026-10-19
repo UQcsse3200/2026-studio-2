@@ -43,16 +43,8 @@ public class RotatableAnimationRenderComponent extends AnimationRenderComponent 
     Vector2 pos = entity.getPosition();
     Vector2 scale = entity.getScale();
 
-    float width;
-    float height;
-    if (defaultRegionWidthPx > 0f) {
-      float unitsPerPixel = scale.x / defaultRegionWidthPx;
-      width = region.getRegionWidth() * unitsPerPixel;
-      height = region.getRegionHeight() * unitsPerPixel;
-    } else {
-      width = scale.x;
-      height = scale.y;
-    }
+    float width = frameWidth(region, scale);
+    float height = frameHeight(region, scale);
 
     float rotation = rotateComponent.getRotation();
 

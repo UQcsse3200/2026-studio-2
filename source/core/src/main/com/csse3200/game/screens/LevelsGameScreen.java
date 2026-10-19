@@ -2,7 +2,6 @@ package com.csse3200.game.screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.csse3200.game.GdxGame;
@@ -28,21 +27,11 @@ import com.csse3200.game.components.minigames.spinthewheel.WheelConfig;
 import com.csse3200.game.components.player.KeyboardPlayerInputComponent;
 import com.csse3200.game.components.player.PlayerInteractionComponent;
 import com.csse3200.game.entities.Entity;
-import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.entities.factories.ItemFactory;
-import com.csse3200.game.entities.factories.RenderFactory;
 import com.csse3200.game.events.EventHandler;
 import com.csse3200.game.input.InputComponent;
 import com.csse3200.game.input.InputDecorator;
-import com.csse3200.game.input.InputService;
-import com.csse3200.game.lighting.LightingEngine;
-import com.csse3200.game.lighting.LightingService;
-import com.csse3200.game.physics.PhysicsEngine;
-import com.csse3200.game.physics.PhysicsService;
 import com.csse3200.game.physics.components.PhysicsComponent;
-import com.csse3200.game.rendering.RenderService;
-import com.csse3200.game.rendering.Renderer;
-import com.csse3200.game.services.GameTime;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.GameEndActions;
@@ -60,7 +49,7 @@ import org.slf4j.LoggerFactory;
  *
  * <p>Details on libGDX screens: https://happycoding.io/tutorials/libgdx/game-screens
  */
-public class LevelsGameScreen extends ScreenAdapter {
+public class LevelsGameScreen extends BaseGameScreen {
   private static final String LEVEL3 = "level3";
 
   private static final String LEVEL2 = "level2";
@@ -78,11 +67,8 @@ public class LevelsGameScreen extends ScreenAdapter {
   private String level = LEVEL1;
 
   private final GdxGame game;
-  private final Renderer renderer;
-  private final PhysicsEngine physicsEngine;
   private final SpinTheWheelOverlay wheelOverlay;
   private final PauseMenuOverlay pauseOverlay;
-  private final LightingEngine lightingEngine;
   private final BlackjackOverlay blackjackOverlay;
   private final MinigameOverlayManager minigameOverlayManager;
   private Entity player;
@@ -102,32 +88,12 @@ public class LevelsGameScreen extends ScreenAdapter {
   private float gravity = 1f;
 
   public LevelsGameScreen(GdxGame game) {
+    super();
     this.game = game;
 
-    logger.debug("Initialising main game screen services");
-
-    ServiceLocator.registerTimeSource(new GameTime());
-
-    PhysicsService physicsService = new PhysicsService();
-    ServiceLocator.registerPhysicsService(physicsService);
-    physicsEngine = physicsService.getPhysics();
-
-    ServiceLocator.registerInputService(new InputService());
-    ServiceLocator.registerResourceService(new ResourceService());
-
-    ServiceLocator.registerEntityService(new EntityService());
-    ServiceLocator.registerRenderService(new RenderService());
-    ServiceLocator.registerGameEndEventHandler(new EventHandler());
+    // Only this screen uses the save handler, so it is registered here; BaseGameScreen sets up
+    // everything the game screens share
     ServiceLocator.registerGameSaveEventHandler(new EventHandler());
-
-    renderer = RenderFactory.createRenderer();
-
-    renderer.getDebug().renderPhysicsWorld(physicsEngine.getWorld());
-
-    LightingService lightingService =
-        new LightingService(renderer.getCamera(), physicsEngine.getWorld());
-    ServiceLocator.registerLightingService(lightingService);
-    lightingEngine = lightingService.getEngine();
 
     loadAssets();
     createUI();
@@ -369,37 +335,6 @@ public class LevelsGameScreen extends ScreenAdapter {
     blackjackOverlay.afterRender();
   }
 
-  @Override
-  public void resize(int width, int height) {
-    renderer.resize(width, height);
-    logger.trace("Resized renderer: ({} x {})", width, height);
-  }
-
-  @Override
-  public void pause() {
-    logger.info("Game paused");
-  }
-
-  @Override
-  public void resume() {
-    logger.info("Game resumed");
-  }
-
-  @Override
-  public void dispose() {
-    logger.debug("Disposing main game screen");
-
-    renderer.dispose();
-    unloadAssets();
-
-    ServiceLocator.getEntityService().dispose();
-    lightingEngine.dispose();
-    ServiceLocator.getRenderService().dispose();
-    ServiceLocator.getResourceService().dispose();
-
-    ServiceLocator.clear();
-  }
-
   /**
    * The level's textures and spin the wheel's so it can be opened as an overlay.
    *
@@ -477,7 +412,8 @@ public class LevelsGameScreen extends ScreenAdapter {
     resourceService.loadAll();
   }
 
-  private void unloadAssets() {
+  @Override
+  protected void unloadAssets() {
     logger.debug("Unloading assets");
     ResourceService resourceService = ServiceLocator.getResourceService();
     resourceService.unloadAssets(mainGameTextures);

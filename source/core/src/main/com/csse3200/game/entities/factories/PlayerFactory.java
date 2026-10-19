@@ -31,6 +31,7 @@ import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.rendering.AnimationRenderComponent;
 import com.csse3200.game.rendering.ParticleEffectsRenderingComponent;
+import com.csse3200.game.rendering.item.GrappleFailedIndicatorRenderComponent;
 import com.csse3200.game.rendering.item.GrappleHoldRenderComponent;
 import com.csse3200.game.rendering.item.GrappleIndicatorRenderComponent;
 import com.csse3200.game.rendering.item.GrappleRenderComponent;
@@ -107,6 +108,7 @@ public class PlayerFactory {
             .addComponent(new GrappleComponent())
             .addComponent(new GrappleRenderComponent())
             .addComponent(new GrappleIndicatorRenderComponent())
+            .addComponent(new GrappleFailedIndicatorRenderComponent())
             .addComponent(new PlayerAnimationController())
             .addComponent(new GrappleHoldRenderComponent())
             .addComponent(new MeleeComponent())
