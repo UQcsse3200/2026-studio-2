@@ -14,11 +14,21 @@ public final class InventorySlot {
     this.quantity = quantity;
   }
 
-  static InventorySlot empty() {
+  /**
+   * @return the shared empty slot instance
+   */
+  public static InventorySlot empty() {
     return EMPTY;
   }
 
-  static InventorySlot of(ItemType itemType, int quantity) {
+  /**
+   * Builds an occupied slot.
+   *
+   * @param itemType item in the slot
+   * @param quantity positive quantity
+   * @return the new slot
+   */
+  public static InventorySlot of(ItemType itemType, int quantity) {
     if (itemType == null || quantity <= 0) {
       throw new IllegalArgumentException("Occupied slots require an item and positive quantity");
     }

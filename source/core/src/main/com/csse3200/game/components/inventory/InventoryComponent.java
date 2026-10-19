@@ -339,12 +339,13 @@ public class InventoryComponent extends Component {
   }
 
   /**
-   * Returns the number of slots in the first-row hotbar.
+   * Returns the number of slots in the first-row hotbar. The hotbar is one full row, so this is the
+   * same as the column count.
    *
    * @return hotbar slot count
    */
   public int getHotbarSlotCount() {
-    return columns;
+    return getColumns();
   }
 
   /**
@@ -367,7 +368,9 @@ public class InventoryComponent extends Component {
   }
 
   public void setSlots(List<InventorySlot> slots) {
-    this.slots = List.copyOf(slots);
+    // Stored mutable so internal operations (e.g. removeItem) can update slots in place.
+    // External callers still receive an immutable snapshot via getSlots().
+    this.slots = new ArrayList<>(slots);
   }
 
   /**

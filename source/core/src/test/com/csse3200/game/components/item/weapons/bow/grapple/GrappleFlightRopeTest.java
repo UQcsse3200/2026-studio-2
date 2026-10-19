@@ -204,6 +204,52 @@ class GrappleFlightRopeTest {
   }
 
   @Test
+  void passingOnePlatformShouldMoveTheSwingPivotOntoTheNextPlatformsFixture() {
+    box(3f, 0f, 1f, 2f);
+    box(6f, 0f, 1f, 2f);
+    Entity arrow = fire();
+    moveArrow(arrow, 1f, 4f);
+    moveArrow(arrow, 8f, 4f);
+    moveArrow(arrow, 8f, -4f);
+    Fixture target = box(8.5f, -4f, 0.5f, 1f);
+    arrow
+        .getEvents()
+        .trigger("collisionStart", arrow.getComponent(HitboxComponent.class).getFixture(), target);
+    entities.update();
+    assertTrue(grapple.isAttached());
+    assertTrue(grapple.getAnchorPoint().x < 2f, "first platform initially supports the player");
+    player.setPosition(4.5f, 3.5f);
+    grapple.update();
+    assertTrue(grapple.isAttached());
+    // This flight routes underneath the second platform. Its bottom-left vertex is (5,-2),
+    // offset outward by 0.025 along the unit vector (-1,-2).
+    assertEquals(4.9888197f, grapple.getAnchorPoint().x, 0.0001f);
+    assertEquals(-2.0223607f, grapple.getAnchorPoint().y, 0.0001f);
+    assertEquals(1, physics.getPhysics().getWorld().getJointCount());
+    assertEquals(grapple.getRopePath().get(1), grapple.getAnchorPoint());
+  }
+
+  @Test
+  void disposalAfterEntityServiceShutdownShouldCancelAnyLateArrowContact() {
+    Entity arrow = fire();
+    moveArrow(arrow, 8f, -4f);
+    Fixture target = box(8.5f, -4f, 0.5f, 1f);
+    ServiceLocator.registerEntityService(null);
+    try {
+      grapple.dispose();
+      arrow
+          .getEvents()
+          .trigger(
+              "collisionStart", arrow.getComponent(HitboxComponent.class).getFixture(), target);
+      assertTrue(grapple.getRopePath().isEmpty());
+      assertFalse(grapple.isAttached());
+      assertEquals(0, physics.getPhysics().getWorld().getJointCount());
+    } finally {
+      ServiceLocator.registerEntityService(entities);
+    }
+  }
+
+  @Test
   void releaseShouldCancelFlyingArrowAndItsRope() {
     Entity arrow = curveOverObstacle();
     grapple.release();
