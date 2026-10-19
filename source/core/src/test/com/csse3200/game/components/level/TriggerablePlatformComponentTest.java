@@ -1,6 +1,5 @@
 package com.csse3200.game.components.level;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import com.badlogic.gdx.graphics.Texture;

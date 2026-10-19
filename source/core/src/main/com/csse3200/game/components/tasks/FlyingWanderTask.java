@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory;
  * bit between movements. Requires an entity with a PhysicsMovementComponent.
  */
 public class FlyingWanderTask extends DefaultTask implements PriorityTask {
-  private static final Logger logger = LoggerFactory.getLogger(WanderTask.class);
+  private static final Logger logger = LoggerFactory.getLogger(FlyingWanderTask.class);
 
   private final Vector2 wanderRange;
   private final float waitTime;

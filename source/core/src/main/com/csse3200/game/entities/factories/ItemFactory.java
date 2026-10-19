@@ -67,8 +67,8 @@ public class ItemFactory {
       case HEALTH_POTION -> createHealthPotion(quantity);
       case FIRE_ARROW -> createFireArrow(quantity);
       case ICE_ARROW -> createIceArrow(quantity);
-      case SpeedPotion -> createSpeedPotion(quantity);
-      case PoisonPotion -> createPoisonPotion(quantity);
+      case SPEED_POTION -> createSpeedPotion(quantity);
+      case POISON_POTION -> createPoisonPotion(quantity);
     };
   }
 
@@ -86,8 +86,8 @@ public class ItemFactory {
       case "healthPotion" -> createItem(ItemType.HEALTH_POTION, quantity);
       case "fireArrow" -> createItem(ItemType.FIRE_ARROW, quantity);
       case "iceArrow", "coldArrow" -> createItem(ItemType.ICE_ARROW, quantity);
-      case "speedPotion" -> createItem(ItemType.SpeedPotion, quantity);
-      case "poisonPotion" -> createItem(ItemType.PoisonPotion, quantity);
+      case "speedPotion" -> createItem(ItemType.SPEED_POTION, quantity);
+      case "poisonPotion" -> createItem(ItemType.POISON_POTION, quantity);
       default -> throw new IllegalArgumentException("Unknown item type: " + itemName);
     };
   }

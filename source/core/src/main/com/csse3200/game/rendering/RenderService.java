@@ -1,5 +1,6 @@
 package com.csse3200.game.rendering;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Array;
@@ -27,10 +28,11 @@ public class RenderService implements Disposable {
    */
   public void register(Renderable renderable) {
     int layerIndex = renderable.getLayer();
-    if (!renderables.containsKey(layerIndex)) {
-      renderables.put(layerIndex, new Array<>(INITIAL_CAPACITY));
-    }
     Array<Renderable> layer = renderables.get(layerIndex);
+    if (layer == null) {
+      layer = new Array<>(INITIAL_CAPACITY);
+      renderables.put(layerIndex, layer);
+    }
     layer.add(renderable);
   }
 
@@ -52,6 +54,11 @@ public class RenderService implements Disposable {
    * @param batch batch to render to.
    */
   public void render(SpriteBatch batch) {
+    // The stage is drawn with this same batch and leaves its last tint on it (the arrow wheel fades
+    // arrows the player has run out of, for instance). Start from plain white so nothing in the
+    // world inherits that and comes out tinted or see-through.
+    batch.setColor(Color.WHITE);
+
     for (Array<Renderable> layer : renderables) {
       // Sort into rendering order
       layer.sort();

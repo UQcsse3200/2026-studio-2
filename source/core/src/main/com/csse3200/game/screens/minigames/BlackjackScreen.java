@@ -34,12 +34,12 @@ public class BlackjackScreen extends MinigameScreen {
 
   @Override
   protected String[] getTextures() {
-    return BlackjackConfig.TEXTURES;
+    return BlackjackConfig.TEXTURES.toArray(String[]::new);
   }
 
   @Override
   protected String[] getSounds() {
-    return BlackjackConfig.SOUNDS;
+    return BlackjackConfig.SOUNDS.toArray(String[]::new);
   }
 
   private void setSoundEnabled(boolean enabled) {

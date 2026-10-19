@@ -25,7 +25,7 @@ public class EventHandler {
 
   public EventHandler() {
     // Assume no events by default, which will be the case for most entities
-    listeners = new HashMap<>(0);
+    listeners = HashMap.newHashMap(0);
   }
 
   /**
@@ -148,7 +148,11 @@ public class EventHandler {
   private void forEachListener(String eventName, Consumer<EventListener> func) {
     Array<EventListener> eventListeners = listeners.getOrDefault(eventName, null);
     if (eventListeners != null) {
-      eventListeners.forEach(func);
+      // Iterate over a snapshot so a listener may safely trigger another event on this handler
+      // from within its own handle() (libGDX Array iterators are not reentrant).
+      for (int i = 0; i < eventListeners.size; i++) {
+        func.accept(eventListeners.get(i));
+      }
     }
   }
 

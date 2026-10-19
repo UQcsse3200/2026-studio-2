@@ -56,11 +56,7 @@ public class KeyboardTerminalInputComponent extends InputComponent {
     }
     // Shop close stays here because this handler runs before player input, which swallows keys
     // while the shop is open. Pause itself is owned by the pause overlay on main.
-    if (keycode == Input.Keys.ESCAPE && closeOpenShop()) {
-      return true;
-    }
-
-    return false;
+    return keycode == Input.Keys.ESCAPE && closeOpenShop();
   }
 
   /**

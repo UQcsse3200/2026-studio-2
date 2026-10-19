@@ -33,11 +33,13 @@ class GameEndDisplayTest {
     Gdx.graphics = graphics;
 
     RenderService renderService = mock(RenderService.class);
-    when(renderService.getStage()).thenReturn(mock(Stage.class));
+    Stage stageMock = mock(Stage.class);
+    when(renderService.getStage()).thenReturn(stageMock);
     ServiceLocator.registerRenderService(renderService);
 
     ResourceService resourceService = mock(ResourceService.class);
-    when(resourceService.getAsset(anyString(), eq(Texture.class))).thenReturn(mock(Texture.class));
+    Texture textureMock = mock(Texture.class);
+    when(resourceService.getAsset(anyString(), eq(Texture.class))).thenReturn(textureMock);
     ServiceLocator.registerResourceService(resourceService);
 
     ServiceLocator.registerEntityService(new EntityService());

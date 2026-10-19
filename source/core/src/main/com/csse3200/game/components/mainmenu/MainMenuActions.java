@@ -27,15 +27,18 @@ public class MainMenuActions extends Component {
   }
 
   /**
-   * Starts the intro cutscene, then enters level 1. if cutscene is completed, proceeds to level 1
+   * Starts a brand-new game: creates a save in the first empty slot, then the intro cutscene and
+   * level 1. When every slot is taken the save-select screen opens so one can be deleted.
    */
   private void onPlay() {
     logger.info("Play");
-    game.startInitialCutscene();
+    game.startNewGame();
   }
 
+  /** Opens the save-select screen, where an existing save can be loaded or deleted. */
   private void onContinue() {
     logger.info("Continue");
+    game.setScreen(GdxGame.ScreenType.LOAD_SAVE);
   }
 
   /** Swaps to the Sandbox screen. */

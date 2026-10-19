@@ -30,7 +30,6 @@ import org.slf4j.LoggerFactory;
 public class GameEndDisplay extends UIComponent {
   private static final Logger logger = LoggerFactory.getLogger(GameEndDisplay.class);
   private static final float Z_INDEX = 20f;
-  // private static final int BORDER_THICKNESS = 3;
   private static final float BUTTON_WIDTH = 200f;
   private static final float BUTTON_HEIGHT = 70f;
 
@@ -50,17 +49,12 @@ public class GameEndDisplay extends UIComponent {
 
   private static final Color TRANSPARENT = new Color(0f, 0f, 0f, 0f);
 
-  // private static NinePatchDrawable cachedBackground;
-
   private GameEndState state;
   private String resultText;
   private final String titleText;
   private boolean visible = false;
 
   private Table root;
-  private Stack stack;
-  private Table backgroundTable;
-  private Image background;
   private Table panel;
   private Label titleLabel;
   private TextBoxComponent messageBox;
@@ -283,12 +277,9 @@ public class GameEndDisplay extends UIComponent {
     ServiceLocator.getGameEndEventHandler()
         .addListener(
             "gameEnd",
-            new com.csse3200.game.events.listeners.EventListener1<GameEndState>() {
-              @Override
-              public void handle(GameEndState state) {
-                logger.info("GameEndDisplay received gameEnd event with state: {}", state);
-                setState(state);
-              }
+            (GameEndState newState) -> {
+              logger.info("GameEndDisplay received gameEnd event with state: {}", newState);
+              setState(newState);
             });
     buildActors();
   }
@@ -297,17 +288,16 @@ public class GameEndDisplay extends UIComponent {
     root = new Table();
     root.setFillParent(true);
 
-    stack = new Stack();
+    Stack stack = new Stack();
     Texture backgroundTexture =
         ServiceLocator.getResourceService().getAsset("images/ui/scroll_bg.png", Texture.class);
 
-    backgroundTable = new Table();
-    background = new Image(backgroundTexture);
+    Table backgroundTable = new Table();
+    Image background = new Image(backgroundTexture);
     backgroundTable.add(background);
     // root.add(stack).fill().expand();
     panel = new Table();
     panel.setVisible(visible);
-    // panel.setBackground(getBackgroundDrawable());
     Value padding = Value.percentWidth(0.01f, root);
 
     titleLabel = new Label(titleText, skin);

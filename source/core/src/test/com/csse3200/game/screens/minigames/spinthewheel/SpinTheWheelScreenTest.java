@@ -24,14 +24,15 @@ class SpinTheWheelScreenTest {
 
   @Test
   void shouldLoadTheWheelsAssets() {
-    assertArrayEquals(WheelConfig.TEXTURES, screen.getTextures());
-    assertArrayEquals(WheelConfig.SOUNDS, screen.getSounds());
+    assertArrayEquals(WheelConfig.TEXTURES.toArray(String[]::new), screen.getTextures());
+    assertArrayEquals(WheelConfig.SOUNDS.toArray(String[]::new), screen.getSounds());
   }
 
   @Test
   void shouldBuildTheWheelUi() {
     RenderService renderService = mock(RenderService.class);
-    when(renderService.getStage()).thenReturn(mock(Stage.class));
+    Stage stageMock = mock(Stage.class);
+    when(renderService.getStage()).thenReturn(stageMock);
     ServiceLocator.registerRenderService(renderService);
 
     Entity ui = screen.createUI();

@@ -58,6 +58,16 @@ class InventoryComponentTest {
   }
 
   @Test
+  void shouldGrowHotbarWhenColumnIsAdded() {
+    InventoryComponent inventory = new InventoryComponent(0, 2, 4);
+
+    assertTrue(inventory.addColumn());
+
+    assertEquals(5, inventory.getColumns());
+    assertEquals(5, inventory.getHotbarSlotCount());
+  }
+
+  @Test
   void shouldKeepCapacityConstructorAsSingleRowLayout() {
     InventoryComponent inventory = new InventoryComponent(0, 4);
 
@@ -211,7 +221,8 @@ class InventoryComponentTest {
     assertNull(inventory.getSlot(2));
     assertFalse(inventory.isSlotEmpty(-1));
     assertFalse(inventory.isSlotEmpty(2));
-    assertThrows(UnsupportedOperationException.class, () -> inventory.getSlots().clear());
+    var slots = inventory.getSlots();
+    assertThrows(UnsupportedOperationException.class, slots::clear);
   }
 
   @Test

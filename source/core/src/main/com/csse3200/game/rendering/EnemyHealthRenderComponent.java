@@ -79,9 +79,4 @@ public class EnemyHealthRenderComponent extends RenderComponent {
     // just in case
     batch.setColor(Color.WHITE);
   }
-
-  @Override
-  public void dispose() {
-    super.dispose();
-  }
 }

@@ -32,20 +32,21 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.MockedConstruction;
-import org.mockito.Mockito;
 
 @ExtendWith(GameExtension.class)
 class EnemyFactoryTest {
   @BeforeEach
   void setUp() {
     ServiceLocator.registerPhysicsService(new PhysicsService());
-    RenderService renderService = Mockito.mock(RenderService.class);
-    Mockito.when(renderService.getDebug())
-        .thenReturn(Mockito.mock(com.csse3200.game.rendering.DebugRenderer.class));
+    RenderService renderService = mock(RenderService.class);
+    com.csse3200.game.rendering.DebugRenderer debugRendererMock =
+        mock(com.csse3200.game.rendering.DebugRenderer.class);
+    when(renderService.getDebug()).thenReturn(debugRendererMock);
     ServiceLocator.registerRenderService(renderService);
 
     LightingEngine lightingEngine = mock(LightingEngine.class);
-    when(lightingEngine.getRayHandler()).thenReturn(mock(box2dLight.RayHandler.class));
+    box2dLight.RayHandler rayHandlerMock = mock(box2dLight.RayHandler.class);
+    when(lightingEngine.getRayHandler()).thenReturn(rayHandlerMock);
     LightingService lightingService = mock(LightingService.class);
     when(lightingService.getEngine()).thenReturn(lightingEngine);
     ServiceLocator.registerLightingService(lightingService);

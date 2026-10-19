@@ -41,7 +41,6 @@ public class GrappleSideRenderComponent extends RenderComponent {
     shapeRenderer.setColor(light, light, light, 1f);
     shapeRenderer.setProjectionMatrix(batch.getProjectionMatrix());
     shapeRenderer.begin(ShapeType.Filled);
-    // shapeRenderer.setColor(Color.GOLD);
 
     drawSide(PlatformGrappleComponent.LEFT_SIDE, new Vector2(left, bottom), new Vector2(left, top));
 

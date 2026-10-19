@@ -26,7 +26,6 @@ public class BackpackDisplay extends UIComponent {
   private Table table;
   private Table inventoryTable;
   private Table detailsTable;
-  private Table contentTable;
   private Table highlightedSlot;
   private float originalAlpha;
 
@@ -42,7 +41,7 @@ public class BackpackDisplay extends UIComponent {
     // Backpack is hidden by default.
     table.setVisible(false);
 
-    contentTable = new Table();
+    Table contentTable = new Table();
     inventoryTable = new Table();
     detailsTable = new Table();
 
@@ -195,7 +194,7 @@ public class BackpackDisplay extends UIComponent {
               target = target.getParent();
             }
 
-            Table newHighlightedSlot = target instanceof Table ? (Table) target : null;
+            Table newHighlightedSlot = target instanceof Table targetTable ? targetTable : null;
 
             if (highlightedSlot != newHighlightedSlot) {
               if (highlightedSlot != null) {

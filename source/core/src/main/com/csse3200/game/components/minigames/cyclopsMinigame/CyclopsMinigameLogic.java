@@ -17,6 +17,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class CyclopsMinigameLogic extends Component {
+  private static final String WALK_STOP = "walkStop";
+
   private static final Logger logger = LoggerFactory.getLogger(CyclopsMinigameLogic.class);
 
   static final int BUTTON = Input.Buttons.LEFT;
@@ -60,7 +62,7 @@ public class CyclopsMinigameLogic extends Component {
 
   /* Player Entity */
   private final Entity playerEntity;
-  private static final String playerLossAnimation = "hurt";
+  private static final String PLAYER_LOSS_ANIMATION = "hurt";
 
   BlankTransitionScreenCover transitionScreenCover;
 
@@ -78,18 +80,18 @@ public class CyclopsMinigameLogic extends Component {
   /* Audio/Sound Effects */
   Sound walkingSound;
   private long walkingSoundID;
-  private static final String walkingSoundPath = "sounds/walkingSounds/walkingSound.mp3";
-  private static final float walkingSoundVolume = 0.4f;
+  private static final String WALKING_SOUND_PATH = "sounds/walkingSounds/walkingSound.mp3";
+  private static final float WALKING_SOUND_VOLUME = 0.4f;
 
   Sound hitSound;
   private long hitSoundID;
-  private static final String hitSoundPath = "sounds/minigames/cyclops/marker-hit.ogg";
-  private static final float hitSoundVolume = 0.4f;
+  private static final String HIT_SOUND_PATH = "sounds/minigames/cyclops/marker-hit.ogg";
+  private static final float HIT_SOUND_VOLUME = 0.4f;
 
   Sound missSound;
   private long missSoundID;
-  private static final String missSoundPath = "sounds/minigames/cyclops/marker-miss.ogg";
-  private static final float missSoundVolume = 0.4f;
+  private static final String MISS_SOUND_PATH = "sounds/minigames/cyclops/marker-miss.ogg";
+  private static final float MISS_SOUND_VOLUME = 0.4f;
 
   /* Constructors */
   public CyclopsMinigameLogic(
@@ -138,8 +140,17 @@ public class CyclopsMinigameLogic extends Component {
   }
 
   /* Player Handling Functions */
+  private Vector2 worldPosition(GridPoint2 location) {
+    Vector2 position = terrainComponent.tileToWorldPosition(location);
+    if (position == null) {
+      throw new IllegalStateException(
+          "Cyclops terrain has no world coordinates for tile " + location);
+    }
+    return position.add(playerOffset);
+  }
+
   private void movePlayer(GridPoint2 location) {
-    Vector2 worldPos = this.terrainComponent.tileToWorldPosition(location).add(playerOffset);
+    Vector2 worldPos = worldPosition(location);
     logger.debug("Converting GridPoint2 Location ({}) to World Position ({})", location, worldPos);
     logger.info(
         "Moving Player (Entity {}) from orig:{} to dest:{}",
@@ -177,15 +188,15 @@ public class CyclopsMinigameLogic extends Component {
   /* Audio */
 
   private void loadSounds() {
-    walkingSound = ServiceLocator.getResourceService().getAsset(walkingSoundPath, Sound.class);
-    hitSound = ServiceLocator.getResourceService().getAsset(hitSoundPath, Sound.class);
-    missSound = ServiceLocator.getResourceService().getAsset(missSoundPath, Sound.class);
+    walkingSound = ServiceLocator.getResourceService().getAsset(WALKING_SOUND_PATH, Sound.class);
+    hitSound = ServiceLocator.getResourceService().getAsset(HIT_SOUND_PATH, Sound.class);
+    missSound = ServiceLocator.getResourceService().getAsset(MISS_SOUND_PATH, Sound.class);
   }
 
   private void playWalkingSound() {
     this.walkingSoundID = walkingSound.play();
     walkingSound.setLooping(this.walkingSoundID, true);
-    walkingSound.setVolume(this.walkingSoundID, GameVolume.scale(walkingSoundVolume));
+    walkingSound.setVolume(this.walkingSoundID, GameVolume.scale(WALKING_SOUND_VOLUME));
   }
 
   private void stopWalkingSound() {
@@ -199,8 +210,8 @@ public class CyclopsMinigameLogic extends Component {
 
   private void playMarkerHitSound() {
     this.hitSoundID = hitSound.play();
-    hitSound.setVolume(this.hitSoundID, GameVolume.scale(hitSoundVolume));
-    logger.debug("Starting hit sound (ID: {}) with volume {}", this.hitSoundID, hitSoundVolume);
+    hitSound.setVolume(this.hitSoundID, GameVolume.scale(HIT_SOUND_VOLUME));
+    logger.debug("Starting hit sound (ID: {}) with volume {}", this.hitSoundID, HIT_SOUND_VOLUME);
   }
 
   private void stopMarkerHitSound() {
@@ -214,8 +225,9 @@ public class CyclopsMinigameLogic extends Component {
 
   private void playMarkerMissSound() {
     this.missSoundID = missSound.play();
-    missSound.setVolume(this.missSoundID, GameVolume.scale(missSoundVolume));
-    logger.debug("Starting miss sound (ID: {}) with volume {}", this.missSoundID, missSoundVolume);
+    missSound.setVolume(this.missSoundID, GameVolume.scale(MISS_SOUND_VOLUME));
+    logger.debug(
+        "Starting miss sound (ID: {}) with volume {}", this.missSoundID, MISS_SOUND_VOLUME);
   }
 
   private void stopMarkerMissSound() {
@@ -248,8 +260,7 @@ public class CyclopsMinigameLogic extends Component {
   private void beginRun(boolean success) {
     runSuccess = success;
     runStart = playerEntity.getPosition().cpy();
-    runTarget =
-        terrainComponent.tileToWorldPosition(advanceToNextLocation(runSuccess)).add(playerOffset);
+    runTarget = worldPosition(advanceToNextLocation(runSuccess));
     playWalkingSound();
     playerEntity.getEvents().trigger("walk", new Vector2(1, 0));
     playerEntity.getEvents().trigger("sprint");
@@ -273,7 +284,7 @@ public class CyclopsMinigameLogic extends Component {
     if (combatStats != null) {
       combatStats.addHealth(-MISS_DAMAGE);
     }
-    playerEntity.getEvents().trigger(playerLossAnimation);
+    playerEntity.getEvents().trigger(PLAYER_LOSS_ANIMATION);
     // A miss costs a heart and retries the current statue; losing all hearts restarts the
     // minigame.
     changeState(playerIsDead() ? State.DEATH : State.LOSS);
@@ -346,10 +357,7 @@ public class CyclopsMinigameLogic extends Component {
 
   private void beginRetreat() {
     runStart = playerEntity.getPosition().cpy();
-    runTarget =
-        terrainComponent
-            .tileToWorldPosition(safeLocations.get(currentSafeLocation))
-            .add(playerOffset);
+    runTarget = worldPosition(safeLocations.get(currentSafeLocation));
     playWalkingSound();
     playerEntity.getEvents().trigger("walk", new Vector2(-1, 0));
     playerEntity.getEvents().trigger("sprint");
@@ -359,10 +367,10 @@ public class CyclopsMinigameLogic extends Component {
   private void finishRetreat() {
     playerEntity.setPosition(runTarget);
     playerEntity.getEvents().trigger("sprintStop");
-    playerEntity.getEvents().trigger("walkStop");
+    playerEntity.getEvents().trigger(WALK_STOP);
     stopWalkingSound();
     playerEntity.getEvents().trigger("walk", new Vector2(1, 0));
-    playerEntity.getEvents().trigger("walkStop");
+    playerEntity.getEvents().trigger(WALK_STOP);
     ServiceLocator.getCyclopsMinigameEventHandler().trigger(CYCLOPS_SLEEP_EVENT);
     startMinigame();
   }
@@ -448,7 +456,7 @@ public class CyclopsMinigameLogic extends Component {
         if (elapsed(TRANSITION_DELAY)) {
           playerEntity.setPosition(runTarget);
           playerEntity.getEvents().trigger("sprintStop");
-          playerEntity.getEvents().trigger("walkStop");
+          playerEntity.getEvents().trigger(WALK_STOP);
           stopWalkingSound();
           handleTimingOutcome(); /* Changes state itself */
         } else {

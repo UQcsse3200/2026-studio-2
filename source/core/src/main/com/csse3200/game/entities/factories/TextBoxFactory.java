@@ -9,7 +9,9 @@ import org.slf4j.LoggerFactory;
 public class TextBoxFactory {
   private static final Logger logger = LoggerFactory.getLogger(TextBoxFactory.class);
 
-  public TextBoxFactory() {}
+  public TextBoxFactory() {
+    // Instances hold no state; createFromConfig uses the registered services.
+  }
 
   /**
    * Loads a text box config from the given JSON file and creates the resulting text box.

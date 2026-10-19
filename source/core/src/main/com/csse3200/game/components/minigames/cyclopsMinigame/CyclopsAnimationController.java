@@ -68,7 +68,9 @@ public class CyclopsAnimationController extends Component {
       case CHARGING -> windUp();
       case JUMPING, RETURNING -> jump(delta);
       case ATTACKING -> swing(delta);
-      default -> {}
+      default -> {
+        // Other states leave the current animation unchanged.
+      }
     }
   }
 

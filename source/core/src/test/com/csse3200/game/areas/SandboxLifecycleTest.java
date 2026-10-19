@@ -47,7 +47,8 @@ class SandboxLifecycleTest extends UiTestSupport {
     realResources = new ResourceService();
     ServiceLocator.registerResourceService(realResources);
     LightingEngine lightingEngine = mock(LightingEngine.class);
-    when(lightingEngine.getRayHandler()).thenReturn(mock(box2dLight.RayHandler.class));
+    box2dLight.RayHandler rayHandlerMock = mock(box2dLight.RayHandler.class);
+    when(lightingEngine.getRayHandler()).thenReturn(rayHandlerMock);
     LightingService lightingService = mock(LightingService.class);
     when(lightingService.getEngine()).thenReturn(lightingEngine);
     ServiceLocator.registerLightingService(lightingService);
@@ -162,7 +163,7 @@ class SandboxLifecycleTest extends UiTestSupport {
     area = null;
     assertEquals(1, entities.getEntities().size);
     assertTrue(entities.getEntities().contains(player, true));
-    assertFalse(realResources.containsAsset(ItemType.SpeedPotion.getTexturePath(), Texture.class));
+    assertFalse(realResources.containsAsset(ItemType.SPEED_POTION.getTexturePath(), Texture.class));
     player.dispose();
     assertEquals(0, stage.getActors().size);
   }

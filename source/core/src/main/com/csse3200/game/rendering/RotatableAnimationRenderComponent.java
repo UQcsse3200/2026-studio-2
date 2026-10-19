@@ -10,7 +10,6 @@ import com.csse3200.game.components.level.RotatableMapComponent;
 public class RotatableAnimationRenderComponent extends AnimationRenderComponent {
   private final TextureRegion renderRegion = new TextureRegion();
   private RotatableMapComponent rotateComponent;
-  private float rotation;
 
   public RotatableAnimationRenderComponent(TextureAtlas atlas) {
     super(atlas);
@@ -42,7 +41,7 @@ public class RotatableAnimationRenderComponent extends AnimationRenderComponent 
       height = scale.y;
     }
 
-    rotation = rotateComponent.getRotation();
+    float rotation = rotateComponent.getRotation();
 
     // recreate the adjustments in a local texture region so we can use the correct overload
     renderRegion.setRegion(region);
@@ -50,7 +49,6 @@ public class RotatableAnimationRenderComponent extends AnimationRenderComponent 
       renderRegion.flip(true, false);
     }
 
-    float light = getDarkness();
     Color prevColor = batch.getColor().cpy();
     batch.draw(
         renderRegion, pos.x, pos.y, width / 2f, height / 2f, width, height, 1f, 1f, rotation);

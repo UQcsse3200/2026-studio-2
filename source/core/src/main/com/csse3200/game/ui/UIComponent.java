@@ -6,16 +6,20 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.csse3200.game.rendering.RenderComponent;
 import com.csse3200.game.rendering.Renderable;
 import com.csse3200.game.services.ServiceLocator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** A generic component for rendering onto the ui. */
 public abstract class UIComponent extends RenderComponent implements Renderable {
+  private static final Logger logger = LoggerFactory.getLogger(UIComponent.class);
+
   private static final int UI_LAYER = 2;
   protected final Skin skin = new Skin(Gdx.files.internal("flat-earth/skin/flat-earth-ui.json"));
   protected Stage stage;
 
   @Override
   public void create() {
-    System.out.println("UIComponent.create() called for " + this.getClass().getSimpleName());
+    logger.debug("UIComponent.create() called for {}", getClass().getSimpleName());
     super.create();
     stage = ServiceLocator.getRenderService().getStage();
   }

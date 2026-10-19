@@ -1,6 +1,8 @@
 package com.csse3200.game.rendering;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -12,8 +14,10 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Matrix4;
 import com.csse3200.game.components.BurnStatsComponent;
 import com.csse3200.game.components.PoisonStatsComponent;
+import com.csse3200.game.components.SlowStatsComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.extensions.GameExtension;
+import com.csse3200.game.physics.components.PhysicsMovementComponent;
 import com.csse3200.game.services.GameTime;
 import com.csse3200.game.services.ServiceLocator;
 import org.junit.jupiter.api.BeforeEach;
@@ -89,6 +93,7 @@ class ParticleEffectsRenderingComponentTest {
           new Entity()
               .addComponent(new BurnStatsComponent())
               .addComponent(new ParticleEffectsRenderingComponent());
+      entity.setPosition(0f, 4f);
       entity.create();
       entity.getComponent(BurnStatsComponent.class).applyBurn(1f, 5f);
 
@@ -103,6 +108,12 @@ class ParticleEffectsRenderingComponentTest {
           .rect(
               org.mockito.ArgumentMatchers.anyFloat(),
               org.mockito.ArgumentMatchers.anyFloat(),
+              org.mockito.ArgumentMatchers.anyFloat(),
+              org.mockito.ArgumentMatchers.anyFloat());
+      verify(renderers.constructed().get(0), atLeastOnce())
+          .rect(
+              org.mockito.ArgumentMatchers.anyFloat(),
+              eq(4f),
               org.mockito.ArgumentMatchers.anyFloat(),
               org.mockito.ArgumentMatchers.anyFloat());
       component.dispose();
@@ -129,6 +140,97 @@ class ParticleEffectsRenderingComponentTest {
 
       verify(batch).end();
       verify(renderers.constructed().get(0)).begin(ShapeRenderer.ShapeType.Filled);
+      component.dispose();
+    }
+  }
+
+  @Test
+  void shouldDrawIceParticlesWhenEntityIsSlowed() {
+    ServiceLocator.registerTimeSource(gameTime);
+    when(batch.getProjectionMatrix()).thenReturn(new Matrix4());
+    when(gameTime.getTime()).thenReturn(1000L);
+
+    try (MockedConstruction<ShapeRenderer> renderers = mockConstruction(ShapeRenderer.class)) {
+      Entity entity =
+          new Entity()
+              .addComponent(new SlowStatsComponent())
+              .addComponent(new PhysicsMovementComponent())
+              .addComponent(new ParticleEffectsRenderingComponent());
+      entity.setPosition(0f, 4f);
+      entity.create();
+      entity.getEvents().trigger("applySlow", 0.5f, 5f);
+
+      ParticleEffectsRenderingComponent component =
+          entity.getComponent(ParticleEffectsRenderingComponent.class);
+      component.render(batch);
+
+      verify(batch).end();
+      verify(batch).begin();
+      verify(renderers.constructed().get(0)).begin(ShapeRenderer.ShapeType.Filled);
+      verify(renderers.constructed().get(0), times(PARTICLE_SEGMENTS))
+          .rect(
+              org.mockito.ArgumentMatchers.anyFloat(),
+              org.mockito.ArgumentMatchers.anyFloat(),
+              org.mockito.ArgumentMatchers.anyFloat(),
+              org.mockito.ArgumentMatchers.anyFloat());
+      verify(renderers.constructed().get(0), atLeastOnce())
+          .rect(
+              org.mockito.ArgumentMatchers.anyFloat(),
+              eq(4f),
+              org.mockito.ArgumentMatchers.anyFloat(),
+              org.mockito.ArgumentMatchers.anyFloat());
+      component.dispose();
+    }
+  }
+
+  @Test
+  void shouldNotDrawIceParticlesWhenEntityIsNotSlowed() {
+    ServiceLocator.registerTimeSource(gameTime);
+
+    Entity entity =
+        new Entity()
+            .addComponent(new SlowStatsComponent())
+            .addComponent(new PhysicsMovementComponent())
+            .addComponent(new ParticleEffectsRenderingComponent());
+    entity.create();
+
+    ParticleEffectsRenderingComponent component =
+        entity.getComponent(ParticleEffectsRenderingComponent.class);
+    component.render(batch);
+
+    verify(batch, never()).end();
+    component.dispose();
+  }
+
+  @Test
+  void shouldDrawFireAndIceParticlesWhenEntityIsBurningAndSlowed() {
+    ServiceLocator.registerTimeSource(gameTime);
+    when(batch.getProjectionMatrix()).thenReturn(new Matrix4());
+    when(gameTime.getTime()).thenReturn(1000L);
+
+    try (MockedConstruction<ShapeRenderer> renderers = mockConstruction(ShapeRenderer.class)) {
+      Entity entity =
+          new Entity()
+              .addComponent(new BurnStatsComponent())
+              .addComponent(new SlowStatsComponent())
+              .addComponent(new PhysicsMovementComponent())
+              .addComponent(new ParticleEffectsRenderingComponent());
+      entity.create();
+      entity.getComponent(BurnStatsComponent.class).applyBurn(1f, 5f);
+      entity.getEvents().trigger("applySlow", 0.5f, 5f);
+
+      ParticleEffectsRenderingComponent component =
+          entity.getComponent(ParticleEffectsRenderingComponent.class);
+      component.render(batch);
+
+      verify(batch).end();
+      verify(batch).begin();
+      verify(renderers.constructed().get(0), times(PARTICLE_SEGMENTS * 2))
+          .rect(
+              org.mockito.ArgumentMatchers.anyFloat(),
+              org.mockito.ArgumentMatchers.anyFloat(),
+              org.mockito.ArgumentMatchers.anyFloat(),
+              org.mockito.ArgumentMatchers.anyFloat());
       component.dispose();
     }
   }

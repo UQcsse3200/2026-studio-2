@@ -19,12 +19,12 @@ public class SpinTheWheelScreen extends MinigameScreen {
 
   @Override
   protected String[] getTextures() {
-    return WheelConfig.TEXTURES;
+    return WheelConfig.TEXTURES.toArray(String[]::new);
   }
 
   @Override
   protected String[] getSounds() {
-    return WheelConfig.SOUNDS;
+    return WheelConfig.SOUNDS.toArray(String[]::new);
   }
 
   @Override

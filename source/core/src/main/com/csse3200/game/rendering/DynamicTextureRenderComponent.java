@@ -12,7 +12,7 @@ public class DynamicTextureRenderComponent extends RenderComponent {
   private Texture texture;
   private TextureRegion textureRegion;
   private RotatableMapComponent rotateComponent;
-  private float rotation;
+  private boolean keepAspectRatio;
 
   public DynamicTextureRenderComponent(String texturePath) {
     setTexture(texturePath);
@@ -37,9 +37,34 @@ public class DynamicTextureRenderComponent extends RenderComponent {
     textureRegion = new TextureRegion(texture);
   }
 
+  /**
+   * Draws only a rectangular slice of the texture, e.g. one tile's worth of a wide strip.
+   *
+   * @param x left edge of the slice in texture pixels
+   * @param y top edge of the slice in texture pixels
+   * @param width width of the slice in pixels
+   * @param height height of the slice in pixels
+   * @return self
+   */
+  public DynamicTextureRenderComponent setRegion(int x, int y, int width, int height) {
+    textureRegion = new TextureRegion(texture, x, y, width, height);
+    return this;
+  }
+
   public void setTexture(Texture texture) {
     this.texture = texture;
     textureRegion = new TextureRegion(texture);
+  }
+
+  /**
+   * Draws the texture with its own proportions, centred inside the entity's scale, instead of
+   * stretching it to fill the entity. The entity's size, collider and centre stay unchanged.
+   *
+   * @return self
+   */
+  public DynamicTextureRenderComponent keepAspectRatio() {
+    this.keepAspectRatio = true;
+    return this;
   }
 
   public void scaleEntity() {
@@ -50,20 +75,21 @@ public class DynamicTextureRenderComponent extends RenderComponent {
   protected void draw(SpriteBatch batch) {
     Vector2 position = entity.getPosition();
     Vector2 scale = entity.getScale();
-    rotation = rotateComponent != null ? rotateComponent.getRotation() : 0f;
+    float width = scale.x;
+    float height = scale.y;
+    if (keepAspectRatio) {
+      float textureAspect =
+          (float) textureRegion.getRegionWidth() / textureRegion.getRegionHeight();
+      width = Math.min(scale.x, scale.y * textureAspect);
+      height = width / textureAspect;
+    }
+    float drawX = position.x + (scale.x - width) / 2f;
+    float drawY = position.y + (scale.y - height) / 2f;
+    float rotation = rotateComponent != null ? rotateComponent.getRotation() : 0f;
     Color prevColor = batch.getColor().cpy();
-    float light = getDarkness();
+
     batch.draw(
-        textureRegion,
-        position.x,
-        position.y,
-        scale.x / 2f,
-        scale.y / 2f,
-        scale.x,
-        scale.y,
-        1f,
-        1f,
-        rotation);
+        textureRegion, drawX, drawY, width / 2f, height / 2f, width, height, 1f, 1f, rotation);
     batch.setColor(prevColor);
   }
 }

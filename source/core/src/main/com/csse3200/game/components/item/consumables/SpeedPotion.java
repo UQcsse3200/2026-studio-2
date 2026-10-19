@@ -5,7 +5,7 @@ import com.csse3200.game.components.item.ItemType;
 public class SpeedPotion extends Consumable {
 
   public SpeedPotion(int quantity) {
-    super(ItemType.SpeedPotion, quantity);
+    super(ItemType.SPEED_POTION, quantity);
   }
 
   public float getSpeedBoost() {
