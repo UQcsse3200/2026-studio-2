@@ -271,9 +271,9 @@ public class LevelsGameScreen extends ScreenAdapter {
     registerLevelSwap();
 
     renderer.getCamera().setTarget(currentGameArea.getPlayer());
-      if (wasMapToggled) {
-          currentGameArea.toggleLevelMap();
-      }
+    if (wasMapToggled) {
+      currentGameArea.toggleLevelMap();
+    }
     // Finish applying a loaded save now that its level's area exists (no-op otherwise).
     game.applyPendingSaveWorld(currentGameArea, level);
   }
@@ -288,7 +288,6 @@ public class LevelsGameScreen extends ScreenAdapter {
     PlayerInteractionComponent interaction =
         current == null ? null : current.getComponent(PlayerInteractionComponent.class);
     return interaction != null && interaction.consumeShopClosed();
-    
   }
 
   private void toggleCheatMode() {
@@ -339,10 +338,11 @@ public class LevelsGameScreen extends ScreenAdapter {
         player.getComponent(PhysicsComponent.class).getBody().setGravityScale(gravity);
         player.getComponent(KeyboardPlayerInputComponent.class).toggleCheats();
       }
+    }
 
-    //if (!terminalOpen && Gdx.input.isKeyJustPressed(Input.Keys.BACKSPACE)) {
+    // if (!terminalOpen && Gdx.input.isKeyJustPressed(Input.Keys.BACKSPACE)) {
     //  toggleCheatMode();
-    //}
+    // }
 
     if (!minigameOverlayManager.isActive() && Gdx.input.isKeyJustPressed(Input.Keys.PAGE_UP)) {
       if (level.equals(LEVEL1)) {
@@ -367,7 +367,6 @@ public class LevelsGameScreen extends ScreenAdapter {
     wheelOverlay.afterRender();
     pauseOverlay.afterRender();
     blackjackOverlay.afterRender();
-    }
   }
 
   @Override
