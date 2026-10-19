@@ -122,7 +122,8 @@ public class Level2Config extends LevelConfig {
               2,
               triggerablePlatformTFP,
               new String[] {ENEMY_ARENA_COMPLETE},
-              false), // P7
+              false,
+              true), // P7
           new TriggerablePlatformConfig(
               new GridPoint2(33, 25),
               3,
@@ -130,7 +131,8 @@ public class Level2Config extends LevelConfig {
               8,
               triggerablePlatformTFP,
               new String[] {ENEMY_ARENA_COMPLETE},
-              false), // P8
+              false,
+              true), // P8
           new TriggerablePlatformConfig(
               new GridPoint2(28, 40),
               4,
@@ -138,7 +140,8 @@ public class Level2Config extends LevelConfig {
               0,
               triggerablePlatformTFP,
               new String[] {TRIGGER_WHEEL_SPIN_PLATFORM},
-              false), // TP1
+              false,
+              true), // TP1
           new TriggerablePlatformConfig(
               new GridPoint2(36, 43),
               3,
@@ -146,7 +149,8 @@ public class Level2Config extends LevelConfig {
               1,
               triggerablePlatformTFP,
               new String[] {TRIGGER_WHEEL_SPIN_PLATFORM},
-              false), // TP2
+              false,
+              true), // TP2
         };
 
     bounds = new PlatformConfig[] {new PlatformConfig(new GridPoint2(-1, -5), 1, 55, 0, groundTFP)};

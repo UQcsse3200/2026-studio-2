@@ -165,13 +165,17 @@ public class ObstacleFactory {
    * @return triggerable platform entity
    */
   public static Entity createTriggerablePlatform(TriggerablePlatformConfig config) {
+    ActivatableComponent activation =
+        new ActivatableComponent(config.getInitialState(), config.getIds());
+    activation.setSingleActivation(config.getSingleActivation());
+
     Entity platform =
         new Entity()
             .addComponent(new DynamicTextureRenderComponent(config.textureFilepath))
             .addComponent(new PhysicsComponent())
             .addComponent(new ColliderComponent().setLayer(PhysicsLayer.OBSTACLE))
             .addComponent(new PlatformGrappleComponent(config.grappleSides))
-            .addComponent(new ActivatableComponent(config.getInitialState(), config.getIds()))
+            .addComponent(activation)
             .addComponent(new TriggerablePlatformComponent());
 
     platform.getComponent(PhysicsComponent.class).setBodyType(BodyType.StaticBody);

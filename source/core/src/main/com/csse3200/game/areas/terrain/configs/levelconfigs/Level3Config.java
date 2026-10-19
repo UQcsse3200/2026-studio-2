@@ -185,7 +185,8 @@ public class Level3Config extends LevelConfig {
               0,
               triggerablePlatformTFP,
               new String[] {ENEMY_ARENA1},
-              false), // TP1
+              false,
+              true), // TP1
           new TriggerablePlatformConfig(
               new GridPoint2(3, 33),
               6,
@@ -193,7 +194,8 @@ public class Level3Config extends LevelConfig {
               0,
               triggerablePlatformTFP,
               new String[] {ENEMY_ARENA1_COMPLETE},
-              false), // TP2
+              false,
+              true), // TP2
           new TriggerablePlatformConfig(
               new GridPoint2(12, 33),
               3,
@@ -201,7 +203,8 @@ public class Level3Config extends LevelConfig {
               0,
               triggerablePlatformTFP,
               new String[] {ENEMY_ARENA1_COMPLETE},
-              false), // TP3
+              false,
+              true), // TP3
           new TriggerablePlatformConfig(
               new GridPoint2(18, 33),
               6,
@@ -209,7 +212,8 @@ public class Level3Config extends LevelConfig {
               0,
               triggerablePlatformTFP,
               new String[] {ENEMY_ARENA1_COMPLETE},
-              false), // TP4
+              false,
+              true), // TP4
           new TriggerablePlatformConfig(
               new GridPoint2(12, 58),
               3,
@@ -217,7 +221,8 @@ public class Level3Config extends LevelConfig {
               0,
               triggerablePlatformTFP,
               new String[] {"tp5", ENEMY_ARENA2},
-              true), // TP5
+              true,
+              false), // TP5
           new TriggerablePlatformConfig(
               new GridPoint2(5, 64),
               5,
@@ -225,7 +230,8 @@ public class Level3Config extends LevelConfig {
               0,
               triggerablePlatformTFP,
               new String[] {ENEMY_ARENA2_COMPLETE},
-              false), // TP6
+              false,
+              true), // TP6
           new TriggerablePlatformConfig(
               new GridPoint2(12, 64),
               3,
@@ -233,7 +239,8 @@ public class Level3Config extends LevelConfig {
               0,
               triggerablePlatformTFP,
               new String[] {ENEMY_ARENA2_COMPLETE},
-              false), // TP7
+              false,
+              true), // TP7
           new TriggerablePlatformConfig(
               new GridPoint2(17, 64),
               5,
@@ -241,7 +248,8 @@ public class Level3Config extends LevelConfig {
               0,
               triggerablePlatformTFP,
               new String[] {ENEMY_ARENA2_COMPLETE},
-              false), // TP8
+              false,
+              true), // TP8
           new TriggerablePlatformConfig(
               new GridPoint2(9, 87),
               3,
@@ -249,6 +257,7 @@ public class Level3Config extends LevelConfig {
               0,
               triggerablePlatformTFP,
               new String[] {SEC3_TPS},
+              false,
               false), // TP9
           new TriggerablePlatformConfig(
               new GridPoint2(3, 90),
@@ -257,7 +266,8 @@ public class Level3Config extends LevelConfig {
               0,
               triggerablePlatformTFP,
               new String[] {SEC3_TPS},
-              true), // TP10
+              true,
+              false), // TP10
           new TriggerablePlatformConfig(
               new GridPoint2(2, 93),
               3,
@@ -265,6 +275,7 @@ public class Level3Config extends LevelConfig {
               1,
               triggerablePlatformTFP,
               new String[] {SEC3_TPS},
+              false,
               false), // TP11
           new TriggerablePlatformConfig(
               new GridPoint2(12, 97),
@@ -272,7 +283,8 @@ public class Level3Config extends LevelConfig {
               1,
               0,
               triggerablePlatformTFP,
-              new String[] {SEC3_TPS, "bossArena"},
+              new String[] {"bossArena"},
+              false,
               true), // TP12
         };
 

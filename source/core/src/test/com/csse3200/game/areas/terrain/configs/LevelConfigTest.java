@@ -129,7 +129,7 @@ class LevelConfigTest {
     levelConfig.triggerablePlatforms =
         new TriggerablePlatformConfig[] {
           new TriggerablePlatformConfig(
-              pos, (int) size.x, (int) size.y, 0, "", new String[] {"test"}, false)
+              pos, (int) size.x, (int) size.y, 0, "", new String[] {"test"}, false, false)
         };
     levelConfig.createEntities();
 
