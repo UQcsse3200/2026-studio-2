@@ -42,7 +42,7 @@ public class BlackjackDisplay extends UIComponent {
   private static final String CARD_PATH = "images/minigames/blackjack/";
   private static final String CARD_BACK_PATH = "images/minigames/blackjack/card_back.png";
   private static final String BACKGROUND_PATH =
-      "images/minigames/blackjack/god_of_wind_background.png";
+      "images/minigames/blackjack/blackjack_table_background.png";
   private static final String CARD_DEAL_SOUND = "sounds/minigames/blackjack/card-deal.mp3";
   private static final String WIN_SOUND = "sounds/minigames/blackjack/win.mp3";
   private static final String LOSE_SOUND = "sounds/minigames/blackjack/lose.mp3";
