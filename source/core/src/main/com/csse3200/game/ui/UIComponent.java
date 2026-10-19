@@ -14,7 +14,8 @@ public abstract class UIComponent extends RenderComponent implements Renderable 
   private static final Logger logger = LoggerFactory.getLogger(UIComponent.class);
 
   private static final int UI_LAYER = 2;
-  protected final Skin skin = new Skin(Gdx.files.internal("flat-earth/skin/flat-earth-ui.json"));
+  protected static final Skin skin =
+      new Skin(Gdx.files.internal("flat-earth/skin/flat-earth-ui.json"));
   protected Stage stage;
 
   @Override
