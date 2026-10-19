@@ -340,11 +340,10 @@ public class GdxGame extends Game {
   @Override
   public void dispose() {
     logger.debug("Disposing of current screen");
-    getScreen().dispose();
-    ThemedCursor.dispose();
     if (getScreen() != null) {
       getScreen().dispose();
     }
+    ThemedCursor.dispose();
   }
 
   /**
