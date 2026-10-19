@@ -67,6 +67,7 @@ public class BackgroundRenderComponent extends RenderComponent {
   }
 
   private ArrayList<ArrayList<Float>> rainOffsets = null;
+  // Created once and reused for the rain drop offsets.
   private final Random random = new Random();
   private final List<ParallaxLayer> layers = new ArrayList<>();
   private final CameraComponent camera;
