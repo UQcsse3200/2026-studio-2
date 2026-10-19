@@ -51,6 +51,30 @@ public class TransitionScreen implements Screen {
     batch = new SpriteBatch();
   }
 
+  TransitionScreen(
+      GdxGame game,
+      Screen fromScreen,
+      ScreenType targetType,
+      SpriteBatch batch,
+      Texture blackPixel) {
+    this.game = game;
+    this.fromScreen = fromScreen;
+    this.targetType = targetType;
+    this.batch = batch;
+    this.blackPixel = blackPixel;
+  }
+
+  private static Texture createBlackPixel() {
+    Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
+    try {
+      pixmap.setColor(Color.BLACK);
+      pixmap.fill();
+      return new Texture(pixmap);
+    } finally {
+      pixmap.dispose();
+    }
+  }
+
   @Override
   public void render(float delta) {
     float alpha;

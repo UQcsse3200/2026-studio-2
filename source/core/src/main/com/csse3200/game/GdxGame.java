@@ -14,12 +14,10 @@ import com.csse3200.game.screens.LevelsGameScreen;
 import com.csse3200.game.screens.MainGameScreen;
 import com.csse3200.game.screens.MainMenuScreen;
 import com.csse3200.game.screens.SandboxGameScreen;
-import com.csse3200.game.screens.SettingsFromPauseScreen;
 import com.csse3200.game.screens.SettingsScreen;
 import com.csse3200.game.screens.TransitionScreen;
 import com.csse3200.game.screens.minigames.BlackjackScreen;
 import com.csse3200.game.screens.minigames.CyclopsMinigameRoomScreen;
-import com.csse3200.game.screens.minigames.MinigameSelectScreen;
 import com.csse3200.game.screens.minigames.spinthewheel.SpinTheWheelScreen;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -205,10 +203,6 @@ public class GdxGame extends Game {
         return bossScreen;
       case SETTINGS:
         return new SettingsScreen(this);
-      case SETTINGS_FROM_PAUSE:
-        return new SettingsFromPauseScreen(this);
-      case MINIGAME_SELECT:
-        return new MinigameSelectScreen(this);
       case CYCLOPS_MINIGAME:
         return new CyclopsMinigameRoomScreen(this);
       case MINIGAME_SPIN_THE_WHEEL:
