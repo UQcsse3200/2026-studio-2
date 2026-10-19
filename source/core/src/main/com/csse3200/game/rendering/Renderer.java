@@ -7,7 +7,9 @@ import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.csse3200.game.GdxGame;
 import com.csse3200.game.components.CameraComponent;
+import com.csse3200.game.lighting.LightingEngine;
 import com.csse3200.game.services.ServiceLocator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -95,6 +97,7 @@ public class Renderer implements Disposable {
   public void render() {
     Matrix4 projMatrix = camera.getProjectionMatrix();
     batch.setProjectionMatrix(projMatrix);
+    GdxGame.applyDefaultClearColor();
     Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
     // The stage shares this batch and may leave its color/alpha tinted (e.g. a fading UI
@@ -104,6 +107,26 @@ public class Renderer implements Disposable {
     batch.begin();
     renderService.render(batch);
     batch.end();
+    debugRenderer.render(projMatrix);
+
+    stage.act();
+    stage.draw();
+  }
+
+  public void render(LightingEngine lightingEngine) {
+    Matrix4 projMatrix = camera.getProjectionMatrix();
+
+    batch.setProjectionMatrix(projMatrix);
+    Gdx.gl.glClearColor(248f / 255f, 249 / 255f, 178 / 255f, 1);
+    Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+    batch.begin();
+    renderService.render(batch);
+    batch.end();
+
+    // renderLightingHelper(lightingEngine);
+    lightingEngine.render();
+
     debugRenderer.render(projMatrix);
 
     stage.act();

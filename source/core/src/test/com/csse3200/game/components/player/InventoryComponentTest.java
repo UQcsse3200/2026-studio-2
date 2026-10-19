@@ -17,6 +17,22 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 @ExtendWith(GameExtension.class)
 class InventoryComponentTest {
+  @Test
+  void shouldSaturateGoldAtIntegerMaximumInsteadOfWrappingToZero() {
+    InventoryComponent inventory = new InventoryComponent(Integer.MAX_VALUE - 1);
+    inventory.addGold(10);
+    assertEquals(Integer.MAX_VALUE, inventory.getGold());
+    inventory.addGold(Integer.MAX_VALUE);
+    assertEquals(Integer.MAX_VALUE, inventory.getGold());
+  }
+
+  @Test
+  void shouldClampLargeGoldDeductionsAtZero() {
+    InventoryComponent inventory = new InventoryComponent(100);
+    inventory.addGold(Integer.MIN_VALUE);
+    assertEquals(0, inventory.getGold());
+  }
+
   // ---------
   // Grid dimensions and resizing
   // ---------

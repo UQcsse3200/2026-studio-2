@@ -3,7 +3,14 @@ package com.csse3200.game.ui.terminal;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import com.badlogic.gdx.Input;
+import com.csse3200.game.components.player.KeyboardPlayerInputComponent;
+import com.csse3200.game.entities.Entity;
+import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.extensions.GameExtension;
+import com.csse3200.game.input.InputService;
+import com.csse3200.game.services.ServiceLocator;
+import java.util.concurrent.atomic.AtomicBoolean;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -56,5 +63,48 @@ class TouchTerminalInputComponentTest {
     when(terminal.isOpen()).thenReturn(false);
     assertFalse(terminalInput.keyDown('a'));
     assertFalse(terminalInput.keyUp('a'));
+  }
+
+  @Test
+  void shouldSwallowPointerInputWhenTerminalOpen() {
+    Terminal terminal = mock(Terminal.class);
+    when(terminal.isOpen()).thenReturn(true);
+    TouchTerminalInputComponent terminalInput = new TouchTerminalInputComponent(terminal);
+
+    assertTrue(terminalInput.touchDown(100, 100, 0, Input.Buttons.LEFT));
+    assertTrue(terminalInput.touchUp(100, 100, 0, Input.Buttons.LEFT));
+    assertTrue(terminalInput.touchDragged(100, 100, 0));
+    assertTrue(terminalInput.mouseMoved(100, 100));
+  }
+
+  @Test
+  void shouldNotSwallowPointerInputWhenTerminalClosed() {
+    Terminal terminal = mock(Terminal.class);
+    when(terminal.isOpen()).thenReturn(false);
+    TouchTerminalInputComponent terminalInput = new TouchTerminalInputComponent(terminal);
+
+    assertFalse(terminalInput.touchDown(100, 100, 0, Input.Buttons.LEFT));
+    assertFalse(terminalInput.touchUp(100, 100, 0, Input.Buttons.LEFT));
+    assertFalse(terminalInput.touchDragged(100, 100, 0));
+    assertFalse(terminalInput.mouseMoved(100, 100));
+  }
+
+  @Test
+  void shouldReleaseHeldPlayerInputWhenTerminalScrolledOpen() {
+    ServiceLocator.registerInputService(new InputService());
+    EntityService entityService = new EntityService();
+    ServiceLocator.registerEntityService(entityService);
+
+    Entity player = new Entity().addComponent(new KeyboardPlayerInputComponent());
+    entityService.register(player);
+    AtomicBoolean released = new AtomicBoolean(false);
+    player.getEvents().addListener("releaseHeldGameplayInput", () -> released.set(true));
+
+    Terminal terminal = new Terminal();
+    TouchTerminalInputComponent terminalInput = new TouchTerminalInputComponent(terminal);
+
+    terminalInput.scrolled(0, -1);
+    assertTrue(terminal.isOpen());
+    assertTrue(released.get());
   }
 }

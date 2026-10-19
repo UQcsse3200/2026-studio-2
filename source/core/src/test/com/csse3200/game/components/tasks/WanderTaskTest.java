@@ -1,13 +1,16 @@
 package com.csse3200.game.components.tasks;
 
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import com.csse3200.game.ai.tasks.AITaskComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.events.listeners.EventListener0;
 import com.csse3200.game.extensions.GameExtension;
+import com.csse3200.game.physics.PhysicsService;
 import com.csse3200.game.physics.components.PhysicsMovementComponent;
+import com.csse3200.game.rendering.RenderService;
 import com.csse3200.game.services.GameTime;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.utils.math.Vector2Utils;
@@ -20,11 +23,14 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(GameExtension.class)
 @ExtendWith(MockitoExtension.class)
 class WanderTaskTest {
+
   @Mock GameTime gameTime;
 
   @BeforeEach
   void beforeEach() {
     ServiceLocator.registerTimeSource(gameTime);
+    ServiceLocator.registerPhysicsService(new PhysicsService());
+    ServiceLocator.registerRenderService(new RenderService());
   }
 
   @Test
@@ -42,6 +48,6 @@ class WanderTaskTest {
 
     wanderTask.start();
 
-    verify(callback).handle();
+    verify(callback, times(1)).handle();
   }
 }

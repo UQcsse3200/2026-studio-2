@@ -28,6 +28,22 @@ class AnimationRenderComponentTest {
   }
 
   @Test
+  void disposingOneEnemyKeepsSharedAtlasAlive() {
+    TextureAtlas atlas = createMockAtlas("idle", 1);
+    RenderService renders = mock(RenderService.class);
+    ServiceLocator.registerRenderService(renders);
+    AnimationRenderComponent first = new AnimationRenderComponent(atlas);
+    AnimationRenderComponent survivor = new AnimationRenderComponent(atlas);
+    first.addAnimation("idle", 0.1f);
+    survivor.addAnimation("idle", 0.1f);
+    first.dispose();
+    survivor.startAnimation("idle");
+    assertEquals("idle", survivor.getCurrentAnimation());
+    verify(atlas, never()).dispose();
+    verify(renders).unregister(first);
+  }
+
+  @Test
   void shouldAddRemoveAnimation() {
     TextureAtlas atlas = createMockAtlas("test_name", 1);
     AnimationRenderComponent animator = new AnimationRenderComponent(atlas);

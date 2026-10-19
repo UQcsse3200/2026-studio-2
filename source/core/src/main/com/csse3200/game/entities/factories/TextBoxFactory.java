@@ -22,6 +22,19 @@ public class TextBoxFactory {
       logger.error("Failed to load text box config from {}", filePath);
       return;
     }
+    createTextBox(textConfig);
+  }
+
+  /**
+   * Creates a text box from an in-memory config (e.g. built by a terminal command preview).
+   *
+   * @param textConfig the text box config to display
+   */
+  public void createTextBox(TextConfig textConfig) {
+    if (textConfig == null) {
+      logger.error("Failed to create text box from null config");
+      return;
+    }
 
     try {
       new TextBoxComponent(
@@ -36,7 +49,8 @@ public class TextBoxFactory {
               textConfig.borderThickness,
               textConfig.fontPath,
               textConfig.getTextAlignment(),
-              textConfig.pages)
+              textConfig.pages,
+              textConfig.portraitPaths)
           .create();
     } catch (Exception e) {
       logger.error("Failed to create text box: {}", e.getMessage());

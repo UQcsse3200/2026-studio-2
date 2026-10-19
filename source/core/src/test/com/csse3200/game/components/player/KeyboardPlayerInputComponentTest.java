@@ -68,18 +68,6 @@ class KeyboardPlayerInputComponentTest {
   }
 
   @Test
-  void shouldMeleeOnLeftClick() {
-    Entity player = new Entity();
-    KeyboardPlayerInputComponent component = aimedComponent(player);
-
-    AtomicReference<Vector2> direction = new AtomicReference<>();
-    player.getEvents().addListener("melee", (Vector2 aim) -> direction.set(aim));
-
-    assertTrue(component.touchDown(4, 2, 0, Buttons.LEFT));
-    assertTrue(direction.get().epsilonEquals(new Vector2(9.5f, 4.5f)));
-  }
-
-  @Test
   void shouldShootOnRightClick() {
     Entity player = new Entity();
     KeyboardPlayerInputComponent component = aimedComponent(player);
@@ -113,18 +101,6 @@ class KeyboardPlayerInputComponentTest {
   }
 
   @Test
-  void shouldSignalStopMeleeOnLeftRelease() {
-    Entity player = new Entity();
-    KeyboardPlayerInputComponent component = aimedComponent(player);
-
-    AtomicInteger stops = new AtomicInteger();
-    player.getEvents().addListener("stopMelee", stops::incrementAndGet);
-
-    assertTrue(component.touchUp(4, 2, 0, Buttons.LEFT));
-    assertEquals(1, stops.get());
-  }
-
-  @Test
   void shouldNotFireWithoutCamera() {
     KeyboardPlayerInputComponent component = new KeyboardPlayerInputComponent();
     Entity player = new Entity().addComponent(component);
@@ -136,15 +112,28 @@ class KeyboardPlayerInputComponentTest {
   }
 
   @Test
-  void shouldNotHandleQ() {
+  void shouldTriggerInstrumentOnQ() {
     Entity player = new Entity();
     KeyboardPlayerInputComponent component = aimedComponent(player);
 
-    AtomicInteger events = new AtomicInteger();
-    player.getEvents().addListener("cycleArrow", events::incrementAndGet);
+    AtomicInteger instruments = new AtomicInteger();
+    player.getEvents().addListener("instrumentStart", instruments::incrementAndGet);
 
-    assertFalse(component.keyDown(Keys.Q));
-    assertEquals(0, events.get());
+    assertTrue(component.keyDown(Keys.Q));
+    assertEquals(1, instruments.get());
+  }
+
+  @Test
+  void shouldNotStartInstrumentWhilePaused() {
+    Entity player = new Entity();
+    KeyboardPlayerInputComponent component = aimedComponent(player);
+
+    AtomicInteger instruments = new AtomicInteger();
+    player.getEvents().addListener("instrumentStart", instruments::incrementAndGet);
+
+    when(entityService.getPaused()).thenReturn(true);
+    assertTrue(component.keyDown(Keys.Q));
+    assertEquals(0, instruments.get());
   }
 
   @Test
@@ -233,6 +222,37 @@ class KeyboardPlayerInputComponentTest {
     assertEquals(1, sprints.get());
     assertTrue(component.keyUp(Keys.SHIFT_LEFT));
     assertEquals(1, sprintStops.get());
+  }
+
+  @Test
+  void shouldIgnoreMovementJumpAndSprintKeysWhilePausedAndAllowThemAfterResume() {
+    KeyboardPlayerInputComponent component = new KeyboardPlayerInputComponent();
+    Entity player = new Entity().addComponent(component);
+    AtomicInteger walks = new AtomicInteger();
+    AtomicInteger jumps = new AtomicInteger();
+    AtomicInteger sprints = new AtomicInteger();
+    player.getEvents().addListener("walk", (Vector2 direction) -> walks.incrementAndGet());
+    player.getEvents().addListener("jump", jumps::incrementAndGet);
+    player.getEvents().addListener("sprint", sprints::incrementAndGet);
+
+    when(entityService.getPaused()).thenReturn(true);
+    component.keyDown(Keys.A);
+    component.keyDown(Keys.SPACE);
+    component.keyDown(Keys.SHIFT_LEFT);
+    assertEquals(0, walks.get());
+    assertEquals(0, jumps.get());
+    assertEquals(0, sprints.get());
+
+    // Release the paused presses so they don't cancel the walk direction after resuming.
+    component.keyUp(Keys.A);
+    component.keyUp(Keys.SHIFT_LEFT);
+    when(entityService.getPaused()).thenReturn(false);
+    component.keyDown(Keys.D);
+    component.keyDown(Keys.SPACE);
+    component.keyDown(Keys.SHIFT_LEFT);
+    assertEquals(1, walks.get());
+    assertEquals(1, jumps.get());
+    assertEquals(1, sprints.get());
   }
 
   @Test
@@ -368,23 +388,26 @@ class KeyboardPlayerInputComponentTest {
   }
 
   @Test
-  void shouldBlockWeaponInputWhileTheArrowWheelIsOpen() {
+  void shouldMeasureThePointerFromTheWheelCentreWhenTheWheelHasBeenPlaced() {
+    Graphics graphics = mock(Graphics.class);
+    when(graphics.getWidth()).thenReturn(800);
+    when(graphics.getHeight()).thenReturn(600);
+    Gdx.graphics = graphics;
     KeyboardPlayerInputComponent component = new KeyboardPlayerInputComponent();
     ArrowWheelComponent wheel = new ArrowWheelComponent();
     Entity player = new Entity().addComponent(component).addComponent(wheel);
-    player.setPosition(0f, 0f);
     wheel.create();
-    component.setCameraComponent(new CameraComponent(camera));
-    AtomicInteger melee = new AtomicInteger();
-    player.getEvents().addListener("melee", (Vector2 ignored) -> melee.incrementAndGet());
-
     component.keyDown(Keys.TAB);
-    assertFalse(component.touchDown(4, 2, 0, Buttons.LEFT));
-    assertEquals(0, melee.get());
+    // Wheel in the bottom-left corner: 150px from the left and 450px from the top.
+    wheel.setScreenCentre(150f, 450f);
 
-    component.keyUp(Keys.TAB);
-    assertTrue(component.touchDown(4, 2, 0, Buttons.LEFT));
-    assertEquals(1, melee.get());
+    // Directly above the wheel's centre, which is nowhere near the screen centre.
+    component.mouseMoved(150, 350);
+    assertEquals(ArrowType.STANDARD, wheel.getHighlighted());
+
+    // Lower right of the wheel's centre.
+    component.mouseMoved(150 + 80, 450 + 50);
+    assertEquals(ArrowType.FIRE, wheel.getHighlighted());
   }
 
   @Test
@@ -494,5 +517,65 @@ class KeyboardPlayerInputComponentTest {
     assertFalse(component.isRightMouseHeld());
     assertEquals(1, cancels.get());
     assertEquals(0, stops.get());
+  }
+
+  @Test
+  void shouldTriggerMeleeOnLeftClick() {
+    KeyboardPlayerInputComponent component = new KeyboardPlayerInputComponent();
+    Entity player = new Entity().addComponent(component);
+    AtomicInteger swings = new AtomicInteger();
+    player.getEvents().addListener("meleeStart", swings::incrementAndGet);
+
+    assertTrue(component.touchDown(4, 2, 0, Buttons.LEFT));
+
+    assertEquals(1, swings.get());
+  }
+
+  @Test
+  void shouldNotStartMeleeWhileTheRightMouseButtonIsHeld() {
+    Entity player = new Entity();
+    KeyboardPlayerInputComponent component = aimedComponent(player);
+    AtomicInteger swings = new AtomicInteger();
+    player.getEvents().addListener("meleeStart", swings::incrementAndGet);
+
+    component.touchDown(4, 2, 0, Buttons.RIGHT);
+    assertTrue(component.isRightMouseHeld());
+
+    // Right-held means the player is charging a shot or hanging off the rope. Letting a swing
+    // start there would play the melee clip over the bow or rope pose, and the rope pose stops the
+    // animator every frame, so the swing would never report finishing and would latch "attacking".
+    assertFalse(component.touchDown(4, 2, 0, Buttons.LEFT));
+    assertEquals(0, swings.get());
+  }
+
+  @Test
+  void shouldAllowMeleeAgainOnceTheRightMouseButtonIsReleased() {
+    Entity player = new Entity();
+    KeyboardPlayerInputComponent component = aimedComponent(player);
+    AtomicInteger swings = new AtomicInteger();
+    player.getEvents().addListener("meleeStart", swings::incrementAndGet);
+
+    component.touchDown(4, 2, 0, Buttons.RIGHT);
+    component.touchDown(4, 2, 0, Buttons.LEFT);
+    assertEquals(0, swings.get());
+
+    component.touchUp(4, 2, 0, Buttons.RIGHT);
+    assertFalse(component.isRightMouseHeld());
+
+    assertTrue(component.touchDown(4, 2, 0, Buttons.LEFT));
+    assertEquals(1, swings.get());
+  }
+
+  @Test
+  void shouldNotStartMeleeWhilePaused() {
+    when(entityService.getPaused()).thenReturn(true);
+    KeyboardPlayerInputComponent component = new KeyboardPlayerInputComponent();
+    Entity player = new Entity().addComponent(component);
+    AtomicInteger swings = new AtomicInteger();
+    player.getEvents().addListener("meleeStart", swings::incrementAndGet);
+
+    assertFalse(component.touchDown(4, 2, 0, Buttons.LEFT));
+
+    assertEquals(0, swings.get());
   }
 }

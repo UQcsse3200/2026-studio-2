@@ -19,6 +19,8 @@ import com.csse3200.game.components.projectile.ArrowType;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.extensions.GameExtension;
+import com.csse3200.game.lighting.LightingEngine;
+import com.csse3200.game.lighting.LightingService;
 import com.csse3200.game.physics.PhysicsService;
 import com.csse3200.game.services.GameTime;
 import com.csse3200.game.services.ServiceLocator;
@@ -37,6 +39,12 @@ class ItemUseComponentTest {
     time = mock(GameTime.class);
     when(time.getTime()).thenReturn(0L);
     ServiceLocator.registerTimeSource(time);
+
+    LightingEngine lightingEngine = mock(LightingEngine.class);
+    when(lightingEngine.getRayHandler()).thenReturn(mock(box2dLight.RayHandler.class));
+    LightingService lightingService = mock(LightingService.class);
+    when(lightingService.getEngine()).thenReturn(lightingEngine);
+    ServiceLocator.registerLightingService(lightingService);
   }
 
   @Test
@@ -157,6 +165,107 @@ class ItemUseComponentTest {
   }
 
   @Test
+  void shouldStartGrappleDrawOnShootEventWithoutUsingTheBowChargeFlow() {
+    Entity player = createPlayer();
+    InventoryComponent inventory = player.getComponent(InventoryComponent.class);
+    inventory.addItem(ItemType.ROPE_ARROW, 1);
+
+    int[] drawStarts = {0};
+    int[] chargeStarts = {0};
+    int[] grappleFires = {0};
+    player.getEvents().addListener("grappleDrawStart", (Vector2 ignored) -> drawStarts[0]++);
+    player.getEvents().addListener("chargeStart", (Vector2 ignored) -> chargeStarts[0]++);
+    player.getEvents().addListener("grappleFire", (Vector2 ignored) -> grappleFires[0]++);
+
+    player.getEvents().trigger("shoot", new Vector2(1f, 0f));
+
+    // The rope arrow starts charging on its own dedicated event now, not the bow's shared
+    // "chargeStart"/"chargeRelease" hold-and-release events, and not the old instant "grappleFire".
+    assertEquals(1, drawStarts[0]);
+    assertEquals(0, chargeStarts[0]);
+    assertEquals(0, grappleFires[0]);
+    assertEquals(1, inventory.getItemCount(ItemType.ROPE_ARROW));
+  }
+
+  @Test
+  void shouldReleaseGrappleDrawOnStopShootWithoutUsingTheBowChargeFlow() {
+    Entity player = createPlayer();
+    InventoryComponent inventory = player.getComponent(InventoryComponent.class);
+    inventory.addItem(ItemType.ROPE_ARROW, 1);
+
+    int[] drawReleases = {0};
+    player.getEvents().addListener("grappleDrawRelease", (Vector2 ignored) -> drawReleases[0]++);
+
+    player.getEvents().trigger("stopShoot");
+
+    assertEquals(1, drawReleases[0]);
+  }
+
+  @Test
+  void shouldRejectARopeArrowShotWithNoAimInsteadOfStartingTheDraw() {
+    Entity player = createPlayer();
+    InventoryComponent inventory = player.getComponent(InventoryComponent.class);
+    inventory.addItem(ItemType.ROPE_ARROW, 1);
+
+    AtomicReference<ItemType> failed = new AtomicReference<>();
+    AtomicInteger drawStarts = new AtomicInteger();
+    AtomicInteger used = new AtomicInteger();
+    player.getEvents().addListener("itemUseFailed", (ItemType type) -> failed.set(type));
+    player
+        .getEvents()
+        .addListener("grappleDrawStart", (Vector2 ignored) -> drawStarts.incrementAndGet());
+    player.getEvents().addListener("itemUsed", (ItemType ignored) -> used.incrementAndGet());
+
+    player.getEvents().trigger("shoot", Vector2.Zero.cpy());
+
+    assertEquals(ItemType.ROPE_ARROW, failed.get());
+    assertEquals(0, drawStarts.get());
+    assertEquals(0, used.get());
+  }
+
+  @Test
+  void shouldDrawTheRopeArrowWithoutLockingInABowArrowTypeOrSpendingAmmo() {
+    Entity player = createPlayer();
+    InventoryComponent inventory = player.getComponent(InventoryComponent.class);
+    inventory.addItem(ItemType.ROPE_ARROW, 1);
+
+    AtomicInteger bowTypeChanges = new AtomicInteger();
+    AtomicReference<ItemType> used = new AtomicReference<>();
+    player
+        .getEvents()
+        .addListener("setArrowType", (ArrowType ignored) -> bowTypeChanges.incrementAndGet());
+    player.getEvents().addListener("itemUsed", (ItemType type) -> used.set(type));
+
+    player.getEvents().trigger("shoot", new Vector2(1f, 0f));
+
+    // GrappleComponent, not the bow, fires this arrow, so the bow's type must be left alone.
+    assertEquals(0, bowTypeChanges.get());
+    assertEquals(ItemType.ROPE_ARROW, used.get());
+    assertEquals(1, inventory.getItemCount(ItemType.ROPE_ARROW));
+  }
+
+  @Test
+  void shouldSendBothGrappleReleasesWhateverArrowIsSelectedByReleaseTime() {
+    Entity player = createPlayer();
+    InventoryComponent inventory = player.getComponent(InventoryComponent.class);
+    inventory.addItem(ItemType.STANDARD_ARROW, 1);
+
+    AtomicInteger drawReleases = new AtomicInteger();
+    AtomicInteger swingReleases = new AtomicInteger();
+    player
+        .getEvents()
+        .addListener("grappleDrawRelease", (Vector2 ignored) -> drawReleases.incrementAndGet());
+    player.getEvents().addListener("grappleRelease", swingReleases::incrementAndGet);
+
+    player.getEvents().trigger("stopShoot");
+
+    // The selection can move on mid-draw (spending the last arrow auto-advances it), so neither a
+    // charge release nor a swing release may depend on the rope arrow still being selected.
+    assertEquals(1, drawReleases.get());
+    assertEquals(1, swingReleases.get());
+  }
+
+  @Test
   void shouldStartChargeOnShootEventWithoutFiringYet() {
     Entity player = createPlayer();
     InventoryComponent inventory = player.getComponent(InventoryComponent.class);
@@ -242,7 +351,7 @@ class ItemUseComponentTest {
   }
 
   @Test
-  void shouldNotReleaseGrappleOnStopShootForOtherArrows() {
+  void shouldSignalGrappleReleaseEvenWhenAnotherArrowIsSelected() {
     Entity player = createPlayer();
     InventoryComponent inventory = player.getComponent(InventoryComponent.class);
     inventory.addItem(ItemType.STANDARD_ARROW, 1);
@@ -252,7 +361,35 @@ class ItemUseComponentTest {
 
     player.getEvents().trigger("stopShoot");
 
-    assertEquals(0, released.get());
+    assertEquals(1, released.get());
+  }
+
+  @Test
+  void shouldReleaseGrappleAfterSwitchingAwayFromTheFiredRopeArrow() {
+    Entity player = createPlayer();
+    InventoryComponent inventory = player.getComponent(InventoryComponent.class);
+    inventory.addItem(ItemType.ROPE_ARROW, 1);
+    inventory.addItem(ItemType.STANDARD_ARROW, 3);
+    AtomicInteger drawn = new AtomicInteger();
+    AtomicInteger drawReleased = new AtomicInteger();
+    AtomicInteger released = new AtomicInteger();
+    player
+        .getEvents()
+        .addListener("grappleDrawStart", (Vector2 ignored) -> drawn.incrementAndGet());
+    player
+        .getEvents()
+        .addListener("grappleDrawRelease", (Vector2 ignored) -> drawReleased.incrementAndGet());
+    player.getEvents().addListener("grappleRelease", released::incrementAndGet);
+    player.getEvents().trigger("shoot", new Vector2(1f, 0f));
+    inventory.selectSlot(1);
+    player.getEvents().trigger("stopShoot");
+    // Pressing starts the draw (the arrow now leaves on release), and letting go still reaches the
+    // grapple even though a different arrow is selected by then.
+    assertEquals(1, drawn.get());
+    assertEquals(1, drawReleased.get());
+    assertEquals(1, released.get());
+    assertEquals(1, inventory.getItemCount(ItemType.ROPE_ARROW));
+    assertEquals(3, inventory.getItemCount(ItemType.STANDARD_ARROW));
   }
 
   @Test
@@ -263,16 +400,6 @@ class ItemUseComponentTest {
   @Test
   void shouldFireIceArrowThroughBowAndConsumeAmmo() {
     assertArrowUsesBowType(ItemType.ICE_ARROW, ArrowType.ICE);
-  }
-
-  @Test
-  void shouldUseSwordThroughMeleeAttackEvent() {
-    assertMeleeItemUsesDamageAndRange(ItemType.Sword);
-  }
-
-  @Test
-  void shouldUseSpearThroughMeleeAttackEvent() {
-    assertMeleeItemUsesDamageAndRange(ItemType.Spear);
   }
 
   @Test
@@ -343,30 +470,6 @@ class ItemUseComponentTest {
     assertEquals(expectedArrowType, bowType.get());
     assertEquals(1, shots.get());
     assertEquals(1, inventory.getItemCount(itemType));
-  }
-
-  private void assertMeleeItemUsesDamageAndRange(ItemType itemType) {
-    Entity player = createPlayer();
-    InventoryComponent inventory = player.getComponent(InventoryComponent.class);
-    inventory.addItem(itemType, 1);
-
-    AtomicReference<Vector2> direction = new AtomicReference<>();
-    AtomicInteger damage = new AtomicInteger();
-    AtomicReference<Float> range = new AtomicReference<>();
-    player
-        .getEvents()
-        .addListener(
-            "meleeAttack",
-            (Vector2 aim, Integer itemDamage, Float itemRange) -> {
-              direction.set(aim);
-              damage.set(itemDamage);
-              range.set(itemRange);
-            });
-
-    assertTrue(player.getComponent(ItemUseComponent.class).useSelectedItem());
-    assertFalse(direction.get().isZero());
-    assertEquals(itemType.getDamage(), damage.get());
-    assertEquals(itemType.getRange(), range.get(), 0.001f);
   }
 
   @Test

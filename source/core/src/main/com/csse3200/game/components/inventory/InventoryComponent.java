@@ -3,7 +3,6 @@ package com.csse3200.game.components.inventory;
 import com.csse3200.game.components.Component;
 import com.csse3200.game.components.item.ItemType;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,7 +18,7 @@ public class InventoryComponent extends Component {
   private static final int DEFAULT_COLUMNS = 8;
   private static final int MAX_COLUMNS = 9;
 
-  private final List<InventorySlot> slots;
+  private List<InventorySlot> slots;
   private int rows;
   private int columns;
 
@@ -114,12 +113,14 @@ public class InventoryComponent extends Component {
   }
 
   /**
-   * Adds to the player's gold. The amount added can be negative.
+   * Adds to the player's gold. Negative amounts deduct gold; the result stays between zero and
+   * Integer.MAX_VALUE.
    *
    * @param gold gold to add
    */
   public void addGold(int gold) {
-    setGold(this.gold + gold);
+    long total = (long) this.gold + gold;
+    setGold((int) Math.max(0L, Math.min(Integer.MAX_VALUE, total)));
   }
 
   // ---------
@@ -362,7 +363,11 @@ public class InventoryComponent extends Component {
    * @return ordered slot snapshot
    */
   public List<InventorySlot> getSlots() {
-    return Collections.unmodifiableList(new ArrayList<>(slots));
+    return List.copyOf(slots);
+  }
+
+  public void setSlots(List<InventorySlot> slots) {
+    this.slots = List.copyOf(slots);
   }
 
   /**

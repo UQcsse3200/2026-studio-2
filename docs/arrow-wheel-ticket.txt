@@ -1,0 +1,25 @@
+# **Description**
+**Task:** Update the arrow wheel to three arrow types.
+**Feature:** [Advanced Inventory System](#93)
+
+The wheel had four wedges - Standard, Fire, Ice and Poison. But there is no poison arrow item in `ItemType`, so you could highlight that wedge and nothing would happen. I cut `WHEEL_TYPES` down to the three that actually exist. The wedge maths splits 360 by however many types are in the array, so I did not have to touch that part. I also added `ArrowWheelDisplay` to draw the wheel on screen, because before this you could not see what you were picking. It greys out the types you have no arrows for and shows the count next to each one.
+
+# **Dependencies**
+- [x] Decision on whether rope arrow belongs on the wheel, it is a real arrow item but is currently hotbar-only
+
+# **Milestones**
+- [x] Cut `WHEEL_TYPES` down to Standard, Fire and Ice
+- [x] Added `getWheelTypes()` so the display and the maths use the same list
+- [x] Wrote `ArrowWheelDisplay` and added it in `PlayerFactory`
+- [x] Updated the tests for three wedges
+- [x] Tested in game, ran spotless, pushed
+
+**Completion Deadline:** Oct. 5
+
+# **Documentation**
+- [Advanced Inventory System](../wiki/Advanced-Inventory-System)
+- [JavaDoc](JavaDoc/com/csse3200/game/components/projectile/ArrowType)
+- [JavaDoc](JavaDoc/com/csse3200/game/components/player/ArrowWheelDisplay)
+
+# **Member**
+- Aayush Singh Parmar (@AayushSinghParmar)

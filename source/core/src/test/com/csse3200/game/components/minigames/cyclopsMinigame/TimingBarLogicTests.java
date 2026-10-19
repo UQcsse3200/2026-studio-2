@@ -15,7 +15,7 @@ class TimingBarLogicTests {
     TimingBarLogic logic = new TimingBarLogic(defaultWidth);
     logic.changeScoringAreaWidth(100f);
 
-    assertEquals(1.0f, logic.scoringAreaSize, 0.001f);
+    assertEquals(1.0f, logic.getScoringAreaSize(), 0.001f);
     assertEquals(0.0f, logic.greenStart, 0.001f);
     assertEquals(1.0f, logic.greenEnd, 0.001f);
   }
@@ -37,10 +37,10 @@ class TimingBarLogicTests {
     logic.stopMarker();
 
     float deltaTime = 0.5f; // Smaller number to avoid bounce
-    float previousLocation = logic.markerX;
+    float previousLocation = logic.getMarkerX();
 
     logic.update(deltaTime);
-    assertEquals(previousLocation, logic.markerX, 0.001f);
+    assertEquals(previousLocation, logic.getMarkerX(), 0.001f);
   }
 
   @Test
@@ -49,12 +49,12 @@ class TimingBarLogicTests {
     logic.startMarker();
 
     float deltaTime = 0.5f; // Smaller number to avoid bounce
-    float previousLocation = logic.markerX;
+    float previousLocation = logic.getMarkerX();
     float expectedNextLocation =
-        previousLocation + (logic.markerSpeed * logic.direction * deltaTime);
+        previousLocation + (TimingBarLogic.markerSpeed * logic.direction * deltaTime);
 
     logic.update(deltaTime);
-    assertEquals(expectedNextLocation, logic.markerX, 0.001f);
+    assertEquals(expectedNextLocation, logic.getMarkerX(), 0.001f);
   }
 
   @Test
@@ -64,11 +64,11 @@ class TimingBarLogicTests {
 
     float deltaTime = 5f;
     logic.update(deltaTime);
-    assertEquals(logic.barWidth, logic.markerX, 0.001f);
+    assertEquals(logic.barWidth, logic.getMarkerX(), 0.001f);
     assertEquals(-1, logic.direction);
 
     logic.update(deltaTime);
-    assertEquals(0, logic.markerX, 0.001f);
+    assertEquals(0, logic.getMarkerX(), 0.001f);
     assertEquals(1, logic.direction);
   }
 
@@ -91,6 +91,6 @@ class TimingBarLogicTests {
     logic.update(0.001f);
     logic.stopMarker();
     logic.resetMarker();
-    assertEquals(0f, logic.markerX);
+    assertEquals(0f, logic.getMarkerX());
   }
 }

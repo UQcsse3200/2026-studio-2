@@ -7,7 +7,7 @@ import com.csse3200.game.services.ServiceLocator;
 public class PoisonBuff extends Component {
   private float poisonDamagePerSecond;
   private float poisonDuration;
-  private float poisonBuffEndTime;
+  private long poisonBuffEndTime;
 
   @Override
   public void create() {

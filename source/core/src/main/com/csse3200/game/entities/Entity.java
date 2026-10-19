@@ -34,6 +34,7 @@ public class Entity {
   private final EventHandler eventHandler;
   private boolean enabled = true;
   private boolean created = false;
+  private boolean disposed = false;
   private Vector2 position = Vector2.Zero.cpy();
   private Vector2 scale = new Vector2(1, 1);
   private Array<Component> createdComponents;
@@ -201,6 +202,9 @@ public class Entity {
 
   /** Dispose of the entity. This will dispose of all components on this entity. */
   public void dispose() {
+    // An area can still hold an enemy which was already removed after dying.
+    if (disposed) return;
+    disposed = true;
     for (Component component : createdComponents) {
       component.dispose();
     }

@@ -2,9 +2,12 @@ package com.csse3200.game.components.level;
 
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.csse3200.game.components.Component;
+import com.csse3200.game.components.player.PlayerActions;
+import com.csse3200.game.physics.BodyUserData;
 
 public class LevelTriggerComponent extends Component {
   String levelName;
+  private boolean triggered;
 
   /**
    * @param name the name of the level to swap to when the component is triggered
@@ -26,6 +29,12 @@ public class LevelTriggerComponent extends Component {
    * @param other the fixture that hit this entity
    */
   private void onCollisionStart(Fixture me, Fixture other) {
+    if (triggered
+        || !(other.getBody().getUserData() instanceof BodyUserData data)
+        || data.entity.getComponent(PlayerActions.class) == null) {
+      return;
+    }
+    triggered = true;
     entity.getEvents().trigger("triggerNextLevel", levelName);
   }
 }

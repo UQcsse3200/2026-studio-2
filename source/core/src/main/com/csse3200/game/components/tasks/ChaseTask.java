@@ -6,6 +6,7 @@ import com.csse3200.game.ai.tasks.PriorityTask;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.physics.PhysicsEngine;
 import com.csse3200.game.physics.PhysicsLayer;
+import com.csse3200.game.physics.components.PhysicsMovementComponent;
 import com.csse3200.game.physics.raycast.RaycastHit;
 import com.csse3200.game.rendering.DebugRenderer;
 import com.csse3200.game.services.ServiceLocator;
@@ -20,6 +21,8 @@ public class ChaseTask extends DefaultTask implements PriorityTask {
   private final DebugRenderer debugRenderer;
   private final RaycastHit hit = new RaycastHit();
   private MovementTask movementTask;
+  private EdgeDetectTask edgeDetector;
+  private PhysicsMovementComponent movementComponent;
 
   /**
    * @param target The entity to chase.
@@ -39,6 +42,11 @@ public class ChaseTask extends DefaultTask implements PriorityTask {
   @Override
   public void start() {
     super.start();
+
+    edgeDetector = new EdgeDetectTask(0.3f);
+
+    movementComponent = owner.getEntity().getComponent(PhysicsMovementComponent.class);
+
     movementTask = new MovementTask(target.getPosition());
     movementTask.create(owner);
     movementTask.start();
@@ -48,8 +56,25 @@ public class ChaseTask extends DefaultTask implements PriorityTask {
 
   @Override
   public void update() {
+    Entity enemy = owner.getEntity();
+
+    float direction;
+
+    if (target.getPosition().x >= enemy.getPosition().x) {
+      direction = 1f;
+    } else {
+      direction = -1f;
+    }
+
+    if (!edgeDetector.isGroundAhead(enemy, direction)) {
+      movementComponent.setMoving(false);
+      return;
+    }
+
     movementTask.setTarget(target.getPosition());
+    movementComponent.setMoving(true);
     movementTask.update();
+
     if (movementTask.getStatus() != Status.ACTIVE) {
       movementTask.start();
     }
@@ -99,6 +124,7 @@ public class ChaseTask extends DefaultTask implements PriorityTask {
       debugRenderer.drawLine(from, hit.point);
       return false;
     }
+
     debugRenderer.drawLine(from, to);
     return true;
   }

@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.spy;
 
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.item.ItemType;
@@ -44,7 +45,22 @@ class ArrowProjectileComponentTest {
   }
 
   @Test
-  void grappleArrowFliesStraight() {
+  void shouldTurnToFaceItsFlightPathAboutItsCentreSoTheHitboxStaysOnTheSprite() {
+    Entity arrow = createArrow(new Vector2(-1f, 0f), 10f, 15f);
+    ArrowProjectileComponent projectile = arrow.getComponent(ArrowProjectileComponent.class);
+    PhysicsComponent physics = arrow.getComponent(PhysicsComponent.class);
+    Vector2 centreBefore = projectile.getWorldCenter();
+
+    projectile.update();
+
+    // Box2D rotates about the body's origin - the box's corner. Turning to face left that way
+    // would fling the box a whole arrow-length away from where the sprite is drawn.
+    assertEquals(MathUtils.PI, physics.getBody().getAngle(), 1e-4f);
+    assertTrue(projectile.getWorldCenter().epsilonEquals(centreBefore, 1e-4f));
+  }
+
+  @Test
+  void grappleArrowArcsLikeEveryOtherArrow() {
     Entity arrow =
         new Entity()
             .addComponent(new PhysicsComponent())
@@ -53,7 +69,9 @@ class ArrowProjectileComponentTest {
     arrow.setPosition(0f, 0f);
     entityService.register(arrow);
 
-    assertEquals(0f, arrow.getComponent(PhysicsComponent.class).getBody().getGravityScale());
+    assertEquals(
+        ArrowProjectileComponent.ARC_GRAVITY_SCALE,
+        arrow.getComponent(PhysicsComponent.class).getBody().getGravityScale());
   }
 
   @Test

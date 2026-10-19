@@ -12,6 +12,8 @@ import com.csse3200.game.ui.UIComponent;
 
 /** Displays the player's inventory bar at the bottom of the screen as drawn rounded boxes. */
 public class InventoryBarDisplay extends UIComponent {
+  private final InventorySlotStyle slotStyle = new InventorySlotStyle();
+  private boolean dirty;
 
   private static final float SLOT_WIDTH = 90f;
   private static final float SLOT_HEIGHT = 90f;
@@ -44,9 +46,7 @@ public class InventoryBarDisplay extends UIComponent {
 
   /** Refreshes the inventory bar when the inventory changes. */
   private void refresh() {
-    if (table != null) {
-      populateSlots();
-    }
+    dirty = true;
   }
 
   private void onBackpackOpened() {
@@ -76,14 +76,14 @@ public class InventoryBarDisplay extends UIComponent {
   }
 
   /** Hides the quick bar while the backpack is open. */
-  private void hideBar() {
+  public void hideBar() {
     if (table != null) {
       table.setVisible(false);
     }
   }
 
   /** Displays the quick bar after the backpack is closed. */
-  private void showBar() {
+  public void showBar() {
     if (table != null) {
       table.setVisible(true);
     }
@@ -135,8 +135,7 @@ public class InventoryBarDisplay extends UIComponent {
    */
   private Table createSlot(ItemType item, int count, boolean selected) {
     Table slot = new Table();
-    slot.setBackground(
-        selected ? InventorySlotStyle.getSelectedBox() : InventorySlotStyle.getNormalBox());
+    slot.setBackground(selected ? slotStyle.getSelectedBox() : slotStyle.getNormalBox());
     slot.pad(6f);
 
     Texture texture =
@@ -162,8 +161,7 @@ public class InventoryBarDisplay extends UIComponent {
    */
   private Table createEmptySlot(boolean selected) {
     Table slot = new Table();
-    slot.setBackground(
-        selected ? InventorySlotStyle.getSelectedBox() : InventorySlotStyle.getNormalBox());
+    slot.setBackground(selected ? slotStyle.getSelectedBox() : slotStyle.getNormalBox());
     slot.pad(6f);
 
     slot.add().expand().fill();
@@ -173,7 +171,10 @@ public class InventoryBarDisplay extends UIComponent {
 
   @Override
   public void draw(SpriteBatch batch) {
-    // Drawing is handled by the stage.
+    if (dirty && table != null && table.isVisible()) {
+      populateSlots();
+      dirty = false;
+    }
   }
 
   @Override
@@ -183,5 +184,6 @@ public class InventoryBarDisplay extends UIComponent {
     if (root != null) {
       root.remove();
     }
+    slotStyle.dispose();
   }
 }

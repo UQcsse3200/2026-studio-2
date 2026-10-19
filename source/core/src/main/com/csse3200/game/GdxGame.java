@@ -5,7 +5,9 @@ import static com.badlogic.gdx.Gdx.app;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.csse3200.game.components.player.PlayerSnapshot;
 import com.csse3200.game.cutscene.CutsceneLoader;
+import com.csse3200.game.entities.Entity;
 import com.csse3200.game.files.UserSettings;
 import com.csse3200.game.screens.CutsceneScreen;
 import com.csse3200.game.screens.LevelsGameScreen;
@@ -36,15 +38,29 @@ public class GdxGame extends Game {
   // cutscene from being triggered multiple times.
   private boolean introStarted = false;
 
+  private PlayerSnapshot playerSnapshot;
+
   @Override
   public void create() {
     logger.info("Creating game");
     loadSettings();
 
-    // Sets background to light yellow
-    Gdx.gl.glClearColor(248f / 255f, 249 / 255f, 178 / 255f, 1);
+    applyDefaultClearColor();
 
+    // setScreen(ScreenType.LEVEL_BOSS_GAME);
     setScreen(ScreenType.MAIN_MENU);
+  }
+
+  /**
+   * Restores the default light-yellow clear colour used behind transparent terrain (e.g. Sandbox).
+   *
+   * <p>Cutscenes set a black clear colour while they are on screen; this puts the game colour back.
+   */
+  public static void applyDefaultClearColor() {
+    if (Gdx.gl == null) {
+      return;
+    }
+    Gdx.gl.glClearColor(248f / 255f, 249 / 255f, 178 / 255f, 1);
   }
 
   /** Loads the game's settings. */
@@ -93,14 +109,14 @@ public class GdxGame extends Game {
     setScreen(new CutsceneScreen(this, cutscene, destination));
   }
 
-  /** Starts the initial cutscene once per game session, then falls back to the tutorial level. */
+  /** Starts the initial cutscene once per game session, then falls back to level 1. */
   public void startInitialCutscene() {
     if (introStarted) {
       transitionTo(ScreenType.LEVEL_1_GAME);
       return;
     }
 
-    // logging for if the cutscene is not available, and fallback to tutorial level
+    // logging for if the cutscene is not available, and fallback to level 1
     CutsceneLoader.Result result = new CutsceneLoader().load("cutscene1");
     if (!result.isSuccess()) {
       logger.debug("Initial cutscene unavailable: {}", result.getError());
@@ -129,6 +145,31 @@ public class GdxGame extends Game {
     }
   }
 
+  /**
+   * Collects a snapshot of the player's state components (gold, health, inventory)
+   *
+   * @param player - the player entity to save
+   */
+  public void savePlayerState(Entity player) {
+    if (player == null) {
+      logger.warn("Attempting to save a null player");
+      return;
+    }
+    playerSnapshot = PlayerSnapshot.capture(player);
+  }
+
+  /**
+   * If a player snapshot is available then update the given player entity to match the stored
+   * snapshot data (gold, health, inventory)
+   *
+   * @param player - the player to update with the stored snapshot
+   */
+  public void restorePlayerState(Entity player) {
+    if (playerSnapshot == null) return;
+    playerSnapshot.applyTo(player);
+    playerSnapshot = null;
+  }
+
   @Override
   public void dispose() {
     logger.debug("Disposing of current screen");
@@ -152,9 +193,17 @@ public class GdxGame extends Game {
       case SANDBOX:
         return new SandboxGameScreen(this);
       case LEVEL_2_GAME:
-        LevelsGameScreen screen = new LevelsGameScreen(this);
-        screen.queueAreaSwap("level2");
-        return screen;
+        LevelsGameScreen screen2 = new LevelsGameScreen(this);
+        screen2.queueAreaSwap("level2");
+        return screen2;
+      case LEVEL_3_GAME:
+        LevelsGameScreen screen3 = new LevelsGameScreen(this);
+        screen3.queueAreaSwap("level3");
+        return screen3;
+      case LEVEL_BOSS_GAME:
+        LevelsGameScreen bossScreen = new LevelsGameScreen(this);
+        bossScreen.queueAreaSwap("boss");
+        return bossScreen;
       case SETTINGS:
         return new SettingsScreen(this);
       case SETTINGS_FROM_PAUSE:
@@ -178,6 +227,8 @@ public class GdxGame extends Game {
     LEVEL_1_GAME,
     SANDBOX,
     LEVEL_2_GAME,
+    LEVEL_3_GAME,
+    LEVEL_BOSS_GAME,
     SETTINGS,
     SETTINGS_FROM_PAUSE,
     MINIGAME_SELECT,

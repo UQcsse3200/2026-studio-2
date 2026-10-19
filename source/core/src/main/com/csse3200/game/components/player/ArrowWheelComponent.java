@@ -23,6 +23,8 @@ public class ArrowWheelComponent extends Component {
   private boolean open = false;
   private ArrowType highlighted;
   private ArrowType selected = ArrowType.STANDARD;
+  private final Vector2 screenCentre = new Vector2();
+  private boolean hasScreenCentre = false;
 
   @Override
   public void create() {
@@ -31,11 +33,32 @@ public class ArrowWheelComponent extends Component {
     entity.getEvents().addListener("closeArrowWheel", this::close);
     entity.getEvents().addListener("arrowWheelPointerMoved", this::highlightFromPointer);
     entity.getEvents().addListener("bowEquipped", this::setBowEquipped);
+    entity.getEvents().addListener("inventorySelectionChanged", this::selectNextAvailable);
   }
 
   /** Returns whether the wheel should currently be drawn. */
   public boolean isOpen() {
     return open;
+  }
+
+  /**
+   * Records where the wheel is drawn, so the pointer can be measured from its centre rather than
+   * the screen's.
+   *
+   * @param x centre in screen pixels from the left edge
+   * @param yFromTop centre in screen pixels from the top edge
+   */
+  public void setScreenCentre(float x, float yFromTop) {
+    screenCentre.set(x, yFromTop);
+    hasScreenCentre = true;
+  }
+
+  /**
+   * @return the wheel's centre in screen pixels (x from the left, y from the top), or null if the
+   *     wheel hasn't been placed on screen
+   */
+  public Vector2 getScreenCentre() {
+    return hasScreenCentre ? screenCentre : null;
   }
 
   /** Returns the arrow type under the pointer, or null when closed or aimed at the centre. */
@@ -53,7 +76,7 @@ public class ArrowWheelComponent extends Component {
    * been locked, or if the player has an inventory but no arrows of that type in it.
    */
   public boolean isAvailable(ArrowType type) {
-    if (type == null || !available.contains(type)) {
+    if (type == null || !isWheelType(type) || !available.contains(type)) {
       return false;
     }
     if (inventory == null) {
@@ -63,9 +86,19 @@ public class ArrowWheelComponent extends Component {
     return arrowItem != null && inventory.hasItem(arrowItem);
   }
 
+  /** Only types displayed on the wheel may be selected or unlocked. */
+  private static boolean isWheelType(ArrowType type) {
+    for (ArrowType wheelType : ArrowType.getWheelTypes()) {
+      if (wheelType == type) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   /** Locks or unlocks an arrow type. A locked type is drawn but cannot be selected. */
   public void setAvailable(ArrowType type, boolean unlocked) {
-    if (type == null) {
+    if (type == null || !isWheelType(type)) {
       return;
     }
     if (unlocked) {
@@ -119,6 +152,33 @@ public class ArrowWheelComponent extends Component {
     selectInventorySlotFor(selected);
     entity.getEvents().trigger("arrowSelected", selected);
     return true;
+  }
+
+  /**
+   * Switches to an arrow type the player still has, for when the selected one runs out. The
+   * inventory empties the slot and moves the selection on by itself, but it can land on a potion,
+   * which leaves the wheel showing an arrow the player can no longer fire.
+   *
+   * <p>Keeps the current type while it is still available, and leaves it alone if the player has no
+   * arrows at all.
+   *
+   * @return the type now selected, or null if the player has no arrows at all
+   */
+  ArrowType selectNextAvailable() {
+    if (isAvailable(selected)) {
+      return selected;
+    }
+
+    for (ArrowType type : ArrowType.getWheelTypes()) {
+      if (isAvailable(type)) {
+        selected = type;
+        selectInventorySlotFor(selected);
+        entity.getEvents().trigger("arrowSelected", selected);
+        return selected;
+      }
+    }
+
+    return null;
   }
 
   /** Moves the inventory selection onto the slot holding this arrow type, if there is one. */

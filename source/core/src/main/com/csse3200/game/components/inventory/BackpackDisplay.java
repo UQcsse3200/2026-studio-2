@@ -21,6 +21,8 @@ import com.csse3200.game.ui.UIComponent;
  * displays information about that item in the item details panel.
  */
 public class BackpackDisplay extends UIComponent {
+  private final InventorySlotStyle slotStyle = new InventorySlotStyle();
+  private boolean dirty;
   private Table table;
   private Table inventoryTable;
   private Table detailsTable;
@@ -44,7 +46,7 @@ public class BackpackDisplay extends UIComponent {
     inventoryTable = new Table();
     detailsTable = new Table();
 
-    detailsTable.setBackground(InventorySlotStyle.getNormalBox());
+    detailsTable.setBackground(slotStyle.getNormalBox());
 
     detailsTable.pad(20f);
 
@@ -115,9 +117,9 @@ public class BackpackDisplay extends UIComponent {
     InventoryComponent inventory = entity.getComponent(InventoryComponent.class);
 
     if (slotIndex == inventory.getSelectedSlotIndex()) {
-      slot.setBackground(InventorySlotStyle.getSelectedBox());
+      slot.setBackground(slotStyle.getSelectedBox());
     } else {
-      slot.setBackground(InventorySlotStyle.getNormalBox());
+      slot.setBackground(slotStyle.getNormalBox());
     }
 
     Texture texture =
@@ -197,13 +199,13 @@ public class BackpackDisplay extends UIComponent {
 
             if (highlightedSlot != newHighlightedSlot) {
               if (highlightedSlot != null) {
-                highlightedSlot.setBackground(InventorySlotStyle.getNormalBox());
+                highlightedSlot.setBackground(slotStyle.getNormalBox());
               }
 
               highlightedSlot = newHighlightedSlot;
 
               if (highlightedSlot != null) {
-                highlightedSlot.setBackground(InventorySlotStyle.getSelectedBox());
+                highlightedSlot.setBackground(slotStyle.getSelectedBox());
               }
             }
           }
@@ -214,7 +216,7 @@ public class BackpackDisplay extends UIComponent {
             slot.getColor().a = originalAlpha;
 
             if (highlightedSlot != null) {
-              highlightedSlot.setBackground(InventorySlotStyle.getNormalBox());
+              highlightedSlot.setBackground(slotStyle.getNormalBox());
               highlightedSlot = null;
             }
 
@@ -257,9 +259,12 @@ public class BackpackDisplay extends UIComponent {
     Table slot = new Table();
     slot.setUserObject(slotIndex);
     slot.pad(8f);
-    slot.setBackground(InventorySlotStyle.getNormalBox());
-
     InventoryComponent inventory = entity.getComponent(InventoryComponent.class);
+    slot.setBackground(
+        slotIndex == inventory.getSelectedSlotIndex()
+            ? slotStyle.getSelectedBox()
+            : slotStyle.getNormalBox());
+
     Label slotLabel =
         new Label(
             slotNumber <= inventory.getHotbarSlotCount() ? Integer.toString(slotNumber) : "", skin);
@@ -362,8 +367,13 @@ public class BackpackDisplay extends UIComponent {
     return itemType.getTexturePath();
   }
 
-  /** Refreshes the backpack after inventory data changes. */
+  /** Coalesces events until the visible backpack is drawn. */
   private void refresh() {
+    dirty = true;
+  }
+
+  private void refreshContent() {
+    dirty = false;
     populateSlots();
 
     InventoryComponent inventory = entity.getComponent(InventoryComponent.class);
@@ -379,6 +389,7 @@ public class BackpackDisplay extends UIComponent {
 
   /** Displays the backpack and hides the quick bar. */
   public void showBackpack() {
+    refreshContent();
     visible = true;
     table.setVisible(true);
 
@@ -416,7 +427,9 @@ public class BackpackDisplay extends UIComponent {
 
   @Override
   public void draw(SpriteBatch batch) {
-    // Drawing is handled by the stage.
+    if (visible && dirty) {
+      refreshContent();
+    }
   }
 
   @Override
@@ -424,7 +437,7 @@ public class BackpackDisplay extends UIComponent {
     if (table != null) {
       table.remove();
     }
-
+    slotStyle.dispose();
     super.dispose();
   }
 }

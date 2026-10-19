@@ -203,6 +203,36 @@ class BlackjackTest {
     assertFalse(game.isPlayerWinner());
   }
 
+  @Test
+  void testSetBalanceUpdatesBalance() {
+    Blackjack game = new Blackjack(100, new Random(1));
+
+    game.setBalance(250);
+
+    assertEquals(250, game.getBalance());
+  }
+
+  @Test
+  void testSetBalanceRejectsNegativeBalance() {
+    Blackjack game = new Blackjack(100, new Random(1));
+
+    assertThrows(IllegalArgumentException.class, () -> game.setBalance(-1));
+    assertEquals(100, game.getBalance());
+  }
+
+  @Test
+  void testBetUsesResynchronisedBalance() {
+    Blackjack game = new Blackjack(10, new Random(1));
+
+    assertThrows(IllegalArgumentException.class, () -> game.placeBet(50));
+
+    game.setBalance(100);
+    game.placeBet(50);
+
+    assertEquals(100, game.getBalance());
+    assertEquals(50, game.getBet());
+  }
+
   private static Blackjack resolvedGameWithAnyResult() {
     for (int seed = 0; seed < 1000; seed++) {
       Blackjack game = new Blackjack(100, new Random(seed));

@@ -21,6 +21,8 @@ public class WanderTask extends DefaultTask implements PriorityTask {
   private MovementTask movementTask;
   private WaitTask waitTask;
   private Task currentTask;
+  private EdgeDetectTask edgeDetector;
+  private Vector2 wanderTarget;
 
   /**
    * @param wanderRange Distance in X and Y the entity can move from its position when start() is
@@ -40,11 +42,15 @@ public class WanderTask extends DefaultTask implements PriorityTask {
   @Override
   public void start() {
     super.start();
+
     startPos = owner.getEntity().getPosition();
+
+    edgeDetector = new EdgeDetectTask(0.3f);
 
     waitTask = new WaitTask(waitTime);
     waitTask.create(owner);
-    movementTask = new MovementTask(getRandomPosInRange());
+    wanderTarget = getRandomPosInRange();
+    movementTask = new MovementTask(wanderTarget);
     movementTask.create(owner);
 
     movementTask.start();
@@ -62,6 +68,20 @@ public class WanderTask extends DefaultTask implements PriorityTask {
         startMoving();
       }
     }
+
+    // Edge detection
+    if (currentTask == movementTask) {
+      Vector2 currentPos = owner.getEntity().getPosition();
+
+      float direction = Math.signum(wanderTarget.x - currentPos.x);
+
+      if (direction != 0 && !edgeDetector.isGroundAhead(owner.getEntity(), direction)) {
+        movementTask.stop();
+        startWaiting();
+        return;
+      }
+    }
+
     currentTask.update();
   }
 
@@ -72,7 +92,8 @@ public class WanderTask extends DefaultTask implements PriorityTask {
 
   private void startMoving() {
     logger.debug("Starting moving");
-    movementTask.setTarget(getRandomPosInRange());
+    wanderTarget = getRandomPosInRange();
+    movementTask.setTarget(wanderTarget);
     swapTask(movementTask);
   }
 

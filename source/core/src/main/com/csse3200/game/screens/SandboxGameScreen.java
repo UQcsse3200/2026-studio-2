@@ -12,6 +12,8 @@ import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.entities.factories.RenderFactory;
 import com.csse3200.game.input.InputDecorator;
 import com.csse3200.game.input.InputService;
+import com.csse3200.game.lighting.LightingEngine;
+import com.csse3200.game.lighting.LightingService;
 import com.csse3200.game.physics.PhysicsEngine;
 import com.csse3200.game.physics.PhysicsService;
 import com.csse3200.game.rendering.RenderService;
@@ -29,6 +31,7 @@ public class SandboxGameScreen extends ScreenAdapter {
   private final Renderer renderer;
   private final PhysicsEngine physicsEngine;
   private final SandboxGameArea sandboxGameArea;
+  private final LightingEngine lightingEngine;
 
   /**
    * Creates the sandbox screen and its minimal service lifecycle.
@@ -49,6 +52,11 @@ public class SandboxGameScreen extends ScreenAdapter {
     ServiceLocator.registerRenderService(new RenderService());
 
     renderer = RenderFactory.createRenderer();
+
+    LightingService lightingService =
+        new LightingService(renderer.getCamera(), physicsEngine.getWorld());
+    ServiceLocator.registerLightingService(lightingService);
+    lightingEngine = lightingService.getEngine();
 
     TerrainFactory terrainFactory = new TerrainFactory(renderer.getCamera());
     sandboxGameArea = new SandboxGameArea(terrainFactory, renderer.getCamera());
@@ -72,6 +80,7 @@ public class SandboxGameScreen extends ScreenAdapter {
     physicsEngine.update();
     ServiceLocator.getEntityService().update();
     renderer.render();
+    renderer.render(lightingEngine);
   }
 
   @Override
@@ -96,6 +105,7 @@ public class SandboxGameScreen extends ScreenAdapter {
     ServiceLocator.getEntityService().dispose();
     ServiceLocator.getRenderService().dispose();
     renderer.dispose();
+    lightingEngine.dispose();
     ServiceLocator.getResourceService().dispose();
     physicsEngine.dispose();
     ServiceLocator.clear();

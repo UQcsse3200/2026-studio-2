@@ -68,7 +68,7 @@ public class CombatStatsComponent extends Component {
    *
    * @return is player dead
    */
-  public Boolean isDead() {
+  public boolean isDead() {
     return health == 0;
   }
 
@@ -120,7 +120,7 @@ public class CombatStatsComponent extends Component {
    */
   public void setHealth(int health) {
     boolean wasAlive = this.health > 0;
-    this.health = Math.max(0, Math.min(health, maxHealth));
+    this.health = Math.clamp(health, 0, maxHealth);
     if (entity != null) {
       entity.getEvents().trigger("updateHealth", this.health);
       if (wasAlive && isDead()) {

@@ -1,0 +1,59 @@
+# **Description**
+**Task:** [Fix item descriptions that do not match actual item stats](#xx).
+**Feature:** [Advanced Inventory System](#93)
+
+Several item descriptions in `ItemType` do not match the stats the item actually has, so the item dictionary and tooltips mislead the player. The clearest case is `ICE_ARROW`, which deals 8 direct damage but whose description reads only "Slows enemies for 5 seconds" with no mention of damage at all. By comparison `FIRE_ARROW` deals 5 direct damage and does state it, so a player reading both descriptions would reasonably conclude the fire arrow hits harder when the opposite is true. This ticket audits every `ItemType` entry, compares the description text against the damage, heal, burn, slow and poison values passed to the constructor, and corrects the descriptions so they state what the item actually does. A unit test is added so descriptions and stats cannot drift apart again.
+
+## **Example (optional)**
+- **Ice Arrow today**: Description says "Slows enemies for 5 seconds." Actual stats: 8 damage, slow factor 0.5 for 5 seconds. The damage is invisible to the player.
+- **Ice Arrow after the fix**: "Deals 8 direct damage and slows enemies for 5 seconds."
+- **Why it matters**: A player choosing between fire and ice from the arrow wheel is making that choice on wrong information.
+
+# **Dependencies**
+- [ ] Confirm with the team whether the stat values or the descriptions are the source of truth, in case a stat was meant to be changed instead (#xx)
+
+# **Milestones**
+- [ ] Audit every `ItemType` entry, comparing description text against its constructor values (Oct. 6)
+- [ ] Unit test added that fails when a description omits a non-zero stat (Oct. 7)
+- [ ] Descriptions corrected so each one states the item's real damage and effects (Oct. 7)
+- [ ] Checked in game via the item dictionary, formatting run and PR raised (Oct. 8)
+
+**Completion Deadline:** Oct. 8
+
+# **Documentation**
+- [Advanced Inventory System](../wiki/Advanced-Inventory-System)
+- [JavaDoc](JavaDoc/com/csse3200/game/components/item/ItemType)
+
+# **Member**
+- Aayush Singh Parmar (@AayushSinghParmar) (SLACK HANDLE HERE)
+
+
+=====================================================================
+SECOND, SMALLER BUG TICKET - paste separately if you want it as its own issue
+=====================================================================
+
+# **Description**
+**Task:** [Empty catch blocks hide failures](#xx).
+**Feature:** [Advanced Inventory System](#93)
+
+Three places in the codebase catch `Exception` and do nothing with it, so real failures disappear with no log line and no way to debug them. In `ItemUseComponent.shootSelectedArrow()` the arrow release sound is wrapped in a try/catch with an empty body, which means a missing or unloaded sound asset fails completely silently. `PauseMenuDisplay` has two more. This ticket replaces each empty catch with a logged warning, narrows the caught type where the specific exception is known, and keeps the existing behaviour of not crashing the game.
+
+## **Example (optional)**
+- **Today**: `sounds/Arrow_release.wav` fails to load. The rope arrow fires with no sound and nothing is written to the log, so the cause looks like a sound design issue rather than a missing asset.
+- **After the fix**: the same failure writes a warning naming the asset, and the game carries on as before.
+
+# **Dependencies**
+- [ ] None
+
+# **Milestones**
+- [ ] Replace the empty catch in `ItemUseComponent` with a logged warning (Oct. 6)
+- [ ] Replace the two empty catches in `PauseMenuDisplay` (Oct. 7)
+- [ ] Formatting run and PR raised (Oct. 7)
+
+**Completion Deadline:** Oct. 7
+
+# **Documentation**
+- [JavaDoc](JavaDoc/com/csse3200/game/components/player/ItemUseComponent)
+
+# **Member**
+- Aayush Singh Parmar (@AayushSinghParmar) (SLACK HANDLE HERE)
