@@ -561,6 +561,7 @@ public class CyclopsMinigameLogic extends Component {
     timeInState += delta;
 
     switch (state) {
+      case WIN -> finishMinigame();
       case CAUGHT -> waitForCyclopsHit();
       case LOSS -> waitBeforeRetreat();
       case RETREAT -> updateRetreat();
