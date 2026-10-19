@@ -128,7 +128,9 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-first">Constructor</div>
 <div class="table-header col-last">Description</div>
 <div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(com.csse3200.game.components.minigames.cyclopsminigame.TimingBarLogic)" class="member-name-link">TimingBarDisplay</a><wbr>(<a href="TimingBarLogic.html" title="class in com.csse3200.game.components.minigames.cyclopsminigame">TimingBarLogic</a>&nbsp;logic)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">UI display component for the timing bar logic</div>
+</div>
 </div>
 </section>
 </li>
@@ -146,12 +148,12 @@ loadScripts(document, 'script');</script>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#create()" class="member-name-link">create</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Called when the entity is created and registered.</div>
+<div class="block">Create the internal UI components for the Timing Bar Display.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#dispose()" class="member-name-link">dispose</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Called when the component is disposed.</div>
+<div class="block">Dispose of the TimingBarDisplay and cleanup any disposable components</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#draw(com.badlogic.gdx.graphics.g2d.SpriteBatch)" class="member-name-link">draw</a><wbr>(com.badlogic.gdx.graphics.g2d.SpriteBatch&nbsp;batch)</code></div>
@@ -160,14 +162,19 @@ loadScripts(document, 'script');</script>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isVisible()" class="member-name-link">isVisible</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Get the visibility status of the timing bar display</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setVisible(boolean)" class="member-name-link">setVisible</a><wbr>(boolean&nbsp;visible)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Changes the visibility of the timing bar to show or hide the UI element</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#update()" class="member-name-link">update</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Called once per frame of the game, and should be used for most component logic.</div>
+<div class="block">Updates the display to update the sweeping marker (moving or stopped) and the scoring zone
+ (shrinking after each successful attempt)</div>
 </div>
 </div>
 </div>
@@ -205,6 +212,11 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="&lt;init&gt;(com.csse3200.game.components.minigames.cyclopsminigame.TimingBarLogic)">
 <h3>TimingBarDisplay</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">TimingBarDisplay</span><wbr><span class="parameters">(<a href="TimingBarLogic.html" title="class in com.csse3200.game.components.minigames.cyclopsminigame">TimingBarLogic</a>&nbsp;logic)</span></div>
+<div class="block">UI display component for the timing bar logic</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>logic</code> - - TimingBarLogic class to handle logic behind the sweeping marker</dd>
+</dl>
 </section>
 </li>
 </ul>
@@ -219,21 +231,30 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="setVisible(boolean)">
 <h3>setVisible</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setVisible</span><wbr><span class="parameters">(boolean&nbsp;visible)</span></div>
+<div class="block">Changes the visibility of the timing bar to show or hide the UI element</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>visible</code> - boolean - True to show the UI, False to hide the UI</dd>
+</dl>
 </section>
 </li>
 <li>
 <section class="detail" id="isVisible()">
 <h3>isVisible</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">isVisible</span>()</div>
+<div class="block">Get the visibility status of the timing bar display</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>boolean - True if the display is visible, otherwise False</dd>
+</dl>
 </section>
 </li>
 <li>
 <section class="detail" id="create()">
 <h3>create</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">create</span>()</div>
-<div class="block"><span class="description-from-type-label">Description copied from class:&nbsp;<code><a href="../../Component.html#create()">Component</a></code></span></div>
-<div class="block">Called when the entity is created and registered. Initial logic such as calls to GetComponent
- should be made here, not in the constructor which is called before an entity is finished.</div>
+<div class="block">Create the internal UI components for the Timing Bar Display. Creates and groups the individual
+ elements and centres the bar (vertically and horizontally) to the game window.</div>
 <dl class="notes">
 <dt>Overrides:</dt>
 <dd><code><a href="../../../ui/UIComponent.html#create()">create</a></code>&nbsp;in class&nbsp;<code><a href="../../../ui/UIComponent.html" title="class in com.csse3200.game.ui">UIComponent</a></code></dd>
@@ -244,9 +265,8 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="update()">
 <h3>update</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">update</span>()</div>
-<div class="block"><span class="description-from-type-label">Description copied from class:&nbsp;<code><a href="../../Component.html#update()">Component</a></code></span></div>
-<div class="block">Called once per frame of the game, and should be used for most component logic. Not called if
- component is disabled.</div>
+<div class="block">Updates the display to update the sweeping marker (moving or stopped) and the scoring zone
+ (shrinking after each successful attempt)</div>
 <dl class="notes">
 <dt>Overrides:</dt>
 <dd><code><a href="../../../rendering/RenderComponent.html#update()">update</a></code>&nbsp;in class&nbsp;<code><a href="../../../rendering/RenderComponent.html" title="class in com.csse3200.game.rendering">RenderComponent</a></code></dd>
@@ -270,8 +290,7 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="dispose()">
 <h3>dispose</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">dispose</span>()</div>
-<div class="block"><span class="description-from-type-label">Description copied from class:&nbsp;<code><a href="../../Component.html#dispose()">Component</a></code></span></div>
-<div class="block">Called when the component is disposed. Dispose of any internal resources here.</div>
+<div class="block">Dispose of the TimingBarDisplay and cleanup any disposable components</div>
 <dl class="notes">
 <dt>Specified by:</dt>
 <dd><code>dispose</code>&nbsp;in interface&nbsp;<code>com.badlogic.gdx.utils.Disposable</code></dd>

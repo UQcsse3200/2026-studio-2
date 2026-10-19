@@ -132,7 +132,9 @@ loadScripts(document, 'script');</script>
  <a href="TimingBarDisplay.html" title="class in com.csse3200.game.components.minigames.cyclopsminigame">TimingBarDisplay</a>&nbsp;display,
  <a href="../../../areas/terrain/TerrainComponent.html" title="class in com.csse3200.game.areas.terrain">TerrainComponent</a>&nbsp;terrainComponent,
  <a href="../../../entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;player)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">CyclopsMinigameLogic Component Handles all game components of the minigame</div>
+</div>
 </div>
 </section>
 </li>
@@ -149,42 +151,58 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#areNextSafeLocations()" class="member-name-link">areNextSafeLocations</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Checks if there are more safe locations that can be moved to.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#create()" class="member-name-link">create</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Called when the entity is created and registered.</div>
+<div class="block">Creates the CyclopsMinigameLogic and sets up the necessary event listeners for the dev commands</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#dispose()" class="member-name-link">dispose</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Called when the component is disposed.</div>
+<div class="block">Dispose all disposable components and stops any playing sound effects</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#restartMinigame()" class="member-name-link">restartMinigame</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Restarts the cyclops minigame to the initial setup.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setLossLocations(java.util.List)" class="member-name-link">setLossLocations</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;com.badlogic.gdx.math.GridPoint2&gt;&nbsp;lossLocations)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Sets the loss locations of the minigame.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setPlayerOffset(com.badlogic.gdx.math.Vector2)" class="member-name-link">setPlayerOffset</a><wbr>(com.badlogic.gdx.math.Vector2&nbsp;playerOffset)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">set the offset of the player (the current vector location of the player)</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setSafeLocations(java.util.List)" class="member-name-link">setSafeLocations</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;com.badlogic.gdx.math.GridPoint2&gt;&nbsp;safeLocations)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Sets the safe locations of the minigame.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setWinLocation(com.badlogic.gdx.math.GridPoint2)" class="member-name-link">setWinLocation</a><wbr>(com.badlogic.gdx.math.GridPoint2&nbsp;winLocation)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Set the win position of the game area that the player moves to on winning the minigame</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#startMinigame()" class="member-name-link">startMinigame</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Starts the timing minigame.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#stopMinigame()" class="member-name-link">stopMinigame</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Stops the cyclops minigame stopping all sound effects and moving components</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#update()" class="member-name-link">update</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Called once per frame of the game, and should be used for most component logic.</div>
+<div class="block">Handles updating the minigame states depending on the current game state</div>
 </div>
 </div>
 </div>
@@ -263,6 +281,17 @@ loadScripts(document, 'script');</script>
  <a href="TimingBarDisplay.html" title="class in com.csse3200.game.components.minigames.cyclopsminigame">TimingBarDisplay</a>&nbsp;display,
  <a href="../../../areas/terrain/TerrainComponent.html" title="class in com.csse3200.game.areas.terrain">TerrainComponent</a>&nbsp;terrainComponent,
  <a href="../../../entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;player)</span></div>
+<div class="block">CyclopsMinigameLogic Component Handles all game components of the minigame</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>logic</code> - - TimingBarLogic component that handles moving the sweeping marker</dd>
+<dd><code>display</code> - - TimingBarDisplay component that handles showing the sweeping marker and
+     display</dd>
+<dd><code>terrainComponent</code> - - TerrainComponent used to position game objects and the player within
+     the game</dd>
+<dd><code>player</code> - - Entity for the player that is used in the game area (Must have an animation
+     component)</dd>
+</dl>
 </section>
 </li>
 </ul>
@@ -277,57 +306,87 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="setPlayerOffset(com.badlogic.gdx.math.Vector2)">
 <h3>setPlayerOffset</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setPlayerOffset</span><wbr><span class="parameters">(com.badlogic.gdx.math.Vector2&nbsp;playerOffset)</span></div>
+<div class="block">set the offset of the player (the current vector location of the player)</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>playerOffset</code> - - Vector2 of the current location of the player</dd>
+</dl>
 </section>
 </li>
 <li>
 <section class="detail" id="setWinLocation(com.badlogic.gdx.math.GridPoint2)">
 <h3>setWinLocation</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setWinLocation</span><wbr><span class="parameters">(com.badlogic.gdx.math.GridPoint2&nbsp;winLocation)</span></div>
+<div class="block">Set the win position of the game area that the player moves to on winning the minigame</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>winLocation</code> - - GridPoint2 location for the final place to move the player</dd>
+</dl>
 </section>
 </li>
 <li>
 <section class="detail" id="setLossLocations(java.util.List)">
 <h3>setLossLocations</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setLossLocations</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;com.badlogic.gdx.math.GridPoint2&gt;&nbsp;lossLocations)</span></div>
+<div class="block">Sets the loss locations of the minigame. The positions the player moves to on unsuccessful
+ timing minigame outcomes</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>lossLocations</code> - - List of GridPoint2 locations</dd>
+</dl>
 </section>
 </li>
 <li>
 <section class="detail" id="setSafeLocations(java.util.List)">
 <h3>setSafeLocations</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setSafeLocations</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;com.badlogic.gdx.math.GridPoint2&gt;&nbsp;safeLocations)</span></div>
+<div class="block">Sets the safe locations of the minigame. The positions the player moves to on successful timing
+ minigame outcomes</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>safeLocations</code> - - List of GridPoint2 locations</dd>
+</dl>
 </section>
 </li>
 <li>
 <section class="detail" id="areNextSafeLocations()">
 <h3>areNextSafeLocations</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">areNextSafeLocations</span>()</div>
+<div class="block">Checks if there are more safe locations that can be moved to.</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>True if more safe locations are accessible, otherwise False</dd>
+</dl>
 </section>
 </li>
 <li>
 <section class="detail" id="startMinigame()">
 <h3>startMinigame</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">startMinigame</span>()</div>
+<div class="block">Starts the timing minigame. Shows the timing bar display after a short delay and begins moving
+ the timing bar</div>
 </section>
 </li>
 <li>
 <section class="detail" id="stopMinigame()">
 <h3>stopMinigame</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">stopMinigame</span>()</div>
+<div class="block">Stops the cyclops minigame stopping all sound effects and moving components</div>
 </section>
 </li>
 <li>
 <section class="detail" id="restartMinigame()">
 <h3>restartMinigame</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">restartMinigame</span>()</div>
+<div class="block">Restarts the cyclops minigame to the initial setup. - Moves player to the starting location -
+ Resets the timing bar scoring area width to the starting value</div>
 </section>
 </li>
 <li>
 <section class="detail" id="create()">
 <h3>create</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">create</span>()</div>
-<div class="block"><span class="description-from-type-label">Description copied from class:&nbsp;<code><a href="../../Component.html#create()">Component</a></code></span></div>
-<div class="block">Called when the entity is created and registered. Initial logic such as calls to GetComponent
- should be made here, not in the constructor which is called before an entity is finished.</div>
+<div class="block">Creates the CyclopsMinigameLogic and sets up the necessary event listeners for the dev commands</div>
 <dl class="notes">
 <dt>Overrides:</dt>
 <dd><code><a href="../../Component.html#create()">create</a></code>&nbsp;in class&nbsp;<code><a href="../../Component.html" title="class in com.csse3200.game.components">Component</a></code></dd>
@@ -338,9 +397,7 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="update()">
 <h3>update</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">update</span>()</div>
-<div class="block"><span class="description-from-type-label">Description copied from class:&nbsp;<code><a href="../../Component.html#update()">Component</a></code></span></div>
-<div class="block">Called once per frame of the game, and should be used for most component logic. Not called if
- component is disabled.</div>
+<div class="block">Handles updating the minigame states depending on the current game state</div>
 <dl class="notes">
 <dt>Overrides:</dt>
 <dd><code><a href="../../Component.html#update()">update</a></code>&nbsp;in class&nbsp;<code><a href="../../Component.html" title="class in com.csse3200.game.components">Component</a></code></dd>
@@ -351,8 +408,7 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="dispose()">
 <h3>dispose</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">dispose</span>()</div>
-<div class="block"><span class="description-from-type-label">Description copied from class:&nbsp;<code><a href="../../Component.html#dispose()">Component</a></code></span></div>
-<div class="block">Called when the component is disposed. Dispose of any internal resources here.</div>
+<div class="block">Dispose all disposable components and stops any playing sound effects</div>
 <dl class="notes">
 <dt>Overrides:</dt>
 <dd><code><a href="../../Component.html#dispose()">dispose</a></code>&nbsp;in class&nbsp;<code><a href="../../Component.html" title="class in com.csse3200.game.components">Component</a></code></dd>

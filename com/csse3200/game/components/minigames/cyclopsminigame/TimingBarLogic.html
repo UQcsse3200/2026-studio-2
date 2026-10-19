@@ -105,7 +105,10 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-first">Constructor</div>
 <div class="table-header col-last">Description</div>
 <div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(float)" class="member-name-link">TimingBarLogic</a><wbr>(float&nbsp;scoringAreaWidth)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Timing bar logic component to be the mathematical state of a timing bar and a sweeping marker A
+ scoring area is centred in the area to act as the scoring zone</div>
+</div>
 </div>
 </section>
 </li>
@@ -123,7 +126,7 @@ loadScripts(document, 'script');</script>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#changeScoringAreaWidth(float)" class="member-name-link">changeScoringAreaWidth</a><wbr>(float&nbsp;width)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Change the width of the scoring area to the given width</div>
+<div class="block">Change the width of the scoring area to the given width.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#checkHit()" class="member-name-link">checkHit</a>()</code></div>
@@ -132,13 +135,20 @@ loadScripts(document, 'script');</script>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>float</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getMarkerX()" class="member-name-link">getMarkerX</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Get the current X location of the marker that needs to be scaled to the visual width of the
+ timing bar</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>float</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getScoringAreaSize()" class="member-name-link">getScoringAreaSize</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Get the current size of the scoring area</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#resetMarker()" class="member-name-link">resetMarker</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Resets the sliding marker to the start of the timing bar</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#startMarker()" class="member-name-link">startMarker</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
@@ -175,10 +185,11 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="&lt;init&gt;(float)">
 <h3>TimingBarLogic</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">TimingBarLogic</span><wbr><span class="parameters">(float&nbsp;scoringAreaWidth)</span></div>
+<div class="block">Timing bar logic component to be the mathematical state of a timing bar and a sweeping marker A
+ scoring area is centred in the area to act as the scoring zone</div>
 <dl class="notes">
 <dt>Parameters:</dt>
-<dd><code>scoringAreaWidth</code> - Scoring area width is designed to be a float as a percentage (e.g 0 -
-     100%)</dd>
+<dd><code>scoringAreaWidth</code> - percentage of timing bar to cover with a "scoring zone" (0-100%)</dd>
 </dl>
 </section>
 </li>
@@ -194,19 +205,30 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="getMarkerX()">
 <h3>getMarkerX</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">float</span>&nbsp;<span class="element-name">getMarkerX</span>()</div>
+<div class="block">Get the current X location of the marker that needs to be scaled to the visual width of the
+ timing bar</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>float - between 0 and 1 of the current position of the marker.</dd>
+</dl>
 </section>
 </li>
 <li>
 <section class="detail" id="getScoringAreaSize()">
 <h3>getScoringAreaSize</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">float</span>&nbsp;<span class="element-name">getScoringAreaSize</span>()</div>
+<div class="block">Get the current size of the scoring area</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>float - percentage of timing bar covered</dd>
+</dl>
 </section>
 </li>
 <li>
 <section class="detail" id="changeScoringAreaWidth(float)">
 <h3>changeScoringAreaWidth</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">changeScoringAreaWidth</span><wbr><span class="parameters">(float&nbsp;width)</span></div>
-<div class="block">Change the width of the scoring area to the given width</div>
+<div class="block">Change the width of the scoring area to the given width. And centres it within the timing bar</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>width</code> - - float value as a percentage, 0-100%</dd>
@@ -220,7 +242,7 @@ loadScripts(document, 'script');</script>
 <div class="block">Update the marker to move along the bar.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
-<dd><code>deltaTime</code> - </dd>
+<dd><code>deltaTime</code> - - time passed since last frame</dd>
 </dl>
 </section>
 </li>
@@ -242,6 +264,7 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="resetMarker()">
 <h3>resetMarker</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">resetMarker</span>()</div>
+<div class="block">Resets the sliding marker to the start of the timing bar</div>
 </section>
 </li>
 <li>
@@ -251,7 +274,7 @@ loadScripts(document, 'script');</script>
 <div class="block">Checks whether the marker is in the scoring green area.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>True when the marker is in the scoring area, otherwise False.</dd>
+<dd>boolean - True when the marker is in the scoring area, otherwise False.</dd>
 </dl>
 </section>
 </li>
