@@ -25,8 +25,8 @@ public class PhysicsContactListener implements ContactListener {
   // this is a measure of how many pixels on the top half of the sides of the platform the player
   // can collide with for the physics engine to accept that as a valid jump and adjust the player's
   // position to reflect a successful jump
-  private final float platformCollisionLenienceHeight = 1f;
-  private final float collisionTolerance = 0.1f;
+  private static final float platformCollisionLenienceHeight = 1f;
+  private static final float collisionTolerance = 0.1f;
 
   // caches results from preSolve to handle the end of contact updating once a collision is complete
   private PlayerActions playerActions; // stores reference to a playerActions from a contact

@@ -23,7 +23,6 @@ public abstract class RenderComponent extends Component implements Renderable, D
   private float beforeFlashBackground = 1f;
   private Entity player = null;
   public float rainIntensity = 1f;
-  private int updateInterval = 0;
   private float target = 1f;
 
   @Override
@@ -77,18 +76,13 @@ public abstract class RenderComponent extends Component implements Renderable, D
       darkness = 0.25f;
     }
     if (darkness > 0.25f) {
-      // darkness -= deltaTime / 100f;
       darkness = target;
     }
     lightning += deltaTime;
     lightning %= 20; // 40
-    if (lightning > 5f && lightning < 5.5f) {
-      darkness = 1.1f;
-      ServiceLocator.getLightingService().getEngine().setAmbientLight(1f);
-    } else if (lightning > 5.7f && lightning < 5.8f) {
-      darkness = 1.1f;
-      ServiceLocator.getLightingService().getEngine().setAmbientLight(1f);
-    } else if (lightning > 13f && lightning < 13.3f) {
+    if (lightning > 5f && lightning < 5.5f
+        || lightning > 5.7f && lightning < 5.8f
+        || lightning > 13f && lightning < 13.3f) {
       darkness = 1.1f;
       ServiceLocator.getLightingService().getEngine().setAmbientLight(1f);
     } else {
@@ -97,14 +91,13 @@ public abstract class RenderComponent extends Component implements Renderable, D
     }
   }
 
-  private void updateBackgroundLight(float deltaTime) {
+  private void updateBackgroundLight() {
     // Prevent black screen after flash
     if (backgroundLight <= 0.125f) {
       backgroundLight = 0.125f;
     }
     // Keep decrementing light until full night reached
     if (backgroundLight > 0.125f) {
-      // backgroundLight -= deltaTime / 100f;
       backgroundLight = target;
     }
     // if lightning currently striking
@@ -148,7 +141,7 @@ public abstract class RenderComponent extends Component implements Renderable, D
       darkness = beforeFlash;
       backgroundLight = beforeFlashBackground;
       updateDarkness(deltaTime);
-      updateBackgroundLight(deltaTime);
+      updateBackgroundLight();
     }
   }
 

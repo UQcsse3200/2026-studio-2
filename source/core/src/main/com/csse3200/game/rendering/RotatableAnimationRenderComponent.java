@@ -10,7 +10,6 @@ import com.csse3200.game.components.level.RotatableMapComponent;
 public class RotatableAnimationRenderComponent extends AnimationRenderComponent {
   private final TextureRegion renderRegion = new TextureRegion();
   private RotatableMapComponent rotateComponent;
-  private float rotation;
   private boolean flashing = false;
   private float flashTime = 0f;
 
