@@ -25,7 +25,6 @@ class ProjectileFactoryTest {
   @BeforeEach
   void setUp() {
     ServiceLocator.registerPhysicsService(new PhysicsService());
-    ServiceLocator.registerPhysicsService(new PhysicsService());
 
     MockServices.registerLighting();
     MockServices.registerTextures();
@@ -91,7 +90,8 @@ class ProjectileFactoryTest {
   @Test
   void shouldCreateSkeletonArcherProjectileWithConfiguredDamageAndLifetime() {
     Entity projectile =
-        EnemyProjectileFactory.createSkeletonArcherProjectile(new Vector2(3f, 4f), 7, 5f, 2f);
+        EnemyProjectileFactory.createSkeletonArcherProjectile(
+            new Entity(), new Vector2(0f, 0f), new Vector2(3f, 4f), 7, 5f, 2f);
 
     assertEquals(7, projectile.getComponent(CombatStatsComponent.class).getBaseAttack());
     assertNotNull(projectile.getComponent(ProjectileComponent.class));

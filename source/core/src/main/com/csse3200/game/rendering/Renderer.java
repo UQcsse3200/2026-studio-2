@@ -98,7 +98,10 @@ public class Renderer implements Disposable {
     Matrix4 projMatrix = camera.getProjectionMatrix();
     batch.setProjectionMatrix(projMatrix);
     GdxGame.applyDefaultClearColor();
-    Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+    // Same check as applyDefaultClearColor(): Gdx.gl is null when there is no OpenGL context.
+    if (Gdx.gl != null) {
+      Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+    }
 
     // The stage shares this batch and may leave its color/alpha tinted (e.g. a fading UI
     // actor) after its last draw call. Reset it before world rendering so that tint doesn't
@@ -117,8 +120,10 @@ public class Renderer implements Disposable {
     Matrix4 projMatrix = camera.getProjectionMatrix();
 
     batch.setProjectionMatrix(projMatrix);
-    Gdx.gl.glClearColor(248f / 255f, 249 / 255f, 178 / 255f, 1);
-    Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+    GdxGame.applyDefaultClearColor();
+    if (Gdx.gl != null) {
+      Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+    }
 
     batch.begin();
     renderService.render(batch);
