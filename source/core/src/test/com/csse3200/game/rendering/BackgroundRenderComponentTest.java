@@ -21,8 +21,11 @@ import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.services.GameTime;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
+import java.lang.reflect.Method;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.verification.VerificationMode;
@@ -215,5 +218,13 @@ public class BackgroundRenderComponentTest {
     background.draw(batch);
 
     verifyNoInteractions(batch);
+  }
+
+  @ParameterizedTest
+  @CsvSource({"3.75, 3.0", "-3.75, -3.0", "0.75, 0.0", "-0.75, 0.0"})
+  void rainGridTruncatesFractionalBoundsTowardZero(float value, float expected) throws Exception {
+    Method truncate = BackgroundRenderComponent.class.getDeclaredMethod("truncate", float.class);
+    truncate.setAccessible(true);
+    assertEquals(expected, (float) truncate.invoke(null, value), 0.0001f);
   }
 }
