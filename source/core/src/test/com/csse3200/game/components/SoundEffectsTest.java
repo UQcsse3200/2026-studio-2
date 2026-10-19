@@ -54,7 +54,7 @@ class SoundEffectsTest {
     SoundEffects.load(resources);
     SoundEffects.unload(resources);
 
-    verify(resources).loadSounds(SoundEffects.FILES);
-    verify(resources).unloadAssets(SoundEffects.FILES);
+    verify(resources).loadSounds(SoundEffects.FILES.toArray(String[]::new));
+    verify(resources).unloadAssets(SoundEffects.FILES.toArray(String[]::new));
   }
 }

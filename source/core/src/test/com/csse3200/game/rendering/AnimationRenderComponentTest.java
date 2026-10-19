@@ -296,6 +296,37 @@ class AnimationRenderComponentTest {
   }
 
   @Test
+  void shouldUseEntityGeometryWhenAnAnchorHasNoPixelScale() {
+    ServiceLocator.registerTimeSource(mock(GameTime.class));
+    TextureAtlas atlas = createMockAtlas("idle", 1);
+    Texture texture = mock(Texture.class);
+    when(atlas.findRegions("idle").first().getTexture()).thenReturn(texture);
+    AnimationRenderComponent animator = new AnimationRenderComponent(atlas);
+    Entity entity = new Entity();
+    entity.setPosition(4f, 7f);
+    entity.setScale(2f, 3f);
+    animator.setEntity(entity);
+    animator.addAnimation(
+        "idle", 1f, com.badlogic.gdx.graphics.g2d.Animation.PlayMode.LOOP, 40f, 12f);
+    animator.startAnimation("idle");
+    SpriteBatch batch = mock(SpriteBatch.class);
+
+    animator.draw(batch);
+
+    verify(batch)
+        .draw(
+            eq(texture),
+            eq(4f),
+            eq(7f),
+            eq(2f),
+            eq(3f),
+            anyFloat(),
+            anyFloat(),
+            anyFloat(),
+            anyFloat());
+  }
+
+  @Test
   void shouldStopAnimation() {
     TextureAtlas atlas = createMockAtlas("test_name", 1);
     AnimationRenderComponent animator = new AnimationRenderComponent(atlas);

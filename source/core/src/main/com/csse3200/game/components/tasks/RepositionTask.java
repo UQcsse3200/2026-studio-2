@@ -45,9 +45,7 @@ public class RepositionTask extends DefaultTask implements PriorityTask {
 
     Vector2 enemyPos = owner.getEntity().getPosition();
     Vector2 targetPos = target.getPosition();
-    Vector2 repositionDir = enemyPos.cpy().sub(targetPos);
-    repositionDir.y = 0;
-    repositionDir.nor();
+    Vector2 repositionDir = directionAwayFrom(enemyPos, targetPos);
     Vector2 reposition = enemyPos.cpy().add(repositionDir.scl(repositionDistance));
 
     movementTask = new MovementTask(reposition);
@@ -63,6 +61,7 @@ public class RepositionTask extends DefaultTask implements PriorityTask {
     Vector2 enemyPos = owner.getEntity().getPosition();
     Vector2 targetPos = target.getPosition();
     float direction = Math.signum(enemyPos.x - targetPos.x);
+
     if (!behaviour.equals("flying")) {
       if (!edgeDetector.isGroundAhead(owner.getEntity(), direction)) {
         movementTask.stop();
@@ -77,6 +76,17 @@ public class RepositionTask extends DefaultTask implements PriorityTask {
       status = Status.FINISHED;
       repositionRequired = false;
     }
+  }
+
+  /**
+   * @return the unit direction to back off in. On the ground that is straight along the floor.
+   */
+  protected Vector2 directionAwayFrom(Vector2 enemyPos, Vector2 targetPos) {
+    Vector2 away = enemyPos.cpy().sub(targetPos);
+    if (!behaviour.equals("flying")) {
+      away.y = 0;
+    }
+    return away.nor();
   }
 
   @Override

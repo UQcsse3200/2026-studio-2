@@ -1,8 +1,11 @@
 package com.csse3200.game.rendering;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
 import com.csse3200.game.components.Component;
+import com.csse3200.game.components.player.PlayerActions;
+import com.csse3200.game.entities.Entity;
 import com.csse3200.game.services.ServiceLocator;
 
 /**
@@ -15,8 +18,12 @@ public abstract class RenderComponent extends Component implements Renderable, D
   public float lightning = 0f;
   public float backgroundLight = 1f;
   private boolean weather = false;
+  private Float fixedZIndex;
   private float beforeFlash = 1f;
   private float beforeFlashBackground = 1f;
+  private Entity player = null;
+  public float rainIntensity = 1f;
+  private float target = 1f;
 
   @Override
   public void create() {
@@ -69,32 +76,32 @@ public abstract class RenderComponent extends Component implements Renderable, D
       darkness = 0.25f;
     }
     if (darkness > 0.25f) {
-      darkness -= deltaTime / 100f;
+      darkness = target;
     }
     lightning += deltaTime;
     lightning %= 20; // 40
-    if (lightning > 5f && lightning < 5.5f) {
-      darkness = 1f;
-    } else if (lightning > 5.7f && lightning < 5.8f) {
-      darkness = 1f;
-    } else if (lightning > 13f && lightning < 13.3f) {
-      darkness = 1f;
+    if (lightning > 5f && lightning < 5.5f
+        || lightning > 5.7f && lightning < 5.8f
+        || lightning > 13f && lightning < 13.3f) {
+      darkness = 1.1f;
+      ServiceLocator.getLightingService().getEngine().setAmbientLight(1f);
     } else {
       beforeFlash = darkness;
+      ServiceLocator.getLightingService().getEngine().setAmbientLight(beforeFlash);
     }
   }
 
-  private void updateBackgroundLight(float deltaTime) {
+  private void updateBackgroundLight() {
     // Prevent black screen after flash
     if (backgroundLight <= 0.125f) {
       backgroundLight = 0.125f;
     }
     // Keep decrementing light until full night reached
     if (backgroundLight > 0.125f) {
-      backgroundLight -= deltaTime / 100f;
+      backgroundLight = target;
     }
     // if lightning currently striking
-    if (darkness == 1f) {
+    if (darkness == 1.1f) {
       // only flash background if it is dark enough, limit how bright it may flash
       if (backgroundLight < 0.3f) {
         backgroundLight = 0.3f;
@@ -104,22 +111,59 @@ public abstract class RenderComponent extends Component implements Renderable, D
     }
   }
 
-  @Override
-  public void update() {
-    if (weather) {
-      if (ServiceLocator.getTimeSource() != null) {
-        float deltaTime = ServiceLocator.getTimeSource().getDeltaTime();
-        darkness = beforeFlash;
-        backgroundLight = beforeFlashBackground;
-        updateDarkness(deltaTime);
-        updateBackgroundLight(deltaTime);
-        ServiceLocator.getLightingService().getEngine().setAmbientLight(darkness);
+  private void getTargetIntensity() {
+    if (player != null) {
+      if (player.getPosition().y >= 98) {
+        if (target > 0f) {
+          // gradual increase to max intensity once at top
+          target -= 0.001f;
+        } else {
+          target = 0f;
+        }
+      } else {
+        float currentTarget = ((player.getPosition().y - 6f) / 92f);
+        target = 1f - (currentTarget * 0.75f);
       }
+      rainIntensity = target;
     }
   }
 
   @Override
+  public void update() {
+    if (player == null) {
+      Array<Entity> entities = ServiceLocator.getEntityService().getEntities();
+      for (Entity entity : entities) {
+        if (entity.getComponent(PlayerActions.class) != null) {
+          player = entity;
+        }
+      }
+    }
+
+    if (weather && ServiceLocator.getTimeSource() != null) {
+      getTargetIntensity();
+      float deltaTime = ServiceLocator.getTimeSource().getDeltaTime();
+      darkness = beforeFlash;
+      backgroundLight = beforeFlashBackground;
+      updateDarkness(deltaTime);
+      updateBackgroundLight();
+    }
+  }
+
+  /**
+   * Draws this component at a fixed depth instead of by the entity's height, for scenery the player
+   * should always walk in front of. Lower values are drawn first, further back.
+   *
+   * @param zIndex the fixed depth to draw at
+   */
+  public void setFixedZIndex(float zIndex) {
+    this.fixedZIndex = zIndex;
+  }
+
+  @Override
   public float getZIndex() {
+    if (fixedZIndex != null) {
+      return fixedZIndex;
+    }
     // The smaller the Y value, the higher the Z index, so that closer entities are drawn in front
     return -entity.getPosition().y;
   }

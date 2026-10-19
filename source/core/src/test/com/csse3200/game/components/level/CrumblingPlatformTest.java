@@ -141,21 +141,27 @@ public class CrumblingPlatformTest {
     verify(platform, atLeastOnce()).respawn();
   }
 
-  @Test
-  void crumbleShouldDisablePlatform() {
+  /** A mock entity with a physics component and a texture renderer showing the given texture. */
+  private static Entity entityShowing(Texture texture) {
     Entity e = mock(Entity.class);
 
     PhysicsComponent physics = mock(PhysicsComponent.class);
     physics.setEntity(e);
 
     DynamicTextureRenderComponent textureRenderer = mock(DynamicTextureRenderComponent.class);
-    Texture texture = mock(Texture.class);
     textureRenderer.setEntity(e);
     when(textureRenderer.getTexture()).thenReturn(texture);
     doNothing().when(textureRenderer).setTexture(anyString());
 
     when(e.getComponent(PhysicsComponent.class)).thenReturn(physics);
     when(e.getComponent(DynamicTextureRenderComponent.class)).thenReturn(textureRenderer);
+    return e;
+  }
+
+  @Test
+  void crumbleShouldDisablePlatform() {
+    Texture texture = mock(Texture.class);
+    Entity e = entityShowing(texture);
 
     CrumblingPlatformComponent platform = new CrumblingPlatformComponent(0, 0f, 2f, 0f);
     platform.setEntity(e);
@@ -171,19 +177,8 @@ public class CrumblingPlatformTest {
 
   @Test
   void respawnShouldEnablePlatform() {
-    Entity e = mock(Entity.class);
-
-    PhysicsComponent physics = mock(PhysicsComponent.class);
-    physics.setEntity(e);
-
-    DynamicTextureRenderComponent textureRenderer = mock(DynamicTextureRenderComponent.class);
     Texture texture = mock(Texture.class);
-    textureRenderer.setEntity(e);
-    when(textureRenderer.getTexture()).thenReturn(texture);
-    doNothing().when(textureRenderer).setTexture(anyString());
-
-    when(e.getComponent(PhysicsComponent.class)).thenReturn(physics);
-    when(e.getComponent(DynamicTextureRenderComponent.class)).thenReturn(textureRenderer);
+    Entity e = entityShowing(texture);
 
     CrumblingPlatformComponent platform = new CrumblingPlatformComponent(0, 0f, 0f, 2f);
     platform.setEntity(e);
@@ -195,6 +190,7 @@ public class CrumblingPlatformTest {
     assertEquals(CrumblingPlatformComponent.CrumbleState.NORMAL, platform.state);
     assertEquals(0f, platform.stateTime);
     // physics being enabled is tested appropriately in game
-    assertEquals(platform.platformTexture, textureRenderer.getTexture());
+    assertEquals(
+        platform.platformTexture, e.getComponent(DynamicTextureRenderComponent.class).getTexture());
   }
 }

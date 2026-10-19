@@ -24,7 +24,7 @@ import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.physics.components.PhysicsMovementComponent;
 import com.csse3200.game.rendering.AnimationRenderComponent;
 import com.csse3200.game.rendering.RenderService;
-import com.csse3200.game.rendering.TextureRenderComponent;
+import com.csse3200.game.rendering.ShopDoorRenderComponent;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import org.junit.jupiter.api.BeforeEach;
@@ -37,8 +37,9 @@ class NPCFactoryTest {
   void setUp() {
     ServiceLocator.registerPhysicsService(new PhysicsService());
     RenderService renderService = mock(RenderService.class);
-    when(renderService.getDebug())
-        .thenReturn(mock(com.csse3200.game.rendering.DebugRenderer.class));
+    com.csse3200.game.rendering.DebugRenderer debugRendererMock =
+        mock(com.csse3200.game.rendering.DebugRenderer.class);
+    when(renderService.getDebug()).thenReturn(debugRendererMock);
     ServiceLocator.registerRenderService(renderService);
 
     ResourceService resources = mock(ResourceService.class);
@@ -59,11 +60,11 @@ class NPCFactoryTest {
   }
 
   @Test
-  void shouldUseConfiguredShopkeeperTexture() {
+  void shouldRenderShopkeeperAsShopDoor() {
     Entity shopkeeper = NPCFactory.createShopkeeper();
 
-    assertNotNull(shopkeeper.getComponent(TextureRenderComponent.class));
-    org.junit.jupiter.api.Assertions.assertEquals(1.5f, shopkeeper.getScale().y);
+    assertNotNull(shopkeeper.getComponent(ShopDoorRenderComponent.class));
+    org.junit.jupiter.api.Assertions.assertEquals(3f, shopkeeper.getScale().y);
   }
 
   @Test

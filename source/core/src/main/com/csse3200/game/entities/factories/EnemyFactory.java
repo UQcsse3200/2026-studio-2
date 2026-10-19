@@ -8,7 +8,6 @@ import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.csse3200.game.ai.tasks.AITaskComponent;
 import com.csse3200.game.components.BossPhaseComponent;
 import com.csse3200.game.components.BurnStatsComponent;
-import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.EnemyDeathComponent;
 import com.csse3200.game.components.EnemyItemDropComponent;
@@ -39,10 +38,8 @@ import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.physics.components.PhysicsMovementComponent;
 import com.csse3200.game.rendering.AnimationRenderComponent;
-import com.csse3200.game.rendering.BossHealthRenderComponent;
 import com.csse3200.game.rendering.EnemyHealthRenderComponent;
 import com.csse3200.game.rendering.ParticleEffectsRenderingComponent;
-import com.csse3200.game.rendering.StatusEffectRenderComponent;
 import com.csse3200.game.rendering.TextureRenderComponent;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.List;
@@ -205,6 +202,8 @@ public class EnemyFactory {
             PhysicsComponent.AlignX.CENTER,
             PhysicsComponent.AlignY.BOTTOM);
 
+    // skeletonArcher.getComponent(AnimationRenderComponent.class).scaleEntity();
+
     return skeletonArcher;
   }
 
@@ -244,7 +243,7 @@ public class EnemyFactory {
    */
   public static Entity createVulture(Entity target) {
     EnemyConfig config = configs.vulture;
-    Entity Vulture = createEnemy(target, config);
+    Entity vulture = createEnemy(target, config);
 
     AnimationRenderComponent animator =
         new AnimationRenderComponent(
@@ -253,16 +252,15 @@ public class EnemyFactory {
     animator.addAnimation("walk", 0.15f, Animation.PlayMode.LOOP);
     animator.addAnimation("idle", 0.15f, Animation.PlayMode.LOOP);
 
-    Vulture
+    vulture
         // .addComponent(new CombatStatsComponent(config.health, config.baseAttack))
         .addComponent(animator)
         .addComponent(new EnemyAnimationController(target))
         .addComponent(new ChaseSoundComponent("sounds/osprey.ogg", 0.15f));
 
-    Vulture.getComponent(AnimationRenderComponent.class).scaleEntity();
-    // Vulture.getComponent(ColliderComponent.class).setSensor(true);
+    vulture.getComponent(AnimationRenderComponent.class).scaleEntity();
 
-    return Vulture;
+    return vulture;
   }
 
   /**
@@ -301,6 +299,8 @@ public class EnemyFactory {
             PhysicsComponent.AlignX.CENTER,
             PhysicsComponent.AlignY.BOTTOM);
 
+    // necromancer.getComponent(AnimationRenderComponent.class).scaleEntity();
+
     return necromancer;
   }
 
@@ -310,8 +310,9 @@ public class EnemyFactory {
    * @param target entity the enemy will chase and attack
    * @return cyclops entity
    */
-  public static Entity createCalypso(
-      Entity target, List<Vector2> tpPositions, CameraComponent camera) {
+  public static Entity createCalypso(Entity target, List<Vector2> tpPositions
+      // CameraComponent camera
+      ) {
     EnemyConfig config = configs.calypso;
     Entity calypso = createEnemy(target, config);
 
@@ -338,7 +339,9 @@ public class EnemyFactory {
     calypso.addComponent(new EnemyAnimationController(target));
     calypso.addComponent(animator);
     calypso.addComponent(new EnemyTeleportComponent(tpPositions, 500L, 10000L));
-    calypso.addComponent(new BossHealthRenderComponent(camera));
+    // calypso.addComponent(new BossHealthRenderComponent(camera));
+    calypso.addComponent(
+        new EnemyHealthRenderComponent()); //  TEMP while boss health bar being fixed
     calypso.addComponent(new BossPhaseComponent());
 
     animator.scaleEntity();
@@ -414,7 +417,7 @@ public class EnemyFactory {
             .addComponent(new EnemyItemDropComponent(config.itemDrops))
             .addComponent(aiComponent)
             .addComponent(new SlowStatsComponent())
-            .addComponent(new StatusEffectRenderComponent())
+            // .addComponent(new StatusEffectRenderComponent())
             .addComponent(new EnemySummonComponent(false));
 
     if (config != configs.calypso) {
@@ -442,9 +445,17 @@ public class EnemyFactory {
 
     // If the enemy is a range type, add a range task.
     if (config.attackType.equals("range")) {
+      // Archers fire at the speed of a player's standard arrow, which arcs the same way.
       aiComponent.addTask(
           new RangedAttackTask(
-              target, 20, config.attackRange, 2f, config.baseAttack, 4.5f, 5f, config.attackType));
+              target,
+              20,
+              config.attackRange,
+              2f,
+              config.baseAttack,
+              ProjectileFactory.STANDARD_ARROW_SPEED,
+              5f,
+              config.attackType));
       // If the enemy is a summon type, add summon + range task
     } else if (config.attackType.equals("summon")) {
       aiComponent

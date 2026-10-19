@@ -10,6 +10,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 @ExtendWith(GameExtension.class)
 class CutsceneInputComponentTest {
@@ -55,36 +57,23 @@ class CutsceneInputComponentTest {
   }
 
   @Test
-  void touchUpShouldInvokeAdvanceAction() {
-    AtomicBoolean invoked = new AtomicBoolean(false);
-    CutsceneInputComponent input = new CutsceneInputComponent(() -> invoked.set(true));
-
-    assertTrue(input.touchUp(100, 200, 0, 0));
-    assertTrue(invoked.get());
-  }
-
-  @Test
   void touchUpShouldReturnTrue() {
     CutsceneInputComponent input = new CutsceneInputComponent(() -> {});
 
     assertTrue(input.touchUp(0, 0, 0, 0));
   }
 
-  @Test
-  void touchUpAnyPointerShouldInvokeAdvance() {
+  @ParameterizedTest
+  @CsvSource({
+    "100, 200, 0, 0", // primary pointer, left click
+    "100, 200, 1, 0", // pointer 1 (second finger)
+    "100, 200, 0, 1" // right click
+  })
+  void touchUpShouldInvokeAdvanceAction(int screenX, int screenY, int pointer, int button) {
     AtomicBoolean invoked = new AtomicBoolean(false);
     CutsceneInputComponent input = new CutsceneInputComponent(() -> invoked.set(true));
 
-    assertTrue(input.touchUp(100, 200, 1, 0)); // pointer 1 (second finger)
-    assertTrue(invoked.get());
-  }
-
-  @Test
-  void touchUpAnyButtonShouldInvokeAdvance() {
-    AtomicBoolean invoked = new AtomicBoolean(false);
-    CutsceneInputComponent input = new CutsceneInputComponent(() -> invoked.set(true));
-
-    assertTrue(input.touchUp(100, 200, 0, 1)); // right click
+    assertTrue(input.touchUp(screenX, screenY, pointer, button));
     assertTrue(invoked.get());
   }
 }

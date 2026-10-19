@@ -4,7 +4,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.utils.Align;
-import com.csse3200.game.components.TextBoxComponent;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,12 +12,12 @@ import org.slf4j.LoggerFactory;
 
 /** Defines the configs to be loaded by TextBoxFactory */
 public class TextConfig {
-  private static final Logger logger = LoggerFactory.getLogger(TextBoxComponent.class);
+  private static final Logger logger = LoggerFactory.getLogger(TextConfig.class);
   // All values are default
 
-  // Positions
-  public int xPos = 100;
-  public int yPos = 100;
+  // Scene2D positions use floating-point coordinates, including subpixel placement.
+  public float xPos = 100f;
+  public float yPos = 100f;
 
   // The box display. Stored as colour names (e.g. "Color.WHITE" or "WHITE") because these are
   // read straight from JSON, and Json can't deserialise a plain string into a Colour object.
@@ -98,8 +97,8 @@ public class TextConfig {
     try {
       Field field = Color.class.getField(name.toUpperCase());
       Object fieldValue = field.get(null);
-      if (fieldValue instanceof Color) {
-        return (Color) fieldValue;
+      if (fieldValue instanceof Color color) {
+        return color;
       }
     } catch (ReflectiveOperationException | IllegalArgumentException e) {
       // fall through to fallback

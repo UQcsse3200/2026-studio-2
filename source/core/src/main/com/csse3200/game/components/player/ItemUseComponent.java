@@ -19,6 +19,8 @@ import org.slf4j.LoggerFactory;
  * execution based on the currently selected item in the player's inventory.
  */
 public class ItemUseComponent extends Component {
+  private static final String ITEM_USED = "itemUsed";
+  private static final String ITEM_USE_FAILED = "itemUseFailed";
   private static final Logger logger = LoggerFactory.getLogger(ItemUseComponent.class);
   private static final Vector2 DEFAULT_AIM = new Vector2(1f, 0f);
 
@@ -59,12 +61,12 @@ public class ItemUseComponent extends Component {
     }
 
     if (direction == null || direction.isZero()) {
-      entity.getEvents().trigger("itemUseFailed", selected);
+      entity.getEvents().trigger(ITEM_USE_FAILED, selected);
       return;
     }
 
     if (selected == ItemType.ROPE_ARROW) {
-      entity.getEvents().trigger("itemUsed", selected);
+      entity.getEvents().trigger(ITEM_USED, selected);
       entity.getEvents().trigger("grappleDrawStart", direction);
       return;
     }
@@ -72,15 +74,13 @@ public class ItemUseComponent extends Component {
     // Reject before reserving ammo. Readiness also covers a bow that already has a paid arrow
     // charging, so repeat clicks and the alternate attack input cannot consume another arrow.
     if (!isPrimaryWeaponReady()) {
-      entity.getEvents().trigger("itemUseFailed", selected);
+      entity.getEvents().trigger(ITEM_USE_FAILED, selected);
       return;
     }
 
     entity.getEvents().trigger("setArrowType", selected.toArrowType());
-    if (selected.consumesAmmo()) {
-      inventory.removeItem(selected, 1);
-    }
-    entity.getEvents().trigger("itemUsed", selected);
+    inventory.removeItem(selected, 1);
+    entity.getEvents().trigger(ITEM_USED, selected);
     entity.getEvents().trigger("chargeStart", direction);
   }
 
@@ -123,14 +123,14 @@ public class ItemUseComponent extends Component {
       case STANDARD_ARROW, FIRE_ARROW, ICE_ARROW, ROPE_ARROW ->
           useArrow(selected, getAimDirection());
       case HEALTH_POTION -> useHealthPotion();
-      case SpeedPotion -> useSpeedPotion();
-      case PoisonPotion -> usePoisonPotion();
+      case SPEED_POTION -> useSpeedPotion();
+      case POISON_POTION -> usePoisonPotion();
     };
   }
 
   private boolean useArrow(ItemType arrowItem, Vector2 direction) {
-    if (direction == null || direction.isZero() || !inventory.hasItem(arrowItem)) {
-      entity.getEvents().trigger("itemUseFailed", arrowItem);
+    if (!inventory.hasItem(arrowItem)) {
+      entity.getEvents().trigger(ITEM_USE_FAILED, arrowItem);
       return false;
     }
 
@@ -141,7 +141,7 @@ public class ItemUseComponent extends Component {
       WeaponComponent weapons = entity.getComponent(WeaponComponent.class);
       PrimaryWeapon primary = weapons == null ? null : weapons.getPrimaryWeapon();
       if (primary == null || !primary.isReady()) {
-        entity.getEvents().trigger("itemUseFailed", arrowItem);
+        entity.getEvents().trigger(ITEM_USE_FAILED, arrowItem);
         return false;
       }
 
@@ -149,48 +149,46 @@ public class ItemUseComponent extends Component {
       entity.getEvents().trigger("setArrowType", arrowItem.toArrowType());
       entity.getEvents().trigger("primaryAttack", direction);
 
-      if (arrowItem.consumesAmmo()) {
-        inventory.removeItem(arrowItem, 1);
-      }
+      inventory.removeItem(arrowItem, 1);
     }
 
-    entity.getEvents().trigger("itemUsed", arrowItem);
+    entity.getEvents().trigger(ITEM_USED, arrowItem);
     return true;
   }
 
   private boolean useHealthPotion() {
     if (combatStats == null || combatStats.isHealthFull()) {
       logger.debug("Cannot use health potion: health is already full or stats missing.");
-      entity.getEvents().trigger("itemUseFailed", ItemType.HEALTH_POTION);
+      entity.getEvents().trigger(ITEM_USE_FAILED, ItemType.HEALTH_POTION);
       return false;
     }
 
     if (!inventory.removeItem(ItemType.HEALTH_POTION, 1)) {
-      entity.getEvents().trigger("itemUseFailed", ItemType.HEALTH_POTION);
+      entity.getEvents().trigger(ITEM_USE_FAILED, ItemType.HEALTH_POTION);
       return false;
     }
 
     combatStats.addHealth(ItemType.HEALTH_POTION.getHealAmount());
-    entity.getEvents().trigger("itemUsed", ItemType.HEALTH_POTION);
+    entity.getEvents().trigger(ITEM_USED, ItemType.HEALTH_POTION);
     return true;
   }
 
   private boolean useSpeedPotion() {
-    if (!inventory.hasItem(ItemType.SpeedPotion)) {
+    if (!inventory.hasItem(ItemType.SPEED_POTION)) {
       logger.debug("No speed potion available to use");
-      entity.getEvents().trigger("itemUseFailed", ItemType.SpeedPotion);
+      entity.getEvents().trigger(ITEM_USE_FAILED, ItemType.SPEED_POTION);
       return false;
     }
 
     PlayerActions playerActions = entity.getComponent(PlayerActions.class);
     if (playerActions != null && playerActions.isSpeedPotionActive()) {
       logger.debug("Speed potion buff is already active");
-      entity.getEvents().trigger("itemUseFailed", ItemType.SpeedPotion);
+      entity.getEvents().trigger(ITEM_USE_FAILED, ItemType.SPEED_POTION);
       return false;
     }
 
-    if (!inventory.removeItem(ItemType.SpeedPotion, 1)) {
-      entity.getEvents().trigger("itemUseFailed", ItemType.SpeedPotion);
+    if (!inventory.removeItem(ItemType.SPEED_POTION, 1)) {
+      entity.getEvents().trigger(ITEM_USE_FAILED, ItemType.SPEED_POTION);
       return false;
     }
 
@@ -198,30 +196,27 @@ public class ItemUseComponent extends Component {
         .getEvents()
         .trigger(
             "speedPotionUsed",
-            ItemType.SpeedPotion.getSpeedBoost(),
-            ItemType.SpeedPotion.getDuration());
-    entity.getEvents().trigger("itemUsed", ItemType.SpeedPotion);
+            ItemType.SPEED_POTION.getSpeedBoost(),
+            ItemType.SPEED_POTION.getDuration());
+    entity.getEvents().trigger(ITEM_USED, ItemType.SPEED_POTION);
     return true;
   }
 
   private boolean usePoisonPotion() {
-    if (!inventory.hasItem(ItemType.PoisonPotion)) {
+    if (!inventory.hasItem(ItemType.POISON_POTION)) {
       logger.debug("No poison potion available to use");
-      entity.getEvents().trigger("itemUseFailed", ItemType.PoisonPotion);
+      entity.getEvents().trigger(ITEM_USE_FAILED, ItemType.POISON_POTION);
       return false;
     }
 
     Vector2 direction = getAimDirection();
-    if (direction == null
-        || direction.isZero()
-        || ServiceLocator.getEntityService() == null
-        || ServiceLocator.getPhysicsService() == null) {
-      entity.getEvents().trigger("itemUseFailed", ItemType.PoisonPotion);
+    if (ServiceLocator.getEntityService() == null || ServiceLocator.getPhysicsService() == null) {
+      entity.getEvents().trigger(ITEM_USE_FAILED, ItemType.POISON_POTION);
       return false;
     }
 
-    if (!inventory.removeItem(ItemType.PoisonPotion, 1)) {
-      entity.getEvents().trigger("itemUseFailed", ItemType.PoisonPotion);
+    if (!inventory.removeItem(ItemType.POISON_POTION, 1)) {
+      entity.getEvents().trigger(ITEM_USE_FAILED, ItemType.POISON_POTION);
       return false;
     }
 
@@ -231,7 +226,7 @@ public class ItemUseComponent extends Component {
     ServiceLocator.getEntityService()
         .register(
             ProjectileFactory.createThrownPoisonPotion(entity, spawnPosition, throwDirection));
-    entity.getEvents().trigger("itemUsed", ItemType.PoisonPotion);
+    entity.getEvents().trigger(ITEM_USED, ItemType.POISON_POTION);
     return true;
   }
 

@@ -7,7 +7,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import com.badlogic.gdx.Gdx;
 import com.csse3200.game.components.inventory.InventoryComponent;
 import com.csse3200.game.extensions.GameExtension;
-import java.util.Arrays;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,9 +16,8 @@ class BlackjackConfigTest {
 
   @Test
   void shouldContainEveryBlackjackTexture() {
-    assertEquals(62, BlackjackConfig.TEXTURES.length);
-    assertTrue(
-        Arrays.stream(BlackjackConfig.TEXTURES).allMatch(path -> path != null && !path.isBlank()));
+    assertEquals(62, BlackjackConfig.TEXTURES.size());
+    assertTrue(BlackjackConfig.TEXTURES.stream().allMatch(path -> path != null && !path.isBlank()));
 
     for (String path : BlackjackConfig.TEXTURES) {
       assertTrue(Gdx.files.internal(path).exists(), path);
@@ -28,7 +26,7 @@ class BlackjackConfigTest {
 
   @Test
   void shouldContainOneTextureForEveryCard() {
-    List<String> paths = Arrays.asList(BlackjackConfig.TEXTURES);
+    List<String> paths = BlackjackConfig.TEXTURES;
 
     for (Blackjack.Suit suit : Blackjack.Suit.values()) {
       for (Blackjack.Rank rank : Blackjack.Rank.values()) {
@@ -44,7 +42,7 @@ class BlackjackConfigTest {
   @Test
   void shouldContainSharedBlackjackTextures() {
     assertNotNull(BlackjackConfig.TEXTURES);
-    List<String> paths = Arrays.asList(BlackjackConfig.TEXTURES);
+    List<String> paths = BlackjackConfig.TEXTURES;
 
     assertTrue(paths.contains("images/minigames/blackjack/card_back.png"));
     assertTrue(paths.contains("images/Buttons/back_up_btn.png"));
@@ -53,9 +51,8 @@ class BlackjackConfigTest {
 
   @Test
   void shouldContainBlackjackSounds() {
-    assertEquals(3, BlackjackConfig.SOUNDS.length);
-    assertTrue(
-        Arrays.stream(BlackjackConfig.SOUNDS).allMatch(path -> Gdx.files.internal(path).exists()));
+    assertEquals(3, BlackjackConfig.SOUNDS.size());
+    assertTrue(BlackjackConfig.SOUNDS.stream().allMatch(path -> Gdx.files.internal(path).exists()));
   }
 
   @Test

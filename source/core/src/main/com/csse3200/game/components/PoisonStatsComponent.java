@@ -47,7 +47,7 @@ public class PoisonStatsComponent extends Component {
       nextDamageTime += DAMAGE_INTERVAL;
     }
 
-    if (currentTime >= poisonEndTime && nextDamageTime > poisonEndTime) {
+    if (currentTime >= poisonEndTime) {
       damagePerSecond = 0f;
     }
   }

@@ -19,8 +19,8 @@ import com.csse3200.game.services.ServiceLocator;
  */
 public class ParticleEffectsRenderingComponent extends RenderComponent {
 
-  private static final int pixelCount = 5;
-  private static final int segmentsPerPixel = 6;
+  private static final int PIXEL_COUNT = 5;
+  private static final int SEGMENTS_PER_PIXEL = 6;
 
   private static final Color fireBaseColour = new Color(0.55f, 0.05f, 0.02f, 1f);
   private static final Color fireMidColour = new Color(0.95f, 0.35f, 0.05f, 1f);
@@ -71,7 +71,8 @@ public class ParticleEffectsRenderingComponent extends RenderComponent {
       return;
     }
 
-    Vector2 centre = entity.getCenterPosition();
+    float x = entity.getCenterPosition().x;
+    float y = entity.getPosition().y;
     Vector2 scale = entity.getScale();
     float baseSize = Math.max(scale.x / 4, scale.y / 4);
     float seconds = time.getTime() / 1000f;
@@ -85,13 +86,13 @@ public class ParticleEffectsRenderingComponent extends RenderComponent {
     shapeRenderer.begin(ShapeType.Filled);
 
     if (burning) {
-      drawEffect(centre, baseSize, seconds, fireBaseColour, fireMidColour, fireTipColour);
+      drawEffect(x, y, baseSize, seconds, fireBaseColour, fireMidColour, fireTipColour);
     }
     if (slowed) {
-      drawEffect(centre, baseSize, seconds, iceBaseColour, iceMidColour, iceTipColour);
+      drawEffect(x, y, baseSize, seconds, iceBaseColour, iceMidColour, iceTipColour);
     }
     if (poisoned) {
-      drawEffect(centre, baseSize, seconds, poisonBaseColour, poisonMidColour, poisonTipColour);
+      drawEffect(x, y, baseSize, seconds, poisonBaseColour, poisonMidColour, poisonTipColour);
     }
 
     shapeRenderer.end();
@@ -99,30 +100,28 @@ public class ParticleEffectsRenderingComponent extends RenderComponent {
   }
 
   /**
-   * Draws {@value #pixelCount} tapering, swaying streaks rising from the entity's centre, each
+   * Draws {@value #PIXEL_COUNT} tapering, swaying streaks rising from the entity's centre, each
    * built from small stacked quads colour-graded from base -> mid -> tip.
    */
   private void drawEffect(
-      Vector2 centre, float baseSize, float seconds, Color base, Color mid, Color tip) {
+      float x, float y, float baseSize, float seconds, Color base, Color mid, Color tip) {
     if (pointLightComponent != null) {
       pointLightComponent.setColor(base);
     }
-    for (int i = 0; i < pixelCount; i++) {
-      float hash = MathUtils.random((float) 11.0 + i * 17.3f);
+    for (int i = 0; i < PIXEL_COUNT; i++) {
+      float hash = MathUtils.random(11.0f + i * 17.3f);
       float sway = MathUtils.sin(seconds * (1.6f + hash) + i) * baseSize * 0.08f;
-      float height = baseSize * (0.55f + 0.4f * MathUtils.random((float) 11.0 + i));
+      float height = baseSize * (0.55f + 0.4f * MathUtils.random(11.0f + i));
       float flicker = 0.85f + 0.15f * MathUtils.sin(seconds * (4f + hash * 3f) + i * 2f);
       height *= flicker;
 
       float pixel = Math.max(0.15f, baseSize * 0.05f);
-      float startX = centre.x;
-      float startY = centre.y - (centre.y / 2);
 
-      for (int s = 0; s < segmentsPerPixel; s++) {
-        float t = s / (float) (segmentsPerPixel - 1);
-        float segY = startY + height * t;
+      for (int s = 0; s < SEGMENTS_PER_PIXEL; s++) {
+        float t = s / (float) (SEGMENTS_PER_PIXEL - 1);
+        float segY = y + height * t;
         float segSway = sway * t + MathUtils.sin(seconds * 3f + s + i) * pixel;
-        float segX = startX + segSway;
+        float segX = x + segSway;
         float segWidth = pixel * (1.6f - 1.1f * t);
 
         colourGradient(base, mid, tip, t, workingColour);

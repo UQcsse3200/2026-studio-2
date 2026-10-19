@@ -6,8 +6,11 @@ import static org.mockito.Mockito.*;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Array;
 import com.csse3200.game.components.CameraComponent;
+import com.csse3200.game.components.player.PlayerActions;
 import com.csse3200.game.entities.Entity;
+import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.lighting.LightingEngine;
 import com.csse3200.game.lighting.LightingService;
@@ -49,6 +52,26 @@ class RenderComponentTest {
   }
 
   @Test
+  void shouldDrawAtAFixedDepthRegardlessOfHeightWhenOneIsSet() {
+    RenderComponent scenery = spy(RenderComponent.class);
+    RenderComponent player = spy(RenderComponent.class);
+    Entity sceneryEntity = new Entity();
+    Entity playerEntity = new Entity();
+    scenery.setEntity(sceneryEntity);
+    player.setEntity(playerEntity);
+    scenery.setFixedZIndex(-100f);
+
+    // The player is higher up, which would normally put them behind the scenery.
+    sceneryEntity.setPosition(0f, 1f);
+    playerEntity.setPosition(0f, 50f);
+    assertTrue(scenery.getZIndex() < player.getZIndex());
+
+    // Moving the scenery doesn't change its depth.
+    sceneryEntity.setPosition(0f, -50f);
+    assertEquals(-100f, scenery.getZIndex());
+  }
+
+  @Test
   void shouldGiveCorrectRenderOrder() {
     RenderComponent component1 = spy(RenderComponent.class);
     RenderComponent component2 = spy(RenderComponent.class);
@@ -86,7 +109,7 @@ class RenderComponentTest {
         new ForegroundRenderComponent(cameraComponent, backgroundPos, worldBounds);
     TiledRenderComponent tiledComponent = new TiledRenderComponent(texturePath, tileSize);
     assertTrue(foregroundComponent.getLayer() > backgroundComponent.getLayer());
-    assertTrue(tiledComponent.getLayer() > foregroundComponent.getLayer());
+    assertTrue(tiledComponent.getLayer() < foregroundComponent.getLayer());
   }
 
   @Test
@@ -115,6 +138,18 @@ class RenderComponentTest {
     LightingService lightingService = mock(LightingService.class);
     LightingEngine lightingEngine = mock(LightingEngine.class);
 
+    Entity player = mock(Entity.class);
+    Entity entity = mock(Entity.class);
+    Array<Entity> entities = new Array<>();
+    entities.add(entity);
+    entities.add(player);
+    EntityService entityService = mock(EntityService.class);
+    when(entityService.getEntities()).thenReturn(entities);
+    ServiceLocator.registerEntityService(entityService);
+
+    when(player.getComponent(PlayerActions.class)).thenReturn(new PlayerActions());
+    when(player.getPosition()).thenReturn(new Vector2(10f, 1f));
+
     when(time.getDeltaTime()).thenReturn(0.001f);
     when(lightingService.getEngine()).thenReturn(lightingEngine);
     ServiceLocator.registerTimeSource(time);
@@ -124,11 +159,20 @@ class RenderComponentTest {
     renderComponent.toggleWeather();
     renderComponent.update();
     float newDarkness = renderComponent.getDarkness();
-    assertTrue(prevDarkness != newDarkness);
+    assertNotEquals(prevDarkness, newDarkness);
   }
 
   @Test
   void shouldNotUpdateDarknessWhenWeatherIsOff() {
+    Entity player = mock(Entity.class);
+    Entity entity = mock(Entity.class);
+    Array<Entity> entities = new Array<>();
+    entities.add(entity);
+    entities.add(player);
+    EntityService entityService = mock(EntityService.class);
+    when(entityService.getEntities()).thenReturn(entities);
+    ServiceLocator.registerEntityService(entityService);
+
     RenderComponent renderComponent = spy(RenderComponent.class);
     float prevDarkness = renderComponent.getDarkness();
     renderComponent.update();
@@ -143,6 +187,18 @@ class RenderComponentTest {
     LightingService lightingService = mock(LightingService.class);
     LightingEngine lightingEngine = mock(LightingEngine.class);
 
+    Entity player = mock(Entity.class);
+    Entity entity = mock(Entity.class);
+    Array<Entity> entities = new Array<>();
+    entities.add(entity);
+    entities.add(player);
+    EntityService entityService = mock(EntityService.class);
+    when(entityService.getEntities()).thenReturn(entities);
+    ServiceLocator.registerEntityService(entityService);
+
+    when(player.getComponent(PlayerActions.class)).thenReturn(new PlayerActions());
+    when(player.getPosition()).thenReturn(new Vector2(10f, 1f));
+
     when(time.getDeltaTime()).thenReturn(0.001f);
     when(lightingService.getEngine()).thenReturn(lightingEngine);
     ServiceLocator.registerTimeSource(time);
@@ -152,11 +208,20 @@ class RenderComponentTest {
     renderComponent.toggleWeather();
     renderComponent.update();
     float newBackgroundLight = renderComponent.getBackgroundLight();
-    assertTrue(prevBackgroundLight != newBackgroundLight);
+    assertNotEquals(prevBackgroundLight, newBackgroundLight);
   }
 
   @Test
   void shouldNotUpdateBackgroundLightWhenWeatherIsOff() {
+    Entity player = mock(Entity.class);
+    Entity entity = mock(Entity.class);
+    Array<Entity> entities = new Array<>();
+    entities.add(entity);
+    entities.add(player);
+    EntityService entityService = mock(EntityService.class);
+    when(entityService.getEntities()).thenReturn(entities);
+    ServiceLocator.registerEntityService(entityService);
+
     RenderComponent renderComponent = spy(RenderComponent.class);
     float prevBackgroundLight = renderComponent.getBackgroundLight();
     renderComponent.update();

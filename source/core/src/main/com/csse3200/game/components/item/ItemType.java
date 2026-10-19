@@ -74,7 +74,7 @@ public enum ItemType {
       0f,
       0f),
 
-  SpeedPotion(
+  SPEED_POTION(
       8,
       "Speed Potion",
       "Increases movement speed by 70% for 3 seconds.",
@@ -93,7 +93,7 @@ public enum ItemType {
       0f,
       0f),
 
-  PoisonPotion(
+  POISON_POTION(
       9,
       "Poison Potion",
       "Throws a poison flask that applies poison damage over time.",
@@ -245,7 +245,7 @@ public enum ItemType {
   public boolean isArrow() {
     return switch (this) {
       case STANDARD_ARROW, ROPE_ARROW, FIRE_ARROW, ICE_ARROW -> true;
-      case HEALTH_POTION, SpeedPotion, PoisonPotion -> false;
+      case HEALTH_POTION, SPEED_POTION, POISON_POTION -> false;
     };
   }
 

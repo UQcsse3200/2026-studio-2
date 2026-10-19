@@ -7,8 +7,9 @@ import com.csse3200.game.areas.terrain.configs.PlatformConfig;
 public class BossArenaConfig extends LevelConfig {
   public BossArenaConfig() {
     platformTFP = "images/terrain/Level_3/Platform_level-3.png";
-    ledgesTFP = "images/terrain/Level_3/Platform_level-3.png";
     groundTFP = "images/terrain/Level_3/tile-level3.png";
+    // The ledges are long, so they use the repeating ground tile rather than a stretched platform.
+    ledgesTFP = groundTFP;
 
     playerSpawn = new GridPoint2(9, 2);
 

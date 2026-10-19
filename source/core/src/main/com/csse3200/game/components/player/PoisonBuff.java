@@ -27,11 +27,7 @@ public class PoisonBuff extends Component {
 
   public boolean isActive() {
     GameTime time = ServiceLocator.getTimeSource();
-    if (time != null && poisonDamagePerSecond > 0f && time.getTime() < poisonBuffEndTime) {
-      return true;
-    } else {
-      return false;
-    }
+    return time != null && poisonDamagePerSecond > 0f && time.getTime() < poisonBuffEndTime;
   }
 
   public float getPoisonDamagePerSecond() {

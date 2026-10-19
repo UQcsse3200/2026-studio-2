@@ -28,7 +28,10 @@ public class ProjectileFactory {
   public static final float FIRE_ARROW_RANGE = 50f;
 
   public static final float GRAPPLE_ARROW_SPEED = 22f;
-  public static final float GRAPPLE_ARROW_RANGE = 50f;
+
+  /** How far from the player a grapple arrow can fly before it gives up; also the longest rope. */
+  public static final float GRAPPLE_ARROW_RANGE = 25f;
+
   public static final float PLAYER_ARROW_WIDTH = 0.6f;
   public static final float PLAYER_ARROW_HEIGHT = 0.3f;
 
@@ -188,15 +191,15 @@ public class ProjectileFactory {
     Entity potion =
         createArrow(
                 position,
-                ItemType.PoisonPotion.getDamage(),
+                ItemType.POISON_POTION.getDamage(),
                 new ArrowProjectileComponent(
                     shooter,
                     direction.cpy().nor(),
                     POISON_POTION_SPEED,
                     POISON_POTION_RANGE,
                     ArrowType.POTION,
-                    ItemType.PoisonPotion.getPoisonDamagePerSecond(),
-                    ItemType.PoisonPotion.getPoisonDuration()),
+                    ItemType.POISON_POTION.getPoisonDamagePerSecond(),
+                    ItemType.POISON_POTION.getPoisonDuration()),
                 ArrowType.POTION)
             .addComponent(
                 new PointLightComponent(

@@ -1,6 +1,6 @@
 package com.csse3200.game.rendering.item;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
 import com.badlogic.gdx.graphics.Color;
@@ -155,5 +155,16 @@ class ArrowRenderBehaviourTest {
     verify(batch).setColor(Color.WHITE);
     verify(batch, never()).setColor(Color.LIGHT_GRAY);
     verify(batch).draw(texture, 0f, 0f, 1f, 1f, 2f, 2f, 1f, 1f, -45f, 0, 0, 26, 26, false, false);
+  }
+
+  @Test
+  void nullArrowTypeUsesTheStandardSpriteAndFireKeepsItsUiTint() {
+    Texture texture = texture(100, 100);
+    ArrowRenderComponent renderer = new ArrowRenderComponent(null);
+    new Entity().addComponent(renderer).setScale(2f, 2f);
+    renderer.create();
+    renderer.render(batch);
+    verify(batch).draw(texture, 0f, 0f, 1f, 1f, 2f, 2f, 1f, 1f, -45f, 0, 0, 100, 100, false, false);
+    assertEquals(new Color(1f, 0f, 0f, 1f), ArrowType.FIRE.getTintColor());
   }
 }

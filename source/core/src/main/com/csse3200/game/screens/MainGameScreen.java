@@ -2,7 +2,6 @@ package com.csse3200.game.screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.csse3200.game.GdxGame;
@@ -19,20 +18,10 @@ import com.csse3200.game.components.minigames.blackjack.BlackjackConfig;
 import com.csse3200.game.components.minigames.blackjack.BlackjackOverlay;
 import com.csse3200.game.components.minigames.spinthewheel.SpinTheWheelOverlay;
 import com.csse3200.game.components.minigames.spinthewheel.WheelConfig;
+import com.csse3200.game.components.player.PlayerInteractionComponent;
 import com.csse3200.game.entities.Entity;
-import com.csse3200.game.entities.EntityService;
-import com.csse3200.game.entities.factories.RenderFactory;
-import com.csse3200.game.events.EventHandler;
 import com.csse3200.game.input.InputComponent;
 import com.csse3200.game.input.InputDecorator;
-import com.csse3200.game.input.InputService;
-import com.csse3200.game.lighting.LightingEngine;
-import com.csse3200.game.lighting.LightingService;
-import com.csse3200.game.physics.PhysicsEngine;
-import com.csse3200.game.physics.PhysicsService;
-import com.csse3200.game.rendering.RenderService;
-import com.csse3200.game.rendering.Renderer;
-import com.csse3200.game.services.GameTime;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.GameEndActions;
@@ -50,48 +39,23 @@ import org.slf4j.LoggerFactory;
  *
  * <p>Details on libGDX screens: https://happycoding.io/tutorials/libgdx/game-screens
  */
-public class MainGameScreen extends ScreenAdapter {
+public class MainGameScreen extends BaseGameScreen {
   private static final Logger logger = LoggerFactory.getLogger(MainGameScreen.class);
   private static final String[] mainGameTextures = createTextures();
 
   private static final Vector2 CAMERA_POSITION = new Vector2(7.5f, 7.5f);
 
   private final GdxGame game;
-  private final Renderer renderer;
-  private final PhysicsEngine physicsEngine;
   private Entity player;
   private Terminal terminal;
   private final SpinTheWheelOverlay wheelOverlay;
   private final BlackjackOverlay blackjackOverlay;
   private final MinigameOverlayManager minigameOverlayManager;
   private final PauseMenuOverlay pauseOverlay;
-  private final LightingEngine lightingEngine;
 
   public MainGameScreen(GdxGame game) {
+    super(CAMERA_POSITION);
     this.game = game;
-
-    logger.debug("Initialising main game screen services");
-    ServiceLocator.registerTimeSource(new GameTime());
-
-    PhysicsService physicsService = new PhysicsService();
-    ServiceLocator.registerPhysicsService(physicsService);
-    physicsEngine = physicsService.getPhysics();
-
-    ServiceLocator.registerInputService(new InputService());
-    ServiceLocator.registerResourceService(new ResourceService());
-
-    ServiceLocator.registerEntityService(new EntityService());
-    ServiceLocator.registerRenderService(new RenderService());
-    ServiceLocator.registerGameEndEventHandler(new EventHandler());
-
-    renderer = RenderFactory.createRenderer();
-    renderer.getCamera().getEntity().setPosition(CAMERA_POSITION);
-    renderer.getDebug().renderPhysicsWorld(physicsEngine.getWorld());
-
-    LightingService lightingService =
-        new LightingService(renderer.getCamera(), physicsEngine.getWorld());
-    ServiceLocator.registerLightingService(lightingService);
-    lightingEngine = lightingService.getEngine();
 
     loadAssets();
     createUI();
@@ -106,7 +70,7 @@ public class MainGameScreen extends ScreenAdapter {
     wheelOverlay = new SpinTheWheelOverlay(WheelConfig.ITEMS, player, minigameOverlayManager);
     player.getEvents().addListener("spinTheWheel", wheelOverlay::request);
     blackjackOverlay = new BlackjackOverlay(player, minigameOverlayManager);
-    pauseOverlay = new PauseMenuOverlay(game, forestGameArea);
+    pauseOverlay = new PauseMenuOverlay(game);
   }
 
   private void onPlayerDeath() {
@@ -115,21 +79,30 @@ public class MainGameScreen extends ScreenAdapter {
         () -> ServiceLocator.getGameEndEventHandler().trigger("gameEnd", GameEndState.LOSE));
   }
 
+  /**
+   * Whether the shop closed since the last frame. An Esc press that closes the shop is handled by
+   * the input chain, but the pause menu polls the key itself, so without this one press would do
+   * both.
+   */
+  private boolean consumeShopClosed() {
+    Entity current = player;
+    PlayerInteractionComponent interaction =
+        current == null ? null : current.getComponent(PlayerInteractionComponent.class);
+    return interaction != null && interaction.consumeShopClosed();
+  }
+
   @Override
   public void render(float delta) {
     // Overlay shortcuts bypass the input handler chain, so ignore them while the terminal is
     // open. F1 still toggles the terminal itself.
     boolean terminalOpen = terminal != null && terminal.isOpen();
+    boolean shopJustClosed = consumeShopClosed();
     if (!terminalOpen
+        && !shopJustClosed
         && Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)
         && !ServiceLocator.getEntityService().getSettingsOpen()) {
       pauseOverlay.request();
     }
-    /*
-    if (Gdx.input.isKeyJustPressed(Input.Keys.L)) {
-      blackjackOverlay.request();
-    }
-     */
 
     physicsEngine.update();
     ServiceLocator.getEntityService().update();
@@ -138,37 +111,6 @@ public class MainGameScreen extends ScreenAdapter {
     wheelOverlay.afterRender();
     blackjackOverlay.afterRender();
     pauseOverlay.afterRender();
-  }
-
-  @Override
-  public void resize(int width, int height) {
-    renderer.resize(width, height);
-    logger.trace("Resized renderer: ({} x {})", width, height);
-  }
-
-  @Override
-  public void pause() {
-    logger.info("Game paused");
-  }
-
-  @Override
-  public void resume() {
-    logger.info("Game resumed");
-  }
-
-  @Override
-  public void dispose() {
-    logger.debug("Disposing main game screen");
-
-    renderer.dispose();
-    unloadAssets();
-
-    ServiceLocator.getEntityService().dispose();
-    lightingEngine.dispose();
-    ServiceLocator.getRenderService().dispose();
-    ServiceLocator.getResourceService().dispose();
-
-    ServiceLocator.clear();
   }
 
   /**
@@ -186,6 +128,8 @@ public class MainGameScreen extends ScreenAdapter {
                 "images/health/Damaged_heart.png",
                 "images/health/Last_Health.png",
                 "images/items/gold_coin.png",
+                "images/backgrounds/coin_bg.png",
+                "images/backgrounds/shop_bg.png",
                 "images/ui/scroll_bg.png",
                 "images/Buttons/continue_up_btn.png",
                 "images/Buttons/continue_down_btn.png",
@@ -205,8 +149,8 @@ public class MainGameScreen extends ScreenAdapter {
                 "images/Buttons/x_down_btn.png"));
 
     paths.addAll(List.of(ItemAssets.getTextures()));
-    paths.addAll(List.of(WheelConfig.TEXTURES));
-    paths.addAll(List.of(BlackjackConfig.TEXTURES));
+    paths.addAll(WheelConfig.TEXTURES);
+    paths.addAll(BlackjackConfig.TEXTURES);
     return paths.toArray(new String[0]);
   }
 
@@ -214,16 +158,17 @@ public class MainGameScreen extends ScreenAdapter {
     logger.debug("Loading assets");
     ResourceService resourceService = ServiceLocator.getResourceService();
     resourceService.loadTextures(mainGameTextures);
-    resourceService.loadSounds(WheelConfig.SOUNDS);
+    resourceService.loadSounds(WheelConfig.SOUNDS.toArray(String[]::new));
     ButtonSound.load(resourceService);
     ServiceLocator.getResourceService().loadAll();
   }
 
-  private void unloadAssets() {
+  @Override
+  protected void unloadAssets() {
     logger.debug("Unloading assets");
     ResourceService resourceService = ServiceLocator.getResourceService();
     resourceService.unloadAssets(mainGameTextures);
-    resourceService.unloadAssets(WheelConfig.SOUNDS);
+    resourceService.unloadAssets(WheelConfig.SOUNDS.toArray(String[]::new));
     ButtonSound.unload(resourceService);
   }
 

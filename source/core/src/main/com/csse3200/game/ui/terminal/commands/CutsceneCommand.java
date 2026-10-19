@@ -38,7 +38,9 @@ public class CutsceneCommand implements Command {
 
     CutsceneLoader.Result result = loader.load(args.get(0));
     if (!result.isSuccess()) {
-      logger.debug("Could not start cutscene '{}': {}", args.get(0), result.getError());
+      if (logger.isDebugEnabled()) {
+        logger.debug("Could not start cutscene '{}': {}", args.get(0), result.getError());
+      }
       return false;
     }
 

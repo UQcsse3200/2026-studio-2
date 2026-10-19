@@ -5,6 +5,7 @@ import com.badlogic.gdx.math.GridPoint2;
 public class TriggerablePlatformConfig extends PlatformConfig {
   String[] ids;
   boolean initialState;
+  boolean singleActivation;
 
   public TriggerablePlatformConfig(
       GridPoint2 position,
@@ -13,10 +14,12 @@ public class TriggerablePlatformConfig extends PlatformConfig {
       int grappleSides,
       String textureFilepath,
       String[] ids,
-      boolean initialState) {
+      boolean initialState,
+      boolean singleActivation) {
     super(position, width, height, grappleSides, textureFilepath);
     this.ids = ids;
     this.initialState = initialState;
+    this.singleActivation = singleActivation;
   }
 
   public String[] getIds() {
@@ -25,5 +28,9 @@ public class TriggerablePlatformConfig extends PlatformConfig {
 
   public boolean getInitialState() {
     return initialState;
+  }
+
+  public boolean getSingleActivation() {
+    return singleActivation;
   }
 }

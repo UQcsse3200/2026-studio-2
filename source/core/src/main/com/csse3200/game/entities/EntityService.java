@@ -127,12 +127,12 @@ public class EntityService {
   }
 
   public boolean getSettingsOpen() {
-    System.out.printf("Settings status requested : %b", settingsOpen);
+    logger.debug("Settings status requested : {}", settingsOpen);
     return settingsOpen;
   }
 
   public void setSettingsOpen(boolean newSettingsState) {
-    System.out.printf("Settings status set : %b", newSettingsState);
+    logger.debug("Settings status set : {}", newSettingsState);
     settingsOpen = newSettingsState;
   }
 }

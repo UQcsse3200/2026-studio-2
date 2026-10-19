@@ -113,7 +113,10 @@ class GrappleFlightRopeTest {
   @Test
   void realGravityArcShouldLeaveTheAnchoredRopeOverTheObstacle() {
     box(5f, 0f, 1f, 2f);
-    box(30.5f, 0f, 0.5f, 20f);
+    // Its face is close enough that the arc comes down on it above the player's feet. A hook that
+    // lands below the shooter is refused, so a wall far enough away to land well below would not
+    // hook.
+    box(24.5f, 0f, 0.5f, 20f);
     Entity arrow = fire();
     boolean bentDuringFlight = false;
     float peakY = arrowCenter(arrow).y;
@@ -135,8 +138,9 @@ class GrappleFlightRopeTest {
     assertEquals(4, path.size(), "rope should retain both top corners: " + path);
     assertTrue(path.get(1).x < 4f && path.get(1).y > 2f);
     assertTrue(path.get(2).x > 6f && path.get(2).y > 2f);
-    assertEquals(30f, path.getLast().x, 0.05f);
-    assertTrue(path.getLast().y < -4f, "arrow should land below the obstacle");
+    assertEquals(24f, path.getLast().x, 0.05f);
+    assertTrue(path.getLast().y < 2f, "arrow should land below the top of the obstacle");
+    assertTrue(path.getLast().y > -0.4f, "and above the player's feet, or it would not hook");
     float routedLength = 0f;
     for (int i = 1; i < path.size(); i++) {
       routedLength += path.get(i - 1).dst(path.get(i));
@@ -174,11 +178,19 @@ class GrappleFlightRopeTest {
   void impactShouldPreserveFlightBendsAndUseTheWholePathAsRopeLength() {
     int[] attachments = {0};
     player.getEvents().addListener("grappleAttached", () -> attachments[0]++);
-    Entity arrow = curveOverObstacle();
+    // Over the obstacle's top corners and down its far side, landing level with the player: a hook
+    // below their feet is refused, so this can't come down at the foot of the wall as it once did.
+    box(5f, 0f, 1f, 2f);
+    Entity arrow = fire();
+    moveArrow(arrow, 3f, 4f);
+    moveArrow(arrow, 6.5f, 4f);
+    moveArrow(arrow, 8f, 3f);
+    moveArrow(arrow, 8f, 1f);
+    moveArrow(arrow, 8f, 0f);
     assertEquals(0, attachments[0], "flight must not start the holding pose");
     List<Vector2> flightPath = grapple.getRopePath();
     assertEquals(4, flightPath.size());
-    Fixture target = box(8.5f, -4f, 0.5f, 1f);
+    Fixture target = box(8.5f, 0f, 0.5f, 1f);
     arrow
         .getEvents()
         .trigger("collisionStart", arrow.getComponent(HitboxComponent.class).getFixture(), target);
@@ -194,13 +206,59 @@ class GrappleFlightRopeTest {
       pathLength += anchoredPath.get(i - 1).dst(anchoredPath.get(i));
     }
     assertEquals(pathLength, grapple.getRopeLength(), 0.001f);
-    assertTrue(grapple.getRopeLength() > new Vector2(8f, -4f).len() + 2f);
+    assertTrue(grapple.getRopeLength() > new Vector2(8f, 0f).len() + 1f);
     assertEquals(1, physics.getPhysics().getWorld().getJointCount());
     assertEquals(anchoredPath.get(1), grapple.getAnchorPoint(), "swing pivot is nearest bend");
     player.setPosition(6.5f, 3.5f);
     grapple.update();
     assertTrue(grapple.getRopePath().size() < anchoredPath.size(), "passed bends should unwrap");
     assertEquals(1, attachments[0], "changing the joint pivot must not announce a new attachment");
+  }
+
+  @Test
+  void passingOnePlatformShouldMoveTheSwingPivotOntoTheNextPlatformsFixture() {
+    box(3f, 0f, 1f, 2f);
+    box(6f, 0f, 1f, 2f);
+    Entity arrow = fire();
+    moveArrow(arrow, 1f, 4f);
+    moveArrow(arrow, 8f, 4f);
+    moveArrow(arrow, 8f, -4f);
+    Fixture target = box(8.5f, -4f, 0.5f, 1f);
+    // This is about how the rope wraps the platforms, not about where a hook may land (one below
+    // the player's feet is refused when the arrow hits), so attach it directly.
+    grapple.attachTo(target.getBody(), new Vector2(8f, -4f));
+    entities.update();
+    assertTrue(grapple.isAttached());
+    assertTrue(grapple.getAnchorPoint().x < 2f, "first platform initially supports the player");
+    player.setPosition(4.5f, 3.5f);
+    grapple.update();
+    assertTrue(grapple.isAttached());
+    // This flight routes underneath the second platform. Its bottom-left vertex is (5,-2),
+    // offset outward by 0.025 along the unit vector (-1,-2).
+    assertEquals(4.9888197f, grapple.getAnchorPoint().x, 0.0001f);
+    assertEquals(-2.0223607f, grapple.getAnchorPoint().y, 0.0001f);
+    assertEquals(1, physics.getPhysics().getWorld().getJointCount());
+    assertEquals(grapple.getRopePath().get(1), grapple.getAnchorPoint());
+  }
+
+  @Test
+  void disposalAfterEntityServiceShutdownShouldCancelAnyLateArrowContact() {
+    Entity arrow = fire();
+    moveArrow(arrow, 8f, -4f);
+    Fixture target = box(8.5f, -4f, 0.5f, 1f);
+    ServiceLocator.registerEntityService(null);
+    try {
+      grapple.dispose();
+      arrow
+          .getEvents()
+          .trigger(
+              "collisionStart", arrow.getComponent(HitboxComponent.class).getFixture(), target);
+      assertTrue(grapple.getRopePath().isEmpty());
+      assertFalse(grapple.isAttached());
+      assertEquals(0, physics.getPhysics().getWorld().getJointCount());
+    } finally {
+      ServiceLocator.registerEntityService(entities);
+    }
   }
 
   @Test

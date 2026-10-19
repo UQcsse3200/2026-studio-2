@@ -13,17 +13,14 @@ public final class ItemAssets {
    * Returns a fresh, deduplicated list for the owning screen to load and unload. Keeping a screen
    * reference prevents area transitions from unloading held items' textures.
    *
-   * @return item textures, including projectile animations and status effects
+   * @return item textures, including projectile animations
    */
   public static String[] getTextures() {
     return Stream.of(
             Arrays.stream(ItemType.values())
                 .flatMap(item -> Stream.of(item.getTexturePath(), item.getProjectileTexturePath())),
             Arrays.stream(ArrowType.values()).map(ArrowType::getTexturePath),
-            Stream.of(
-                ItemFactory.GOLD_TEXTURE,
-                "images/items/effects/fire_status_effect.png",
-                "images/items/effects/ice_status_effect.png"))
+            Stream.of(ItemFactory.GOLD_TEXTURE))
         .flatMap(stream -> stream)
         .distinct()
         .toArray(String[]::new);

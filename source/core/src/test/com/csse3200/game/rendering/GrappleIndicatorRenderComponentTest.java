@@ -26,6 +26,7 @@ import com.csse3200.game.components.item.ItemType;
 import com.csse3200.game.components.item.weapons.bow.grapple.GrappleComponent;
 import com.csse3200.game.components.player.KeyboardPlayerInputComponent;
 import com.csse3200.game.entities.Entity;
+import com.csse3200.game.entities.factories.ProjectileFactory;
 import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.physics.PhysicsService;
@@ -195,7 +196,7 @@ class GrappleIndicatorRenderComponentTest {
       // No obstruction, so the preview reaches all the way out to the grapple's maximum range - as
       // a straight-line distance from the player, not just a fixed horizontal offset any more.
       float distance = new Vector2(xCaptor.getValue(), yCaptor.getValue()).dst(origin.x, origin.y);
-      assertEquals(50f, distance, 1.5f);
+      assertEquals(ProjectileFactory.GRAPPLE_ARROW_RANGE, distance, 1.5f);
       // And it's an arc, not a straight line: it's fallen well below the player by then.
       assertTrue(yCaptor.getValue() < origin.y - 5f);
     }
@@ -237,5 +238,12 @@ class GrappleIndicatorRenderComponentTest {
       verify(shape).dispose();
     }
     verify(renderService).unregister(renderer);
+  }
+
+  @Test
+  void missingInventoryOrInputPreventsThePreview() {
+    renderer(grapple, null, input).render(batch);
+    renderer(grapple, inventory, null).render(batch);
+    verifyNoInteractions(batch);
   }
 }

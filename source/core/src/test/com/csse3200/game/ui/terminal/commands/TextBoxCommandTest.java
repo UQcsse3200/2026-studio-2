@@ -22,7 +22,8 @@ class TextBoxCommandTest {
   @BeforeEach
   void setUp() {
     renderService = mock(RenderService.class);
-    when(renderService.getStage()).thenReturn(mock(Stage.class));
+    Stage stageMock = mock(Stage.class);
+    when(renderService.getStage()).thenReturn(stageMock);
     ServiceLocator.registerRenderService(renderService);
   }
 

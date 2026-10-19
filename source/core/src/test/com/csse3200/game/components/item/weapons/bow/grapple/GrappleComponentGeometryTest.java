@@ -24,7 +24,7 @@ class GrappleComponentGeometryTest {
   void shouldDiscoverPlatformEdgesFromAnchorTowardPlayer() {
     World world = new World(Vector2.Zero, true);
     try {
-      Fixture wall = rectangle(world, new Vector2(5f, 0f), 2f, 4f, 0f);
+      rectangle(world, new Vector2(5f, 0f), 2f, 4f, 0f);
 
       List<GrappleComponent.RopeContact> contacts =
           GrappleComponent.traceContacts(world, new Vector2(10f, 3f), new Vector2(0f, 0f));
@@ -44,7 +44,7 @@ class GrappleComponentGeometryTest {
   void shouldTransformRotatedFixtureVerticesIntoWorldSpace() {
     World world = new World(Vector2.Zero, true);
     try {
-      Fixture wall = rectangle(world, new Vector2(3f, 4f), 2f, 4f, 90f);
+      rectangle(world, new Vector2(3f, 4f), 2f, 4f, 90f);
 
       List<GrappleComponent.RopeContact> contacts =
           GrappleComponent.traceContacts(world, new Vector2(8f, 8f), new Vector2(-2f, 0f));
@@ -157,6 +157,42 @@ class GrappleComponentGeometryTest {
 
       lastBody.getBody().setTransform(8f, 2f, 0f);
       assertEquals(8f, GrappleComponent.fixedPathLength(anchor, contacts), 0.001f);
+    } finally {
+      world.dispose();
+    }
+  }
+
+  @Test
+  void collinearRopeShouldNotCountAsCrossingEitherWindingSide() {
+    World world = new World(Vector2.Zero, true);
+    try {
+      Fixture fixture = rectangle(world, new Vector2(5f, 0f), 1f, 1f, 0f);
+      GrappleComponent.RopeContact wound =
+          new GrappleComponent.RopeContact(fixture, new Vector2(5f, 0f), 1);
+      assertFalse(wound.hasCrossedSide(new Vector2(0f, 0f), new Vector2(10f, 0f)));
+      GrappleComponent.RopeContact initiallyStraight =
+          new GrappleComponent.RopeContact(fixture, new Vector2(5f, 0f), 0);
+      fixture.getBody().setTransform(5f, -2f, 0f);
+      assertFalse(initiallyStraight.hasCrossedSide(new Vector2(0f, 0f), new Vector2(10f, 0f)));
+      assertTrue(wound.hasCrossedSide(new Vector2(0f, 0f), new Vector2(10f, 0f)));
+    } finally {
+      world.dispose();
+    }
+  }
+
+  @Test
+  void tracingDenseTerrainShouldStopAtSixteenDistinctBends() {
+    World world = new World(Vector2.Zero, true);
+    try {
+      for (int i = 1; i <= 24; i++) {
+        rectangle(world, new Vector2(i * 4f, 0f), 1f, i * 2f, 0f);
+      }
+      List<GrappleComponent.RopeContact> contacts =
+          GrappleComponent.traceContacts(world, Vector2.Zero, new Vector2(110f, 0f));
+      assertEquals(16, contacts.size());
+      for (int i = 1; i < contacts.size(); i++) {
+        assertTrue(contacts.get(i).getWorldPoint().x > contacts.get(i - 1).getWorldPoint().x);
+      }
     } finally {
       world.dispose();
     }

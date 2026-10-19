@@ -15,20 +15,20 @@ class ShopCatalogTest {
   void listingsShouldHaveValidPricesAndQuantities() {
     assertFalse(ShopCatalog.getListings().isEmpty());
     for (ShopListing listing : ShopCatalog.getListings()) {
-      assertNotNull(ShopCatalog.getListing(listing.getItemType()));
-      assertTrue(listing.getPrice() >= 0);
-      assertTrue(listing.getQuantity() > 0);
+      assertNotNull(ShopCatalog.getListing(listing.itemType()));
+      assertTrue(listing.price() >= 0);
+      assertTrue(listing.quantity() > 0);
     }
   }
 
   @Test
   void shouldUsePlaceholderPrices() {
-    assertEquals(10, ShopCatalog.getListing(ItemType.STANDARD_ARROW).getPrice());
-    assertEquals(15, ShopCatalog.getListing(ItemType.FIRE_ARROW).getPrice());
-    assertEquals(15, ShopCatalog.getListing(ItemType.ICE_ARROW).getPrice());
-    assertEquals(8, ShopCatalog.getListing(ItemType.HEALTH_POTION).getPrice());
-    assertEquals(12, ShopCatalog.getListing(ItemType.SpeedPotion).getPrice());
-    assertEquals(12, ShopCatalog.getListing(ItemType.PoisonPotion).getPrice());
+    assertEquals(10, ShopCatalog.getListing(ItemType.STANDARD_ARROW).price());
+    assertEquals(15, ShopCatalog.getListing(ItemType.FIRE_ARROW).price());
+    assertEquals(15, ShopCatalog.getListing(ItemType.ICE_ARROW).price());
+    assertEquals(8, ShopCatalog.getListing(ItemType.HEALTH_POTION).price());
+    assertEquals(12, ShopCatalog.getListing(ItemType.SPEED_POTION).price());
+    assertEquals(12, ShopCatalog.getListing(ItemType.POISON_POTION).price());
   }
 
   @Test
