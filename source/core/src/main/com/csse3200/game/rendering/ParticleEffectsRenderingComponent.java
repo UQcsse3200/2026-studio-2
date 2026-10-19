@@ -71,7 +71,9 @@ public class ParticleEffectsRenderingComponent extends RenderComponent {
       }
       return;
     }
-    pointLightComponent.setActive(true);
+    if (pointLightComponent != null) {
+      pointLightComponent.setActive(true);
+    }
 
     float x = entity.getCenterPosition().x;
     float y = entity.getPosition().y;
