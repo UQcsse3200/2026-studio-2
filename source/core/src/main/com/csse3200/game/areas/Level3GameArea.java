@@ -22,6 +22,8 @@ public class Level3GameArea extends GameArea {
 
   private static final String FURTHEST_BACKGROUND_TEXTURE = "images/parallax/level_1_furthest.png";
 
+  private static final String LIGHTNING_1 = "images/parallax/lightning_1.png";
+
   private static final float WALL_WIDTH = 0.1f;
 
   private Vector2 worldBounds;
@@ -40,7 +42,7 @@ public class Level3GameArea extends GameArea {
     "images/parallax/level_1_background.png",
     FURTHEST_BACKGROUND_TEXTURE,
     CLOUDS_TEXTURE,
-    "images/parallax/lightning_1.png",
+    LIGHTNING_1,
     "images/parallax/lightning_2.png",
     "images/parallax/lightning_3.png",
     "images/parallax/lightning_4.png",
@@ -227,7 +229,7 @@ public class Level3GameArea extends GameArea {
 
     // Lightning image 1
     backgroundComponent.addLayer(
-        "images/parallax/lightning_1.png",
+        LIGHTNING_1,
         new Vector2(0f, 0f),
         2f,
         7f,
@@ -242,7 +244,7 @@ public class Level3GameArea extends GameArea {
 
     // Lightning image 2
     backgroundComponent.addLayer(
-        "images/parallax/lightning_1.png",
+        LIGHTNING_1,
         new Vector2(0f, 0f),
         2f,
         7f,
@@ -404,7 +406,7 @@ public class Level3GameArea extends GameArea {
       int bossBoundY = (int) bossBounds.y;
 
       Entity camera = new Entity();
-      cameraComponent.resize(bossBoundX, bossBoundY, bossBoundX + 4);
+      cameraComponent.resize(bossBoundX, bossBoundY, (float) bossBoundX + 4);
       camera.setPosition(bossBounds.x / 2 + 1, bossBounds.y / 2 + 97);
       cameraComponent.setTarget(camera);
 

@@ -265,7 +265,7 @@ public class Level3Config extends LevelConfig {
               1,
               0,
               triggerablePlatformTFP,
-              new String[] {"bossArena"},
+              new String[] {BOSS_ARENA},
               false,
               true), // TP12
         };
