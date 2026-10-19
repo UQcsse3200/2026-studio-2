@@ -1,0 +1,163 @@
+package com.csse3200.game.screens;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
+import box2dLight.RayHandler;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.csse3200.game.GdxGame;
+import com.csse3200.game.areas.ForestGameArea;
+import com.csse3200.game.areas.Level1GameArea;
+import com.csse3200.game.areas.terrain.TerrainFactory;
+import com.csse3200.game.components.CameraComponent;
+import com.csse3200.game.components.maingame.MainGameActions;
+import com.csse3200.game.entities.Entity;
+import com.csse3200.game.entities.factories.RenderFactory;
+import com.csse3200.game.extensions.GameExtension;
+import com.csse3200.game.rendering.DebugRenderer;
+import com.csse3200.game.rendering.Renderer;
+import com.csse3200.game.services.ServiceLocator;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
+import org.mockito.MockedConstruction;
+import org.mockito.MockedStatic;
+
+@ExtendWith(GameExtension.class)
+class GameplayScreenLifecycleTest {
+  @ParameterizedTest
+  @ValueSource(booleans = {false, true})
+  void constructsRealGameplayScreensAndDisposesTheirSharedServices(boolean levels) {
+    try (ScreenFixture fixture = new ScreenFixture(levels)) {
+      var entities = ServiceLocator.getEntityService();
+      var resources = ServiceLocator.getResourceService();
+      assertEquals(
+          levels ? new Vector2(2f, 3f) : new Vector2(7.5f, 7.5f),
+          fixture.cameraEntity.getPosition());
+      assertFalse(entities.getEntities().isEmpty());
+      assertTrue(fixture.stage.getActors().size > 0);
+      assertTrue(resources.containsAsset("images/Buttons/exit_up_btn.png", Texture.class));
+      assertNotNull(ServiceLocator.getLightingService());
+      if (levels) {
+        verify(fixture.levelAreas.constructed().getFirst()).create();
+      } else {
+        verify(fixture.forests.constructed().getFirst()).create();
+        assertNull(ServiceLocator.getGameSaveEventHandler());
+      }
+      fixture.screen.render(1f / 60f);
+      verify(fixture.renderer).render();
+      verify(fixture.renderer).render(ServiceLocator.getLightingService().getEngine());
+      fixture.screen.resize(1280, 720);
+      verify(fixture.renderer).resize(1280, 720);
+      for (Entity entity : entities.getEntities()) {
+        if (entity.getComponent(MainGameActions.class) != null) {
+          entity.getEvents().trigger("exit");
+        }
+      }
+      verify(fixture.game).setScreen(GdxGame.ScreenType.MAIN_MENU);
+      fixture.disposeScreen();
+      verify(fixture.renderer).dispose();
+      assertTrue(entities.getEntities().isEmpty());
+      assertFalse(resources.containsAsset("images/Buttons/exit_up_btn.png", Texture.class));
+      assertNull(ServiceLocator.getResourceService());
+      assertNull(ServiceLocator.getGameSaveEventHandler());
+    }
+  }
+
+  @Test
+  void levelConstructorRestoresSavesAndConnectsPlayerEventsAndCamera() {
+    try (ScreenFixture fixture = new ScreenFixture(true)) {
+      Level1GameArea area = fixture.levelAreas.constructed().getFirst();
+      verify(fixture.game).restorePlayerState(fixture.player);
+      verify(fixture.game).applyPendingSavePlayer(fixture.player);
+      verify(fixture.game).applyPendingSaveWorld(area, "level1");
+      ServiceLocator.getGameSaveEventHandler().trigger("autosave");
+      verify(fixture.game).autosave("level1", area);
+      fixture.player.getEvents().trigger("respawnAtCheckpoint");
+      verify(area).respawn();
+      fixture.player.getEvents().trigger("toggleMap");
+      verify(area).toggleLevelMap();
+      fixture.player.setPosition(22f, 9f);
+      fixture.camera.update();
+      assertEquals(22f, fixture.camera.getCamera().position.x);
+      assertEquals(9f, fixture.camera.getCamera().position.y);
+    }
+  }
+
+  /** Real screens, services, UI and assets, with rendering and map generation isolated. */
+  private static class ScreenFixture implements AutoCloseable {
+    private final Stage stage;
+    private final CameraComponent camera = new CameraComponent();
+    private final Entity cameraEntity = new Entity().addComponent(camera);
+    private final Entity player = new Entity();
+    private final Renderer renderer = mock(Renderer.class);
+    private final GdxGame game = mock(GdxGame.class);
+    private final MockedStatic<RenderFactory> factories;
+    private final MockedConstruction<RayHandler> rays;
+    private final MockedConstruction<TerrainFactory> terrains;
+    private final MockedConstruction<ForestGameArea> forests;
+    private final MockedConstruction<Level1GameArea> levelAreas;
+    private BaseGameScreen screen;
+
+    ScreenFixture(boolean levels) {
+      SpriteBatch batch = mock(SpriteBatch.class);
+      stage = new Stage(new ScreenViewport(), batch);
+      stage.getViewport().update(1600, 900, true);
+      cameraEntity.setPosition(2f, 3f);
+      DebugRenderer debug = mock(DebugRenderer.class);
+      when(renderer.getCamera()).thenReturn(camera);
+      when(renderer.getDebug()).thenReturn(debug);
+      factories = mockStatic(RenderFactory.class);
+      rays = mockConstruction(RayHandler.class);
+      terrains = mockConstruction(TerrainFactory.class);
+      forests =
+          mockConstruction(
+              ForestGameArea.class, (area, context) -> when(area.getPlayer()).thenReturn(player));
+      levelAreas =
+          mockConstruction(
+              Level1GameArea.class, (area, context) -> when(area.getPlayer()).thenReturn(player));
+      factories
+          .when(RenderFactory::createRenderer)
+          .thenAnswer(
+              call -> {
+                ServiceLocator.getRenderService().setStage(stage);
+                ServiceLocator.getRenderService().setDebug(debug);
+                return renderer;
+              });
+      try {
+        screen = levels ? new LevelsGameScreen(game) : new MainGameScreen(game);
+      } catch (RuntimeException | Error exception) {
+        close();
+        throw exception;
+      }
+    }
+
+    void disposeScreen() {
+      if (screen != null) {
+        var physics = ServiceLocator.getPhysicsService().getPhysics();
+        screen.dispose();
+        screen = null;
+        physics.dispose();
+      }
+    }
+
+    @Override
+    public void close() {
+      try {
+        disposeScreen();
+      } finally {
+        stage.dispose();
+        levelAreas.close();
+        forests.close();
+        terrains.close();
+        rays.close();
+        factories.close();
+      }
+    }
+  }
+}

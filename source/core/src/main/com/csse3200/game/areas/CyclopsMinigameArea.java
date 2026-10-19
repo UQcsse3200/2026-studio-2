@@ -10,7 +10,6 @@ import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.areas.terrain.TerrainFactory;
 import com.csse3200.game.components.CameraComponent;
-import com.csse3200.game.components.GameVolume;
 import com.csse3200.game.components.minigames.cyclopsminigame.CyclopsAnimationController;
 import com.csse3200.game.components.minigames.cyclopsminigame.CyclopsCameraFollowComponent;
 import com.csse3200.game.components.minigames.cyclopsminigame.CyclopsFloorRenderComponent;
@@ -25,7 +24,6 @@ import com.csse3200.game.entities.factories.PlayerFactory;
 import com.csse3200.game.rendering.AnimationRenderComponent;
 import com.csse3200.game.rendering.BackgroundRenderComponent;
 import com.csse3200.game.rendering.TextureRenderComponent;
-import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.ArrayList;
 import java.util.List;
@@ -434,32 +432,23 @@ public class CyclopsMinigameArea extends GameArea {
   }
 
   private void playMusic() {
-    Music music = ServiceLocator.getResourceService().getAsset(CAVE_BACKGROUND_MUSIC, Music.class);
-    music.setLooping(true);
-    GameVolume.setMusicVolume(music, 0.4f);
-    music.play();
+    playLoopingMusic(CAVE_BACKGROUND_MUSIC, 0.4f);
   }
 
   private void loadAssets() {
-    logger.debug("Loading assets");
-    ResourceService resourceService = ServiceLocator.getResourceService();
-    resourceService.loadTextures(cyclopsMinigameTextures);
-    resourceService.loadTextureAtlases(cyclopsMinigameTexturesAtlases);
-    resourceService.loadSounds(cyclopsMinigameSounds);
-    resourceService.loadMusic(cyclopsMinigameMusic);
-
-    while (!resourceService.loadForMillis(10)) {
-      logger.info("Loading... {}%", resourceService.getProgress());
-    }
+    loadAreaAssets(
+        cyclopsMinigameTextures,
+        cyclopsMinigameTexturesAtlases,
+        cyclopsMinigameSounds,
+        cyclopsMinigameMusic);
   }
 
   private void unloadAssets() {
-    logger.debug("Unloading assets");
-    ResourceService resourceService = ServiceLocator.getResourceService();
-    resourceService.unloadAssets(cyclopsMinigameTextures);
-    resourceService.unloadAssets(cyclopsMinigameTexturesAtlases);
-    resourceService.unloadAssets(cyclopsMinigameSounds);
-    resourceService.unloadAssets(cyclopsMinigameMusic);
+    unloadAreaAssets(
+        cyclopsMinigameTextures,
+        cyclopsMinigameTexturesAtlases,
+        cyclopsMinigameSounds,
+        cyclopsMinigameMusic);
   }
 
   @Override

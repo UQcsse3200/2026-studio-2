@@ -66,8 +66,9 @@ public class BackgroundRenderComponent extends RenderComponent {
     }
   }
 
-  private final Random rainRandom = new Random();
   private ArrayList<ArrayList<Float>> rainOffsets = null;
+  // Created once and reused for the rain drop offsets.
+  private final Random random = new Random();
   private final List<ParallaxLayer> layers = new ArrayList<>();
   private final CameraComponent camera;
 
@@ -325,7 +326,7 @@ public class BackgroundRenderComponent extends RenderComponent {
             currentX = startX;
             rainOffsets.add(new ArrayList<>());
             while (currentX < endX) {
-              float microOffset = rainRandom.nextFloat();
+              float microOffset = random.nextFloat();
               float micro = -verticalOffset + microOffset * 2 * verticalOffset;
               rainOffsets.get(y).add(micro);
               currentX += gap;

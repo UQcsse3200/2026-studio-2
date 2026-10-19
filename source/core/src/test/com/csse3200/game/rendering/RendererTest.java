@@ -92,6 +92,40 @@ class RendererTest {
     verify(renderService).render(spriteBatch);
   }
 
+  @Test
+  void shouldRestoreDefaultClearColourBeforeRendering() {
+    CameraComponent cameraComponent = makeCameraEntity(camera);
+    Renderer renderer =
+        new Renderer(cameraComponent, 10, spriteBatch, stage, renderService, debugRenderer);
+    Gdx.gl.glClearColor(0f, 0f, 0f, 1f);
+    clearInvocations(Gdx.gl);
+
+    renderer.render();
+
+    var order = inOrder(Gdx.gl, renderService);
+    order.verify(Gdx.gl).glClearColor(248f / 255f, 249f / 255f, 178f / 255f, 1f);
+    order.verify(Gdx.gl).glClear(GL20.GL_COLOR_BUFFER_BIT);
+    order.verify(renderService).render(spriteBatch);
+  }
+
+  @Test
+  void shouldRestoreDefaultClearColourBeforeLitRendering() {
+    CameraComponent cameraComponent = makeCameraEntity(camera);
+    Renderer renderer =
+        new Renderer(cameraComponent, 10, spriteBatch, stage, renderService, debugRenderer);
+    LightingEngine lighting = mock(LightingEngine.class);
+    Gdx.gl.glClearColor(0f, 0f, 0f, 1f);
+    clearInvocations(Gdx.gl);
+
+    renderer.render(lighting);
+
+    var order = inOrder(Gdx.gl, renderService, lighting);
+    order.verify(Gdx.gl).glClearColor(248f / 255f, 249f / 255f, 178f / 255f, 1f);
+    order.verify(Gdx.gl).glClear(GL20.GL_COLOR_BUFFER_BIT);
+    order.verify(renderService).render(spriteBatch);
+    order.verify(lighting).render();
+  }
+
   private static CameraComponent makeCameraEntity(Camera camera) {
     Entity camEntity = new Entity().addComponent(new CameraComponent(camera));
     return camEntity.getComponent(CameraComponent.class);
