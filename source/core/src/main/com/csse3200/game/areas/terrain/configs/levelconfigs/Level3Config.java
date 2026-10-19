@@ -497,14 +497,8 @@ public class Level3Config extends LevelConfig {
     // crumbling or moving platform), so the rising water can reset from each of them.
     checkpoints =
         new CheckpointConfig[] {
-          // new CheckpointConfig(new GridPoint2(19, 28)),
           new CheckpointConfig(new GridPoint2(10, 6)),
-          new CheckpointConfig(new GridPoint2(13, 21)),
           new CheckpointConfig(new GridPoint2(16, 37)), // on P12
-          // new CheckpointConfig(new GridPoint2(13, 52)),
-          // new CheckpointConfig(new GridPoint2(19, 59)),
-          // new CheckpointConfig(new GridPoint2(17, 85)),
-          // new CheckpointConfig(new GridPoint2(19, 98)),
           new CheckpointConfig(new GridPoint2(16, 68)), // on ledge above EA2
           new CheckpointConfig(new GridPoint2(13, 85)),
           new CheckpointConfig(new GridPoint2(13, 98)),
