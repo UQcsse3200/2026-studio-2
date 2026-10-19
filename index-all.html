@@ -3237,6 +3237,10 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/files/SaveFile.PlayerSaveData.html#gold" class="member-name-link">gold</a> - Variable in class com.csse3200.game.files.<a href="com/csse3200/game/files/SaveFile.PlayerSaveData.html" title="class in com.csse3200.game.files">SaveFile.PlayerSaveData</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/player/PlayerInteractionComponent.html#GOLD_PICKUP_RANGE" class="member-name-link">GOLD_PICKUP_RANGE</a> - Static variable in class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/PlayerInteractionComponent.html" title="class in com.csse3200.game.components.player">PlayerInteractionComponent</a></dt>
+<dd>
+<div class="block">Distance in metres at which gold is collected without pressing interact.</div>
+</dd>
 <dt><a href="com/csse3200/game/areas/Level1GameArea.html#GOLD_SPAWNS" class="member-name-link">GOLD_SPAWNS</a> - Static variable in class com.csse3200.game.areas.<a href="com/csse3200/game/areas/Level1GameArea.html" title="class in com.csse3200.game.areas">Level1GameArea</a></dt>
 <dd>
 <div class="block">Sit on top of the 1-tile-tall floating platforms (skip the first, which has the shop).</div>
@@ -3604,6 +3608,8 @@ loadScripts(document, 'script');</script>
 <dt><a href="com/csse3200/game/components/item/weapons/bow/BowComponent.html#isCharging()" class="member-name-link">isCharging()</a> - Method in class com.csse3200.game.components.item.weapons.bow.<a href="com/csse3200/game/components/item/weapons/bow/BowComponent.html" title="class in com.csse3200.game.components.item.weapons.bow">BowComponent</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/item/weapons/bow/grapple/GrappleComponent.html#isCharging()" class="member-name-link">isCharging()</a> - Method in class com.csse3200.game.components.item.weapons.bow.grapple.<a href="com/csse3200/game/components/item/weapons/bow/grapple/GrappleComponent.html" title="class in com.csse3200.game.components.item.weapons.bow.grapple">GrappleComponent</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/item/GoldPickupComponent.html#isCollected()" class="member-name-link">isCollected()</a> - Method in class com.csse3200.game.components.item.<a href="com/csse3200/game/components/item/GoldPickupComponent.html" title="class in com.csse3200.game.components.item">GoldPickupComponent</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/item/weapons/bow/arrow/Arrow.html#isConsumeAmmo()" class="member-name-link">isConsumeAmmo()</a> - Method in class com.csse3200.game.components.item.weapons.bow.arrow.<a href="com/csse3200/game/components/item/weapons/bow/arrow/Arrow.html" title="class in com.csse3200.game.components.item.weapons.bow.arrow">Arrow</a></dt>
 <dd>&nbsp;</dd>
@@ -6482,6 +6488,10 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Used to trigger the component to update itself.</div>
 </dd>
+<dt><a href="com/csse3200/game/components/item/GoldPickupComponent.html#tryCollect()" class="member-name-link">tryCollect()</a> - Method in class com.csse3200.game.components.item.<a href="com/csse3200/game/components/item/GoldPickupComponent.html" title="class in com.csse3200.game.components.item">GoldPickupComponent</a></dt>
+<dd>
+<div class="block">Claims this coin before awarding gold, preventing repeated pickups during deferred removal.</div>
+</dd>
 <dt><a href="com/csse3200/game/components/minigames/MinigameOverlayManager.html#tryOpen()" class="member-name-link">tryOpen()</a> - Method in class com.csse3200.game.components.minigames.<a href="com/csse3200/game/components/minigames/MinigameOverlayManager.html" title="class in com.csse3200.game.components.minigames">MinigameOverlayManager</a></dt>
 <dd>
 <div class="block">Attempts to claim the minigame overlay.</div>
@@ -6641,6 +6651,10 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/player/PlayerAnimationController.html#update()" class="member-name-link">update()</a> - Method in class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/PlayerAnimationController.html" title="class in com.csse3200.game.components.player">PlayerAnimationController</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/player/PlayerInteractionComponent.html#update()" class="member-name-link">update()</a> - Method in class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/PlayerInteractionComponent.html" title="class in com.csse3200.game.components.player">PlayerInteractionComponent</a></dt>
+<dd>
+<div class="block">Collects every nearby coin.</div>
+</dd>
 <dt><a href="com/csse3200/game/components/PoisonStatsComponent.html#update()" class="member-name-link">update()</a> - Method in class com.csse3200.game.components.<a href="com/csse3200/game/components/PoisonStatsComponent.html" title="class in com.csse3200.game.components">PoisonStatsComponent</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/projectile/ArrowProjectileComponent.html#update()" class="member-name-link">update()</a> - Method in class com.csse3200.game.components.projectile.<a href="com/csse3200/game/components/projectile/ArrowProjectileComponent.html" title="class in com.csse3200.game.components.projectile">ArrowProjectileComponent</a></dt>
