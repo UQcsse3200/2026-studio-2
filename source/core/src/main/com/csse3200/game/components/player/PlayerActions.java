@@ -66,6 +66,8 @@ public class PlayerActions extends Component {
       -1; // When to give up waiting for a queued jump to leave the ground
   private float decelerationTraction = 1f;
   private float traction = 1f;
+  private Vector2 physicsHelperNewPosition;
+  private boolean physicsHelperRequestedPositionChange = false;
 
   /**
    * The direction the player is currently facing.
@@ -92,6 +94,7 @@ public class PlayerActions extends Component {
     entity.getEvents().addListener("death", this::die);
     entity.getEvents().addListener("revive", this::revive);
     entity.getEvents().addListener("grappleAttached", this::onGrappleAttached);
+    entity.getEvents().addListener("physicsPositionRequest", this::setPhysicsHelperNewPosition);
   }
 
   @Override
@@ -99,6 +102,7 @@ public class PlayerActions extends Component {
     if (dead) {
       return;
     }
+    handlePhysicsHelperRequest();
     boolean wasGrounded = isGrounded;
     isGrounded = checkGrounded();
     checkJumpWindup();
@@ -531,6 +535,19 @@ public class PlayerActions extends Component {
         body.setAwake(true); // force awaken the body to respond to the current contact
       }
     }
+  }
+
+  private void handlePhysicsHelperRequest() {
+    if (physicsHelperRequestedPositionChange && physicsHelperNewPosition != null) {
+      entity.setPosition(physicsHelperNewPosition);
+    }
+    physicsHelperRequestedPositionChange = false;
+    physicsHelperNewPosition = null;
+  }
+
+  private void setPhysicsHelperNewPosition(Vector2 position) {
+    physicsHelperNewPosition = position;
+    physicsHelperRequestedPositionChange = true;
   }
 
   public boolean isSpeedPotionActive() {

@@ -178,4 +178,21 @@ class TriggerButtonComponentTest {
     verify(animator).startAnimation("pressed");
     assertEquals(0f, component.lastActivation, 0.001f);
   }
+
+  @Test
+  void shouldStartFlashingWhenCreated() {
+    RotatableAnimationRenderComponent animator = mock(RotatableAnimationRenderComponent.class);
+    Entity button = new Entity().addComponent(animator).addComponent(new TriggerButtonComponent());
+
+    button.create();
+
+    verify(animator).setFlashing(true);
+  }
+
+  @Test
+  void shouldCreateWithoutAnimatorWithoutFailing() {
+    Entity button = new Entity().addComponent(new TriggerButtonComponent());
+
+    assertDoesNotThrow(button::create);
+  }
 }

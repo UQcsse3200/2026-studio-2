@@ -6,8 +6,11 @@ import static org.mockito.Mockito.*;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Array;
 import com.csse3200.game.components.CameraComponent;
+import com.csse3200.game.components.player.PlayerActions;
 import com.csse3200.game.entities.Entity;
+import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.lighting.LightingEngine;
 import com.csse3200.game.lighting.LightingService;
@@ -106,7 +109,7 @@ class RenderComponentTest {
         new ForegroundRenderComponent(cameraComponent, backgroundPos, worldBounds);
     TiledRenderComponent tiledComponent = new TiledRenderComponent(texturePath, tileSize);
     assertTrue(foregroundComponent.getLayer() > backgroundComponent.getLayer());
-    assertTrue(tiledComponent.getLayer() > foregroundComponent.getLayer());
+    assertTrue(tiledComponent.getLayer() < foregroundComponent.getLayer());
   }
 
   @Test
@@ -135,6 +138,18 @@ class RenderComponentTest {
     LightingService lightingService = mock(LightingService.class);
     LightingEngine lightingEngine = mock(LightingEngine.class);
 
+    Entity player = mock(Entity.class);
+    Entity entity = mock(Entity.class);
+    Array<Entity> entities = new Array<>();
+    entities.add(entity);
+    entities.add(player);
+    EntityService entityService = mock(EntityService.class);
+    when(entityService.getEntities()).thenReturn(entities);
+    ServiceLocator.registerEntityService(entityService);
+
+    when(player.getComponent(PlayerActions.class)).thenReturn(new PlayerActions());
+    when(player.getPosition()).thenReturn(new Vector2(10f, 1f));
+
     when(time.getDeltaTime()).thenReturn(0.001f);
     when(lightingService.getEngine()).thenReturn(lightingEngine);
     ServiceLocator.registerTimeSource(time);
@@ -149,6 +164,15 @@ class RenderComponentTest {
 
   @Test
   void shouldNotUpdateDarknessWhenWeatherIsOff() {
+    Entity player = mock(Entity.class);
+    Entity entity = mock(Entity.class);
+    Array<Entity> entities = new Array<>();
+    entities.add(entity);
+    entities.add(player);
+    EntityService entityService = mock(EntityService.class);
+    when(entityService.getEntities()).thenReturn(entities);
+    ServiceLocator.registerEntityService(entityService);
+
     RenderComponent renderComponent = spy(RenderComponent.class);
     float prevDarkness = renderComponent.getDarkness();
     renderComponent.update();
@@ -162,6 +186,18 @@ class RenderComponentTest {
     GameTime time = mock(GameTime.class);
     LightingService lightingService = mock(LightingService.class);
     LightingEngine lightingEngine = mock(LightingEngine.class);
+
+    Entity player = mock(Entity.class);
+    Entity entity = mock(Entity.class);
+    Array<Entity> entities = new Array<>();
+    entities.add(entity);
+    entities.add(player);
+    EntityService entityService = mock(EntityService.class);
+    when(entityService.getEntities()).thenReturn(entities);
+    ServiceLocator.registerEntityService(entityService);
+
+    when(player.getComponent(PlayerActions.class)).thenReturn(new PlayerActions());
+    when(player.getPosition()).thenReturn(new Vector2(10f, 1f));
 
     when(time.getDeltaTime()).thenReturn(0.001f);
     when(lightingService.getEngine()).thenReturn(lightingEngine);
@@ -177,6 +213,15 @@ class RenderComponentTest {
 
   @Test
   void shouldNotUpdateBackgroundLightWhenWeatherIsOff() {
+    Entity player = mock(Entity.class);
+    Entity entity = mock(Entity.class);
+    Array<Entity> entities = new Array<>();
+    entities.add(entity);
+    entities.add(player);
+    EntityService entityService = mock(EntityService.class);
+    when(entityService.getEntities()).thenReturn(entities);
+    ServiceLocator.registerEntityService(entityService);
+
     RenderComponent renderComponent = spy(RenderComponent.class);
     float prevBackgroundLight = renderComponent.getBackgroundLight();
     renderComponent.update();

@@ -40,8 +40,8 @@ public class GdxGame extends Game {
 
   private boolean transitioning = false;
 
-  // a check for if the intro cutscene has been triggered, once per game session, to prevent the
-  // cutscene from being triggered multiple times.
+  // Prevents the intro cutscene from triggering multiple times
+  // in one game session.
   private boolean introStarted = false;
 
   private PlayerSnapshot playerSnapshot;
@@ -69,7 +69,6 @@ public class GdxGame extends Game {
   public void create() {
     logger.info("Creating game");
     loadSettings();
-
     applyDefaultClearColor();
 
     setScreen(ScreenType.MAIN_MENU);
@@ -84,7 +83,7 @@ public class GdxGame extends Game {
     if (Gdx.gl == null) {
       return;
     }
-    Gdx.gl.glClearColor(248f / 255f, 249 / 255f, 178 / 255f, 1);
+    Gdx.gl.glClearColor(248f / 255f, 249f / 255f, 178f / 255f, 1);
   }
 
   /** Loads the game's settings. */
@@ -286,16 +285,12 @@ public class GdxGame extends Game {
 
   /** Screen type for a saved level name. */
   private static ScreenType levelScreenType(String level) {
-    switch (level) {
-      case LEVEL_2:
-        return ScreenType.LEVEL_2_GAME;
-      case LEVEL_3:
-        return ScreenType.LEVEL_3_GAME;
-      case "boss":
-        return ScreenType.LEVEL_BOSS_GAME;
-      default:
-        return ScreenType.LEVEL_1_GAME;
-    }
+    return switch (level) {
+      case LEVEL_2 -> ScreenType.LEVEL_2_GAME;
+      case LEVEL_3 -> ScreenType.LEVEL_3_GAME;
+      case "boss" -> ScreenType.LEVEL_BOSS_GAME;
+      default -> ScreenType.LEVEL_1_GAME;
+    };
   }
 
   /**
@@ -316,7 +311,7 @@ public class GdxGame extends Game {
   /**
    * Collects a snapshot of the player's state components (gold, health, inventory)
    *
-   * @param player - the player entity to save
+   * @param player the player entity to save
    */
   public void savePlayerState(Entity player) {
     if (player == null) {
@@ -330,10 +325,12 @@ public class GdxGame extends Game {
    * If a player snapshot is available then update the given player entity to match the stored
    * snapshot data (gold, health, inventory)
    *
-   * @param player - the player to update with the stored snapshot
+   * @param player the player to update with the stored snapshot
    */
   public void restorePlayerState(Entity player) {
-    if (playerSnapshot == null) return;
+    if (playerSnapshot == null) {
+      return;
+    }
     playerSnapshot.applyTo(player);
     playerSnapshot = null;
   }
@@ -341,7 +338,9 @@ public class GdxGame extends Game {
   @Override
   public void dispose() {
     logger.debug("Disposing of current screen");
-    getScreen().dispose();
+    if (getScreen() != null) {
+      getScreen().dispose();
+    }
   }
 
   /**

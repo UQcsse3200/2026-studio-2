@@ -9,13 +9,16 @@ import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.areas.terrain.TerrainComponent;
 import com.csse3200.game.areas.terrain.TerrainFactory;
+import com.csse3200.game.areas.terrain.configs.LevelConfig;
 import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
+import com.csse3200.game.rendering.CaveEntranceRenderComponent;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -155,6 +158,29 @@ class Level2GameAreaTest extends AbstractAreaAssetsTest {
 
     assertEquals(50f, bounds.x);
     assertEquals(45f, bounds.y);
+  }
+
+  @Test
+  void level2TexturesIncludeExitDoorTexture() throws Exception {
+    Field field = Level2GameArea.class.getDeclaredField("level2Textures");
+    field.setAccessible(true);
+
+    String[] textures = (String[]) field.get(null);
+
+    assertTrue(Arrays.asList(textures).contains(CaveEntranceRenderComponent.TEXTURE));
+  }
+
+  @Test
+  void level2ConfigTargetsLevel3WithoutAStandaloneTrigger() throws Exception {
+    assertEquals("level3", area.config.getNextLevelName());
+    // The exit door is the only trigger; the config must not create a second one.
+    assertNull(getConfigField("nextLevelTriggerSpawn"));
+  }
+
+  private Object getConfigField(String name) throws Exception {
+    Field field = LevelConfig.class.getDeclaredField(name);
+    field.setAccessible(true);
+    return field.get(area.config);
   }
 
   @Test
