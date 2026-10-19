@@ -131,7 +131,7 @@
 
 
   "calypso": {
-    "health": 50,
+    "health": 300,
     "baseAttack": 2,
     "speed": 4.0,
     "behaviour": "chase",
