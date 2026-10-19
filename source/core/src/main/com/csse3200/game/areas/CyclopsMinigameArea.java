@@ -15,6 +15,7 @@ import com.csse3200.game.components.TextBoxComponent;
 import com.csse3200.game.components.minigames.cyclopsMinigame.CyclopsAnimationController;
 import com.csse3200.game.components.minigames.cyclopsMinigame.CyclopsCameraFollowComponent;
 import com.csse3200.game.components.minigames.cyclopsMinigame.CyclopsFloorRenderComponent;
+import com.csse3200.game.components.minigames.cyclopsMinigame.CyclopsHeartsDisplay;
 import com.csse3200.game.components.minigames.cyclopsMinigame.CyclopsHurtSoundComponent;
 import com.csse3200.game.components.minigames.cyclopsMinigame.CyclopsMinigameLogic;
 import com.csse3200.game.components.minigames.cyclopsMinigame.CyclopsSoundComponent;
@@ -428,6 +429,8 @@ public class CyclopsMinigameArea extends GameArea {
         ServiceLocator.getResourceService().getAsset("sounds/hurt_player_4.wav", Sound.class);
     newPlayer.addComponent(
         new CyclopsHurtSoundComponent(loadHurtVoices(), HURT_VOLUME_BY_HEARTS, deathVoice));
+    // Shows each 1.5-heart miss as a half heart, in place of the usual whole-heart bar.
+    newPlayer.addComponent(new CyclopsHeartsDisplay());
     Vector2 baseScale = newPlayer.getScale().cpy();
     newPlayer.setScale(baseScale.cpy().scl(PLAYER_SCALE));
     // Growing the sprite moves its centre right, so shift its anchor left to keep it over the tile.
