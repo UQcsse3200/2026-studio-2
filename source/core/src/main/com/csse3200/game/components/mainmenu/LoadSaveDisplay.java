@@ -336,7 +336,9 @@ public class LoadSaveDisplay extends UIComponent {
   }
 
   @Override
-  public void draw(SpriteBatch batch) {}
+  public void draw(SpriteBatch batch) {
+    // Nothing to draw manually; the stage renders this display's actors.
+  }
 
   @Override
   public float getZIndex() {

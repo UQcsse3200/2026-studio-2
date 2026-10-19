@@ -356,7 +356,7 @@ public abstract class GameArea implements Disposable {
     GridPoint2 respawnPoint = getRespawnPoint();
     resetPlayerVelocity();
     RespawnComponent respawn = player.getComponent(RespawnComponent.class);
-    respawn.queueRespawn(new Vector2(respawnPoint.x, respawnPoint.y));
+    respawn.queueRespawn(new Vector2((float) respawnPoint.x, (float) respawnPoint.y));
   }
 
   /**
@@ -369,7 +369,7 @@ public abstract class GameArea implements Disposable {
     player.setEnabled(true);
     RespawnComponent.reviveWithPenalty(player);
     RespawnComponent respawn = player.getComponent(RespawnComponent.class);
-    respawn.queueRespawn(new Vector2(respawnPoint.x, respawnPoint.y));
+    respawn.queueRespawn(new Vector2((float) respawnPoint.x, (float) respawnPoint.y));
     player.getEvents().trigger("revive");
   }
 

@@ -392,7 +392,7 @@ public class TextBoxComponent extends UIComponent {
     label.setAlignment(this.textAlignment);
     applyTextColor();
 
-    table.add(label).width(this.maxWidth).pad(this.padding);
+    table.add(label).width((float) this.maxWidth).pad((float) this.padding);
 
     stage.addActor(table);
   }

@@ -20,6 +20,7 @@ import com.csse3200.game.components.level.LevelTriggerComponent;
 import com.csse3200.game.components.player.PlayerActions;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
+import com.csse3200.game.events.listeners.EventListener1;
 import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.input.InputService;
 import com.csse3200.game.physics.PhysicsLayer;
@@ -98,7 +99,7 @@ class Level2ExitDoorTest {
     spawnExitDoor.invoke(area);
 
     door = area.getLevelChanger();
-    door.getEvents().addListener("triggerNextLevel", (String level) -> requestedLevels.add(level));
+    door.getEvents().addListener("triggerNextLevel", (EventListener1<String>) requestedLevels::add);
 
     // Solid terrain around the exit, as laid out in Level2Config.
     solidBox(33, 7, 2, 1); // P11, the ledge the door stands on

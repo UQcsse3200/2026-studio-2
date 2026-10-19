@@ -62,17 +62,17 @@ class Level1GameAreaTest extends AbstractAreaAssetsTest {
 
   @Test
   void shouldHaveCorrectShopkeeperSpawn() {
-    assertEquals(new GridPoint2(5, 3), Level1GameArea.SHOPKEEPER_SPAWN);
+    assertEquals(Level1GameArea.SHOPKEEPER_SPAWN, new GridPoint2(5, 3));
   }
 
   @Test
   void shouldHaveCorrectItemSpawns() {
-    assertEquals(new GridPoint2(2, 3), Level1GameArea.ROPE_ARROW_SPAWN);
-    assertEquals(new GridPoint2(4, 3), Level1GameArea.STANDARD_ARROW_SPAWN);
-    assertEquals(new GridPoint2(6, 3), Level1GameArea.FIRE_ARROW_SPAWN);
-    assertEquals(new GridPoint2(8, 5), Level1GameArea.ICE_ARROW_SPAWN);
-    assertEquals(new GridPoint2(10, 5), Level1GameArea.POISON_ARROW_SPAWN);
-    assertEquals(new GridPoint2(12, 5), Level1GameArea.HEALTH_POTION_SPAWN);
+    assertEquals(Level1GameArea.ROPE_ARROW_SPAWN, new GridPoint2(2, 3));
+    assertEquals(Level1GameArea.STANDARD_ARROW_SPAWN, new GridPoint2(4, 3));
+    assertEquals(Level1GameArea.FIRE_ARROW_SPAWN, new GridPoint2(6, 3));
+    assertEquals(Level1GameArea.ICE_ARROW_SPAWN, new GridPoint2(8, 5));
+    assertEquals(Level1GameArea.POISON_ARROW_SPAWN, new GridPoint2(10, 5));
+    assertEquals(Level1GameArea.HEALTH_POTION_SPAWN, new GridPoint2(12, 5));
   }
 
   @Test
@@ -87,13 +87,13 @@ class Level1GameAreaTest extends AbstractAreaAssetsTest {
   @Test
   void shouldHaveCorrectGoldSpawns() {
     assertEquals(
-        List.of(new GridPoint2(9, 5), new GridPoint2(15, 7), new GridPoint2(20, 8)),
-        Level1GameArea.GOLD_SPAWNS);
+        Level1GameArea.GOLD_SPAWNS,
+        List.of(new GridPoint2(9, 5), new GridPoint2(15, 7), new GridPoint2(20, 8)));
   }
 
   @Test
   void shouldHaveCorrectWheelTokenSpawn() {
-    assertEquals(new GridPoint2(32, 3), Level1GameArea.WHEEL_TOKEN_SPAWN);
+    assertEquals(Level1GameArea.WHEEL_TOKEN_SPAWN, new GridPoint2(32, 3));
   }
 
   @Test
