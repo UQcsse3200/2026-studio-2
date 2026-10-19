@@ -58,6 +58,9 @@ class ObstacleFactoryTest {
         .thenReturn(texture);
     TextureAtlas atlas = mock(TextureAtlas.class);
     AtlasRegion region = mock(AtlasRegion.class);
+    when(region.getRegionWidth()).thenReturn(1);
+    when(region.getRegionHeight()).thenReturn(1);
+    when(atlas.findRegion(org.mockito.ArgumentMatchers.anyString())).thenReturn(region);
     when(atlas.findRegions(org.mockito.ArgumentMatchers.anyString()))
         .thenReturn(new com.badlogic.gdx.utils.Array<>(new AtlasRegion[] {region}));
     when(resources.getAsset(
@@ -165,7 +168,14 @@ class ObstacleFactoryTest {
   void shouldCreateTriggerablePlatformWithActivationComponents() {
     TriggerablePlatformConfig config =
         new TriggerablePlatformConfig(
-            new GridPoint2(1, 2), 3, 1, 0, "images/platform.png", new String[] {"switch"}, true);
+            new GridPoint2(1, 2),
+            3,
+            1,
+            0,
+            "images/platform.png",
+            new String[] {"switch"},
+            true,
+            false);
 
     Entity platform = ObstacleFactory.createTriggerablePlatform(config);
 

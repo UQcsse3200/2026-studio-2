@@ -51,6 +51,19 @@ public class TransitionScreen implements Screen {
     batch = new SpriteBatch();
   }
 
+  TransitionScreen(
+      GdxGame game,
+      Screen fromScreen,
+      ScreenType targetType,
+      SpriteBatch batch,
+      Texture blackPixel) {
+    this.game = game;
+    this.fromScreen = fromScreen;
+    this.targetType = targetType;
+    this.batch = batch;
+    this.blackPixel = blackPixel;
+  }
+
   @Override
   public void render(float delta) {
     float alpha;
@@ -112,16 +125,24 @@ public class TransitionScreen implements Screen {
   }
 
   @Override
-  public void show() {}
+  public void show() {
+    // The constructor has already prepared the transition resources.
+  }
 
   @Override
-  public void pause() {}
+  public void pause() {
+    // The transition has no separate pause or resume state.
+  }
 
   @Override
-  public void resume() {}
+  public void resume() {
+    // The transition has no separate pause or resume state.
+  }
 
   @Override
-  public void hide() {}
+  public void hide() {
+    // Transition resources are released by dispose().
+  }
 
   @Override
   public void dispose() {

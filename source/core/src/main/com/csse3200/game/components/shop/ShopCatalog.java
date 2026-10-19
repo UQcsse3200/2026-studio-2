@@ -29,8 +29,8 @@ public final class ShopCatalog {
           new ShopListing(ItemType.FIRE_ARROW, FIRE_ARROW_PRICE, FIRE_ARROW_QUANTITY),
           new ShopListing(ItemType.ICE_ARROW, ICE_ARROW_PRICE, ICE_ARROW_QUANTITY),
           new ShopListing(ItemType.HEALTH_POTION, HEALTH_POTION_PRICE, HEALTH_POTION_QUANTITY),
-          new ShopListing(ItemType.SpeedPotion, SPEED_POTION_PRICE, SPEED_POTION_QUANTITY),
-          new ShopListing(ItemType.PoisonPotion, POISON_POTION_PRICE, POISON_POTION_QUANTITY));
+          new ShopListing(ItemType.SPEED_POTION, SPEED_POTION_PRICE, SPEED_POTION_QUANTITY),
+          new ShopListing(ItemType.POISON_POTION, POISON_POTION_PRICE, POISON_POTION_QUANTITY));
 
   /**
    * @return unmodifiable list of items the shop currently sells
@@ -50,7 +50,7 @@ public final class ShopCatalog {
       return null;
     }
     for (ShopListing listing : LISTINGS) {
-      if (listing.getItemType() == itemType) {
+      if (listing.itemType() == itemType) {
         return listing;
       }
     }

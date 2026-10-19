@@ -15,7 +15,7 @@ public class GameVolume {
   }
 
   public static void set(float newVolume) {
-    volume = Math.max(0f, Math.min(1f, newVolume));
+    volume = Math.clamp(newVolume, 0f, 1f);
     for (Map.Entry<Music, Float> entry : musicVolumes.entrySet()) {
       entry.getKey().setVolume(entry.getValue() * volume);
     }

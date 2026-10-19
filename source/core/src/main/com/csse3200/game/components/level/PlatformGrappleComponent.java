@@ -5,7 +5,7 @@ import com.csse3200.game.components.Component;
 import com.csse3200.game.entities.Entity;
 
 public class PlatformGrappleComponent extends Component {
-  /// Helper constants provided for more readable code :)
+  // Helper constants provided for more readable code :)
   public static final int LEFT_SIDE = 8;
   public static final int TOP_SIDE = 4;
   public static final int RIGHT_SIDE = 2;

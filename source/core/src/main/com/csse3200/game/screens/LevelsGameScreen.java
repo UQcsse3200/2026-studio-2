@@ -2,7 +2,6 @@ package com.csse3200.game.screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.csse3200.game.GdxGame;
@@ -10,7 +9,6 @@ import com.csse3200.game.areas.GameArea;
 import com.csse3200.game.areas.Level1GameArea;
 import com.csse3200.game.areas.Level2GameArea;
 import com.csse3200.game.areas.Level3GameArea;
-import com.csse3200.game.areas.LevelBossGameArea;
 import com.csse3200.game.areas.terrain.TerrainFactory;
 import com.csse3200.game.components.ButtonSound;
 import com.csse3200.game.components.GameVolume;
@@ -27,27 +25,19 @@ import com.csse3200.game.components.minigames.blackjack.BlackjackOverlay;
 import com.csse3200.game.components.minigames.spinthewheel.SpinTheWheelOverlay;
 import com.csse3200.game.components.minigames.spinthewheel.WheelConfig;
 import com.csse3200.game.components.player.KeyboardPlayerInputComponent;
+import com.csse3200.game.components.player.PlayerInteractionComponent;
 import com.csse3200.game.entities.Entity;
-import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.entities.factories.ItemFactory;
-import com.csse3200.game.entities.factories.RenderFactory;
 import com.csse3200.game.events.EventHandler;
 import com.csse3200.game.input.InputComponent;
 import com.csse3200.game.input.InputDecorator;
-import com.csse3200.game.input.InputService;
-import com.csse3200.game.lighting.LightingEngine;
-import com.csse3200.game.lighting.LightingService;
-import com.csse3200.game.physics.PhysicsEngine;
-import com.csse3200.game.physics.PhysicsService;
 import com.csse3200.game.physics.components.PhysicsComponent;
-import com.csse3200.game.rendering.RenderService;
-import com.csse3200.game.rendering.Renderer;
-import com.csse3200.game.services.GameTime;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.GameEndActions;
 import com.csse3200.game.ui.GameEndDisplay;
 import com.csse3200.game.ui.GameEndState;
+import com.csse3200.game.ui.GameplayCursor;
 import com.csse3200.game.ui.terminal.Terminal;
 import com.csse3200.game.ui.terminal.TerminalDisplay;
 import java.util.ArrayList;
@@ -60,7 +50,12 @@ import org.slf4j.LoggerFactory;
  *
  * <p>Details on libGDX screens: https://happycoding.io/tutorials/libgdx/game-screens
  */
-public class LevelsGameScreen extends ScreenAdapter {
+public class LevelsGameScreen extends BaseGameScreen {
+  private static final String LEVEL3 = "level3";
+
+  private static final String LEVEL2 = "level2";
+
+  private static final String LEVEL1 = "level1";
 
   private static final Logger logger = LoggerFactory.getLogger(LevelsGameScreen.class);
 
@@ -70,26 +65,23 @@ public class LevelsGameScreen extends ScreenAdapter {
   private boolean levelSwapQueued = false;
   private GameArea currentGameArea;
   private GameArea nextGameArea;
-  private String level = "level1";
+  private String level = LEVEL1;
 
   private final GdxGame game;
-  private final Renderer renderer;
-  private final PhysicsEngine physicsEngine;
   private final SpinTheWheelOverlay wheelOverlay;
   private final PauseMenuOverlay pauseOverlay;
-  private final LightingEngine lightingEngine;
   private final BlackjackOverlay blackjackOverlay;
   private final MinigameOverlayManager minigameOverlayManager;
   private Entity player;
   private GameEndDisplay gameEndDisplay;
   private Terminal terminal;
-  private static final String gameplayMusic = "sounds/gameplay_bg.ogg";
-  private static final String[] gameplayMusicFiles = {gameplayMusic};
-  private static final String winMusic = "sounds/Win_music.mp3";
-  private static final String loseMusic = "sounds/Death_music.ogg";
-  private static final String[] gameEndMusic = {winMusic, loseMusic, "sounds/Main_menu_sound.mp3"};
-  private static final String[] gameSounds = {
-    "sounds/hit.ogg", "sounds/Arrow_release.wav", "sounds/jump.ogg", "sounds/itempick.wav"
+  private final GameplayCursor cursor = new GameplayCursor();
+  private static final String GAMEPLAY_MUSIC = "sounds/gameplay_bg.ogg";
+  private static final String[] gameplayMusicFiles = {GAMEPLAY_MUSIC};
+  private static final String WIN_MUSIC = "sounds/Win_music.mp3";
+  private static final String LOSE_MUSIC = "sounds/Death_music.ogg";
+  private static final String[] gameEndMusic = {
+    WIN_MUSIC, LOSE_MUSIC, "sounds/Main_menu_sound.mp3"
   };
   private final Level1GameArea level1GameArea;
   // Cheat mode (Backspace): zero gravity plus free vertical movement. Starts off.
@@ -98,32 +90,12 @@ public class LevelsGameScreen extends ScreenAdapter {
   private float gravity = 1f;
 
   public LevelsGameScreen(GdxGame game) {
+    super();
     this.game = game;
 
-    logger.debug("Initialising main game screen services");
-
-    ServiceLocator.registerTimeSource(new GameTime());
-
-    PhysicsService physicsService = new PhysicsService();
-    ServiceLocator.registerPhysicsService(physicsService);
-    physicsEngine = physicsService.getPhysics();
-
-    ServiceLocator.registerInputService(new InputService());
-    ServiceLocator.registerResourceService(new ResourceService());
-
-    ServiceLocator.registerEntityService(new EntityService());
-    ServiceLocator.registerRenderService(new RenderService());
-    ServiceLocator.registerGameEndEventHandler(new EventHandler());
-
-    renderer = RenderFactory.createRenderer();
-
-    // renderer.getDebug().setActive(true);
-    renderer.getDebug().renderPhysicsWorld(physicsEngine.getWorld());
-
-    LightingService lightingService =
-        new LightingService(renderer.getCamera(), physicsEngine.getWorld());
-    ServiceLocator.registerLightingService(lightingService);
-    lightingEngine = lightingService.getEngine();
+    // Only this screen uses the save handler, so it is registered here; BaseGameScreen sets up
+    // everything the game screens share
+    ServiceLocator.registerGameSaveEventHandler(new EventHandler());
 
     loadAssets();
     createUI();
@@ -142,62 +114,36 @@ public class LevelsGameScreen extends ScreenAdapter {
     currentGameArea = level1GameArea;
     registerLevelSwap();
 
+    // Checkpoints are the game's save points: GameArea forwards every activation here.
+    ServiceLocator.getGameSaveEventHandler()
+        .addListener("autosave", () -> game.autosave(level, currentGameArea));
+    // Winning marks the active save as completed (shown on the save-select screen).
+    ServiceLocator.getGameEndEventHandler()
+        .addListener(
+            "gameEnd",
+            (GameEndState state) -> {
+              if (state == GameEndState.WIN) {
+                game.markSaveCompleted();
+              }
+            });
+
     player = level1GameArea.getPlayer();
     game.restorePlayerState(player);
+    // A save loaded from disk contributes its player state here, and its world state too when the
+    // save is in level 1; saves in other levels are restored after their area swap instead.
+    game.applyPendingSavePlayer(player);
+    game.applyPendingSaveWorld(currentGameArea, level);
     player.getEvents().addListener("respawnAtCheckpoint", () -> currentGameArea.respawn());
     player.getEvents().addListener("toggleMap", () -> currentGameArea.toggleLevelMap());
+    player.getEvents().addListener("toggleBossView", () -> currentGameArea.toggleBossCamera());
 
-    player
-        .getEvents()
-        .addListener(
-            // "jumpStart", not the raw "jump" input event: PlayerActions discards a press made
-            // mid-air, during a wind-up, or after death, and the sound must not play for those.
-            "jumpStart",
-            () -> {
-              try {
-                com.badlogic.gdx.audio.Sound jumpSound =
-                    ServiceLocator.getResourceService()
-                        .getAsset("sounds/jump.ogg", com.badlogic.gdx.audio.Sound.class);
-                jumpSound.play(0.5f);
-              } catch (Exception e) {
-                // skip
-              }
-            });
-    player
-        .getEvents()
-        .addListener(
-            "hurt",
-            () -> {
-              try {
-                com.badlogic.gdx.audio.Sound hurtSound =
-                    ServiceLocator.getResourceService()
-                        .getAsset("sounds/hit.ogg", com.badlogic.gdx.audio.Sound.class);
-                hurtSound.play(0.2f);
-              } catch (Exception e) {
-                // skip
-              }
-            });
-    player
-        .getEvents()
-        .addListener(
-            "itemPickedUp",
-            (Object item) -> {
-              try {
-                com.badlogic.gdx.audio.Sound pickupSound =
-                    ServiceLocator.getResourceService()
-                        .getAsset("sounds/itempick.wav", com.badlogic.gdx.audio.Sound.class);
-                pickupSound.play(0.2f);
-              } catch (Exception e) {
-                // skip
-              }
-            });
     // Follow the player with the camera.
     renderer.getCamera().setTarget(player);
     player.getEvents().addListener("deathAnimationFinished", this::onPlayerDeath);
     wheelOverlay = new SpinTheWheelOverlay(WheelConfig.ITEMS, player);
     player.getEvents().addListener("wheelTokenPickedUp", wheelOverlay::request);
     player.getEvents().addListener("spinTheWheel", wheelOverlay::request);
-    pauseOverlay = new PauseMenuOverlay(game, level1GameArea);
+    pauseOverlay = new PauseMenuOverlay(game);
 
     minigameOverlayManager = new MinigameOverlayManager();
     blackjackOverlay = new BlackjackOverlay(player, minigameOverlayManager);
@@ -224,7 +170,7 @@ public class LevelsGameScreen extends ScreenAdapter {
       gameEndDisplay.hide();
     }
     try {
-      Music music = ServiceLocator.getResourceService().getAsset(gameplayMusic, Music.class);
+      Music music = ServiceLocator.getResourceService().getAsset(GAMEPLAY_MUSIC, Music.class);
       if (!music.isPlaying()) {
         music.setLooping(true);
         GameVolume.setMusicVolume(music, 0.05f);
@@ -243,7 +189,7 @@ public class LevelsGameScreen extends ScreenAdapter {
           .getEvents()
           .addListener(
               "triggerNextLevel",
-              (String level) -> SoundEffects.play("sounds/level_complete.wav", 0.5f));
+              (String nextLevel) -> SoundEffects.play("sounds/level_complete.wav", 0.5f));
     }
   }
 
@@ -257,21 +203,19 @@ public class LevelsGameScreen extends ScreenAdapter {
     TerrainFactory terrainFactory = new TerrainFactory(renderer.getCamera());
 
     switch (level) {
-      case "level1":
+      case LEVEL1:
         nextGameArea = new Level1GameArea(terrainFactory, renderer.getCamera());
         break;
-      case "level2":
+      case LEVEL2:
         nextGameArea = new Level2GameArea(terrainFactory, renderer.getCamera(), player);
         break;
-      case "level3":
+      case LEVEL3:
         nextGameArea = new Level3GameArea(terrainFactory, renderer.getCamera(), player);
-        break;
-      case "boss":
-        nextGameArea = new LevelBossGameArea(terrainFactory, renderer.getCamera(), player);
         break;
       default:
         return;
     }
+    this.level = level;
     levelSwapQueued = true;
   }
 
@@ -282,6 +226,12 @@ public class LevelsGameScreen extends ScreenAdapter {
   private void performLevelSwap() {
     logger.info("Swapping level to new game area");
 
+    boolean wasMapToggled = false;
+    if (currentGameArea.isMapToggled()) {
+      wasMapToggled = true;
+      currentGameArea.toggleLevelMap();
+    }
+
     nextGameArea.create();
     currentGameArea.dispose();
     currentGameArea = nextGameArea;
@@ -289,6 +239,35 @@ public class LevelsGameScreen extends ScreenAdapter {
     registerLevelSwap();
 
     renderer.getCamera().setTarget(currentGameArea.getPlayer());
+    if (wasMapToggled) {
+      currentGameArea.toggleLevelMap();
+    }
+    // Finish applying a loaded save now that its level's area exists (no-op otherwise).
+    game.applyPendingSaveWorld(currentGameArea, level);
+  }
+
+  /**
+   * Whether the shop closed since the last frame. An Esc press that closes the shop is handled by
+   * the input chain, but the pause menu polls the key itself, so without this one press would do
+   * both.
+   */
+  private boolean consumeShopClosed() {
+    Entity current = currentGameArea == null ? null : currentGameArea.getPlayer();
+    PlayerInteractionComponent interaction =
+        current == null ? null : current.getComponent(PlayerInteractionComponent.class);
+    return interaction != null && interaction.consumeShopClosed();
+  }
+
+  private void toggleCheatMode() {
+    cheats = !cheats;
+    PhysicsComponent physics = player.getComponent(PhysicsComponent.class);
+    if (cheats) {
+      gravity = physics.getBody().getGravityScale();
+      physics.getBody().setGravityScale(0);
+    } else {
+      physics.getBody().setGravityScale(gravity);
+    }
+    player.getComponent(KeyboardPlayerInputComponent.class).toggleCheats();
   }
 
   @Override
@@ -302,7 +281,9 @@ public class LevelsGameScreen extends ScreenAdapter {
     // Overlay shortcuts bypass the input handler chain, so ignore them while the terminal is
     // open. F1 still toggles the terminal itself.
     boolean terminalOpen = terminal != null && terminal.isOpen();
+    boolean shopJustClosed = consumeShopClosed();
     if (!terminalOpen
+        && !shopJustClosed
         && !minigameOverlayManager.isActive()
         && Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)
         && !ServiceLocator.getEntityService().getSettingsOpen()) {
@@ -315,34 +296,24 @@ public class LevelsGameScreen extends ScreenAdapter {
       debug.setActive(!debug.getActive());
     }
 
-    /*
-    if (Gdx.input.isKeyJustPressed(Input.Keys.L)) {
-      blackjackOverlay.request();
-    } */
-
-    if (Gdx.input.isKeyJustPressed(Input.Keys.BACKSPACE)) {
-      cheats = !cheats;
-      if (cheats) {
-        gravity = player.getComponent(PhysicsComponent.class).getBody().getGravityScale();
-        player.getComponent(PhysicsComponent.class).getBody().setGravityScale(0);
-        player.getComponent(KeyboardPlayerInputComponent.class).toggleCheats();
-      } else {
-        player.getComponent(PhysicsComponent.class).getBody().setGravityScale(gravity);
-        player.getComponent(KeyboardPlayerInputComponent.class).toggleCheats();
-      }
+    if (!terminalOpen && Gdx.input.isKeyJustPressed(Input.Keys.BACKSPACE)) {
+      toggleCheatMode();
     }
 
-    if (!minigameOverlayManager.isActive() && Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
-      if (level.equals("level1")) {
-        level = "level2";
-      } else if (level.equals("level2")) {
-        level = "level3";
-      } else if (level.equals("level3")) {
-        level = "boss";
-      } else if (level.equals("boss")) {
+    if (!minigameOverlayManager.isActive() && Gdx.input.isKeyJustPressed(Input.Keys.PAGE_UP)) {
+      if (level.equals(LEVEL1)) {
+        level = LEVEL2;
+      } else if (level.equals(LEVEL2)) {
+        level = LEVEL3;
+      } else if (level.equals(LEVEL3)) {
         level = "none";
       }
       queueAreaSwap(level);
+    }
+    currentGameArea.updateLevelMap();
+
+    if (player.getPosition().y > 98) {
+      player.getEvents().trigger("toggleBossView");
     }
 
     physicsEngine.update();
@@ -352,37 +323,27 @@ public class LevelsGameScreen extends ScreenAdapter {
     wheelOverlay.afterRender();
     pauseOverlay.afterRender();
     blackjackOverlay.afterRender();
+    updateCursor();
+  }
+
+  /** Hides the pointer during normal play and shows it for menus and while aiming. */
+  private void updateCursor() {
+    boolean screenMenuOpen =
+        (terminal != null && terminal.isOpen())
+            || minigameOverlayManager.isActive()
+            || (gameEndDisplay != null && gameEndDisplay.isVisible());
+    cursor.update(currentGameArea == null ? null : currentGameArea.getPlayer(), screenMenuOpen);
   }
 
   @Override
-  public void resize(int width, int height) {
-    renderer.resize(width, height);
-    logger.trace("Resized renderer: ({} x {})", width, height);
-  }
-
-  @Override
-  public void pause() {
-    logger.info("Game paused");
-  }
-
-  @Override
-  public void resume() {
-    logger.info("Game resumed");
+  public void hide() {
+    cursor.restore();
   }
 
   @Override
   public void dispose() {
-    logger.debug("Disposing main game screen");
-
-    renderer.dispose();
-    unloadAssets();
-
-    ServiceLocator.getEntityService().dispose();
-    lightingEngine.dispose();
-    ServiceLocator.getRenderService().dispose();
-    ServiceLocator.getResourceService().dispose();
-
-    ServiceLocator.clear();
+    cursor.dispose();
+    super.dispose();
   }
 
   /**
@@ -433,8 +394,8 @@ public class LevelsGameScreen extends ScreenAdapter {
     paths.add(ItemFactory.GOLD_TEXTURE);
     paths.add("images/projectiles/poison_arrow.png");
     paths.addAll(List.of(PauseButtonDisplay.extraTextures()));
-    paths.addAll(List.of(WheelConfig.TEXTURES));
-    paths.addAll(List.of(BlackjackConfig.TEXTURES));
+    paths.addAll(WheelConfig.TEXTURES);
+    paths.addAll(BlackjackConfig.TEXTURES);
     paths.addAll(List.of(ItemAssets.getTextures()));
     return paths.stream().distinct().toArray(String[]::new);
   }
@@ -454,7 +415,7 @@ public class LevelsGameScreen extends ScreenAdapter {
     ResourceService resourceService = ServiceLocator.getResourceService();
     resourceService.loadTextures(mainGameTextures);
     resourceService.loadTextureAtlases(mainGameAtlas);
-    resourceService.loadSounds(WheelConfig.SOUNDS);
+    resourceService.loadSounds(WheelConfig.SOUNDS.toArray(String[]::new));
     resourceService.loadMusic(gameEndMusic);
     SoundEffects.load(resourceService);
     resourceService.loadMusic(gameplayMusicFiles);
@@ -462,12 +423,13 @@ public class LevelsGameScreen extends ScreenAdapter {
     resourceService.loadAll();
   }
 
-  private void unloadAssets() {
+  @Override
+  protected void unloadAssets() {
     logger.debug("Unloading assets");
     ResourceService resourceService = ServiceLocator.getResourceService();
     resourceService.unloadAssets(mainGameTextures);
     resourceService.unloadAssets(mainGameAtlas);
-    resourceService.unloadAssets(WheelConfig.SOUNDS);
+    resourceService.unloadAssets(WheelConfig.SOUNDS.toArray(String[]::new));
     SoundEffects.unload(resourceService);
     resourceService.unloadAssets(gameEndMusic);
     resourceService.unloadAssets(gameplayMusicFiles);
@@ -475,7 +437,7 @@ public class LevelsGameScreen extends ScreenAdapter {
   }
 
   private void playMusic() {
-    Music music = ServiceLocator.getResourceService().getAsset(gameplayMusic, Music.class);
+    Music music = ServiceLocator.getResourceService().getAsset(GAMEPLAY_MUSIC, Music.class);
     music.setLooping(true);
     GameVolume.setMusicVolume(music, 0.05f);
     music.play();
@@ -497,10 +459,19 @@ public class LevelsGameScreen extends ScreenAdapter {
 
     gameEndDisplay = new GameEndDisplay(GameEndState.LOSE);
     terminal = new Terminal(game, GdxGame.ScreenType.LEVEL_1_GAME);
+    terminal.addCommand(
+        "cheats",
+        args -> {
+          toggleCheatMode();
+          return true;
+        });
     ui.addComponent(new InputDecorator(stage, 10))
         .addComponent(new PerformanceDisplay())
         .addComponent(new CoordinateDisplay(renderer.getCamera()))
         .addComponent(new MainGameActions(this.game))
+        // Keep this a lambda: pauseOverlay is assigned after createUI() runs in the constructor,
+        // and a
+        // method reference would read it (still null) immediately.
         .addComponent(new PauseButtonDisplay(() -> pauseOverlay.request()))
         .addComponent(gameEndDisplay) // Add GameEndDisplay component to the UI entity
         .addComponent(new GameEndActions(this.game, this::restartAtCheckpoint))

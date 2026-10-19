@@ -16,15 +16,15 @@ class ItemDictionaryDisplayTest extends UiTestSupport {
     ItemDictionaryComponent dictionary = new ItemDictionaryComponent();
     ItemDictionaryDisplay display = new ItemDictionaryDisplay();
     register(new Entity().addComponent(dictionary).addComponent(display));
-    dictionary.unlockItem(ItemType.SpeedPotion);
-    dictionary.unlockItem(ItemType.PoisonPotion);
+    dictionary.unlockItem(ItemType.SPEED_POTION);
+    dictionary.unlockItem(ItemType.POISON_POTION);
     display.showDictionary();
     Table content = field(display, "contentTable", Table.class);
-    click(content.getChildren().get(ItemType.SpeedPotion.ordinal() + 1));
+    click(content.getChildren().get(ItemType.SPEED_POTION.ordinal() + 1));
     assertTrue(labels(content).contains("Speed Boost: 70%"));
     assertTrue(labels(content).contains("Duration: 3.0s"));
     click(content.getChildren().peek());
-    click(content.getChildren().get(ItemType.PoisonPotion.ordinal() + 1));
+    click(content.getChildren().get(ItemType.POISON_POTION.ordinal() + 1));
     assertTrue(labels(content).contains("Poison Damage: 3.0/s"));
     assertTrue(labels(content).contains("Poison Duration: 3.0s"));
   }

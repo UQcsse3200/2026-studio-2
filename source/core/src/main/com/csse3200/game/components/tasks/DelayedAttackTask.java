@@ -16,8 +16,8 @@ public class DelayedAttackTask extends DefaultTask implements PriorityTask {
   protected final float attackKnockback;
   // Can add attack Duration if necessary
 
-  protected float attackStartTime;
-  protected Entity attack;
+  protected long attackStartTime;
+  // protected Entity attack;
   protected boolean isAttacking = false;
   protected float attackDuration = 1;
 
@@ -49,16 +49,16 @@ public class DelayedAttackTask extends DefaultTask implements PriorityTask {
   @Override
   public void update() {
     long currentTime = ServiceLocator.getTimeSource().getTime();
+    long elapsedTime = currentTime - attackStartTime;
 
     // start attack after delay
-    if (!isAttacking && currentTime >= attackStartTime + attackDelay * 1000) {
+    if (!isAttacking && elapsedTime >= attackDelay * 1000) {
       createAttack();
       isAttacking = true;
     }
 
     // end attack after duration
-    if (isAttacking
-        && currentTime >= attackStartTime + attackDelay * 1000 + attackDuration * 1000) {
+    if (isAttacking && elapsedTime >= attackDelay * 1000 + attackDuration * 1000) {
       isAttacking = false;
       attackStartTime = currentTime;
     }
@@ -74,7 +74,7 @@ public class DelayedAttackTask extends DefaultTask implements PriorityTask {
 
     Vector2 attackOffset = new Vector2(offsetX, 0);
 
-    attack =
+    Entity attack =
         AttackFactory.createNewAttack(
             size, attackOffset, attackDamage, 1f, attackKnockback, owner.getEntity());
     attack.setPosition(enemyPosition);

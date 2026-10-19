@@ -46,7 +46,7 @@ public class AnimationRenderComponent extends RenderComponent {
 
   // Texels per world-unit at entity.scale.x == 1, established by scaleEntity(). 0 means
   // scaleEntity() was never called, so draw() falls back to entity.scale directly.
-  protected float defaultRegionWidthPx;
+  protected int defaultRegionWidthPx;
 
   /**
    * Create the component for a given texture atlas.
@@ -55,11 +55,11 @@ public class AnimationRenderComponent extends RenderComponent {
    */
   public AnimationRenderComponent(TextureAtlas atlas) {
     this.atlas = atlas;
-    this.animations = new HashMap<>(4);
+    this.animations = HashMap.newHashMap(4);
     timeSource = ServiceLocator.getTimeSource();
   }
 
-  private final Map<String, Vector2> animationAnchors = new HashMap<>(4);
+  private final Map<String, Vector2> animationAnchors = HashMap.newHashMap(4);
 
   /**
    * Register an animation from the texture atlas. Will play once when called with startAnimation()
@@ -230,6 +230,30 @@ public class AnimationRenderComponent extends RenderComponent {
     return flipX;
   }
 
+  /**
+   * @return how wide to draw this frame, in world units. Frames keep their size relative to the
+   *     animation's default frame, so a larger frame is drawn larger rather than squashed to fit.
+   */
+  protected float frameWidth(TextureRegion region, Vector2 scale) {
+    if (defaultRegionWidthPx > 0) {
+      float unitsPerPixel = scale.x / defaultRegionWidthPx;
+      return region.getRegionWidth() * unitsPerPixel;
+    }
+    return scale.x;
+  }
+
+  /**
+   * @return how tall to draw this frame, in world units
+   * @see #frameWidth(TextureRegion, Vector2)
+   */
+  protected float frameHeight(TextureRegion region, Vector2 scale) {
+    if (defaultRegionWidthPx > 0) {
+      float unitsPerPixel = scale.x / defaultRegionWidthPx;
+      return region.getRegionHeight() * unitsPerPixel;
+    }
+    return scale.y;
+  }
+
   @Override
   protected void draw(SpriteBatch batch) {
     if (currentAnimation == null) {
@@ -239,20 +263,12 @@ public class AnimationRenderComponent extends RenderComponent {
     Vector2 pos = entity.getPosition();
     Vector2 scale = entity.getScale();
 
-    float width;
-    float height;
-    if (defaultRegionWidthPx > 0f) {
-      float unitsPerPixel = scale.x / defaultRegionWidthPx;
-      width = region.getRegionWidth() * unitsPerPixel;
-      height = region.getRegionHeight() * unitsPerPixel;
-    } else {
-      width = scale.x;
-      height = scale.y;
-    }
+    float width = frameWidth(region, scale);
+    float height = frameHeight(region, scale);
     float drawX = pos.x;
     float drawY = pos.y;
     Vector2 anchor = animationAnchors.get(currentAnimationName);
-    if (anchor != null && defaultRegionWidthPx > 0f) {
+    if (anchor != null && defaultRegionWidthPx > 0) {
       float unitsPerPixel = scale.x / defaultRegionWidthPx;
       // Mirroring flips the character's position within the frame too, so mirror the anchor.
       float anchorX = flipX ? region.getRegionWidth() - anchor.x : anchor.x;
@@ -274,20 +290,14 @@ public class AnimationRenderComponent extends RenderComponent {
       u = u2;
       u2 = tmp;
     }
-    // Color prevColor = batch.getColor().cpy();
-    float light = getDarkness();
+
     batch.draw(region.getTexture(), drawX, drawY, width, height, u, v, u2, v2);
-    // batch.setColor(prevColor);
     batch.setColor(Color.WHITE);
     if (!ServiceLocator.getEntityService().getPaused()) {
       animationPlayTime += timeSource.getDeltaTime();
     }
   }
 
-  @Override
-  public void dispose() {
-    // Atlases belong to ResourceService and are shared by all entities of the same type.
-    // Disposing one enemy must not invalidate the textures used by surviving/new enemies.
-    super.dispose();
-  }
+  // Atlases are shared and owned by ResourceService; inherit disposal without releasing them.
+
 }

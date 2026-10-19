@@ -11,6 +11,8 @@ import java.nio.ByteBuffer;
 import org.lwjgl.system.MemoryUtil;
 import org.lwjgl.system.Platform;
 import org.lwjgl.system.macosx.ObjCRuntime;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Sets the macOS Dock icon. GLFW ignores window icons on macOS and the {@code -Xdock:icon} JVM flag
@@ -19,6 +21,8 @@ import org.lwjgl.system.macosx.ObjCRuntime;
  * initWithData:...]]}.
  */
 final class MacDockIcon {
+  private static final Logger logger = LoggerFactory.getLogger(MacDockIcon.class);
+
   private MacDockIcon() {}
 
   /**
@@ -55,7 +59,7 @@ final class MacDockIcon {
         invokePPPP(app, sel_getUid("setApplicationIconImage:"), image, send);
       }
     } catch (Exception | LinkageError e) {
-      System.err.println("Could not set the Dock icon: " + e);
+      logger.warn("Could not set the Dock icon", e);
     } finally {
       if (buffer != null) {
         MemoryUtil.memFree(buffer);

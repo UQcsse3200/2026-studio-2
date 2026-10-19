@@ -38,7 +38,7 @@
     "speed": 2.5,
     "behaviour": "chase",
     "attackType": "range",
-    "attackRange": 6.0,
+    "attackRange": 10.0,
 
     "wanderRangeX": 4.0,
     "wanderRangeY": 0.0,

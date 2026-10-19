@@ -12,9 +12,8 @@ import com.csse3200.game.services.ServiceLocator;
 public class CheckpointComponent extends Component {
 
   private boolean collected;
-  private GridPoint2 position;
-  private Entity player = null;
-  private final String atlas;
+  private final GridPoint2 position;
+  private Entity player;
   private AnimationRenderComponent torchAnimator;
   private PointLightComponent pointLightComponent;
 
@@ -43,41 +42,30 @@ public class CheckpointComponent extends Component {
   public CheckpointComponent(boolean collected, GridPoint2 position, String atlas) {
     this.collected = collected;
     this.position = position;
-    this.atlas = atlas;
   }
 
   @Override
   public void create() {
-    try {
-      pointLightComponent = entity.getComponent(PointLightComponent.class);
-    } catch (Exception e) {
-      pointLightComponent = null;
-    }
-  }
-
-  /**
-   * Gives this checkpoint the statue entity that represents it, so activating the checkpoint can
-   * switch that same entity to its lit frame rather than drawing a second entity over the top.
-   *
-   * @param torch entity with an {@link AnimationRenderComponent} that has "unlit" and "lit"
-   */
-  public void setTorch(Entity torch) {
-    this.torchAnimator = torch.getComponent(AnimationRenderComponent.class);
+    pointLightComponent = entity.getComponent(PointLightComponent.class);
+    // The checkpoint entity draws itself; null when the level has no checkpoint atlas.
+    torchAnimator = entity.getComponent(AnimationRenderComponent.class);
   }
 
   public void activate() {
     if (collected) {
       return;
     }
-    this.collected = true;
+
+    collected = true;
     entity.getEvents().trigger("checkpointActivated", position);
 
     if (torchAnimator != null) {
       // Swap the existing statue to its lit frame so the unlit frame isn't left behind it.
       torchAnimator.startAnimation("lit");
     }
+
     if (pointLightComponent != null) {
-      pointLightComponent.setColor(new Color(0.55f, 0.05f, 0.02f, 1f));
+      pointLightComponent.setColor(new Color(228f / 255f, 112f / 255f, 37f / 255f, 1f));
     }
   }
 
@@ -85,11 +73,16 @@ public class CheckpointComponent extends Component {
     if (pointLightComponent != null) {
       pointLightComponent.setColor(Color.CLEAR);
     }
-    this.collected = false;
+
+    collected = false;
+
+    if (torchAnimator != null) {
+      torchAnimator.startAnimation("unlit");
+    }
   }
 
   public boolean isActive() {
-    return this.collected;
+    return collected;
   }
 
   public GridPoint2 getPosition() {
@@ -100,19 +93,26 @@ public class CheckpointComponent extends Component {
   @Override
   public void update() {
     if (player == null) {
-      for (Entity entity : ServiceLocator.getEntityService().getEntities()) {
-        if (entity.getComponent(PlayerActions.class) != null) {
-          player = entity;
+      for (Entity candidate : ServiceLocator.getEntityService().getEntities()) {
+        if (candidate.getComponent(PlayerActions.class) != null) {
+          player = candidate;
           break;
         }
       }
     }
+
+    // The player may not have been registered yet.
+    if (player == null) {
+      return;
+    }
+
     float playerPosX = player.getPosition().x;
     float playerPosY = player.getPosition().y;
-    if (position.x - 1 < playerPosX && position.x + 1 > playerPosX) {
-      if (position.y - 1 < playerPosY && position.y + 1 > playerPosY) {
-        activate();
-      }
+    if (position.x - 1 < playerPosX
+        && position.x + 1 > playerPosX
+        && position.y - 1 < playerPosY
+        && position.y + 1 > playerPosY) {
+      activate();
     }
   }
 }

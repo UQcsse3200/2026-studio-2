@@ -67,7 +67,7 @@ public class ChaseTask extends DefaultTask implements PriorityTask {
   public void update() {
     Entity enemy = owner.getEntity();
 
-    float direction;
+    float direction = target.getPosition().x >= enemy.getPosition().x ? 1f : -1f;
 
     if (target.getPosition().x >= enemy.getPosition().x) {
       direction = 1f;
@@ -76,7 +76,7 @@ public class ChaseTask extends DefaultTask implements PriorityTask {
     }
 
     if (!chaseBehaviour.equals("flying")) {
-      if (!edgeDetector.isGroundAhead(enemy, direction)) {
+      if (!canAdvance(enemy, direction)) {
         movementComponent.setMoving(false);
         return;
       }
@@ -89,6 +89,15 @@ public class ChaseTask extends DefaultTask implements PriorityTask {
     if (movementTask.getStatus() != Status.ACTIVE) {
       movementTask.start();
     }
+  }
+
+  /**
+   * @param direction 1 to move right, -1 to move left
+   * @return false if the chaser has to hold still rather than step that way. On the ground that is
+   *     when there is no floor ahead, so it does not walk off the edge of a platform.
+   */
+  protected boolean canAdvance(Entity enemy, float direction) {
+    return edgeDetector.isGroundAhead(enemy, direction);
   }
 
   @Override

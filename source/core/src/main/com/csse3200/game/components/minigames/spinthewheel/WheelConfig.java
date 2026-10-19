@@ -12,9 +12,9 @@ public final class WheelConfig {
           new WheelItem(ItemType.ICE_ARROW, 5),
           new WheelItem(ItemType.HEALTH_POTION, 2));
 
-  public static final String[] TEXTURES = SpinTheWheelDisplay.texturesFor(ITEMS);
+  public static final List<String> TEXTURES = List.of(SpinTheWheelDisplay.texturesFor(ITEMS));
 
-  public static final String[] SOUNDS = SpinTheWheelDisplay.sounds();
+  public static final List<String> SOUNDS = List.of(SpinTheWheelDisplay.sounds());
 
   private WheelConfig() {}
 }

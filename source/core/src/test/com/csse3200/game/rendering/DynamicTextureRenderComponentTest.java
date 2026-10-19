@@ -102,7 +102,7 @@ class DynamicTextureRenderComponentTest {
 
     DynamicTextureRenderComponent component = new DynamicTextureRenderComponent(texture);
 
-    Entity entity = new Entity().addComponent(component);
+    new Entity().addComponent(component);
 
     component.create();
 

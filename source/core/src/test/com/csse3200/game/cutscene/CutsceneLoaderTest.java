@@ -7,43 +7,24 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import com.csse3200.game.extensions.GameExtension;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 @ExtendWith(GameExtension.class)
 class CutsceneLoaderTest {
-  @Test
-  void shouldLoadJpegFolderWithoutManifest() {
-    CutsceneLoader.Result result = new CutsceneLoader().load("test-no-manifest");
+  @ParameterizedTest
+  @CsvSource({
+    "test-no-manifest, 2, a.jpeg",
+    "cutscene1, 5, scene1.jpeg",
+    "cutscene2, 6, scene1.jpeg",
+    "cutscene3, 5, scene1.jpeg"
+  })
+  void shouldLoadCutsceneImages(String folder, int imageCount, String firstImage) {
+    CutsceneLoader.Result result = new CutsceneLoader().load(folder);
 
     assertTrue(result.isSuccess());
-    assertEquals(2, result.getCutscene().getImagePaths().length);
-    assertTrue(result.getCutscene().getImagePaths()[0].endsWith("a.jpeg"));
-  }
-
-  @Test
-  void shouldLoadManifest() {
-    CutsceneLoader.Result result = new CutsceneLoader().load("cutscene1");
-
-    assertTrue(result.isSuccess());
-    assertEquals(5, result.getCutscene().getImagePaths().length);
-    assertTrue(result.getCutscene().getImagePaths()[0].endsWith("scene1.jpeg"));
-  }
-
-  @Test
-  void shouldLoadCutscene2() {
-    CutsceneLoader.Result result = new CutsceneLoader().load("cutscene2");
-
-    assertTrue(result.isSuccess());
-    assertEquals(6, result.getCutscene().getImagePaths().length);
-    assertTrue(result.getCutscene().getImagePaths()[0].endsWith("scene1.jpeg"));
-  }
-
-  @Test
-  void shouldLoadCutscene3() {
-    CutsceneLoader.Result result = new CutsceneLoader().load("cutscene3");
-
-    assertTrue(result.isSuccess());
-    assertEquals(5, result.getCutscene().getImagePaths().length);
-    assertTrue(result.getCutscene().getImagePaths()[0].endsWith("scene1.jpeg"));
+    assertEquals(imageCount, result.getCutscene().getImagePaths().length);
+    assertTrue(result.getCutscene().getImagePaths()[0].endsWith(firstImage));
   }
 
   @Test

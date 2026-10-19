@@ -2,18 +2,18 @@ package com.csse3200.game.areas.terrain.configs;
 
 import com.csse3200.game.components.level.SpawnerComponent;
 import com.csse3200.game.entities.Entity;
-import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Supplier;
 
 public class SpawnerConfig {
-  public ArrayList<Supplier<Entity>> spawns;
+  public List<Supplier<Entity>> spawns;
   public float spawnInterval;
   public int maxSpawns;
   public SpawnerComponent.ACTIVATION_MODE mode;
   public boolean active;
 
   public SpawnerConfig(
-      ArrayList<Supplier<Entity>> spawns,
+      List<Supplier<Entity>> spawns,
       float interval,
       int maxSpawns,
       SpawnerComponent.ACTIVATION_MODE mode,

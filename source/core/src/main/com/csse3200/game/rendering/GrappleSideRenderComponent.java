@@ -35,13 +35,12 @@ public class GrappleSideRenderComponent extends RenderComponent {
     float bottom = pos.y;
     float top = pos.y + scale.y;
 
-    // todo: change this shaperenderer into a tiled png of a rope or somethng
+    // Geometric outlines mark grappleable edges without requiring a dedicated edge texture.
     batch.end();
     float light = getDarkness();
     shapeRenderer.setColor(light, light, light, 1f);
     shapeRenderer.setProjectionMatrix(batch.getProjectionMatrix());
     shapeRenderer.begin(ShapeType.Filled);
-    // shapeRenderer.setColor(Color.GOLD);
 
     drawSide(PlatformGrappleComponent.LEFT_SIDE, new Vector2(left, bottom), new Vector2(left, top));
 

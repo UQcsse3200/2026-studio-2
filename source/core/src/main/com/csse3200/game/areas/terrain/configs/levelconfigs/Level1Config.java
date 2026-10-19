@@ -16,7 +16,7 @@ public class Level1Config extends LevelConfig {
 
     // TEMP
     playerSpawn = new GridPoint2(1, 4);
-    nextLevelTriggerSpawn = new GridPoint2(88, 18);
+    nextLevelTriggerSpawn = new GridPoint2(87, 17);
     nextLevelName = "level2";
 
     // Retain the original switchbacks, floors and shafts; add pacing around that structure.
@@ -40,11 +40,9 @@ public class Level1Config extends LevelConfig {
           // Optional reverse climb to the concealed refuge entrance on the original roof.
           new PlatformConfig(new GridPoint2(19, 20), 3, 1, 2, platformTFP),
           // Approach step for the spike crossing; the three original upper platforms remain.
-          new PlatformConfig(new GridPoint2(53, 20), 3, 1, 2, platformTFP),
           // second half
-          new PlatformConfig(new GridPoint2(56, 22), 3, 1, 1, platformTFP),
-          new PlatformConfig(new GridPoint2(61, 23), 3, 1, 1, platformTFP),
-          new PlatformConfig(new GridPoint2(66, 22), 3, 1, 1, platformTFP),
+          new PlatformConfig(new GridPoint2(60, 20), 3, 1, 1, platformTFP),
+          new PlatformConfig(new GridPoint2(64, 22), 3, 1, 1, platformTFP),
         };
 
     // All moving platforms match the 3 x 1 normal platforms. The lower lift is shifted
@@ -53,17 +51,17 @@ public class Level1Config extends LevelConfig {
         new MovingPlatformConfig[] {
           moving(8, 15, 8, 15, 14, 15, 2, 0, 0),
           moving(25, 15, 25, 15, 36, 15, 3, 0, 0),
-          moving(60, 10, 60, 2, 60, 10, 0, 2, 10),
-          moving(60, 12, 60, 12, 60, 15, 0, 2, 0),
-          moving(72, 2, 72, 2, 72, 12, 0, 2.5f, 10),
+          moving(60, 9, 60, 2, 60, 9, 0, 2, 10),
+          moving(60, 10, 60, 10, 60, 15, 0, 2, 0),
+          moving(75, 1, 75, 1, 75, 17, 0, 2.5f, 10),
         };
 
     spikes =
         new SpikeClusterConfig[] {
           // Distinct upper crossing: 3 broad platforms above the original shelf.
-          new SpikeClusterConfig(60, 67, 19, 19, 0f, false),
+          new SpikeClusterConfig(59, 67, 18, 18, 0f, false),
           // Short late-game jump on the lower route, with safe landings either side.
-          new SpikeClusterConfig(66, 67, 1, 1, 0f, false),
+          new SpikeClusterConfig(67, 72, 0, 0, 0f, false),
         };
 
     bounds =
@@ -86,33 +84,38 @@ public class Level1Config extends LevelConfig {
           new PlatformConfig(new GridPoint2(0, 16), 1, 5, 0, groundTFP),
           new PlatformConfig(new GridPoint2(0, 22), 17, 1, 0, groundTFP),
           new PlatformConfig(new GridPoint2(28, 19), 4, 1, 0, groundTFP),
-          new PlatformConfig(new GridPoint2(35, 21), 15, 1, 0, groundTFP),
+          new PlatformConfig(new GridPoint2(35, 21), 19, 1, 0, groundTFP),
 
           // second half
-          new PlatformConfig(new GridPoint2(53, 13), 3, 4, 0, groundTFP),
-          new PlatformConfig(new GridPoint2(56, 15), 3, 1, 0, groundTFP),
-          new PlatformConfig(new GridPoint2(56, 16), 1, 3, 2, groundTFP),
-          new PlatformConfig(new GridPoint2(53, 7), 3, 4, 0, groundTFP),
-          new PlatformConfig(new GridPoint2(56, 10), 4, 1, 0, groundTFP),
+          new PlatformConfig(new GridPoint2(53, 14), 3, 8, 0, groundTFP),
+          new PlatformConfig(new GridPoint2(56, 14), 3, 1, 0, groundTFP),
+          new PlatformConfig(new GridPoint2(56, 15), 1, 3, 2, groundTFP),
+          new PlatformConfig(new GridPoint2(53, 6), 3, 4, 0, groundTFP),
+          new PlatformConfig(new GridPoint2(56, 9), 4, 1, 0, groundTFP),
           new PlatformConfig(new GridPoint2(63, 0), 1, 18, 0, groundTFP),
-          new PlatformConfig(new GridPoint2(59, 18), 10, 1, 0, groundTFP),
-          new PlatformConfig(new GridPoint2(68, 15), 3, 1, 0, groundTFP),
-          new PlatformConfig(new GridPoint2(71, 15), 1, 6, 0, groundTFP),
-          new PlatformConfig(new GridPoint2(64, 15), 1, 1, 0, groundTFP),
-          new PlatformConfig(new GridPoint2(68, 11), 1, 3, 0, groundTFP),
-          new PlatformConfig(new GridPoint2(68, 11), 3, 1, 0, groundTFP),
-          new PlatformConfig(new GridPoint2(75, 15), 3, 1, 8, groundTFP),
-          new PlatformConfig(new GridPoint2(75, 12), 1, 3, 8, groundTFP),
-          new PlatformConfig(new GridPoint2(78, 0), 13, 17, 0, groundTFP),
+          new PlatformConfig(new GridPoint2(71, 14), 3, 25, 0, groundTFP),
+
+          // grapple prt 2
+          new PlatformConfig(new GridPoint2(66, 7), 8, 8, 8, groundTFP),
+          new PlatformConfig(new GridPoint2(74, 25), 27, 14, 8, groundTFP),
+
+          // end wall
+          new PlatformConfig(new GridPoint2(90, 17), 11, 8, 8, groundTFP),
+          new PlatformConfig(new GridPoint2(78, 0), 23, 17, 0, groundTFP),
         };
 
     // The rope arrow starts in the player's inventory instead of the world.
 
-    // Both are earned after a substantial climb/combat section, not grouped at the start.
+    // Five checkpoints spread along the route, each on a wide, stable platform: the first floor,
+    // the platform after the left-hand climb, the top shelf, the approach to the spike crossing,
+    // and the final block just before the exit portal.
     checkpoints =
         new CheckpointConfig[] {
-          new CheckpointConfig(new GridPoint2(47, 22)),
-          new CheckpointConfig(new GridPoint2(85, 17)),
+          new CheckpointConfig(new GridPoint2(16, 5)),
+          new CheckpointConfig(new GridPoint2(19, 17)),
+          new CheckpointConfig(new GridPoint2(44, 17)),
+          new CheckpointConfig(new GridPoint2(58, 10)),
+          new CheckpointConfig(new GridPoint2(81, 17)),
         };
 
     wheelSpinSpawns = new GridPoint2[] {new GridPoint2(32, 3)};

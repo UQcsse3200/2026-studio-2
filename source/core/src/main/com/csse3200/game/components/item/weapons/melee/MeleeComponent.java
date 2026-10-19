@@ -57,7 +57,25 @@ public class MeleeComponent extends Component {
   public void create() {
     super.create();
     entity.getEvents().addListener("meleeStart", this::startSwing);
-    entity.getEvents().addListener("death", () -> dead = true);
+    entity.getEvents().addListener("death", this::die);
+    entity.getEvents().addListener("revive", this::revive);
+  }
+
+  private void die() {
+    dead = true;
+    resetSwing();
+  }
+
+  private void revive() {
+    dead = false;
+    resetSwing();
+  }
+
+  private void resetSwing() {
+    swinging = false;
+    hitApplied = false;
+    elapsed = 0f;
+    cooldownTimer = 0f;
   }
 
   @Override
@@ -129,7 +147,7 @@ public class MeleeComponent extends Component {
 
     for (int i = 0; i < RAY_COUNT; i++) {
       float angle = -half + ARC_DEGREES * i / (RAY_COUNT - 1);
-      Vector2 end = new Vector2(facing, 0f).rotateDeg(angle).scl(RANGE).add(origin);
+      Vector2 end = new Vector2(facing < 0 ? -1f : 1f, 0f).rotateDeg(angle).scl(RANGE).add(origin);
 
       RaycastHit wall = new RaycastHit();
       if (physics.raycast(origin, end, PhysicsLayer.SOLID, wall) && wall.point != null) {

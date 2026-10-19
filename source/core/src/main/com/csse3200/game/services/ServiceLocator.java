@@ -27,6 +27,7 @@ public class ServiceLocator {
   private static ResourceService resourceService;
   private static EventHandler gameEndEventHandler;
   private static EventHandler cyclopsMinigameEventHandler;
+  private static EventHandler gameSaveEventHandler;
   private static LightingService lightingService;
 
   public static EntityService getEntityService() {
@@ -61,6 +62,16 @@ public class ServiceLocator {
     return cyclopsMinigameEventHandler;
   }
 
+  /**
+   * Event handler for save-related game events (e.g. "autosave" when a checkpoint is activated).
+   * Registered by the gameplay screen, so it is null outside gameplay.
+   *
+   * @return the save event handler, or null when none is registered
+   */
+  public static EventHandler getGameSaveEventHandler() {
+    return gameSaveEventHandler;
+  }
+
   public static LightingService getLightingService() {
     return lightingService;
   }
@@ -78,6 +89,11 @@ public class ServiceLocator {
   public static void registerCyclopsMinigameEventHandler(EventHandler eventHandler) {
     logger.debug("Registering cyclops minigame event handler {}", eventHandler);
     cyclopsMinigameEventHandler = eventHandler;
+  }
+
+  public static void registerGameSaveEventHandler(EventHandler eventHandler) {
+    logger.debug("Registering game save event handler {}", eventHandler);
+    gameSaveEventHandler = eventHandler;
   }
 
   public static void registerEntityService(EntityService service) {
@@ -119,6 +135,7 @@ public class ServiceLocator {
     resourceService = null;
     gameEndEventHandler = null;
     cyclopsMinigameEventHandler = null;
+    gameSaveEventHandler = null;
     lightingService = null;
   }
 

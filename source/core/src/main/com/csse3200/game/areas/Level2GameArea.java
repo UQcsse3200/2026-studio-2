@@ -6,21 +6,19 @@ import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.areas.terrain.TerrainFactory;
 import com.csse3200.game.areas.terrain.configs.levelconfigs.Level2Config;
 import com.csse3200.game.components.CameraComponent;
-import com.csse3200.game.components.GameVolume;
+import com.csse3200.game.components.gamearea.GameAreaDisplay;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.EnemyFactory;
 import com.csse3200.game.entities.factories.ItemFactory;
+import com.csse3200.game.entities.factories.ObstacleFactory;
+import com.csse3200.game.physics.components.ColliderComponent;
+import com.csse3200.game.physics.components.PhysicsComponent.AlignX;
+import com.csse3200.game.physics.components.PhysicsComponent.AlignY;
 import com.csse3200.game.rendering.BackgroundRenderComponent;
-import com.csse3200.game.services.ResourceService;
+import com.csse3200.game.rendering.CaveEntranceRenderComponent;
 import com.csse3200.game.services.ServiceLocator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class Level2GameArea extends GameArea {
-
-  private static final Logger logger = LoggerFactory.getLogger(Level2GameArea.class);
-
-  private static final float WALL_WIDTH = 0.1f;
 
   private Vector2 worldBounds;
 
@@ -29,13 +27,30 @@ public class Level2GameArea extends GameArea {
         new GridPoint2(6, 23), new GridPoint2(11, 23), new GridPoint2(17, 23),
       };
 
+  /**
+   * Exit door to Level 3. It stands on P11 against wall G14. P11 is only two tiles wide, so the
+   * door uses the 2 x 2.67 room door size from Level 1 rather than the 3 x 4 Level 1 exit, which
+   * would overhang the gap.
+   */
+  private static final GridPoint2 EXIT_DOOR_SPAWN = new GridPoint2(33, 8);
+
+  private static final Vector2 EXIT_DOOR_SCALE = new Vector2(2f, 2.67f);
+
+  /**
+   * Sensor covering only the doorway: centred in the door and resting on P11's top surface, so it
+   * lies entirely above solid platform and cannot be reached from below the ledge.
+   */
+  private static final Vector2 EXIT_DOOR_TRIGGER_SIZE = new Vector2(1f, 2f);
+
   /** Textures used by the level 2 game area. */
   private static final String[] level2Textures = {
     "images/ui/scroll_bg.png",
 
     // Level 2 background
+    "images/backgrounds/coin_bg.png",
+    "images/backgrounds/shop_bg.png",
+    "images/backgrounds/Level_end.png",
     "images/backgrounds/Background-2.png",
-    "images/backgrounds/Platform_level-2.png",
     "images/parallax/Clouds-birds.png",
     "images/parallax/Mountains-layer.png",
     "images/parallax/level_2_clouds.png",
@@ -53,6 +68,8 @@ public class Level2GameArea extends GameArea {
     "images/health/purple_heart.png",
     "images/traps/spiky_ball.png",
     "images/traps/spiky_ball_trap.png",
+    "images/terrain/Level_3/water tile.png", // torches
+    CaveEntranceRenderComponent.TEXTURE, // exit door
     ItemFactory.WHEEL_TOKEN_TEXTURE,
 
     // Enemy textures
@@ -74,14 +91,14 @@ public class Level2GameArea extends GameArea {
     "images/enemies/skeleton_warrior.atlas",
     "images/enemies/necromancer.atlas",
     "images/enemies/vulture.atlas",
-    "images/terrain/Level_1/Level_1_checkpoint.atlas"
+    "images/terrain/Level_2/level_2_checkpoint.atlas"
   };
 
   private static final String[] level2Sounds = {"sounds/Impact4.ogg"};
 
-  private static final String backgroundMusic = "sounds/BGM_03_mp3.mp3";
+  private static final String BACKGROUND_MUSIC = "sounds/BGM_03_mp3.mp3";
 
-  private static final String[] level2Music = {backgroundMusic};
+  private static final String[] level2Music = {BACKGROUND_MUSIC};
 
   private final TerrainFactory terrainFactory;
   private final CameraComponent camera;
@@ -99,13 +116,36 @@ public class Level2GameArea extends GameArea {
   @Override
   public void create() {
     loadAssets();
+    displayUI();
 
     spawnTerrain();
+    spawnTorches();
     spawnBackground();
     spawnConfigEntities();
+    spawnExitDoor();
     spawnSkeletonWarrior();
 
     player.setPosition(new Vector2(config.getPlayerSpawn().x, config.getPlayerSpawn().y));
+  }
+
+  private void displayUI() {
+    Entity ui = new Entity();
+    ui.addComponent(new GameAreaDisplay("Level 2"));
+    spawnEntity(ui);
+  }
+
+  /**
+   * Spawns the exit door, which is also Level 2's only next-level trigger. Walking into the doorway
+   * fires the existing "triggerNextLevel" event, which the game screen uses to load Level 3.
+   */
+  private void spawnExitDoor() {
+    Entity exit =
+        ObstacleFactory.createNextLevelTriggerEntity(config.getNextLevelName())
+            .addComponent(new CaveEntranceRenderComponent());
+    exit.setScale(EXIT_DOOR_SCALE);
+    exit.getComponent(ColliderComponent.class)
+        .setAsBoxAligned(EXIT_DOOR_TRIGGER_SIZE, AlignX.CENTER, AlignY.BOTTOM);
+    spawnEntityAt(exit, EXIT_DOOR_SPAWN, false, false);
   }
 
   /** Creates the Level 2 parallax background. */
@@ -117,13 +157,13 @@ public class Level2GameArea extends GameArea {
     // Main background
     backgroundComponent.addLayer(
         "images/backgrounds/Background-2.png",
-        new Vector2(0.10f, 0f),
-        30f,
-        15f,
-        new Vector2(0f, 3.5f),
+        new Vector2(0.1f, 0f),
+        31.5f,
+        17.3f,
+        new Vector2(0f, 3.25f),
         new Vector2(0f, 0f),
         RepeatMode.NONE,
-        1f,
+        0.9f,
         1f,
         false,
         0,
@@ -138,9 +178,6 @@ public class Level2GameArea extends GameArea {
   private void spawnTerrain() {
     terrain = terrainFactory.createTerrain(TerrainFactory.TerrainType.BACKGROUND_DESERT);
     spawnEntity(new Entity().addComponent(terrain));
-    float tileSize = terrain.getTileSize();
-    GridPoint2 tileBounds = terrain.getMapBounds(0);
-    // worldBounds = new Vector2(tileBounds.x * tileSize, tileBounds.y * tileSize);
     worldBounds = new Vector2(50f, 45f);
   }
 
@@ -151,39 +188,29 @@ public class Level2GameArea extends GameArea {
     }
   }
 
-  /** Plays the background music. */
-  private void playMusic() {
-    Music music = ServiceLocator.getResourceService().getAsset(backgroundMusic, Music.class);
+  private void spawnTorches() {
+    GridPoint2[] torchSpawns = {
+      new GridPoint2(10, 41),
+      new GridPoint2(2, 8),
+      new GridPoint2(10, 8),
+      new GridPoint2(37, 28),
+      new GridPoint2(43, 8),
+      new GridPoint2(38, 8),
+    };
 
-    music.setLooping(true);
-    GameVolume.setMusicVolume(music, 0.3f);
-    music.play();
+    for (GridPoint2 pos : torchSpawns) {
+      spawnEntityAt(ObstacleFactory.createTorch(), pos, true, false);
+    }
   }
 
   /** Loads all Level 2 assets. */
   private void loadAssets() {
-    logger.debug("Loading assets");
-
-    ResourceService resourceService = ServiceLocator.getResourceService();
-    resourceService.loadTextures(level2Textures);
-    resourceService.loadTextureAtlases(level2TexturesAtlas);
-    resourceService.loadSounds(level2Sounds);
-    resourceService.loadMusic(level2Music);
-
-    while (!resourceService.loadForMillis(10)) {
-      logger.info("Loading... {}%", resourceService.getProgress());
-    }
+    loadAreaAssets(level2Textures, level2TexturesAtlas, level2Sounds, level2Music);
   }
 
   /** Unloads all Level 2 assets. */
   private void unloadAssets() {
-    logger.debug("Unloading assets");
-
-    ResourceService resourceService = ServiceLocator.getResourceService();
-    resourceService.unloadAssets(level2Textures);
-    resourceService.unloadAssets(level2TexturesAtlas);
-    resourceService.unloadAssets(level2Sounds);
-    resourceService.unloadAssets(level2Music);
+    unloadAreaAssets(level2Textures, level2TexturesAtlas, level2Sounds, level2Music);
   }
 
   @Override
@@ -195,7 +222,7 @@ public class Level2GameArea extends GameArea {
   @Override
   public void dispose() {
     super.dispose();
-    ServiceLocator.getResourceService().getAsset(backgroundMusic, Music.class).stop();
+    ServiceLocator.getResourceService().getAsset(BACKGROUND_MUSIC, Music.class).stop();
     this.unloadAssets();
   }
 }

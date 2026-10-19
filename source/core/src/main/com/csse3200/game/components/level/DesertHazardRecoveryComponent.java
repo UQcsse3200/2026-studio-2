@@ -15,7 +15,11 @@ public class DesertHazardRecoveryComponent extends Component {
     CombatStatsComponent stats = entity.getComponent(CombatStatsComponent.class);
     if (stats.isDead()) return;
     boolean upperSpikes =
-        position.x > 59.5f && position.x < 68.2f && position.y > 18.5f && position.y < 20.4f;
+        !stats.isGodMode()
+            && position.x > 59.5f
+            && position.x < 68.2f
+            && position.y > 18.5f
+            && position.y < 20.4f;
     boolean fellOut = position.y < -4;
     if (!upperSpikes && !fellOut) return;
     // Use the normal damage/invulnerability path so touching a spike cannot charge twice.

@@ -3,30 +3,43 @@ package com.csse3200.game.areas;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.areas.terrain.TerrainFactory;
 import com.csse3200.game.components.CameraComponent;
-import com.csse3200.game.components.GameVolume;
-import com.csse3200.game.components.TextBoxComponent;
-import com.csse3200.game.components.minigames.cyclopsMinigame.CyclopsCameraFollowComponent;
-import com.csse3200.game.components.minigames.cyclopsMinigame.CyclopsFloorRenderComponent;
-import com.csse3200.game.components.minigames.cyclopsMinigame.CyclopsHurtSoundComponent;
-import com.csse3200.game.components.minigames.cyclopsMinigame.CyclopsMinigameLogic;
-import com.csse3200.game.components.minigames.cyclopsMinigame.TimingBarDisplay;
-import com.csse3200.game.components.minigames.cyclopsMinigame.TimingBarLogic;
+import com.csse3200.game.components.minigames.cyclopsminigame.CyclopsAnimationController;
+import com.csse3200.game.components.minigames.cyclopsminigame.CyclopsCameraFollowComponent;
+import com.csse3200.game.components.minigames.cyclopsminigame.CyclopsFloorRenderComponent;
+import com.csse3200.game.components.minigames.cyclopsminigame.CyclopsHurtSoundComponent;
+import com.csse3200.game.components.minigames.cyclopsminigame.CyclopsMinigameLogic;
+import com.csse3200.game.components.minigames.cyclopsminigame.CyclopsSoundComponent;
+import com.csse3200.game.components.minigames.cyclopsminigame.TimingBarDisplay;
+import com.csse3200.game.components.minigames.cyclopsminigame.TimingBarLogic;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.ObstacleFactory;
 import com.csse3200.game.entities.factories.PlayerFactory;
-import com.csse3200.game.input.CutsceneInputComponent;
-import com.csse3200.game.services.ResourceService;
+import com.csse3200.game.rendering.AnimationRenderComponent;
+import com.csse3200.game.rendering.BackgroundRenderComponent;
+import com.csse3200.game.rendering.TextureRenderComponent;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.ArrayList;
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class CyclopsMinigameArea extends GameArea {
+  private static final String CAVE_BACKGROUND_MUSIC =
+      "sounds/minigames/cyclops/cave_background_noise.mp3";
+
+  private static final String HURT_PLAYER_ONE_SOUND = "sounds/hurt_player_1.wav";
+
+  private static final String HURT_PLAYER_TWO_SOUND = "sounds/hurt_player_2.wav";
+
+  private static final String HURT_PLAYER_FOUR_SOUND = "sounds/hurt_player_4.wav";
+
   private static final Logger logger = LoggerFactory.getLogger(CyclopsMinigameArea.class);
 
   static final float PLAYER_SCALE = 1.5f;
@@ -34,7 +47,12 @@ public class CyclopsMinigameArea extends GameArea {
   private static final int CAVE_FLOOR_GROUND_TOP_ROW = 289;
   private static final int CAVE_FLOOR_GROUND_ROWS = 35;
   private static final float FLOOR_SCREEN_FRACTION = 0.2f;
+  private static final float BACKGROUND_PARALLAX = 0.1f;
+  // Row of the background image (0 = top) where its stone floor starts.
+  private static final int CAVE_BACKGROUND_FLOOR_ROW = 812;
 
+  private static final String CAVE_BACKGROUND_TEXTURE =
+      "images/minigames/Cyclops/cave_background.png";
   private static final String CAVE_FLOOR_TEXTURE = "images/minigames/Cyclops/CyclopsCaveFloor.png";
   static final String CAVE_FORMATION_1 = "images/minigames/Cyclops/cave_formation_1.png";
   static final String CAVE_FORMATION_2 = "images/minigames/Cyclops/cave_formation_2.png";
@@ -43,52 +61,68 @@ public class CyclopsMinigameArea extends GameArea {
     CAVE_FORMATION_1, CAVE_FORMATION_2, CAVE_FORMATION_3
   };
 
+  private static final String CAVE_ROCK_PLATFORM =
+      "images/minigames/Cyclops/cave_rock_platform.png";
+  private static final String CYCLOPS_ATLAS = "images/minigames/Cyclops/cyclops.atlas";
+  private static final float CAVE_ROCK_WIDTH = 7.5f;
+  private static final float CYCLOPS_FRAME_WIDTH = 10.75f;
+  private static final float CYCLOPS_BODY_COLUMN = 114f;
+  // Rock pixels he sinks into its top face, so he stands on it rather than on its back edge.
+  private static final int SLEEPING_CYCLOPS_SINK_PIXELS = 5;
+
   private static final String[] cyclopsMinigameTextures = {
     "images/backgrounds/black_roof.png",
     "images/health/purple_heart.png",
     "images/ui/transparent.png",
     "images/terrain/Others/platform.png",
     "images/ui/transparent.png",
+    CAVE_BACKGROUND_TEXTURE,
     CAVE_FLOOR_TEXTURE,
     CAVE_FORMATION_1,
     CAVE_FORMATION_2,
     CAVE_FORMATION_3,
+    CAVE_ROCK_PLATFORM,
     "images/health/PixelArt_HeartBack.png",
     "images/health/Damaged_heart.png",
     "images/health/Last_Health.png",
+    "images/items/gold_coin.png",
+    "images/backgrounds/coin_bg.png",
     "images/minigames/Cyclops/timing_bar_frame.png"
   };
 
-  private static final String[] cyclopsMinigameTexturesAtlases = {"images/player/player.atlas"};
-
-  private static final String[] cyclopsMinigameMusic = {
-    "sounds/minigames/cyclops/cave_background_noise.mp3"
+  private static final String[] cyclopsMinigameTexturesAtlases = {
+    "images/player/player.atlas", CYCLOPS_ATLAS
   };
+
+  private static final String[] cyclopsMinigameMusic = {CAVE_BACKGROUND_MUSIC};
 
   // Indexed by hearts remaining after a hit. 0 hearts is the fatal hit, which uses placeholder 4.
-  public static final String[] HURT_VOICE_PATH_BY_HEARTS = {
-    "sounds/hurt_player_4.wav",
-    "sounds/hurt_player_2.wav",
-    "sounds/hurt_player_2.wav",
-    "sounds/hurt_player_1.wav",
-    "sounds/hurt_player_1.wav"
-  };
-  public static final float[] HURT_VOLUME_BY_HEARTS = {0.6f, 0.3f, 0.3f, 0.3f, 0.3f};
+  public static final List<String> HURT_VOICE_PATH_BY_HEARTS =
+      List.of(
+          HURT_PLAYER_FOUR_SOUND,
+          HURT_PLAYER_TWO_SOUND,
+          HURT_PLAYER_TWO_SOUND,
+          HURT_PLAYER_ONE_SOUND,
+          HURT_PLAYER_ONE_SOUND);
+  public static final List<Float> HURT_VOLUME_BY_HEARTS = List.of(0.6f, 0.3f, 0.3f, 0.3f, 0.3f);
 
   private static final String[] cyclopsMinigameSounds = {
     "sounds/walkingSounds/walkingSound.mp3",
     "sounds/minigames/cyclops/marker-hit.ogg",
     "sounds/minigames/cyclops/marker-miss.ogg",
-    "sounds/hurt_player_1.wav",
-    "sounds/hurt_player_2.wav",
+    HURT_PLAYER_ONE_SOUND,
+    HURT_PLAYER_TWO_SOUND,
     "sounds/hurt_player_3.wav",
-    "sounds/hurt_player_4.wav"
+    HURT_PLAYER_FOUR_SOUND,
+    CyclopsSoundComponent.SNORE_PATH,
+    CyclopsSoundComponent.ROAR_PATH,
+    CyclopsSoundComponent.LANDING_PATH,
+    CyclopsSoundComponent.CLUB_HIT_PATH
   };
 
   private final TerrainFactory terrainFactory;
 
-  private Entity player;
-  private Entity minigame;
+  private Entity minigamePlayer;
   private Vector2 playerOffset = new Vector2();
   private float formationHeight;
 
@@ -99,9 +133,6 @@ public class CyclopsMinigameArea extends GameArea {
   private GridPoint2 winLocation;
   private ArrayList<GridPoint2> statueLocations;
   private ArrayList<GridPoint2> statueGapLocations;
-
-  private CutsceneInputComponent input;
-  private TextBoxComponent textBox;
 
   public CyclopsMinigameArea(CameraComponent camera, TerrainFactory terrainFactory) {
     super(camera);
@@ -114,10 +145,12 @@ public class CyclopsMinigameArea extends GameArea {
     loadAssets();
 
     spawnTerrain();
-    player = spawnPlayer();
+    spawnBackground();
+    minigamePlayer = spawnPlayer();
     spawnStatues();
+    Entity cyclops = spawnSleepingCyclops();
     displayFloor();
-    spawnCamera();
+    spawnCamera(cyclops);
 
     playMusic();
 
@@ -136,13 +169,13 @@ public class CyclopsMinigameArea extends GameArea {
     TimingBarLogic timingBarLogic = new TimingBarLogic(20f);
     TimingBarDisplay timingBarDisplay = new TimingBarDisplay(timingBarLogic);
     CyclopsMinigameLogic cyclopsMinigameLogic =
-        new CyclopsMinigameLogic(timingBarLogic, timingBarDisplay, terrain, player);
+        new CyclopsMinigameLogic(timingBarLogic, timingBarDisplay, terrain, minigamePlayer);
     cyclopsMinigameLogic.setWinLocation(winLocation);
     cyclopsMinigameLogic.setSafeLocations(statueLocations);
     cyclopsMinigameLogic.setLossLocations(statueGapLocations);
     cyclopsMinigameLogic.setPlayerOffset(playerOffset);
 
-    minigame = new Entity();
+    Entity minigame = new Entity();
     minigame.addComponent(timingBarDisplay);
     minigame.addComponent(cyclopsMinigameLogic);
     spawnEntity(minigame);
@@ -157,20 +190,56 @@ public class CyclopsMinigameArea extends GameArea {
     winLocation = new GridPoint2(winTileX(), statueYLevel);
   }
 
+  private void spawnBackground() {
+    float roomWidth = terrain.tileToWorldPosition(MAP_SIZE.x, 0).x;
+    float floorY = terrain.tileToWorldPosition(0, statueYLevel).y;
+    float viewWidth = cameraComponent.getCamera().viewportWidth;
+
+    Texture image =
+        ServiceLocator.getResourceService().getAsset(CAVE_BACKGROUND_TEXTURE, Texture.class);
+    float width = viewWidth + BACKGROUND_PARALLAX * (roomWidth - viewWidth);
+    float height = width * image.getHeight() / image.getWidth();
+    float floorHeight =
+        height * (image.getHeight() - CAVE_BACKGROUND_FLOOR_ROW) / image.getHeight();
+    Vector2 backgroundPos =
+        new Vector2(-(1f - BACKGROUND_PARALLAX) * viewWidth / 2f, floorY - floorHeight);
+
+    BackgroundRenderComponent backgroundComponent =
+        new BackgroundRenderComponent(
+            cameraComponent, backgroundPos, terrain.tileToWorldPosition(MAP_SIZE));
+    backgroundComponent.addLayer(
+        CAVE_BACKGROUND_TEXTURE,
+        new Vector2(BACKGROUND_PARALLAX, 0f),
+        width,
+        height,
+        new Vector2(0f, 0f),
+        new Vector2(0f, 0f),
+        RepeatMode.NONE,
+        0f,
+        1f,
+        false,
+        0,
+        -1);
+
+    Entity background = new Entity().addComponent(backgroundComponent);
+    background.setPosition(backgroundPos);
+    spawnEntity(background);
+  }
+
   /**
    * Keeps the camera on the player's x, clamped so the view never passes the room's ends. The
    * height is fixed so the floor line sits a fifth of the way up the screen.
    */
-  private void spawnCamera() {
+  private void spawnCamera(Entity cyclops) {
     float roomWidth = terrain.tileToWorldPosition(MAP_SIZE.x, 0).x;
     float floorY = terrain.tileToWorldPosition(0, statueYLevel).y;
     float viewHeight = cameraComponent.getCamera().viewportHeight;
     float cameraY = floorY + (0.5f - FLOOR_SCREEN_FRACTION) * viewHeight;
-    Entity cameraEntityHolder =
-        new Entity()
-            .addComponent(
-                new CyclopsCameraFollowComponent(
-                    player, cameraComponent.getCamera(), roomWidth, cameraY));
+    CyclopsCameraFollowComponent follow =
+        new CyclopsCameraFollowComponent(
+            minigamePlayer, cameraComponent.getCamera(), roomWidth, cameraY);
+    cyclops.getEvents().addListener(CyclopsAnimationController.LANDED_EVENT, follow::shake);
+    Entity cameraEntityHolder = new Entity().addComponent(follow);
     spawnEntity(cameraEntityHolder);
     this.cameraComponent.setTarget(cameraEntityHolder);
   }
@@ -203,7 +272,7 @@ public class CyclopsMinigameArea extends GameArea {
   private void spawnStatues() {
     this.statueLocations = new ArrayList<>(NUM_STATUES);
     this.statueGapLocations = new ArrayList<>(NUM_STATUES);
-    formationHeight = formationHeightFor(player.getScale().y);
+    formationHeight = formationHeightFor(minigamePlayer.getScale().y);
 
     for (int i = 1; i <= NUM_STATUES; i++) {
       int x = statueTileX(i);
@@ -228,6 +297,61 @@ public class CyclopsMinigameArea extends GameArea {
       GridPoint2 gapLocation = new GridPoint2(gapTileX(i), statueYLevel);
       statueGapLocations.add(gapLocation);
     }
+  }
+
+  /**
+   * Spawns the cyclops dozing on his feet, club on his shoulder, on a rock in the middle of the
+   * room. Both sit just behind the cave formations so the player and formations draw in front of
+   * them.
+   */
+  private Entity spawnSleepingCyclops() {
+    Vector2 middle = terrain.tileToWorldPosition(MAP_SIZE.x / 2, statueYLevel);
+
+    TextureRenderComponent rockRender =
+        new TextureRenderComponent(CAVE_ROCK_PLATFORM) {
+          // Sorted by its top rather than its base, so the cyclops standing on it draws in front.
+          @Override
+          public float getZIndex() {
+            return -(entity.getPosition().y + entity.getScale().y);
+          }
+        };
+    Entity rock = new Entity().addComponent(rockRender);
+    rockRender.scaleEntity();
+    rock.scaleWidth(CAVE_ROCK_WIDTH);
+    rock.setPosition(middle.x - CAVE_ROCK_WIDTH / 2f, middle.y + 2f * STATUE_DEPTH_OFFSET);
+    spawnEntity(rock);
+
+    AnimationRenderComponent cyclopsAnimator =
+        new AnimationRenderComponent(
+            ServiceLocator.getResourceService().getAsset(CYCLOPS_ATLAS, TextureAtlas.class));
+    cyclopsAnimator.addAnimation("sleep", 0.1f, Animation.PlayMode.LOOP, CYCLOPS_BODY_COLUMN, 0f);
+    cyclopsAnimator.addAnimation("idle", 0.083f, Animation.PlayMode.LOOP, CYCLOPS_BODY_COLUMN, 0f);
+    cyclopsAnimator.addAnimation(
+        "charge_start", 0.073f, Animation.PlayMode.NORMAL, CYCLOPS_BODY_COLUMN, 0f);
+    cyclopsAnimator.addAnimation("jump", 0.1f, Animation.PlayMode.LOOP, CYCLOPS_BODY_COLUMN, 0f);
+    cyclopsAnimator.addAnimation(
+        "attack",
+        CyclopsAnimationController.ATTACK_FRAME_TIME,
+        Animation.PlayMode.NORMAL,
+        CYCLOPS_BODY_COLUMN,
+        0f);
+    Entity cyclops =
+        new Entity()
+            .addComponent(cyclopsAnimator)
+            .addComponent(
+                new CyclopsAnimationController(minigamePlayer, middle.y + STATUE_DEPTH_OFFSET / 2f))
+            .addComponent(new CyclopsSoundComponent());
+    cyclopsAnimator.scaleEntity();
+    cyclops.scaleWidth(CYCLOPS_FRAME_WIDTH);
+    Texture rockImage =
+        ServiceLocator.getResourceService().getAsset(CAVE_ROCK_PLATFORM, Texture.class);
+    float rockPixelSize = CAVE_ROCK_WIDTH / rockImage.getWidth();
+    float rockTop = rock.getPosition().y + rock.getScale().y;
+    cyclops.setPosition(
+        middle.x - CYCLOPS_FRAME_WIDTH / 2f,
+        rockTop - SLEEPING_CYCLOPS_SINK_PIXELS * rockPixelSize);
+    spawnEntity(cyclops);
+    return cyclops;
   }
 
   /**
@@ -284,7 +408,7 @@ public class CyclopsMinigameArea extends GameArea {
   private Entity spawnPlayer() {
     Entity newPlayer = PlayerFactory.createPlayerDisplay();
     Sound deathVoice =
-        ServiceLocator.getResourceService().getAsset("sounds/hurt_player_4.wav", Sound.class);
+        ServiceLocator.getResourceService().getAsset(HURT_PLAYER_FOUR_SOUND, Sound.class);
     newPlayer.addComponent(
         new CyclopsHurtSoundComponent(loadHurtVoices(), HURT_VOLUME_BY_HEARTS, deathVoice));
     Vector2 baseScale = newPlayer.getScale().cpy();
@@ -298,51 +422,39 @@ public class CyclopsMinigameArea extends GameArea {
   }
 
   private Sound[] loadHurtVoices() {
-    Sound[] voices = new Sound[HURT_VOICE_PATH_BY_HEARTS.length];
-    for (int i = 0; i < HURT_VOICE_PATH_BY_HEARTS.length; i++) {
+    Sound[] voices = new Sound[HURT_VOICE_PATH_BY_HEARTS.size()];
+    for (int i = 0; i < HURT_VOICE_PATH_BY_HEARTS.size(); i++) {
       voices[i] =
-          ServiceLocator.getResourceService().getAsset(HURT_VOICE_PATH_BY_HEARTS[i], Sound.class);
+          ServiceLocator.getResourceService()
+              .getAsset(HURT_VOICE_PATH_BY_HEARTS.get(i), Sound.class);
     }
     return voices;
   }
 
   private void playMusic() {
-    Music music =
-        ServiceLocator.getResourceService()
-            .getAsset("sounds/minigames/cyclops/cave_background_noise.mp3", Music.class);
-    music.setLooping(true);
-    GameVolume.setMusicVolume(music, 0.4f);
-    music.play();
+    playLoopingMusic(CAVE_BACKGROUND_MUSIC, 0.4f);
   }
 
   private void loadAssets() {
-    logger.debug("Loading assets");
-    ResourceService resourceService = ServiceLocator.getResourceService();
-    resourceService.loadTextures(cyclopsMinigameTextures);
-    resourceService.loadTextureAtlases(cyclopsMinigameTexturesAtlases);
-    resourceService.loadSounds(cyclopsMinigameSounds);
-    resourceService.loadMusic(cyclopsMinigameMusic);
-
-    while (!resourceService.loadForMillis(10)) {
-      logger.info("Loading... {}%", resourceService.getProgress());
-    }
+    loadAreaAssets(
+        cyclopsMinigameTextures,
+        cyclopsMinigameTexturesAtlases,
+        cyclopsMinigameSounds,
+        cyclopsMinigameMusic);
   }
 
   private void unloadAssets() {
-    logger.debug("Unloading assets");
-    ResourceService resourceService = ServiceLocator.getResourceService();
-    resourceService.unloadAssets(cyclopsMinigameTextures);
-    resourceService.unloadAssets(cyclopsMinigameTexturesAtlases);
-    resourceService.unloadAssets(cyclopsMinigameSounds);
-    resourceService.unloadAssets(cyclopsMinigameMusic);
+    unloadAreaAssets(
+        cyclopsMinigameTextures,
+        cyclopsMinigameTexturesAtlases,
+        cyclopsMinigameSounds,
+        cyclopsMinigameMusic);
   }
 
   @Override
   public void dispose() {
     super.dispose();
-    ServiceLocator.getResourceService()
-        .getAsset("sounds/minigames/cyclops/cave_background_noise.mp3", Music.class)
-        .stop();
+    ServiceLocator.getResourceService().getAsset(CAVE_BACKGROUND_MUSIC, Music.class).stop();
     this.unloadAssets();
   }
 }

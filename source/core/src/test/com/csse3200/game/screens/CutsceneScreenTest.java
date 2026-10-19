@@ -154,7 +154,7 @@ class CutsceneScreenTest {
         new CutsceneScreen(game, cutscene, GdxGame.ScreenType.MAIN_GAME, batch, stage);
 
     // Should not throw
-    screen.render(0.016f);
+    assertDoesNotThrow(() -> screen.render(0.016f));
   }
 
   @Test
@@ -208,8 +208,8 @@ class CutsceneScreenTest {
     assertTrue(screen.getSkipTable().getChildren().contains(screen.getSkipButton(), true));
     // Bottom-right alignment: bottom + right bits set on the table's align flag.
     int align = screen.getSkipTable().getAlign();
-    assertTrue((align & com.badlogic.gdx.utils.Align.bottom) != 0);
-    assertTrue((align & com.badlogic.gdx.utils.Align.right) != 0);
+    assertNotEquals(0, (align & com.badlogic.gdx.utils.Align.bottom));
+    assertNotEquals(0, (align & com.badlogic.gdx.utils.Align.right));
     // Skip uses the continue button textures.
     assertEquals("images/Buttons/continue_up_btn.png", CutsceneScreen.SKIP_UP_TEXTURE);
     assertEquals("images/Buttons/continue_down_btn.png", CutsceneScreen.SKIP_DOWN_TEXTURE);

@@ -34,6 +34,19 @@ public class GrappleHoldRenderComponent extends RenderComponent {
   /** Rope points closer to the player than this are skipped when working out the direction. */
   private static final float MIN_ROPE_LENGTH = 0.2f;
 
+  /**
+   * How far above level the rope must point, as the sine of its angle, before the player starts
+   * hanging from it. A rope that is level or points down means they are beside or above the hook,
+   * not hanging from it, and the pose would turn them head-down.
+   */
+  private static final float START_HANGING_ELEVATION = 0.3f;
+
+  /**
+   * Once hanging, the rope can sag this close to level before they stop. Lower than the start
+   * threshold so swinging past the limit doesn't flicker between the pose and the normal sprite.
+   */
+  private static final float KEEP_HANGING_ELEVATION = 0.1f;
+
   private Texture texture;
   private GrappleComponent grapple;
   private AnimationRenderComponent animator;
@@ -59,8 +72,21 @@ public class GrappleHoldRenderComponent extends RenderComponent {
     }
   }
 
+  /**
+   * @return true while the hanging pose is being drawn in place of the normal sprite
+   */
+  boolean isHolding() {
+    return holding;
+  }
+
+  /** Lets a test supply the pose's image, which otherwise needs a graphics context to load. */
+  void setTexture(Texture texture) {
+    this.texture = texture;
+  }
+
   @Override
   public void update() {
+    boolean wasHanging = holding;
     holding = false;
 
     boolean attached = grapple != null && grapple.isAttached();
@@ -73,7 +99,12 @@ public class GrappleHoldRenderComponent extends RenderComponent {
       return;
     }
 
-    // Let the hurt and death animations show instead of the rope pose.
+    // Action clips must finish before hiding the animator, otherwise their controller state
+    // cannot complete and the normal sprite cannot resume after detaching.
+    if (controller != null && controller.isPlayingActionAnimation()) {
+      return;
+    }
+    // Also protect hurt and death when no controller is present.
     String current = animator.getCurrentAnimation();
     if ("hurt".equals(current) || "death".equals(current)) {
       return;
@@ -85,6 +116,17 @@ public class GrappleHoldRenderComponent extends RenderComponent {
       return;
     }
     Vector2 up = next.cpy().sub(centre).nor();
+
+    // Only hang from a rope that goes up. The player can end up above the hook they landed on, by
+    // climbing or swinging over it, and the rope then points down: the pose would flip them
+    // upside-down, so give them back their normal animation until the rope goes up again.
+    float minimumElevation = wasHanging ? KEEP_HANGING_ELEVATION : START_HANGING_ELEVATION;
+    if (up.y < minimumElevation) {
+      if (wasHanging && controller != null) {
+        controller.refreshAnimation();
+      }
+      return;
+    }
 
     gripPosition.set(centre).mulAdd(up, GRIP_OFFSET);
     // The art's rope points straight up (90 degrees); turn it to point along the rope instead.
@@ -113,7 +155,7 @@ public class GrappleHoldRenderComponent extends RenderComponent {
     float minDistanceSquared = MIN_ROPE_LENGTH * MIN_ROPE_LENGTH;
 
     for (int k = 1; k <= last; k++) {
-      Vector2 point = startsAtPlayer ? path.get(k) : path.get(last - k);
+      Vector2 point = path.get(startsAtPlayer ? k : last - k);
       if (point.dst2(centre) >= minDistanceSquared) {
         return point;
       }

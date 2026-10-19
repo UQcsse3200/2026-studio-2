@@ -2,7 +2,6 @@ package com.csse3200.game.components.mainmenu;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
 
 import com.csse3200.game.GdxGame;
 import com.csse3200.game.entities.Entity;
@@ -31,10 +30,17 @@ class MainMenuActionsTest {
   }
 
   @Test
-  void shouldStartInitialCutsceneWhenPlayIsTriggered() {
+  void shouldStartNewGameWhenPlayIsTriggered() {
     ui.getEvents().trigger("Play");
 
-    verify(game).startInitialCutscene();
+    verify(game).startNewGame();
+  }
+
+  @Test
+  void shouldOpenSaveSelectScreenWhenContinueIsTriggered() {
+    ui.getEvents().trigger("Continue");
+
+    verify(game).setScreen(GdxGame.ScreenType.LOAD_SAVE);
   }
 
   @Test
@@ -49,12 +55,5 @@ class MainMenuActionsTest {
     ui.getEvents().trigger("Exit");
 
     verify(game).exit();
-  }
-
-  @Test
-  void shouldLeaveContinueActionUnchangedUntilImplemented() {
-    ui.getEvents().trigger("Continue");
-
-    verifyNoInteractions(game);
   }
 }

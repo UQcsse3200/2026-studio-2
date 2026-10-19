@@ -31,6 +31,7 @@ import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.rendering.AnimationRenderComponent;
 import com.csse3200.game.rendering.ParticleEffectsRenderingComponent;
+import com.csse3200.game.rendering.item.GrappleFailedIndicatorRenderComponent;
 import com.csse3200.game.services.GameTime;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
@@ -53,7 +54,8 @@ class PlayerFactoryTest {
     ServiceLocator.registerPhysicsService(physics);
 
     LightingEngine lightingEngine = mock(LightingEngine.class);
-    when(lightingEngine.getRayHandler()).thenReturn(mock(box2dLight.RayHandler.class));
+    box2dLight.RayHandler rayHandlerMock = mock(box2dLight.RayHandler.class);
+    when(lightingEngine.getRayHandler()).thenReturn(rayHandlerMock);
     LightingService lightingService = mock(LightingService.class);
     when(lightingService.getEngine()).thenReturn(lightingEngine);
     ServiceLocator.registerLightingService(lightingService);
@@ -87,6 +89,7 @@ class PlayerFactoryTest {
       assertNotNull(bow);
       assertSame(bow, player.getComponent(WeaponComponent.class).getPrimaryWeapon());
       assertNotNull(player.getComponent(GrappleComponent.class));
+      assertNotNull(player.getComponent(GrappleFailedIndicatorRenderComponent.class));
       assertNotNull(player.getComponent(PlayerActions.class));
       AnimationRenderComponent animator = player.getComponent(AnimationRenderComponent.class);
       for (String clip :
@@ -194,5 +197,29 @@ class PlayerFactoryTest {
   @Test
   void giveStartingLoadoutIgnoresNullPlayer() {
     assertDoesNotThrow(() -> PlayerFactory.giveStartingLoadout(null));
+  }
+
+  @Test
+  void loadoutSupportsPlayersWithoutInventoryOrDictionary() {
+    Entity noInventory = new Entity();
+    assertDoesNotThrow(() -> PlayerFactory.giveStartingLoadout(noInventory));
+    InventoryComponent inventory = new InventoryComponent(0);
+    Entity noDictionary = new Entity().addComponent(inventory);
+    PlayerFactory.giveStartingLoadout(noDictionary);
+    assertEquals(1, inventory.getItemCount(ItemType.ROPE_ARROW));
+  }
+
+  @Test
+  void factoriesRejectReflectiveInstantiation() throws Exception {
+    for (Class<?> utility :
+        new Class<?>[] {
+          PlayerFactory.class, ProjectileFactory.class, EnemyProjectileFactory.class
+        }) {
+      var constructor = utility.getDeclaredConstructor();
+      constructor.setAccessible(true);
+      var exception =
+          assertThrows(java.lang.reflect.InvocationTargetException.class, constructor::newInstance);
+      assertInstanceOf(IllegalStateException.class, exception.getCause());
+    }
   }
 }

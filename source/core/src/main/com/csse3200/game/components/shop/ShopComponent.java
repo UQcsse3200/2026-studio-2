@@ -40,7 +40,7 @@ public class ShopComponent extends Component {
    * @return purchase result
    */
   public PurchaseResult buy(ShopListing listing) {
-    ShopListing offered = listing == null ? null : ShopCatalog.getListing(listing.getItemType());
+    ShopListing offered = listing == null ? null : ShopCatalog.getListing(listing.itemType());
     if (offered == null) {
       notifyFailed("Cannot buy this item.");
       return PurchaseResult.INVALID;
@@ -52,23 +52,23 @@ public class ShopComponent extends Component {
       return PurchaseResult.INVALID;
     }
 
-    if (!inventory.hasGold(offered.getPrice())) {
+    if (!inventory.hasGold(offered.price())) {
       notifyFailed("Not enough gold.");
       return PurchaseResult.INSUFFICIENT_GOLD;
     }
 
-    if (!inventory.addItem(offered.getItemType(), offered.getQuantity())) {
+    if (!inventory.addItem(offered.itemType(), offered.quantity())) {
       notifyFailed("Inventory is full.");
       return PurchaseResult.INVENTORY_FULL;
     }
 
-    inventory.addGold(-offered.getPrice());
-    entity.getEvents().trigger("itemPurchased", offered.getItemType());
+    inventory.addGold(-offered.price());
+    entity.getEvents().trigger("itemPurchased", offered.itemType());
     logger.info(
         "Purchased {} x{} for {} gold",
-        offered.getItemType().getDisplayName(),
-        offered.getQuantity(),
-        offered.getPrice());
+        offered.itemType().getDisplayName(),
+        offered.quantity(),
+        offered.price());
     return PurchaseResult.SUCCESS;
   }
 
@@ -87,7 +87,7 @@ public class ShopComponent extends Component {
   public boolean canAfford(ShopListing listing) {
     ShopListing offered = offeredListing(listing);
     InventoryComponent inventory = entity.getComponent(InventoryComponent.class);
-    return offered != null && inventory != null && inventory.hasGold(offered.getPrice());
+    return offered != null && inventory != null && inventory.hasGold(offered.price());
   }
 
   /**
@@ -101,17 +101,17 @@ public class ShopComponent extends Component {
       return false;
     }
 
-    ItemType itemType = offered.getItemType();
+    ItemType itemType = offered.itemType();
 
     int currentQuantity = inventory.getItemCount(itemType);
     if (currentQuantity > 0) {
-      return (long) currentQuantity + offered.getQuantity() <= Integer.MAX_VALUE;
+      return (long) currentQuantity + offered.quantity() <= Integer.MAX_VALUE;
     }
     return !inventory.isFull();
   }
 
   private ShopListing offeredListing(ShopListing listing) {
-    return listing == null ? null : ShopCatalog.getListing(listing.getItemType());
+    return listing == null ? null : ShopCatalog.getListing(listing.itemType());
   }
 
   private void notifyFailed(String reason) {

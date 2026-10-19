@@ -78,10 +78,10 @@ class GrappleSideRenderComponentTest {
 
       ShapeRenderer shape = shapes.constructed().getFirst();
       verify(shape).setColor(Color.GOLD);
-      verify(shape).rectLine(eq(BOTTOM_LEFT), eq(TOP_LEFT), eq(LINE_WIDTH));
-      verify(shape).rectLine(eq(BOTTOM_LEFT), eq(BOTTOM_RIGHT), eq(LINE_WIDTH));
-      verify(shape, never()).rectLine(eq(TOP_LEFT), eq(TOP_RIGHT), eq(LINE_WIDTH));
-      verify(shape, never()).rectLine(eq(BOTTOM_RIGHT), eq(TOP_RIGHT), eq(LINE_WIDTH));
+      verify(shape).rectLine(BOTTOM_LEFT, TOP_LEFT, LINE_WIDTH);
+      verify(shape).rectLine(BOTTOM_LEFT, BOTTOM_RIGHT, LINE_WIDTH);
+      verify(shape, never()).rectLine(TOP_LEFT, TOP_RIGHT, LINE_WIDTH);
+      verify(shape, never()).rectLine(BOTTOM_RIGHT, TOP_RIGHT, LINE_WIDTH);
     }
   }
 
@@ -93,10 +93,10 @@ class GrappleSideRenderComponentTest {
       renderer.render(batch);
 
       ShapeRenderer shape = shapes.constructed().getFirst();
-      verify(shape).rectLine(eq(BOTTOM_LEFT), eq(TOP_LEFT), eq(LINE_WIDTH));
-      verify(shape).rectLine(eq(TOP_LEFT), eq(TOP_RIGHT), eq(LINE_WIDTH));
-      verify(shape).rectLine(eq(BOTTOM_RIGHT), eq(TOP_RIGHT), eq(LINE_WIDTH));
-      verify(shape).rectLine(eq(BOTTOM_LEFT), eq(BOTTOM_RIGHT), eq(LINE_WIDTH));
+      verify(shape).rectLine(BOTTOM_LEFT, TOP_LEFT, LINE_WIDTH);
+      verify(shape).rectLine(TOP_LEFT, TOP_RIGHT, LINE_WIDTH);
+      verify(shape).rectLine(BOTTOM_RIGHT, TOP_RIGHT, LINE_WIDTH);
+      verify(shape).rectLine(BOTTOM_LEFT, BOTTOM_RIGHT, LINE_WIDTH);
     }
   }
 
@@ -139,14 +139,14 @@ class GrappleSideRenderComponentTest {
       ShapeRenderer shape = shapes.constructed().getFirst();
 
       renderer.render(batch);
-      verify(shape, times(1)).rectLine(eq(TOP_LEFT), eq(TOP_RIGHT), eq(LINE_WIDTH));
+      verify(shape, times(1)).rectLine(TOP_LEFT, TOP_RIGHT, LINE_WIDTH);
 
       // e.g. a button press opens up the right-hand side and closes the top
       platform.updateGrappleSides(PlatformGrappleComponent.RIGHT_SIDE);
       renderer.render(batch);
 
-      verify(shape, times(1)).rectLine(eq(TOP_LEFT), eq(TOP_RIGHT), eq(LINE_WIDTH));
-      verify(shape, times(1)).rectLine(eq(BOTTOM_RIGHT), eq(TOP_RIGHT), eq(LINE_WIDTH));
+      verify(shape, times(1)).rectLine(TOP_LEFT, TOP_RIGHT, LINE_WIDTH);
+      verify(shape, times(1)).rectLine(BOTTOM_RIGHT, TOP_RIGHT, LINE_WIDTH);
     }
   }
 

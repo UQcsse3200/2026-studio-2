@@ -45,11 +45,6 @@ public class SummonTask extends DefaultTask implements PriorityTask {
   }
 
   @Override
-  public void start() {
-    super.start();
-  }
-
-  @Override
   public void update() {
     long currentTime = ServiceLocator.getTimeSource().getTime();
 

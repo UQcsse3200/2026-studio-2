@@ -3,12 +3,7 @@ package com.csse3200.game.entities.factories;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
-import com.badlogic.gdx.graphics.Texture;
 import com.csse3200.game.components.item.GoldPickupComponent;
 import com.csse3200.game.components.item.Item;
 import com.csse3200.game.components.item.ItemComponent;
@@ -18,12 +13,11 @@ import com.csse3200.game.components.item.consumables.HealthPotion;
 import com.csse3200.game.components.item.consumables.PoisonPotion;
 import com.csse3200.game.components.item.consumables.SpeedPotion;
 import com.csse3200.game.components.item.weapons.bow.arrow.Arrow;
+import com.csse3200.game.components.lighting.PointLightComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.extensions.GameExtension;
-import com.csse3200.game.lighting.LightingEngine;
-import com.csse3200.game.lighting.LightingService;
 import com.csse3200.game.physics.PhysicsService;
-import com.csse3200.game.services.ResourceService;
+import com.csse3200.game.services.MockServices;
 import com.csse3200.game.services.ServiceLocator;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -39,18 +33,8 @@ class ItemFactoryTest {
     physicsService = new PhysicsService();
     ServiceLocator.registerPhysicsService(physicsService);
 
-    LightingEngine lightingEngine = mock(LightingEngine.class);
-    when(lightingEngine.getRayHandler()).thenReturn(mock(box2dLight.RayHandler.class));
-    LightingService lightingService = mock(LightingService.class);
-    when(lightingService.getEngine()).thenReturn(lightingEngine);
-    ServiceLocator.registerLightingService(lightingService);
-
-    Texture texture = mock(Texture.class);
-    when(texture.getWidth()).thenReturn(1);
-    when(texture.getHeight()).thenReturn(1);
-    ResourceService resourceService = mock(ResourceService.class);
-    when(resourceService.getAsset(anyString(), eq(Texture.class))).thenReturn(texture);
-    ServiceLocator.registerResourceService(resourceService);
+    MockServices.registerLighting();
+    MockServices.registerTextures();
   }
 
   @AfterEach
@@ -65,8 +49,8 @@ class ItemFactoryTest {
     assertItemMapping(ItemType.HEALTH_POTION, HealthPotion.class);
     assertItemMapping(ItemType.FIRE_ARROW, Arrow.class);
     assertItemMapping(ItemType.ICE_ARROW, Arrow.class);
-    assertItemMapping(ItemType.SpeedPotion, SpeedPotion.class);
-    assertItemMapping(ItemType.PoisonPotion, PoisonPotion.class);
+    assertItemMapping(ItemType.SPEED_POTION, SpeedPotion.class);
+    assertItemMapping(ItemType.POISON_POTION, PoisonPotion.class);
   }
 
   @Test
@@ -93,10 +77,32 @@ class ItemFactoryTest {
   }
 
   @Test
+  void potionCatalogNamesStillCreateTheSameItems() {
+    Item speed =
+        ItemFactory.createItem("speedPotion", 2).getComponent(ItemComponent.class).getItem();
+    Item poison =
+        ItemFactory.createItem("poisonPotion", 3).getComponent(ItemComponent.class).getItem();
+
+    assertInstanceOf(SpeedPotion.class, speed);
+    assertEquals(8, speed.getItemType().getId());
+    assertEquals(2, speed.getQuantity());
+    assertInstanceOf(PoisonPotion.class, poison);
+    assertEquals(9, poison.getItemType().getId());
+    assertEquals(3, poison.getQuantity());
+  }
+
+  @Test
   void shouldCreateWheelTokenPickup() {
     Entity entity = ItemFactory.createWheelToken();
 
     assertNotNull(entity.getComponent(WheelTokenPickupComponent.class));
+  }
+
+  @Test
+  void shouldCreateWheelTokenWithGlow() {
+    Entity entity = ItemFactory.createWheelToken();
+
+    assertNotNull(entity.getComponent(PointLightComponent.class));
   }
 
   private static void assertItemMapping(ItemType type, Class<? extends Item> expectedClass) {

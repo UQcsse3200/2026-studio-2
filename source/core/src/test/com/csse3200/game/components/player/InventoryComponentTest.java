@@ -58,6 +58,16 @@ class InventoryComponentTest {
   }
 
   @Test
+  void shouldGrowHotbarWhenColumnIsAdded() {
+    InventoryComponent inventory = new InventoryComponent(0, 2, 4);
+
+    assertTrue(inventory.addColumn());
+
+    assertEquals(5, inventory.getColumns());
+    assertEquals(5, inventory.getHotbarSlotCount());
+  }
+
+  @Test
   void shouldKeepCapacityConstructorAsSingleRowLayout() {
     InventoryComponent inventory = new InventoryComponent(0, 4);
 
@@ -75,9 +85,12 @@ class InventoryComponentTest {
         IllegalArgumentException.class, () -> new InventoryComponent(0, Integer.MAX_VALUE, 9));
   }
 
-  @Test
-  void shouldAddRowWithoutMovingExistingSlots() {
-    InventoryComponent inventory = new InventoryComponent(0, 2, 3);
+  /**
+   * Puts the inventory on a player and adds two arrows, then starts counting the events it sends.
+   *
+   * @return the number of inventory change events, and then of selection change events
+   */
+  private static int[][] countEventsAfterAddingTwoArrows(InventoryComponent inventory) {
     Entity player = new Entity().addComponent(inventory);
     int[] inventoryEvents = {0};
     int[] selectionEvents = {0};
@@ -87,6 +100,15 @@ class InventoryComponentTest {
     inventory.addItem(ItemType.ROPE_ARROW, 1);
     inventoryEvents[0] = 0;
     selectionEvents[0] = 0;
+    return new int[][] {inventoryEvents, selectionEvents};
+  }
+
+  @Test
+  void shouldAddRowWithoutMovingExistingSlots() {
+    InventoryComponent inventory = new InventoryComponent(0, 2, 3);
+    int[][] events = countEventsAfterAddingTwoArrows(inventory);
+    int[] inventoryEvents = events[0];
+    int[] selectionEvents = events[1];
 
     assertTrue(inventory.addRow());
 
@@ -211,7 +233,8 @@ class InventoryComponentTest {
     assertNull(inventory.getSlot(2));
     assertFalse(inventory.isSlotEmpty(-1));
     assertFalse(inventory.isSlotEmpty(2));
-    assertThrows(UnsupportedOperationException.class, () -> inventory.getSlots().clear());
+    var slots = inventory.getSlots();
+    assertThrows(UnsupportedOperationException.class, slots::clear);
   }
 
   @Test
@@ -286,15 +309,9 @@ class InventoryComponentTest {
   @Test
   void shouldNotifyBothEventsWhenSelectedOccupiedSlotIsSwapped() {
     InventoryComponent inventory = new InventoryComponent(0, 2);
-    Entity player = new Entity().addComponent(inventory);
-    int[] inventoryEvents = {0};
-    int[] selectionEvents = {0};
-    player.getEvents().addListener("inventoryChanged", () -> inventoryEvents[0]++);
-    player.getEvents().addListener("inventorySelectionChanged", () -> selectionEvents[0]++);
-    inventory.addItem(ItemType.STANDARD_ARROW, 1);
-    inventory.addItem(ItemType.ROPE_ARROW, 1);
-    inventoryEvents[0] = 0;
-    selectionEvents[0] = 0;
+    int[][] events = countEventsAfterAddingTwoArrows(inventory);
+    int[] inventoryEvents = events[0];
+    int[] selectionEvents = events[1];
 
     assertTrue(inventory.swapSlots(0, 1));
 
@@ -433,15 +450,9 @@ class InventoryComponentTest {
   @Test
   void shouldNotNotifyWhenInventoryIsAlreadySorted() {
     InventoryComponent inventory = new InventoryComponent(0, 3);
-    Entity player = new Entity().addComponent(inventory);
-    int[] inventoryEvents = {0};
-    int[] selectionEvents = {0};
-    player.getEvents().addListener("inventoryChanged", () -> inventoryEvents[0]++);
-    player.getEvents().addListener("inventorySelectionChanged", () -> selectionEvents[0]++);
-    inventory.addItem(ItemType.STANDARD_ARROW, 1);
-    inventory.addItem(ItemType.ROPE_ARROW, 1);
-    inventoryEvents[0] = 0;
-    selectionEvents[0] = 0;
+    int[][] events = countEventsAfterAddingTwoArrows(inventory);
+    int[] inventoryEvents = events[0];
+    int[] selectionEvents = events[1];
 
     assertFalse(inventory.sortByItemId());
 

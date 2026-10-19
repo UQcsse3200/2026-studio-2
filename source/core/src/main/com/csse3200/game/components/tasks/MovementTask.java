@@ -22,8 +22,6 @@ public class MovementTask extends DefaultTask {
   private Vector2 lastPos;
   private PhysicsMovementComponent movementComponent;
 
-  private boolean paused = false;
-
   public MovementTask(Vector2 target) {
     this.target = target;
     this.gameTime = ServiceLocator.getTimeSource();

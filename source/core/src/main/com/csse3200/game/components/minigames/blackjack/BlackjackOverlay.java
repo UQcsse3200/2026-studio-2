@@ -76,7 +76,7 @@ public class BlackjackOverlay {
 
     ServiceLocator.getResourceService().loadMusic(new String[] {BLACKJACK_MUSIC});
 
-    ServiceLocator.getResourceService().loadSounds(BlackjackConfig.SOUNDS);
+    ServiceLocator.getResourceService().loadSounds(BlackjackConfig.SOUNDS.toArray(String[]::new));
 
     ServiceLocator.getResourceService().loadAll();
 

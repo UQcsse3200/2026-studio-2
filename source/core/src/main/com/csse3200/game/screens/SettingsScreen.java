@@ -31,10 +31,17 @@ public class SettingsScreen extends ScreenAdapter {
   };
 
   private final GdxGame game;
+  private final GdxGame.ScreenType returnScreen;
   private final Renderer renderer;
 
   public SettingsScreen(GdxGame game) {
+    this(game, GdxGame.ScreenType.MAIN_MENU);
+  }
+
+  /** A settings screen that goes back to the given screen when it is exited. */
+  protected SettingsScreen(GdxGame game, GdxGame.ScreenType returnScreen) {
     this.game = game;
+    this.returnScreen = returnScreen;
 
     logger.debug("Initialising settings screen services");
     ServiceLocator.registerInputService(new InputService());
@@ -94,7 +101,7 @@ public class SettingsScreen extends ScreenAdapter {
     logger.debug("Creating ui");
     Stage stage = ServiceLocator.getRenderService().getStage();
     Entity ui = new Entity();
-    ui.addComponent(new SettingsMenuDisplay(game, GdxGame.ScreenType.MAIN_MENU))
+    ui.addComponent(new SettingsMenuDisplay(game, returnScreen))
         .addComponent(new InputDecorator(stage, 10));
     ServiceLocator.getEntityService().register(ui);
   }

@@ -43,14 +43,26 @@ class PlayerStatsDisplayTest {
     ServiceLocator.registerRenderService(renderService);
 
     ResourceService resourceService = mock(ResourceService.class);
+    Texture textureMock = mock(Texture.class);
     when(resourceService.getAsset("images/health/red_heart.png", Texture.class))
-        .thenReturn(mock(Texture.class));
+        .thenReturn(textureMock);
+    Texture textureMock2 = mock(Texture.class);
     when(resourceService.getAsset("images/health/PixelArt_HeartBack.png", Texture.class))
-        .thenReturn(mock(Texture.class));
+        .thenReturn(textureMock2);
+    Texture textureMock3 = mock(Texture.class);
     when(resourceService.getAsset("images/health/Damaged_heart.png", Texture.class))
-        .thenReturn(mock(Texture.class));
+        .thenReturn(textureMock3);
+    Texture textureMock4 = mock(Texture.class);
     when(resourceService.getAsset("images/health/Last_Health.png", Texture.class))
-        .thenReturn(mock(Texture.class));
+        .thenReturn(textureMock4);
+    Texture goldBar = mock(Texture.class);
+    when(goldBar.getWidth()).thenReturn(557);
+    when(goldBar.getHeight()).thenReturn(144);
+    when(resourceService.getAsset("images/backgrounds/coin_bg.png", Texture.class))
+        .thenReturn(goldBar);
+    Texture goldCoin = mock(Texture.class);
+    when(resourceService.getAsset("images/items/gold_coin.png", Texture.class))
+        .thenReturn(goldCoin);
     ServiceLocator.registerResourceService(resourceService);
 
     entityService = new EntityService();
