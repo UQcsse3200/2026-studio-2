@@ -1,9 +1,11 @@
 package com.csse3200.game.physics;
 
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.csse3200.game.components.level.LedgeComponent;
 import com.csse3200.game.components.player.PlayerActions;
 import com.csse3200.game.entities.Entity;
+import com.csse3200.game.physics.components.ColliderComponent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,6 +21,12 @@ import org.slf4j.LoggerFactory;
  */
 public class PhysicsContactListener implements ContactListener {
   private static final Logger logger = LoggerFactory.getLogger(PhysicsContactListener.class);
+
+  // this is a measure of how many pixels on the top half of the sides of the platform the player
+  // can collide with for the physics engine to accept that as a valid jump and adjust the player's
+  // position to reflect a successful jump
+  private static final float PLATFORM_COLLISION_LENIENCE_HEIGHT = 1f;
+  private static final float COLLISION_TOLERANCE = 0.1f;
 
   // caches results from preSolve to handle the end of contact updating once a collision is complete
   private PlayerActions playerActions; // stores reference to a playerActions from a contact
@@ -71,32 +79,75 @@ public class PhysicsContactListener implements ContactListener {
       return;
     }
 
-    // determine if one of the fixtures involved in the collision is a ledge
-    boolean entityALedge = entityA.getComponent(LedgeComponent.class) != null;
-    boolean entityBLedge = entityB.getComponent(LedgeComponent.class) != null;
-    if (!entityALedge && !entityBLedge) {
-      return;
-    }
+    // we only have presolve work to do if a contact involves a ground component (for ledges or the
+    // new movement helper system)
+    ColliderComponent entityACollider = entityA.getComponent(ColliderComponent.class);
+    ColliderComponent entityBCollider = entityB.getComponent(ColliderComponent.class);
+    if (entityACollider != null && entityBCollider != null) {
+      // do a bitwise AND to check if any contacts are a part of the SOLID layer and should be
+      // validated against our physics checks
+      if ((entityACollider.getLayer() & PhysicsLayer.SOLID) != 0
+          && (entityBCollider.getLayer() & PhysicsLayer.SOLID) != 0) {
+        return;
+      }
 
-    // if we found a ledge, we need to check if the player is attempting to move through the bottom
-    // of the ledge fixture. if so, we disable contact for this collision
-    Fixture playerFixture = entityALedge ? fixtureB : fixtureA;
+      // determine if either fixture is a player, early return if not
+      boolean playerFixtureA = entityA.getComponent(PlayerActions.class) != null;
+      boolean playerFixtureB = entityB.getComponent(PlayerActions.class) != null;
+      Fixture playerFixture = playerFixtureA ? fixtureA : playerFixtureB ? fixtureB : null;
+      if (playerFixture == null) {
+        return;
+      }
 
-    // determine velocity to ensure the player is moving up at time of collision
-    Body playerBody = playerFixture.getBody();
-    if (playerBody.getLinearVelocity().y > 0) {
-      contact.setEnabled(false);
-      return;
-    }
+      Entity player = playerFixtureA ? entityA : entityB;
+      PlayerActions actions = player.getComponent(PlayerActions.class);
+      Entity ground = playerFixtureA ? entityB : entityA;
+      Body playerBody = playerFixture.getBody();
+      Body groundBody = playerFixtureA ? fixtureB.getBody() : fixtureA.getBody();
 
-    // resolve any ledge dropping requests active on the player actions component
-    Entity playerEntity = entityALedge ? entityB : entityA;
-    PlayerActions actions = playerEntity.getComponent(PlayerActions.class);
+      // check if the player bottom has come into contact with the side of a platform's top
+      // LENIENCE number of pixels to correct the player movement
+      float leftSideCoord = groundBody.getPosition().x;
+      float rightSideCoord = groundBody.getPosition().x + ground.getScale().x;
+      float topCoord = groundBody.getPosition().y + ground.getScale().y;
 
-    if (actions != null && actions.droppingFromLedge) {
-      playerActions = actions;
-      ledgeFixture = entityALedge ? fixtureA : fixtureB;
-      contact.setEnabled(false);
+      // calculates the
+      float playerXLeft = playerBody.getPosition().x;
+      float playerXRight = playerBody.getPosition().x + player.getScale().x;
+
+      // determine if a valid side contact was made and let the player know it's new position
+      float diff = topCoord - playerBody.getPosition().y;
+      if (diff > 0
+          && diff <= PLATFORM_COLLISION_LENIENCE_HEIGHT + COLLISION_TOLERANCE
+          && playerBody.getLinearVelocity().y < 0) {
+        if (Math.abs(playerXRight - leftSideCoord) <= COLLISION_TOLERANCE) {
+          player
+              .getEvents()
+              .trigger("physicsPositionRequest", new Vector2(playerXLeft + 0.1f, topCoord + 0.1f));
+        } else if (Math.abs(playerXLeft - rightSideCoord) <= COLLISION_TOLERANCE) {
+          player
+              .getEvents()
+              .trigger("physicsPositionRequest", new Vector2(playerXLeft - 0.1f, topCoord + 0.1f));
+        }
+      }
+
+      // determine if one of the fixtures involved in the collision is a ledge
+      boolean entityALedge = entityA.getComponent(LedgeComponent.class) != null;
+      boolean entityBLedge = entityB.getComponent(LedgeComponent.class) != null;
+      if (entityALedge || entityBLedge) {
+        // determine velocity to ensure the player is moving up at time of collision
+        if (playerBody.getLinearVelocity().y > 0) {
+          contact.setEnabled(false);
+          return;
+        }
+
+        // resolve any ledge dropping requests active on the player actions component
+        if (actions != null && actions.droppingFromLedge) {
+          playerActions = actions;
+          ledgeFixture = entityALedge ? fixtureA : fixtureB;
+          contact.setEnabled(false);
+        }
+      }
     }
   }
 

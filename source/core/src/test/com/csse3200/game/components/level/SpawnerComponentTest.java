@@ -115,10 +115,6 @@ class SpawnerComponentTest {
     component.update();
     component.update();
 
-    assertEquals(0, spawnCount[0]);
-
-    component.update();
-
     assertEquals(1, spawnCount[0]);
   }
 

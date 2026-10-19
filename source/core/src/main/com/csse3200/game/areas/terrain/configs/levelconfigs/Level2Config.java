@@ -38,7 +38,8 @@ public class Level2Config extends LevelConfig {
     checkpointAtlas = "images/terrain/Level_2/level_2_checkpoint.atlas";
 
     playerSpawn = new GridPoint2(0, 42);
-    nextLevelTriggerSpawn = new GridPoint2(33, 8);
+    // No nextLevelTriggerSpawn: the exit door spawned by Level2GameArea is the only Level 3
+    // trigger. A config trigger at (33, 8) reached down to P11's underside and fired from below.
     nextLevelName = "level3";
     // The platform under the portal is only 2 wide, so the portal is sized to fit it.
     nextLevelPortalHeight = 1.9f;
@@ -115,7 +116,8 @@ public class Level2Config extends LevelConfig {
               2,
               triggerablePlatformTFP,
               new String[] {ENEMY_ARENA_COMPLETE},
-              false), // P7
+              false,
+              true), // P7
           new TriggerablePlatformConfig(
               new GridPoint2(33, 25),
               3,
@@ -123,7 +125,8 @@ public class Level2Config extends LevelConfig {
               8,
               triggerablePlatformTFP,
               new String[] {ENEMY_ARENA_COMPLETE},
-              false), // P8
+              false,
+              true), // P8
           new TriggerablePlatformConfig(
               new GridPoint2(28, 40),
               4,
@@ -131,7 +134,8 @@ public class Level2Config extends LevelConfig {
               0,
               triggerablePlatformTFP,
               new String[] {TRIGGER_WHEEL_SPIN_PLATFORM},
-              false), // TP1
+              false,
+              true), // TP1
           new TriggerablePlatformConfig(
               new GridPoint2(36, 43),
               3,
@@ -139,7 +143,8 @@ public class Level2Config extends LevelConfig {
               1,
               triggerablePlatformTFP,
               new String[] {TRIGGER_WHEEL_SPIN_PLATFORM},
-              false), // TP2
+              false,
+              true), // TP2
         };
 
     bounds = new PlatformConfig[] {new PlatformConfig(new GridPoint2(-1, -5), 1, 55, 0, groundTFP)};
@@ -197,7 +202,7 @@ public class Level2Config extends LevelConfig {
 
     spikes =
         new SpikeClusterConfig[] {
-          // new SpikeClusterConfig(0, 11, 37, 37, 0f, false), // SC1
+          new SpikeClusterConfig(0, 11, 37, 37, 0f, false), // SC1
           new SpikeClusterConfig(19, 21, 29, 29, 0f, false), // SC2
           new SpikeClusterConfig(4, 5, 25, 25, 0f, false), // SC3
           new SpikeClusterConfig(0, 1, 21, 21, 0f, false), // SC3
@@ -306,8 +311,8 @@ public class Level2Config extends LevelConfig {
                   () -> EnemyFactory.createSkeletonWarrior(player),
                   () -> EnemyFactory.createSkeletonArcher(player),
                   () -> EnemyFactory.createNecromancer(player))),
-          5f,
-          7,
+          7f,
+          5,
           SpawnerComponent.ACTIVATION_MODE.NORMAL,
           false), // ES1+2
     };

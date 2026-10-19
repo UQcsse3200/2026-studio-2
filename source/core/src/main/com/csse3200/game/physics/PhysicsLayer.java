@@ -10,8 +10,6 @@ public class PhysicsLayer {
   public static final short NPC = (1 << 3);
   // Ground and platforms used by side-view player movement
   public static final short GROUND = (1 << 4);
-  // Solids used for grappling + groundedness
-  public static final short SOLID = GROUND | OBSTACLE;
   // Projectiles fired by the player
   public static final short PLAYER_PROJECTILE = (1 << 5);
   // Invisible level-boundary walls: keep characters in, let projectiles pass
@@ -22,6 +20,10 @@ public class PhysicsLayer {
   // The solid body of a character, as opposed to the NPC sensor used for damage. Separate so the
   // player can stand on an enemy without arrows treating that body as a second thing to hit.
   public static final short CHARACTER = (1 << 8);
+  // specific layer for ledges to allow projectiles to pass through
+  public static final short LEDGE = (1 << 9);
+  // Solids used for grappling + groundedness
+  public static final short SOLID = GROUND | OBSTACLE | LEDGE;
   // Everything the player can land on. Enemies count: standing on one is standing on ground.
   public static final short STANDABLE = SOLID | CHARACTER;
 
