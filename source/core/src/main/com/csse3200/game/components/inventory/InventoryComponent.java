@@ -339,12 +339,13 @@ public class InventoryComponent extends Component {
   }
 
   /**
-   * Returns the number of slots in the first-row hotbar.
+   * Returns the number of slots in the first-row hotbar. The hotbar is one full row, so this is the
+   * same as the column count.
    *
    * @return hotbar slot count
    */
   public int getHotbarSlotCount() {
-    return columns;
+    return getColumns();
   }
 
   /**
