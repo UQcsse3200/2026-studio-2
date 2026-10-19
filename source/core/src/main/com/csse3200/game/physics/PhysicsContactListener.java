@@ -94,10 +94,10 @@ public class PhysicsContactListener implements ContactListener {
       // determine if either fixture is a player, early return if not
       boolean playerFixtureA = entityA.getComponent(PlayerActions.class) != null;
       boolean playerFixtureB = entityB.getComponent(PlayerActions.class) != null;
-      Fixture playerFixture = playerFixtureA ? fixtureA : playerFixtureB ? fixtureB : null;
-      if (playerFixture == null) {
+      if (!playerFixtureA && !playerFixtureB) {
         return;
       }
+      Fixture playerFixture = playerFixtureA ? fixtureA : fixtureB;
 
       Entity player = playerFixtureA ? entityA : entityB;
       PlayerActions actions = player.getComponent(PlayerActions.class);
