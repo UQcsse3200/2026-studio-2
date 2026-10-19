@@ -11,6 +11,7 @@ import com.csse3200.game.components.maingame.MainGameExitDisplay;
 import com.csse3200.game.components.minigames.cyclopsMinigame.CyclopsMinigameDisplay;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.services.ServiceLocator;
+import com.csse3200.game.ui.TopRightButtonDisplay;
 import com.csse3200.game.ui.UiTestSupport;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
@@ -22,7 +23,8 @@ class ExitButtonDisplayTest extends UiTestSupport {
   @ParameterizedTest
   @ValueSource(booleans = {false, true})
   void sharesVisibilityLayoutAndCleanupWhileRetainingEachScreensButtonSize(boolean mainGame) {
-    ExitButtonDisplay display = mainGame ? new MainGameExitDisplay() : new CyclopsMinigameDisplay();
+    TopRightButtonDisplay display =
+        mainGame ? new MainGameExitDisplay() : new CyclopsMinigameDisplay();
     display.setVisible(false); // Visibility can be requested before the actors exist.
     new Entity().addComponent(display);
     display.create();

@@ -107,7 +107,7 @@ public final class InventorySlotStyle implements Disposable {
     if (inCornerBox) {
       int cx = x < r ? r : size - r - 1;
       int cy = y < r ? r : size - r - 1;
-      double distance = Math.hypot(x - cx, y - cy);
+      double distance = Math.hypot((double) x - cx, (double) y - cy);
       if (distance > r) {
         return Color.rgba8888(0f, 0f, 0f, 0f);
       }

@@ -7,6 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.csse3200.game.services.ServiceLocator;
 
 /** Shared layout and actor lifecycle for a screen's top-right action button. */
 public abstract class TopRightButtonDisplay extends UIComponent {
@@ -14,18 +15,43 @@ public abstract class TopRightButtonDisplay extends UIComponent {
   private final float buttonHeight;
   private final float padTop;
   private final float padRight;
+  private final String upTexturePath;
+  private final String downTexturePath;
   private Table table;
 
   protected TopRightButtonDisplay(
-      float buttonWidth, float buttonHeight, float padTop, float padRight) {
+      float buttonWidth,
+      float buttonHeight,
+      float padTop,
+      float padRight,
+      String upTexturePath,
+      String downTexturePath) {
     this.buttonWidth = buttonWidth;
     this.buttonHeight = buttonHeight;
     this.padTop = padTop;
     this.padRight = padRight;
+    this.upTexturePath = upTexturePath;
+    this.downTexturePath = downTexturePath;
   }
 
-  /** Adds the screen's textures and action using its configured button dimensions. */
-  protected void addButton(Texture up, Texture down, Runnable onClick) {
+  @Override
+  public void create() {
+    super.create();
+    createButton();
+  }
+
+  /** Subclasses can choose alternative art when the actors are created. */
+  protected void createButton() {
+    addButton(upTexturePath, downTexturePath);
+  }
+
+  /** Handles this screen's action when the button is pressed. */
+  protected abstract void onButtonClicked();
+
+  /** Adds the screen's textures using its configured button dimensions. */
+  protected void addButton(String upPath, String downPath) {
+    Texture up = ServiceLocator.getResourceService().getAsset(upPath, Texture.class);
+    Texture down = ServiceLocator.getResourceService().getAsset(downPath, Texture.class);
     table = new Table();
     table.top().right();
     table.setFillParent(true);
@@ -38,7 +64,7 @@ public abstract class TopRightButtonDisplay extends UIComponent {
         new ChangeListener() {
           @Override
           public void changed(ChangeEvent changeEvent, Actor actor) {
-            onClick.run();
+            onButtonClicked();
           }
         });
     table.add(button).width(buttonWidth).height(buttonHeight).padTop(padTop).padRight(padRight);

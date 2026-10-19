@@ -1,9 +1,7 @@
 package com.csse3200.game.components.maingame;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Texture;
 import com.csse3200.game.components.ButtonSound;
-import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.TopRightButtonDisplay;
 
 /**
@@ -22,7 +20,7 @@ public class PauseButtonDisplay extends TopRightButtonDisplay {
    * @param onPause called when the button is clicked
    */
   public PauseButtonDisplay(Runnable onPause) {
-    super(240f, 80f, 90f, 20f);
+    super(240f, 80f, 90f, 20f, EXIT_UP, EXIT_DOWN);
     this.onPause = onPause;
   }
 
@@ -37,16 +35,13 @@ public class PauseButtonDisplay extends TopRightButtonDisplay {
   }
 
   @Override
-  public void create() {
-    super.create();
-
+  protected void createButton() {
     boolean pauseArt = hasPauseImages();
-    Texture up =
-        ServiceLocator.getResourceService().getAsset(pauseArt ? PAUSE_UP : EXIT_UP, Texture.class);
-    Texture down =
-        ServiceLocator.getResourceService()
-            .getAsset(pauseArt ? PAUSE_DOWN : EXIT_DOWN, Texture.class);
+    addButton(pauseArt ? PAUSE_UP : EXIT_UP, pauseArt ? PAUSE_DOWN : EXIT_DOWN);
+  }
 
-    addButton(up, down, () -> ButtonSound.playClickThen(onPause));
+  @Override
+  protected void onButtonClicked() {
+    ButtonSound.playClickThen(onPause);
   }
 }

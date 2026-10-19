@@ -8,12 +8,7 @@ import com.csse3200.game.components.GameVolume;
 import com.csse3200.game.components.mainmenu.LoadSaveActions;
 import com.csse3200.game.components.mainmenu.LoadSaveDisplay;
 import com.csse3200.game.entities.Entity;
-import com.csse3200.game.entities.EntityService;
-import com.csse3200.game.entities.factories.RenderFactory;
 import com.csse3200.game.input.InputDecorator;
-import com.csse3200.game.input.InputService;
-import com.csse3200.game.rendering.RenderService;
-import com.csse3200.game.rendering.Renderer;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import org.slf4j.Logger;
@@ -24,10 +19,9 @@ import org.slf4j.LoggerFactory;
  * after {@link MainMenuScreen} (same background, music and title logo) and reached from the main
  * menu's Continue button or from Play when every slot is full.
  */
-public class LoadSaveScreen extends RenderedScreen {
+public class LoadSaveScreen extends MenuScreen {
   private static final Logger logger = LoggerFactory.getLogger(LoadSaveScreen.class);
   private final GdxGame game;
-  private final Renderer renderer;
 
   private static final String[] loadSaveTextures = {
     "images/ui/title_odysseus_logo.png",
@@ -42,26 +36,8 @@ public class LoadSaveScreen extends RenderedScreen {
     this.game = game;
     logger.debug("Initialising save-select screen services");
 
-    ServiceLocator.registerInputService(new InputService());
-    ServiceLocator.registerResourceService(new ResourceService());
-    ServiceLocator.registerEntityService(new EntityService());
-    ServiceLocator.registerRenderService(new RenderService());
-
-    renderer = RenderFactory.createRenderer();
-
     loadAssets();
     createUI();
-  }
-
-  @Override
-  public void render(float delta) {
-    ServiceLocator.getEntityService().update();
-    renderer.render();
-  }
-
-  @Override
-  protected Renderer getRenderer() {
-    return renderer;
   }
 
   @Override
