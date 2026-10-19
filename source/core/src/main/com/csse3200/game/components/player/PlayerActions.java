@@ -386,6 +386,11 @@ public class PlayerActions extends Component {
     }
 
     if (isGrounded) {
+      if (isGrappling()) {
+        // Standing with a rope out: jumping lets go of it, rather than leaping into a swing from
+        // the ground. Only an attached rope - release() would also cancel a shot still in flight.
+        grapple.release();
+      }
       airDashUsed = false;
       dashCooldownRemaining = 0f;
       isGrounded = false;

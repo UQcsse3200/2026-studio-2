@@ -840,19 +840,45 @@ class PlayerActionsTest {
   }
 
   @Test
-  void shouldJumpFromTheGroundAndKeepTheRope() {
+  void shouldLetGoOfTheRopeWhenJumpingFromTheGround() {
     GrappleComponent grapple = new GrappleComponent();
     Entity player = createPlayerWithGrapple(grapple);
     createGroundUnderPlayer();
     attachRopeAbovePlayer(grapple);
     player.update();
     AtomicInteger jumps = countEvent(player, "jumpStart");
+    Body body = player.getComponent(PhysicsComponent.class).getBody();
 
     player.getEvents().trigger("jump");
 
-    // A normal jump, not the let-go-and-kick meant for hanging from the rope.
+    // Jumping into a swing from the ground looked wrong, so the rope is let go of instead.
+    assertFalse(grapple.isAttached());
+    // And it's a normal jump with its crouch, not the instant kick meant for hanging from the rope.
     assertEquals(1, jumps.get());
-    assertTrue(grapple.isAttached());
+    assertEquals(0f, body.getLinearVelocity().y);
+    when(gameTime.getTime()).thenReturn(1_000L);
+    player.update();
+    assertTrue(body.getLinearVelocity().y > 0f);
+  }
+
+  @Test
+  void shouldNotCancelAGrappleShotStillInFlightWhenJumping() {
+    GrappleComponent grapple = new GrappleComponent();
+    Entity player = createPlayerWithGrapple(grapple);
+    createGroundUnderPlayer();
+    player.update();
+    // The arrow has struck but the rope isn't built until the grapple's next update, just as when
+    // a shot lands mid-crouch.
+    BodyDef anchorDef = new BodyDef();
+    anchorDef.type = BodyDef.BodyType.StaticBody;
+    anchorDef.position.set(0.5f, 5f);
+    Body anchor = ServiceLocator.getPhysicsService().getPhysics().createBody(anchorDef);
+    grapple.attachTo(anchor, new Vector2(0.5f, 5f));
+
+    player.getEvents().trigger("jump");
+    grapple.update();
+
+    assertTrue(grapple.isAttached(), "only an attached rope is let go of");
   }
 
   @Test
