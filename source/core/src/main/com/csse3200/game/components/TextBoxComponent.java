@@ -462,8 +462,8 @@ public class TextBoxComponent extends UIComponent {
     float y = this.posY;
     if (entity != null) {
       Vector2 worldPos = entity.getCenterPosition();
-      float screenWidth = Gdx.graphics.getWidth();
-      float screenHeight = Gdx.graphics.getHeight();
+      int screenWidth = Gdx.graphics.getWidth();
+      int screenHeight = Gdx.graphics.getHeight();
       x = (worldPos.x / 20f) * screenWidth + 10f;
       y = (worldPos.y / 20f) * screenHeight + 18f;
     }

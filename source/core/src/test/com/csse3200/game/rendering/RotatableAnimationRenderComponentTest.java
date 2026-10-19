@@ -109,7 +109,7 @@ class RotatableAnimationRenderComponentTest {
     when(animation.getKeyFrame(anyFloat())).thenReturn(region);
 
     setup.component.currentAnimation = animation;
-    setup.component.defaultRegionWidthPx = 0f;
+    setup.component.defaultRegionWidthPx = 0;
 
     setup.entity.setPosition(2f, 3f);
     setup.entity.setScale(4f, 6f);
@@ -140,7 +140,7 @@ class RotatableAnimationRenderComponentTest {
     when(animation.getKeyFrame(anyFloat())).thenReturn(region);
 
     setup.component.currentAnimation = animation;
-    setup.component.defaultRegionWidthPx = 100f;
+    setup.component.defaultRegionWidthPx = 100;
 
     setup.entity.setPosition(1f, 2f);
     setup.entity.setScale(4f, 8f);
@@ -172,7 +172,7 @@ class RotatableAnimationRenderComponentTest {
     when(timeSource.getDeltaTime()).thenReturn(0.25f);
 
     setup.component.currentAnimation = animation;
-    setup.component.defaultRegionWidthPx = 0f;
+    setup.component.defaultRegionWidthPx = 0;
 
     float before = setup.component.animationPlayTime;
 
@@ -194,7 +194,7 @@ class RotatableAnimationRenderComponentTest {
     when(animation.getKeyFrame(anyFloat())).thenReturn(region);
 
     setup.component.currentAnimation = animation;
-    setup.component.defaultRegionWidthPx = 0f;
+    setup.component.defaultRegionWidthPx = 0;
 
     setup.component.draw(batch);
 

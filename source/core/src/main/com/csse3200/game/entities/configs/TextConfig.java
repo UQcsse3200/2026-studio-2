@@ -15,9 +15,9 @@ public class TextConfig {
   private static final Logger logger = LoggerFactory.getLogger(TextConfig.class);
   // All values are default
 
-  // Positions
-  public int xPos = 100;
-  public int yPos = 100;
+  // Scene2D positions use floating-point coordinates, including subpixel placement.
+  public float xPos = 100f;
+  public float yPos = 100f;
 
   // The box display. Stored as colour names (e.g. "Color.WHITE" or "WHITE") because these are
   // read straight from JSON, and Json can't deserialise a plain string into a Colour object.
