@@ -94,6 +94,10 @@ loadScripts(document, 'script');</script>
 <dt>All Implemented Interfaces:</dt>
 <dd><code><a href="../../ai/tasks/PriorityTask.html" title="interface in com.csse3200.game.ai.tasks">PriorityTask</a></code>, <code><a href="../../ai/tasks/Task.html" title="interface in com.csse3200.game.ai.tasks">Task</a></code></dd>
 </dl>
+<dl class="notes">
+<dt>Direct Known Subclasses:</dt>
+<dd><code><a href="FlyingRepositionTask.html" title="class in com.csse3200.game.components.tasks">FlyingRepositionTask</a></code></dd>
+</dl>
 <hr>
 <div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">RepositionTask</span>
 <span class="extends-implements">extends <a href="../../ai/tasks/DefaultTask.html" title="class in com.csse3200.game.ai.tasks">DefaultTask</a>
@@ -146,11 +150,19 @@ implements <a href="../../ai/tasks/PriorityTask.html" title="interface in com.cs
 <div class="table-header col-first">Modifier and Type</div>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#create(com.csse3200.game.ai.tasks.TaskRunner)" class="member-name-link">create</a><wbr>(<a href="../../ai/tasks/TaskRunner.html" title="interface in com.csse3200.game.ai.tasks">TaskRunner</a>&nbsp;taskRunner)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected boolean</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#canStep(com.csse3200.game.entities.Entity,float)" class="member-name-link">canStep</a><wbr>(<a href="../../entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;enemy,
+ float&nbsp;direction)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#create(com.csse3200.game.ai.tasks.TaskRunner)" class="member-name-link">create</a><wbr>(<a href="../../ai/tasks/TaskRunner.html" title="interface in com.csse3200.game.ai.tasks">TaskRunner</a>&nbsp;taskRunner)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Create the task and attach it to the task runner.</div>
 </div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected com.badlogic.gdx.math.Vector2</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#directionAwayFrom(com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2)" class="member-name-link">directionAwayFrom</a><wbr>(com.badlogic.gdx.math.Vector2&nbsp;enemyPos,
+ com.badlogic.gdx.math.Vector2&nbsp;targetPos)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getPriority()" class="member-name-link">getPriority</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
@@ -258,6 +270,31 @@ implements <a href="../../ai/tasks/PriorityTask.html" title="interface in com.cs
 <dd><code><a href="../../ai/tasks/Task.html#update()">update</a></code>&nbsp;in interface&nbsp;<code><a href="../../ai/tasks/Task.html" title="interface in com.csse3200.game.ai.tasks">Task</a></code></dd>
 <dt>Overrides:</dt>
 <dd><code><a href="../../ai/tasks/DefaultTask.html#update()">update</a></code>&nbsp;in class&nbsp;<code><a href="../../ai/tasks/DefaultTask.html" title="class in com.csse3200.game.ai.tasks">DefaultTask</a></code></dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="directionAwayFrom(com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2)">
+<h3>directionAwayFrom</h3>
+<div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type">com.badlogic.gdx.math.Vector2</span>&nbsp;<span class="element-name">directionAwayFrom</span><wbr><span class="parameters">(com.badlogic.gdx.math.Vector2&nbsp;enemyPos,
+ com.badlogic.gdx.math.Vector2&nbsp;targetPos)</span></div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>the unit direction to back off in. On the ground that is straight along the floor.</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="canStep(com.csse3200.game.entities.Entity,float)">
+<h3>canStep</h3>
+<div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">canStep</span><wbr><span class="parameters">(<a href="../../entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;enemy,
+ float&nbsp;direction)</span></div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>direction</code> - 1 to step right, -1 to step left</dd>
+<dt>Returns:</dt>
+<dd>false if the enemy must not step that way. On the ground that is when there is no floor
+     ahead, so it does not back off the edge of a platform.</dd>
 </dl>
 </section>
 </li>

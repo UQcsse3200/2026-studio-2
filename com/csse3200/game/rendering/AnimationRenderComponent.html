@@ -218,6 +218,14 @@ loadScripts(document, 'script');</script>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Draw the renderable.</div>
 </div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected float</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#frameHeight(com.badlogic.gdx.graphics.g2d.TextureRegion,com.badlogic.gdx.math.Vector2)" class="member-name-link">frameHeight</a><wbr>(com.badlogic.gdx.graphics.g2d.TextureRegion&nbsp;region,
+ com.badlogic.gdx.math.Vector2&nbsp;scale)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected float</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#frameWidth(com.badlogic.gdx.graphics.g2d.TextureRegion,com.badlogic.gdx.math.Vector2)" class="member-name-link">frameWidth</a><wbr>(com.badlogic.gdx.graphics.g2d.TextureRegion&nbsp;region,
+ com.badlogic.gdx.math.Vector2&nbsp;scale)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getCurrentAnimation()" class="member-name-link">getCurrentAnimation</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
@@ -508,6 +516,35 @@ loadScripts(document, 'script');</script>
 <dl class="notes">
 <dt>Returns:</dt>
 <dd>true if flipped, false otherwise.</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="frameWidth(com.badlogic.gdx.graphics.g2d.TextureRegion,com.badlogic.gdx.math.Vector2)">
+<h3>frameWidth</h3>
+<div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type">float</span>&nbsp;<span class="element-name">frameWidth</span><wbr><span class="parameters">(com.badlogic.gdx.graphics.g2d.TextureRegion&nbsp;region,
+ com.badlogic.gdx.math.Vector2&nbsp;scale)</span></div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>how wide to draw this frame, in world units. Frames keep their size relative to the
+     animation's default frame, so a larger frame is drawn larger rather than squashed to fit.</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="frameHeight(com.badlogic.gdx.graphics.g2d.TextureRegion,com.badlogic.gdx.math.Vector2)">
+<h3>frameHeight</h3>
+<div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type">float</span>&nbsp;<span class="element-name">frameHeight</span><wbr><span class="parameters">(com.badlogic.gdx.graphics.g2d.TextureRegion&nbsp;region,
+ com.badlogic.gdx.math.Vector2&nbsp;scale)</span></div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>how tall to draw this frame, in world units</dd>
+<dt>See Also:</dt>
+<dd>
+<ul class="tag-list-long">
+<li><a href="#frameWidth(com.badlogic.gdx.graphics.g2d.TextureRegion,com.badlogic.gdx.math.Vector2)"><code>frameWidth(TextureRegion, Vector2)</code></a></li>
+</ul>
+</dd>
 </dl>
 </section>
 </li>

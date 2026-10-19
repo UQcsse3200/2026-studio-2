@@ -86,7 +86,9 @@ loadScripts(document, 'script');</script>
 </div>
 <div class="inheritance" title="Inheritance Tree"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">java.lang.Object</a>
 <div class="inheritance"><a href="../../ai/tasks/DefaultTask.html" title="class in com.csse3200.game.ai.tasks">com.csse3200.game.ai.tasks.DefaultTask</a>
+<div class="inheritance"><a href="ChaseTask.html" title="class in com.csse3200.game.components.tasks">com.csse3200.game.components.tasks.ChaseTask</a>
 <div class="inheritance">com.csse3200.game.components.tasks.FlyingChaseTask</div>
+</div>
 </div>
 </div>
 <section class="class-description" id="class-description">
@@ -96,9 +98,8 @@ loadScripts(document, 'script');</script>
 </dl>
 <hr>
 <div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">FlyingChaseTask</span>
-<span class="extends-implements">extends <a href="../../ai/tasks/DefaultTask.html" title="class in com.csse3200.game.ai.tasks">DefaultTask</a>
-implements <a href="../../ai/tasks/PriorityTask.html" title="interface in com.csse3200.game.ai.tasks">PriorityTask</a></span></div>
-<div class="block">Chases a target entity until they get too far away or line of sight is lost</div>
+<span class="extends-implements">extends <a href="ChaseTask.html" title="class in com.csse3200.game.components.tasks">ChaseTask</a></span></div>
+<div class="block">Chases a target entity through the air, so there are no platform edges to stop at.</div>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -147,27 +148,16 @@ implements <a href="../../ai/tasks/PriorityTask.html" title="interface in com.cs
 <div class="table-header col-first">Modifier and Type</div>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getPriority()" class="member-name-link">getPriority</a>()</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected boolean</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#canAdvance(com.csse3200.game.entities.Entity,float)" class="member-name-link">canAdvance</a><wbr>(<a href="../../entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;enemy,
+ float&nbsp;direction)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#start()" class="member-name-link">start</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Start running this task.</div>
-</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#stop()" class="member-name-link">stop</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Stop the task immediately.</div>
-</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#update()" class="member-name-link">update</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Run one frame of the task.</div>
 </div>
 </div>
 </div>
-</div>
+<div class="inherited-list">
+<h3 id="methods-inherited-from-class-com.csse3200.game.components.tasks.ChaseTask">Methods inherited from class&nbsp;com.csse3200.game.components.tasks.<a href="ChaseTask.html" title="class in com.csse3200.game.components.tasks">ChaseTask</a></h3>
+<code><a href="ChaseTask.html#getPriority()">getPriority</a>, <a href="ChaseTask.html#start()">start</a>, <a href="ChaseTask.html#stop()">stop</a>, <a href="ChaseTask.html#update()">update</a></code></div>
 <div class="inherited-list">
 <h3 id="methods-inherited-from-class-com.csse3200.game.ai.tasks.DefaultTask">Methods inherited from class&nbsp;com.csse3200.game.ai.tasks.<a href="../../ai/tasks/DefaultTask.html" title="class in com.csse3200.game.ai.tasks">DefaultTask</a></h3>
 <code><a href="../../ai/tasks/DefaultTask.html#create(com.csse3200.game.ai.tasks.TaskRunner)">create</a>, <a href="../../ai/tasks/DefaultTask.html#getStatus()">getStatus</a></code></div>
@@ -195,13 +185,6 @@ implements <a href="../../ai/tasks/PriorityTask.html" title="interface in com.cs
  int&nbsp;priority,
  float&nbsp;viewDistance,
  float&nbsp;maxChaseDistance)</span></div>
-<dl class="notes">
-<dt>Parameters:</dt>
-<dd><code>target</code> - The entity to chase.</dd>
-<dd><code>priority</code> - Task priority when chasing (0 when not chasing).</dd>
-<dd><code>viewDistance</code> - Maximum distance from the entity at which chasing can start.</dd>
-<dd><code>maxChaseDistance</code> - Maximum distance from the entity while chasing before giving up.</dd>
-</dl>
 </section>
 </li>
 </ul>
@@ -213,54 +196,18 @@ implements <a href="../../ai/tasks/PriorityTask.html" title="interface in com.cs
 <h2>Method Details</h2>
 <ul class="member-list">
 <li>
-<section class="detail" id="start()">
-<h3>start</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">start</span>()</div>
-<div class="block"><span class="description-from-type-label">Description copied from interface:&nbsp;<code><a href="../../ai/tasks/Task.html#start()">Task</a></code></span></div>
-<div class="block">Start running this task. This will usually be called by an AI controller.</div>
+<section class="detail" id="canAdvance(com.csse3200.game.entities.Entity,float)">
+<h3>canAdvance</h3>
+<div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">canAdvance</span><wbr><span class="parameters">(<a href="../../entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;enemy,
+ float&nbsp;direction)</span></div>
 <dl class="notes">
-<dt>Specified by:</dt>
-<dd><code><a href="../../ai/tasks/Task.html#start()">start</a></code>&nbsp;in interface&nbsp;<code><a href="../../ai/tasks/Task.html" title="interface in com.csse3200.game.ai.tasks">Task</a></code></dd>
 <dt>Overrides:</dt>
-<dd><code><a href="../../ai/tasks/DefaultTask.html#start()">start</a></code>&nbsp;in class&nbsp;<code><a href="../../ai/tasks/DefaultTask.html" title="class in com.csse3200.game.ai.tasks">DefaultTask</a></code></dd>
-</dl>
-</section>
-</li>
-<li>
-<section class="detail" id="update()">
-<h3>update</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">update</span>()</div>
-<div class="block"><span class="description-from-type-label">Description copied from interface:&nbsp;<code><a href="../../ai/tasks/Task.html#update()">Task</a></code></span></div>
-<div class="block">Run one frame of the task. Similar to the update() in Components.</div>
-<dl class="notes">
-<dt>Specified by:</dt>
-<dd><code><a href="../../ai/tasks/Task.html#update()">update</a></code>&nbsp;in interface&nbsp;<code><a href="../../ai/tasks/Task.html" title="interface in com.csse3200.game.ai.tasks">Task</a></code></dd>
-<dt>Overrides:</dt>
-<dd><code><a href="../../ai/tasks/DefaultTask.html#update()">update</a></code>&nbsp;in class&nbsp;<code><a href="../../ai/tasks/DefaultTask.html" title="class in com.csse3200.game.ai.tasks">DefaultTask</a></code></dd>
-</dl>
-</section>
-</li>
-<li>
-<section class="detail" id="stop()">
-<h3>stop</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">stop</span>()</div>
-<div class="block"><span class="description-from-type-label">Description copied from interface:&nbsp;<code><a href="../../ai/tasks/Task.html#stop()">Task</a></code></span></div>
-<div class="block">Stop the task immediately. This can be called at any time by the AI controller.</div>
-<dl class="notes">
-<dt>Specified by:</dt>
-<dd><code><a href="../../ai/tasks/Task.html#stop()">stop</a></code>&nbsp;in interface&nbsp;<code><a href="../../ai/tasks/Task.html" title="interface in com.csse3200.game.ai.tasks">Task</a></code></dd>
-<dt>Overrides:</dt>
-<dd><code><a href="../../ai/tasks/DefaultTask.html#stop()">stop</a></code>&nbsp;in class&nbsp;<code><a href="../../ai/tasks/DefaultTask.html" title="class in com.csse3200.game.ai.tasks">DefaultTask</a></code></dd>
-</dl>
-</section>
-</li>
-<li>
-<section class="detail" id="getPriority()">
-<h3>getPriority</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">getPriority</span>()</div>
-<dl class="notes">
-<dt>Specified by:</dt>
-<dd><code><a href="../../ai/tasks/PriorityTask.html#getPriority()">getPriority</a></code>&nbsp;in interface&nbsp;<code><a href="../../ai/tasks/PriorityTask.html" title="interface in com.csse3200.game.ai.tasks">PriorityTask</a></code></dd>
+<dd><code><a href="ChaseTask.html#canAdvance(com.csse3200.game.entities.Entity,float)">canAdvance</a></code>&nbsp;in class&nbsp;<code><a href="ChaseTask.html" title="class in com.csse3200.game.components.tasks">ChaseTask</a></code></dd>
+<dt>Parameters:</dt>
+<dd><code>direction</code> - 1 to move right, -1 to move left</dd>
+<dt>Returns:</dt>
+<dd>false if the chaser has to hold still rather than step that way. On the ground that is
+     when there is no floor ahead, so it does not walk off the edge of a platform.</dd>
 </dl>
 </section>
 </li>
