@@ -246,6 +246,34 @@ class CyclopsAnimationControllerTest {
   }
 
   @Test
+  void drivesAnAnimatorSubclassHandedToIt() {
+    // Wired as in CyclopsMinigameArea: the animator is a subclass that takes its depth from the
+    // controller, so getComponent(AnimationRenderComponent.class) can't find it.
+    TextureAtlas atlas = mock(TextureAtlas.class);
+    Array<AtlasRegion> regions = new Array<>(1);
+    regions.add(mock(AtlasRegion.class));
+    when(atlas.findRegions("sleep")).thenReturn(regions);
+    AnimationRenderComponent subclassAnimator =
+        new AnimationRenderComponent(atlas) {
+          @Override
+          public float getZIndex() {
+            return entity.getComponent(CyclopsAnimationController.class).getZIndex();
+          }
+        };
+    subclassAnimator.addAnimation("sleep", 1f, PlayMode.LOOP);
+    CyclopsAnimationController subclassController =
+        new CyclopsAnimationController(player, GROUND_Y, subclassAnimator);
+    Entity subclassCyclops =
+        new Entity().addComponent(subclassAnimator).addComponent(subclassController);
+    subclassCyclops.setPosition(HOME);
+
+    subclassController.create();
+
+    assertEquals("sleep", subclassAnimator.getCurrentAnimation());
+    assertEquals(-HOME.y, subclassAnimator.getZIndex(), 0.001f);
+  }
+
+  @Test
   void sleepEventWhileAsleepLeavesHimOnHisRock() {
     minigameEvents.trigger(CyclopsMinigameLogic.CYCLOPS_SLEEP_EVENT);
     step(1f);

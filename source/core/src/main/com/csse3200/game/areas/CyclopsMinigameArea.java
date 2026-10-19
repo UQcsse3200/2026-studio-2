@@ -329,17 +329,19 @@ public class CyclopsMinigameArea extends GameArea {
     rock.setPosition(middle.x - CAVE_ROCK_WIDTH / 2f, middle.y + 2f * STATUE_DEPTH_OFFSET);
     spawnEntity(rock);
 
-    CyclopsAnimationController cyclopsController =
-        new CyclopsAnimationController(player, cyclopsGroundY(middle.y));
     AnimationRenderComponent cyclopsAnimator =
         new AnimationRenderComponent(
             ServiceLocator.getResourceService().getAsset(CYCLOPS_ATLAS, TextureAtlas.class)) {
           // Awake, he holds one depth in front of the rocks so he can't flip depth mid-jump.
           @Override
           public float getZIndex() {
-            return cyclopsController.getZIndex();
+            return entity.getComponent(CyclopsAnimationController.class).getZIndex();
           }
         };
+    // This animator is a subclass, so it can't be found by AnimationRenderComponent.class. Hand it
+    // to the controller directly.
+    CyclopsAnimationController cyclopsController =
+        new CyclopsAnimationController(player, cyclopsGroundY(middle.y), cyclopsAnimator);
     cyclopsAnimator.addAnimation("sleep", 0.1f, Animation.PlayMode.LOOP, CYCLOPS_BODY_COLUMN, 0f);
     cyclopsAnimator.addAnimation("idle", 0.083f, Animation.PlayMode.LOOP, CYCLOPS_BODY_COLUMN, 0f);
     cyclopsAnimator.addAnimation(

@@ -45,14 +45,30 @@ public class CyclopsAnimationController extends Component {
   private boolean hitLanded;
 
   public CyclopsAnimationController(Entity target, float groundY) {
+    this(target, groundY, null);
+  }
+
+  /**
+   * Creates a controller that drives the given animator. Use this when the animator is a subclass
+   * (such as one with its own draw depth), since components are looked up by their exact class.
+   *
+   * @param target the entity he attacks
+   * @param groundY the floor height he lands at
+   * @param animator his animator, or null to look up the entity's AnimationRenderComponent
+   */
+  public CyclopsAnimationController(
+      Entity target, float groundY, AnimationRenderComponent animator) {
     this.target = target;
     this.groundY = groundY;
+    this.animator = animator;
   }
 
   @Override
   public void create() {
     super.create();
-    animator = this.entity.getComponent(AnimationRenderComponent.class);
+    if (animator == null) {
+      animator = this.entity.getComponent(AnimationRenderComponent.class);
+    }
     home = entity.getPosition();
     animator.startAnimation("sleep");
 
