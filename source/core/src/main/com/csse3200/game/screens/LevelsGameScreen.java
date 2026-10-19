@@ -294,21 +294,9 @@ public class LevelsGameScreen extends BaseGameScreen {
       debug.setActive(!debug.getActive());
     }
 
-    if (Gdx.input.isKeyJustPressed(Input.Keys.BACKSPACE)) {
-      cheats = !cheats;
-      if (cheats) {
-        gravity = player.getComponent(PhysicsComponent.class).getBody().getGravityScale();
-        player.getComponent(PhysicsComponent.class).getBody().setGravityScale(0);
-        player.getComponent(KeyboardPlayerInputComponent.class).toggleCheats();
-      } else {
-        player.getComponent(PhysicsComponent.class).getBody().setGravityScale(gravity);
-        player.getComponent(KeyboardPlayerInputComponent.class).toggleCheats();
-      }
+    if (!terminalOpen && Gdx.input.isKeyJustPressed(Input.Keys.BACKSPACE)) {
+      toggleCheatMode();
     }
-
-    // if (!terminalOpen && Gdx.input.isKeyJustPressed(Input.Keys.BACKSPACE)) {
-    //  toggleCheatMode();
-    // }
 
     if (!minigameOverlayManager.isActive() && Gdx.input.isKeyJustPressed(Input.Keys.PAGE_UP)) {
       if (level.equals(LEVEL1)) {

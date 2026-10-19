@@ -192,17 +192,6 @@ class Level2ExitDoorTest {
     assertTrue(requestedLevels.isEmpty());
   }
 
-  /*
-  @Test
-  void walkingIntoTheDoorLoadsLevel3Once() {
-    // Along P11's surface into the doorway, then lingering inside it.
-    move(new Vector2(36f, 8.02f), new Vector2(-3f, 0f), 60);
-    move(playerBody.getPosition().cpy(), Vector2.Zero, 60);
-
-    assertEquals(List.of("level3"), requestedLevels);
-  }
-  */
-
   /** Places the player's bottom-left corner at start and drives it at velocity for steps. */
   private void move(Vector2 start, Vector2 velocity, int steps) {
     playerBody.setTransform(start, 0f);

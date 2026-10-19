@@ -14,7 +14,6 @@ public class CheckpointComponent extends Component {
   private boolean collected;
   private final GridPoint2 position;
   private Entity player;
-  private final String atlas;
   private AnimationRenderComponent torchAnimator;
   private PointLightComponent pointLightComponent;
 
@@ -43,7 +42,6 @@ public class CheckpointComponent extends Component {
   public CheckpointComponent(boolean collected, GridPoint2 position, String atlas) {
     this.collected = collected;
     this.position = position;
-    this.atlas = atlas;
   }
 
   @Override
