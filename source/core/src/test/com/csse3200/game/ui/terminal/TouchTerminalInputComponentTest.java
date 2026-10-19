@@ -12,6 +12,27 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.junit.jupiter.api.Test;
 
 class TouchTerminalInputComponentTest extends AbstractTerminalInputComponentTest {
+  @Test
+  void createdInputRegistersAndUsesItsEntityTerminal() {
+    InputService inputs = mock(InputService.class);
+    ServiceLocator.registerInputService(inputs);
+    Terminal terminal = new Terminal();
+    TouchTerminalInputComponent input = new TouchTerminalInputComponent();
+    new Entity().addComponent(terminal).addComponent(input);
+    input.create();
+    verify(inputs).register(input);
+    assertEquals(10, input.getPriority());
+    assertFalse(input.keyTyped('a'));
+    input.scrolled(0f, -1f);
+    assertTrue(terminal.isOpen());
+    input.scrolled(1f, 0f);
+    assertTrue(terminal.isOpen());
+    assertTrue(input.keyTyped('a'));
+    assertEquals("a", terminal.getEnteredMessage());
+    input.dispose();
+    verify(inputs).unregister(input);
+  }
+
   @Override
   TerminalInputComponent createInput(Terminal terminal) {
     return new TouchTerminalInputComponent(terminal);

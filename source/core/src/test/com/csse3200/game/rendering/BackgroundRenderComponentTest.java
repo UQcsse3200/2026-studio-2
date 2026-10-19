@@ -52,7 +52,8 @@ public class BackgroundRenderComponentTest {
   private static void registerTextures(String... paths) {
     ResourceService resourceService = mock(ResourceService.class);
     for (String path : paths) {
-      when(resourceService.getAsset(path, Texture.class)).thenReturn(mock(Texture.class));
+      Texture texture = mock(Texture.class);
+      when(resourceService.getAsset(path, Texture.class)).thenReturn(texture);
     }
     ServiceLocator.registerResourceService(resourceService);
   }
@@ -138,14 +139,12 @@ public class BackgroundRenderComponentTest {
 
   @Test
   void shouldScaleLayersWhenMapToggledLevel2() {
-    assertMapToggleScalesLayers(
-        "level2", (terrain, camera, player) -> new Level2GameArea(terrain, camera, player));
+    assertMapToggleScalesLayers("level2", Level2GameArea::new);
   }
 
   @Test
   void shouldScaleLayersWhenMapToggledLevel3() {
-    assertMapToggleScalesLayers(
-        "level3", (terrain, camera, player) -> new Level3GameArea(terrain, camera, player));
+    assertMapToggleScalesLayers("level3", Level3GameArea::new);
   }
 
   /**

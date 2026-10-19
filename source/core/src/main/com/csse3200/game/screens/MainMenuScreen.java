@@ -1,6 +1,5 @@
 package com.csse3200.game.screens;
 
-import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.csse3200.game.GdxGame;
@@ -21,7 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /** The game screen containing the main menu. */
-public class MainMenuScreen extends ScreenAdapter {
+public class MainMenuScreen extends RenderedScreen {
   private static final Logger logger = LoggerFactory.getLogger(MainMenuScreen.class);
   private final GdxGame game;
   private final Renderer renderer;
@@ -63,23 +62,17 @@ public class MainMenuScreen extends ScreenAdapter {
   }
 
   @Override
+  protected Renderer getRenderer() {
+    return renderer;
+  }
+
+  @Override
   public void resize(int width, int height) {
-    renderer.resize(width, height);
+    super.resize(width, height);
     MainMenuDisplay display = ui == null ? null : ui.getComponent(MainMenuDisplay.class);
     if (display != null) {
       display.resize();
     }
-    logger.trace("Resized renderer: ({} x {})", width, height);
-  }
-
-  @Override
-  public void pause() {
-    logger.info("Game paused");
-  }
-
-  @Override
-  public void resume() {
-    logger.info("Game resumed");
   }
 
   @Override

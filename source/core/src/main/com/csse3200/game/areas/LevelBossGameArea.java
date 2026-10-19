@@ -11,12 +11,8 @@ import com.csse3200.game.entities.factories.EnemyFactory;
 import com.csse3200.game.rendering.BackgroundRenderComponent;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.List;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class LevelBossGameArea extends GameArea {
-
-  private static final Logger logger = LoggerFactory.getLogger(LevelBossGameArea.class);
 
   private static final GridPoint2 CALYPSO_SPAWN = new GridPoint2(15, 1);
 

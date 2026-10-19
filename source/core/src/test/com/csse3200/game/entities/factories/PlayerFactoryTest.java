@@ -211,7 +211,10 @@ class PlayerFactoryTest {
 
   @Test
   void factoriesRejectReflectiveInstantiation() throws Exception {
-    for (Class<?> utility : new Class<?>[] {PlayerFactory.class, ProjectileFactory.class}) {
+    for (Class<?> utility :
+        new Class<?>[] {
+          PlayerFactory.class, ProjectileFactory.class, EnemyProjectileFactory.class
+        }) {
       var constructor = utility.getDeclaredConstructor();
       constructor.setAccessible(true);
       var exception =

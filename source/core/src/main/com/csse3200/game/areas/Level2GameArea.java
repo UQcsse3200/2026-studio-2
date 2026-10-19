@@ -12,12 +12,8 @@ import com.csse3200.game.entities.factories.EnemyFactory;
 import com.csse3200.game.entities.factories.ItemFactory;
 import com.csse3200.game.rendering.BackgroundRenderComponent;
 import com.csse3200.game.services.ServiceLocator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class Level2GameArea extends GameArea {
-
-  private static final Logger logger = LoggerFactory.getLogger(Level2GameArea.class);
 
   private Vector2 worldBounds;
 

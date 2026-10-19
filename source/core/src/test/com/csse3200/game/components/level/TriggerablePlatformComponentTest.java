@@ -57,7 +57,7 @@ class TriggerablePlatformComponentTest {
 
   @Test
   void shouldCreateActivePlatform() {
-    Entity entity = createPlatform(true);
+    createPlatform(true);
 
     verify(collider).setLayer(PhysicsLayer.GROUND);
     verify(textureComponent).setTexture(normalTexture);
@@ -65,7 +65,7 @@ class TriggerablePlatformComponentTest {
 
   @Test
   void shouldCreateInactivePlatform() {
-    Entity entity = createPlatform(false);
+    createPlatform(false);
 
     verify(collider).setLayer(PhysicsLayer.NONE);
     verify(textureComponent).setTexture(transparentTexture);

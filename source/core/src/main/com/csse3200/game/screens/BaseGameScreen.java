@@ -1,6 +1,5 @@
 package com.csse3200.game.screens;
 
-import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.entities.factories.RenderFactory;
@@ -22,7 +21,7 @@ import org.slf4j.LoggerFactory;
  * What the screens that play the game share: the services every level needs, the renderer and
  * lighting, and tidying them all up again when the screen is disposed.
  */
-public abstract class BaseGameScreen extends ScreenAdapter {
+public abstract class BaseGameScreen extends RenderedScreen {
   private static final Logger logger = LoggerFactory.getLogger(BaseGameScreen.class);
 
   protected final Renderer renderer;
@@ -68,19 +67,8 @@ public abstract class BaseGameScreen extends ScreenAdapter {
   protected abstract void unloadAssets();
 
   @Override
-  public void resize(int width, int height) {
-    renderer.resize(width, height);
-    logger.trace("Resized renderer: ({} x {})", width, height);
-  }
-
-  @Override
-  public void pause() {
-    logger.info("Game paused");
-  }
-
-  @Override
-  public void resume() {
-    logger.info("Game resumed");
+  protected Renderer getRenderer() {
+    return renderer;
   }
 
   @Override

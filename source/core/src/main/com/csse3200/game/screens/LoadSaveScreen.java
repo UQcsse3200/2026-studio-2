@@ -1,6 +1,5 @@
 package com.csse3200.game.screens;
 
-import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.csse3200.game.GdxGame;
@@ -25,7 +24,7 @@ import org.slf4j.LoggerFactory;
  * after {@link MainMenuScreen} (same background, music and title logo) and reached from the main
  * menu's Continue button or from Play when every slot is full.
  */
-public class LoadSaveScreen extends ScreenAdapter {
+public class LoadSaveScreen extends RenderedScreen {
   private static final Logger logger = LoggerFactory.getLogger(LoadSaveScreen.class);
   private final GdxGame game;
   private final Renderer renderer;
@@ -61,19 +60,8 @@ public class LoadSaveScreen extends ScreenAdapter {
   }
 
   @Override
-  public void resize(int width, int height) {
-    renderer.resize(width, height);
-    logger.trace("Resized renderer: ({} x {})", width, height);
-  }
-
-  @Override
-  public void pause() {
-    logger.info("Game paused");
-  }
-
-  @Override
-  public void resume() {
-    logger.info("Game resumed");
+  protected Renderer getRenderer() {
+    return renderer;
   }
 
   @Override

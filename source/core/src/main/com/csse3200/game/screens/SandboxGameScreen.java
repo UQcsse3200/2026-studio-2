@@ -1,6 +1,5 @@
 package com.csse3200.game.screens;
 
-import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.csse3200.game.GdxGame;
 import com.csse3200.game.areas.SandboxGameArea;
@@ -25,7 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /** Screen containing the isolated inventory developer sandbox. */
-public class SandboxGameScreen extends ScreenAdapter {
+public class SandboxGameScreen extends RenderedScreen {
   private static final Logger logger = LoggerFactory.getLogger(SandboxGameScreen.class);
 
   private final Renderer renderer;
@@ -84,19 +83,8 @@ public class SandboxGameScreen extends ScreenAdapter {
   }
 
   @Override
-  public void resize(int width, int height) {
-    renderer.resize(width, height);
-    logger.trace("Resized sandbox renderer: ({} x {})", width, height);
-  }
-
-  @Override
-  public void pause() {
-    logger.info("Sandbox paused");
-  }
-
-  @Override
-  public void resume() {
-    logger.info("Sandbox resumed");
+  protected Renderer getRenderer() {
+    return renderer;
   }
 
   @Override

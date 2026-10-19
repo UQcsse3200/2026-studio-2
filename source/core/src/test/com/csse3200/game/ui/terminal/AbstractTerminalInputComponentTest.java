@@ -3,6 +3,7 @@ package com.csse3200.game.ui.terminal;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -10,6 +11,8 @@ import com.badlogic.gdx.Input;
 import com.csse3200.game.extensions.GameExtension;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 /**
  * What every terminal input handler has to do, however it opens and closes the terminal: type into
@@ -19,6 +22,54 @@ import org.junit.jupiter.api.extension.ExtendWith;
 abstract class AbstractTerminalInputComponentTest {
   /** The handler under test, using the given terminal. */
   abstract TerminalInputComponent createInput(Terminal terminal);
+
+  @Test
+  void closedTerminalDoesNotProcessTypedInput() {
+    Terminal terminal = mock(Terminal.class);
+    TerminalInputComponent input = createInput(terminal);
+    assertFalse(input.keyTyped('a'));
+    verify(terminal, never()).appendToMessage('a');
+    verify(terminal, never()).processMessage();
+  }
+
+  @ParameterizedTest
+  @ValueSource(chars = {'a', '7', ' '})
+  void openTerminalAcceptsLettersNumbersAndSpaces(char character) {
+    Terminal terminal = mock(Terminal.class);
+    when(terminal.isOpen()).thenReturn(true);
+    assertTrue(createInput(terminal).keyTyped(character));
+    verify(terminal).appendToMessage(character);
+  }
+
+  @Test
+  void openTerminalRejectsUnsupportedCharacters() {
+    Terminal terminal = mock(Terminal.class);
+    when(terminal.isOpen()).thenReturn(true);
+    assertFalse(createInput(terminal).keyTyped('@'));
+    verify(terminal, never()).appendToMessage('@');
+  }
+
+  @ParameterizedTest
+  @ValueSource(chars = {'\r', '\n'})
+  void successfulCommandClosesTerminalAndClearsMessage(char enter) {
+    Terminal terminal = mock(Terminal.class);
+    when(terminal.isOpen()).thenReturn(true);
+    when(terminal.processMessage()).thenReturn(true);
+    assertTrue(createInput(terminal).keyTyped(enter));
+    verify(terminal).processMessage();
+    verify(terminal).toggleIsOpen();
+    verify(terminal).setEnteredMessage("");
+  }
+
+  @Test
+  void unsuccessfulCommandClearsMessageAndKeepsTerminalOpen() {
+    Terminal terminal = mock(Terminal.class);
+    when(terminal.isOpen()).thenReturn(true);
+    assertTrue(createInput(terminal).keyTyped('\n'));
+    verify(terminal).processMessage();
+    verify(terminal, never()).toggleIsOpen();
+    verify(terminal).setEnteredMessage("");
+  }
 
   @Test
   void shouldUpdateMessageOnKeyTyped() {

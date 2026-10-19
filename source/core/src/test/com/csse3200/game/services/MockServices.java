@@ -22,7 +22,8 @@ public final class MockServices {
   /** Registers a lighting service whose engine has a ray handler, so lights can be created. */
   public static void registerLighting() {
     LightingEngine lightingEngine = mock(LightingEngine.class);
-    when(lightingEngine.getRayHandler()).thenReturn(mock(RayHandler.class));
+    RayHandler rayHandler = mock(RayHandler.class);
+    when(lightingEngine.getRayHandler()).thenReturn(rayHandler);
     LightingService lightingService = mock(LightingService.class);
     when(lightingService.getEngine()).thenReturn(lightingEngine);
     ServiceLocator.registerLightingService(lightingService);
@@ -57,7 +58,7 @@ public final class MockServices {
         .thenAnswer(
             call -> {
               GridPoint2 tile = call.getArgument(0);
-              return new Vector2(tile.x, tile.y);
+              return new Vector2((float) tile.x, (float) tile.y);
             });
   }
 }

@@ -89,28 +89,7 @@ public final class InventorySlotStyle implements Disposable {
 
     for (int y = 0; y < size; y++) {
       for (int x = 0; x < size; x++) {
-        boolean inCornerBox = (x < r || x >= size - r) && (y < r || y >= size - r);
-
-        if (inCornerBox) {
-          float cx = x < r ? r : size - r - 1;
-          float cy = y < r ? r : size - r - 1;
-          double dist = Math.hypot(x - cx, y - cy);
-
-          if (dist > r) {
-            pixmap.drawPixel(x, y, Color.rgba8888(0f, 0f, 0f, 0f));
-          } else if (dist > r - BORDER_THICKNESS) {
-            pixmap.drawPixel(x, y, Color.rgba8888(borderColor));
-          } else {
-            pixmap.drawPixel(x, y, Color.rgba8888(fillColor));
-          }
-        } else {
-          boolean onBorder =
-              x < BORDER_THICKNESS
-                  || x >= size - BORDER_THICKNESS
-                  || y < BORDER_THICKNESS
-                  || y >= size - BORDER_THICKNESS;
-          pixmap.drawPixel(x, y, Color.rgba8888(onBorder ? borderColor : fillColor));
-        }
+        pixmap.drawPixel(x, y, roundedBoxPixel(x, y, size, borderColor, fillColor));
       }
     }
 
@@ -119,5 +98,26 @@ public final class InventorySlotStyle implements Disposable {
 
     NinePatch patch = new NinePatch(texture, r, r, r, r);
     return new NinePatchDrawable(patch);
+  }
+
+  /** Classifies a pixel as transparent, border or fill without changing the corner geometry. */
+  private static int roundedBoxPixel(int x, int y, int size, Color borderColor, Color fillColor) {
+    int r = CORNER_RADIUS;
+    boolean inCornerBox = (x < r || x >= size - r) && (y < r || y >= size - r);
+    if (inCornerBox) {
+      int cx = x < r ? r : size - r - 1;
+      int cy = y < r ? r : size - r - 1;
+      double distance = Math.hypot(x - cx, y - cy);
+      if (distance > r) {
+        return Color.rgba8888(0f, 0f, 0f, 0f);
+      }
+      return Color.rgba8888(distance > r - BORDER_THICKNESS ? borderColor : fillColor);
+    }
+    boolean onBorder =
+        x < BORDER_THICKNESS
+            || x >= size - BORDER_THICKNESS
+            || y < BORDER_THICKNESS
+            || y >= size - BORDER_THICKNESS;
+    return Color.rgba8888(onBorder ? borderColor : fillColor);
   }
 }

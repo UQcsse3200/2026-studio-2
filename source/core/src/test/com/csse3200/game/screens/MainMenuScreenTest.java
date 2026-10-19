@@ -87,9 +87,13 @@ class MainMenuScreenTest {
       screen.render(1f / 60f);
       verify(renderer).render();
 
-      // Resize with a UI containing MainMenuDisplay.
+      // Resize rebuilds the menu actors as well as forwarding the viewport dimensions.
+      var oldBackground = stage.getActors().first();
+      int actorCount = stage.getActors().size;
       screen.resize(1280, 720);
       verify(renderer).resize(1280, 720);
+      assertNull(oldBackground.getStage());
+      assertEquals(actorCount, stage.getActors().size);
 
       // Resize with a UI entity that has no MainMenuDisplay.
       setUi(screen, new Entity());

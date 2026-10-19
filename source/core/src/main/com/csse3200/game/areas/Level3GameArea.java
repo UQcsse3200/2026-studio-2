@@ -15,15 +15,11 @@ import com.csse3200.game.entities.factories.ObstacleFactory;
 import com.csse3200.game.physics.BodyUserData;
 import com.csse3200.game.rendering.*;
 import com.csse3200.game.services.ServiceLocator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class Level3GameArea extends GameArea {
   private static final String CLOUDS_TEXTURE = "images/parallax/level_1_clouds.png";
 
   private static final String FURTHEST_BACKGROUND_TEXTURE = "images/parallax/level_1_furthest.png";
-
-  private static final Logger logger = LoggerFactory.getLogger(Level3GameArea.class);
 
   private Vector2 worldBounds;
 
