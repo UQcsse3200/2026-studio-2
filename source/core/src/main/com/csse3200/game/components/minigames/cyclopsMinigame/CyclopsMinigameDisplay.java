@@ -23,6 +23,7 @@ public class CyclopsMinigameDisplay extends UIComponent {
     addActors();
   }
 
+  /** Adds UI Components of Buttons for exiting the CyclopsMinigame */
   private void addActors() {
     table = new Table();
     table.top().right();
@@ -58,14 +59,20 @@ public class CyclopsMinigameDisplay extends UIComponent {
 
   @Override
   public void draw(SpriteBatch batch) {
-    // draw is handled by the stage
+    /* draw is handled by the stage */
   }
 
+  /**
+   * Get the Z Index of this UIComponent
+   *
+   * @return float - Z Index of the UIComponent
+   */
   @Override
   public float getZIndex() {
     return Z_INDEX;
   }
 
+  /** Dispose all disposable components */
   @Override
   public void dispose() {
     table.clear();
