@@ -4,10 +4,15 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Fixture;
+import com.csse3200.game.components.CombatStatsComponent;
+import com.csse3200.game.components.player.PlayerActions;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
+import com.csse3200.game.events.listeners.EventListener0;
 import com.csse3200.game.extensions.GameExtension;
+import com.csse3200.game.physics.BodyUserData;
 import com.csse3200.game.services.GameTime;
 import com.csse3200.game.services.ServiceLocator;
 import org.junit.jupiter.api.BeforeEach;
@@ -153,5 +158,92 @@ class SpikyBallComponentTest {
     component.handleDispose(fixtureA, fixtureB);
 
     verify(entityService).scheduleForDisposal(entity);
+  }
+
+  private Fixture fixtureOf(Entity owner) {
+    BodyUserData data = new BodyUserData();
+    data.entity = owner;
+    Body body = mock(Body.class);
+    when(body.getUserData()).thenReturn(data);
+    Fixture fixture = mock(Fixture.class);
+    when(fixture.getBody()).thenReturn(body);
+    return fixture;
+  }
+
+  private Entity createBall() {
+    Entity ball =
+        new Entity()
+            .addComponent(new SpikyBallComponent(new Vector2(1f, 0f)))
+            .addComponent(new CombatStatsComponent(100, 2));
+    ball.create();
+    return ball;
+  }
+
+  @Test
+  void shouldDamagePlayerByBallAttackOnCollision() {
+    CombatStatsComponent stats = new CombatStatsComponent(10, 0, 1000L);
+    Entity player = new Entity().addComponent(mock(PlayerActions.class)).addComponent(stats);
+    EventListener0 death = mock(EventListener0.class);
+    EventListener0 hurt = mock(EventListener0.class);
+    player.getEvents().addListener("death", death);
+    player.getEvents().addListener("hurt", hurt);
+    Entity ball = createBall();
+
+    ball.getEvents().trigger("collisionStart", mock(Fixture.class), fixtureOf(player));
+
+    assertEquals(8, stats.getHealth());
+    assertFalse(stats.isDead());
+    verify(hurt).handle();
+    verify(death, never()).handle();
+    verify(entityService).scheduleForDisposal(ball);
+  }
+
+  @Test
+  void shouldNotDamagePlayerWhileInvulnerable() {
+    when(timeSource.getTime()).thenReturn(0L);
+    CombatStatsComponent stats = new CombatStatsComponent(10, 0, 1000L);
+    Entity player = new Entity().addComponent(mock(PlayerActions.class)).addComponent(stats);
+    stats.hit(new CombatStatsComponent(1, 2)); // starts the invulnerability window
+
+    createBall().getEvents().trigger("collisionStart", mock(Fixture.class), fixtureOf(player));
+
+    assertEquals(8, stats.getHealth());
+  }
+
+  @Test
+  void shouldOnlyDamagePlayerOnceForRepeatedContacts() {
+    CombatStatsComponent stats = new CombatStatsComponent(10, 0, 1000L);
+    Entity player = new Entity().addComponent(mock(PlayerActions.class)).addComponent(stats);
+    Entity ball = createBall();
+    Fixture playerFixture = fixtureOf(player);
+
+    ball.getEvents().trigger("collisionStart", mock(Fixture.class), playerFixture);
+    ball.getEvents().trigger("collisionStart", mock(Fixture.class), playerFixture);
+    createBall().getEvents().trigger("collisionStart", mock(Fixture.class), playerFixture);
+
+    assertEquals(8, stats.getHealth());
+  }
+
+  @Test
+  void shouldNotDamagePlayerInGodMode() {
+    CombatStatsComponent stats = new CombatStatsComponent(10, 0, 1000L);
+    Entity player = new Entity().addComponent(mock(PlayerActions.class)).addComponent(stats);
+    stats.setGodMode(true);
+
+    createBall().getEvents().trigger("collisionStart", mock(Fixture.class), fixtureOf(player));
+
+    assertEquals(10, stats.getHealth());
+  }
+
+  @Test
+  void shouldNotDamageNonPlayerEntities() {
+    CombatStatsComponent stats = new CombatStatsComponent(10, 0);
+    Entity enemy = new Entity().addComponent(stats);
+    Entity ball = createBall();
+
+    ball.getEvents().trigger("collisionStart", mock(Fixture.class), fixtureOf(enemy));
+
+    assertEquals(10, stats.getHealth());
+    verify(entityService).scheduleForDisposal(ball);
   }
 }

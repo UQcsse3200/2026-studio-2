@@ -87,11 +87,17 @@ public class EnemyProjectileFactory {
         new Entity()
             .addComponent(new PhysicsComponent())
             .addComponent(movement)
-            .addComponent(new HitboxComponent().setLayer(PhysicsLayer.ENEMY_PROJECTILE))
+            .addComponent(
+                new HitboxComponent()
+                    .setLayer(PhysicsLayer.ENEMY_PROJECTILE)
+                    .excludeCollisionLayers(PhysicsLayer.LEDGE))
             .addComponent(new CombatStatsComponent(1, damage))
             .addComponent(new ProjectileAttackComponent(PhysicsLayer.PLAYER))
             .addComponent(new ProjectileComponent(lifetime))
-            .addComponent(new ColliderComponent())
+            .addComponent(
+                new ColliderComponent()
+                    .setLayer(PhysicsLayer.ENEMY_PROJECTILE)
+                    .excludeCollisionLayers(PhysicsLayer.LEDGE))
             .addComponent(
                 new TextureRenderComponent("images/projectiles/necromancer_projectile.png"))
             .addComponent(
@@ -127,11 +133,17 @@ public class EnemyProjectileFactory {
         new Entity()
             .addComponent(new PhysicsComponent())
             .addComponent(movement)
-            .addComponent(new HitboxComponent().setLayer(PhysicsLayer.NPC))
+            .addComponent(
+                new HitboxComponent()
+                    .setLayer(PhysicsLayer.NPC)
+                    .excludeCollisionLayers(PhysicsLayer.LEDGE))
             .addComponent(new CombatStatsComponent(1, damage))
             .addComponent(new ProjectileAttackComponent(PhysicsLayer.PLAYER))
             .addComponent(new ProjectileComponent(lifetime))
-            .addComponent(new ColliderComponent())
+            .addComponent(
+                new ColliderComponent()
+                    .setLayer(PhysicsLayer.NPC)
+                    .excludeCollisionLayers(PhysicsLayer.LEDGE))
             // Temporary asset until the Calypso projectile sprite is available.
             .addComponent(
                 new TextureRenderComponent("images/projectiles/necromancer_projectile.png"))

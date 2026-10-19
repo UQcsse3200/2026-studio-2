@@ -107,6 +107,15 @@ public class LevelConfig {
   }
 
   /**
+   * Public getter for the name of the level this level transitions to
+   *
+   * @return the next level's name, or null if this level has no next level
+   */
+  public String getNextLevelName() {
+    return nextLevelName;
+  }
+
+  /**
    * Public getter to access checkpoint components for levels
    *
    * @return a list of the CheckpointComponents of a level
@@ -116,9 +125,11 @@ public class LevelConfig {
     if (checkpoints == null) {
       return checkpointComponents;
     }
+
     java.util.Arrays.stream(checkpoints)
         .map(c -> c.getEntity().getComponent(CheckpointComponent.class))
         .forEach(checkpointComponents::add);
+
     return checkpointComponents;
   }
 
@@ -339,7 +350,16 @@ public class LevelConfig {
       checkpoint.setScale(1f, 1.5f);
       checkpoint.getComponent(PointLightComponent.class).setActive(false);
 
-      c.setEntity(checkpoint);
+      checkpoint
+          .addComponent(new CheckpointComponent(false, c.getPosition(), checkpointAtlas))
+          .addComponent(
+              new PointLightComponent(
+                  ServiceLocator.getLightingService().getEngine().getRayHandler(),
+                  LightingDefaults.RAYS,
+                  Color.CLEAR,
+                  LightingDefaults.DIST));
+
+      checkpoint.setScale(CheckpointComponent.ATLAS_WIDTH, CheckpointComponent.ATLAS_HEIGHT);
 
       // The statue art comes from the checkpoint atlas and is drawn by the checkpoint entity
       // itself. Without an atlas the checkpoint still works but has nothing to draw.
@@ -356,12 +376,12 @@ public class LevelConfig {
         // Keep the statue's proportions, whatever the atlas's frame shape is.
         animator.scaleEntity();
         checkpoint.scaleHeight(checkpointHeight);
-        checkpoint.getComponent(CheckpointComponent.class).setTorch(checkpoint);
       }
 
       GridPoint2 pos = c.getPosition();
       checkpoint.setPosition(pos.x, pos.y - 1.3f);
 
+      c.setEntity(checkpoint);
       entities.add(new SpawnData(c.getPosition(), checkpoint));
     }
   }

@@ -18,6 +18,7 @@ import com.csse3200.game.components.player.PlayerActions;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.physics.BodyUserData;
+import com.csse3200.game.physics.PhysicsService;
 import com.csse3200.game.rendering.AnimationRenderComponent;
 import com.csse3200.game.rendering.BackgroundRenderComponent;
 import com.csse3200.game.rendering.DynamicTextureRenderComponent;
@@ -102,11 +103,15 @@ class Level3GameAreaTest extends AbstractAreaAssetsTest {
 
   @Test
   void spawnTerrainCreatesBackgroundDesertTerrain() throws Exception {
+    PhysicsService physics = new PhysicsService();
+    ServiceLocator.registerPhysicsService(physics);
+
     when(terrainFactory.createTerrain(TerrainFactory.TerrainType.BACKGROUND_DESERT))
         .thenReturn(terrain);
 
     when(terrain.getTileSize()).thenReturn(1f);
     when(terrain.getMapBounds(0)).thenReturn(new GridPoint2(90, 30));
+    when(terrain.tileToWorldPosition(any(GridPoint2.class))).thenReturn(new Vector2(0, 0));
 
     invokePrivate("spawnTerrain");
 
@@ -115,11 +120,15 @@ class Level3GameAreaTest extends AbstractAreaAssetsTest {
 
   @Test
   void spawnTerrainSetsLevel3WorldBounds() throws Exception {
+    PhysicsService physics = new PhysicsService();
+    ServiceLocator.registerPhysicsService(physics);
+
     when(terrainFactory.createTerrain(TerrainFactory.TerrainType.BACKGROUND_DESERT))
         .thenReturn(terrain);
 
     when(terrain.getTileSize()).thenReturn(1f);
     when(terrain.getMapBounds(0)).thenReturn(new GridPoint2(90, 30));
+    when(terrain.tileToWorldPosition(any(GridPoint2.class))).thenReturn(new Vector2(0, 0));
 
     invokePrivate("spawnTerrain");
 
@@ -128,8 +137,8 @@ class Level3GameAreaTest extends AbstractAreaAssetsTest {
 
     Vector2 bounds = (Vector2) field.get(area);
 
-    assertEquals(30f, bounds.x);
-    assertEquals(100f, bounds.y);
+    assertEquals(40f, bounds.x);
+    assertEquals(35f, bounds.y);
   }
 
   @Test

@@ -400,7 +400,20 @@ public abstract class GameArea implements Disposable {
     }
   }
 
+  public void toggleBossCamera() {}
+
   public void toggleLevelMap() {}
+
+  public void updateLevelMap() {}
+
+  public void updateMap(Vector2 worldBounds, CameraComponent cameraComponent) {
+    if (mapToggled) {
+      Entity camera = new Entity();
+      float playerPosY = getPlayer().getPosition().y;
+      camera.setPosition(worldBounds.x / 2 - 5, worldBounds.y / 2 + playerPosY / 1.3f);
+      cameraComponent.setTarget(camera);
+    }
+  }
 
   public void toggleMap(
       Vector2 worldBounds,
@@ -413,9 +426,15 @@ public abstract class GameArea implements Disposable {
       viewportWidth = cameraComponent.getCamera().viewportWidth;
       viewportHeight = cameraComponent.getCamera().viewportHeight;
 
-      cameraComponent.resize(worldBoundX, worldBoundY, (float) worldBoundX + 10);
       Entity camera = new Entity();
-      camera.setPosition(worldBounds.x / 2, worldBounds.y / 2);
+      if (level.equals("level3")) {
+        float cameraPosY = cameraComponent.getCamera().position.y;
+        cameraComponent.resize(worldBoundX, worldBoundY, (float) worldBoundX + 5);
+        camera.setPosition(worldBounds.x / 2 - 5, worldBounds.y / 2 + cameraPosY / 1.3f);
+      } else {
+        cameraComponent.resize(worldBoundX, worldBoundY, (float) worldBoundX + 10);
+        camera.setPosition(worldBounds.x / 2, worldBounds.y / 2);
+      }
       cameraComponent.setTarget(camera);
 
       float scaleX = worldBoundX / viewportWidth;
@@ -433,6 +452,10 @@ public abstract class GameArea implements Disposable {
       getPlayer().getComponent(PlayerStatsDisplay.class).show();
     }
     mapToggled = !mapToggled;
+  }
+
+  public boolean isMapToggled() {
+    return mapToggled;
   }
 
   public KeyboardPlayerInputComponent getInput() {
