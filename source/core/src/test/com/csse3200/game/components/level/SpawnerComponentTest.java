@@ -194,13 +194,17 @@ class SpawnerComponentTest {
     assertEquals(2, spawnCount[0]);
   }
 
-  @Test
-  void shouldActivateNormalSpawner() {
+  /**
+   * Builds a spawner, sends it one activation event and gives it a second to run.
+   *
+   * @return how many entities it spawned
+   */
+  private int spawnsAfterActivationEvent(
+      boolean startsActive, SpawnerComponent.ACTIVATION_MODE mode, boolean activated) {
     Entity child = new Entity();
 
     SpawnerComponent component =
-        new SpawnerComponent(
-            createSpawnables(child), 1f, 5, false, SpawnerComponent.ACTIVATION_MODE.NORMAL);
+        new SpawnerComponent(createSpawnables(child), 1f, 5, startsActive, mode);
 
     Entity spawner = new Entity().addComponent(component);
     spawner.create();
@@ -210,76 +214,38 @@ class SpawnerComponentTest {
 
     when(timeSource.getDeltaTime()).thenReturn(1f);
 
-    spawner.getEvents().trigger("activatedMapComponent", true);
+    spawner.getEvents().trigger("activatedMapComponent", activated);
     component.update();
 
-    assertEquals(1, spawnCount[0]);
+    return spawnCount[0];
+  }
+
+  @Test
+  void shouldActivateNormalSpawner() {
+    int spawned = spawnsAfterActivationEvent(false, SpawnerComponent.ACTIVATION_MODE.NORMAL, true);
+
+    assertEquals(1, spawned);
   }
 
   @Test
   void shouldDeactivateNormalSpawner() {
-    Entity child = new Entity();
+    int spawned = spawnsAfterActivationEvent(true, SpawnerComponent.ACTIVATION_MODE.NORMAL, false);
 
-    SpawnerComponent component =
-        new SpawnerComponent(
-            createSpawnables(child), 1f, 5, true, SpawnerComponent.ACTIVATION_MODE.NORMAL);
-
-    Entity spawner = new Entity().addComponent(component);
-    spawner.create();
-
-    final int[] spawnCount = {0};
-    spawner.getEvents().addListener("spawnEntity", (Entity spawned) -> spawnCount[0]++);
-
-    when(timeSource.getDeltaTime()).thenReturn(1f);
-
-    spawner.getEvents().trigger("activatedMapComponent", false);
-    component.update();
-
-    assertEquals(0, spawnCount[0]);
+    assertEquals(0, spawned);
   }
 
   @Test
   void shouldToggleSpawnerOn() {
-    Entity child = new Entity();
+    int spawned = spawnsAfterActivationEvent(false, SpawnerComponent.ACTIVATION_MODE.TOGGLE, true);
 
-    SpawnerComponent component =
-        new SpawnerComponent(
-            createSpawnables(child), 1f, 5, false, SpawnerComponent.ACTIVATION_MODE.TOGGLE);
-
-    Entity spawner = new Entity().addComponent(component);
-    spawner.create();
-
-    final int[] spawnCount = {0};
-    spawner.getEvents().addListener("spawnEntity", (Entity spawned) -> spawnCount[0]++);
-
-    when(timeSource.getDeltaTime()).thenReturn(1f);
-
-    spawner.getEvents().trigger("activatedMapComponent", true);
-    component.update();
-
-    assertEquals(1, spawnCount[0]);
+    assertEquals(1, spawned);
   }
 
   @Test
   void shouldToggleSpawnerOff() {
-    Entity child = new Entity();
+    int spawned = spawnsAfterActivationEvent(true, SpawnerComponent.ACTIVATION_MODE.TOGGLE, true);
 
-    SpawnerComponent component =
-        new SpawnerComponent(
-            createSpawnables(child), 1f, 5, true, SpawnerComponent.ACTIVATION_MODE.TOGGLE);
-
-    Entity spawner = new Entity().addComponent(component);
-    spawner.create();
-
-    final int[] spawnCount = {0};
-    spawner.getEvents().addListener("spawnEntity", (Entity spawned) -> spawnCount[0]++);
-
-    when(timeSource.getDeltaTime()).thenReturn(1f);
-
-    spawner.getEvents().trigger("activatedMapComponent", true);
-    component.update();
-
-    assertEquals(0, spawnCount[0]);
+    assertEquals(0, spawned);
   }
 
   @Test

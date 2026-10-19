@@ -16,6 +16,41 @@ import org.junit.jupiter.api.extension.ExtendWith;
 @ExtendWith(GameExtension.class)
 class TriggerComponentTest {
 
+  /** A created entity with a trigger for the given ids. */
+  private static Entity triggerEntity(TriggerComponent component) {
+    Entity triggerEntity = new Entity().addComponent(component);
+    triggerEntity.create();
+    return triggerEntity;
+  }
+
+  /** Counts how many ids the trigger activates. */
+  private static int[] countActivations(Entity triggerEntity) {
+    final int[] activations = {0};
+    triggerEntity.getEvents().addListener("activateByKey", (String id) -> activations[0]++);
+    return activations;
+  }
+
+  private static Entity playerEntity() {
+    return new Entity().addComponent(mock(PlayerActions.class));
+  }
+
+  private static BodyUserData userDataFor(Entity entity) {
+    BodyUserData data = new BodyUserData();
+    data.entity = entity;
+    return data;
+  }
+
+  /** Has something whose body carries the given user data run into the trigger. */
+  private static void collideWith(Entity triggerEntity, Object bodyUserData) {
+    Fixture other = mock(Fixture.class);
+    Body body = mock(Body.class);
+
+    when(other.getBody()).thenReturn(body);
+    when(body.getUserData()).thenReturn(bodyUserData);
+
+    triggerEntity.getEvents().trigger("collisionStart", null, other);
+  }
+
   @Test
   void shouldReturnIds() {
     String[] ids = {"door1", "platform1"};
@@ -26,100 +61,41 @@ class TriggerComponentTest {
 
   @Test
   void shouldActivateIdsWhenPlayerCollides() {
-    TriggerComponent component = new TriggerComponent(new String[] {"door1", "platform1"}, false);
+    Entity triggerEntity =
+        triggerEntity(new TriggerComponent(new String[] {"door1", "platform1"}, false));
+    int[] activations = countActivations(triggerEntity);
 
-    Entity triggerEntity = new Entity().addComponent(component);
-    triggerEntity.create();
-
-    final int[] activations = {0};
-
-    triggerEntity.getEvents().addListener("activateByKey", (String id) -> activations[0]++);
-
-    Entity player = new Entity().addComponent(mock(PlayerActions.class));
-
-    BodyUserData data = new BodyUserData();
-    data.entity = player;
-
-    Fixture other = mock(Fixture.class);
-    Body body = mock(Body.class);
-
-    when(other.getBody()).thenReturn(body);
-    when(body.getUserData()).thenReturn(data);
-
-    triggerEntity.getEvents().trigger("collisionStart", null, other);
+    collideWith(triggerEntity, userDataFor(playerEntity()));
 
     assertEquals(2, activations[0]);
   }
 
   @Test
   void shouldNotActivateWhenBodyHasNoUserData() {
-    TriggerComponent component = new TriggerComponent(new String[] {"door1"}, false);
+    Entity triggerEntity = triggerEntity(new TriggerComponent(new String[] {"door1"}, false));
+    int[] activations = countActivations(triggerEntity);
 
-    Entity triggerEntity = new Entity().addComponent(component);
-    triggerEntity.create();
-
-    final int[] activations = {0};
-
-    triggerEntity.getEvents().addListener("activateByKey", (String id) -> activations[0]++);
-
-    Fixture other = mock(Fixture.class);
-    Body body = mock(Body.class);
-
-    when(other.getBody()).thenReturn(body);
-    when(body.getUserData()).thenReturn(null);
-
-    triggerEntity.getEvents().trigger("collisionStart", null, other);
+    collideWith(triggerEntity, null);
 
     assertEquals(0, activations[0]);
   }
 
   @Test
   void shouldNotActivateWhenBodyHasNoEntity() {
-    TriggerComponent component = new TriggerComponent(new String[] {"door1"}, false);
+    Entity triggerEntity = triggerEntity(new TriggerComponent(new String[] {"door1"}, false));
+    int[] activations = countActivations(triggerEntity);
 
-    Entity triggerEntity = new Entity().addComponent(component);
-    triggerEntity.create();
-
-    final int[] activations = {0};
-
-    triggerEntity.getEvents().addListener("activateByKey", (String id) -> activations[0]++);
-
-    BodyUserData data = new BodyUserData();
-
-    Fixture other = mock(Fixture.class);
-    Body body = mock(Body.class);
-
-    when(other.getBody()).thenReturn(body);
-    when(body.getUserData()).thenReturn(data);
-
-    triggerEntity.getEvents().trigger("collisionStart", null, other);
+    collideWith(triggerEntity, new BodyUserData());
 
     assertEquals(0, activations[0]);
   }
 
   @Test
   void shouldNotActivateWhenCollisionIsNotPlayer() {
-    TriggerComponent component = new TriggerComponent(new String[] {"door1"}, false);
+    Entity triggerEntity = triggerEntity(new TriggerComponent(new String[] {"door1"}, false));
+    int[] activations = countActivations(triggerEntity);
 
-    Entity triggerEntity = new Entity().addComponent(component);
-    triggerEntity.create();
-
-    final int[] activations = {0};
-
-    triggerEntity.getEvents().addListener("activateByKey", (String id) -> activations[0]++);
-
-    Entity nonPlayer = new Entity();
-
-    BodyUserData data = new BodyUserData();
-    data.entity = nonPlayer;
-
-    Fixture other = mock(Fixture.class);
-    Body body = mock(Body.class);
-
-    when(other.getBody()).thenReturn(body);
-    when(body.getUserData()).thenReturn(data);
-
-    triggerEntity.getEvents().trigger("collisionStart", null, other);
+    collideWith(triggerEntity, userDataFor(new Entity()));
 
     assertEquals(0, activations[0]);
   }
@@ -127,30 +103,14 @@ class TriggerComponentTest {
   @Test
   void shouldOnlyActivateOnceWhenOneTimeActivation() {
     ColliderComponent collider = mock(ColliderComponent.class);
-
     TriggerComponent component = new TriggerComponent(new String[] {"door1"}, true);
-
     Entity triggerEntity = new Entity().addComponent(component).addComponent(collider);
-
     triggerEntity.create();
+    int[] activations = countActivations(triggerEntity);
+    BodyUserData player = userDataFor(playerEntity());
 
-    final int[] activations = {0};
-
-    triggerEntity.getEvents().addListener("activateByKey", (String id) -> activations[0]++);
-
-    Entity player = new Entity().addComponent(mock(PlayerActions.class));
-
-    BodyUserData data = new BodyUserData();
-    data.entity = player;
-
-    Fixture other = mock(Fixture.class);
-    Body body = mock(Body.class);
-
-    when(other.getBody()).thenReturn(body);
-    when(body.getUserData()).thenReturn(data);
-
-    triggerEntity.getEvents().trigger("collisionStart", null, other);
-    triggerEntity.getEvents().trigger("collisionStart", null, other);
+    collideWith(triggerEntity, player);
+    collideWith(triggerEntity, player);
 
     assertEquals(1, activations[0]);
     assertTrue(component.activated);
@@ -159,22 +119,8 @@ class TriggerComponentTest {
 
   @Test
   void shouldHandleNullIds() {
-    TriggerComponent component = new TriggerComponent(null, false);
+    Entity triggerEntity = triggerEntity(new TriggerComponent(null, false));
 
-    Entity triggerEntity = new Entity().addComponent(component);
-    triggerEntity.create();
-
-    Entity player = new Entity().addComponent(mock(PlayerActions.class));
-
-    BodyUserData data = new BodyUserData();
-    data.entity = player;
-
-    Fixture other = mock(Fixture.class);
-    Body body = mock(Body.class);
-
-    when(other.getBody()).thenReturn(body);
-    when(body.getUserData()).thenReturn(data);
-
-    assertDoesNotThrow(() -> triggerEntity.getEvents().trigger("collisionStart", null, other));
+    assertDoesNotThrow(() -> collideWith(triggerEntity, userDataFor(playerEntity())));
   }
 }

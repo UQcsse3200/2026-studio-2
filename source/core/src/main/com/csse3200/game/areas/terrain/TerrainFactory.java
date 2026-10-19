@@ -83,47 +83,30 @@ public class TerrainFactory {
       case CYCLOPS_ROOM:
         TextureRegion cyclopsTile =
             new TextureRegion(resourceService.getAsset("images/ui/transparent.png", Texture.class));
-        return createCyclopsRoomTerrain(0.5f, cyclopsTile);
+        return createFilledTerrain(0.5f, cyclopsTile);
       case BACKGROUND_DESERT:
         TextureRegion desertTile =
             new TextureRegion(resourceService.getAsset("images/ui/transparent.png", Texture.class));
-        return createDesertTerrain(1f, desertTile);
+        return createFilledTerrain(1f, desertTile);
       default:
         return null;
     }
   }
 
-  private TerrainComponent createCyclopsRoomTerrain(float tileWorldSize, TextureRegion tile) {
+  /** Creates terrain that fills the whole map with one tile. */
+  private TerrainComponent createFilledTerrain(float tileWorldSize, TextureRegion tile) {
     GridPoint2 tilePixelSize = new GridPoint2(tile.getRegionWidth(), tile.getRegionHeight());
-    TiledMap tiledMap = createCyclopRoomTiles(tilePixelSize, tile);
+    TiledMap tiledMap = createFilledTiles(tilePixelSize, tile);
     TiledMapRenderer renderer = createRenderer(tiledMap, tileWorldSize / tilePixelSize.x);
     return new TerrainComponent(camera, tiledMap, renderer, orientation, tileWorldSize);
   }
 
-  private TerrainComponent createDesertTerrain(float tileWorldSize, TextureRegion tile) {
-    GridPoint2 tilePixelSize = new GridPoint2(tile.getRegionWidth(), tile.getRegionHeight());
-    TiledMap tiledMap = createDesertTiles(tilePixelSize, tile);
-    TiledMapRenderer renderer = createRenderer(tiledMap, tileWorldSize / tilePixelSize.x);
-    return new TerrainComponent(camera, tiledMap, renderer, orientation, tileWorldSize);
-  }
-
-  private TiledMap createCyclopRoomTiles(GridPoint2 tileSize, TextureRegion tile) {
+  /** Creates a map with a single layer where every cell uses the given tile. */
+  private TiledMap createFilledTiles(GridPoint2 tileSize, TextureRegion tile) {
     TiledMap tiledMap = new TiledMap();
     TerrainTile transparentTile = new TerrainTile(tile);
     TiledMapTileLayer layer = new TiledMapTileLayer(MAP_SIZE.x, MAP_SIZE.y, tileSize.x, tileSize.y);
 
-    fillTiles(layer, MAP_SIZE, transparentTile);
-
-    tiledMap.getLayers().add(layer);
-    return tiledMap;
-  }
-
-  private TiledMap createDesertTiles(GridPoint2 tileSize, TextureRegion tile) {
-    TiledMap tiledMap = new TiledMap();
-    TerrainTile transparentTile = new TerrainTile(tile);
-    TiledMapTileLayer layer = new TiledMapTileLayer(MAP_SIZE.x, MAP_SIZE.y, tileSize.x, tileSize.y);
-
-    // Create base grass
     fillTiles(layer, MAP_SIZE, transparentTile);
 
     tiledMap.getLayers().add(layer);

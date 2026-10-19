@@ -171,7 +171,9 @@ class GdxGameSaveTest {
     }
 
     @Override
-    public void create() {}
+    public void create() {
+      // Test stub: no entities need to be spawned.
+    }
 
     CheckpointComponent addCheckpoint(GridPoint2 position) {
       CheckpointComponent checkpoint =
