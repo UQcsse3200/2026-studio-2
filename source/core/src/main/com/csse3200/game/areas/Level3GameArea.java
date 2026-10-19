@@ -7,7 +7,6 @@ import com.badlogic.gdx.physics.box2d.Fixture;
 import com.csse3200.game.areas.terrain.TerrainFactory;
 import com.csse3200.game.areas.terrain.configs.levelconfigs.Level3Config;
 import com.csse3200.game.components.CameraComponent;
-import com.csse3200.game.components.GameVolume;
 import com.csse3200.game.components.level.RisingWaterComponent;
 import com.csse3200.game.components.player.PlayerActions;
 import com.csse3200.game.entities.Entity;
@@ -111,7 +110,8 @@ public class Level3GameArea extends GameArea {
     spawnRisingWater();
     spawnForeground();
     activateWeather();
-    player.setPosition(new Vector2(config.getPlayerSpawn().x, config.getPlayerSpawn().y));
+    player.setPosition(
+        new Vector2((float) config.getPlayerSpawn().x, (float) config.getPlayerSpawn().y));
   }
 
   private void activateWeather() {
@@ -331,15 +331,6 @@ public class Level3GameArea extends GameArea {
   protected void onCheckpointActivated(GridPoint2 position) {
     super.onCheckpointActivated(position);
     water.getEvents().trigger("checkpointEncountered", position.y);
-  }
-
-  /** Plays the background music. */
-  private void playMusic() {
-    Music music = ServiceLocator.getResourceService().getAsset(BACKGROUND_MUSIC, Music.class);
-
-    music.setLooping(true);
-    GameVolume.setMusicVolume(music, 0.3f);
-    music.play();
   }
 
   /** Loads all Level 2 assets. */

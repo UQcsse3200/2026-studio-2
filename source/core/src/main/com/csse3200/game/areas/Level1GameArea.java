@@ -8,7 +8,6 @@ import com.csse3200.game.areas.terrain.TerrainFactory.TerrainType;
 import com.csse3200.game.areas.terrain.configs.levelconfigs.Level1Config;
 import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.components.Component;
-import com.csse3200.game.components.GameVolume;
 import com.csse3200.game.components.gamearea.GameAreaDisplay;
 import com.csse3200.game.components.level.DesertHazardRecoveryComponent;
 import com.csse3200.game.components.player.KeyboardPlayerInputComponent;
@@ -27,7 +26,6 @@ import org.slf4j.LoggerFactory;
 /** Level 1 area for the game with platforms, enemies, and a player. */
 public class Level1GameArea extends GameArea {
   private static final Logger logger = LoggerFactory.getLogger(Level1GameArea.class);
-  private KeyboardPlayerInputComponent input;
 
   // Encounters are activated nearby so sentries do not wander away before the player arrives.
   private static final GridPoint2[] skeletonWarriorSpawnLocations = {
@@ -177,11 +175,6 @@ public class Level1GameArea extends GameArea {
         () -> spawnEntityAt(EnemyFactory.createVulture(player), new GridPoint2(74, 9), true, true));
   }
 
-  @Override
-  public KeyboardPlayerInputComponent getInput() {
-    return input;
-  }
-
   private void displayUI() {
     Entity ui = new Entity();
     ui.addComponent(new GameAreaDisplay("Level 1"));
@@ -304,25 +297,6 @@ public class Level1GameArea extends GameArea {
                     }
                   }
                 }));
-  }
-
-  List<Vector2> testCalypsoTpPositions =
-      List.of(new Vector2(5f, 3f), new Vector2(10f, 7f), new Vector2(15f, 2f));
-
-  /**
-   * private void spawnTestCalypso() { for (GridPoint2 spawnLocation : testSpawnLocations) { Entity
-   * enemy = EnemyFactory.createCalypso(player, testCalypsoTpPositions); spawnEntityAt(enemy,
-   * spawnLocation, true, true); } }*
-   */
-
-  /** Plays the background music. */
-  private void playMusic() {
-
-    Music music = ServiceLocator.getResourceService().getAsset(BACKGROUND_MUSIC, Music.class);
-
-    music.setLooping(true);
-    GameVolume.setMusicVolume(music, 0.3f);
-    music.play();
   }
 
   /** Loads all assets. */

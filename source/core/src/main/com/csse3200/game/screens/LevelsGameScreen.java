@@ -491,7 +491,7 @@ public class LevelsGameScreen extends ScreenAdapter {
         .addComponent(new PerformanceDisplay())
         .addComponent(new CoordinateDisplay(renderer.getCamera()))
         .addComponent(new MainGameActions(this.game))
-        .addComponent(new PauseButtonDisplay(() -> pauseOverlay.request()))
+        .addComponent(new PauseButtonDisplay(pauseOverlay::request))
         .addComponent(gameEndDisplay) // Add GameEndDisplay component to the UI entity
         .addComponent(new GameEndActions(this.game, this::restartAtCheckpoint))
         .addComponent(terminal)

@@ -61,7 +61,7 @@ class SandboxLifecycleTest extends UiTestSupport {
         .thenAnswer(
             call -> {
               GridPoint2 tile = call.getArgument(0);
-              return new Vector2(tile.x, tile.y);
+              return new Vector2((float) tile.x, (float) tile.y);
             });
     area = new SandboxGameArea(factory, new CameraComponent());
     pointLights = mockConstruction(PointLightComponent.class);

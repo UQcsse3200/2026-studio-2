@@ -91,8 +91,8 @@ public final class InventorySlotStyle implements Disposable {
         boolean inCornerBox = (x < r || x >= size - r) && (y < r || y >= size - r);
 
         if (inCornerBox) {
-          float cx = x < r ? r : size - r - 1;
-          float cy = y < r ? r : size - r - 1;
+          float cx = (float) (x < r ? r : size - r - 1);
+          float cy = (float) (y < r ? r : size - r - 1);
           double dist = Math.hypot(x - cx, y - cy);
 
           if (dist > r) {
@@ -138,8 +138,8 @@ public final class InventorySlotStyle implements Disposable {
         boolean inCornerBox = (x < r || x >= size - r) && (y < r || y >= size - r);
 
         if (inCornerBox) {
-          float cx = x < r ? r : size - r - 1;
-          float cy = y < r ? r : size - r - 1;
+          float cx = (float) (x < r ? r : size - r - 1);
+          float cy = (float) (y < r ? r : size - r - 1);
           double dist = Math.hypot(x - cx, y - cy);
 
           if (dist > r) {

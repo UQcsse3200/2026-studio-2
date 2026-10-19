@@ -54,8 +54,6 @@ public class ForestGameArea extends GameArea {
 
   private final TerrainFactory terrainFactory;
 
-  private Entity player;
-
   /**
    * Initialise this ForestGameArea to use the provided TerrainFactory.
    *
@@ -66,14 +64,6 @@ public class ForestGameArea extends GameArea {
   public ForestGameArea(CameraComponent cameraComponent, TerrainFactory terrainFactory) {
     super(cameraComponent);
     this.terrainFactory = terrainFactory;
-  }
-
-  /**
-   * @return the player entity after this area has been created
-   */
-  @Override
-  public Entity getPlayer() {
-    return player;
   }
 
   /** Create the game area, including terrain, static entities (trees), dynamic entities (player) */

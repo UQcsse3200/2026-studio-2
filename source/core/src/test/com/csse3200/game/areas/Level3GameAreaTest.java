@@ -126,16 +126,6 @@ class Level3GameAreaTest {
   }
 
   @Test
-  void playMusicConfiguresAndStartsBackgroundMusic() throws Exception {
-    invokePrivate("playMusic");
-
-    verify(resourceService).getAsset("sounds/BGM_03_mp3.mp3", Music.class);
-    verify(music).setLooping(true);
-    verify(music).setVolume(0.3f);
-    verify(music).play();
-  }
-
-  @Test
   void spawnTerrainCreatesBackgroundDesertTerrain() throws Exception {
     when(terrainFactory.createTerrain(TerrainFactory.TerrainType.BACKGROUND_DESERT))
         .thenReturn(terrain);

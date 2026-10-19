@@ -120,7 +120,7 @@ public class AnimationRenderComponent extends RenderComponent {
   public void scaleEntity() {
     TextureRegion defaultTexture = this.atlas.findRegion("default");
     entity.setScale(1f, (float) defaultTexture.getRegionHeight() / defaultTexture.getRegionWidth());
-    defaultRegionWidthPx = defaultTexture.getRegionWidth();
+    defaultRegionWidthPx = (float) defaultTexture.getRegionWidth();
   }
 
   /**

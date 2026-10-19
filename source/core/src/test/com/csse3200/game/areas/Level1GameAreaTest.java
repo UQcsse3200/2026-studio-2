@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
-import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.areas.terrain.TerrainComponent;
@@ -31,7 +30,6 @@ class Level1GameAreaTest {
   private CameraComponent camera;
   private ResourceService resourceService;
   private EntityService entityService;
-  private Music music;
   private TerrainComponent terrain;
 
   @BeforeEach
@@ -40,7 +38,6 @@ class Level1GameAreaTest {
     camera = mock(CameraComponent.class);
     resourceService = mock(ResourceService.class);
     entityService = mock(EntityService.class);
-    music = mock(Music.class);
     terrain = mock(TerrainComponent.class);
 
     ServiceLocator.registerResourceService(resourceService);
@@ -184,17 +181,5 @@ class Level1GameAreaTest {
     assertNotNull(bounds);
     assertTrue(bounds.x > 0);
     assertTrue(bounds.y > 0);
-  }
-
-  @Test
-  void playMusicConfiguresAndStartsBackgroundMusic() throws Exception {
-    when(resourceService.getAsset(anyString(), eq(Music.class))).thenReturn(music);
-
-    invokePrivate("playMusic");
-
-    verify(resourceService).getAsset(anyString(), eq(Music.class));
-    verify(music).setLooping(true);
-    verify(music).setVolume(anyFloat());
-    verify(music).play();
   }
 }

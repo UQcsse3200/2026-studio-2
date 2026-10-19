@@ -6,7 +6,6 @@ import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.areas.terrain.TerrainFactory;
 import com.csse3200.game.areas.terrain.configs.levelconfigs.Level2Config;
 import com.csse3200.game.components.CameraComponent;
-import com.csse3200.game.components.GameVolume;
 import com.csse3200.game.components.gamearea.GameAreaDisplay;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.EnemyFactory;
@@ -107,7 +106,8 @@ public class Level2GameArea extends GameArea {
     spawnConfigEntities();
     spawnSkeletonWarrior();
 
-    player.setPosition(new Vector2(config.getPlayerSpawn().x, config.getPlayerSpawn().y));
+    player.setPosition(
+        new Vector2((float) config.getPlayerSpawn().x, (float) config.getPlayerSpawn().y));
   }
 
   private void displayUI() {
@@ -154,15 +154,6 @@ public class Level2GameArea extends GameArea {
       Entity enemy = EnemyFactory.createSkeletonWarrior(player);
       spawnEntityAt(enemy, spawnLocation, true, true);
     }
-  }
-
-  /** Plays the background music. */
-  private void playMusic() {
-    Music music = ServiceLocator.getResourceService().getAsset(BACKGROUND_MUSIC, Music.class);
-
-    music.setLooping(true);
-    GameVolume.setMusicVolume(music, 0.3f);
-    music.play();
   }
 
   /** Loads all Level 2 assets. */

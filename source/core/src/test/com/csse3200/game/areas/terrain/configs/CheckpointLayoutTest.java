@@ -43,7 +43,8 @@ class CheckpointLayoutTest {
             isSolidTopAt(config, x + STATUE_WIDTH - 0.1f, y),
             where + " has no platform under its right");
         assertTrue(
-            !isInsideSolid(config, x, y, STATUE_WIDTH, CheckpointComponent.ATLAS_HEIGHT),
+            !isInsideSolid(
+                config, (float) x, (float) y, STATUE_WIDTH, CheckpointComponent.ATLAS_HEIGHT),
             where + " is inside a platform");
       }
     }

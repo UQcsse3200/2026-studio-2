@@ -40,8 +40,8 @@ public class TextBoxFactory {
 
     try {
       new TextBoxComponent(
-              textConfig.xPos,
-              textConfig.yPos,
+              (float) textConfig.xPos,
+              (float) textConfig.yPos,
               textConfig.getTextColour(),
               textConfig.getBackgroundColour(),
               textConfig.getBorderColour(),
