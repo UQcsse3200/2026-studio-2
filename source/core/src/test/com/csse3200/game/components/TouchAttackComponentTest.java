@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.extensions.GameExtension;
@@ -279,8 +280,7 @@ class TouchAttackComponentTest {
     return attacker;
   }
 
-  private com.badlogic.gdx.math.Vector2 velocityAfterHitWithKnockback(
-      float knockback, float targetX, float targetY) {
+  private Vector2 velocityAfterHitWithKnockback(float knockback, float targetX, float targetY) {
     deltaPerUpdate(0.3f);
     Entity attacker = attackerWithKnockback(knockback);
     Entity target = createTarget(LAYER);
@@ -292,8 +292,8 @@ class TouchAttackComponentTest {
 
   @Test
   void shouldPushTheTargetAwayFromTheAttacker() {
-    com.badlogic.gdx.math.Vector2 pushedRight = velocityAfterHitWithKnockback(10f, 4f, 0f);
-    com.badlogic.gdx.math.Vector2 pushedLeft = velocityAfterHitWithKnockback(10f, -4f, 0f);
+    Vector2 pushedRight = velocityAfterHitWithKnockback(10f, 4f, 0f);
+    Vector2 pushedLeft = velocityAfterHitWithKnockback(10f, -4f, 0f);
 
     assertTrue(pushedRight.x > 0f, "target on the right goes right");
     assertEquals(0f, pushedRight.y, 1e-4f);
@@ -302,7 +302,7 @@ class TouchAttackComponentTest {
 
   @Test
   void shouldPushUpwardWhenTheTargetIsAbove() {
-    com.badlogic.gdx.math.Vector2 pushed = velocityAfterHitWithKnockback(10f, 0f, 4f);
+    Vector2 pushed = velocityAfterHitWithKnockback(10f, 0f, 4f);
 
     assertTrue(pushed.y > 0f);
     assertEquals(0f, pushed.x, 1e-4f);
@@ -318,7 +318,7 @@ class TouchAttackComponentTest {
 
   @Test
   void shouldNotPushWithoutKnockback() {
-    com.badlogic.gdx.math.Vector2 velocity = velocityAfterHitWithKnockback(0f, 4f, 0f);
+    Vector2 velocity = velocityAfterHitWithKnockback(0f, 4f, 0f);
 
     assertEquals(0f, velocity.len(), 1e-6f);
   }

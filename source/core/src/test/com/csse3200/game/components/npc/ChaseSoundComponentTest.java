@@ -18,6 +18,8 @@ import com.csse3200.game.services.ServiceLocator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 @ExtendWith(GameExtension.class)
 class ChaseSoundComponentTest {
@@ -49,24 +51,19 @@ class ChaseSoundComponentTest {
     verify(sound).play(0.15f);
   }
 
-  @Test
-  void shouldNotPlayAgainDuringCooldown() {
-    when(time.getTime()).thenReturn(0L, 5000L);
+  @ParameterizedTest
+  @CsvSource({
+    "5000, 1", // well inside the cooldown
+    "9999, 1", // one millisecond short of it
+    "10000, 2" // exactly at the end of it
+  })
+  void shouldPlayAgainOnlyOnceTheCooldownIsOver(long secondChaseAt, int expectedPlays) {
+    when(time.getTime()).thenReturn(0L, secondChaseAt);
 
     enemy.getEvents().trigger("chaseStart");
     enemy.getEvents().trigger("chaseStart");
 
-    verify(sound, times(1)).play(0.15f);
-  }
-
-  @Test
-  void shouldPlayAgainAfterCooldown() {
-    when(time.getTime()).thenReturn(0L, 10000L);
-
-    enemy.getEvents().trigger("chaseStart");
-    enemy.getEvents().trigger("chaseStart");
-
-    verify(sound, times(2)).play(0.15f);
+    verify(sound, times(expectedPlays)).play(0.15f);
   }
 
   @Test
@@ -77,16 +74,6 @@ class ChaseSoundComponentTest {
     enemy.getEvents().trigger("chaseStart");
 
     verify(sound, never()).play(anyFloat());
-  }
-
-  @Test
-  void shouldNotPlayJustBeforeTheCooldownEnds() {
-    when(time.getTime()).thenReturn(0L, 9999L);
-
-    enemy.getEvents().trigger("chaseStart");
-    enemy.getEvents().trigger("chaseStart");
-
-    verify(sound, times(1)).play(0.15f);
   }
 
   @Test

@@ -1,5 +1,6 @@
 package com.csse3200.game.components.npc;
 
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -27,7 +28,7 @@ class GhostAnimationControllerTest {
 
   @Test
   void shouldNotAnimateAnythingOnItsOwn() {
-    verify(animator, never()).startAnimation(org.mockito.ArgumentMatchers.anyString());
+    verify(animator, never()).startAnimation(anyString());
   }
 
   @Test

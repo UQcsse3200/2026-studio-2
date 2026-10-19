@@ -191,13 +191,13 @@ class EnemyTeleportComponentTest {
 
     for (int i = 0; i < 300; i++) {
       enemy.getEvents().trigger("hitPlayer");
-      Vector2 now = enemy.getPosition().cpy();
+      Vector2 current = enemy.getPosition().cpy();
       assertTrue(isAtOneOf(enemy, SPOTS));
       if (previous != null) {
-        assertNotEquals(previous, now, "teleported nowhere on attempt " + i);
+        assertNotEquals(previous, current, "teleported nowhere on attempt " + i);
       }
-      visited.add(now);
-      previous = now;
+      visited.add(current);
+      previous = current;
     }
 
     assertEquals(new HashSet<>(SPOTS), visited, "every spot gets used eventually");

@@ -3,8 +3,10 @@ package com.csse3200.game.components;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
@@ -16,6 +18,7 @@ import com.badlogic.gdx.Gdx;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.ItemDrop;
 import com.csse3200.game.entities.factories.ItemFactory;
+import com.csse3200.game.events.listeners.EventListener1;
 import com.csse3200.game.extensions.GameExtension;
 import java.util.ArrayList;
 import java.util.List;
@@ -44,7 +47,7 @@ class EnemyItemDropComponentTest {
               return null;
             })
         .when(app)
-        .postRunnable(org.mockito.ArgumentMatchers.any(Runnable.class));
+        .postRunnable(any(Runnable.class));
     Gdx.app = app;
 
     // Making a real item needs textures and lights: what is dropped is all that matters here
@@ -80,7 +83,8 @@ class EnemyItemDropComponentTest {
             .addComponent(new EnemyItemDropComponent(List.of(drops)));
     enemy.setPosition(7f, 3f);
     enemy.create();
-    enemy.getEvents().addListener("spawnEntity", (Entity item) -> spawned.add(item));
+    EventListener1<Entity> collectSpawned = spawned::add;
+    enemy.getEvents().addListener("spawnEntity", collectSpawned);
     return enemy;
   }
 
@@ -206,8 +210,6 @@ class EnemyItemDropComponentTest {
   }
 
   private void verifyCreated(String item, int times) {
-    itemFactory.verify(
-        () -> ItemFactory.createItem(org.mockito.ArgumentMatchers.eq(item), anyInt()),
-        times(times));
+    itemFactory.verify(() -> ItemFactory.createItem(eq(item), anyInt()), times(times));
   }
 }

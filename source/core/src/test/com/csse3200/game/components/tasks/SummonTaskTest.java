@@ -9,6 +9,7 @@ import static org.mockito.Mockito.times;
 
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.EnemyFactory;
+import com.csse3200.game.events.listeners.EventListener1;
 import com.csse3200.game.extensions.GameExtension;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,7 +39,8 @@ class SummonTaskTest {
     player = new Entity();
     player.setPosition(3f, 0f);
     necromancer = world.enemyAt(10f, 4f);
-    necromancer.getEvents().addListener("spawnEntity", (Entity entity) -> spawned.add(entity));
+    EventListener1<Entity> collectSpawned = spawned::add;
+    necromancer.getEvents().addListener("spawnEntity", collectSpawned);
 
     // Making a real skeleton needs the whole asset pipeline: only what gets summoned matters here
     factory = mockStatic(EnemyFactory.class);

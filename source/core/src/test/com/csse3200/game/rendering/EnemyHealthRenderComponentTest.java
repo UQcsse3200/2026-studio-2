@@ -6,6 +6,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyFloat;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import com.badlogic.gdx.graphics.Color;
@@ -57,7 +58,7 @@ class EnemyHealthRenderComponentTest {
       ArgumentCaptor<Float> width,
       ArgumentCaptor<Float> height) {
     bar.draw(batch);
-    verify(batch, org.mockito.Mockito.times(3))
+    verify(batch, times(3))
         .draw(any(Texture.class), x.capture(), y.capture(), width.capture(), height.capture());
   }
 
@@ -174,14 +175,13 @@ class EnemyHealthRenderComponentTest {
   void shouldUseOneSharedTextureForEveryBar() {
     ArgumentCaptor<Texture> first = ArgumentCaptor.forClass(Texture.class);
     bar.draw(batch);
-    verify(batch, org.mockito.Mockito.times(3))
-        .draw(first.capture(), anyFloat(), anyFloat(), anyFloat(), anyFloat());
+    verify(batch, times(3)).draw(first.capture(), anyFloat(), anyFloat(), anyFloat(), anyFloat());
 
     SpriteBatch otherBatch = mock(SpriteBatch.class);
     enemyWithHealth(10, 10);
     bar.draw(otherBatch);
     ArgumentCaptor<Texture> second = ArgumentCaptor.forClass(Texture.class);
-    verify(otherBatch, org.mockito.Mockito.times(3))
+    verify(otherBatch, times(3))
         .draw(second.capture(), anyFloat(), anyFloat(), anyFloat(), anyFloat());
 
     assertSame(first.getValue(), second.getValue());
