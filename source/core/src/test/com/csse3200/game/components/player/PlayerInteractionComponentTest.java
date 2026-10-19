@@ -326,6 +326,121 @@ class PlayerInteractionComponentTest {
   }
 
   @Test
+  void shouldAutomaticallyCollectAllNearbyGoldAndEmitEachAmount() {
+    InventoryComponent inventory = new InventoryComponent(0);
+    Entity player = createPlayer(inventory);
+    Entity first = spawnGold(new Vector2(0.5f, 0));
+    Entity second = new Entity().addComponent(new GoldPickupComponent(25));
+    second.setPosition(0.25f, 0);
+    ServiceLocator.getEntityService().register(second);
+    int[] awarded = {0};
+    player.getEvents().addListener("goldPickedUp", (Integer amount) -> awarded[0] += amount);
+
+    player.getComponent(PlayerInteractionComponent.class).update();
+    ServiceLocator.getEntityService().update();
+
+    assertEquals(35, inventory.getGold());
+    assertEquals(35, awarded[0]);
+    assertFalse(ServiceLocator.getEntityService().getEntities().contains(first, true));
+    assertFalse(ServiceLocator.getEntityService().getEntities().contains(second, true));
+  }
+
+  @Test
+  void shouldCollectAtAutoPickupBoundaryButLeaveFurtherGold() {
+    InventoryComponent inventory = new InventoryComponent(0);
+    Entity player = createPlayer(inventory);
+    spawnGold(new Vector2(0.75f, 0));
+    Entity further = spawnGold(new Vector2(0.76f, 0));
+
+    player.getComponent(PlayerInteractionComponent.class).update();
+    ServiceLocator.getEntityService().update();
+
+    assertEquals(10, inventory.getGold());
+    assertTrue(ServiceLocator.getEntityService().getEntities().contains(further, true));
+    assertTrue(player.getComponent(PlayerInteractionComponent.class).pickupGold(further));
+    assertEquals(20, inventory.getGold(), "Manual pickup retains its larger range");
+  }
+
+  @Test
+  void shouldLeaveItemsAndWheelTokensForManualInteraction() {
+    Entity player = createPlayer(new InventoryComponent(0));
+    Entity item = spawnWorldItem(new Arrow(ItemType.STANDARD_ARROW, 3), new Vector2(0.2f, 0));
+    Entity token = spawnWheelToken(new Vector2(0.3f, 0));
+
+    player.getComponent(PlayerInteractionComponent.class).update();
+
+    assertTrue(ServiceLocator.getEntityService().getEntities().contains(item, true));
+    assertTrue(ServiceLocator.getEntityService().getEntities().contains(token, true));
+    assertEquals(0, player.getComponent(InventoryComponent.class).getGold());
+  }
+
+  @Test
+  void shouldAwardGoldOnlyOnceBeforeDeferredRemoval() {
+    Entity player = createPlayer(new InventoryComponent(0));
+    Entity gold = spawnGold(new Vector2(0.5f, 0));
+    PlayerInteractionComponent interaction = player.getComponent(PlayerInteractionComponent.class);
+    int[] pickups = {0};
+    player.getEvents().addListener("goldPickedUp", (Integer amount) -> pickups[0]++);
+
+    interaction.update();
+    interaction.update();
+    assertFalse(interaction.pickupGold(gold));
+    assertNull(interaction.findNearestGold());
+
+    assertEquals(10, interaction.getInventory().getGold());
+    assertEquals(1, pickups[0]);
+  }
+
+  @Test
+  void shouldNotAutomaticallyCollectGoldWhileShopIsOpen() {
+    Entity player = createPlayer(new InventoryComponent(0));
+    spawnShopNpc(new Vector2(0.5f, 0));
+    spawnGold(new Vector2(0.5f, 0));
+    PlayerInteractionComponent interaction = player.getComponent(PlayerInteractionComponent.class);
+    interaction.interact();
+
+    interaction.update();
+    assertEquals(0, interaction.getInventory().getGold());
+
+    player.getEvents().trigger("closeShop");
+    interaction.update();
+    assertEquals(10, interaction.getInventory().getGold());
+  }
+
+  @Test
+  void shouldRespectPauseAndNotSkipOtherEntityUpdatesWhenCollecting() {
+    ServiceLocator.registerTimeSource(mock(com.csse3200.game.services.GameTime.class));
+    EntityService service = ServiceLocator.getEntityService();
+    // Register gold before the player to expose removal during EntityService's unordered iteration.
+    Entity gold = spawnGold(new Vector2(0.5f, 0));
+    InventoryComponent inventory = new InventoryComponent(0);
+    Entity player =
+        new Entity().addComponent(inventory).addComponent(new PlayerInteractionComponent());
+    service.register(player);
+    int[] updates = {0};
+    service.register(
+        new Entity()
+            .addComponent(
+                new com.csse3200.game.components.Component() {
+                  @Override
+                  public void update() {
+                    updates[0]++;
+                  }
+                }));
+
+    service.setPaused(true);
+    service.update();
+    assertEquals(0, inventory.getGold());
+    assertEquals(0, updates[0]);
+
+    service.setPaused(false);
+    service.update();
+    assertEquals(10, inventory.getGold());
+    assertEquals(1, updates[0]);
+    assertFalse(service.getEntities().contains(gold, true));
+  }
+
+  @Test
   void shouldNotFindGoldOutOfRange() {
     Entity player = createPlayer(new InventoryComponent(0));
     spawnGold(new Vector2(10f, 10f));
