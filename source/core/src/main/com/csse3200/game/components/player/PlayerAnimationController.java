@@ -257,15 +257,6 @@ public class PlayerAnimationController extends Component {
   }
 
   /**
-   * @return whether the rope pose may take over. Never while a one-shot clip is playing: the pose
-   *     hides the animation by stopping it, and a stopped clip never reports finishing, so its flag
-   *     would stay set and freeze every later animation change.
-   */
-  public boolean canShowRopePose() {
-    return !dead && !landing && !instrumentActive && !isBusyWithHigherPriorityAnimation();
-  }
-
-  /**
    * Forgets every one-shot clip that is about to be replaced. Each of these flags is only cleared
    * when its own clip finishes, and the animator can only finish the clip it is playing, so a flag
    * left behind by a replaced clip stayed set forever and froze every later animation change.

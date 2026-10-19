@@ -22,9 +22,14 @@ public class MovingPlatformComponentTest {
 
   @BeforeEach
   void beforeEach() {
-    firstTarget = new Vector2(-10f, 0f);
-    secondTarget = new Vector2(10f, 0f);
-    speed = new Vector2(5f, 0f);
+    buildPlatform(new Vector2(-10f, 0f), new Vector2(10f, 0f), new Vector2(5f, 0f));
+  }
+
+  /** Builds a platform that moves between the targets, on an entity made of mocks. */
+  private void buildPlatform(Vector2 first, Vector2 second, Vector2 platformSpeed) {
+    firstTarget = first;
+    secondTarget = second;
+    speed = platformSpeed;
     platform = new MovingPlatformComponent(0, firstTarget, secondTarget, speed);
 
     moveComp = mock(PhysicsMovementComponent.class);
@@ -83,21 +88,7 @@ public class MovingPlatformComponentTest {
 
   @Test
   void shouldSetCorrectFirstVerticalSpeed() {
-    firstTarget = new Vector2(0f, -10f);
-    secondTarget = new Vector2(0f, 10f);
-    speed = new Vector2(0f, 5f);
-    platform = new MovingPlatformComponent(0, firstTarget, secondTarget, speed);
-
-    moveComp = mock(PhysicsMovementComponent.class);
-    comp = mock(PhysicsComponent.class);
-    body = mock(Body.class);
-    activatable = mock(ActivatableComponent.class);
-    Entity entity = spy(Entity.class);
-
-    entity.addComponent(comp);
-    entity.addComponent(moveComp);
-    entity.addComponent(platform);
-    entity.addComponent(activatable);
+    buildPlatform(new Vector2(0f, -10f), new Vector2(0f, 10f), new Vector2(0f, 5f));
 
     when(moveComp.getMoving()).thenReturn(true);
     when(moveComp.getTarget()).thenReturn(firstTarget).thenReturn(secondTarget);
@@ -109,21 +100,7 @@ public class MovingPlatformComponentTest {
 
   @Test
   void shouldSetCorrectSecondVerticalSpeed() {
-    firstTarget = new Vector2(0f, -10f);
-    secondTarget = new Vector2(0f, 10f);
-    speed = new Vector2(0f, 5f);
-    platform = new MovingPlatformComponent(0, firstTarget, secondTarget, speed);
-
-    moveComp = mock(PhysicsMovementComponent.class);
-    comp = mock(PhysicsComponent.class);
-    body = mock(Body.class);
-    activatable = mock(ActivatableComponent.class);
-    Entity entity = spy(Entity.class);
-
-    entity.addComponent(comp);
-    entity.addComponent(moveComp);
-    entity.addComponent(platform);
-    entity.addComponent(activatable);
+    buildPlatform(new Vector2(0f, -10f), new Vector2(0f, 10f), new Vector2(0f, 5f));
 
     when(moveComp.getMoving()).thenReturn(true);
     when(moveComp.getTarget()).thenReturn(secondTarget).thenReturn(firstTarget);

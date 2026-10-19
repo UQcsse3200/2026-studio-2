@@ -37,13 +37,9 @@ public class RepositionTask extends DefaultTask implements PriorityTask {
   public void start() {
     super.start();
 
-    edgeDetector = new EdgeDetectTask(0.3f);
-
     Vector2 enemyPos = owner.getEntity().getPosition();
     Vector2 targetPos = target.getPosition();
-    Vector2 repositionDir = enemyPos.cpy().sub(targetPos);
-    repositionDir.y = 0;
-    repositionDir.nor();
+    Vector2 repositionDir = directionAwayFrom(enemyPos, targetPos);
     Vector2 reposition = enemyPos.cpy().add(repositionDir.scl(repositionDistance));
 
     movementTask = new MovementTask(reposition);
@@ -59,7 +55,7 @@ public class RepositionTask extends DefaultTask implements PriorityTask {
     Vector2 enemyPos = owner.getEntity().getPosition();
     Vector2 targetPos = target.getPosition();
     float direction = Math.signum(enemyPos.x - targetPos.x);
-    if (!edgeDetector.isGroundAhead(owner.getEntity(), direction)) {
+    if (!canStep(owner.getEntity(), direction)) {
       movementTask.stop();
       status = Status.FINISHED;
       repositionRequired = false;
@@ -72,6 +68,27 @@ public class RepositionTask extends DefaultTask implements PriorityTask {
       status = Status.FINISHED;
       repositionRequired = false;
     }
+  }
+
+  /**
+   * @return the unit direction to back off in. On the ground that is straight along the floor.
+   */
+  protected Vector2 directionAwayFrom(Vector2 enemyPos, Vector2 targetPos) {
+    Vector2 away = enemyPos.cpy().sub(targetPos);
+    away.y = 0;
+    return away.nor();
+  }
+
+  /**
+   * @param direction 1 to step right, -1 to step left
+   * @return false if the enemy must not step that way. On the ground that is when there is no floor
+   *     ahead, so it does not back off the edge of a platform.
+   */
+  protected boolean canStep(Entity enemy, float direction) {
+    if (edgeDetector == null) {
+      edgeDetector = new EdgeDetectTask(0.3f);
+    }
+    return edgeDetector.isGroundAhead(enemy, direction);
   }
 
   @Override

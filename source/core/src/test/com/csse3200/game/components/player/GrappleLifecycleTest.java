@@ -8,6 +8,7 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
+import com.badlogic.gdx.physics.box2d.Shape;
 import com.csse3200.game.components.item.weapons.bow.grapple.GrappleComponent;
 import com.csse3200.game.components.projectile.ArrowProjectileComponent;
 import com.csse3200.game.entities.Entity;
@@ -171,6 +172,24 @@ class GrappleLifecycleTest {
     assertTrue(playerBody.getLinearVelocity().isZero(0.0001f));
   }
 
+  /** Gives the body a fixture of the given shape on the solid layer, then disposes the shape. */
+  private static void makeSolid(Body obstacle, Shape shape) {
+    var fixture = obstacle.createFixture(shape, 0f);
+    shape.dispose();
+    var filter = fixture.getFilterData();
+    filter.categoryBits = PhysicsLayer.SOLID;
+    fixture.setFilterData(filter);
+  }
+
+  /** The rope should still be the single straight length it was attached as. */
+  private void assertRopeStillRunsStraightToTheAnchor() {
+    assertTrue(grapple.isAttached());
+    assertEquals(2, grapple.getRopePath().size());
+    assertEquals(new Vector2(10f, 0f), grapple.getAnchorPoint());
+    assertEquals(10f, grapple.getRopeLength(), 0.001f);
+    assertEquals(1, physics.getPhysics().getWorld().getJointCount());
+  }
+
   @Test
   void shouldRetainOriginalJointWhenObstructionHasNoPolygonCorners() {
     grapple.attachTo(anchor(10f, 0f), new Vector2(10f, 0f));
@@ -178,17 +197,9 @@ class GrappleLifecycleTest {
     Body obstacle = anchor(5f, 0f);
     CircleShape shape = new CircleShape();
     shape.setRadius(1f);
-    var fixture = obstacle.createFixture(shape, 0f);
-    shape.dispose();
-    var filter = fixture.getFilterData();
-    filter.categoryBits = PhysicsLayer.SOLID;
-    fixture.setFilterData(filter);
+    makeSolid(obstacle, shape);
     grapple.update();
-    assertTrue(grapple.isAttached());
-    assertEquals(2, grapple.getRopePath().size());
-    assertEquals(new Vector2(10f, 0f), grapple.getAnchorPoint());
-    assertEquals(10f, grapple.getRopeLength(), 0.001f);
-    assertEquals(1, physics.getPhysics().getWorld().getJointCount());
+    assertRopeStillRunsStraightToTheAnchor();
   }
 
   @Test
@@ -198,17 +209,9 @@ class GrappleLifecycleTest {
     Body obstacle = anchor(5f, 0f);
     PolygonShape shape = new PolygonShape();
     shape.setAsBox(1f, 20f);
-    var fixture = obstacle.createFixture(shape, 0f);
-    shape.dispose();
-    var filter = fixture.getFilterData();
-    filter.categoryBits = PhysicsLayer.SOLID;
-    fixture.setFilterData(filter);
+    makeSolid(obstacle, shape);
     // Every visible corner is farther from the anchor than the entire available rope.
     grapple.update();
-    assertTrue(grapple.isAttached());
-    assertEquals(2, grapple.getRopePath().size());
-    assertEquals(new Vector2(10f, 0f), grapple.getAnchorPoint());
-    assertEquals(10f, grapple.getRopeLength(), 0.001f);
-    assertEquals(1, physics.getPhysics().getWorld().getJointCount());
+    assertRopeStillRunsStraightToTheAnchor();
   }
 }

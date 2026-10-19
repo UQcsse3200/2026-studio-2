@@ -4,14 +4,12 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
-import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.areas.terrain.TerrainComponent;
 import com.csse3200.game.areas.terrain.TerrainFactory;
 import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.entities.EntityService;
-import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import java.lang.reflect.Field;
@@ -20,10 +18,8 @@ import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 
-@ExtendWith(GameExtension.class)
-class Level1GameAreaTest {
+class Level1GameAreaTest extends AbstractAreaAssetsTest {
 
   private Level1GameArea gameArea;
 
@@ -31,7 +27,6 @@ class Level1GameAreaTest {
   private CameraComponent camera;
   private ResourceService resourceService;
   private EntityService entityService;
-  private Music music;
   private TerrainComponent terrain;
 
   @BeforeEach
@@ -40,7 +35,6 @@ class Level1GameAreaTest {
     camera = mock(CameraComponent.class);
     resourceService = mock(ResourceService.class);
     entityService = mock(EntityService.class);
-    music = mock(Music.class);
     terrain = mock(TerrainComponent.class);
 
     ServiceLocator.registerResourceService(resourceService);
@@ -119,35 +113,19 @@ class Level1GameAreaTest {
   }
 
   @Test
-  void loadAssetsLoadsLevel1Resources() throws Exception {
-    invokePrivate("loadAssets");
-
-    verify(resourceService).loadTextures(any(String[].class));
-    verify(resourceService).loadTextureAtlases(any(String[].class));
-    verify(resourceService).loadSounds(any(String[].class));
-    verify(resourceService).loadMusic(any(String[].class));
-    verify(resourceService).loadForMillis(10);
-  }
-
-  @Test
-  void loadAssetsWaitsUntilLoadingCompletes() throws Exception {
-    when(resourceService.loadForMillis(10)).thenReturn(false, false, true);
-    when(resourceService.getProgress()).thenReturn(25, 75);
-
-    invokePrivate("loadAssets");
-
-    verify(resourceService, times(3)).loadForMillis(10);
-    verify(resourceService, times(2)).getProgress();
-  }
-
-  @Test
   void unloadAssetsUnloadsAllLevel1Resources() throws Exception {
     invokePrivate("unloadAssets");
 
     verify(resourceService, atLeastOnce()).unloadAssets(any(String[].class));
   }
 
-  private void invokePrivate(String methodName) throws Exception {
+  @Override
+  ResourceService resourceService() {
+    return resourceService;
+  }
+
+  @Override
+  void invokePrivate(String methodName) throws Exception {
     Method method = Level1GameArea.class.getDeclaredMethod(methodName);
     method.setAccessible(true);
     method.invoke(gameArea);
@@ -184,17 +162,5 @@ class Level1GameAreaTest {
     assertNotNull(bounds);
     assertTrue(bounds.x > 0);
     assertTrue(bounds.y > 0);
-  }
-
-  @Test
-  void playMusicConfiguresAndStartsBackgroundMusic() throws Exception {
-    when(resourceService.getAsset(anyString(), eq(Music.class))).thenReturn(music);
-
-    invokePrivate("playMusic");
-
-    verify(resourceService).getAsset(anyString(), eq(Music.class));
-    verify(music).setLooping(true);
-    verify(music).setVolume(anyFloat());
-    verify(music).play();
   }
 }

@@ -45,6 +45,8 @@ public class ArrowTrajectoryDisplay extends UIComponent {
     bow = entity.getComponent(BowComponent.class);
     input = entity.getComponent(KeyboardPlayerInputComponent.class);
     entity.getEvents().addListener("death", () -> dead = true);
+    // A checkpoint restart brings the player back; without this the arc stayed off for good.
+    entity.getEvents().addListener("revive", () -> dead = false);
 
     dotTexture = createDotTexture();
     for (int i = 0; i < DOT_COUNT; i++) {

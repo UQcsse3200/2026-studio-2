@@ -552,6 +552,11 @@ public class BlackjackDisplay extends UIComponent {
       playerCards.add(createCardImage(card)).width(playerCardWidth).height(CARD_HEIGHT).pad(5f);
     }
 
+    refreshTotalsAndResult();
+  }
+
+  /** Updates the hand totals, the gold and bet line, and the result message. */
+  private void refreshTotalsAndResult() {
     if (blackjack.getDealerHand().isEmpty()) {
       dealerTotalLabel.setText("Dealer total: -");
     } else if (blackjack.isRoundInProgress() && !blackjack.isRoundOver()) {
@@ -564,9 +569,7 @@ public class BlackjackDisplay extends UIComponent {
         blackjack.getPlayerHand().isEmpty()
             ? "Player total: -"
             : "Player total: " + blackjack.getPlayerTotal());
-
     balanceLabel.setText("Gold: " + getDisplayedGold() + "    Bet: " + blackjack.getBet());
-
     if (inventory != null && inventory.getGold() <= 0) {
       resultLabel.setText(EMPTY_BALANCE_MESSAGE);
     } else {
@@ -585,24 +588,7 @@ public class BlackjackDisplay extends UIComponent {
       statusLabel.setText(PLACE_BET);
     }
 
-    if (blackjack.getDealerHand().isEmpty()) {
-      dealerTotalLabel.setText("Dealer total: -");
-    } else if (blackjack.isRoundInProgress() && !blackjack.isRoundOver()) {
-      dealerTotalLabel.setText("Dealer total: ?");
-    } else {
-      dealerTotalLabel.setText("Dealer total: " + blackjack.getDealerTotal());
-    }
-
-    playerTotalLabel.setText(
-        blackjack.getPlayerHand().isEmpty()
-            ? "Player total: -"
-            : "Player total: " + blackjack.getPlayerTotal());
-    balanceLabel.setText("Gold: " + getDisplayedGold() + "    Bet: " + blackjack.getBet());
-    if (inventory != null && inventory.getGold() <= 0) {
-      resultLabel.setText(EMPTY_BALANCE_MESSAGE);
-    } else {
-      resultLabel.setText(blackjack.getResultMessage());
-    }
+    refreshTotalsAndResult();
   }
 
   private void animateInitialDeal() {

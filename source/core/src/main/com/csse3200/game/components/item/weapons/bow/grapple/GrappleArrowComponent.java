@@ -24,8 +24,33 @@ public class GrappleArrowComponent extends Component {
    */
   private static final float MIN_TRAVEL = 1.2f;
 
+  /**
+   * A hook has to land at least this far above the shooter's feet. Anything lower is the floor or a
+   * platform underneath them, which is not something to swing from. The margin covers the floor
+   * they are standing on sitting exactly at their feet.
+   */
+  private static final float ABOVE_FEET_MARGIN = 0.1f;
+
+  /** How long a hook that could not catch stays where it landed before it is reeled in. */
+  private static final float HOLD_SECONDS = 0.25f;
+
+  /** How fast the rope reels a missed hook back in, in world units per second. */
+  private static final float REEL_SPEED = 20f;
+
+  /** A hook being reeled in is gone once it gets this close to the player. */
+  private static final float REEL_ARRIVAL_DISTANCE = 0.5f;
+
+  /** Gives up and removes a hook that is still being reeled in after this long. */
+  private static final float MAX_REEL_SECONDS = 2f;
+
   private final Entity shooter;
   private boolean spent = false;
+
+  // Landed somewhere it could not hook: held, then reeled back to the player, by update()
+  private boolean missed = false;
+  private boolean frozen = false;
+  private float heldFor = 0f;
+  private float reeledFor = 0f;
 
   public GrappleArrowComponent(Entity shooter) {
     this.shooter = shooter;
@@ -34,6 +59,18 @@ public class GrappleArrowComponent extends Component {
   @Override
   public void create() {
     entity.getEvents().addListener("collisionStart", this::onCollision);
+    entity
+        .getEvents()
+        .addListener(ArrowProjectileComponent.RANGE_EXCEEDED_EVENT, this::onOutOfRange);
+  }
+
+  /** The arrow flew its full range without reaching anything: the player gets the same marker. */
+  private void onOutOfRange(Vector2 point) {
+    // A hook that already landed (and is being held or reeled in) has had its marker
+    if (spent) {
+      return;
+    }
+    shooter.getEvents().trigger("grappleFailed", point.cpy());
   }
 
   @Override
@@ -60,14 +97,14 @@ public class GrappleArrowComponent extends Component {
         || !PhysicsLayer.contains(GRAPPLE_TARGETS, other.getFilterData().categoryBits)) {
       return;
     }
-    if (arrowCenter().dst2(shooter.getCenterPosition()) < MIN_TRAVEL * MIN_TRAVEL) {
-      return;
-    }
+    // Any terrain the arrow reaches ends its flight, whether or not it makes a hook. Otherwise an
+    // arrow that lands somewhere it cannot hook would just carry on through the platform.
     spent = true;
 
+    Vector2 anchor = findSurfacePoint(other);
     GrappleComponent grapple = shooter.getComponent(GrappleComponent.class);
-    if (grapple != null) {
-      grapple.attachTo(other.getBody(), findSurfacePoint(other));
+    if (grapple != null && canHookAt(anchor)) {
+      grapple.attachTo(other.getBody(), anchor);
 
       // check if other fixture that was hit with the arrow is a slippery platform to inform it
       // the player has grappled to it
@@ -78,12 +115,71 @@ public class GrappleArrowComponent extends Component {
           platform.setGrappled(true);
         }
       }
+    } else if (grapple != null) {
+      // Landed below the shooter or right on top of them: it can't hook, so tell the player. One
+      // event for both reasons, so they get the same marker whichever it was.
+      shooter.getEvents().trigger("grappleFailed", anchor.cpy());
+      // The hook stays where it landed rather than vanishing, then update() reels it back in. The
+      // rope keeps following it the whole way, because the grapple still tracks this arrow.
+      missed = true;
+      return;
     }
 
-    // The rope takes over from here; either way the arrow is done
+    // The rope takes over from here
+    removeArrow();
+  }
+
+  /**
+   * Holds a hook that could not catch where it landed for a moment, then reels it back along the
+   * rope to the player, removing it when it arrives. Does nothing for an arrow that has not missed.
+   */
+  @Override
+  public void update() {
+    if (!missed) {
+      return;
+    }
+    ArrowProjectileComponent projectile = entity.getComponent(ArrowProjectileComponent.class);
+    if (projectile == null) {
+      removeArrow(); // nothing to animate
+      return;
+    }
+    // Stopped here rather than in the collision callback, which Box2D does not allow it in.
+    if (!frozen) {
+      projectile.stop();
+      frozen = true;
+    }
+
+    float delta = ServiceLocator.getTimeSource().getDeltaTime();
+    if (heldFor < HOLD_SECONDS) {
+      heldFor += delta;
+      return;
+    }
+
+    reeledFor += delta;
+    Vector2 here = projectile.getWorldCenter();
+    Vector2 toPlayer = shooter.getCenterPosition().sub(here);
+    float step = REEL_SPEED * delta;
+    if (toPlayer.len() <= Math.max(step, REEL_ARRIVAL_DISTANCE) || reeledFor > MAX_REEL_SECONDS) {
+      removeArrow();
+    } else {
+      projectile.moveCentreTo(here.mulAdd(toPlayer.nor(), step));
+    }
+  }
+
+  private void removeArrow() {
     if (ServiceLocator.getEntityService() != null) {
       ServiceLocator.getEntityService().scheduleRemoval(entity);
     }
+  }
+
+  /**
+   * @return true if a rope can be anchored at this point: not right on top of the shooter, and not
+   *     below their feet
+   */
+  private boolean canHookAt(Vector2 anchor) {
+    boolean farEnough = arrowCenter().dst2(shooter.getCenterPosition()) >= MIN_TRAVEL * MIN_TRAVEL;
+    boolean aboveFeet = anchor.y >= shooter.getPosition().y + ABOVE_FEET_MARGIN;
+    return farEnough && aboveFeet;
   }
 
   /**

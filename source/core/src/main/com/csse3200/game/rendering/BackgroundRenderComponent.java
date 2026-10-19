@@ -67,6 +67,8 @@ public class BackgroundRenderComponent extends RenderComponent {
   }
 
   private ArrayList<ArrayList<Float>> rainOffsets = null;
+  // Created once and reused for the rain drop offsets.
+  private final Random random = new Random();
   private final List<ParallaxLayer> layers = new ArrayList<>();
   private final CameraComponent camera;
 
@@ -303,14 +305,14 @@ public class BackgroundRenderComponent extends RenderComponent {
         // random vertical offset applied to each rain drop in range -verticalOffset to
         // verticalOffset
         float verticalOffset = 0.05f;
-        float cameraWidth = (float) (int) camera.getCamera().viewportWidth + 4;
-        float cameraHeight = (float) (int) camera.getCamera().viewportHeight + 6;
-        float centerX = (float) (int) camera.getCamera().position.x;
-        float centerY = (float) (int) camera.getCamera().position.y;
-        float startX = (float) (int) centerX - (cameraWidth / 2);
-        float endX = (float) (int) centerX + (cameraWidth / 2);
-        float startY = (float) (int) centerY + (cameraHeight / 2);
-        float endY = (float) (int) centerY - (cameraHeight / 2);
+        float cameraWidth = truncate(camera.getCamera().viewportWidth) + 4;
+        float cameraHeight = truncate(camera.getCamera().viewportHeight) + 6;
+        int centerX = (int) camera.getCamera().position.x;
+        int centerY = (int) camera.getCamera().position.y;
+        float startX = centerX - (cameraWidth / 2);
+        float endX = centerX + (cameraWidth / 2);
+        float startY = centerY + (cameraHeight / 2);
+        float endY = centerY - (cameraHeight / 2);
         float currentX;
         float currentY = startY;
         float drawPosX;
@@ -318,7 +320,6 @@ public class BackgroundRenderComponent extends RenderComponent {
 
         // Compute array of offsets, so each raindrop has a set offset
         if (rainOffsets == null) {
-          Random random = new Random();
           rainOffsets = new ArrayList<>();
           int y = 0;
           while (currentY > endY) {
@@ -414,6 +415,11 @@ public class BackgroundRenderComponent extends RenderComponent {
       }
       batch.setColor(prevColor);
     }
+  }
+
+  /** Drops the fractional part of a value, rounding towards zero like an int cast. */
+  private static float truncate(float value) {
+    return (float) (value < 0 ? Math.ceil(value) : Math.floor(value));
   }
 
   @Override

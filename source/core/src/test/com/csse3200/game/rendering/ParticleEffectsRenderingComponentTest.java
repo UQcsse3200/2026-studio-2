@@ -1,6 +1,7 @@
 package com.csse3200.game.rendering;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.anyFloat;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mockConstruction;
@@ -41,11 +42,33 @@ class ParticleEffectsRenderingComponentTest {
     ServiceLocator.registerRenderService(renderService);
   }
 
-  @Test
-  void shouldRegisterAndUnregisterWithRenderService() {
+  /** The clock and projection a draw needs; the clock reads a second in. */
+  private void useClockAndProjection() {
     ServiceLocator.registerTimeSource(gameTime);
     when(batch.getProjectionMatrix()).thenReturn(new Matrix4());
     when(gameTime.getTime()).thenReturn(1000L);
+  }
+
+  private static void verifyRects(ShapeRenderer shapes, int count) {
+    verify(shapes, times(count)).rect(anyFloat(), anyFloat(), anyFloat(), anyFloat());
+  }
+
+  private static void verifyRectAtHeight(ShapeRenderer shapes, float y) {
+    verify(shapes, atLeastOnce()).rect(anyFloat(), eq(y), anyFloat(), anyFloat());
+  }
+
+  /** A single effect should have been drawn in one batch pass, at the entity's height. */
+  private void verifyDrawnOneEffectAtHeight(ShapeRenderer shapes, float y) {
+    verify(batch).end();
+    verify(batch).begin();
+    verify(shapes).begin(ShapeRenderer.ShapeType.Filled);
+    verifyRects(shapes, PARTICLE_SEGMENTS);
+    verifyRectAtHeight(shapes, y);
+  }
+
+  @Test
+  void shouldRegisterAndUnregisterWithRenderService() {
+    useClockAndProjection();
 
     try (MockedConstruction<ShapeRenderer> renderers = mockConstruction(ShapeRenderer.class)) {
       Entity entity =
@@ -84,9 +107,7 @@ class ParticleEffectsRenderingComponentTest {
 
   @Test
   void shouldDrawFireParticlesWhenEntityIsBurning() {
-    ServiceLocator.registerTimeSource(gameTime);
-    when(batch.getProjectionMatrix()).thenReturn(new Matrix4());
-    when(gameTime.getTime()).thenReturn(1000L);
+    useClockAndProjection();
 
     try (MockedConstruction<ShapeRenderer> renderers = mockConstruction(ShapeRenderer.class)) {
       Entity entity =
@@ -101,30 +122,14 @@ class ParticleEffectsRenderingComponentTest {
           entity.getComponent(ParticleEffectsRenderingComponent.class);
       component.render(batch);
 
-      verify(batch).end();
-      verify(batch).begin();
-      verify(renderers.constructed().get(0)).begin(ShapeRenderer.ShapeType.Filled);
-      verify(renderers.constructed().get(0), times(PARTICLE_SEGMENTS))
-          .rect(
-              org.mockito.ArgumentMatchers.anyFloat(),
-              org.mockito.ArgumentMatchers.anyFloat(),
-              org.mockito.ArgumentMatchers.anyFloat(),
-              org.mockito.ArgumentMatchers.anyFloat());
-      verify(renderers.constructed().get(0), atLeastOnce())
-          .rect(
-              org.mockito.ArgumentMatchers.anyFloat(),
-              eq(4f),
-              org.mockito.ArgumentMatchers.anyFloat(),
-              org.mockito.ArgumentMatchers.anyFloat());
+      verifyDrawnOneEffectAtHeight(renderers.constructed().get(0), 4f);
       component.dispose();
     }
   }
 
   @Test
   void shouldDrawPoisonParticlesWhenEntityIsPoisoned() {
-    ServiceLocator.registerTimeSource(gameTime);
-    when(batch.getProjectionMatrix()).thenReturn(new Matrix4());
-    when(gameTime.getTime()).thenReturn(1000L);
+    useClockAndProjection();
 
     try (MockedConstruction<ShapeRenderer> renderers = mockConstruction(ShapeRenderer.class)) {
       Entity entity =
@@ -146,9 +151,7 @@ class ParticleEffectsRenderingComponentTest {
 
   @Test
   void shouldDrawIceParticlesWhenEntityIsSlowed() {
-    ServiceLocator.registerTimeSource(gameTime);
-    when(batch.getProjectionMatrix()).thenReturn(new Matrix4());
-    when(gameTime.getTime()).thenReturn(1000L);
+    useClockAndProjection();
 
     try (MockedConstruction<ShapeRenderer> renderers = mockConstruction(ShapeRenderer.class)) {
       Entity entity =
@@ -164,21 +167,7 @@ class ParticleEffectsRenderingComponentTest {
           entity.getComponent(ParticleEffectsRenderingComponent.class);
       component.render(batch);
 
-      verify(batch).end();
-      verify(batch).begin();
-      verify(renderers.constructed().get(0)).begin(ShapeRenderer.ShapeType.Filled);
-      verify(renderers.constructed().get(0), times(PARTICLE_SEGMENTS))
-          .rect(
-              org.mockito.ArgumentMatchers.anyFloat(),
-              org.mockito.ArgumentMatchers.anyFloat(),
-              org.mockito.ArgumentMatchers.anyFloat(),
-              org.mockito.ArgumentMatchers.anyFloat());
-      verify(renderers.constructed().get(0), atLeastOnce())
-          .rect(
-              org.mockito.ArgumentMatchers.anyFloat(),
-              eq(4f),
-              org.mockito.ArgumentMatchers.anyFloat(),
-              org.mockito.ArgumentMatchers.anyFloat());
+      verifyDrawnOneEffectAtHeight(renderers.constructed().get(0), 4f);
       component.dispose();
     }
   }
@@ -204,9 +193,7 @@ class ParticleEffectsRenderingComponentTest {
 
   @Test
   void shouldDrawFireAndIceParticlesWhenEntityIsBurningAndSlowed() {
-    ServiceLocator.registerTimeSource(gameTime);
-    when(batch.getProjectionMatrix()).thenReturn(new Matrix4());
-    when(gameTime.getTime()).thenReturn(1000L);
+    useClockAndProjection();
 
     try (MockedConstruction<ShapeRenderer> renderers = mockConstruction(ShapeRenderer.class)) {
       Entity entity =
@@ -225,12 +212,7 @@ class ParticleEffectsRenderingComponentTest {
 
       verify(batch).end();
       verify(batch).begin();
-      verify(renderers.constructed().get(0), times(PARTICLE_SEGMENTS * 2))
-          .rect(
-              org.mockito.ArgumentMatchers.anyFloat(),
-              org.mockito.ArgumentMatchers.anyFloat(),
-              org.mockito.ArgumentMatchers.anyFloat(),
-              org.mockito.ArgumentMatchers.anyFloat());
+      verifyRects(renderers.constructed().get(0), PARTICLE_SEGMENTS * 2);
       component.dispose();
     }
   }

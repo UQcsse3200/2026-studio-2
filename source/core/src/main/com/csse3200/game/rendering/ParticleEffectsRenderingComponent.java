@@ -71,7 +71,6 @@ public class ParticleEffectsRenderingComponent extends RenderComponent {
       return;
     }
 
-    //    Vector2 centre = entity.getPosition();
     float x = entity.getCenterPosition().x;
     float y = entity.getPosition().y;
     Vector2 scale = entity.getScale();

@@ -20,8 +20,8 @@ public class LoadSaveActions extends Component {
 
   @Override
   public void create() {
-    entity.getEvents().addListener("Load", (Integer slot) -> onLoad(slot));
-    entity.getEvents().addListener("Delete", (Integer slot) -> onDelete(slot));
+    entity.getEvents().addListener("Load", this::onLoad);
+    entity.getEvents().addListener("Delete", this::onDelete);
     entity.getEvents().addListener("Back", this::onBack);
   }
 

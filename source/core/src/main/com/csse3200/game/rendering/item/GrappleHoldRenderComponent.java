@@ -14,7 +14,9 @@ import java.util.List;
 /**
  * Draws the player hanging from the grapple rope. The art contains a short length of rope, and the
  * whole image is turned every frame so that rope lies along the real rope where it leaves the
- * player. While it is drawing, the player's normal animation is hidden.
+ * player. It only shows while the player actually hangs from the rope: off the ground, below the
+ * hook, and not mid-way through another action. While it is drawing, the player's normal animation
+ * is hidden.
  */
 public class GrappleHoldRenderComponent extends RenderComponent {
   private static final String TEXTURE_PATH = "images/player/player_rope_hold.png";
@@ -41,8 +43,6 @@ public class GrappleHoldRenderComponent extends RenderComponent {
   private PlayerAnimationController controller;
   private PlayerActions actions;
 
-  // Whether the pose was drawn last frame, so the normal animation can be restored after.
-  private boolean wasHolding = false;
   private boolean holding = false;
   private boolean flipped = false;
   private float rotation = 0f;
@@ -63,21 +63,33 @@ public class GrappleHoldRenderComponent extends RenderComponent {
     }
   }
 
+  /**
+   * @return true while the hanging pose is being drawn in place of the normal sprite
+   */
+  boolean isHolding() {
+    return holding;
+  }
+
+  /** Lets a test supply the pose's image, which otherwise needs a graphics context to load. */
+  void setTexture(Texture texture) {
+    this.texture = texture;
+  }
+
   @Override
   public void update() {
+    boolean wasHanging = holding;
     holding = updateHolding();
-    if (wasHolding && !holding && controller != null) {
-      // The pose stopped the normal animation while it drew. It has stopped drawing - the player
-      // landed, let go, or the rope fell below them - so bring the normal animation back.
+    if (wasHanging && !holding && controller != null) {
+      // The pose hid the normal animation while it drew. It has stopped - the player let go,
+      // landed, or ended up beside or above the hook - so bring the normal animation back.
       controller.refreshAnimation();
     }
-    wasHolding = holding;
   }
 
   /**
    * Works out this frame's pose and, when it should show, hides the normal animation under it.
    *
-   * @return whether the rope pose draws this frame
+   * @return whether the pose draws this frame
    */
   private boolean updateHolding() {
     boolean attached = grapple != null && grapple.isAttached();
@@ -89,9 +101,9 @@ public class GrappleHoldRenderComponent extends RenderComponent {
       return false;
     }
 
-    // Let the hurt and death animations show instead of the rope pose.
-    // Let a hit, death, shot, swing, dash or landing play out instead of cutting it off.
-    if (controller != null && !controller.canShowRopePose()) {
+    // Action clips must finish before hiding the animator, otherwise their controller state
+    // cannot complete and the normal sprite cannot resume after detaching.
+    if (controller != null && controller.isPlayingActionAnimation()) {
       return false;
     }
     // Also protect hurt and death when no controller is present.
@@ -106,9 +118,10 @@ public class GrappleHoldRenderComponent extends RenderComponent {
       return false;
     }
     Vector2 up = next.cpy().sub(centre).nor();
+
     if (up.y < 0f) {
-      // The rope runs down to an anchor below the player: it's slack and isn't
-      // holding them up, so hanging from it (upside down, with this art) would make no sense.
+      // The rope runs down to an anchor below the player: it's slack and isn't holding them up,
+      // so hanging from it (upside down, with this art) would make no sense.
       return false;
     }
 

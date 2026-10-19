@@ -46,8 +46,6 @@ class GrappleHoldPoseTest {
     animator = mock(AnimationRenderComponent.class);
     when(animator.getCurrentAnimation()).thenReturn("walk");
     controller = mock(PlayerAnimationController.class);
-    // A mock answers false by default, which would read as "busy with a clip, hold the pose".
-    when(controller.canShowRopePose()).thenReturn(true);
     renderer = new GrappleHoldRenderComponent();
     new Entity()
         .addComponent(grapple)
@@ -87,13 +85,20 @@ class GrappleHoldPoseTest {
     when(grapple.getRopePath())
         .thenReturn(
             List.of(
-                new Vector2(-5f, 7f), new Vector2(-3f, 0.5f),
+                new Vector2(-5f, 7f), new Vector2(-2.5f, 4.5f),
                 new Vector2(0.45f, 0.5f), new Vector2(0.5f, 0.5f)));
     try (var textures = mockConstruction(Texture.class)) {
       renderer.create();
       renderer.update();
       renderer.render(batch);
-      assertPose(textures.constructed().getFirst(), -0.05f, 0.5f, 1f, 90f);
+      // The first bend that is far enough away is (-2.5, 4.5): up and to the left of the player,
+      // so the rope leaves along (-0.6, 0.8) and the hands sit 0.55 along it.
+      assertPose(
+          textures.constructed().getFirst(),
+          0.5f - 0.6f * 0.55f,
+          0.5f + 0.8f * 0.55f,
+          1f,
+          new Vector2(-0.6f, 0.8f).angleDeg() - 90f);
     }
   }
 
