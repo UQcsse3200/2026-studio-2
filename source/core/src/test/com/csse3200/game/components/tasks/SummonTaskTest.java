@@ -73,9 +73,15 @@ class SummonTaskTest {
     player.setPosition(3f, 2f);
 
     SummonTask summonTask = new SummonTask(player, 30, 10f, 5f);
-    Entity necromancer = new Entity().addComponent(new AITaskComponent().addTask(summonTask));
+
+    AITaskComponent aiTaskComponent = new AITaskComponent();
+
+    Entity necromancer = new Entity().addComponent(aiTaskComponent);
+
     necromancer.setPosition(2f, 2f);
     necromancer.create();
+
+    aiTaskComponent.addTask(summonTask);
 
     final Entity[] summoned = {null};
     necromancer.getEvents().addListener("spawnEntity", (Entity spawned) -> summoned[0] = spawned);
@@ -99,9 +105,14 @@ class SummonTaskTest {
 
     SummonTask summonTask = new SummonTask(player, 30, 10f, 5f);
 
-    Entity necromancer = new Entity().addComponent(new AITaskComponent().addTask(summonTask));
+    AITaskComponent aiTaskComponent = new AITaskComponent();
+
+    Entity necromancer = new Entity().addComponent(aiTaskComponent);
+
     necromancer.setPosition(2f, 2f);
     necromancer.create();
+
+    aiTaskComponent.addTask(summonTask);
 
     java.util.List<Entity> summoned = new java.util.ArrayList<>();
 
@@ -130,7 +141,7 @@ class SummonTaskTest {
       summonTask.update();
     }
 
-    assertEquals(3, summoned.size(), "Expected three summoned Skeleton Warriors");
+    assertEquals(2, summoned.size(), "Expected two summoned Skeleton Warriors due to summon limit");
 
     for (int i = 0; i < summoned.size(); i++) {
       System.out.println("Skeleton " + (i + 1) + " position: " + summoned.get(i).getPosition());
@@ -139,9 +150,5 @@ class SummonTaskTest {
     assertFalse(
         summoned.get(0).getPosition().epsilonEquals(summoned.get(1).getPosition(), 0.001f),
         "Skeleton Warriors should not spawn at the same position");
-
-    assertFalse(
-        summoned.get(1).getPosition().epsilonEquals(summoned.get(2).getPosition(), 0.001f),
-        "Third Skeleton Warrior should not overlap the first");
   }
 }

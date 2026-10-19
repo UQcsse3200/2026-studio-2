@@ -2,6 +2,8 @@ package com.csse3200.game.components.tasks;
 
 import com.csse3200.game.ai.tasks.DefaultTask;
 import com.csse3200.game.ai.tasks.PriorityTask;
+import com.csse3200.game.ai.tasks.TaskRunner;
+import com.csse3200.game.components.EnemySummonComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.EnemyFactory;
 import com.csse3200.game.services.ServiceLocator;
@@ -14,6 +16,8 @@ public class SummonTask extends DefaultTask implements PriorityTask {
   private final float cooldown;
 
   private long lastSummonTime;
+  private int currentSummonCount = 0;
+  private int MAX_SUMMON_COUNT = 2;
 
   /**
    * Creates a summon attack task
@@ -28,6 +32,12 @@ public class SummonTask extends DefaultTask implements PriorityTask {
     this.priority = priority;
     this.attackRange = attackRange;
     this.cooldown = cooldown;
+  }
+
+  @Override
+  public void create(TaskRunner taskRunner) {
+    super.create(taskRunner);
+    owner.getEntity().getEvents().addListener("summonedEnemyDied", this::summonedEnemyDied);
   }
 
   @Override
@@ -53,7 +63,7 @@ public class SummonTask extends DefaultTask implements PriorityTask {
 
     boolean canSummon = currentTime - lastSummonTime >= cooldown * 1000;
 
-    if (canSummon && distance <= attackRange) {
+    if (canSummon && currentSummonCount < MAX_SUMMON_COUNT && distance <= attackRange) {
       return priority;
     }
 
@@ -83,11 +93,15 @@ public class SummonTask extends DefaultTask implements PriorityTask {
       float spawnY = y + offset[1];
 
       if (!isSpawnPositionOccupied(spawnX, spawnY)) {
-        Entity skeletonWarrior = EnemyFactory.createSkeletonWarrior(target);
-        skeletonWarrior.setPosition(spawnX, spawnY);
-
-        necromancer.getEvents().trigger("spawnEntity", skeletonWarrior);
-        return;
+        if (currentSummonCount < MAX_SUMMON_COUNT) {
+          Entity skeletonWarrior = EnemyFactory.createSkeletonWarrior(target);
+          skeletonWarrior.getComponent(EnemySummonComponent.class).setSummonedStatus(true);
+          skeletonWarrior.getComponent(EnemySummonComponent.class).setSummoner(necromancer);
+          skeletonWarrior.setPosition(spawnX, spawnY);
+          currentSummonCount++;
+          necromancer.getEvents().trigger("spawnEntity", skeletonWarrior);
+          return;
+        }
       }
     }
 
@@ -113,5 +127,9 @@ public class SummonTask extends DefaultTask implements PriorityTask {
     }
 
     return false;
+  }
+
+  private void summonedEnemyDied() {
+    currentSummonCount--;
   }
 }

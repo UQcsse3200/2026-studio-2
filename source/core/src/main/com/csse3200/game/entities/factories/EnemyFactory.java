@@ -11,6 +11,7 @@ import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.EnemyDeathComponent;
 import com.csse3200.game.components.EnemyItemDropComponent;
+import com.csse3200.game.components.EnemySummonComponent;
 import com.csse3200.game.components.EnemyTeleportComponent;
 import com.csse3200.game.components.PoisonStatsComponent;
 import com.csse3200.game.components.SlowStatsComponent;
@@ -406,13 +407,14 @@ public class EnemyFactory {
             .addComponent(new EnemyItemDropComponent(config.itemDrops))
             .addComponent(aiComponent)
             .addComponent(new SlowStatsComponent())
-            .addComponent(new StatusEffectRenderComponent());
+            .addComponent(new StatusEffectRenderComponent())
+            .addComponent(new EnemySummonComponent(false));
 
     if (config != configs.calypso) {
       enemy.addComponent(new EnemyHealthRenderComponent());
     }
 
-    PhysicsUtils.setScaledCollider(enemy, 0.9f, 0.4f); // 0.4f seems small: any reason?
+    PhysicsUtils.setScaledCollider(enemy, 0.9f, 0.4f);
 
     // Enemy chasing AI
     aiComponent
