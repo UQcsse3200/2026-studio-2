@@ -2,7 +2,8 @@ package com.csse3200.game.ui;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -11,10 +12,8 @@ import static org.mockito.Mockito.when;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Graphics;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Input.Buttons;
-import com.badlogic.gdx.graphics.Cursor;
-import com.badlogic.gdx.graphics.Cursor.SystemCursor;
-import com.badlogic.gdx.graphics.Pixmap;
 import com.csse3200.game.components.inventory.InventoryComponent;
 import com.csse3200.game.components.item.ItemType;
 import com.csse3200.game.components.player.ArrowWheelComponent;
@@ -30,17 +29,17 @@ import org.junit.jupiter.api.extension.ExtendWith;
 @ExtendWith(GameExtension.class)
 class GameplayCursorTest {
   private EntityService entityService;
-  private Graphics graphics;
-  private Cursor hiddenCursor;
+  private Input input;
 
   @BeforeEach
   void setUp() {
     entityService = mock(EntityService.class);
     ServiceLocator.registerEntityService(entityService);
-    graphics = mock(Graphics.class);
-    hiddenCursor = mock(Cursor.class);
-    when(graphics.newCursor(any(Pixmap.class), any(Integer.class), any(Integer.class)))
-        .thenReturn(hiddenCursor);
+    input = mock(Input.class);
+    Gdx.input = input;
+    Graphics graphics = mock(Graphics.class);
+    when(graphics.getWidth()).thenReturn(1280);
+    when(graphics.getHeight()).thenReturn(720);
     Gdx.graphics = graphics;
   }
 
@@ -114,39 +113,63 @@ class GameplayCursorTest {
   }
 
   @Test
-  void shouldSwapToTheHiddenCursorOnlyWhenVisibilityChanges() {
+  void shouldCapturePointerOnlyWhenVisibilityChanges() {
     GameplayCursor cursor = new GameplayCursor();
     Entity player = playerHolding(ItemType.STANDARD_ARROW);
 
     cursor.update(player, false);
     cursor.update(player, false);
     assertFalse(cursor.isVisible());
-    verify(graphics, times(1)).setCursor(hiddenCursor);
+    verify(input, times(1)).setCursorCatched(true);
 
     cursor.update(player, true);
     cursor.update(player, true);
     assertTrue(cursor.isVisible());
-    verify(graphics, times(1)).setSystemCursor(SystemCursor.Arrow);
+    verify(input, times(1)).setCursorCatched(false);
   }
 
   @Test
-  void shouldNotTouchTheCursorWhileItShouldStayVisible() {
+  void shouldNotTouchThePointerWhileItShouldStayVisible() {
     GameplayCursor cursor = new GameplayCursor();
     cursor.update(null, true);
-    verify(graphics, never()).setCursor(any());
-    verify(graphics, never()).setSystemCursor(any());
+    verify(input, never()).setCursorCatched(anyBoolean());
+    verify(input, never()).setCursorPosition(anyInt(), anyInt());
   }
 
   @Test
-  void shouldRestoreTheNormalCursorOnDispose() {
+  void shouldReleaseThePointerWhereTheMouseIsInsideTheWindow() {
+    GameplayCursor cursor = new GameplayCursor();
+    cursor.update(playerHolding(ItemType.STANDARD_ARROW), false);
+    when(input.getX()).thenReturn(400);
+    when(input.getY()).thenReturn(300);
+
+    cursor.update(null, true);
+
+    verify(input).setCursorPosition(400, 300);
+  }
+
+  @Test
+  void shouldClampTheReleasedPointerToTheWindow() {
+    GameplayCursor cursor = new GameplayCursor();
+    cursor.update(playerHolding(ItemType.STANDARD_ARROW), false);
+    // While captured the tracked position can run past the window edges.
+    when(input.getX()).thenReturn(5000);
+    when(input.getY()).thenReturn(-200);
+
+    cursor.update(null, true);
+
+    verify(input).setCursorPosition(1279, 0);
+  }
+
+  @Test
+  void shouldReleaseThePointerOnDispose() {
     GameplayCursor cursor = new GameplayCursor();
     cursor.update(playerHolding(ItemType.STANDARD_ARROW), false);
 
     cursor.dispose();
 
     assertTrue(cursor.isVisible());
-    verify(graphics).setSystemCursor(SystemCursor.Arrow);
-    verify(hiddenCursor).dispose();
+    verify(input).setCursorCatched(false);
   }
 
   private static Entity playerHolding(ItemType item) {

@@ -1,9 +1,7 @@
 package com.csse3200.game.ui;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Cursor;
-import com.badlogic.gdx.graphics.Cursor.SystemCursor;
-import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.math.MathUtils;
 import com.csse3200.game.components.inventory.BackpackDisplay;
 import com.csse3200.game.components.inventory.InventoryComponent;
 import com.csse3200.game.components.item.ItemType;
@@ -16,20 +14,17 @@ import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.services.ServiceLocator;
 
 /**
- * Hides the mouse pointer during normal play. It only shows while a menu is open or while the
+ * Disables the mouse pointer during normal play. It only shows while a menu is open or while the
  * player holds right click to aim a bow or grapple.
  *
- * <p>The pointer is hidden by swapping in a transparent cursor rather than catching it, because
- * aiming still needs the real mouse position.
+ * <p>While disabled the pointer is captured: hidden and locked to the window, so it can't click
+ * outside the game. The mouse position keeps updating, so aiming still works.
  */
 public class GameplayCursor {
-  private static final int HIDDEN_CURSOR_SIZE = 16;
-
-  private Cursor hiddenCursor;
   private boolean visible = true;
 
   /**
-   * Shows or hides the pointer for this frame.
+   * Shows or disables the pointer for this frame.
    *
    * @param player the player entity, or null if there isn't one yet
    * @param screenMenuOpen whether a menu owned by the screen (terminal, game over panel, minigame)
@@ -55,13 +50,9 @@ public class GameplayCursor {
     setVisible(true);
   }
 
-  /** Restores the normal pointer and frees the hidden cursor. */
+  /** Puts the normal pointer back before the screen is thrown away. */
   public void dispose() {
     restore();
-    if (hiddenCursor != null) {
-      hiddenCursor.dispose();
-      hiddenCursor = null;
-    }
   }
 
   /**
@@ -72,27 +63,30 @@ public class GameplayCursor {
   }
 
   private void setVisible(boolean show) {
-    if (show == visible || Gdx.graphics == null) {
+    if (show == visible || Gdx.input == null) {
       return;
     }
     if (show) {
-      Gdx.graphics.setSystemCursor(SystemCursor.Arrow);
+      releasePointer();
     } else {
-      Gdx.graphics.setCursor(getHiddenCursor());
+      Gdx.input.setCursorCatched(true);
     }
     visible = show;
   }
 
-  private Cursor getHiddenCursor() {
-    if (hiddenCursor == null) {
-      Pixmap pixmap = new Pixmap(HIDDEN_CURSOR_SIZE, HIDDEN_CURSOR_SIZE, Pixmap.Format.RGBA8888);
-      pixmap.setBlending(Pixmap.Blending.None);
-      pixmap.setColor(0f, 0f, 0f, 0f);
-      pixmap.fill();
-      hiddenCursor = Gdx.graphics.newCursor(pixmap, 0, 0);
-      pixmap.dispose();
+  /**
+   * Releases the captured pointer where the mouse has been tracking, clamped to the window.
+   * Otherwise it would reappear wherever it was when it was captured.
+   */
+  private static void releasePointer() {
+    int x = Gdx.input.getX();
+    int y = Gdx.input.getY();
+    Gdx.input.setCursorCatched(false);
+    if (Gdx.graphics != null && Gdx.graphics.getWidth() > 0 && Gdx.graphics.getHeight() > 0) {
+      Gdx.input.setCursorPosition(
+          MathUtils.clamp(x, 0, Gdx.graphics.getWidth() - 1),
+          MathUtils.clamp(y, 0, Gdx.graphics.getHeight() - 1));
     }
-    return hiddenCursor;
   }
 
   /** Pause, settings, the shop and the minigame overlays all pause the entity service. */
