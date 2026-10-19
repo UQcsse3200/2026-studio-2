@@ -20,7 +20,6 @@ import com.csse3200.game.components.npc.ChaseSoundComponent;
 import com.csse3200.game.components.npc.EnemyAnimationController;
 import com.csse3200.game.components.tasks.*;
 import com.csse3200.game.components.tasks.ChaseTask;
-import com.csse3200.game.components.tasks.DelayedAttackTask;
 import com.csse3200.game.components.tasks.RangedAttackTask;
 import com.csse3200.game.components.tasks.RepositionTask;
 import com.csse3200.game.components.tasks.SummonTask;
@@ -56,6 +55,39 @@ public class EnemyFactory {
   private static final EnemyConfigs configs =
       FileLoader.readClass(EnemyConfigs.class, "configs/Enemies.json");
 
+  // Necromancer variables
+  private static final float NECRO_HEIGHT_VS_PLAYER = 1f;
+  private static final float NECRO_FRAME_WIDTH_PX = 308f;
+  private static final float NECRO_FRAME_HEIGHT_PX = 392f;
+  private static final float NECRO_BODY_HEIGHT_PX = 363f;
+  private static final float NECRO_ANCHOR_X = 156f;
+  private static final float NECRO_ANCHOR_Y = 4f;
+  private static final float NECRO_FRAME_TIME = 0.2f;
+
+  // Skeleton archer variables
+  private static final float ARCHER_HEIGHT_VS_PLAYER = 1f;
+  private static final float ARCHER_FRAME_WIDTH_PX = 300f;
+  private static final float ARCHER_FRAME_HEIGHT_PX = 392f;
+  private static final float ARCHER_BODY_HEIGHT_PX = 328f;
+  private static final float ARCHER_ANCHOR_X = 112f;
+  private static final float ARCHER_ANCHOR_Y = 4f;
+  private static final float ARCHER_FRAME_TIME = 0.08f;
+
+  // Skeleton warrior variables
+  private static final float WARRIOR_HEIGHT_VS_PLAYER = 1f;
+  private static final float WARRIOR_FRAME_WIDTH_PX = 346f;
+  private static final float WARRIOR_FRAME_HEIGHT_PX = 316f;
+  private static final float WARRIOR_BODY_HEIGHT_PX = 308f;
+  private static final float WARRIOR_ANCHOR_X = 133f;
+  private static final float WARRIOR_ANCHOR_Y = 5f;
+  private static final float WARRIOR_FRAME_TIME = 0.15f;
+  private static final float WARRIOR_ATTACK_DELAY = 0.5f;
+  private static final int WARRIOR_STRIKE_FRAME = 2;
+  private static final float WARRIOR_SWORD_REACH_PX = 208f;
+  private static final int WARRIOR_ATTACK_FRAMES = 5;
+  private static final float WARRIOR_ATTACK_COOLDOWN = 0.5f;
+
+  // Calypso variables
   private static final float CALYPSO_SWEEP_DURATION = 0.8f;
   private static final float CALYPSO_IDLE_FRAME_TIME = 0.15f;
   private static final float CALYPSO_WALK_FRAME_TIME = 0.15f;
@@ -78,22 +110,55 @@ public class EnemyFactory {
     EnemyConfig config = configs.skeletonWarrior;
     Entity skeletonWarrior = createEnemy(target, config);
 
-    AnimationRenderComponent animator =
-        new AnimationRenderComponent(
-            ServiceLocator.getResourceService()
-                .getAsset("images/enemies/skeleton_warrior.atlas", TextureAtlas.class));
-    animator.addAnimation("walk", 0.15f, Animation.PlayMode.LOOP);
-    animator.addAnimation("idle", 0.15f, Animation.PlayMode.LOOP);
+    TextureAtlas atlas =
+        ServiceLocator.getResourceService()
+            .getAsset("images/enemies/skeleton_warrior.atlas", TextureAtlas.class);
+    AnimationRenderComponent animator = new AnimationRenderComponent(atlas);
+    animator.addAnimation(
+        "walk", WARRIOR_FRAME_TIME, Animation.PlayMode.LOOP, WARRIOR_ANCHOR_X, WARRIOR_ANCHOR_Y);
+    animator.addAnimation(
+        "idle", WARRIOR_FRAME_TIME, Animation.PlayMode.LOOP, WARRIOR_ANCHOR_X, WARRIOR_ANCHOR_Y);
+    animator.addAnimation(
+        "attack",
+        WARRIOR_ATTACK_DELAY / (WARRIOR_STRIKE_FRAME + 0.5f),
+        Animation.PlayMode.NORMAL,
+        WARRIOR_ANCHOR_X,
+        WARRIOR_ANCHOR_Y);
 
     skeletonWarrior.addComponent(new EnemyAnimationController(target));
     skeletonWarrior.addComponent(animator);
-    skeletonWarrior.addComponent(new ChaseSoundComponent("sounds/evil cyber laugh.wav", 0.15f));
 
-    // Skeleton Warrior has a charged attack (extra range melee with initial delay)
+    animator.scaleEntity();
+    float charHeight = target.getScale().y * WARRIOR_HEIGHT_VS_PLAYER;
+    float pxToWorld = charHeight / WARRIOR_BODY_HEIGHT_PX;
+    skeletonWarrior.setScale(
+        WARRIOR_FRAME_WIDTH_PX * pxToWorld, WARRIOR_FRAME_HEIGHT_PX * pxToWorld);
+
+    float bodyWidth = charHeight * 0.5f;
+    Vector2 scale = skeletonWarrior.getScale();
+    PhysicsUtils.setScaledCollider(
+        skeletonWarrior, bodyWidth / scale.x, 0.4f * charHeight / scale.y);
+    skeletonWarrior
+        .getComponent(HitboxComponent.class)
+        .setAsBoxAligned(
+            new Vector2(bodyWidth, charHeight * 0.9f),
+            PhysicsComponent.AlignX.CENTER,
+            PhysicsComponent.AlignY.BOTTOM);
+
+    float attackFrameTime = WARRIOR_ATTACK_DELAY / (WARRIOR_STRIKE_FRAME + 0.5f);
+    float swordReach = WARRIOR_SWORD_REACH_PX * pxToWorld;
+
     skeletonWarrior
         .getComponent(AITaskComponent.class)
         .addTask(
-            new DelayedAttackTask(target, 20, config.attackRange, 0.5f, config.baseAttack, 10f));
+            new SweepAttackTask(
+                target,
+                20,
+                swordReach,
+                charHeight,
+                WARRIOR_ATTACK_DELAY,
+                WARRIOR_ATTACK_FRAMES * attackFrameTime,
+                WARRIOR_ATTACK_COOLDOWN));
 
     return skeletonWarrior;
   }
@@ -106,24 +171,39 @@ public class EnemyFactory {
    */
   public static Entity createSkeletonArcher(Entity target) {
     EnemyConfig config = configs.skeletonArcher;
-    Entity SkeletonArcher = createEnemy(target, config);
+    Entity skeletonArcher = createEnemy(target, config);
 
     AnimationRenderComponent animator =
         new AnimationRenderComponent(
             ServiceLocator.getResourceService()
                 .getAsset("images/enemies/skeleton_archer.atlas", TextureAtlas.class));
-    animator.addAnimation("walk", 0.15f, Animation.PlayMode.LOOP);
-    animator.addAnimation("idle", 0.15f, Animation.PlayMode.LOOP);
+    animator.addAnimation(
+        "walk", ARCHER_FRAME_TIME, Animation.PlayMode.LOOP, ARCHER_ANCHOR_X, ARCHER_ANCHOR_Y);
+    animator.addAnimation(
+        "idle", ARCHER_FRAME_TIME, Animation.PlayMode.LOOP, ARCHER_ANCHOR_X, ARCHER_ANCHOR_Y);
 
-    SkeletonArcher
-        // .addComponent(new CombatStatsComponent(config.health, config.baseAttack))
+    skeletonArcher
         .addComponent(animator)
         .addComponent(new EnemyAnimationController(target))
         .addComponent(new ChaseSoundComponent("sounds/evil cyber laugh.wav", 0.15f));
 
-    SkeletonArcher.getComponent(AnimationRenderComponent.class).scaleEntity();
+    animator.scaleEntity();
+    float charHeight = target.getScale().y * ARCHER_HEIGHT_VS_PLAYER;
+    float pxToWorld = charHeight / ARCHER_BODY_HEIGHT_PX;
+    skeletonArcher.setScale(ARCHER_FRAME_WIDTH_PX * pxToWorld, ARCHER_FRAME_HEIGHT_PX * pxToWorld);
 
-    return SkeletonArcher;
+    float bodyWidth = charHeight * 0.45f;
+    Vector2 scale = skeletonArcher.getScale();
+    PhysicsUtils.setScaledCollider(
+        skeletonArcher, bodyWidth / scale.x, 0.4f * charHeight / scale.y);
+    skeletonArcher
+        .getComponent(HitboxComponent.class)
+        .setAsBoxAligned(
+            new Vector2(bodyWidth, charHeight * 0.9f),
+            PhysicsComponent.AlignX.CENTER,
+            PhysicsComponent.AlignY.BOTTOM);
+
+    return skeletonArcher;
   }
 
   /**
@@ -191,23 +271,35 @@ public class EnemyFactory {
    */
   public static Entity createNecromancer(Entity target) {
     EnemyConfig config = configs.necromancer;
-    Entity Necromancer = createEnemy(target, config);
+    Entity necromancer = createEnemy(target, config);
 
     AnimationRenderComponent animator =
         new AnimationRenderComponent(
             ServiceLocator.getResourceService()
                 .getAsset("images/enemies/necromancer.atlas", TextureAtlas.class));
-    animator.addAnimation("walk", 0.15f, Animation.PlayMode.LOOP);
-    animator.addAnimation("idle", 0.15f, Animation.PlayMode.LOOP);
+    animator.addAnimation(
+        "walk", NECRO_FRAME_TIME, Animation.PlayMode.LOOP, NECRO_ANCHOR_X, NECRO_ANCHOR_Y);
+    animator.addAnimation(
+        "idle", NECRO_FRAME_TIME, Animation.PlayMode.LOOP, NECRO_ANCHOR_X, NECRO_ANCHOR_Y);
 
-    Necromancer
-        // .addComponent(new CombatStatsComponent(config.health, config.baseAttack))
-        .addComponent(animator)
-        .addComponent(new EnemyAnimationController(target));
+    necromancer.addComponent(animator).addComponent(new EnemyAnimationController(target));
 
-    Necromancer.getComponent(AnimationRenderComponent.class).scaleEntity();
+    animator.scaleEntity();
+    float charHeight = target.getScale().y * NECRO_HEIGHT_VS_PLAYER;
+    float pxToWorld = charHeight / NECRO_BODY_HEIGHT_PX;
+    necromancer.setScale(NECRO_FRAME_WIDTH_PX * pxToWorld, NECRO_FRAME_HEIGHT_PX * pxToWorld);
 
-    return Necromancer;
+    float bodyWidth = charHeight * 0.45f;
+    Vector2 scale = necromancer.getScale();
+    PhysicsUtils.setScaledCollider(necromancer, bodyWidth / scale.x, 0.4f * charHeight / scale.y);
+    necromancer
+        .getComponent(HitboxComponent.class)
+        .setAsBoxAligned(
+            new Vector2(bodyWidth, charHeight * 0.9f),
+            PhysicsComponent.AlignX.CENTER,
+            PhysicsComponent.AlignY.BOTTOM);
+
+    return necromancer;
   }
 
   /**

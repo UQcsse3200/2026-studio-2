@@ -85,10 +85,11 @@ public class EnemyAnimationController extends Component {
   }
 
   void animateSweep() {
-    if (!animator.hasAnimation("sweep")) {
+    String name = animator.hasAnimation("sweep") ? "sweep" : "attack";
+    if (!animator.hasAnimation(name)) {
       return;
     }
     isAttacking = true;
-    animator.startAnimation("sweep");
+    animator.startAnimation(name);
   }
 }
