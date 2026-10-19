@@ -132,8 +132,25 @@ public class BlackjackDisplay extends UIComponent {
 
     table.setBackground(new TextureRegionDrawable(backgroundTexture));
 
-    Label dealerLabel = new Label("Dealer", skin);
-    Label playerLabel = new Label("Player", skin);
+    Label dealerLabel = new Label("DEALER", skin);
+    Label playerLabel = new Label("PLAYER", skin);
+
+    // Give the player and dealer titles their own gold-themed styles.
+    Label.LabelStyle dealerStyle = new Label.LabelStyle(dealerLabel.getStyle());
+    dealerStyle.fontColor = Color.valueOf("F5D78B");
+    dealerLabel.setStyle(dealerStyle);
+
+    Label.LabelStyle playerStyle = new Label.LabelStyle(playerLabel.getStyle());
+    playerStyle.fontColor = Color.valueOf("F5D78B");
+    playerLabel.setStyle(playerStyle);
+
+    dealerLabel.setFontScale(1.45f);
+    playerLabel.setFontScale(1.45f);
+
+    dealerLabel.setAlignment(
+        com.badlogic.gdx.utils.Align.center);
+    playerLabel.setAlignment(
+        com.badlogic.gdx.utils.Align.center);
 
     dealerTotalLabel = new Label("", skin);
     playerTotalLabel = new Label("", skin);
@@ -277,9 +294,9 @@ public class BlackjackDisplay extends UIComponent {
           }
         });
     Table dealerRegion = new Table();
-    dealerRegion.add(dealerLabel).padTop(12f);
+    dealerRegion.add(dealerLabel).padTop(45f).padBottom(-25f);
     dealerRegion.row();
-    dealerRegion.add(dealerCards).height(CARD_HEIGHT + 20f).padTop(8f);
+    dealerRegion.add(dealerCards).height(CARD_HEIGHT + 20f).padTop(55f);
     dealerRegion.row();
     dealerRegion.add(dealerTotalLabel).padTop(4f);
 
