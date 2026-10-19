@@ -9,7 +9,6 @@ import com.csse3200.game.areas.GameArea;
 import com.csse3200.game.areas.Level1GameArea;
 import com.csse3200.game.areas.Level2GameArea;
 import com.csse3200.game.areas.Level3GameArea;
-import com.csse3200.game.areas.LevelBossGameArea;
 import com.csse3200.game.areas.terrain.TerrainFactory;
 import com.csse3200.game.components.ButtonSound;
 import com.csse3200.game.components.GameVolume;
@@ -136,6 +135,7 @@ public class LevelsGameScreen extends BaseGameScreen {
     game.applyPendingSaveWorld(currentGameArea, level);
     player.getEvents().addListener("respawnAtCheckpoint", () -> currentGameArea.respawn());
     player.getEvents().addListener("toggleMap", () -> currentGameArea.toggleLevelMap());
+    player.getEvents().addListener("toggleBossView", () -> currentGameArea.toggleBossCamera());
 
     // Follow the player with the camera.
     renderer.getCamera().setTarget(player);
@@ -212,9 +212,6 @@ public class LevelsGameScreen extends BaseGameScreen {
       case LEVEL3:
         nextGameArea = new Level3GameArea(terrainFactory, renderer.getCamera(), player);
         break;
-      case "boss":
-        nextGameArea = new LevelBossGameArea(terrainFactory, renderer.getCamera(), player);
-        break;
       default:
         return;
     }
@@ -229,6 +226,12 @@ public class LevelsGameScreen extends BaseGameScreen {
   private void performLevelSwap() {
     logger.info("Swapping level to new game area");
 
+    boolean wasMapToggled = false;
+    if (currentGameArea.isMapToggled()) {
+      wasMapToggled = true;
+      currentGameArea.toggleLevelMap();
+    }
+
     nextGameArea.create();
     currentGameArea.dispose();
     currentGameArea = nextGameArea;
@@ -236,6 +239,9 @@ public class LevelsGameScreen extends BaseGameScreen {
     registerLevelSwap();
 
     renderer.getCamera().setTarget(currentGameArea.getPlayer());
+    if (wasMapToggled) {
+      currentGameArea.toggleLevelMap();
+    }
     // Finish applying a loaded save now that its level's area exists (no-op otherwise).
     game.applyPendingSaveWorld(currentGameArea, level);
   }
@@ -250,6 +256,18 @@ public class LevelsGameScreen extends BaseGameScreen {
     PlayerInteractionComponent interaction =
         current == null ? null : current.getComponent(PlayerInteractionComponent.class);
     return interaction != null && interaction.consumeShopClosed();
+  }
+
+  private void toggleCheatMode() {
+    cheats = !cheats;
+    PhysicsComponent physics = player.getComponent(PhysicsComponent.class);
+    if (cheats) {
+      gravity = physics.getBody().getGravityScale();
+      physics.getBody().setGravityScale(0);
+    } else {
+      physics.getBody().setGravityScale(gravity);
+    }
+    player.getComponent(KeyboardPlayerInputComponent.class).toggleCheats();
   }
 
   @Override
@@ -278,29 +296,24 @@ public class LevelsGameScreen extends BaseGameScreen {
       debug.setActive(!debug.getActive());
     }
 
-    if (Gdx.input.isKeyJustPressed(Input.Keys.BACKSPACE)) {
-      cheats = !cheats;
-      if (cheats) {
-        gravity = player.getComponent(PhysicsComponent.class).getBody().getGravityScale();
-        player.getComponent(PhysicsComponent.class).getBody().setGravityScale(0);
-        player.getComponent(KeyboardPlayerInputComponent.class).toggleCheats();
-      } else {
-        player.getComponent(PhysicsComponent.class).getBody().setGravityScale(gravity);
-        player.getComponent(KeyboardPlayerInputComponent.class).toggleCheats();
-      }
+    if (!terminalOpen && Gdx.input.isKeyJustPressed(Input.Keys.BACKSPACE)) {
+      toggleCheatMode();
     }
 
-    if (!minigameOverlayManager.isActive() && Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
+    if (!minigameOverlayManager.isActive() && Gdx.input.isKeyJustPressed(Input.Keys.PAGE_UP)) {
       if (level.equals(LEVEL1)) {
         level = LEVEL2;
       } else if (level.equals(LEVEL2)) {
         level = LEVEL3;
       } else if (level.equals(LEVEL3)) {
-        level = "boss";
-      } else if (level.equals("boss")) {
         level = "none";
       }
       queueAreaSwap(level);
+    }
+    currentGameArea.updateLevelMap();
+
+    if (player.getPosition().y > 98) {
+      player.getEvents().trigger("toggleBossView");
     }
 
     physicsEngine.update();
@@ -446,6 +459,12 @@ public class LevelsGameScreen extends BaseGameScreen {
 
     gameEndDisplay = new GameEndDisplay(GameEndState.LOSE);
     terminal = new Terminal(game, GdxGame.ScreenType.LEVEL_1_GAME);
+    terminal.addCommand(
+        "cheats",
+        args -> {
+          toggleCheatMode();
+          return true;
+        });
     ui.addComponent(new InputDecorator(stage, 10))
         .addComponent(new PerformanceDisplay())
         .addComponent(new CoordinateDisplay(renderer.getCamera()))

@@ -5,7 +5,7 @@ import com.csse3200.game.components.CameraComponent;
 
 public class ForegroundRenderComponent extends BackgroundRenderComponent {
 
-  private static final int FOREGROUND_LAYER = 10;
+  private static final int FOREGROUND_LAYER = 12;
 
   /**
    * Creates a multi-layer parallax background.

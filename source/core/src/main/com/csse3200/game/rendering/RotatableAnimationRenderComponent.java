@@ -10,6 +10,8 @@ import com.csse3200.game.components.level.RotatableMapComponent;
 public class RotatableAnimationRenderComponent extends AnimationRenderComponent {
   private final TextureRegion renderRegion = new TextureRegion();
   private RotatableMapComponent rotateComponent;
+  private boolean flashing = false;
+  private float flashTime = 0f;
 
   public RotatableAnimationRenderComponent(TextureAtlas atlas) {
     super(atlas);
@@ -19,6 +21,16 @@ public class RotatableAnimationRenderComponent extends AnimationRenderComponent 
   public void create() {
     super.create();
     rotateComponent = entity.getComponent(RotatableMapComponent.class);
+  }
+
+  /**
+   * Enables or disables a pulsing brightness effect to draw attention to this entity.
+   *
+   * @param flashing true to pulse, false to draw normally
+   */
+  public void setFlashing(boolean flashing) {
+    this.flashing = flashing;
+    this.flashTime = 0f;
   }
 
   @Override
@@ -42,6 +54,12 @@ public class RotatableAnimationRenderComponent extends AnimationRenderComponent 
     }
 
     Color prevColor = batch.getColor().cpy();
+    if (flashing) {
+      float pulse = 0.65f + 0.35f * (0.5f + 0.5f * (float) Math.sin(flashTime * 6f));
+      Color c = batch.getColor();
+      batch.setColor(c.r * pulse, c.g * pulse, c.b * pulse, c.a);
+      flashTime += timeSource.getDeltaTime();
+    }
     batch.draw(
         renderRegion, pos.x, pos.y, width / 2f, height / 2f, width, height, 1f, 1f, rotation);
     batch.setColor(prevColor);

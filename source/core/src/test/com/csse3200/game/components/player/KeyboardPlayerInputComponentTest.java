@@ -1,5 +1,6 @@
 package com.csse3200.game.components.player;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -22,6 +23,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.csse3200.game.components.CameraComponent;
+import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.inventory.InventoryComponent;
 import com.csse3200.game.components.item.ItemType;
 import com.csse3200.game.components.item.weapons.PrimaryWeapon;
@@ -616,5 +618,36 @@ class KeyboardPlayerInputComponentTest {
     assertTrue(component.touchUp(1, 1, 0, Buttons.LEFT));
     assertEquals(0, shots.get());
     assertFalse(component.isRightMouseHeld());
+  }
+
+  @Test
+  void shouldEnableGodModeWhenCheatsToggledOn() {
+    KeyboardPlayerInputComponent component = new KeyboardPlayerInputComponent();
+    CombatStatsComponent stats = new CombatStatsComponent(100, 0);
+    new Entity().addComponent(component).addComponent(stats);
+
+    component.toggleCheats();
+
+    assertTrue(stats.isGodMode());
+  }
+
+  @Test
+  void shouldDisableGodModeWhenCheatsToggledOff() {
+    KeyboardPlayerInputComponent component = new KeyboardPlayerInputComponent();
+    CombatStatsComponent stats = new CombatStatsComponent(100, 0);
+    new Entity().addComponent(component).addComponent(stats);
+
+    component.toggleCheats();
+    component.toggleCheats();
+
+    assertFalse(stats.isGodMode());
+  }
+
+  @Test
+  void shouldToggleCheatsWithoutCombatStats() {
+    KeyboardPlayerInputComponent component = new KeyboardPlayerInputComponent();
+    new Entity().addComponent(component);
+
+    assertDoesNotThrow(component::toggleCheats);
   }
 }

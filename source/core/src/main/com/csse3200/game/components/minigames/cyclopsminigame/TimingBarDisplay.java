@@ -65,10 +65,20 @@ public class TimingBarDisplay extends UIComponent {
 
   private boolean visible = false;
 
+  /**
+   * UI display component for the timing bar logic
+   *
+   * @param logic - TimingBarLogic class to handle logic behind the sweeping marker
+   */
   public TimingBarDisplay(TimingBarLogic logic) {
     this.logic = logic;
   }
 
+  /**
+   * Changes the visibility of the timing bar to show or hide the UI element
+   *
+   * @param visible boolean - True to show the UI, False to hide the UI
+   */
   public void setVisible(boolean visible) {
     this.visible = visible;
     if (table != null) {
@@ -76,10 +86,19 @@ public class TimingBarDisplay extends UIComponent {
     }
   }
 
+  /**
+   * Get the visibility status of the timing bar display
+   *
+   * @return boolean - True if the display is visible, otherwise False
+   */
   public boolean isVisible() {
     return this.visible;
   }
 
+  /**
+   * Create the internal UI components for the Timing Bar Display. Creates and groups the individual
+   * elements and centres the bar (vertically and horizontally) to the game window.
+   */
   @Override
   public void create() {
     super.create();
@@ -134,16 +153,32 @@ public class TimingBarDisplay extends UIComponent {
     stage.addActor(table);
   }
 
+  /**
+   * Create an Image component from a given TextureRegion and Color
+   *
+   * @param region - the LibGDX TextureRegion to use for loading
+   * @param colour - the LibGDX Color to draw the Image with
+   * @return Image - the created image from the TextureRegion and Color
+   */
   private Image blankImage(TextureRegion region, Color colour) {
     Image image = new Image(region);
     image.setColor(colour);
     return image;
   }
 
+  /**
+   * Create and Image array to hold the various UI layers of the timing bar display
+   *
+   * @return Image[] - an array of Images
+   */
   private Image[] scoringLayers() {
     return new Image[] {scoringZone, zoneHighlight, zoneShadow, zoneLeftEdge, zoneRightEdge};
   }
 
+  /**
+   * Updates the display to update the sweeping marker (moving or stopped) and the scoring zone
+   * (shrinking after each successful attempt)
+   */
   @Override
   public void update() {
     if (marker != null) {
@@ -154,11 +189,26 @@ public class TimingBarDisplay extends UIComponent {
     }
   }
 
+  /**
+   * Sets the position, width and height of a given LibGDX Image
+   *
+   * @param image - The LibGDX Image to change
+   * @param x - the screen x coordinate to put the image
+   * @param y - the screen y coordinate to put the image
+   * @param width - the width to set the image
+   * @param height - the height to set the image
+   */
   private static void setBox(Image image, float x, float y, float width, float height) {
     image.setPosition(x, y);
     image.setSize(width, height);
   }
 
+  /**
+   * Shrinks the scoring zone to a new given area percentage. Handles shrinking the width of the
+   * scoring zone, and centring the scoring area in the timing bar display
+   *
+   * @param scoringArea - the new percentage of area to cover (0-100%)
+   */
   private void layoutScoringZone(float scoringArea) {
     float width = scoringArea * BAR_WIDTH;
     float x = BAR_WIDTH / 2 - width / 2;
@@ -173,6 +223,10 @@ public class TimingBarDisplay extends UIComponent {
         zoneRightEdge, x + width - ZONE_EDGE_WIDTH, ZONE_EDGE_INSET, ZONE_EDGE_WIDTH, edgeHeight);
   }
 
+  /**
+   * Moves the sweeping timing bar to an updated position based on the TimingBarLogic given with the
+   * constructor.
+   */
   private void layoutMarker() {
     float bodyX = logic.getMarkerX() * BAR_WIDTH + (MARKER_WIDTH - MARKER_BODY_WIDTH) / 2;
     float bodyY = -MARKER_OVERHANG;
@@ -217,6 +271,12 @@ public class TimingBarDisplay extends UIComponent {
     paintScoringZone(flashOn);
   }
 
+  /**
+   * Flashes the scoring zone by changing colours to act as a visual animation
+   *
+   * @param flashOn - True changes each component of the scoring zone to a flash color, otherwise
+   *     stays default color
+   */
   private void paintScoringZone(boolean flashOn) {
     scoringZone.setColor(flashOn ? FLASH_COLOR : ZONE_BASE);
     zoneHighlight.setColor(flashOn ? FLASH_COLOR : ZONE_HIGHLIGHT);
@@ -236,6 +296,7 @@ public class TimingBarDisplay extends UIComponent {
     batch.setColor(Color.WHITE);
   }
 
+  /** Dispose of the TimingBarDisplay and cleanup any disposable components */
   @Override
   public void dispose() {
     super.dispose();
