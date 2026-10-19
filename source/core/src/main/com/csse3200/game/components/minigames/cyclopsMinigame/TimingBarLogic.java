@@ -24,8 +24,8 @@ public class TimingBarLogic {
   boolean isStopped = true;
 
   /**
-   * Timing bar logic component to be the mathematical state of a timing bar and a sweeping marker
-   * A scoring area is centred in the area to act as the scoring zone
+   * Timing bar logic component to be the mathematical state of a timing bar and a sweeping marker A
+   * scoring area is centred in the area to act as the scoring zone
    *
    * @param scoringAreaWidth percentage of timing bar to cover with a "scoring zone" (0-100%)
    */
@@ -34,8 +34,9 @@ public class TimingBarLogic {
   }
 
   /**
-   * Get the current X location of the marker that needs to be scaled
-   * to the visual width of the timing bar
+   * Get the current X location of the marker that needs to be scaled to the visual width of the
+   * timing bar
+   *
    * @return float - between 0 and 1 of the current position of the marker.
    */
   public float getMarkerX() {
@@ -44,6 +45,7 @@ public class TimingBarLogic {
 
   /**
    * Get the current size of the scoring area
+   *
    * @return float - percentage of timing bar covered
    */
   public float getScoringAreaSize() {
@@ -51,8 +53,7 @@ public class TimingBarLogic {
   }
 
   /**
-   * Change the width of the scoring area to the given width.
-   * And centres it within the timing bar
+   * Change the width of the scoring area to the given width. And centres it within the timing bar
    *
    * @param width - float value as a percentage, 0-100%
    */
