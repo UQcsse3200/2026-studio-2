@@ -142,6 +142,17 @@ class GrappleRopePoseTest {
   }
 
   @Test
+  void shouldStillHangFromARopeRunningLevelWithThePlayer() {
+    // The player's centre is at (0.5, 0.5): a rope out to the side, as at the top of a big swing.
+    attachRopeTo(5.5f, 0.5f);
+
+    frame();
+
+    // Regression: a level rope was treated like one running down to an anchor below.
+    assertNull(animator.getCurrentAnimation());
+  }
+
+  @Test
   void shouldNotHangFromARopeThatRunsDownToAnAnchorBelow() {
     attachRopeTo(0.5f, -5f);
 

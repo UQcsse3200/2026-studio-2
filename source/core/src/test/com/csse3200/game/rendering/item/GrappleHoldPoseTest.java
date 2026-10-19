@@ -46,6 +46,8 @@ class GrappleHoldPoseTest {
     animator = mock(AnimationRenderComponent.class);
     when(animator.getCurrentAnimation()).thenReturn("walk");
     controller = mock(PlayerAnimationController.class);
+    // A mock answers false by default, which would read as "busy with a clip, hold the pose".
+    when(controller.canShowRopePose()).thenReturn(true);
     renderer = new GrappleHoldRenderComponent();
     new Entity()
         .addComponent(grapple)

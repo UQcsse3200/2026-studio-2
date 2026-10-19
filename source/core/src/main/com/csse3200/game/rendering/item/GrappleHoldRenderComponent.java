@@ -106,8 +106,8 @@ public class GrappleHoldRenderComponent extends RenderComponent {
       return false;
     }
     Vector2 up = next.cpy().sub(centre).nor();
-    if (up.y <= 0f) {
-      // The rope runs down to an anchor below or level with the player: it's slack and isn't
+    if (up.y < 0f) {
+      // The rope runs down to an anchor below the player: it's slack and isn't
       // holding them up, so hanging from it (upside down, with this art) would make no sense.
       return false;
     }
