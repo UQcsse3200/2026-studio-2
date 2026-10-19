@@ -111,9 +111,15 @@ loadScripts(document, 'script');</script>
 <div class="col-last even-row-color">
 <div class="block">How much of the world's gravity every arrow (grapple included) falls under in flight.</div>
 </div>
-<div class="col-first odd-row-color"><code>static final short</code></div>
-<div class="col-second odd-row-color"><code><a href="#TERRAIN" class="member-name-link">TERRAIN</a></code></div>
+<div class="col-first odd-row-color"><code>static final <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second odd-row-color"><code><a href="#RANGE_EXCEEDED_EVENT" class="member-name-link">RANGE_EXCEEDED_EVENT</a></code></div>
 <div class="col-last odd-row-color">
+<div class="block">Triggered on the arrow, with the arrow's centre as a <code>Vector2</code>, when it has flown its
+ full range and is about to be removed.</div>
+</div>
+<div class="col-first even-row-color"><code>static final short</code></div>
+<div class="col-second even-row-color"><code><a href="#TERRAIN" class="member-name-link">TERRAIN</a></code></div>
+<div class="col-last even-row-color">
 <div class="block">Layers an arrow stops against.</div>
 </div>
 </div>
@@ -184,12 +190,28 @@ loadScripts(document, 'script');</script>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>com.badlogic.gdx.math.Vector2</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getWorldCenter()" class="member-name-link">getWorldCenter</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isSpent()" class="member-name-link">isSpent</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="ArrowProjectileComponent.html" title="class in com.csse3200.game.components.projectile">ArrowProjectileComponent</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#hurtsPlayer()" class="member-name-link">hurtsPlayer</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Makes this an enemy's arrow: it damages the player and flies straight through other enemies,
+ instead of damaging enemies and passing through the player.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isSpent()" class="member-name-link">isSpent</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#moveCentreTo(com.badlogic.gdx.math.Vector2)" class="member-name-link">moveCentreTo</a><wbr>(com.badlogic.gdx.math.Vector2&nbsp;centre)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Puts the arrow's centre at a point, keeping the angle it is at.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#update()" class="member-name-link">update</a>()</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#stop()" class="member-name-link">stop</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Stops the arrow dead where it is, so it can be moved by hand with <a href="#moveCentreTo(com.badlogic.gdx.math.Vector2)"><code>moveCentreTo(Vector2)</code></a>.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#update()" class="member-name-link">update</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Called once per frame of the game, and should be used for most component logic.</div>
 </div>
 </div>
@@ -237,6 +259,22 @@ loadScripts(document, 'script');</script>
 <dd>
 <ul class="tag-list">
 <li><a href="../../../../../constant-values.html#com.csse3200.game.components.projectile.ArrowProjectileComponent.ARC_GRAVITY_SCALE">Constant Field Values</a></li>
+</ul>
+</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="RANGE_EXCEEDED_EVENT">
+<h3>RANGE_EXCEEDED_EVENT</h3>
+<div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">RANGE_EXCEEDED_EVENT</span></div>
+<div class="block">Triggered on the arrow, with the arrow's centre as a <code>Vector2</code>, when it has flown its
+ full range and is about to be removed.</div>
+<dl class="notes">
+<dt>See Also:</dt>
+<dd>
+<ul class="tag-list">
+<li><a href="../../../../../constant-values.html#com.csse3200.game.components.projectile.ArrowProjectileComponent.RANGE_EXCEEDED_EVENT">Constant Field Values</a></li>
 </ul>
 </dd>
 </dl>
@@ -298,6 +336,19 @@ loadScripts(document, 'script');</script>
 <h2>Method Details</h2>
 <ul class="member-list">
 <li>
+<section class="detail" id="hurtsPlayer()">
+<h3>hurtsPlayer</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="ArrowProjectileComponent.html" title="class in com.csse3200.game.components.projectile">ArrowProjectileComponent</a></span>&nbsp;<span class="element-name">hurtsPlayer</span>()</div>
+<div class="block">Makes this an enemy's arrow: it damages the player and flies straight through other enemies,
+ instead of damaging enemies and passing through the player. Everything else about its flight is
+ the same. Call this before the entity is created.</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>this component</dd>
+</dl>
+</section>
+</li>
+<li>
 <section class="detail" id="create()">
 <h3>create</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">create</span>()</div>
@@ -345,6 +396,27 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="getDirection()">
 <h3>getDirection</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">com.badlogic.gdx.math.Vector2</span>&nbsp;<span class="element-name">getDirection</span>()</div>
+</section>
+</li>
+<li>
+<section class="detail" id="stop()">
+<h3>stop</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">stop</span>()</div>
+<div class="block">Stops the arrow dead where it is, so it can be moved by hand with <a href="#moveCentreTo(com.badlogic.gdx.math.Vector2)"><code>moveCentreTo(Vector2)</code></a>. It keeps facing the way it was flying instead of reverting to the way
+ it was launched. Call this from an entity update, never from inside a collision callback.</div>
+</section>
+</li>
+<li>
+<section class="detail" id="moveCentreTo(com.badlogic.gdx.math.Vector2)">
+<h3>moveCentreTo</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">moveCentreTo</span><wbr><span class="parameters">(com.badlogic.gdx.math.Vector2&nbsp;centre)</span></div>
+<div class="block">Puts the arrow's centre at a point, keeping the angle it is at. Meant for an arrow that has
+ been <a href="#stop()"><code>stopped</code></a>. Call this from an entity update, never from inside a collision
+ callback.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>centre</code> - where the middle of the arrow's collision box should be</dd>
+</dl>
 </section>
 </li>
 <li>

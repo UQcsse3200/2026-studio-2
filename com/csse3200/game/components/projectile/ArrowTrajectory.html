@@ -116,6 +116,15 @@ loadScripts(document, 'script');</script>
 <div class="block">Fills <code>out</code> with evenly time-spaced points along a launch arc: <code>p(t) = start +
  velocity * t + 0.5 * gravity * t^2</code>, where the first point is at <code>t = step</code>.</div>
 </div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static com.badlogic.gdx.math.Vector2</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#launchDirection(com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2,float,float)" class="member-name-link">launchDirection</a><wbr>(com.badlogic.gdx.math.Vector2&nbsp;from,
+ com.badlogic.gdx.math.Vector2&nbsp;to,
+ float&nbsp;speed,
+ float&nbsp;gravityY)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Finds the direction to launch a projectile so that, falling under gravity, its arc passes
+ through a target point.</div>
+</div>
 </div>
 </div>
 </div>
@@ -150,6 +159,30 @@ loadScripts(document, 'script');</script>
 <dd><code>gravityY</code> - constant y acceleration (negative pulls down, 0 flies straight)</dd>
 <dd><code>step</code> - seconds between consecutive points</dd>
 <dd><code>out</code> - preallocated points to overwrite; its length sets how many points are produced</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="launchDirection(com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2,float,float)">
+<h3>launchDirection</h3>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type">com.badlogic.gdx.math.Vector2</span>&nbsp;<span class="element-name">launchDirection</span><wbr><span class="parameters">(com.badlogic.gdx.math.Vector2&nbsp;from,
+ com.badlogic.gdx.math.Vector2&nbsp;to,
+ float&nbsp;speed,
+ float&nbsp;gravityY)</span></div>
+<div class="block">Finds the direction to launch a projectile so that, falling under gravity, its arc passes
+ through a target point. Where two launch angles reach the target, the flatter one is used, so
+ the arrow gets there sooner.
+
+ <p>If the target is out of reach at this speed, it returns the angle that gets closest instead
+ of failing, so a shooter too far away still lobs its shot the right way.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>from</code> - launch position</dd>
+<dd><code>to</code> - point to hit</dd>
+<dd><code>speed</code> - launch speed in world units per second</dd>
+<dd><code>gravityY</code> - constant y acceleration (negative pulls down, 0 means aim straight at it)</dd>
+<dt>Returns:</dt>
+<dd>unit vector to launch along</dd>
 </dl>
 </section>
 </li>

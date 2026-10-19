@@ -121,12 +121,14 @@ loadScripts(document, 'script');</script>
  float&nbsp;lifetime)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createSkeletonArcherProjectile(com.badlogic.gdx.math.Vector2,int,float,float)" class="member-name-link">createSkeletonArcherProjectile</a><wbr>(com.badlogic.gdx.math.Vector2&nbsp;targetPosition,
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createSkeletonArcherProjectile(com.csse3200.game.entities.Entity,com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2,int,float,float)" class="member-name-link">createSkeletonArcherProjectile</a><wbr>(<a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;shooter,
+ com.badlogic.gdx.math.Vector2&nbsp;spawnCenter,
+ com.badlogic.gdx.math.Vector2&nbsp;targetCenter,
  int&nbsp;damage,
  float&nbsp;speed,
  float&nbsp;lifetime)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
-<div class="block">Creates a projectile that travels towards a target position.</div>
+<div class="block">Creates an arrow for a skeleton archer to fire at a target.</div>
 </div>
 </div>
 </div>
@@ -146,21 +148,30 @@ loadScripts(document, 'script');</script>
 <h2>Method Details</h2>
 <ul class="member-list">
 <li>
-<section class="detail" id="createSkeletonArcherProjectile(com.badlogic.gdx.math.Vector2,int,float,float)">
+<section class="detail" id="createSkeletonArcherProjectile(com.csse3200.game.entities.Entity,com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2,int,float,float)">
 <h3>createSkeletonArcherProjectile</h3>
-<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createSkeletonArcherProjectile</span><wbr><span class="parameters">(com.badlogic.gdx.math.Vector2&nbsp;targetPosition,
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createSkeletonArcherProjectile</span><wbr><span class="parameters">(<a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;shooter,
+ com.badlogic.gdx.math.Vector2&nbsp;spawnCenter,
+ com.badlogic.gdx.math.Vector2&nbsp;targetCenter,
  int&nbsp;damage,
  float&nbsp;speed,
  float&nbsp;lifetime)</span></div>
-<div class="block">Creates a projectile that travels towards a target position.</div>
+<div class="block">Creates an arrow for a skeleton archer to fire at a target.
+
+ <p>It is the player's arrow in every way that matters to how it flies: the same sprite, size
+ and hit area, the same arc under gravity, and the same handling of terrain, so it breaks on the
+ floor and walls just as the player's does. It is aimed so its arc comes down on the target. The
+ only differences are that it hurts the player and flies straight through other enemies.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
-<dd><code>targetPosition</code> - position the projectile travels towards</dd>
-<dd><code>damage</code> - damage dealt when the projectile hits the player</dd>
-<dd><code>speed</code> - projectile movement speed</dd>
-<dd><code>lifetime</code> - maximum projectile lifetime in seconds</dd>
+<dd><code>shooter</code> - the archer firing it, which the arrow never hits</dd>
+<dd><code>spawnCenter</code> - where the middle of the arrow starts</dd>
+<dd><code>targetCenter</code> - point the arrow is aimed to land on</dd>
+<dd><code>damage</code> - damage dealt when the arrow hits the player</dd>
+<dd><code>speed</code> - launch speed in world units per second</dd>
+<dd><code>lifetime</code> - maximum arrow lifetime in seconds</dd>
 <dt>Returns:</dt>
-<dd>projectile entity</dd>
+<dd>arrow entity, already positioned at spawnCenter</dd>
 </dl>
 </section>
 </li>
