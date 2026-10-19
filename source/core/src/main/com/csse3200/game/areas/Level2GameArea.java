@@ -11,14 +11,9 @@ import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.EnemyFactory;
 import com.csse3200.game.entities.factories.ItemFactory;
 import com.csse3200.game.rendering.BackgroundRenderComponent;
-import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class Level2GameArea extends GameArea {
-
-  private static final Logger logger = LoggerFactory.getLogger(Level2GameArea.class);
 
   private Vector2 worldBounds;
 
@@ -158,28 +153,12 @@ public class Level2GameArea extends GameArea {
 
   /** Loads all Level 2 assets. */
   private void loadAssets() {
-    logger.debug("Loading assets");
-
-    ResourceService resourceService = ServiceLocator.getResourceService();
-    resourceService.loadTextures(level2Textures);
-    resourceService.loadTextureAtlases(level2TexturesAtlas);
-    resourceService.loadSounds(level2Sounds);
-    resourceService.loadMusic(level2Music);
-
-    while (!resourceService.loadForMillis(10)) {
-      logger.info("Loading... {}%", resourceService.getProgress());
-    }
+    loadAreaAssets(level2Textures, level2TexturesAtlas, level2Sounds, level2Music);
   }
 
   /** Unloads all Level 2 assets. */
   private void unloadAssets() {
-    logger.debug("Unloading assets");
-
-    ResourceService resourceService = ServiceLocator.getResourceService();
-    resourceService.unloadAssets(level2Textures);
-    resourceService.unloadAssets(level2TexturesAtlas);
-    resourceService.unloadAssets(level2Sounds);
-    resourceService.unloadAssets(level2Music);
+    unloadAreaAssets(level2Textures, level2TexturesAtlas, level2Sounds, level2Music);
   }
 
   @Override

@@ -7,10 +7,7 @@ import static org.mockito.Mockito.*;
 import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.math.GridPoint2;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
-import com.csse3200.game.areas.terrain.TerrainComponent;
 import com.csse3200.game.areas.terrain.TerrainFactory;
 import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.components.inventory.InventoryComponent;
@@ -20,9 +17,8 @@ import com.csse3200.game.components.lighting.PointLightComponent;
 import com.csse3200.game.components.sandbox.SandboxEnemyType;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.input.InputService;
-import com.csse3200.game.lighting.LightingEngine;
-import com.csse3200.game.lighting.LightingService;
 import com.csse3200.game.physics.components.PhysicsComponent;
+import com.csse3200.game.services.MockServices;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.UiTestSupport;
@@ -46,23 +42,9 @@ class SandboxLifecycleTest extends UiTestSupport {
     ServiceLocator.registerInputService(new InputService());
     realResources = new ResourceService();
     ServiceLocator.registerResourceService(realResources);
-    LightingEngine lightingEngine = mock(LightingEngine.class);
-    box2dLight.RayHandler rayHandlerMock = mock(box2dLight.RayHandler.class);
-    when(lightingEngine.getRayHandler()).thenReturn(rayHandlerMock);
-    LightingService lightingService = mock(LightingService.class);
-    when(lightingService.getEngine()).thenReturn(lightingEngine);
-    ServiceLocator.registerLightingService(lightingService);
+    MockServices.registerLighting();
     TerrainFactory factory = mock(TerrainFactory.class);
-    TerrainComponent terrain = mock(TerrainComponent.class);
-    when(factory.createTerrain(any())).thenReturn(terrain);
-    when(terrain.getTileSize()).thenReturn(1f);
-    when(terrain.getMapBounds(0)).thenReturn(new GridPoint2(50, 30));
-    when(terrain.tileToWorldPosition(any()))
-        .thenAnswer(
-            call -> {
-              GridPoint2 tile = call.getArgument(0);
-              return new Vector2((float) tile.x, (float) tile.y);
-            });
+    MockServices.stubFlatTerrain(factory);
     area = new SandboxGameArea(factory, new CameraComponent());
     pointLights = mockConstruction(PointLightComponent.class);
     area.create();

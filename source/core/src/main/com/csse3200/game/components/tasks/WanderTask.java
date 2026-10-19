@@ -4,6 +4,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.ai.tasks.DefaultTask;
 import com.csse3200.game.ai.tasks.PriorityTask;
 import com.csse3200.game.ai.tasks.Task;
+import com.csse3200.game.entities.Entity;
 import com.csse3200.game.utils.math.RandomUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,8 +46,6 @@ public class WanderTask extends DefaultTask implements PriorityTask {
 
     startPos = owner.getEntity().getPosition();
 
-    edgeDetector = new EdgeDetectTask(0.3f);
-
     waitTask = new WaitTask(waitTime);
     waitTask.create(owner);
     wanderTarget = getRandomPosInRange();
@@ -75,7 +74,7 @@ public class WanderTask extends DefaultTask implements PriorityTask {
 
       float direction = Math.signum(wanderTarget.x - currentPos.x);
 
-      if (direction != 0 && !edgeDetector.isGroundAhead(owner.getEntity(), direction)) {
+      if (direction != 0 && !canStep(owner.getEntity(), direction)) {
         movementTask.stop();
         startWaiting();
         return;
@@ -83,6 +82,18 @@ public class WanderTask extends DefaultTask implements PriorityTask {
     }
 
     currentTask.update();
+  }
+
+  /**
+   * @param direction 1 to step right, -1 to step left
+   * @return false if the wanderer must not step that way. On the ground that is when there is no
+   *     floor ahead, so it does not wander off the edge of a platform.
+   */
+  protected boolean canStep(Entity enemy, float direction) {
+    if (edgeDetector == null) {
+      edgeDetector = new EdgeDetectTask(0.3f);
+    }
+    return edgeDetector.isGroundAhead(enemy, direction);
   }
 
   private void startWaiting() {

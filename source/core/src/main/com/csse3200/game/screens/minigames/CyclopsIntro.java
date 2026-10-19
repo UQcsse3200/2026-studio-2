@@ -24,6 +24,13 @@ final class CyclopsIntro {
     }
   }
 
+  /** Releases the directly owned text box when leaving before the intro finishes. */
+  void dispose() {
+    if (isShowing()) {
+      textBox.dismiss();
+    }
+  }
+
   /** Returns true once, when the intro is done (or was skipped) and the minigame should start. */
   boolean takeStartDue() {
     if (startPending && (textBox == null || textBox.isDismissed())) {

@@ -36,14 +36,14 @@ public final class InventorySlotStyle implements Disposable {
 
   public NinePatchDrawable getNormalBox() {
     if (cachedNormalBox == null) {
-      cachedNormalBox = buildRoundedBoxDrawable(NORMAL_BORDER_COLOR);
+      cachedNormalBox = buildRoundedBoxDrawable(NORMAL_BORDER_COLOR, FILL_COLOR);
     }
     return cachedNormalBox;
   }
 
   public NinePatchDrawable getSelectedBox() {
     if (cachedSelectedBox == null) {
-      cachedSelectedBox = buildRoundedBoxDrawable(SELECTED_BORDER_COLOR);
+      cachedSelectedBox = buildRoundedBoxDrawable(SELECTED_BORDER_COLOR, FILL_COLOR);
     }
     return cachedSelectedBox;
   }
@@ -51,7 +51,7 @@ public final class InventorySlotStyle implements Disposable {
   /** Returns a separately cached dark background for overlay panels. */
   public NinePatchDrawable getDarkerBox() {
     if (cachedDarkerBox == null) {
-      cachedDarkerBox = buildDarkerRoundedBoxDrawable(SELECTED_BORDER_COLOR);
+      cachedDarkerBox = buildRoundedBoxDrawable(SELECTED_BORDER_COLOR, DARKER_FILL_COLOR);
     }
     return cachedDarkerBox;
   }
@@ -78,9 +78,10 @@ public final class InventorySlotStyle implements Disposable {
    * stretched to any slot size without distorting the corners.
    *
    * @param borderColor the border colour to draw
+   * @param fillColor the colour of the inside
    * @return the built drawable
    */
-  private static NinePatchDrawable buildRoundedBoxDrawable(Color borderColor) {
+  private static NinePatchDrawable buildRoundedBoxDrawable(Color borderColor, Color fillColor) {
     int r = CORNER_RADIUS;
     int size = r * 2 + 2; // corners plus a 2px stretchable sliver in the middle
 
@@ -88,28 +89,7 @@ public final class InventorySlotStyle implements Disposable {
 
     for (int y = 0; y < size; y++) {
       for (int x = 0; x < size; x++) {
-        boolean inCornerBox = (x < r || x >= size - r) && (y < r || y >= size - r);
-
-        if (inCornerBox) {
-          float cx = (float) (x < r ? r : size - r - 1);
-          float cy = (float) (y < r ? r : size - r - 1);
-          double dist = Math.hypot(x - cx, y - cy);
-
-          if (dist > r) {
-            pixmap.drawPixel(x, y, Color.rgba8888(0f, 0f, 0f, 0f));
-          } else if (dist > r - BORDER_THICKNESS) {
-            pixmap.drawPixel(x, y, Color.rgba8888(borderColor));
-          } else {
-            pixmap.drawPixel(x, y, Color.rgba8888(FILL_COLOR));
-          }
-        } else {
-          boolean onBorder =
-              x < BORDER_THICKNESS
-                  || x >= size - BORDER_THICKNESS
-                  || y < BORDER_THICKNESS
-                  || y >= size - BORDER_THICKNESS;
-          pixmap.drawPixel(x, y, Color.rgba8888(onBorder ? borderColor : FILL_COLOR));
-        }
+        pixmap.drawPixel(x, y, roundedBoxPixel(x, y, size, borderColor, fillColor));
       }
     }
 
@@ -120,50 +100,24 @@ public final class InventorySlotStyle implements Disposable {
     return new NinePatchDrawable(patch);
   }
 
-  /**
-   * Builds a rounded-rectangle NinePatch: a solid fill with a border, rounded corners, that can be
-   * stretched to any slot size without distorting the corners.
-   *
-   * @param borderColor the border colour to draw
-   * @return the built drawable
-   */
-  private static NinePatchDrawable buildDarkerRoundedBoxDrawable(Color borderColor) {
+  /** Classifies a pixel as transparent, border or fill without changing the corner geometry. */
+  private static int roundedBoxPixel(int x, int y, int size, Color borderColor, Color fillColor) {
     int r = CORNER_RADIUS;
-    int size = r * 2 + 2; // corners plus a 2px stretchable sliver in the middle
-
-    Pixmap pixmap = new Pixmap(size, size, Pixmap.Format.RGBA8888);
-
-    for (int y = 0; y < size; y++) {
-      for (int x = 0; x < size; x++) {
-        boolean inCornerBox = (x < r || x >= size - r) && (y < r || y >= size - r);
-
-        if (inCornerBox) {
-          float cx = (float) (x < r ? r : size - r - 1);
-          float cy = (float) (y < r ? r : size - r - 1);
-          double dist = Math.hypot(x - cx, y - cy);
-
-          if (dist > r) {
-            pixmap.drawPixel(x, y, Color.rgba8888(0f, 0f, 0f, 0f));
-          } else if (dist > r - BORDER_THICKNESS) {
-            pixmap.drawPixel(x, y, Color.rgba8888(borderColor));
-          } else {
-            pixmap.drawPixel(x, y, Color.rgba8888(DARKER_FILL_COLOR));
-          }
-        } else {
-          boolean onBorder =
-              x < BORDER_THICKNESS
-                  || x >= size - BORDER_THICKNESS
-                  || y < BORDER_THICKNESS
-                  || y >= size - BORDER_THICKNESS;
-          pixmap.drawPixel(x, y, Color.rgba8888(onBorder ? borderColor : DARKER_FILL_COLOR));
-        }
+    boolean inCornerBox = (x < r || x >= size - r) && (y < r || y >= size - r);
+    if (inCornerBox) {
+      int cx = x < r ? r : size - r - 1;
+      int cy = y < r ? r : size - r - 1;
+      double distance = Math.hypot((double) x - cx, (double) y - cy);
+      if (distance > r) {
+        return Color.rgba8888(0f, 0f, 0f, 0f);
       }
+      return Color.rgba8888(distance > r - BORDER_THICKNESS ? borderColor : fillColor);
     }
-
-    Texture texture = new Texture(pixmap);
-    pixmap.dispose();
-
-    NinePatch patch = new NinePatch(texture, r, r, r, r);
-    return new NinePatchDrawable(patch);
+    boolean onBorder =
+        x < BORDER_THICKNESS
+            || x >= size - BORDER_THICKNESS
+            || y < BORDER_THICKNESS
+            || y >= size - BORDER_THICKNESS;
+    return Color.rgba8888(onBorder ? borderColor : fillColor);
   }
 }

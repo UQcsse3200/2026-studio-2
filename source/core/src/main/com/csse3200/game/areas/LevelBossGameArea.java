@@ -9,15 +9,10 @@ import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.EnemyFactory;
 import com.csse3200.game.rendering.BackgroundRenderComponent;
-import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.List;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class LevelBossGameArea extends GameArea {
-
-  private static final Logger logger = LoggerFactory.getLogger(LevelBossGameArea.class);
 
   private static final GridPoint2 CALYPSO_SPAWN = new GridPoint2(15, 1);
 
@@ -131,28 +126,12 @@ public class LevelBossGameArea extends GameArea {
 
   /** Loads all Level 2 assets. */
   private void loadAssets() {
-    logger.debug("Loading assets");
-
-    ResourceService resourceService = ServiceLocator.getResourceService();
-    resourceService.loadTextures(level3Textures);
-    resourceService.loadTextureAtlases(level3TexturesAtlas);
-    resourceService.loadSounds(level3Sounds);
-    resourceService.loadMusic(level3Music);
-
-    while (!resourceService.loadForMillis(10)) {
-      logger.info("Loading... {}%", resourceService.getProgress());
-    }
+    loadAreaAssets(level3Textures, level3TexturesAtlas, level3Sounds, level3Music);
   }
 
   /** Unloads all Level 2 assets. */
   private void unloadAssets() {
-    logger.debug("Unloading assets");
-
-    ResourceService resourceService = ServiceLocator.getResourceService();
-    resourceService.unloadAssets(level3Textures);
-    resourceService.unloadAssets(level3TexturesAtlas);
-    resourceService.unloadAssets(level3Sounds);
-    resourceService.unloadAssets(level3Music);
+    unloadAreaAssets(level3Textures, level3TexturesAtlas, level3Sounds, level3Music);
   }
 
   /** Dispose of the game area. */

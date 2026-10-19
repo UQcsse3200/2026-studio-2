@@ -14,17 +14,12 @@ import com.csse3200.game.entities.factories.ItemFactory;
 import com.csse3200.game.entities.factories.ObstacleFactory;
 import com.csse3200.game.physics.BodyUserData;
 import com.csse3200.game.rendering.*;
-import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class Level3GameArea extends GameArea {
   private static final String CLOUDS_TEXTURE = "images/parallax/level_1_clouds.png";
 
   private static final String FURTHEST_BACKGROUND_TEXTURE = "images/parallax/level_1_furthest.png";
-
-  private static final Logger logger = LoggerFactory.getLogger(Level3GameArea.class);
 
   private Vector2 worldBounds;
 
@@ -335,28 +330,12 @@ public class Level3GameArea extends GameArea {
 
   /** Loads all Level 2 assets. */
   private void loadAssets() {
-    logger.debug("Loading assets");
-
-    ResourceService resourceService = ServiceLocator.getResourceService();
-    resourceService.loadTextures(level3Textures);
-    resourceService.loadTextureAtlases(level3TexturesAtlas);
-    resourceService.loadSounds(level3Sounds);
-    resourceService.loadMusic(level3Music);
-
-    while (!resourceService.loadForMillis(10)) {
-      logger.info("Loading... {}%", resourceService.getProgress());
-    }
+    loadAreaAssets(level3Textures, level3TexturesAtlas, level3Sounds, level3Music);
   }
 
   /** Unloads all Level 2 assets. */
   private void unloadAssets() {
-    logger.debug("Unloading assets");
-
-    ResourceService resourceService = ServiceLocator.getResourceService();
-    resourceService.unloadAssets(level3Textures);
-    resourceService.unloadAssets(level3TexturesAtlas);
-    resourceService.unloadAssets(level3Sounds);
-    resourceService.unloadAssets(level3Music);
+    unloadAreaAssets(level3Textures, level3TexturesAtlas, level3Sounds, level3Music);
   }
 
   @Override

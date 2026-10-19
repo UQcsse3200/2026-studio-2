@@ -77,7 +77,7 @@ public class NPCFactory {
   }
 
   /**
-   * Creates a zombie entity. Zombies currently share the ghost's config and animations.
+   * Creates a zombie entity. Zombies currently use the ghost's sprite, animations and stats.
    *
    * @param target entity to chase
    * @return entity
