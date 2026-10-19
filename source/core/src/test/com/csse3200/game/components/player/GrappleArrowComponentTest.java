@@ -319,7 +319,7 @@ class GrappleArrowComponentTest {
   /** Records every "grappleFailed" the shooter is sent. */
   private List<Vector2> failuresReportedTo(Entity shooter) {
     List<Vector2> failures = new ArrayList<>();
-    shooter.getEvents().addListener("grappleFailed", (Vector2 point) -> failures.add(point));
+    shooter.getEvents().<Vector2>addListener("grappleFailed", failures::add);
     return failures;
   }
 

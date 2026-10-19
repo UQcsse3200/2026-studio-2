@@ -310,7 +310,7 @@ class GrappleHoldRenderComponentTest {
 
     for (int degrees = 0; degrees < 360; degrees += 5) {
       // Put the player on a circle round the hook, so the rope leaves them at every angle in turn.
-      Vector2 offset = new Vector2(6f, 0f).rotateDeg(degrees);
+      Vector2 offset = new Vector2(6f, 0f).rotateDeg((float) degrees);
       player.setPosition(anchor.x - offset.x - 0.5f, anchor.y - offset.y - 0.5f);
       hold.update();
       SpriteBatch batch = mock(SpriteBatch.class);
