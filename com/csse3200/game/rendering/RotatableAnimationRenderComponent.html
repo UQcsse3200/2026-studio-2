@@ -113,7 +113,7 @@ loadScripts(document, 'script');</script>
 <code><a href="AnimationRenderComponent.html#animationPlayTime">animationPlayTime</a>, <a href="AnimationRenderComponent.html#animations">animations</a>, <a href="AnimationRenderComponent.html#atlas">atlas</a>, <a href="AnimationRenderComponent.html#currentAnimation">currentAnimation</a>, <a href="AnimationRenderComponent.html#currentAnimationName">currentAnimationName</a>, <a href="AnimationRenderComponent.html#defaultRegionWidthPx">defaultRegionWidthPx</a>, <a href="AnimationRenderComponent.html#flipX">flipX</a>, <a href="AnimationRenderComponent.html#timeSource">timeSource</a></code></div>
 <div class="inherited-list">
 <h3 id="fields-inherited-from-class-com.csse3200.game.rendering.RenderComponent">Fields inherited from class&nbsp;com.csse3200.game.rendering.<a href="RenderComponent.html" title="class in com.csse3200.game.rendering">RenderComponent</a></h3>
-<code><a href="RenderComponent.html#backgroundLight">backgroundLight</a>, <a href="RenderComponent.html#darkness">darkness</a>, <a href="RenderComponent.html#lightning">lightning</a></code></div>
+<code><a href="RenderComponent.html#backgroundLight">backgroundLight</a>, <a href="RenderComponent.html#darkness">darkness</a>, <a href="RenderComponent.html#lightning">lightning</a>, <a href="RenderComponent.html#rainIntensity">rainIntensity</a></code></div>
 <div class="inherited-list">
 <h3 id="fields-inherited-from-class-com.csse3200.game.components.Component">Fields inherited from class&nbsp;com.csse3200.game.components.<a href="../components/Component.html" title="class in com.csse3200.game.components">Component</a></h3>
 <code><a href="../components/Component.html#enabled">enabled</a>, <a href="../components/Component.html#entity">entity</a></code></div>
@@ -152,6 +152,11 @@ loadScripts(document, 'script');</script>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#draw(com.badlogic.gdx.graphics.g2d.SpriteBatch)" class="member-name-link">draw</a><wbr>(com.badlogic.gdx.graphics.g2d.SpriteBatch&nbsp;batch)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Draw the renderable.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setFlashing(boolean)" class="member-name-link">setFlashing</a><wbr>(boolean&nbsp;flashing)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Enables or disables a pulsing brightness effect to draw attention to this entity.</div>
 </div>
 </div>
 </div>
@@ -203,6 +208,17 @@ loadScripts(document, 'script');</script>
 <dl class="notes">
 <dt>Overrides:</dt>
 <dd><code><a href="RenderComponent.html#create()">create</a></code>&nbsp;in class&nbsp;<code><a href="RenderComponent.html" title="class in com.csse3200.game.rendering">RenderComponent</a></code></dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="setFlashing(boolean)">
+<h3>setFlashing</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setFlashing</span><wbr><span class="parameters">(boolean&nbsp;flashing)</span></div>
+<div class="block">Enables or disables a pulsing brightness effect to draw attention to this entity.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>flashing</code> - true to pulse, false to draw normally</dd>
 </dl>
 </section>
 </li>

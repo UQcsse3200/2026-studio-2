@@ -107,8 +107,11 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color"><code>static final float</code></div>
 <div class="col-second even-row-color"><code><a href="#ATLAS_HEIGHT" class="member-name-link">ATLAS_HEIGHT</a></code></div>
-<div class="col-last even-row-color">
-<div class="block">World height of an atlas-based checkpoint; its width follows the atlas frame's ratio.</div>
+<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><code>static final float</code></div>
+<div class="col-second odd-row-color"><code><a href="#ATLAS_WIDTH" class="member-name-link">ATLAS_WIDTH</a></code></div>
+<div class="col-last odd-row-color">
+<div class="block">World size of an atlas-based checkpoint (each frame is 709 x 890, about 4:5).</div>
 </div>
 </div>
 <div class="inherited-list">
@@ -167,14 +170,8 @@ loadScripts(document, 'script');</script>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isActive()" class="member-name-link">isActive</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setTorch(com.csse3200.game.entities.Entity)" class="member-name-link">setTorch</a><wbr>(<a href="../../entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;torch)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#update()" class="member-name-link">update</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Gives this checkpoint the statue entity that represents it, so activating the checkpoint can
- switch that same entity to its lit frame rather than drawing a second entity over the top.</div>
-</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#update()" class="member-name-link">update</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Check if player position comes in range of checkpoint position.</div>
 </div>
 </div>
@@ -198,10 +195,24 @@ loadScripts(document, 'script');</script>
 <h2>Field Details</h2>
 <ul class="member-list">
 <li>
+<section class="detail" id="ATLAS_WIDTH">
+<h3>ATLAS_WIDTH</h3>
+<div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type">float</span>&nbsp;<span class="element-name">ATLAS_WIDTH</span></div>
+<div class="block">World size of an atlas-based checkpoint (each frame is 709 x 890, about 4:5).</div>
+<dl class="notes">
+<dt>See Also:</dt>
+<dd>
+<ul class="tag-list">
+<li><a href="../../../../../constant-values.html#com.csse3200.game.components.level.CheckpointComponent.ATLAS_WIDTH">Constant Field Values</a></li>
+</ul>
+</dd>
+</dl>
+</section>
+</li>
+<li>
 <section class="detail" id="ATLAS_HEIGHT">
 <h3>ATLAS_HEIGHT</h3>
 <div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type">float</span>&nbsp;<span class="element-name">ATLAS_HEIGHT</span></div>
-<div class="block">World height of an atlas-based checkpoint; its width follows the atlas frame's ratio.</div>
 <dl class="notes">
 <dt>See Also:</dt>
 <dd>
@@ -266,18 +277,6 @@ loadScripts(document, 'script');</script>
 <dl class="notes">
 <dt>Overrides:</dt>
 <dd><code><a href="../Component.html#create()">create</a></code>&nbsp;in class&nbsp;<code><a href="../Component.html" title="class in com.csse3200.game.components">Component</a></code></dd>
-</dl>
-</section>
-</li>
-<li>
-<section class="detail" id="setTorch(com.csse3200.game.entities.Entity)">
-<h3>setTorch</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setTorch</span><wbr><span class="parameters">(<a href="../../entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;torch)</span></div>
-<div class="block">Gives this checkpoint the statue entity that represents it, so activating the checkpoint can
- switch that same entity to its lit frame rather than drawing a second entity over the top.</div>
-<dl class="notes">
-<dt>Parameters:</dt>
-<dd><code>torch</code> - entity with an <a href="../../rendering/AnimationRenderComponent.html" title="class in com.csse3200.game.rendering"><code>AnimationRenderComponent</code></a> that has "unlit" and "lit"</dd>
 </dl>
 </section>
 </li>

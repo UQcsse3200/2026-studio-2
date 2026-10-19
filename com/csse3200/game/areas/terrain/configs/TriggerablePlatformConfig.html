@@ -113,13 +113,14 @@ loadScripts(document, 'script');</script>
 <div class="summary-table two-column-summary">
 <div class="table-header col-first">Constructor</div>
 <div class="table-header col-last">Description</div>
-<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(com.badlogic.gdx.math.GridPoint2,int,int,int,java.lang.String,java.lang.String%5B%5D,boolean)" class="member-name-link">TriggerablePlatformConfig</a><wbr>(com.badlogic.gdx.math.GridPoint2&nbsp;position,
+<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(com.badlogic.gdx.math.GridPoint2,int,int,int,java.lang.String,java.lang.String%5B%5D,boolean,boolean)" class="member-name-link">TriggerablePlatformConfig</a><wbr>(com.badlogic.gdx.math.GridPoint2&nbsp;position,
  int&nbsp;width,
  int&nbsp;height,
  int&nbsp;grappleSides,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;textureFilepath,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>[]&nbsp;ids,
- boolean&nbsp;initialState)</code></div>
+ boolean&nbsp;initialState,
+ boolean&nbsp;singleActivation)</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 </div>
 </section>
@@ -141,6 +142,9 @@ loadScripts(document, 'script');</script>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getInitialState()" class="member-name-link">getInitialState</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getSingleActivation()" class="member-name-link">getSingleActivation</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 </div>
 </div>
 </div>
@@ -159,7 +163,7 @@ loadScripts(document, 'script');</script>
 <h2>Constructor Details</h2>
 <ul class="member-list">
 <li>
-<section class="detail" id="&lt;init&gt;(com.badlogic.gdx.math.GridPoint2,int,int,int,java.lang.String,java.lang.String[],boolean)">
+<section class="detail" id="&lt;init&gt;(com.badlogic.gdx.math.GridPoint2,int,int,int,java.lang.String,java.lang.String[],boolean,boolean)">
 <h3>TriggerablePlatformConfig</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">TriggerablePlatformConfig</span><wbr><span class="parameters">(com.badlogic.gdx.math.GridPoint2&nbsp;position,
  int&nbsp;width,
@@ -167,7 +171,8 @@ loadScripts(document, 'script');</script>
  int&nbsp;grappleSides,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;textureFilepath,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>[]&nbsp;ids,
- boolean&nbsp;initialState)</span></div>
+ boolean&nbsp;initialState,
+ boolean&nbsp;singleActivation)</span></div>
 </section>
 </li>
 </ul>
@@ -188,6 +193,12 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="getInitialState()">
 <h3>getInitialState</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">getInitialState</span>()</div>
+</section>
+</li>
+<li>
+<section class="detail" id="getSingleActivation()">
+<h3>getSingleActivation</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">getSingleActivation</span>()</div>
 </section>
 </li>
 </ul>
