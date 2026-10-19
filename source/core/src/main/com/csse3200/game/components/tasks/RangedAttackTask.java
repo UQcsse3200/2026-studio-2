@@ -102,9 +102,13 @@ public class RangedAttackTask extends DefaultTask implements PriorityTask {
           ProjectileFact.createNecromancerProjectile(
               targetCenter, damage, projectileSpeed, projectileLifetime);
     } else {
-      projectile =
-          ProjectileFact.createSkeletonArcherProjectile(
-              targetCenter, damage, projectileSpeed, projectileLifetime);
+      // An archer's arrow flies like the player's, arcing under gravity, so the factory aims it to
+      // come down on the target and places it at the spawn point itself.
+      ServiceLocator.getEntityService()
+          .register(
+              ProjectileFact.createSkeletonArcherProjectile(
+                  enemy, spawnCenter, targetCenter, damage, projectileSpeed, projectileLifetime));
+      return;
     }
     // setPosition() uses the bottom-left corner, so offset by half the
     // projectile size to place its centre at spawnCenter.
