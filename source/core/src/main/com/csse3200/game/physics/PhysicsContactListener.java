@@ -25,8 +25,8 @@ public class PhysicsContactListener implements ContactListener {
   // this is a measure of how many pixels on the top half of the sides of the platform the player
   // can collide with for the physics engine to accept that as a valid jump and adjust the player's
   // position to reflect a successful jump
-  private static final float PlatformCollisionLenienceHeight = 1f;
-  private static final float CollisionTolerance = 0.1f;
+  private static final float PLATFORM_COLLISION_LENIENCE_HEIGHT = 1f;
+  private static final float COLLISION_TOLERANCE = 0.1f;
 
   // caches results from preSolve to handle the end of contact updating once a collision is complete
   private PlayerActions playerActions; // stores reference to a playerActions from a contact
@@ -118,13 +118,13 @@ public class PhysicsContactListener implements ContactListener {
       // determine if a valid side contact was made and let the player know it's new position
       float diff = topCoord - playerBody.getPosition().y;
       if (diff > 0
-          && diff <= PlatformCollisionLenienceHeight + CollisionTolerance
+          && diff <= PLATFORM_COLLISION_LENIENCE_HEIGHT + COLLISION_TOLERANCE
           && playerBody.getLinearVelocity().y < 0) {
-        if (Math.abs(playerXRight - leftSideCoord) <= CollisionTolerance) {
+        if (Math.abs(playerXRight - leftSideCoord) <= COLLISION_TOLERANCE) {
           player
               .getEvents()
               .trigger("physicsPositionRequest", new Vector2(playerXLeft + 0.1f, topCoord + 0.1f));
-        } else if (Math.abs(playerXLeft - rightSideCoord) <= CollisionTolerance) {
+        } else if (Math.abs(playerXLeft - rightSideCoord) <= COLLISION_TOLERANCE) {
           player
               .getEvents()
               .trigger("physicsPositionRequest", new Vector2(playerXLeft - 0.1f, topCoord + 0.1f));
