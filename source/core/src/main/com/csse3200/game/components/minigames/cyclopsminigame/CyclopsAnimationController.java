@@ -88,8 +88,8 @@ public class CyclopsAnimationController extends Component {
   /**
    * Jump / Charge to the target Entity.
    *
-   * Changing the facing location of the animated entity
-   * depending on location of the target entity
+   * <p>Changing the facing location of the animated entity depending on location of the target
+   * entity
    */
   private void chargeAtTarget() {
     face(target.getCenterPosition().x);
@@ -107,6 +107,7 @@ public class CyclopsAnimationController extends Component {
 
   /**
    * Calculate the attack position to swing the club at the target entity
+   *
    * @return a Vector2 of the position to finish the club swing
    */
   private Vector2 attackPosition() {
@@ -118,8 +119,9 @@ public class CyclopsAnimationController extends Component {
   }
 
   /**
-   * Move the controlled animated entity to the given position
-   * and change the state to the next state
+   * Move the controlled animated entity to the given position and change the state to the next
+   * state
+   *
    * @param position - The Vector2 position to move the controlled entity to
    * @param next - The next State to enter after starting this animation
    */
@@ -133,8 +135,9 @@ public class CyclopsAnimationController extends Component {
   }
 
   /**
-   * Move the controlled entity's position while jumping to a target location.
-   * After landing start the swinging animation or return to idle base position
+   * Move the controlled entity's position while jumping to a target location. After landing start
+   * the swinging animation or return to idle base position
+   *
    * @param delta - time since last frame
    */
   private void jump(float delta) {

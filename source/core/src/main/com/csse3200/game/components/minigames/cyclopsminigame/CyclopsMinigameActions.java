@@ -14,8 +14,8 @@ public class CyclopsMinigameActions extends Component {
   }
 
   /**
-   * Adds the "exit" event to entity this component is attached to.
-   * Event will return to the MAIN_MENU screen on call
+   * Adds the "exit" event to entity this component is attached to. Event will return to the
+   * MAIN_MENU screen on call
    */
   @Override
   public void create() {

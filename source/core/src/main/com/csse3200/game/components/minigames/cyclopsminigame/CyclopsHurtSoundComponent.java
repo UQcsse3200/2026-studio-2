@@ -28,8 +28,8 @@ public class CyclopsHurtSoundComponent extends Component {
   }
 
   /**
-   * Adds the "hurt" event to this component. Event handles playing the sound effect
-   * differently based on the entity this component is attached to.
+   * Adds the "hurt" event to this component. Event handles playing the sound effect differently
+   * based on the entity this component is attached to.
    */
   @Override
   public void create() {
@@ -37,9 +37,8 @@ public class CyclopsHurtSoundComponent extends Component {
   }
 
   /**
-   * Changes the sound effect on the attached entity that plays a hurt sound effect.
-   * Hurt sound effect is pitched and volumed differently based on the attached entity's
-   * CombatStatsComponent.
+   * Changes the sound effect on the attached entity that plays a hurt sound effect. Hurt sound
+   * effect is pitched and volumed differently based on the attached entity's CombatStatsComponent.
    */
   void playVoiceForHearts() {
     CombatStatsComponent combatStats = entity.getComponent(CombatStatsComponent.class);

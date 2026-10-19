@@ -578,8 +578,7 @@ public class CyclopsMinigameLogic extends Component {
   }
 
   /**
-   * Handles finishing the minigame.
-   * Triggering the "win" event in the CyclopsMinigameEventHandler
+   * Handles finishing the minigame. Triggering the "win" event in the CyclopsMinigameEventHandler
    */
   private void finishMinigame() {
     logger.info("Player has WON the cyclops minigame");
@@ -588,9 +587,7 @@ public class CyclopsMinigameLogic extends Component {
     Gdx.app.postRunnable(() -> ServiceLocator.getCyclopsMinigameEventHandler().trigger("win"));
   }
 
-  /**
-   * Starts a delay before changing to the retreat state
-   */
+  /** Starts a delay before changing to the retreat state */
   private void waitBeforeRetreat() {
     if (elapsed(HURT_PAUSE_DELAY)) {
       beginRetreat();
@@ -598,8 +595,8 @@ public class CyclopsMinigameLogic extends Component {
   }
 
   /**
-   * Updates the animation and position of the player
-   * during the retreat state (moving back to the last safe location)
+   * Updates the animation and position of the player during the retreat state (moving back to the
+   * last safe location)
    */
   private void updateRetreat() {
     if (elapsed(TRANSITION_DELAY)) {
@@ -611,8 +608,8 @@ public class CyclopsMinigameLogic extends Component {
   }
 
   /**
-   * Updates death state. Overlays the transition screen cover of the game
-   * and triggers the CyclopsMinigameEventHandler's "died" event
+   * Updates death state. Overlays the transition screen cover of the game and triggers the
+   * CyclopsMinigameEventHandler's "died" event
    */
   private void updateDeath() {
     if (elapsed(DEATH_DISPLAY_DELAY)) {
@@ -623,10 +620,7 @@ public class CyclopsMinigameLogic extends Component {
     }
   }
 
-  /**
-   * Shows the TimingBarDisplay and starts the timing minigame
-   * after a short delay
-   */
+  /** Shows the TimingBarDisplay and starts the timing minigame after a short delay */
   private void showTimingBarWhenReady() {
     if (elapsed(SHOW_HIDE_DELAY)) {
       timingBarDisplay.setVisible(true);
@@ -636,9 +630,7 @@ public class CyclopsMinigameLogic extends Component {
     }
   }
 
-  /**
-   * Hides the TimingBarDisplay after a short delay
-   */
+  /** Hides the TimingBarDisplay after a short delay */
   private void hideTimingBarWhenReady() {
     if (elapsed(SHOW_HIDE_DELAY)) {
       timingBarDisplay.setVisible(false);
@@ -647,8 +639,8 @@ public class CyclopsMinigameLogic extends Component {
   }
 
   /**
-   * Begin moving the playing and showing the running animation
-   * and sound effects after a short delay
+   * Begin moving the playing and showing the running animation and sound effects after a short
+   * delay
    */
   private void beginRunWhenReady() {
     if (elapsed(TRANSITION_DELAY_GAP)) {
@@ -657,9 +649,7 @@ public class CyclopsMinigameLogic extends Component {
     }
   }
 
-  /**
-   * Updates the player position and the player's running animation
-   */
+  /** Updates the player position and the player's running animation */
   private void updateRun() {
     if (elapsed(TRANSITION_DELAY)) {
       playerEntity.setPosition(runTarget);
