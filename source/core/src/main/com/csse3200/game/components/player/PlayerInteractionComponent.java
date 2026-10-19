@@ -28,6 +28,9 @@ public class PlayerInteractionComponent extends Component {
   /** Maximum distance, in metres, at which the player can interact with an item or NPC. */
   public static final float INTERACTION_RANGE = 1.5f;
 
+  /** Distance in metres at which gold is collected without pressing interact. */
+  public static final float GOLD_PICKUP_RANGE = 0.75f;
+
   private InventoryComponent inventory;
   private boolean shopOpen;
   private boolean shopClosedSinceLastCheck;
@@ -48,6 +51,23 @@ public class PlayerInteractionComponent extends Component {
 
   public InventoryComponent getInventory() {
     return inventory;
+  }
+
+  /** Collects every nearby coin. EntityService suppresses updates while the game is paused. */
+  @Override
+  public void update() {
+    if (shopOpen) {
+      return;
+    }
+    for (Entity candidate : ServiceLocator.getEntityService().getEntities()) {
+      GoldPickupComponent gold = candidate.getComponent(GoldPickupComponent.class);
+      if (gold != null
+          && !gold.isCollected()
+          && entity.getCenterPosition().dst2(candidate.getCenterPosition())
+              <= GOLD_PICKUP_RANGE * GOLD_PICKUP_RANGE) {
+        pickupGold(candidate);
+      }
+    }
   }
 
   /**
@@ -152,7 +172,7 @@ public class PlayerInteractionComponent extends Component {
   }
 
   /**
-   * Collects a gold coin, adding its value to the player's gold and removing it from the world.
+   * Collects a gold coin, adding its value and scheduling removal after the current entity update.
    *
    * @param goldEntity gold pickup entity
    * @return true if gold was collected
@@ -169,9 +189,14 @@ public class PlayerInteractionComponent extends Component {
       return false;
     }
 
+    if (!goldPickup.tryCollect()) {
+      return false;
+    }
+
     int amount = goldPickup.getAmount();
+    // Immediate disposal here can skip another entity in EntityService's update loop.
+    ServiceLocator.getEntityService().scheduleRemoval(goldEntity);
     inventory.addGold(amount);
-    goldEntity.dispose();
     entity.getEvents().trigger("goldPickedUp", amount);
     return true;
   }
@@ -334,6 +359,10 @@ public class PlayerInteractionComponent extends Component {
     Array<Entity> entities = ServiceLocator.getEntityService().getEntities();
     for (Entity candidate : entities) {
       if (candidate.equals(entity) || candidate.getComponent(type) == null) {
+        continue;
+      }
+      GoldPickupComponent gold = candidate.getComponent(GoldPickupComponent.class);
+      if (gold != null && gold.isCollected()) {
         continue;
       }
 

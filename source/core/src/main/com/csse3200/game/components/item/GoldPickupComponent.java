@@ -12,6 +12,7 @@ public class GoldPickupComponent extends Component {
   public static final int DEFAULT_AMOUNT = 10;
 
   private final int amount;
+  private boolean collected;
 
   public GoldPickupComponent() {
     this(DEFAULT_AMOUNT);
@@ -32,5 +33,25 @@ public class GoldPickupComponent extends Component {
    */
   public int getAmount() {
     return amount;
+  }
+
+  /**
+   * @return whether this coin has already been awarded and is awaiting removal
+   */
+  public boolean isCollected() {
+    return collected;
+  }
+
+  /**
+   * Claims this coin before awarding gold, preventing repeated pickups during deferred removal.
+   *
+   * @return true only for the first collection attempt
+   */
+  public boolean tryCollect() {
+    if (collected) {
+      return false;
+    }
+    collected = true;
+    return true;
   }
 }
