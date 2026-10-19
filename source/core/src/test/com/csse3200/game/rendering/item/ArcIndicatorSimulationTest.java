@@ -73,9 +73,15 @@ class ArcIndicatorSimulationTest {
       assertEquals(1, shapes.constructed().size());
       ShapeRenderer shape = shapes.constructed().getFirst();
       ArgumentCaptor<Float> endpointX = ArgumentCaptor.forClass(Float.class);
-      verify(shape, times(2)).circle(endpointX.capture(), eq(0.5f), eq(0.15f), eq(12));
+      verify(shape, times(2))
+          .circle(
+              endpointX.capture(),
+              eq(0.5f),
+              eq(ArcIndicatorRenderComponent.LANDING_DOT_RADIUS),
+              eq(12));
       assertEquals(12.5f, endpointX.getValue(), 0.001f);
-      verify(shape, times(800)).circle(anyFloat(), eq(0.5f), eq(0.05f), eq(12));
+      verify(shape, times(800))
+          .circle(anyFloat(), eq(0.5f), eq(ArcIndicatorRenderComponent.DOT_RADIUS), eq(12));
       verify(batch, times(2)).begin();
     }
   }
@@ -94,7 +100,11 @@ class ArcIndicatorSimulationTest {
       preview(2f).render(batch);
       ArgumentCaptor<Float> endpointX = ArgumentCaptor.forClass(Float.class);
       verify(shapes.constructed().getFirst())
-          .circle(endpointX.capture(), eq(0.5f), eq(0.15f), eq(12));
+          .circle(
+              endpointX.capture(),
+              eq(0.5f),
+              eq(ArcIndicatorRenderComponent.LANDING_DOT_RADIUS),
+              eq(12));
       assertEquals(2.51f, endpointX.getValue(), 0.001f);
     }
   }

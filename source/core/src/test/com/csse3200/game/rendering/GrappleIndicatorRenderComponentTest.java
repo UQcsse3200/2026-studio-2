@@ -31,6 +31,7 @@ import com.csse3200.game.entities.factories.ProjectileFactory;
 import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.physics.PhysicsService;
+import com.csse3200.game.rendering.item.ArcIndicatorRenderComponent;
 import com.csse3200.game.rendering.item.GrappleIndicatorRenderComponent;
 import com.csse3200.game.services.ServiceLocator;
 import org.junit.jupiter.api.AfterEach;
@@ -164,14 +165,20 @@ class GrappleIndicatorRenderComponentTest {
       assertEquals(1, shapes.constructed().size());
       ShapeRenderer shape = shapes.constructed().getFirst();
 
-      verify(shape).setColor(Color.WHITE);
+      verify(shape).setColor(new Color(1f, 1f, 1f, ArcIndicatorRenderComponent.DOT_OPACITY));
 
       // Small dots spaced along the arc, plus one bigger dot at the landing point.
-      verify(shape, atLeastOnce()).circle(anyFloat(), anyFloat(), eq(0.05f), eq(12));
+      verify(shape, atLeastOnce())
+          .circle(anyFloat(), anyFloat(), eq(ArcIndicatorRenderComponent.DOT_RADIUS), eq(12));
 
       ArgumentCaptor<Float> xCaptor = ArgumentCaptor.forClass(Float.class);
       ArgumentCaptor<Float> yCaptor = ArgumentCaptor.forClass(Float.class);
-      verify(shape).circle(xCaptor.capture(), yCaptor.capture(), eq(0.15f), eq(12));
+      verify(shape)
+          .circle(
+              xCaptor.capture(),
+              yCaptor.capture(),
+              eq(ArcIndicatorRenderComponent.LANDING_DOT_RADIUS),
+              eq(12));
       // The wall pins the landing x, but under gravity the arc has already dropped by the time it
       // gets there. The arrow spawns 0.6 ahead of the player, so it only has 9.4 left to cover:
       // time-to-wall = 9.4 / GRAPPLE_ARROW_SPEED, drop = 0.5 * effective gravity (20) * t^2.
@@ -194,7 +201,12 @@ class GrappleIndicatorRenderComponentTest {
 
       ArgumentCaptor<Float> xCaptor = ArgumentCaptor.forClass(Float.class);
       ArgumentCaptor<Float> yCaptor = ArgumentCaptor.forClass(Float.class);
-      verify(shape).circle(xCaptor.capture(), yCaptor.capture(), eq(0.15f), eq(12));
+      verify(shape)
+          .circle(
+              xCaptor.capture(),
+              yCaptor.capture(),
+              eq(ArcIndicatorRenderComponent.LANDING_DOT_RADIUS),
+              eq(12));
       // No obstruction, so the preview reaches all the way out to the grapple's maximum range - as
       // a straight-line distance from the player, not just a fixed horizontal offset any more.
       float distance = new Vector2(xCaptor.getValue(), yCaptor.getValue()).dst(origin.x, origin.y);
@@ -221,7 +233,12 @@ class GrappleIndicatorRenderComponentTest {
 
       ArgumentCaptor<Float> xCaptor = ArgumentCaptor.forClass(Float.class);
       ArgumentCaptor<Float> yCaptor = ArgumentCaptor.forClass(Float.class);
-      verify(shape).circle(xCaptor.capture(), yCaptor.capture(), eq(0.15f), eq(12));
+      verify(shape)
+          .circle(
+              xCaptor.capture(),
+              yCaptor.capture(),
+              eq(ArcIndicatorRenderComponent.LANDING_DOT_RADIUS),
+              eq(12));
       // 9.4 left to cover at half speed: four times the drop of a full-speed shot.
       assertEquals(origin.x + 10f, xCaptor.getValue(), 0.05f);
       assertEquals(

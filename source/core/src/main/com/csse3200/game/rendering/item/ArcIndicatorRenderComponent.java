@@ -1,6 +1,8 @@
 package com.csse3200.game.rendering.item;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
@@ -19,8 +21,16 @@ import com.csse3200.game.services.ServiceLocator;
  */
 public abstract class ArcIndicatorRenderComponent extends RenderComponent {
 
-  private static final float DOT_RADIUS = 0.05f;
-  private static final float LANDING_DOT_RADIUS = 0.15f;
+  /** Radius of the dots along the arc, in world units. */
+  public static final float DOT_RADIUS = 0.025f;
+
+  /** Radius of the larger dot marking where the shot lands. */
+  public static final float LANDING_DOT_RADIUS = 0.075f;
+
+  /** How solid the dots are, from 0 (invisible) to 1 (fully solid). */
+  public static final float DOT_OPACITY = 0.75f;
+
+  private static final Color DOT_COLOR = new Color(1f, 1f, 1f, DOT_OPACITY);
   private static final int DOT_SEGMENTS = 12;
 
   // Small enough that consecutive samples land close together for a smooth-looking curve, without
@@ -74,12 +84,16 @@ public abstract class ArcIndicatorRenderComponent extends RenderComponent {
 
     batch.end();
 
+    // Without blending switched on, the shape renderer ignores the colour's alpha and draws solid.
+    Gdx.gl.glEnable(GL20.GL_BLEND);
+    Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
     shapeRenderer.setProjectionMatrix(batch.getProjectionMatrix());
     shapeRenderer.begin(ShapeType.Filled);
-    shapeRenderer.setColor(Color.WHITE);
+    shapeRenderer.setColor(DOT_COLOR);
     Vector2 endPoint = simulateArc(launchPoint(aim), aim);
     shapeRenderer.circle(endPoint.x, endPoint.y, LANDING_DOT_RADIUS, DOT_SEGMENTS);
     shapeRenderer.end();
+    Gdx.gl.glDisable(GL20.GL_BLEND);
 
     batch.begin();
   }
