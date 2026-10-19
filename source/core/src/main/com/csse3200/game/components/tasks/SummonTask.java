@@ -60,7 +60,6 @@ public class SummonTask extends DefaultTask implements PriorityTask {
     return -1;
   }
 
-  
   private void summonSkeleton() {
     Entity necromancer = owner.getEntity();
 
@@ -69,14 +68,14 @@ public class SummonTask extends DefaultTask implements PriorityTask {
 
     // Try positions around the Necromancer.
     float[][] offsets = {
-        {1f, 0f},   // Right
-        {-1f, 0f},  // Left
-        {0f, 1f},   // Above
-        {0f, -1f},  // Below
-        {1f, 1f},   // Top-right
-        {-1f, 1f},  // Top-left
-        {1f, -1f},  // Bottom-right
-        {-1f, -1f}  // Bottom-left
+      {1f, 0f}, // Right
+      {-1f, 0f}, // Left
+      {0f, 1f}, // Above
+      {0f, -1f}, // Below
+      {1f, 1f}, // Top-right
+      {-1f, 1f}, // Top-left
+      {1f, -1f}, // Bottom-right
+      {-1f, -1f} // Bottom-left
     };
 
     for (float[] offset : offsets) {
@@ -95,15 +94,14 @@ public class SummonTask extends DefaultTask implements PriorityTask {
     // No available position found; skip this summon.
   }
 
-
   private boolean isSpawnPositionOccupied(float x, float y) {
     for (Entity other : ServiceLocator.getEntityService().getEntities()) {
       if (other == owner.getEntity()) {
         continue;
       }
 
-      if (other.getComponent(
-          com.csse3200.game.components.npc.EnemyAnimationController.class) == null) {
+      if (other.getComponent(com.csse3200.game.components.npc.EnemyAnimationController.class)
+          == null) {
         continue;
       }
 
@@ -116,5 +114,4 @@ public class SummonTask extends DefaultTask implements PriorityTask {
 
     return false;
   }
-
 }

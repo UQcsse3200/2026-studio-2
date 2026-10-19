@@ -1,4 +1,3 @@
-
 package com.csse3200.game.components.tasks;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -26,7 +25,6 @@ import com.csse3200.game.services.ServiceLocator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import com.csse3200.game.entities.EntityService;
 
 @ExtendWith(GameExtension.class)
 class SummonTaskTest {
@@ -75,15 +73,12 @@ class SummonTaskTest {
     player.setPosition(3f, 2f);
 
     SummonTask summonTask = new SummonTask(player, 30, 10f, 5f);
-    Entity necromancer =
-        new Entity().addComponent(new AITaskComponent().addTask(summonTask));
+    Entity necromancer = new Entity().addComponent(new AITaskComponent().addTask(summonTask));
     necromancer.setPosition(2f, 2f);
     necromancer.create();
 
     final Entity[] summoned = {null};
-    necromancer.getEvents().addListener(
-        "spawnEntity", (Entity spawned) -> summoned[0] = spawned);
-        
+    necromancer.getEvents().addListener("spawnEntity", (Entity spawned) -> summoned[0] = spawned);
 
     when(gameTime.getTime()).thenReturn(6000L);
 
@@ -97,64 +92,56 @@ class SummonTaskTest {
     assertEquals(2f, summoned[0].getPosition().y, 0.001f);
   }
 
+  @Test
+  void shouldNotSpawnTwoSkeletonsAtSamePosition() {
+    Entity player = new Entity();
+    player.setPosition(3f, 2f);
 
-    @Test
-    void shouldNotSpawnTwoSkeletonsAtSamePosition() {
-        Entity player = new Entity();
-        player.setPosition(3f, 2f);
+    SummonTask summonTask = new SummonTask(player, 30, 10f, 5f);
 
-        SummonTask summonTask = new SummonTask(player, 30, 10f, 5f);
+    Entity necromancer = new Entity().addComponent(new AITaskComponent().addTask(summonTask));
+    necromancer.setPosition(2f, 2f);
+    necromancer.create();
 
-        Entity necromancer =
-            new Entity().addComponent(new AITaskComponent().addTask(summonTask));
-        necromancer.setPosition(2f, 2f);
-        necromancer.create();
+    java.util.List<Entity> summoned = new java.util.ArrayList<>();
 
-        java.util.List<Entity> summoned = new java.util.ArrayList<>();
+    necromancer
+        .getEvents()
+        .addListener(
+            "spawnEntity",
+            (Entity spawned) -> {
+              summoned.add(spawned);
+              ServiceLocator.getEntityService().register(spawned);
+            });
 
-        necromancer.getEvents().addListener(
-            "spawnEntity", (Entity spawned) -> {summoned.add(spawned);
-                    ServiceLocator.getEntityService().register(spawned);});
-        
+    try (var lights = mockConstruction(PointLightComponent.class);
+        var particles = mockConstruction(ParticleEffectsRenderingComponent.class)) {
 
-        try (var lights = mockConstruction(PointLightComponent.class);
-            var particles = mockConstruction(ParticleEffectsRenderingComponent.class)) {
+      // First summon at 6 seconds
+      when(gameTime.getTime()).thenReturn(6000L);
+      summonTask.update();
 
-        // First summon at 6 seconds
-        when(gameTime.getTime()).thenReturn(6000L);
-        summonTask.update();
+      // Second summon at 12 seconds
+      when(gameTime.getTime()).thenReturn(12000L);
+      summonTask.update();
 
-        // Second summon at 12 seconds
-        when(gameTime.getTime()).thenReturn(12000L);
-        summonTask.update();
-
-        // Third summon at 18 seconds
-        when(gameTime.getTime()).thenReturn(18000L);
-        summonTask.update();
+      // Third summon at 18 seconds
+      when(gameTime.getTime()).thenReturn(18000L);
+      summonTask.update();
     }
 
     assertEquals(3, summoned.size(), "Expected three summoned Skeleton Warriors");
 
     for (int i = 0; i < summoned.size(); i++) {
-        System.out.println("Skeleton " + (i + 1)
-            + " position: " + summoned.get(i).getPosition());
+      System.out.println("Skeleton " + (i + 1) + " position: " + summoned.get(i).getPosition());
     }
 
     assertFalse(
-        summoned.get(0).getPosition().epsilonEquals(
-            summoned.get(1).getPosition(), 0.001f),
+        summoned.get(0).getPosition().epsilonEquals(summoned.get(1).getPosition(), 0.001f),
         "Skeleton Warriors should not spawn at the same position");
 
-
     assertFalse(
-        summoned.get(1).getPosition().epsilonEquals(
-            summoned.get(2).getPosition(), 0.001f),
+        summoned.get(1).getPosition().epsilonEquals(summoned.get(2).getPosition(), 0.001f),
         "Third Skeleton Warrior should not overlap the first");
-    }
-
-    
-
-
-
-
+  }
 }
