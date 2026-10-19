@@ -1,10 +1,13 @@
 package com.csse3200.game.entities.factories;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.ProjectileAttackComponent;
 import com.csse3200.game.components.ProjectileComponent;
+import com.csse3200.game.components.lighting.PointLightComponent;
 import com.csse3200.game.entities.Entity;
+import com.csse3200.game.lighting.LightingDefaults;
 import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.physics.PhysicsUtils;
 import com.csse3200.game.physics.components.ColliderComponent;
@@ -12,6 +15,7 @@ import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.physics.components.PhysicsMovementComponent;
 import com.csse3200.game.rendering.TextureRenderComponent;
+import com.csse3200.game.services.ServiceLocator;
 
 /** Factory for creating enemy projectiles. */
 public class ProjectileFact {
@@ -65,7 +69,13 @@ public class ProjectileFact {
             .addComponent(new ProjectileComponent(lifetime))
             .addComponent(new ColliderComponent())
             .addComponent(
-                new TextureRenderComponent("images/projectiles/necromancer_projectile.png"));
+                new TextureRenderComponent("images/projectiles/necromancer_projectile.png"))
+            .addComponent(
+                new PointLightComponent(
+                    ServiceLocator.getLightingService().getEngine().getRayHandler(),
+                    LightingDefaults.RAYS,
+                    new Color(0.4f, 0f, 0.65f, 1f),
+                    LightingDefaults.DIST));
 
     projectile.getComponent(TextureRenderComponent.class).scaleEntity();
     projectile.setScale(projectile.getScale().scl(0.8f));
@@ -100,7 +110,13 @@ public class ProjectileFact {
             .addComponent(new ColliderComponent())
             // Temporary asset until the Calypso projectile sprite is available.
             .addComponent(
-                new TextureRenderComponent("images/projectiles/necromancer_projectile.png"));
+                new TextureRenderComponent("images/projectiles/necromancer_projectile.png"))
+            .addComponent(
+                new PointLightComponent(
+                    ServiceLocator.getLightingService().getEngine().getRayHandler(),
+                    LightingDefaults.RAYS,
+                    new Color(0.4f, 0f, 0.65f, 1f),
+                    LightingDefaults.DIST));
 
     projectile.getComponent(TextureRenderComponent.class).scaleEntity();
     projectile.setScale(projectile.getScale().scl(0.8f));
