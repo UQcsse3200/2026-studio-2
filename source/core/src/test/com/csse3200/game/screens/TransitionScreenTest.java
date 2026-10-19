@@ -1,6 +1,5 @@
 package com.csse3200.game.screens;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import com.badlogic.gdx.Screen;
@@ -17,7 +16,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 class TransitionScreenTest {
 
   private static final float HALF_FADE = 0.2f;
-  private static final float FULL_FADE = 0.4f;
 
   private TransitionScreen createTransitionScreen(
       GdxGame game,

@@ -78,9 +78,6 @@ class LoadSaveScreenTest {
       assertTrue(resourceService.containsAsset("images/Buttons/back_up_btn.png", Texture.class));
       assertTrue(resourceService.containsAsset("images/Buttons/back_down_btn.png", Texture.class));
 
-      // Music is loaded and configured.
-      Music music = resourceService.getAsset("sounds/Main_menu_sound.mp3", Music.class);
-
       // Render and resize.
       screen.render(1f / 60f);
       verify(renderer).render();

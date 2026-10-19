@@ -64,17 +64,6 @@ public class TransitionScreen implements Screen {
     this.blackPixel = blackPixel;
   }
 
-  private static Texture createBlackPixel() {
-    Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
-    try {
-      pixmap.setColor(Color.BLACK);
-      pixmap.fill();
-      return new Texture(pixmap);
-    } finally {
-      pixmap.dispose();
-    }
-  }
-
   @Override
   public void render(float delta) {
     float alpha;
