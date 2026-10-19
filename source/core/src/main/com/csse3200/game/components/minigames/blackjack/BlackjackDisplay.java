@@ -190,6 +190,20 @@ public class BlackjackDisplay extends UIComponent {
         createImageButton("images/Buttons/back_up_btn.png", "images/Buttons/back_down_btn.png");
 
     TextButton soundButton = new TextButton("SOUND: ON", skin);
+    // Match the wooden texture used by the other Blackjack buttons.
+    com.badlogic.gdx.graphics.Texture soundUpTexture =
+        new com.badlogic.gdx.graphics.Texture(
+            com.badlogic.gdx.Gdx.files.internal("images/Buttons/sound_up_btn.png"));
+    com.badlogic.gdx.graphics.Texture soundDownTexture =
+        new com.badlogic.gdx.graphics.Texture(
+            com.badlogic.gdx.Gdx.files.internal("images/Buttons/sound_down_btn.png"));
+    soundUpTexture.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
+    soundDownTexture.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
+    TextButton.TextButtonStyle soundStyle = new TextButton.TextButtonStyle(soundButton.getStyle());
+    soundStyle.up = new TextureRegionDrawable(soundUpTexture);
+    soundStyle.down = new TextureRegionDrawable(soundDownTexture);
+    soundStyle.over = soundStyle.up;
+    soundButton.setStyle(soundStyle);
 
     soundButton.addListener(
         new ChangeListener() {
@@ -333,11 +347,11 @@ public class BlackjackDisplay extends UIComponent {
 
     Table buttons = new Table();
 
-    buttons.add(newRoundButton).width(160f).height(56f).pad(5f);
-    buttons.add(hitButton).width(160f).height(56f).pad(5f);
-    buttons.add(standButton).width(160f).height(56f).pad(5f);
-    buttons.add(backButton).width(160f).height(56f).pad(5f);
-    buttons.add(soundButton).width(140f).height(56f).pad(5f);
+    buttons.add(newRoundButton).width(192f).height(67f).pad(5f);
+    buttons.add(hitButton).width(192f).height(67f).pad(5f);
+    buttons.add(standButton).width(192f).height(67f).pad(5f);
+    buttons.add(backButton).width(192f).height(67f).pad(5f);
+    buttons.add(soundButton).width(192f).height(67f).pad(5f);
 
     table.add(dealerRegion).expandX().fillX().height(245f).top();
     table.row();
@@ -347,7 +361,7 @@ public class BlackjackDisplay extends UIComponent {
     table.row();
     table.add(status).height(35f).center();
     table.row();
-    table.add(buttons).height(75f).padBottom(12f).center();
+    table.add(buttons).height(85f).padBottom(12f).center();
 
     stage.addActor(table);
 
