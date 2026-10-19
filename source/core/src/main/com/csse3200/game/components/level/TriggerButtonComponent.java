@@ -16,6 +16,9 @@ public class TriggerButtonComponent extends Component {
   public void create() {
     entity.getEvents().addListener("collisionStart", this::onCollisionStart);
     animator = entity.getComponent(RotatableAnimationRenderComponent.class);
+    if (animator != null) {
+      animator.setFlashing(true);
+    }
   }
 
   @Override

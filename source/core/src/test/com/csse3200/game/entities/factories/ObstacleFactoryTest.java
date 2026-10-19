@@ -168,7 +168,14 @@ class ObstacleFactoryTest {
   void shouldCreateTriggerablePlatformWithActivationComponents() {
     TriggerablePlatformConfig config =
         new TriggerablePlatformConfig(
-            new GridPoint2(1, 2), 3, 1, 0, "images/platform.png", new String[] {"switch"}, true);
+            new GridPoint2(1, 2),
+            3,
+            1,
+            0,
+            "images/platform.png",
+            new String[] {"switch"},
+            true,
+            false);
 
     Entity platform = ObstacleFactory.createTriggerablePlatform(config);
 

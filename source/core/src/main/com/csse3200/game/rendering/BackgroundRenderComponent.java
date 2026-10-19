@@ -1,5 +1,7 @@
 package com.csse3200.game.rendering;
 
+import static com.csse3200.game.areas.GameArea.RepeatMode.*;
+
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -19,22 +21,27 @@ public class BackgroundRenderComponent extends RenderComponent {
   private final Vector2 worldBounds;
   private Vector2 lastCameraPos;
   private int flashOrder = 0;
+  private Vector2 originalVelocity;
+  private float originalWidth;
+  private float originalHeight;
+  private int originalRotation;
+  private final Vector2 finalVelocity = new Vector2(5.5f, -4.5f);
 
   /** A single parallax background layer. */
   private static class ParallaxLayer {
-    private final Texture texture;
+    private Texture texture;
     private final Vector2 parallaxFactor;
     private float width;
     private float height;
     private final Vector2 offset;
     private final Vector2 velocity;
-    private Vector2 position;
+    private final Vector2 position;
     private final RepeatMode repeat;
     private final float distance;
     private float transparency;
     private final boolean flash;
     private int rotation;
-    private int lightningOrder;
+    private final int lightningOrder;
 
     ParallaxLayer(
         Texture texture,
@@ -134,59 +141,110 @@ public class BackgroundRenderComponent extends RenderComponent {
             flash,
             rotation,
             lightningOrder));
+
+    if (repeat == RepeatMode.CHAOTIC) {
+      originalVelocity = new Vector2(velocity.x, velocity.y);
+      originalWidth = width;
+      originalHeight = height;
+      originalRotation = rotation;
+    }
   }
 
   public int getLayerCount() {
     return layers.size();
   }
 
+  private void scaleUp(ParallaxLayer layer, Vector2 factor, Vector2 worldBounds, String level) {
+    if (level.equals("level2")) {
+      layer.position.x -= worldBounds.x / 2 - 10;
+      layer.position.y -= factor.y * layer.height / 2.4f;
+      layer.width *= factor.x / 1.25f;
+      layer.height *= factor.y / 1.25f;
+    } else if (level.equals("level3")) {
+      layer.position.x -= worldBounds.x / 2 - 5;
+      layer.position.y -= worldBounds.y * 0.77f + factor.y;
+      layer.width *= factor.x;
+      layer.height *= factor.y * 1.17f;
+      layer.offset.y *= 1.15f;
+    } else {
+      layer.position.x -= worldBounds.x / 2 - 10;
+      layer.position.y -= worldBounds.y * factor.y / 5.1f;
+      layer.width *= factor.x / 1.57f;
+      layer.height *= factor.y / 1.4f;
+    }
+    layer.offset.x *= factor.x;
+    layer.offset.y *= factor.y;
+    layer.velocity.x *= factor.x;
+    layer.velocity.y *= factor.y;
+  }
+
+  private void scaleDown(ParallaxLayer layer, Vector2 factor, Vector2 worldBounds, String level) {
+    if (level.equals("level2")) {
+      layer.position.x += worldBounds.x / 2 - 10;
+      // layer.height already multiplied by factor.y, negate 1.25 divided before
+      layer.position.y += layer.height / 2.4f * 1.25f;
+      layer.width /= factor.x / 1.25f;
+      layer.height /= factor.y / 1.25f;
+    } else if (level.equals("level3")) {
+      layer.position.x += worldBounds.x / 2 - 5;
+      layer.position.y += worldBounds.y * 0.77f + factor.y;
+      layer.width /= factor.x;
+      layer.height /= factor.y * 1.17f;
+      layer.offset.y /= 1.15f;
+    } else {
+      layer.position.x += worldBounds.x / 2 - 10;
+      layer.position.y += worldBounds.y * factor.y / 5.1f; // factor is a glue-on fix
+      layer.width /= factor.x / 1.57f;
+      layer.height /= factor.y / 1.4f;
+    }
+    layer.offset.x /= factor.x;
+    layer.offset.y /= factor.y;
+    layer.velocity.x /= factor.x;
+    layer.velocity.y /= factor.y;
+  }
+
   /** Scale is controlled individually for each layer. */
   public void scaleEntity(Vector2 factor, Vector2 worldBounds, boolean up, String level) {
     for (ParallaxLayer layer : layers) {
-      if (up) {
-        if (level.equals("level2")) {
-          layer.position.x -= worldBounds.x / 2;
-          layer.position.y -= factor.y * layer.height / 1.4f;
-          layer.width *= factor.x;
-          layer.height *= factor.y * 1.15f;
-        } else if (level.equals("level3")) {
-          layer.position.x -= worldBounds.x / 2 - 5;
-          layer.position.y -= worldBounds.y * 0.87f + factor.y;
-          layer.width *= factor.x;
-          layer.height *= factor.y * 1.17f;
-        } else {
-          layer.position.x -= worldBounds.x / 2;
-          layer.position.y -= worldBounds.y / 2 + factor.y; // factor is a glue-on fix
-          layer.width *= factor.x;
-          layer.height *= factor.y;
+      if (level.equals("bossArena")) {
+        layer.position.x -= 1.7f;
+        layer.position.y -= 1.22f;
+        layer.height += 1;
+        if (layer.flash) {
+          layer.height += 3;
         }
-        layer.offset.x *= factor.x;
-        layer.offset.y *= factor.y;
-        layer.velocity.x *= factor.x;
-        layer.velocity.y *= factor.y;
       } else {
-        if (level.equals("level2")) {
-          layer.position.x += worldBounds.x / 2;
-          // layer.height already multiplied by factor.y, negate 1.1 multiplied before
-          layer.position.y += layer.height / 1.4f / 1.15f;
-          layer.width /= factor.x;
-          layer.height /= factor.y * 1.15f;
-        } else if (level.equals("level3")) {
-          layer.position.x += worldBounds.x / 2 - 5;
-          layer.position.y += worldBounds.y * 0.87f + factor.y;
-          layer.width /= factor.x;
-          layer.height /= factor.y * 1.17f;
+        if (up) {
+          scaleUp(layer, factor, worldBounds, level);
         } else {
-          layer.position.x += worldBounds.x / 2;
-          layer.position.y += worldBounds.y / 2 + factor.y; // factor is a glue-on fix
-          layer.width /= factor.x;
-          layer.height /= factor.y;
+          scaleDown(layer, factor, worldBounds, level);
         }
-        layer.offset.x /= factor.x;
-        layer.offset.y /= factor.y;
-        layer.velocity.x /= factor.x;
-        layer.velocity.y /= factor.y;
       }
+    }
+  }
+
+  /**
+   * Switches lightning layer textures.
+   *
+   * @param layer the layer to switch textures for
+   */
+  private void switchLightningLayer(ParallaxLayer layer) {
+    if (rainIntensity <= 0.3559) {
+      if (layer.lightningOrder == 0) {
+        layer.texture =
+            ServiceLocator.getResourceService()
+                .getAsset("images/parallax/lightning_4.png", Texture.class);
+      }
+    } else if (rainIntensity <= 0.5678) {
+      if (layer.lightningOrder == 1) {
+        layer.texture =
+            ServiceLocator.getResourceService()
+                .getAsset("images/parallax/lightning_2.png", Texture.class);
+      }
+    } else if (rainIntensity <= 0.8205 && layer.lightningOrder == 0) {
+      layer.texture =
+          ServiceLocator.getResourceService()
+              .getAsset("images/parallax/lightning_3.png", Texture.class);
     }
   }
 
@@ -202,6 +260,8 @@ public class BackgroundRenderComponent extends RenderComponent {
     if (weather && layer.flash) {
       // Flash layers that flash during lightning
       float lightning = getLightning();
+      switchLightningLayer(layer);
+
       // Get lightning order
       if (lightning > 5f && lightning < 5.8f) {
         flashOrder = 0;
@@ -210,12 +270,32 @@ public class BackgroundRenderComponent extends RenderComponent {
       }
       // Flash single lightning layer
       if (layer.lightningOrder == flashOrder) {
-        if (darkness == 1f) {
+        if (darkness == 1.1f) {
           layer.transparency = 1f;
         } else {
           layer.transparency = 0f;
         }
       }
+    }
+  }
+
+  /**
+   * Updates rain layers speed, height and rotation for different rain intensities
+   *
+   * @param layer the layer to adjust the weather for
+   */
+  private void updateWeather(ParallaxLayer layer) {
+    boolean weather = getWeather();
+    if (weather && layer.repeat == CHAOTIC && rainIntensity < 1f) {
+      float intensity = 1f - rainIntensity;
+      float finalWidth = 0.1f;
+      float finalHeight = 0.45f;
+      int finalRotation = 40;
+      layer.velocity.x = originalVelocity.x + (finalVelocity.x - originalVelocity.x) * intensity;
+      layer.velocity.y = originalVelocity.y + (finalVelocity.y - originalVelocity.y) * intensity;
+      layer.width = originalWidth + (finalWidth - originalWidth) * intensity;
+      layer.height = originalHeight + (finalHeight - originalHeight) * intensity;
+      layer.rotation = (int) (originalRotation + (finalRotation - originalRotation) * intensity);
     }
   }
 
@@ -261,6 +341,7 @@ public class BackgroundRenderComponent extends RenderComponent {
       float layerY;
 
       layerPos = getPosition(layer, cameraPos, position);
+      updateWeather(layer);
 
       layerX = layerPos.x;
       layerY = layerPos.y;
@@ -305,14 +386,14 @@ public class BackgroundRenderComponent extends RenderComponent {
         // random vertical offset applied to each rain drop in range -verticalOffset to
         // verticalOffset
         float verticalOffset = 0.05f;
-        float cameraWidth = (float) (int) camera.getCamera().viewportWidth + 4;
-        float cameraHeight = (float) (int) camera.getCamera().viewportHeight + 6;
-        float centerX = (float) (int) camera.getCamera().position.x;
-        float centerY = (float) (int) camera.getCamera().position.y;
-        float startX = (float) (int) centerX - (cameraWidth / 2);
-        float endX = (float) (int) centerX + (cameraWidth / 2);
-        float startY = (float) (int) centerY + (cameraHeight / 2);
-        float endY = (float) (int) centerY - (cameraHeight / 2);
+        float cameraWidth = truncate(camera.getCamera().viewportWidth) + 4;
+        float cameraHeight = truncate(camera.getCamera().viewportHeight) + 6;
+        int centerX = (int) camera.getCamera().position.x;
+        int centerY = (int) camera.getCamera().position.y;
+        float startX = centerX - (cameraWidth / 2);
+        float endX = centerX + (cameraWidth / 2);
+        float startY = centerY + (cameraHeight / 2);
+        float endY = centerY - (cameraHeight / 2);
         float currentX;
         float currentY = startY;
         float drawPosX;
@@ -339,7 +420,7 @@ public class BackgroundRenderComponent extends RenderComponent {
         int lengthY = rainOffsets.size();
         int lengthX = rainOffsets.getFirst().size();
 
-        batch.setColor(0.65f, 0.65f, 0.65f, layer.transparency);
+        batch.setColor(0.575f, 0.575f, 1f, 0.5f);
 
         int randomOffsetX;
         int randomOffsetY = 0;
@@ -366,8 +447,8 @@ public class BackgroundRenderComponent extends RenderComponent {
             if ((int) ((currentY * (1 / gap)) % 2) == 0) {
               batch.draw(
                   layer.texture,
-                  drawPosX,
-                  drawPosY,
+                  drawPosX + rainOffsets.get(randomOffsetY).get(randomOffsetX),
+                  drawPosY + rainOffsets.get(randomOffsetY).get(randomOffsetX),
                   layer.width / 2,
                   layer.height / 2,
                   layer.width,
@@ -384,8 +465,8 @@ public class BackgroundRenderComponent extends RenderComponent {
             } else {
               batch.draw(
                   layer.texture,
-                  drawPosX + (gap / 2),
-                  drawPosY,
+                  drawPosX + (gap / 2) + rainOffsets.get(randomOffsetY).get(randomOffsetX),
+                  drawPosY + rainOffsets.get(randomOffsetY).get(randomOffsetX),
                   layer.width / 2,
                   layer.height / 2,
                   layer.width,
@@ -415,6 +496,11 @@ public class BackgroundRenderComponent extends RenderComponent {
       }
       batch.setColor(prevColor);
     }
+  }
+
+  /** Drops the fractional part of a value, rounding towards zero like an int cast. */
+  private static float truncate(float value) {
+    return (float) (value < 0 ? Math.ceil(value) : Math.floor(value));
   }
 
   @Override

@@ -17,8 +17,8 @@ import com.csse3200.game.components.level.RisingWaterComponent;
 import com.csse3200.game.components.player.PlayerActions;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
-import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.physics.BodyUserData;
+import com.csse3200.game.physics.PhysicsService;
 import com.csse3200.game.rendering.AnimationRenderComponent;
 import com.csse3200.game.rendering.BackgroundRenderComponent;
 import com.csse3200.game.rendering.DynamicTextureRenderComponent;
@@ -32,10 +32,8 @@ import java.lang.reflect.Method;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 
-@ExtendWith(GameExtension.class)
-class Level3GameAreaTest {
+class Level3GameAreaTest extends AbstractAreaAssetsTest {
 
   private TerrainFactory terrainFactory;
   private CameraComponent camera;
@@ -97,28 +95,6 @@ class Level3GameAreaTest {
   }
 
   @Test
-  void loadAssetsLoadsLevel3Resources() throws Exception {
-    invokePrivate("loadAssets");
-
-    verify(resourceService).loadTextures(any(String[].class));
-    verify(resourceService).loadTextureAtlases(any(String[].class));
-    verify(resourceService).loadSounds(any(String[].class));
-    verify(resourceService).loadMusic(any(String[].class));
-    verify(resourceService).loadForMillis(10);
-  }
-
-  @Test
-  void loadAssetsWaitsUntilLoadingCompletes() throws Exception {
-    when(resourceService.loadForMillis(10)).thenReturn(false, false, true);
-    when(resourceService.getProgress()).thenReturn(25, 75);
-
-    invokePrivate("loadAssets");
-
-    verify(resourceService, times(3)).loadForMillis(10);
-    verify(resourceService, times(2)).getProgress();
-  }
-
-  @Test
   void unloadAssetsUnloadsAllLevel3Resources() throws Exception {
     invokePrivate("unloadAssets");
 
@@ -126,22 +102,16 @@ class Level3GameAreaTest {
   }
 
   @Test
-  void playMusicConfiguresAndStartsBackgroundMusic() throws Exception {
-    invokePrivate("playMusic");
-
-    verify(resourceService).getAsset("sounds/BGM_03_mp3.mp3", Music.class);
-    verify(music).setLooping(true);
-    verify(music).setVolume(0.3f);
-    verify(music).play();
-  }
-
-  @Test
   void spawnTerrainCreatesBackgroundDesertTerrain() throws Exception {
+    PhysicsService physics = new PhysicsService();
+    ServiceLocator.registerPhysicsService(physics);
+
     when(terrainFactory.createTerrain(TerrainFactory.TerrainType.BACKGROUND_DESERT))
         .thenReturn(terrain);
 
     when(terrain.getTileSize()).thenReturn(1f);
     when(terrain.getMapBounds(0)).thenReturn(new GridPoint2(90, 30));
+    when(terrain.tileToWorldPosition(any(GridPoint2.class))).thenReturn(new Vector2(0, 0));
 
     invokePrivate("spawnTerrain");
 
@@ -150,11 +120,15 @@ class Level3GameAreaTest {
 
   @Test
   void spawnTerrainSetsLevel3WorldBounds() throws Exception {
+    PhysicsService physics = new PhysicsService();
+    ServiceLocator.registerPhysicsService(physics);
+
     when(terrainFactory.createTerrain(TerrainFactory.TerrainType.BACKGROUND_DESERT))
         .thenReturn(terrain);
 
     when(terrain.getTileSize()).thenReturn(1f);
     when(terrain.getMapBounds(0)).thenReturn(new GridPoint2(90, 30));
+    when(terrain.tileToWorldPosition(any(GridPoint2.class))).thenReturn(new Vector2(0, 0));
 
     invokePrivate("spawnTerrain");
 
@@ -163,8 +137,8 @@ class Level3GameAreaTest {
 
     Vector2 bounds = (Vector2) field.get(area);
 
-    assertEquals(30f, bounds.x);
-    assertEquals(100f, bounds.y);
+    assertEquals(40f, bounds.x);
+    assertEquals(35f, bounds.y);
   }
 
   @Test
@@ -182,7 +156,13 @@ class Level3GameAreaTest {
     verify(resourceService, times(4)).unloadAssets(any(String[].class));
   }
 
-  private void invokePrivate(String methodName) throws Exception {
+  @Override
+  ResourceService resourceService() {
+    return resourceService;
+  }
+
+  @Override
+  void invokePrivate(String methodName) throws Exception {
     Method method = Level3GameArea.class.getDeclaredMethod(methodName);
     method.setAccessible(true);
     method.invoke(area);

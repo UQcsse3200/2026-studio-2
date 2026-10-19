@@ -19,13 +19,12 @@ import com.csse3200.game.components.npc.EnemyAnimationController;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.EnemyConfig;
 import com.csse3200.game.extensions.GameExtension;
-import com.csse3200.game.lighting.LightingEngine;
-import com.csse3200.game.lighting.LightingService;
 import com.csse3200.game.physics.PhysicsService;
 import com.csse3200.game.rendering.AnimationRenderComponent;
 import com.csse3200.game.rendering.ParticleEffectsRenderingComponent;
 import com.csse3200.game.rendering.RenderService;
 import com.csse3200.game.rendering.TextureRenderComponent;
+import com.csse3200.game.services.MockServices;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import org.junit.jupiter.api.BeforeEach;
@@ -44,12 +43,7 @@ class EnemyFactoryTest {
     when(renderService.getDebug()).thenReturn(debugRendererMock);
     ServiceLocator.registerRenderService(renderService);
 
-    LightingEngine lightingEngine = mock(LightingEngine.class);
-    box2dLight.RayHandler rayHandlerMock = mock(box2dLight.RayHandler.class);
-    when(lightingEngine.getRayHandler()).thenReturn(rayHandlerMock);
-    LightingService lightingService = mock(LightingService.class);
-    when(lightingService.getEngine()).thenReturn(lightingEngine);
-    ServiceLocator.registerLightingService(lightingService);
+    MockServices.registerLighting();
 
     Texture texture = mock(Texture.class);
     when(texture.getWidth()).thenReturn(1);

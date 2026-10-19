@@ -19,12 +19,10 @@ import com.csse3200.game.screens.LoadSaveScreen;
 import com.csse3200.game.screens.MainGameScreen;
 import com.csse3200.game.screens.MainMenuScreen;
 import com.csse3200.game.screens.SandboxGameScreen;
-import com.csse3200.game.screens.SettingsFromPauseScreen;
 import com.csse3200.game.screens.SettingsScreen;
 import com.csse3200.game.screens.TransitionScreen;
 import com.csse3200.game.screens.minigames.BlackjackScreen;
 import com.csse3200.game.screens.minigames.CyclopsMinigameRoomScreen;
-import com.csse3200.game.screens.minigames.MinigameSelectScreen;
 import com.csse3200.game.screens.minigames.spinthewheel.SpinTheWheelScreen;
 import java.util.ArrayList;
 import java.util.List;
@@ -42,8 +40,8 @@ public class GdxGame extends Game {
 
   private boolean transitioning = false;
 
-  // a check for if the intro cutscene has been triggered, once per game session, to prevent the
-  // cutscene from being triggered multiple times.
+  // Prevents the intro cutscene from triggering multiple times
+  // in one game session.
   private boolean introStarted = false;
 
   private PlayerSnapshot playerSnapshot;
@@ -61,13 +59,16 @@ public class GdxGame extends Game {
   private SaveFile pendingSave;
 
   /** Levels a save file may name; anything else is rejected and treated as level 1. */
-  private static final Set<String> VALID_LEVELS = Set.of("level1", "level2", "level3", "boss");
+  private static final String LEVEL_1 = "level1";
+
+  private static final String LEVEL_2 = "level2";
+  private static final String LEVEL_3 = "level3";
+  private static final Set<String> VALID_LEVELS = Set.of(LEVEL_1, LEVEL_2, LEVEL_3, "boss");
 
   @Override
   public void create() {
     logger.info("Creating game");
     loadSettings();
-
     applyDefaultClearColor();
 
     setScreen(ScreenType.MAIN_MENU);
@@ -82,7 +83,7 @@ public class GdxGame extends Game {
     if (Gdx.gl == null) {
       return;
     }
-    Gdx.gl.glClearColor(248f / 255f, 249 / 255f, 178 / 255f, 1);
+    Gdx.gl.glClearColor(248f / 255f, 249f / 255f, 178f / 255f, 1);
   }
 
   /** Loads the game's settings. */
@@ -187,7 +188,7 @@ public class GdxGame extends Game {
     }
     if (!VALID_LEVELS.contains(save.currentLevel)) {
       logger.warn("Save slot {} names unknown level {}, loading level 1", slot, save.currentLevel);
-      save.currentLevel = "level1";
+      save.currentLevel = LEVEL_1;
     }
     logger.info("Loading save slot {} at level {}", slot, save.currentLevel);
     playerSnapshot = null;
@@ -284,16 +285,12 @@ public class GdxGame extends Game {
 
   /** Screen type for a saved level name. */
   private static ScreenType levelScreenType(String level) {
-    switch (level) {
-      case "level2":
-        return ScreenType.LEVEL_2_GAME;
-      case "level3":
-        return ScreenType.LEVEL_3_GAME;
-      case "boss":
-        return ScreenType.LEVEL_BOSS_GAME;
-      default:
-        return ScreenType.LEVEL_1_GAME;
-    }
+    return switch (level) {
+      case LEVEL_2 -> ScreenType.LEVEL_2_GAME;
+      case LEVEL_3 -> ScreenType.LEVEL_3_GAME;
+      case "boss" -> ScreenType.LEVEL_BOSS_GAME;
+      default -> ScreenType.LEVEL_1_GAME;
+    };
   }
 
   /**
@@ -314,7 +311,7 @@ public class GdxGame extends Game {
   /**
    * Collects a snapshot of the player's state components (gold, health, inventory)
    *
-   * @param player - the player entity to save
+   * @param player the player entity to save
    */
   public void savePlayerState(Entity player) {
     if (player == null) {
@@ -328,10 +325,12 @@ public class GdxGame extends Game {
    * If a player snapshot is available then update the given player entity to match the stored
    * snapshot data (gold, health, inventory)
    *
-   * @param player - the player to update with the stored snapshot
+   * @param player the player to update with the stored snapshot
    */
   public void restorePlayerState(Entity player) {
-    if (playerSnapshot == null) return;
+    if (playerSnapshot == null) {
+      return;
+    }
     playerSnapshot.applyTo(player);
     playerSnapshot = null;
   }
@@ -339,7 +338,9 @@ public class GdxGame extends Game {
   @Override
   public void dispose() {
     logger.debug("Disposing of current screen");
-    getScreen().dispose();
+    if (getScreen() != null) {
+      getScreen().dispose();
+    }
   }
 
   /**
@@ -362,11 +363,11 @@ public class GdxGame extends Game {
         return new SandboxGameScreen(this);
       case LEVEL_2_GAME:
         LevelsGameScreen screen2 = new LevelsGameScreen(this);
-        screen2.queueAreaSwap("level2");
+        screen2.queueAreaSwap(LEVEL_2);
         return screen2;
       case LEVEL_3_GAME:
         LevelsGameScreen screen3 = new LevelsGameScreen(this);
-        screen3.queueAreaSwap("level3");
+        screen3.queueAreaSwap(LEVEL_3);
         return screen3;
       case LEVEL_BOSS_GAME:
         LevelsGameScreen bossScreen = new LevelsGameScreen(this);
@@ -374,10 +375,6 @@ public class GdxGame extends Game {
         return bossScreen;
       case SETTINGS:
         return new SettingsScreen(this);
-      case SETTINGS_FROM_PAUSE:
-        return new SettingsFromPauseScreen(this);
-      case MINIGAME_SELECT:
-        return new MinigameSelectScreen(this);
       case CYCLOPS_MINIGAME:
         return new CyclopsMinigameRoomScreen(this);
       case MINIGAME_SPIN_THE_WHEEL:

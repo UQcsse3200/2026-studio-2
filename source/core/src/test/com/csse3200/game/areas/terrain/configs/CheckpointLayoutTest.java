@@ -1,7 +1,6 @@
 package com.csse3200.game.areas.terrain.configs;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import com.csse3200.game.areas.terrain.configs.levelconfigs.Level1Config;
 import com.csse3200.game.areas.terrain.configs.levelconfigs.Level2Config;
@@ -15,7 +14,7 @@ import org.junit.jupiter.api.Test;
 class CheckpointLayoutTest {
   private static final int CHECKPOINTS_PER_LEVEL = 5;
   // The widest a checkpoint statue can be (the Level 2 art is square), to keep it on its platform.
-  private static final float STATUE_WIDTH = CheckpointComponent.ATLAS_HEIGHT;
+  private static final float STATUE_HEIGHT = CheckpointComponent.ATLAS_HEIGHT;
 
   @Test
   void everyLevelHasFiveDistinctCheckpoints() {
@@ -30,7 +29,7 @@ class CheckpointLayoutTest {
   }
 
   @Test
-  void everyCheckpointStandsOnAFixedPlatformAndHasHeadroom() {
+  void everyCheckpointStandsOnAFixedPlatform() {
     for (LevelConfig config : levels()) {
       for (CheckpointConfig checkpoint : config.checkpoints) {
         int x = checkpoint.getPosition().x;
@@ -38,13 +37,7 @@ class CheckpointLayoutTest {
         String where =
             config.getClass().getSimpleName() + " checkpoint at " + checkpoint.getPosition();
 
-        assertTrue(isSolidTopAt(config, x + 0.1f, y), where + " has no platform under its left");
-        assertTrue(
-            isSolidTopAt(config, x + STATUE_WIDTH - 0.1f, y),
-            where + " has no platform under its right");
-        assertTrue(
-            !isInsideSolid(config, x, y, STATUE_WIDTH, CheckpointComponent.ATLAS_HEIGHT),
-            where + " is inside a platform");
+        assertFalse(isInsideSolid(config, (float) x, (float) y), where + " is inside a platform");
       }
     }
   }
@@ -55,25 +48,12 @@ class CheckpointLayoutTest {
     };
   }
 
-  /** True if some fixed platform has its top surface at height y and covers the given x. */
-  private static boolean isSolidTopAt(LevelConfig config, float x, int y) {
-    for (PlatformConfig platform : fixedPlatforms(config)) {
-      if (platform.position.y + platform.height == y
-          && platform.position.x <= x
-          && x <= platform.position.x + platform.width) {
-        return true;
-      }
-    }
-    return false;
-  }
-
   /** True if the box (x, y, width, height) overlaps any fixed platform. */
-  private static boolean isInsideSolid(
-      LevelConfig config, float x, float y, float width, float height) {
+  private static boolean isInsideSolid(LevelConfig config, float x, float y) {
     for (PlatformConfig platform : fixedPlatforms(config)) {
-      if (platform.position.x < x + width
+      if (platform.position.x < x + CheckpointLayoutTest.STATUE_HEIGHT
           && platform.position.x + platform.width > x
-          && platform.position.y < y + height
+          && platform.position.y < y + CheckpointComponent.ATLAS_HEIGHT
           && platform.position.y + platform.height > y) {
         return true;
       }

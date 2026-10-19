@@ -15,6 +15,7 @@ import com.csse3200.game.components.item.ItemComponent;
 import com.csse3200.game.components.item.ItemType;
 import com.csse3200.game.components.item.weapons.bow.arrow.Arrow;
 import com.csse3200.game.components.level.ActivatableComponent;
+import com.csse3200.game.components.level.CheckpointComponent;
 import com.csse3200.game.components.level.LevelTriggerComponent;
 import com.csse3200.game.components.level.PlatformGrappleComponent;
 import com.csse3200.game.components.player.PlayerStatsDisplay;
@@ -26,6 +27,7 @@ import com.csse3200.game.input.InputService;
 import com.csse3200.game.rendering.BackgroundRenderComponent;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.ArrayList;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -281,5 +283,27 @@ class GameAreaTest {
 
     gameArea.spawnConfigEntities();
     assertEquals(1, gameArea.areaEntities.size());
+  }
+
+  @Test
+  void returnsOnlyActiveCheckpointsInConfigurationOrder() {
+    GameArea area =
+        new GameArea(new CameraComponent()) {
+          @Override
+          public void create() {
+            // Checkpoint queries do not require rendering or spawning a level.
+          }
+        };
+    area.config = mock(LevelConfig.class);
+    CheckpointComponent first = new CheckpointComponent(true, new GridPoint2(20, 3));
+    CheckpointComponent inactive = new CheckpointComponent(false, new GridPoint2(10, 2));
+    CheckpointComponent last = new CheckpointComponent(true, new GridPoint2(5, 1));
+    when(area.config.getCheckpoints()).thenReturn(List.of(first, inactive, last));
+
+    assertEquals(
+        List.of(new GridPoint2(20, 3), new GridPoint2(5, 1)), area.getActiveCheckpointPositions());
+    first.deactivate();
+    last.deactivate();
+    assertTrue(area.getActiveCheckpointPositions().isEmpty());
   }
 }

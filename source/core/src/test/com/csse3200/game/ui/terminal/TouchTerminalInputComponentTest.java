@@ -3,19 +3,41 @@ package com.csse3200.game.ui.terminal;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-import com.badlogic.gdx.Input;
 import com.csse3200.game.components.player.KeyboardPlayerInputComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
-import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.input.InputService;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.concurrent.atomic.AtomicBoolean;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 
-@ExtendWith(GameExtension.class)
-class TouchTerminalInputComponentTest {
+class TouchTerminalInputComponentTest extends AbstractTerminalInputComponentTest {
+  @Test
+  void createdInputRegistersAndUsesItsEntityTerminal() {
+    InputService inputs = mock(InputService.class);
+    ServiceLocator.registerInputService(inputs);
+    Terminal terminal = new Terminal();
+    TouchTerminalInputComponent input = new TouchTerminalInputComponent();
+    new Entity().addComponent(terminal).addComponent(input);
+    input.create();
+    verify(inputs).register(input);
+    assertEquals(10, input.getPriority());
+    assertFalse(input.keyTyped('a'));
+    input.scrolled(0f, -1f);
+    assertTrue(terminal.isOpen());
+    input.scrolled(1f, 0f);
+    assertTrue(terminal.isOpen());
+    assertTrue(input.keyTyped('a'));
+    assertEquals("a", terminal.getEnteredMessage());
+    input.dispose();
+    verify(inputs).unregister(input);
+  }
+
+  @Override
+  TerminalInputComponent createInput(Terminal terminal) {
+    return new TouchTerminalInputComponent(terminal);
+  }
+
   @Test
   void shouldSetTerminalOpenClose() {
     Terminal terminal = spy(Terminal.class);
@@ -31,62 +53,6 @@ class TouchTerminalInputComponentTest {
 
     verify(terminal).setOpen();
     verify(terminal, times(2)).setClosed();
-  }
-
-  @Test
-  void shouldUpdateMessageOnKeyTyped() {
-    Terminal terminal = mock(Terminal.class);
-    when(terminal.isOpen()).thenReturn(true);
-    KeyboardTerminalInputComponent terminalInput = new KeyboardTerminalInputComponent(terminal);
-
-    terminalInput.keyTyped('a');
-    terminalInput.keyTyped('b');
-    verify(terminal).appendToMessage('a');
-    verify(terminal).appendToMessage('b');
-
-    terminalInput.keyTyped('\b');
-    verify(terminal).handleBackspace();
-
-    terminalInput.keyTyped('\n');
-    verify(terminal).processMessage();
-  }
-
-  @Test
-  void shouldHandleMessageWhenTerminalOpen() {
-    Terminal terminal = mock(Terminal.class);
-    KeyboardTerminalInputComponent terminalInput = new KeyboardTerminalInputComponent(terminal);
-
-    when(terminal.isOpen()).thenReturn(true);
-    assertTrue(terminalInput.keyDown('a'));
-    assertTrue(terminalInput.keyUp('a'));
-
-    when(terminal.isOpen()).thenReturn(false);
-    assertFalse(terminalInput.keyDown('a'));
-    assertFalse(terminalInput.keyUp('a'));
-  }
-
-  @Test
-  void shouldSwallowPointerInputWhenTerminalOpen() {
-    Terminal terminal = mock(Terminal.class);
-    when(terminal.isOpen()).thenReturn(true);
-    TouchTerminalInputComponent terminalInput = new TouchTerminalInputComponent(terminal);
-
-    assertTrue(terminalInput.touchDown(100, 100, 0, Input.Buttons.LEFT));
-    assertTrue(terminalInput.touchUp(100, 100, 0, Input.Buttons.LEFT));
-    assertTrue(terminalInput.touchDragged(100, 100, 0));
-    assertTrue(terminalInput.mouseMoved(100, 100));
-  }
-
-  @Test
-  void shouldNotSwallowPointerInputWhenTerminalClosed() {
-    Terminal terminal = mock(Terminal.class);
-    when(terminal.isOpen()).thenReturn(false);
-    TouchTerminalInputComponent terminalInput = new TouchTerminalInputComponent(terminal);
-
-    assertFalse(terminalInput.touchDown(100, 100, 0, Input.Buttons.LEFT));
-    assertFalse(terminalInput.touchUp(100, 100, 0, Input.Buttons.LEFT));
-    assertFalse(terminalInput.touchDragged(100, 100, 0));
-    assertFalse(terminalInput.mouseMoved(100, 100));
   }
 
   @Test

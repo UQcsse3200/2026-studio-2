@@ -6,10 +6,8 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.NinePatch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -70,32 +68,11 @@ public class LoadSaveDisplay extends UIComponent {
   private void addActors() {
     table = new Table();
     table.setFillParent(true);
-    float screenWidth = Gdx.graphics.getWidth();
-    float screenHeight = Gdx.graphics.getHeight();
+    int screenWidth = Gdx.graphics.getWidth();
+    int screenHeight = Gdx.graphics.getHeight();
     float pad = screenHeight * 0.02f;
 
-    Image background =
-        new Image(
-            ServiceLocator.getResourceService()
-                .getAsset("images/backgrounds/main_menu_bg.png", Texture.class));
-
-    // Oversized slightly so the shake below never reveals an edge/gap (same as the main menu).
-    float overscan = 1.03f;
-    float bgWidth = screenWidth * overscan;
-    float bgHeight = screenHeight * overscan;
-    background.setSize(bgWidth, bgHeight);
-    background.setPosition(-(bgWidth - screenWidth) / 2f, -(bgHeight - screenHeight) / 2f);
-    stage.addActor(background);
-
-    float shakeAmount = 15f;
-    float shakeDuration = 1f;
-    background.addAction(
-        Actions.forever(
-            Actions.sequence(
-                Actions.moveBy(shakeAmount, 0f, shakeDuration, Interpolation.sine),
-                Actions.moveBy(-shakeAmount, shakeAmount, shakeDuration, Interpolation.sine),
-                Actions.moveBy(-shakeAmount, -shakeAmount, shakeDuration, Interpolation.sine),
-                Actions.moveBy(shakeAmount, 0f, shakeDuration, Interpolation.sine))));
+    stage.addActor(MenuBackground.create(screenWidth, screenHeight));
 
     slotRowTexture = buildSlotRowTexture();
     slotRowBackground = new NinePatchDrawable(new NinePatch(slotRowTexture, 8, 8, 8, 8));
@@ -337,9 +314,9 @@ public class LoadSaveDisplay extends UIComponent {
       for (int x = 0; x < size; x++) {
         boolean inCornerBox = (x < r || x >= size - r) && (y < r || y >= size - r);
         if (inCornerBox) {
-          float cx = x < r ? r : size - r - 1;
-          float cy = y < r ? r : size - r - 1;
-          double dist = Math.hypot(x - cx, y - cy);
+          int cx = x < r ? r : size - r - 1;
+          int cy = y < r ? r : size - r - 1;
+          double dist = Math.hypot((double) x - cx, (double) y - cy);
           if (dist > r) {
             pixmap.drawPixel(x, y, Color.rgba8888(0f, 0f, 0f, 0f));
           } else if (dist > r - border) {

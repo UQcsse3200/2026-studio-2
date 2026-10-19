@@ -1,5 +1,6 @@
 package com.csse3200.game.areas;
 
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
@@ -9,6 +10,7 @@ import com.csse3200.game.areas.terrain.configs.LevelConfig;
 import com.csse3200.game.areas.terrain.configs.SpawnData;
 import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.components.EnemyDeathComponent;
+import com.csse3200.game.components.GameVolume;
 import com.csse3200.game.components.inventory.InventoryBarDisplay;
 import com.csse3200.game.components.level.*;
 import com.csse3200.game.components.player.KeyboardPlayerInputComponent;
@@ -17,10 +19,13 @@ import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.ItemFactory;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.rendering.BackgroundRenderComponent;
+import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Represents an area in the game, such as a level, indoor area, etc. An area has a terrain and
@@ -29,6 +34,8 @@ import java.util.List;
  * <p>Support for enabling/disabling game areas could be added by making this a Component instead.
  */
 public abstract class GameArea implements Disposable {
+  private static final Logger assetLogger = LoggerFactory.getLogger(GameArea.class);
+
   private static final String ACTIVATE_BY_KEY = "activateByKey";
 
   /** Camera used by this game area. */
@@ -310,13 +317,10 @@ public abstract class GameArea implements Disposable {
    * @return activated checkpoint positions in level configuration order
    */
   public List<GridPoint2> getActiveCheckpointPositions() {
-    List<GridPoint2> positions = new ArrayList<>();
-    for (CheckpointComponent checkpoint : config.getCheckpoints()) {
-      if (checkpoint.isActive()) {
-        positions.add(checkpoint.getPosition());
-      }
-    }
-    return positions;
+    return config.getCheckpoints().stream()
+        .filter(CheckpointComponent::isActive)
+        .map(CheckpointComponent::getPosition)
+        .toList();
   }
 
   /**
@@ -396,7 +400,20 @@ public abstract class GameArea implements Disposable {
     }
   }
 
+  public void toggleBossCamera() {}
+
   public void toggleLevelMap() {}
+
+  public void updateLevelMap() {}
+
+  public void updateMap(Vector2 worldBounds, CameraComponent cameraComponent) {
+    if (mapToggled) {
+      Entity camera = new Entity();
+      float playerPosY = getPlayer().getPosition().y;
+      camera.setPosition(worldBounds.x / 2 - 5, worldBounds.y / 2 + playerPosY / 1.3f);
+      cameraComponent.setTarget(camera);
+    }
+  }
 
   public void toggleMap(
       Vector2 worldBounds,
@@ -409,9 +426,15 @@ public abstract class GameArea implements Disposable {
       viewportWidth = cameraComponent.getCamera().viewportWidth;
       viewportHeight = cameraComponent.getCamera().viewportHeight;
 
-      cameraComponent.resize(worldBoundX, worldBoundY, (float) worldBoundX + 10);
       Entity camera = new Entity();
-      camera.setPosition(worldBounds.x / 2, worldBounds.y / 2);
+      if (level.equals("level3")) {
+        float cameraPosY = cameraComponent.getCamera().position.y;
+        cameraComponent.resize(worldBoundX, worldBoundY, (float) worldBoundX + 5);
+        camera.setPosition(worldBounds.x / 2 - 5, worldBounds.y / 2 + cameraPosY / 1.3f);
+      } else {
+        cameraComponent.resize(worldBoundX, worldBoundY, (float) worldBoundX + 10);
+        camera.setPosition(worldBounds.x / 2, worldBounds.y / 2);
+      }
       cameraComponent.setTarget(camera);
 
       float scaleX = worldBoundX / viewportWidth;
@@ -431,7 +454,45 @@ public abstract class GameArea implements Disposable {
     mapToggled = !mapToggled;
   }
 
+  public boolean isMapToggled() {
+    return mapToggled;
+  }
+
   public KeyboardPlayerInputComponent getInput() {
     return input;
+  }
+
+  /** Loads the assets an area uses and waits until they are all ready. */
+  protected void loadAreaAssets(
+      String[] textures, String[] atlases, String[] sounds, String[] music) {
+    assetLogger.debug("Loading assets");
+    ResourceService resourceService = ServiceLocator.getResourceService();
+    resourceService.loadTextures(textures);
+    resourceService.loadTextureAtlases(atlases);
+    resourceService.loadSounds(sounds);
+    resourceService.loadMusic(music);
+
+    while (!resourceService.loadForMillis(10)) {
+      assetLogger.info("Loading... {}%", resourceService.getProgress());
+    }
+  }
+
+  /** Unloads the assets that {@link #loadAreaAssets} loaded. */
+  protected void unloadAreaAssets(
+      String[] textures, String[] atlases, String[] sounds, String[] music) {
+    assetLogger.debug("Unloading assets");
+    ResourceService resourceService = ServiceLocator.getResourceService();
+    resourceService.unloadAssets(textures);
+    resourceService.unloadAssets(atlases);
+    resourceService.unloadAssets(sounds);
+    resourceService.unloadAssets(music);
+  }
+
+  /** Plays the (already loaded) background music on a loop. */
+  protected void playLoopingMusic(String musicPath, float volume) {
+    Music music = ServiceLocator.getResourceService().getAsset(musicPath, Music.class);
+    music.setLooping(true);
+    GameVolume.setMusicVolume(music, volume);
+    music.play();
   }
 }

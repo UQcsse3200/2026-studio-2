@@ -23,6 +23,7 @@ import com.csse3200.game.physics.PhysicsService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.function.Executable;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -92,44 +93,86 @@ class RendererTest {
   }
 
   @Test
-  void shouldRenderWithoutGlContext() {
-    // Gdx.gl is null when there is no OpenGL context. Put the mock back afterwards so the other
-    // tests in this class still have one.
-    GL20 originalGl = Gdx.gl;
-    Gdx.gl = null;
-    try {
-      CameraComponent cameraComponent = makeCameraEntity(camera);
-      Renderer renderer =
-          new Renderer(cameraComponent, 10, spriteBatch, stage, renderService, debugRenderer);
+  void shouldRestoreDefaultClearColourBeforeRendering() {
+    CameraComponent cameraComponent = makeCameraEntity(camera);
+    Renderer renderer =
+        new Renderer(cameraComponent, 10, spriteBatch, stage, renderService, debugRenderer);
+    Gdx.gl.glClearColor(0f, 0f, 0f, 1f);
+    clearInvocations(Gdx.gl);
 
-      assertDoesNotThrow(() -> renderer.render());
+    renderer.render();
+
+    var order = inOrder(Gdx.gl, renderService);
+    order.verify(Gdx.gl).glClearColor(248f / 255f, 249f / 255f, 178f / 255f, 1f);
+    order.verify(Gdx.gl).glClear(GL20.GL_COLOR_BUFFER_BIT);
+    order.verify(renderService).render(spriteBatch);
+  }
+
+  @Test
+  void shouldRestoreDefaultClearColourBeforeLitRendering() {
+    CameraComponent cameraComponent = makeCameraEntity(camera);
+    Renderer renderer =
+        new Renderer(cameraComponent, 10, spriteBatch, stage, renderService, debugRenderer);
+    LightingEngine lighting = mock(LightingEngine.class);
+    Gdx.gl.glClearColor(0f, 0f, 0f, 1f);
+    clearInvocations(Gdx.gl);
+
+    renderer.render(lighting);
+
+    var order = inOrder(Gdx.gl, renderService, lighting);
+    order.verify(Gdx.gl).glClearColor(248f / 255f, 249f / 255f, 178f / 255f, 1f);
+    order.verify(Gdx.gl).glClear(GL20.GL_COLOR_BUFFER_BIT);
+    order.verify(renderService).render(spriteBatch);
+    order.verify(lighting).render();
+  }
+
+  private static CameraComponent makeCameraEntity(Camera camera) {
+    Entity camEntity = new Entity().addComponent(new CameraComponent(camera));
+    return camEntity.getComponent(CameraComponent.class);
+  }
+
+  @Test
+  void shouldSkipRenderingWithoutGlAndResumeWhenAvailable() {
+    Renderer renderer =
+        new Renderer(
+            makeCameraEntity(camera), 10, spriteBatch, stage, renderService, debugRenderer);
+    GL20 originalGl = Gdx.gl;
+    clearInvocations(renderService);
+    try {
+      Gdx.gl = null;
+      Executable renderFrame = renderer::render;
+      assertDoesNotThrow(renderFrame);
+      verifyNoInteractions(spriteBatch, stage, debugRenderer, renderService);
+
+      Gdx.gl = originalGl;
+      renderer.render();
       verify(renderService).render(spriteBatch);
+      verify(stage).draw();
     } finally {
       Gdx.gl = originalGl;
     }
   }
 
   @Test
-  void shouldRenderWithLightingWithoutGlContext() {
-    // Same as above, for the version of render() that also draws the lighting.
+  void shouldSkipLitRenderingWithoutGlAndResumeWhenAvailable() {
+    Renderer renderer =
+        new Renderer(
+            makeCameraEntity(camera), 10, spriteBatch, stage, renderService, debugRenderer);
+    LightingEngine lighting = mock(LightingEngine.class);
     GL20 originalGl = Gdx.gl;
-    Gdx.gl = null;
+    clearInvocations(renderService);
     try {
-      CameraComponent cameraComponent = makeCameraEntity(camera);
-      Renderer renderer =
-          new Renderer(cameraComponent, 10, spriteBatch, stage, renderService, debugRenderer);
-      LightingEngine lightingEngine = mock(LightingEngine.class);
+      Gdx.gl = null;
+      assertDoesNotThrow(() -> renderer.render(lighting));
+      verifyNoInteractions(spriteBatch, stage, debugRenderer, renderService, lighting);
 
-      assertDoesNotThrow(() -> renderer.render(lightingEngine));
+      Gdx.gl = originalGl;
+      renderer.render(lighting);
       verify(renderService).render(spriteBatch);
-      verify(lightingEngine).render();
+      verify(lighting).render();
+      verify(stage).draw();
     } finally {
       Gdx.gl = originalGl;
     }
-  }
-
-  private static CameraComponent makeCameraEntity(Camera camera) {
-    Entity camEntity = new Entity().addComponent(new CameraComponent(camera));
-    return camEntity.getComponent(CameraComponent.class);
   }
 }

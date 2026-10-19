@@ -1,5 +1,6 @@
 package com.csse3200.game.entities.factories;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -9,7 +10,9 @@ import com.csse3200.game.areas.terrain.configs.*;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.TouchAttackComponent;
 import com.csse3200.game.components.level.*;
+import com.csse3200.game.components.lighting.PointLightComponent;
 import com.csse3200.game.entities.Entity;
+import com.csse3200.game.lighting.LightingDefaults;
 import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.physics.PhysicsUtils;
 import com.csse3200.game.physics.components.ColliderComponent;
@@ -162,13 +165,17 @@ public class ObstacleFactory {
    * @return triggerable platform entity
    */
   public static Entity createTriggerablePlatform(TriggerablePlatformConfig config) {
+    ActivatableComponent activation =
+        new ActivatableComponent(config.getInitialState(), config.getIds());
+    activation.setSingleActivation(config.getSingleActivation());
+
     Entity platform =
         new Entity()
             .addComponent(new DynamicTextureRenderComponent(config.textureFilepath))
             .addComponent(new PhysicsComponent())
             .addComponent(new ColliderComponent().setLayer(PhysicsLayer.OBSTACLE))
             .addComponent(new PlatformGrappleComponent(config.grappleSides))
-            .addComponent(new ActivatableComponent(config.getInitialState(), config.getIds()))
+            .addComponent(activation)
             .addComponent(new TriggerablePlatformComponent());
 
     platform.getComponent(PhysicsComponent.class).setBodyType(BodyType.StaticBody);
@@ -385,7 +392,7 @@ public class ObstacleFactory {
                 : new TextureRenderComponent(config.textureFilepath))
         .addComponent(new LedgeComponent())
         .addComponent(new PhysicsComponent().setBodyType(BodyType.StaticBody))
-        .addComponent(new ColliderComponent().setLayer(PhysicsLayer.OBSTACLE));
+        .addComponent(new ColliderComponent().setLayer(PhysicsLayer.LEDGE));
   }
 
   /**
@@ -399,6 +406,23 @@ public class ObstacleFactory {
         .addComponent(new TextureRenderComponent(texturePath))
         .addComponent(new PhysicsComponent().setBodyType(BodyType.StaticBody))
         .addComponent(new ColliderComponent().setLayer(PhysicsLayer.NONE));
+  }
+
+  public static Entity createTorch() {
+    Entity torch =
+        new Entity()
+            .addComponent(
+                new TextureRenderComponent("images/terrain/Level_3/water tile.png")) // placeholder
+            .addComponent(
+                new PointLightComponent(
+                    ServiceLocator.getLightingService().getEngine().getRayHandler(),
+                    LightingDefaults.RAYS,
+                    new Color((228f / 255f), (112f / 255f), (37f / 255f), 1f),
+                    LightingDefaults.DIST));
+
+    torch.setScale(0.5f, 1.2f);
+
+    return torch;
   }
 
   /**
@@ -468,6 +492,13 @@ public class ObstacleFactory {
 
     PhysicsUtils.setScaledCollider(spike, 0.8f, 0.5f);
 
+    spike
+        .getComponent(HitboxComponent.class)
+        .setAsBoxAligned(
+            spike.getScale().cpy().scl(0.9f, 0.7f),
+            PhysicsComponent.AlignX.CENTER,
+            PhysicsComponent.AlignY.BOTTOM);
+
     return spike;
   }
 
@@ -518,7 +549,7 @@ public class ObstacleFactory {
             .addComponent(new PhysicsComponent().setBodyType(BodyType.DynamicBody))
             .addComponent(new ColliderComponent().setLayer(PhysicsLayer.OBSTACLE))
             .addComponent(new HitboxComponent().setLayer(PhysicsLayer.OBSTACLE))
-            .addComponent(new CombatStatsComponent(100, 4))
+            .addComponent(new CombatStatsComponent(100, 2))
             .addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER))
             .addComponent(new SpikyBallComponent(moveDirection));
 
