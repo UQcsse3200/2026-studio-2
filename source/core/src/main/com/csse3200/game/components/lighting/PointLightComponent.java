@@ -55,8 +55,8 @@ public class PointLightComponent extends Component implements Disposable {
   @Override
   public void update() {
     if (circleLight == null) return;
-    if (circleLight.isActive() != isActive) {
-      circleLight.setActive(isActive);
+    if (circleLight.isActive() != this.isActive) {
+      circleLight.setActive(this.isActive);
     }
 
     // get the amount of time passed

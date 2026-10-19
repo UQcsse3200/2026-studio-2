@@ -1,14 +1,17 @@
 package com.csse3200.game.areas.terrain.configs;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.GridPoint2;
 import com.csse3200.game.components.item.Item;
 import com.csse3200.game.components.level.CheckpointComponent;
+import com.csse3200.game.components.lighting.PointLightComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.EnemyConfig;
 import com.csse3200.game.entities.factories.ItemFactory;
 import com.csse3200.game.entities.factories.ObstacleFactory;
+import com.csse3200.game.lighting.LightingDefaults;
 import com.csse3200.game.rendering.AnimationRenderComponent;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.ArrayList;
@@ -325,8 +328,16 @@ public class LevelConfig {
 
     for (CheckpointConfig c : checkpoints) {
       Entity checkpoint = new Entity();
-      checkpoint.addComponent(new CheckpointComponent(false, c.getPosition(), checkpointAtlas));
+      checkpoint
+          .addComponent(new CheckpointComponent(false, c.getPosition(), checkpointAtlas))
+          .addComponent(
+              new PointLightComponent(
+                  ServiceLocator.getLightingService().getEngine().getRayHandler(),
+                  LightingDefaults.RAYS,
+                  new Color(0.75f, 0.2f, 0f, 1f),
+                  LightingDefaults.DIST));
       checkpoint.setScale(1f, 1.5f);
+      checkpoint.getComponent(PointLightComponent.class).setActive(false);
 
       c.setEntity(checkpoint);
 

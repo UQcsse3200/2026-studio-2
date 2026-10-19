@@ -74,12 +74,14 @@ public class CheckpointComponent extends Component {
     }
     if (pointLightComponent != null) {
       pointLightComponent.setColor(new Color(0.55f, 0.05f, 0.02f, 1f));
+      pointLightComponent.setActive(true);
     }
   }
 
   public void deactivate() {
     if (pointLightComponent != null) {
-      pointLightComponent.setColor(Color.CLEAR);
+      // pointLightComponent.setColor(Color.CLEAR);
+      pointLightComponent.setActive(false);
     }
     this.collected = false;
   }
@@ -95,6 +97,9 @@ public class CheckpointComponent extends Component {
   /** Check if player position comes in range of checkpoint position. */
   @Override
   public void update() {
+    if (pointLightComponent != null) {
+      pointLightComponent.update();
+    }
     if (player == null) {
       for (Entity entity : ServiceLocator.getEntityService().getEntities()) {
         if (entity.getComponent(PlayerActions.class) != null) {
