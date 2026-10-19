@@ -340,9 +340,17 @@ public class EnemyFactory {
 
     // If the enemy is a range type, add a range task.
     if (config.attackType.equals("range")) {
+      // Archers fire at the speed of a player's standard arrow, which arcs the same way.
       aiComponent.addTask(
           new RangedAttackTask(
-              target, 20, config.attackRange, 2f, config.baseAttack, 4.5f, 5f, config.attackType));
+              target,
+              20,
+              config.attackRange,
+              2f,
+              config.baseAttack,
+              ProjectileFactory.STANDARD_ARROW_SPEED,
+              5f,
+              config.attackType));
       // If the enemy is a summon type, add summon + range task
     } else if (config.attackType.equals("summon")) {
       aiComponent

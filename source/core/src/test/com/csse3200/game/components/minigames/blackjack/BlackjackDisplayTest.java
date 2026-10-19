@@ -13,6 +13,7 @@ import static org.mockito.Mockito.when;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
@@ -125,14 +126,17 @@ class BlackjackDisplayTest {
     assertEquals(2f, display.getZIndex());
   }
 
+  private static Label label(BlackjackDisplay display, String name) {
+    return field(display, name, Label.class);
+  }
+
   @Test
   void shouldRejectBetWhenInventoryUnavailable() {
     BlackjackDisplay display = new BlackjackDisplay(new Blackjack(100));
     show(display);
 
     TextField betField = field(display, "betField", TextField.class);
-    com.badlogic.gdx.scenes.scene2d.ui.Label resultLabel =
-        field(display, "resultLabel", com.badlogic.gdx.scenes.scene2d.ui.Label.class);
+    Label resultLabel = label(display, "resultLabel");
 
     betField.setText("10");
     invokeTryStartRound(display);
@@ -147,10 +151,8 @@ class BlackjackDisplayTest {
     show(display);
 
     TextField betField = field(display, "betField", TextField.class);
-    com.badlogic.gdx.scenes.scene2d.ui.Label resultLabel =
-        field(display, "resultLabel", com.badlogic.gdx.scenes.scene2d.ui.Label.class);
-    com.badlogic.gdx.scenes.scene2d.ui.Label statusLabel =
-        field(display, "statusLabel", com.badlogic.gdx.scenes.scene2d.ui.Label.class);
+    Label resultLabel = label(display, "resultLabel");
+    Label statusLabel = label(display, "statusLabel");
 
     betField.setText("10");
     invokeTryStartRound(display);
@@ -167,10 +169,8 @@ class BlackjackDisplayTest {
     BlackjackDisplay display = new BlackjackDisplay(new Blackjack(100), inventory);
     show(display);
 
-    com.badlogic.gdx.scenes.scene2d.ui.Label resultLabel =
-        field(display, "resultLabel", com.badlogic.gdx.scenes.scene2d.ui.Label.class);
-    com.badlogic.gdx.scenes.scene2d.ui.Label statusLabel =
-        field(display, "statusLabel", com.badlogic.gdx.scenes.scene2d.ui.Label.class);
+    Label resultLabel = label(display, "resultLabel");
+    Label statusLabel = label(display, "statusLabel");
 
     invokeTryStartRound(display);
 
@@ -186,8 +186,7 @@ class BlackjackDisplayTest {
     show(display);
 
     TextField betField = field(display, "betField", TextField.class);
-    com.badlogic.gdx.scenes.scene2d.ui.Label resultLabel =
-        field(display, "resultLabel", com.badlogic.gdx.scenes.scene2d.ui.Label.class);
+    Label resultLabel = label(display, "resultLabel");
 
     betField.setText("0");
     invokeTryStartRound(display);
@@ -204,10 +203,8 @@ class BlackjackDisplayTest {
     show(display);
 
     TextField betField = field(display, "betField", TextField.class);
-    com.badlogic.gdx.scenes.scene2d.ui.Label resultLabel =
-        field(display, "resultLabel", com.badlogic.gdx.scenes.scene2d.ui.Label.class);
-    com.badlogic.gdx.scenes.scene2d.ui.Label statusLabel =
-        field(display, "statusLabel", com.badlogic.gdx.scenes.scene2d.ui.Label.class);
+    Label resultLabel = label(display, "resultLabel");
+    Label statusLabel = label(display, "statusLabel");
 
     betField.setText("51");
     invokeTryStartRound(display);

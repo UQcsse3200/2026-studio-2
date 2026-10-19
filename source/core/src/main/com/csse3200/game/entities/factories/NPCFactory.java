@@ -77,29 +77,13 @@ public class NPCFactory {
   }
 
   /**
-   * Creates a ghost entity.
+   * Creates a zombie entity. Zombies currently use the ghost's sprite, animations and stats.
    *
    * @param target entity to chase
    * @return entity
    */
   public static Entity createZombie(Entity target) {
-    Entity ghost = createBaseNPC(target);
-    BaseEntityConfig config = configs.ghost;
-
-    AnimationRenderComponent animator =
-        new AnimationRenderComponent(
-            ServiceLocator.getResourceService().getAsset("images/ghost.atlas", TextureAtlas.class));
-    animator.addAnimation(ANGRY_FLOAT, 0.1f, Animation.PlayMode.LOOP);
-    animator.addAnimation(FLOAT, 0.1f, Animation.PlayMode.LOOP);
-
-    ghost
-        .addComponent(new CombatStatsComponent(config.health, config.baseAttack))
-        .addComponent(animator)
-        .addComponent(new GhostAnimationController());
-
-    ghost.getComponent(AnimationRenderComponent.class).scaleEntity();
-
-    return ghost;
+    return createGhost(target);
   }
 
   /**

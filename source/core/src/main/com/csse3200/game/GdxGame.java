@@ -19,12 +19,10 @@ import com.csse3200.game.screens.LoadSaveScreen;
 import com.csse3200.game.screens.MainGameScreen;
 import com.csse3200.game.screens.MainMenuScreen;
 import com.csse3200.game.screens.SandboxGameScreen;
-import com.csse3200.game.screens.SettingsFromPauseScreen;
 import com.csse3200.game.screens.SettingsScreen;
 import com.csse3200.game.screens.TransitionScreen;
 import com.csse3200.game.screens.minigames.BlackjackScreen;
 import com.csse3200.game.screens.minigames.CyclopsMinigameRoomScreen;
-import com.csse3200.game.screens.minigames.MinigameSelectScreen;
 import com.csse3200.game.screens.minigames.spinthewheel.SpinTheWheelScreen;
 import java.util.ArrayList;
 import java.util.List;
@@ -61,7 +59,11 @@ public class GdxGame extends Game {
   private SaveFile pendingSave;
 
   /** Levels a save file may name; anything else is rejected and treated as level 1. */
-  private static final Set<String> VALID_LEVELS = Set.of("level1", "level2", "level3", "boss");
+  private static final String LEVEL_1 = "level1";
+
+  private static final String LEVEL_2 = "level2";
+  private static final String LEVEL_3 = "level3";
+  private static final Set<String> VALID_LEVELS = Set.of(LEVEL_1, LEVEL_2, LEVEL_3, "boss");
 
   @Override
   public void create() {
@@ -187,7 +189,7 @@ public class GdxGame extends Game {
     }
     if (!VALID_LEVELS.contains(save.currentLevel)) {
       logger.warn("Save slot {} names unknown level {}, loading level 1", slot, save.currentLevel);
-      save.currentLevel = "level1";
+      save.currentLevel = LEVEL_1;
     }
     logger.info("Loading save slot {} at level {}", slot, save.currentLevel);
     playerSnapshot = null;
@@ -285,9 +287,9 @@ public class GdxGame extends Game {
   /** Screen type for a saved level name. */
   private static ScreenType levelScreenType(String level) {
     switch (level) {
-      case "level2":
+      case LEVEL_2:
         return ScreenType.LEVEL_2_GAME;
-      case "level3":
+      case LEVEL_3:
         return ScreenType.LEVEL_3_GAME;
       case "boss":
         return ScreenType.LEVEL_BOSS_GAME;
@@ -362,11 +364,11 @@ public class GdxGame extends Game {
         return new SandboxGameScreen(this);
       case LEVEL_2_GAME:
         LevelsGameScreen screen2 = new LevelsGameScreen(this);
-        screen2.queueAreaSwap("level2");
+        screen2.queueAreaSwap(LEVEL_2);
         return screen2;
       case LEVEL_3_GAME:
         LevelsGameScreen screen3 = new LevelsGameScreen(this);
-        screen3.queueAreaSwap("level3");
+        screen3.queueAreaSwap(LEVEL_3);
         return screen3;
       case LEVEL_BOSS_GAME:
         LevelsGameScreen bossScreen = new LevelsGameScreen(this);
@@ -374,10 +376,6 @@ public class GdxGame extends Game {
         return bossScreen;
       case SETTINGS:
         return new SettingsScreen(this);
-      case SETTINGS_FROM_PAUSE:
-        return new SettingsFromPauseScreen(this);
-      case MINIGAME_SELECT:
-        return new MinigameSelectScreen(this);
       case CYCLOPS_MINIGAME:
         return new CyclopsMinigameRoomScreen(this);
       case MINIGAME_SPIN_THE_WHEEL:

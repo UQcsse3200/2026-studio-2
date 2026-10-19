@@ -32,6 +32,9 @@ public class SettingsMenuDisplay extends UIComponent {
   private final GdxGame game;
 
   private Table rootTable;
+  // Kept so a subclass that outlives its stage (the in-game menu) can tidy them up on dispose
+  protected Table menuBoxTable;
+  protected Image background;
   private TextField fpsText;
   private CheckBox fullScreenCheck;
   private CheckBox vsyncCheck;
@@ -47,6 +50,11 @@ public class SettingsMenuDisplay extends UIComponent {
     this.returnScreen = returnScreen;
   }
 
+  /** For menus that decide for themselves where leaving the menu goes, by overriding leave(). */
+  protected SettingsMenuDisplay(GdxGame game) {
+    this(game, null);
+  }
+
   @Override
   public void create() {
     super.create();
@@ -54,10 +62,10 @@ public class SettingsMenuDisplay extends UIComponent {
   }
 
   private void addActors() {
-    float screenWidth = Gdx.graphics.getWidth();
-    float screenHeight = Gdx.graphics.getHeight();
+    int screenWidth = Gdx.graphics.getWidth();
+    int screenHeight = Gdx.graphics.getHeight();
 
-    Image background =
+    background =
         new Image(
             ServiceLocator.getResourceService()
                 .getAsset("images/backgrounds/main_menu_bg_2.png", Texture.class));
@@ -73,7 +81,7 @@ public class SettingsMenuDisplay extends UIComponent {
     background.setSize(bgWidth, bgHeight);
     background.setPosition(-(bgWidth - screenWidth) / 2f, -(bgHeight - screenHeight) / 2f);
     stage.addActor(background);
-    Table menuBoxTable = new Table();
+    menuBoxTable = new Table();
     Table settingsTable = makeSettingsTable();
     Table menuBtns = makeMenuBtns();
 
@@ -238,7 +246,7 @@ public class SettingsMenuDisplay extends UIComponent {
           @Override
           public void changed(ChangeEvent changeEvent, Actor actor) {
             logger.debug("Exit button clicked");
-            ButtonSound.playClickThen(SettingsMenuDisplay.this::exitMenu);
+            onExitClicked();
           }
         });
 
@@ -274,8 +282,19 @@ public class SettingsMenuDisplay extends UIComponent {
     UserSettings.set(settings, true);
   }
 
-  private void exitMenu() {
+  /** What happens when the exit button is pressed: click, then leave the menu. */
+  protected void onExitClicked() {
+    ButtonSound.playClickThen(this::exitMenu);
+  }
+
+  /** Puts the volume back to the saved setting (it is changed live by the slider), then leaves. */
+  protected void exitMenu() {
     GameVolume.set(UserSettings.get().volume);
+    leave();
+  }
+
+  /** Where the menu goes once it has been exited. */
+  protected void leave() {
     game.setScreen(returnScreen);
   }
 
