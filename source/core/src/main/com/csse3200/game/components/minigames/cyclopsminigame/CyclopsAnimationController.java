@@ -78,12 +78,19 @@ public class CyclopsAnimationController extends Component {
     return state;
   }
 
+  /** Starts the wind up animation and moves to next animation stage after finishing */
   private void windUp() {
     if (animator.isFinished()) {
       jumpTo(attackPosition(), State.JUMPING);
     }
   }
 
+  /**
+   * Jump / Charge to the target Entity.
+   *
+   * Changing the facing location of the animated entity
+   * depending on location of the target entity
+   */
   private void chargeAtTarget() {
     face(target.getCenterPosition().x);
     animator.startAnimation("charge_start");
@@ -91,12 +98,17 @@ public class CyclopsAnimationController extends Component {
     entity.getEvents().trigger(WOKE_UP_EVENT);
   }
 
+  /** Return the controlled entity to their idle position location on screen. */
   private void returnHome() {
     if (state != State.ASLEEP) {
       jumpTo(home, State.RETURNING);
     }
   }
 
+  /**
+   * Calculate the attack position to swing the club at the target entity
+   * @return a Vector2 of the position to finish the club swing
+   */
   private Vector2 attackPosition() {
     float width = entity.getScale().x;
     float playerX = target.getCenterPosition().x;
@@ -105,6 +117,12 @@ public class CyclopsAnimationController extends Component {
     return new Vector2(bodyX - width / 2f, groundY);
   }
 
+  /**
+   * Move the controlled animated entity to the given position
+   * and change the state to the next state
+   * @param position - The Vector2 position to move the controlled entity to
+   * @param next - The next State to enter after starting this animation
+   */
   private void jumpTo(Vector2 position, State next) {
     jumpStart = entity.getPosition();
     destination = position;
@@ -114,6 +132,11 @@ public class CyclopsAnimationController extends Component {
     state = next;
   }
 
+  /**
+   * Move the controlled entity's position while jumping to a target location.
+   * After landing start the swinging animation or return to idle base position
+   * @param delta - time since last frame
+   */
   private void jump(float delta) {
     jumpTime += delta;
     float progress = Math.min(jumpTime / JUMP_DURATION, 1f);
@@ -134,6 +157,7 @@ public class CyclopsAnimationController extends Component {
     }
   }
 
+  /** Start the swinging animation */
   private void startSwing() {
     face(target.getCenterPosition().x);
     animator.startAnimation("attack");
