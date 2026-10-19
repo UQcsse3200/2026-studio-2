@@ -46,11 +46,11 @@ public class CheckpointComponent extends Component {
 
   @Override
   public void create() {
-      try {
-          pointLightComponent = entity.getComponent(PointLightComponent.class);
-      } catch (Exception e) {
-          pointLightComponent = null;
-      }
+    try {
+      pointLightComponent = entity.getComponent(PointLightComponent.class);
+    } catch (Exception e) {
+      pointLightComponent = null;
+    }
     // The checkpoint entity draws itself; null when the level has no checkpoint atlas.
     torchAnimator = entity.getComponent(AnimationRenderComponent.class);
   }
@@ -68,6 +68,7 @@ public class CheckpointComponent extends Component {
     }
     if (pointLightComponent != null) {
       pointLightComponent.setColor(new Color(228f / 255f, 112f / 255f, 37f / 255f, 1f));
+      pointLightComponent.setActive(true);
     }
   }
 
