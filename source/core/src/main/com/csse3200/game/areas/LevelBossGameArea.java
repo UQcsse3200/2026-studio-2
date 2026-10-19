@@ -72,8 +72,7 @@ public class LevelBossGameArea extends GameArea {
     spawnTerrain();
     spawnConfigEntities();
 
-    player.setPosition(
-        new Vector2((float) config.getPlayerSpawn().x, (float) config.getPlayerSpawn().y));
+    player.setPosition(new Vector2(config.getPlayerSpawn().x, config.getPlayerSpawn().y));
 
     spawnCalypso();
   }

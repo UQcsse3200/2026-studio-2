@@ -15,6 +15,8 @@ import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.utils.Align;
+import com.csse3200.game.entities.Entity;
 import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.rendering.RenderService;
 import com.csse3200.game.services.ServiceLocator;
@@ -294,6 +296,33 @@ class TextBoxComponentTest {
     Table table = getField(component, "table");
     assertEquals(100f, table.getX(), 0.01f);
     assertEquals(200f, table.getY(), 0.01f);
+  }
+
+  @Test
+  void shouldFollowEntityCenterAndScreenSizeWhenDrawing() {
+    TextBoxComponent component = makeComponent(List.of("Some text"), 100f);
+    Entity entity = new Entity().addComponent(component);
+    entity.setPosition(4f, 6f);
+    entity.setScale(2f, 4f);
+    component.setPosition(0f, 0f, Align.bottomLeft);
+    when(mockGraphics.getDeltaTime()).thenReturn(1f);
+
+    component.create();
+    invokeDraw(component);
+
+    Table table = getField(component, "table");
+    // The center is (5, 8), a quarter across and two-fifths up the 20-unit world.
+    assertEquals(210f, table.getX(), 0.01f);
+    assertEquals(258f, table.getY(), 0.01f);
+
+    entity.setPosition(9f, 3f);
+    when(mockGraphics.getWidth()).thenReturn(1200);
+    when(mockGraphics.getHeight()).thenReturn(800);
+    invokeDraw(component);
+
+    // Moving and resizing must use the new center (10, 5) and screen dimensions.
+    assertEquals(610f, table.getX(), 0.01f);
+    assertEquals(218f, table.getY(), 0.01f);
   }
 
   @Test

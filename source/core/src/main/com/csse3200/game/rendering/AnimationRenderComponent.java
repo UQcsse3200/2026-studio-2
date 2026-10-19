@@ -46,7 +46,7 @@ public class AnimationRenderComponent extends RenderComponent {
 
   // Texels per world-unit at entity.scale.x == 1, established by scaleEntity(). 0 means
   // scaleEntity() was never called, so draw() falls back to entity.scale directly.
-  protected float defaultRegionWidthPx;
+  protected int defaultRegionWidthPx;
 
   /**
    * Create the component for a given texture atlas.
@@ -120,7 +120,7 @@ public class AnimationRenderComponent extends RenderComponent {
   public void scaleEntity() {
     TextureRegion defaultTexture = this.atlas.findRegion("default");
     entity.setScale(1f, (float) defaultTexture.getRegionHeight() / defaultTexture.getRegionWidth());
-    defaultRegionWidthPx = (float) defaultTexture.getRegionWidth();
+    defaultRegionWidthPx = defaultTexture.getRegionWidth();
   }
 
   /**
@@ -235,7 +235,7 @@ public class AnimationRenderComponent extends RenderComponent {
    *     animation's default frame, so a larger frame is drawn larger rather than squashed to fit.
    */
   protected float frameWidth(TextureRegion region, Vector2 scale) {
-    if (defaultRegionWidthPx > 0f) {
+    if (defaultRegionWidthPx > 0) {
       float unitsPerPixel = scale.x / defaultRegionWidthPx;
       return region.getRegionWidth() * unitsPerPixel;
     }
@@ -247,7 +247,7 @@ public class AnimationRenderComponent extends RenderComponent {
    * @see #frameWidth(TextureRegion, Vector2)
    */
   protected float frameHeight(TextureRegion region, Vector2 scale) {
-    if (defaultRegionWidthPx > 0f) {
+    if (defaultRegionWidthPx > 0) {
       float unitsPerPixel = scale.x / defaultRegionWidthPx;
       return region.getRegionHeight() * unitsPerPixel;
     }
@@ -268,7 +268,7 @@ public class AnimationRenderComponent extends RenderComponent {
     float drawX = pos.x;
     float drawY = pos.y;
     Vector2 anchor = animationAnchors.get(currentAnimationName);
-    if (anchor != null && defaultRegionWidthPx > 0f) {
+    if (anchor != null && defaultRegionWidthPx > 0) {
       float unitsPerPixel = scale.x / defaultRegionWidthPx;
       // Mirroring flips the character's position within the frame too, so mirror the anchor.
       float anchorX = flipX ? region.getRegionWidth() - anchor.x : anchor.x;

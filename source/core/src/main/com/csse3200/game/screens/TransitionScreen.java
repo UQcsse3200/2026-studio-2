@@ -103,13 +103,13 @@ public class TransitionScreen implements Screen {
   }
 
   private void drawOverlay(float alpha) {
-    float width = (float) Gdx.graphics.getWidth();
-    float height = (float) Gdx.graphics.getHeight();
+    int width = Gdx.graphics.getWidth();
+    int height = Gdx.graphics.getHeight();
 
-    batch.getProjectionMatrix().setToOrtho2D(0, 0, (float) width, (float) height);
+    batch.getProjectionMatrix().setToOrtho2D(0, 0, width, height);
     batch.begin();
     batch.setColor(0f, 0f, 0f, alpha);
-    batch.draw(blackPixel, 0, 0, (float) width, (float) height);
+    batch.draw(blackPixel, 0, 0, width, height);
     batch.setColor(Color.WHITE);
     batch.end();
   }

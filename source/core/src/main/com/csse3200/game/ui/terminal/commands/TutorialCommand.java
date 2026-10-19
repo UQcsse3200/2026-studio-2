@@ -55,8 +55,8 @@ public class TutorialCommand implements Command {
 
     TextBoxComponent textBox =
         new TextBoxComponent(
-            (float) config.xPos,
-            (float) config.yPos,
+            config.xPos,
+            config.yPos,
             config.getTextColour(),
             config.getBackgroundColour(),
             config.getBorderColour(),
@@ -69,7 +69,7 @@ public class TutorialCommand implements Command {
             config.pages,
             config.portraitPaths);
     textBox.setExternallyControlled(true);
-    textBox.setPosition((float) config.xPos, (float) config.yPos, Align.bottomLeft);
+    textBox.setPosition(config.xPos, config.yPos, Align.bottomLeft);
     textBox.create();
 
     activeTutorial = new TutorialComponent(textBox);

@@ -307,8 +307,8 @@ public class BackgroundRenderComponent extends RenderComponent {
         float verticalOffset = 0.05f;
         float cameraWidth = truncate(camera.getCamera().viewportWidth) + 4;
         float cameraHeight = truncate(camera.getCamera().viewportHeight) + 6;
-        float centerX = truncate(camera.getCamera().position.x);
-        float centerY = truncate(camera.getCamera().position.y);
+        int centerX = (int) camera.getCamera().position.x;
+        int centerY = (int) camera.getCamera().position.y;
         float startX = centerX - (cameraWidth / 2);
         float endX = centerX + (cameraWidth / 2);
         float startY = centerY + (cameraHeight / 2);
@@ -374,7 +374,7 @@ public class BackgroundRenderComponent extends RenderComponent {
                   layer.height,
                   1f,
                   1f,
-                  (float) layer.rotation,
+                  layer.rotation,
                   0,
                   0,
                   layer.texture.getWidth(),
@@ -392,7 +392,7 @@ public class BackgroundRenderComponent extends RenderComponent {
                   layer.height,
                   1f,
                   1f,
-                  (float) layer.rotation,
+                  layer.rotation,
                   0,
                   0,
                   layer.texture.getWidth(),

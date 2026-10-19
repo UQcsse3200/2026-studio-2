@@ -3,9 +3,7 @@ package com.csse3200.game.components.mainmenu;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -32,33 +30,11 @@ public class MainMenuDisplay extends UIComponent {
   private void addActors() {
     table = new Table();
     table.setFillParent(true);
-    float screenWidth = (float) Gdx.graphics.getWidth();
-    float screenHeight = (float) Gdx.graphics.getHeight();
+    int screenWidth = Gdx.graphics.getWidth();
+    int screenHeight = Gdx.graphics.getHeight();
     float pad = screenHeight * 0.02f;
-    Image background =
-        new Image(
-            ServiceLocator.getResourceService()
-                .getAsset("images/backgrounds/main_menu_bg.png", Texture.class));
-
-    // Oversized slightly so the shake below never reveals an edge/gap.
-    float overscan = 1.03f;
-    float bgWidth = screenWidth * overscan;
-    float bgHeight = screenHeight * overscan;
-    background.setSize(bgWidth, bgHeight);
-    background.setPosition(-(bgWidth - screenWidth) / 2f, -(bgHeight - screenHeight) / 2f);
-    backgroundImage = background;
-    stage.addActor(background);
-
-    // Subtle continuous shake so the background feels a bit alive.
-    float shakeAmount = 15f;
-    float shakeDuration = 1f;
-    background.addAction(
-        Actions.forever(
-            Actions.sequence(
-                Actions.moveBy(shakeAmount, 0f, shakeDuration, Interpolation.sine),
-                Actions.moveBy(-shakeAmount, shakeAmount, shakeDuration, Interpolation.sine),
-                Actions.moveBy(-shakeAmount, -shakeAmount, shakeDuration, Interpolation.sine),
-                Actions.moveBy(shakeAmount, 0f, shakeDuration, Interpolation.sine))));
+    backgroundImage = MenuBackground.create(screenWidth, screenHeight);
+    stage.addActor(backgroundImage);
 
     Image title =
         new Image(

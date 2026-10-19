@@ -133,7 +133,7 @@ public class LevelConfig {
 
     for (PlatformConfig p : platforms) {
       Entity platform = ObstacleFactory.createPlatform(p);
-      platform.setScale((float) p.width, (float) p.height);
+      platform.setScale(p.width, p.height);
       entities.add(new SpawnData(p.position, platform));
     }
   }
@@ -149,7 +149,7 @@ public class LevelConfig {
 
     for (MovingPlatformConfig p : movingPlatforms) {
       Entity platform = ObstacleFactory.createMovingPlatform(p);
-      platform.setScale((float) p.width, (float) p.height);
+      platform.setScale(p.width, p.height);
       entities.add(new SpawnData(p.position, platform));
     }
   }
@@ -165,7 +165,7 @@ public class LevelConfig {
 
     for (CrumblingPlatformConfig c : crumblingPlatforms) {
       Entity platform = ObstacleFactory.createCrumblingPlatform(c);
-      platform.setScale((float) c.width, (float) c.height);
+      platform.setScale(c.width, c.height);
       entities.add(new SpawnData(c.position, platform));
     }
   }
@@ -181,7 +181,7 @@ public class LevelConfig {
 
     for (TriggerablePlatformConfig t : triggerablePlatforms) {
       Entity triggerablePlatform = ObstacleFactory.createTriggerablePlatform(t);
-      triggerablePlatform.setScale((float) t.width, (float) t.height);
+      triggerablePlatform.setScale(t.width, t.height);
       entities.add(new SpawnData(t.position, triggerablePlatform));
     }
   }
@@ -197,7 +197,7 @@ public class LevelConfig {
 
     for (SlipperyPlatformConfig s : slipperyPlatforms) {
       Entity slipperyPlatform = ObstacleFactory.createSlipperyPlatform(s);
-      slipperyPlatform.setScale((float) s.width, (float) s.height);
+      slipperyPlatform.setScale(s.width, s.height);
       entities.add(new SpawnData(s.position, slipperyPlatform));
     }
   }
@@ -211,7 +211,7 @@ public class LevelConfig {
       // A ledge that uses the ground tile repeats it, as floors do, instead of stretching it.
       boolean tiled = p.textureFilepath != null && p.textureFilepath.equals(groundTFP);
       Entity ledge = ObstacleFactory.createLedge(p, tiled);
-      ledge.setScale((float) p.width, (float) p.height);
+      ledge.setScale(p.width, p.height);
       entities.add(new SpawnData(p.position, ledge));
     }
   }
@@ -224,7 +224,7 @@ public class LevelConfig {
     if (bounds != null) {
       for (PlatformConfig b : bounds) {
         Entity bound = ObstacleFactory.createFloor(b);
-        bound.setScale((float) b.width, (float) b.height);
+        bound.setScale(b.width, b.height);
         entities.add(new SpawnData(b.position, bound));
       }
     }
@@ -232,7 +232,7 @@ public class LevelConfig {
     if (floors != null) {
       for (PlatformConfig f : floors) {
         Entity bound = ObstacleFactory.createFloor(f);
-        bound.setScale((float) f.width, (float) f.height);
+        bound.setScale(f.width, f.height);
         entities.add(new SpawnData(f.position, bound));
       }
     }
@@ -349,7 +349,7 @@ public class LevelConfig {
       }
 
       GridPoint2 pos = c.getPosition();
-      checkpoint.setPosition((float) pos.x, pos.y - 1.3f);
+      checkpoint.setPosition(pos.x, pos.y - 1.3f);
 
       entities.add(new SpawnData(c.getPosition(), checkpoint));
     }
