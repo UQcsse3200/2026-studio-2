@@ -38,6 +38,7 @@ import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.GameEndActions;
 import com.csse3200.game.ui.GameEndDisplay;
 import com.csse3200.game.ui.GameEndState;
+import com.csse3200.game.ui.GameplayCursor;
 import com.csse3200.game.ui.terminal.Terminal;
 import com.csse3200.game.ui.terminal.TerminalDisplay;
 import java.util.ArrayList;
@@ -75,6 +76,7 @@ public class LevelsGameScreen extends BaseGameScreen {
   private Entity player;
   private GameEndDisplay gameEndDisplay;
   private Terminal terminal;
+  private final GameplayCursor cursor = new GameplayCursor();
   private static final String GAMEPLAY_MUSIC = "sounds/gameplay_bg.ogg";
   private static final String[] gameplayMusicFiles = {GAMEPLAY_MUSIC};
   private static final String WIN_MUSIC = "sounds/Win_music.mp3";
@@ -308,6 +310,27 @@ public class LevelsGameScreen extends BaseGameScreen {
     wheelOverlay.afterRender();
     pauseOverlay.afterRender();
     blackjackOverlay.afterRender();
+    updateCursor();
+  }
+
+  /** Hides the pointer during normal play and shows it for menus and while aiming. */
+  private void updateCursor() {
+    boolean screenMenuOpen =
+        (terminal != null && terminal.isOpen())
+            || minigameOverlayManager.isActive()
+            || (gameEndDisplay != null && gameEndDisplay.isVisible());
+    cursor.update(currentGameArea == null ? null : currentGameArea.getPlayer(), screenMenuOpen);
+  }
+
+  @Override
+  public void hide() {
+    cursor.restore();
+  }
+
+  @Override
+  public void dispose() {
+    cursor.dispose();
+    super.dispose();
   }
 
   /**
