@@ -50,7 +50,7 @@ public final class ShopCatalog {
       return null;
     }
     for (ShopListing listing : LISTINGS) {
-      if (listing.getItemType() == itemType) {
+      if (listing.itemType() == itemType) {
         return listing;
       }
     }
