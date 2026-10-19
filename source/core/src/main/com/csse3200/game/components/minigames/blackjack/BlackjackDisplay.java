@@ -31,7 +31,7 @@ import com.csse3200.game.ui.UIComponent;
 public class BlackjackDisplay extends UIComponent {
   private static final String EMPTY_BALANCE_MESSAGE = "Your balance is 0 - grind hard!";
 
-  private static final String PLACE_BET = "PLACE BET";
+  private static final String PLACE_BET = "READY";
 
   private static final float Z_INDEX = 2f;
   private static final float CARD_WIDTH = 100f;
@@ -53,6 +53,9 @@ public class BlackjackDisplay extends UIComponent {
   private boolean soundEnabled = true;
   private final java.util.function.Consumer<Boolean> soundToggleCallback;
   private final Runnable backCallback;
+
+  // UI-only textures; released when the Blackjack screen closes.
+  private final java.util.List<Texture> casinoUiTextures = new java.util.ArrayList<>();
 
   private Table table;
   private Image deckImage;
@@ -144,8 +147,8 @@ public class BlackjackDisplay extends UIComponent {
     playerStyle.fontColor = Color.valueOf("F5D78B");
     playerLabel.setStyle(playerStyle);
 
-    dealerLabel.setFontScale(1.45f);
-    playerLabel.setFontScale(1.45f);
+    dealerLabel.setFontScale(1.55f);
+    playerLabel.setFontScale(1.55f);
 
     dealerLabel.setAlignment(
         com.badlogic.gdx.utils.Align.center);
@@ -158,8 +161,17 @@ public class BlackjackDisplay extends UIComponent {
     resultLabel = new Label("", skin);
     statusLabel = new Label(PLACE_BET, skin);
 
+    // Gold text directly on the felt: no navy panels behind the scoreboard or HUD.
+    applyGoldInfoLabelStyle(dealerTotalLabel, 1.05f);
+    applyGoldInfoLabelStyle(playerTotalLabel, 1.05f);
+    applyGoldInfoLabelStyle(balanceLabel, 1.0f);
+    applyGoldInfoLabelStyle(statusLabel, 1.0f);
+    applyGoldInfoLabelStyle(resultLabel, 0.92f);
+
     betField = new TextField("", skin);
-    betField.setMessageText("Enter bet");
+    betField.setStyle(createCasinoBetFieldStyle());
+    betField.setAlignment(com.badlogic.gdx.utils.Align.center);
+    betField.setMessageText("Amount");
     betField.setTextFieldFilter(new TextField.TextFieldFilter.DigitsOnlyFilter());
 
     betField.addListener(
@@ -338,12 +350,15 @@ public class BlackjackDisplay extends UIComponent {
     playerRegion.row();
     playerRegion.add(playerTotalLabel);
 
+    // One compact status line above the buttons; only the editable amount has a border.
     Table status = new Table();
-    status.add(statusLabel).padRight(20f);
-    status.add(resultLabel).padRight(20f);
-    status.add(balanceLabel).padRight(20f);
-    status.add(new Label("Bet:", skin)).padRight(5f);
-    status.add(betField).width(100f);
+    status.add(statusLabel).padRight(22f);
+    status.add(balanceLabel).padRight(22f);
+    status.add(resultLabel).maxWidth(220f).padRight(16f);
+    Label betLabel = new Label("BET", skin);
+    applyGoldInfoLabelStyle(betLabel, 1.0f);
+    status.add(betLabel).padRight(9f);
+    status.add(betField).width(130f).height(34f);
 
     Table buttons = new Table();
 
@@ -359,7 +374,7 @@ public class BlackjackDisplay extends UIComponent {
     table.row();
     table.add(playerRegion).expandX().fillX().height(220f).bottom();
     table.row();
-    table.add(status).height(35f).center();
+    table.add(status).height(52f).center();
     table.row();
     table.add(buttons).height(85f).padBottom(12f).center();
 
@@ -370,6 +385,40 @@ public class BlackjackDisplay extends UIComponent {
     table.validate();
     table.toFront();
     buildResultOverlay();
+  }
+
+  private void applyGoldInfoLabelStyle(Label label, float scale) {
+    Label.LabelStyle style = new Label.LabelStyle(label.getStyle());
+    style.fontColor = Color.valueOf("F5D78B");
+    style.background = null;
+    label.setStyle(style);
+    label.setFontScale(scale);
+    label.setAlignment(com.badlogic.gdx.utils.Align.center);
+  }
+
+  // A restrained green felt entry with a crisp gold edge, matching the table.
+  private TextField.TextFieldStyle createCasinoBetFieldStyle() {
+    TextField.TextFieldStyle style =
+        new TextField.TextFieldStyle(skin.get(TextField.TextFieldStyle.class));
+    style.fontColor = Color.valueOf("FFE5A0");
+    style.messageFontColor = Color.valueOf("D4BA78");
+    style.background = createBetFieldBackground("103D30", "C69B43");
+    style.focusedBackground = createBetFieldBackground("174B39", "F8D978");
+    style.disabledBackground = createBetFieldBackground("26372E", "887344");
+    return style;
+  }
+
+  private NinePatchDrawable createBetFieldBackground(String fillHex, String borderHex) {
+    Pixmap pixels = new Pixmap(24, 24, Pixmap.Format.RGBA8888);
+    pixels.setColor(Color.valueOf(borderHex));
+    pixels.fill();
+    pixels.setColor(Color.valueOf(fillHex));
+    pixels.fillRectangle(2, 2, 20, 20);
+    Texture texture = new Texture(pixels);
+    pixels.dispose();
+    texture.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
+    casinoUiTextures.add(texture);
+    return new NinePatchDrawable(new NinePatch(texture, 4, 4, 4, 4));
   }
 
   private void buildResultOverlay() {
@@ -383,8 +432,13 @@ public class BlackjackDisplay extends UIComponent {
 
     Label title = new Label("", skin);
     title.setName("resultTitle");
+    title.setStyle(makeCasinoTextStyle(title, "6B3C14"));
+    title.setFontScale(1.65f);
+    title.setAlignment(com.badlogic.gdx.utils.Align.center);
 
     Label message = new Label("", skin);
+    message.setStyle(makeCasinoTextStyle(message, "4B301B"));
+    message.setFontScale(1.06f);
     message.setName("resultMessage");
     message.setWrap(true);
 
@@ -421,6 +475,12 @@ public class BlackjackDisplay extends UIComponent {
 
     resultOverlay.add(popup).width(480f);
     stage.addActor(resultOverlay);
+  }
+
+  private Label.LabelStyle makeCasinoTextStyle(Label label, String hexColor) {
+    Label.LabelStyle style = new Label.LabelStyle(label.getStyle());
+    style.fontColor = Color.valueOf(hexColor);
+    return style;
   }
 
   private NinePatchDrawable createResultBackground() {
@@ -589,18 +649,18 @@ public class BlackjackDisplay extends UIComponent {
   /** Updates the hand totals, the gold and bet line, and the result message. */
   private void refreshTotalsAndResult() {
     if (blackjack.getDealerHand().isEmpty()) {
-      dealerTotalLabel.setText("Dealer total: -");
+      dealerTotalLabel.setText("TOTAL  --");
     } else if (blackjack.isRoundInProgress() && !blackjack.isRoundOver()) {
-      dealerTotalLabel.setText("Dealer total: ?");
+      dealerTotalLabel.setText("TOTAL  ??");
     } else {
-      dealerTotalLabel.setText("Dealer total: " + blackjack.getDealerTotal());
+      dealerTotalLabel.setText("TOTAL  " + blackjack.getDealerTotal());
     }
 
     playerTotalLabel.setText(
         blackjack.getPlayerHand().isEmpty()
-            ? "Player total: -"
-            : "Player total: " + blackjack.getPlayerTotal());
-    balanceLabel.setText("Gold: " + getDisplayedGold() + "    Bet: " + blackjack.getBet());
+            ? "TOTAL  --"
+            : "TOTAL  " + blackjack.getPlayerTotal());
+    balanceLabel.setText("GOLD  " + getDisplayedGold() + "     STAKE  " + blackjack.getBet());
     if (inventory != null && inventory.getGold() <= 0) {
       resultLabel.setText(EMPTY_BALANCE_MESSAGE);
     } else {
@@ -937,6 +997,10 @@ public class BlackjackDisplay extends UIComponent {
       resultOverlay.remove();
     }
 
+    for (Texture casinoTexture : casinoUiTextures) {
+      casinoTexture.dispose();
+    }
+    casinoUiTextures.clear();
     super.dispose();
   }
 }
