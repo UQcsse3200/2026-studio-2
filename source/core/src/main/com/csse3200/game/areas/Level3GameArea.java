@@ -402,10 +402,10 @@ public class Level3GameArea extends GameArea {
       int bossBoundX = (int) bossBounds.x;
       int bossBoundY = (int) bossBounds.y;
 
-      Entity camera = new Entity();
+      Entity bossCamera = new Entity();
       cameraComponent.resize(bossBoundX, bossBoundY, (float) bossBoundX + 4);
-      camera.setPosition(bossBounds.x / 2 + 1, bossBounds.y / 2 + 97);
-      cameraComponent.setTarget(camera);
+      bossCamera.setPosition(bossBounds.x / 2 + 1, bossBounds.y / 2 + 97);
+      cameraComponent.setTarget(bossCamera);
 
       backgroundComponent.scaleEntity(bossResizeScale, bossBounds, true, "bossArena");
       bossCamToggled = true;

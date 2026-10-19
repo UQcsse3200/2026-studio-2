@@ -111,6 +111,23 @@ public abstract class RenderComponent extends Component implements Renderable, D
     }
   }
 
+  private void getTargetIntensity() {
+    if (player != null) {
+      if (player.getPosition().y >= 98) {
+        if (target > 0f) {
+          // gradual increase to max intensity once at top
+          target -= 0.001f;
+        } else {
+          target = 0f;
+        }
+      } else {
+        float currentTarget = ((player.getPosition().y - 6f) / 92f);
+        target = 1f - (currentTarget * 0.75f);
+      }
+      rainIntensity = target;
+    }
+  }
+
   @Override
   public void update() {
     if (player == null) {
@@ -123,20 +140,7 @@ public abstract class RenderComponent extends Component implements Renderable, D
     }
 
     if (weather && ServiceLocator.getTimeSource() != null) {
-      if (player != null) {
-        if (player.getPosition().y >= 98) {
-          if (target > 0f) {
-            // gradual increase to max intensity once at top
-            target -= 0.001f;
-          } else {
-            target = 0f;
-          }
-        } else {
-          float currentTarget = ((player.getPosition().y - 6f) / 92f);
-          target = 1f - (currentTarget * 0.75f);
-        }
-        rainIntensity = target;
-      }
+      getTargetIntensity();
       float deltaTime = ServiceLocator.getTimeSource().getDeltaTime();
       darkness = beforeFlash;
       backgroundLight = beforeFlashBackground;

@@ -76,7 +76,6 @@ public class BackgroundRenderComponent extends RenderComponent {
   private ArrayList<ArrayList<Float>> rainOffsets = null;
   // Created once and reused for the rain drop offsets.
   private final Random random = new Random();
-  private final ArrayList<Vector2> rainPositions = new ArrayList<>();
   private final List<ParallaxLayer> layers = new ArrayList<>();
   private final CameraComponent camera;
 
@@ -241,12 +240,10 @@ public class BackgroundRenderComponent extends RenderComponent {
               ServiceLocator.getResourceService()
                   .getAsset("images/parallax/lightning_2.png", Texture.class);
         }
-      } else if (rainIntensity <= 0.8205) {
-        if (layer.lightningOrder == 0) {
-          layer.texture =
-              ServiceLocator.getResourceService()
-                  .getAsset("images/parallax/lightning_3.png", Texture.class);
-        }
+      } else if (rainIntensity <= 0.8205 && layer.lightningOrder == 0) {
+        layer.texture =
+            ServiceLocator.getResourceService()
+                .getAsset("images/parallax/lightning_3.png", Texture.class);
       }
 
       // Get lightning order
@@ -268,23 +265,16 @@ public class BackgroundRenderComponent extends RenderComponent {
 
   private void updateWeather(ParallaxLayer layer) {
     boolean weather = getWeather();
-    if (weather) {
-      if (layer.repeat == CHAOTIC) {
-        if (rainIntensity < 1f) {
-          float intensity = 1f - rainIntensity;
-          float finalWidth = 0.1f;
-          float finalHeight = 0.45f;
-          int finalRotation = 40;
-          layer.velocity.x =
-              originalVelocity.x + (finalVelocity.x - originalVelocity.x) * intensity;
-          layer.velocity.y =
-              originalVelocity.y + (finalVelocity.y - originalVelocity.y) * intensity;
-          layer.width = originalWidth + (finalWidth - originalWidth) * intensity;
-          layer.height = originalHeight + (finalHeight - originalHeight) * intensity;
-          layer.rotation =
-              (int) (originalRotation + (finalRotation - originalRotation) * intensity);
-        }
-      }
+    if (weather && layer.repeat == CHAOTIC && rainIntensity < 1f) {
+      float intensity = 1f - rainIntensity;
+      float finalWidth = 0.1f;
+      float finalHeight = 0.45f;
+      int finalRotation = 40;
+      layer.velocity.x = originalVelocity.x + (finalVelocity.x - originalVelocity.x) * intensity;
+      layer.velocity.y = originalVelocity.y + (finalVelocity.y - originalVelocity.y) * intensity;
+      layer.width = originalWidth + (finalWidth - originalWidth) * intensity;
+      layer.height = originalHeight + (finalHeight - originalHeight) * intensity;
+      layer.rotation = (int) (originalRotation + (finalRotation - originalRotation) * intensity);
     }
   }
 
