@@ -358,11 +358,10 @@ public class PlayerInteractionComponent extends Component {
 
     Array<Entity> entities = ServiceLocator.getEntityService().getEntities();
     for (Entity candidate : entities) {
-      if (candidate.equals(entity) || candidate.getComponent(type) == null) {
-        continue;
-      }
       GoldPickupComponent gold = candidate.getComponent(GoldPickupComponent.class);
-      if (gold != null && gold.isCollected()) {
+      if (candidate.equals(entity)
+          || candidate.getComponent(type) == null
+          || (gold != null && gold.isCollected())) {
         continue;
       }
 
