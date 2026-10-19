@@ -225,42 +225,42 @@ public class BackgroundRenderComponent extends RenderComponent {
     boolean weather = getWeather();
     if (weather && layer.flash) {
       // Flash layers that flash during lightning
-        float lightning = getLightning();
-        // System.out.print(rainIntensity + ", ");
+      float lightning = getLightning();
+      // System.out.print(rainIntensity + ", ");
 
-        if (rainIntensity <= 0.3559) {
-          if (layer.lightningOrder == 0) {
-            layer.texture =
-                ServiceLocator.getResourceService()
-                    .getAsset("images/parallax/lightning_4.png", Texture.class);
-          }
-        } else if (rainIntensity <= 0.5678) {
-          if (layer.lightningOrder == 1) {
-            layer.texture =
-                ServiceLocator.getResourceService()
-                    .getAsset("images/parallax/lightning_2.png", Texture.class);
-          }
-        } else if (rainIntensity <= 0.8205) {
-          if (layer.lightningOrder == 0) {
-            layer.texture =
-                ServiceLocator.getResourceService()
-                    .getAsset("images/parallax/lightning_3.png", Texture.class);
-          }
+      if (rainIntensity <= 0.3559) {
+        if (layer.lightningOrder == 0) {
+          layer.texture =
+              ServiceLocator.getResourceService()
+                  .getAsset("images/parallax/lightning_4.png", Texture.class);
         }
+      } else if (rainIntensity <= 0.5678) {
+        if (layer.lightningOrder == 1) {
+          layer.texture =
+              ServiceLocator.getResourceService()
+                  .getAsset("images/parallax/lightning_2.png", Texture.class);
+        }
+      } else if (rainIntensity <= 0.8205) {
+        if (layer.lightningOrder == 0) {
+          layer.texture =
+              ServiceLocator.getResourceService()
+                  .getAsset("images/parallax/lightning_3.png", Texture.class);
+        }
+      }
 
-        // Get lightning order
-        if (lightning > 5f && lightning < 5.8f) {
-          flashOrder = 0;
-        } else if (lightning > 13f && lightning < 13.3f) {
-          flashOrder = 1;
+      // Get lightning order
+      if (lightning > 5f && lightning < 5.8f) {
+        flashOrder = 0;
+      } else if (lightning > 13f && lightning < 13.3f) {
+        flashOrder = 1;
+      }
+      // Flash single lightning layer
+      if (layer.lightningOrder == flashOrder) {
+        if (darkness == 1.1f) {
+          layer.transparency = 1f;
+        } else {
+          layer.transparency = 0f;
         }
-        // Flash single lightning layer
-        if (layer.lightningOrder == flashOrder) {
-          if (darkness == 1.1f) {
-            layer.transparency = 1f;
-          } else {
-            layer.transparency = 0f;
-          }
       }
     }
   }

@@ -27,7 +27,6 @@ import com.csse3200.game.physics.PhysicsService;
 import com.csse3200.game.physics.components.ColliderComponent;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.rendering.CaveEntranceRenderComponent;
-import com.csse3200.game.rendering.LevelPortalRenderComponent;
 import com.csse3200.game.rendering.RenderService;
 import com.csse3200.game.services.GameTime;
 import com.csse3200.game.services.ResourceService;
@@ -80,9 +79,7 @@ class Level2ExitDoorTest {
     when(resourceService.getAsset(CaveEntranceRenderComponent.TEXTURE, Texture.class))
         .thenReturn(doorTexture);
 
-    when(resourceService.getAsset(
-            LEVEL_END_TEXTURE, Texture.class))
-            .thenReturn(doorTexture);
+    when(resourceService.getAsset(LEVEL_END_TEXTURE, Texture.class)).thenReturn(doorTexture);
 
     // Level 2 terrain uses one world unit per tile.
     TerrainComponent terrain = mock(TerrainComponent.class);

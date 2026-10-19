@@ -366,8 +366,8 @@ public class LevelConfig {
 
       checkpoint.setScale(CheckpointComponent.ATLAS_WIDTH, CheckpointComponent.ATLAS_HEIGHT);
 
-      //--------------------------------------
-      //VERSION FROM OUR BRANCH
+      // --------------------------------------
+      // VERSION FROM OUR BRANCH
       // The torch art comes from the checkpoint atlas. Without one the checkpoint still works but
       // has nothing to draw.
       if (checkpointAtlas != null) {
@@ -383,7 +383,7 @@ public class LevelConfig {
         animator.startAnimation("unlit");
       }
 
-      //VERSION FROM MAIN
+      // VERSION FROM MAIN
       /*
       // The statue art comes from the checkpoint atlas and is drawn by the checkpoint entity
       // itself. Without an atlas the checkpoint still works but has nothing to draw.
@@ -403,7 +403,7 @@ public class LevelConfig {
         checkpoint.getComponent(CheckpointComponent.class).setTorch(checkpoint);
       }
       */
-      //--------------------------------------
+      // --------------------------------------
 
       GridPoint2 pos = c.getPosition();
       checkpoint.setPosition(pos.x, pos.y - 1.3f);

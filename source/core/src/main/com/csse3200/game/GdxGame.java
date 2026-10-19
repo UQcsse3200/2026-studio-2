@@ -283,12 +283,12 @@ public class GdxGame extends Game {
 
   /** Screen type for a saved level name. */
   private static ScreenType levelScreenType(String level) {
-      return switch (level) {
-          case "level2" -> ScreenType.LEVEL_2_GAME;
-          case "level3" -> ScreenType.LEVEL_3_GAME;
-          case "boss" -> ScreenType.LEVEL_BOSS_GAME;
-          default -> ScreenType.LEVEL_1_GAME;
-      };
+    return switch (level) {
+      case "level2" -> ScreenType.LEVEL_2_GAME;
+      case "level3" -> ScreenType.LEVEL_3_GAME;
+      case "boss" -> ScreenType.LEVEL_BOSS_GAME;
+      default -> ScreenType.LEVEL_1_GAME;
+    };
   }
 
   /**
