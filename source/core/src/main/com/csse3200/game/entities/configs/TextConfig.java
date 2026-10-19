@@ -1,8 +1,6 @@
 package com.csse3200.game.entities.configs;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.utils.Align;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -104,17 +102,5 @@ public class TextConfig {
       // fall through to fallback
     }
     return fallback;
-  }
-
-  public BitmapFont loadFont() {
-    if (fontPath == null || fontPath.isBlank()) {
-      return new BitmapFont(Gdx.files.internal("flat-earth/skin/fonts/alagard.fnt"));
-    }
-    try {
-      return new BitmapFont(Gdx.files.internal(fontPath));
-    } catch (Exception e) {
-      logger.error("Failed to load font from {}: {}", fontPath, e.getMessage());
-      return null;
-    }
   }
 }

@@ -96,21 +96,12 @@ public class PointLightComponent extends Component implements Disposable {
     return this;
   }
 
-  public PointLightComponent setSoftnessLength(float softness) {
-    if (circleLight != null) circleLight.setSoftnessLength(softness);
-    return this;
-  }
-
   public void setActive(boolean active) {
     this.isActive = active;
   }
 
   public boolean isActive() {
     return this.isActive;
-  }
-
-  public PointLight getLight() {
-    return circleLight;
   }
 
   public float getDistance() {
