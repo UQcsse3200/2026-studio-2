@@ -50,6 +50,13 @@ public class EnemyTeleportComponent extends Component {
 
   @Override
   public void update() {
+
+    BossPhaseComponent phase = entity.getComponent(BossPhaseComponent.class);
+
+    if (phase.isTransitioning()) {
+      return;
+    }
+
     long currentTime = ServiceLocator.getTimeSource().getTime();
 
     if ((damagedTpTime >= 0) && (currentTime >= damagedTpTime)) {

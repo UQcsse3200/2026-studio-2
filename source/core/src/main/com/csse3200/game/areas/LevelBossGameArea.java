@@ -51,7 +51,9 @@ public class LevelBossGameArea extends GameArea {
   };
 
   private static final String[] level3TexturesAtlas = {
-    "images/in_level_button.atlas", "images/enemies/calypso.atlas"
+    "images/in_level_button.atlas",
+    "images/enemies/calypso.atlas",
+    "images/enemies/skeleton_warrior.atlas"
   };
 
   private static final String[] level3Sounds = {"sounds/Impact4.ogg"};
