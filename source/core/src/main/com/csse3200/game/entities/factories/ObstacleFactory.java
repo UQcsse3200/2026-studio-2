@@ -414,11 +414,10 @@ public class ObstacleFactory {
         .addComponent(new ColliderComponent().setLayer(PhysicsLayer.NONE));
   }
 
-  public static Entity createTorch() {
+  public static Entity createTorch(String texturePath) {
     Entity torch =
         new Entity()
-            .addComponent(
-                new TextureRenderComponent("images/terrain/Level_3/water tile.png")) // placeholder
+            .addComponent(new TextureRenderComponent(texturePath))
             .addComponent(
                 new PointLightComponent(
                     ServiceLocator.getLightingService().getEngine().getRayHandler(),
@@ -426,7 +425,7 @@ public class ObstacleFactory {
                     new Color((228f / 255f), (112f / 255f), (37f / 255f), 1f),
                     LightingDefaults.DIST));
 
-    torch.setScale(0.5f, 1.2f);
+    torch.setScale(1f, 1.5f);
 
     return torch;
   }

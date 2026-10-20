@@ -59,6 +59,7 @@ public class Level2GameArea extends GameArea {
     "images/terrain/Level_2/level_2_tile.png",
     "images/terrain/Level_2/level_2_platform.png",
     "images/terrain/Level_2/level_2_spikes.png",
+    "images/terrain/Level_2/Level_2_torch.png",
 
     // Transparent texture used for the physics-only floor
     "images/ui/transparent.png",
@@ -105,6 +106,7 @@ public class Level2GameArea extends GameArea {
 
   private final TerrainFactory terrainFactory;
   private final CameraComponent camera;
+  protected String TORCH_TEXTURE = "images/terrain/Level_2/Level_2_torch.png";
 
   public Level2GameArea(TerrainFactory terrainFactory, CameraComponent camera, Entity player) {
     super(camera);
@@ -204,7 +206,7 @@ public class Level2GameArea extends GameArea {
     };
 
     for (GridPoint2 pos : torchSpawns) {
-      spawnEntityAt(ObstacleFactory.createTorch(), pos, true, false);
+      spawnEntityAt(ObstacleFactory.createTorch(TORCH_TEXTURE), pos, true, false);
     }
   }
 
