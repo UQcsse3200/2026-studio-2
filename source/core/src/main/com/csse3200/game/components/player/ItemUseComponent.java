@@ -24,8 +24,12 @@ public class ItemUseComponent extends Component {
   private static final Logger logger = LoggerFactory.getLogger(ItemUseComponent.class);
   private static final Vector2 DEFAULT_AIM = new Vector2(1f, 0f);
 
+  /** How far in front of the thrower, as a fraction of their width, a thrown potion appears. */
+  public static final float POTION_SPAWN_OFFSET = 0.8f;
+
   private InventoryComponent inventory;
   private CombatStatsComponent combatStats;
+  private boolean aimingPotion;
 
   @Override
   public void create() {
@@ -36,11 +40,15 @@ public class ItemUseComponent extends Component {
     entity.getEvents().addListener("useItem", this::useSelectedItem);
     entity.getEvents().addListener("shoot", this::shootSelectedArrow);
     entity.getEvents().addListener("stopShoot", this::stopShootSelectedArrow);
+    // A menu stealing the release, or dying mid-aim, drops the potion aim without throwing.
+    entity.getEvents().addListener("chargeCancel", this::cancelPotionAim);
+    entity.getEvents().addListener("death", this::cancelPotionAim);
   }
 
   /**
-   * Starts using the selected arrow item on shoot-button-down. Consumables are ignored here so
-   * holding or clicking the shoot button never accidentally drinks a potion.
+   * Starts using the selected arrow item on shoot-button-down. Drinkable potions are ignored here
+   * so holding or clicking the shoot button never accidentally drinks one. The poison potion is
+   * thrown, so it aims like the bow: holding shows its arc and releasing throws it.
    *
    * <p>Every arrow, including the rope arrow, is held as a charge and only actually fires when
    * {@link #stopShootSelectedArrow()} releases the button, with power (and for the grapple, reach)
@@ -56,6 +64,10 @@ public class ItemUseComponent extends Component {
       return;
     }
     ItemType selected = inventory.getSelectedItem();
+    if (selected == ItemType.POISON_POTION && inventory.hasItem(selected)) {
+      aimingPotion = true;
+      return;
+    }
     if (selected == null || !selected.isArrow() || !inventory.hasItem(selected)) {
       return;
     }
@@ -99,6 +111,10 @@ public class ItemUseComponent extends Component {
     if (inventory == null) {
       return;
     }
+    if (aimingPotion) {
+      aimingPotion = false;
+      usePoisonPotion(getAimDirection());
+    }
     entity.getEvents().trigger("grappleRelease");
     entity.getEvents().trigger("grappleDrawRelease", getAimDirection());
     entity.getEvents().trigger("chargeRelease", getAimDirection());
@@ -124,7 +140,7 @@ public class ItemUseComponent extends Component {
           useArrow(selected, getAimDirection());
       case HEALTH_POTION -> useHealthPotion();
       case SPEED_POTION -> useSpeedPotion();
-      case POISON_POTION -> usePoisonPotion();
+      case POISON_POTION -> usePoisonPotion(getAimDirection());
     };
   }
 
@@ -202,14 +218,24 @@ public class ItemUseComponent extends Component {
     return true;
   }
 
-  private boolean usePoisonPotion() {
+  /**
+   * @return true while right click is held to aim a poison potion, before it is thrown
+   */
+  public boolean isAimingPotion() {
+    return aimingPotion;
+  }
+
+  private void cancelPotionAim() {
+    aimingPotion = false;
+  }
+
+  private boolean usePoisonPotion(Vector2 direction) {
     if (!inventory.hasItem(ItemType.POISON_POTION)) {
       logger.debug("No poison potion available to use");
       entity.getEvents().trigger(ITEM_USE_FAILED, ItemType.POISON_POTION);
       return false;
     }
 
-    Vector2 direction = getAimDirection();
     if (ServiceLocator.getEntityService() == null || ServiceLocator.getPhysicsService() == null) {
       entity.getEvents().trigger(ITEM_USE_FAILED, ItemType.POISON_POTION);
       return false;
@@ -222,7 +248,9 @@ public class ItemUseComponent extends Component {
 
     Vector2 throwDirection = direction.cpy().nor();
     Vector2 spawnPosition =
-        entity.getCenterPosition().mulAdd(throwDirection, entity.getScale().x * 0.8f);
+        entity
+            .getCenterPosition()
+            .mulAdd(throwDirection, entity.getScale().x * POTION_SPAWN_OFFSET);
     ServiceLocator.getEntityService()
         .register(
             ProjectileFactory.createThrownPoisonPotion(entity, spawnPosition, throwDirection));

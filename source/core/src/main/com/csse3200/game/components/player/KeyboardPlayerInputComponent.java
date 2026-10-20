@@ -349,25 +349,25 @@ public class KeyboardPlayerInputComponent extends InputComponent {
     if (cameraComponent == null || Gdx.graphics == null) {
       return null;
     }
+    Vector2 start = getAimStartWorldPosition();
+    Vector3 screen = cameraComponent.getCamera().project(new Vector3(start.x, start.y, 0f));
+    // Camera.project measures y up from the bottom; input coordinates measure it down from the top.
+    return new GridPoint2(Math.round(screen.x), Math.round(Gdx.graphics.getHeight() - screen.y));
+  }
+
+  private Vector2 getAimStartWorldPosition() {
     PlayerActions actions = entity.getComponent(PlayerActions.class);
     int facing = actions == null ? 1 : actions.getFacingDirection();
     Vector2 centre = entity.getCenterPosition();
-    Vector3 start;
     if (isGrappleSelected()) {
       // Aim directions are measured from the centre, so start the angle there.
       float radians = GRAPPLE_AIM_START_ANGLE * MathUtils.degreesToRadians;
-      start =
-          new Vector3(
-              centre.x + facing * AIM_START_DISTANCE * MathUtils.cos(radians),
-              centre.y + AIM_START_DISTANCE * MathUtils.sin(radians),
-              0f);
-    } else {
-      float headHeight = entity.getPosition().y + entity.getScale().y * AIM_START_HEIGHT;
-      start = new Vector3(centre.x + facing * AIM_START_DISTANCE, headHeight, 0f);
+      return new Vector2(
+          centre.x + facing * AIM_START_DISTANCE * MathUtils.cos(radians),
+          centre.y + AIM_START_DISTANCE * MathUtils.sin(radians));
     }
-    Vector3 screen = cameraComponent.getCamera().project(start);
-    // Camera.project measures y up from the bottom; input coordinates measure it down from the top.
-    return new GridPoint2(Math.round(screen.x), Math.round(Gdx.graphics.getHeight() - screen.y));
+    float headHeight = entity.getPosition().y + entity.getScale().y * AIM_START_HEIGHT;
+    return new Vector2(centre.x + facing * AIM_START_DISTANCE, headHeight);
   }
 
   private boolean isGrappleSelected() {

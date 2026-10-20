@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -455,6 +456,71 @@ class ItemUseComponentTest {
     assertTrue(player.getComponent(ItemUseComponent.class).useSelectedItem());
     assertTrue(player.getComponent(ItemUseComponent.class).useSelectedItem());
     assertEquals(0, inventory.getItemCount(ItemType.POISON_POTION));
+  }
+
+  @Test
+  void holdingRightClickShouldAimThePoisonPotionWithoutThrowingIt() {
+    ServiceLocator.registerPhysicsService(new PhysicsService());
+    EntityService entities = mock(EntityService.class);
+    ServiceLocator.registerEntityService(entities);
+    Entity player = createPlayer();
+    InventoryComponent inventory = player.getComponent(InventoryComponent.class);
+    inventory.addItem(ItemType.POISON_POTION, 2);
+
+    player.getEvents().trigger("shoot", new Vector2(1f, 1f));
+
+    assertTrue(player.getComponent(ItemUseComponent.class).isAimingPotion());
+    assertEquals(2, inventory.getItemCount(ItemType.POISON_POTION));
+    verify(entities, never()).register(any(Entity.class));
+  }
+
+  @Test
+  void releasingRightClickShouldThrowTheAimedPoisonPotion() {
+    ServiceLocator.registerPhysicsService(new PhysicsService());
+    EntityService entities = mock(EntityService.class);
+    ServiceLocator.registerEntityService(entities);
+    Entity player = createPlayer();
+    InventoryComponent inventory = player.getComponent(InventoryComponent.class);
+    inventory.addItem(ItemType.POISON_POTION, 2);
+
+    player.getEvents().trigger("shoot", new Vector2(1f, 1f));
+    player.getEvents().trigger("stopShoot");
+
+    assertFalse(player.getComponent(ItemUseComponent.class).isAimingPotion());
+    assertEquals(1, inventory.getItemCount(ItemType.POISON_POTION));
+    verify(entities).register(any(Entity.class));
+  }
+
+  @Test
+  void cancellingThePotionAimShouldNotThrowIt() {
+    ServiceLocator.registerPhysicsService(new PhysicsService());
+    EntityService entities = mock(EntityService.class);
+    ServiceLocator.registerEntityService(entities);
+    Entity player = createPlayer();
+    InventoryComponent inventory = player.getComponent(InventoryComponent.class);
+    inventory.addItem(ItemType.POISON_POTION, 2);
+
+    player.getEvents().trigger("shoot", new Vector2(1f, 1f));
+    // A menu stole the release.
+    player.getEvents().trigger("chargeCancel");
+    player.getEvents().trigger("stopShoot");
+
+    assertFalse(player.getComponent(ItemUseComponent.class).isAimingPotion());
+    assertEquals(2, inventory.getItemCount(ItemType.POISON_POTION));
+    verify(entities, never()).register(any(Entity.class));
+  }
+
+  @Test
+  void rightClickShouldNotAimDrinkablePotions() {
+    Entity player = createPlayer();
+    InventoryComponent inventory = player.getComponent(InventoryComponent.class);
+    inventory.addItem(ItemType.HEALTH_POTION, 1);
+
+    player.getEvents().trigger("shoot", new Vector2(1f, 1f));
+    player.getEvents().trigger("stopShoot");
+
+    assertFalse(player.getComponent(ItemUseComponent.class).isAimingPotion());
+    assertEquals(1, inventory.getItemCount(ItemType.HEALTH_POTION));
   }
 
   private void assertArrowUsesBowType(ItemType itemType, ArrowType expectedArrowType) {

@@ -100,6 +100,13 @@ class GameplayCursorTest {
   }
 
   @Test
+  void shouldShowWhileAimingAPoisonPotion() {
+    Entity player = playerHolding(ItemType.POISON_POTION);
+    holdRightClick(player);
+    assertTrue(GameplayCursor.shouldShow(player, false));
+  }
+
+  @Test
   void shouldStayHiddenWhenRightClickingWithAnItemThatDoesNotAim() {
     Entity player = playerHolding(ItemType.HEALTH_POTION);
     holdRightClick(player);

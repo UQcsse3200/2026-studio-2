@@ -11,14 +11,16 @@ import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.components.item.weapons.bow.BowComponent;
 import com.csse3200.game.components.projectile.ArrowProjectileComponent;
 import com.csse3200.game.components.projectile.ArrowTrajectory;
+import com.csse3200.game.entities.factories.ProjectileFactory;
+import com.csse3200.game.physics.PhysicsEngine;
 import com.csse3200.game.physics.raycast.RaycastHit;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.UIComponent;
 
 /**
- * Shows a dotted preview of where the arrow will fly while the player is drawing the bow. The path
- * uses the same speed, charge and gravity as the real arrow, and stops at the first terrain it
- * would hit.
+ * Shows a dotted preview of where a shot will fly: the arrow while the player is drawing the bow,
+ * or the poison potion while they hold right click to throw it. The path uses the same speed,
+ * charge and gravity as the real projectile, and stops at the first terrain it would hit.
  */
 public class ArrowTrajectoryDisplay extends UIComponent {
   private static final int DOT_COUNT = 18;
@@ -36,6 +38,7 @@ public class ArrowTrajectoryDisplay extends UIComponent {
 
   private Texture dotTexture;
   private BowComponent bow;
+  private ItemUseComponent itemUse;
   private KeyboardPlayerInputComponent input;
   private boolean dead;
 
@@ -43,6 +46,7 @@ public class ArrowTrajectoryDisplay extends UIComponent {
   public void create() {
     super.create();
     bow = entity.getComponent(BowComponent.class);
+    itemUse = entity.getComponent(ItemUseComponent.class);
     input = entity.getComponent(KeyboardPlayerInputComponent.class);
     entity.getEvents().addListener("death", () -> dead = true);
     // A checkpoint restart brings the player back; without this the arc stayed off for good.
@@ -68,9 +72,22 @@ public class ArrowTrajectoryDisplay extends UIComponent {
       return;
     }
 
-    Vector2 velocity = aim.cpy().nor().scl(bow.getLaunchSpeed());
-    Vector2 start = bow.getSpawnPosition(aim);
-    ArrowTrajectory.compute(start, velocity, bow.getArrowGravityY(), DOT_STEP_SECONDS, points);
+    Vector2 direction = aim.cpy().nor();
+    Vector2 velocity;
+    Vector2 start;
+    if (isDrawingBow()) {
+      velocity = direction.scl(bow.getLaunchSpeed());
+      start = bow.getSpawnPosition(aim);
+    } else {
+      // Same launch as ItemUseComponent gives a thrown potion.
+      start =
+          entity
+              .getCenterPosition()
+              .mulAdd(direction, entity.getScale().x * ItemUseComponent.POTION_SPAWN_OFFSET);
+      velocity = direction.scl(ProjectileFactory.POISON_POTION_SPEED);
+    }
+    float gravityY = PhysicsEngine.GRAVITY_Y * ArrowProjectileComponent.ARC_GRAVITY_SCALE;
+    ArrowTrajectory.compute(start, velocity, gravityY, DOT_STEP_SECONDS, points);
 
     int visible = countUntilTerrain(start);
     for (int i = 0; i < visible; i++) {
@@ -87,11 +104,22 @@ public class ArrowTrajectoryDisplay extends UIComponent {
 
   /** Returns the aim to preview, or null when no preview should be shown. */
   private Vector2 getAim() {
-    if (dead || bow == null || input == null || !bow.isCharging() || !input.isRightMouseHeld()) {
+    if (dead
+        || input == null
+        || !input.isRightMouseHeld()
+        || !(isDrawingBow() || isAimingPotion())) {
       return null;
     }
     Vector2 aim = input.getMouseAimDirection();
     return aim == null || aim.isZero() ? null : aim;
+  }
+
+  private boolean isDrawingBow() {
+    return bow != null && bow.isCharging();
+  }
+
+  private boolean isAimingPotion() {
+    return itemUse != null && itemUse.isAimingPotion();
   }
 
   /** Returns how many leading points are reached before the arrow would hit terrain. */

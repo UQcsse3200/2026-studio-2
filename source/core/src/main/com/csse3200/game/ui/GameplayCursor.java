@@ -131,7 +131,10 @@ public class GameplayCursor {
         || (interaction != null && interaction.isShopOpen());
   }
 
-  /** Right click held with an arrow or rope arrow selected, i.e. drawing the bow or grapple. */
+  /**
+   * Right click held with an aimed item selected: drawing the bow or grapple, or lining up a potion
+   * throw.
+   */
   private static boolean isAiming(Entity player) {
     if (player == null) {
       return false;
@@ -142,6 +145,6 @@ public class GameplayCursor {
       return false;
     }
     ItemType selected = inventory.getSelectedItem();
-    return selected != null && selected.isArrow();
+    return selected != null && selected.isAimed();
   }
 }
