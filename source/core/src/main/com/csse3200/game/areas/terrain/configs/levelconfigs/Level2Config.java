@@ -350,6 +350,13 @@ public class Level2Config extends LevelConfig {
           new CheckpointConfig(new GridPoint2(44, 8)),
         };
 
+    // Checkpoint tutorials: a potion refresher at CP1, encouragement at CP2, a warning about the
+    // level's mechanisms at CP3, and a bow reminder at CP4 before the right-hand tower.
+    checkpointTutorials.put(new GridPoint2(8, 40), "tut3");
+    checkpointTutorials.put(new GridPoint2(11, 24), "tut7");
+    checkpointTutorials.put(new GridPoint2(6, 9), "tut8");
+    checkpointTutorials.put(new GridPoint2(38, 28), "tut9");
+
     wheelSpinSpawns = new GridPoint2[] {new GridPoint2(29, 41)};
   }
 }
