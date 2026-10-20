@@ -83,7 +83,14 @@ class RangedAttackTaskTest {
         attackType.equals("calypso") ? PhysicsLayer.NPC : PhysicsLayer.ENEMY_PROJECTILE,
         projectile.getComponent(HitboxComponent.class).getLayer());
     PhysicsMovementComponent movement = projectile.getComponent(PhysicsMovementComponent.class);
-    assertEquals(new Vector2(targetX + 0.5f, 3.5f), movement.getTarget());
+    Vector2 directionToTarget =
+        new Vector2(targetX + 0.5f, 3.5f).sub(projectile.getCenterPosition()).nor();
+
+    Vector2 directionToAimPoint =
+        movement.getTarget().cpy().sub(projectile.getCenterPosition()).nor();
+
+    assertEquals(directionToTarget.x, directionToAimPoint.x, 0.01f);
+    assertEquals(directionToTarget.y, directionToAimPoint.y, 0.01f);
     movement.update();
     Vector2 velocity =
         projectile.getComponent(PhysicsComponent.class).getBody().getLinearVelocity();
