@@ -214,17 +214,21 @@ class MovementTaskVariantsTest {
   }
 
   private ChaseTask chase(boolean flying, Entity target) {
-    return flying ? new FlyingChaseTask(target, 10, 5f, 10f) : new ChaseTask(target, 10, 5f, 10f);
+    return flying
+        ? new ChaseTask(target, 10, 5f, 10f, "flying")
+        : new ChaseTask(target, 10, 5f, 10f, "chase");
   }
 
   private RepositionTask reposition(boolean flying, Entity target) {
-    return flying ? new FlyingRepositionTask(target, 10, 5f) : new RepositionTask(target, 10, 5f);
+    return flying
+        ? new RepositionTask(target, 10, 5f, "flying")
+        : new RepositionTask(target, 10, 5f, "chase");
   }
 
   private WanderTask wander(boolean flying) {
     return flying
-        ? new FlyingWanderTask(new Vector2(10f, 0f), 1f)
-        : new WanderTask(new Vector2(10f, 0f), 1f);
+        ? new WanderTask(new Vector2(10f, 0f), 1f, "flying")
+        : new WanderTask(new Vector2(10f, 0f), 1f, "chase");
   }
 
   private Entity positioned(float x, float y) {

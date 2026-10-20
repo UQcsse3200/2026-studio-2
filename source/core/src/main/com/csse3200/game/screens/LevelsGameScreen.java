@@ -9,6 +9,7 @@ import com.csse3200.game.areas.GameArea;
 import com.csse3200.game.areas.Level1GameArea;
 import com.csse3200.game.areas.Level2GameArea;
 import com.csse3200.game.areas.Level3GameArea;
+import com.csse3200.game.areas.LevelBossGameArea;
 import com.csse3200.game.areas.terrain.TerrainFactory;
 import com.csse3200.game.components.ButtonSound;
 import com.csse3200.game.components.GameVolume;
@@ -248,6 +249,9 @@ public class LevelsGameScreen extends BaseGameScreen {
         break;
       case LEVEL3:
         nextGameArea = new Level3GameArea(terrainFactory, renderer.getCamera(), player);
+        break;
+      case "boss":
+        nextGameArea = new LevelBossGameArea(terrainFactory, renderer.getCamera(), player);
         break;
       default:
         return;

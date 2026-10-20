@@ -1,33 +1,103 @@
-skeleton_walk.png
-size: 48, 30
+skeleton_archer.png
+size: 1174, 1160
 format: RGBA8888
 filter: Nearest,Nearest
 repeat: none
 default
   rotate: false
-  xy: 24, 0
-  size: 24, 30
-  orig: 24, 30
+  xy: 2, 2
+  size: 291, 384
+  orig: 291, 384
   offset: 0, 0
   index: 0
 walk
   rotate: false
-  xy: 0, 0
-  size: 24, 30
-  orig: 24, 30
+  xy: 2, 2
+  size: 291, 384
+  orig: 291, 384
   offset: 0, 0
   index: 0
 walk
   rotate: false
-  xy: 24, 0
-  size: 24, 30
-  orig: 24, 30
+  xy: 295, 2
+  size: 291, 384
+  orig: 291, 384
   offset: 0, 0
   index: 1
+walk
+  rotate: false
+  xy: 588, 2
+  size: 291, 384
+  orig: 291, 384
+  offset: 0, 0
+  index: 2
+walk
+  rotate: false
+  xy: 881, 2
+  size: 291, 384
+  orig: 291, 384
+  offset: 0, 0
+  index: 3
+walk
+  rotate: false
+  xy: 2, 388
+  size: 291, 384
+  orig: 291, 384
+  offset: 0, 0
+  index: 4
+walk
+  rotate: false
+  xy: 295, 388
+  size: 291, 384
+  orig: 291, 384
+  offset: 0, 0
+  index: 5
+walk
+  rotate: false
+  xy: 588, 388
+  size: 291, 384
+  orig: 291, 384
+  offset: 0, 0
+  index: 6
+walk
+  rotate: false
+  xy: 881, 388
+  size: 291, 384
+  orig: 291, 384
+  offset: 0, 0
+  index: 7
+walk
+  rotate: false
+  xy: 2, 774
+  size: 291, 384
+  orig: 291, 384
+  offset: 0, 0
+  index: 8
+walk
+  rotate: false
+  xy: 295, 774
+  size: 291, 384
+  orig: 291, 384
+  offset: 0, 0
+  index: 9
+walk
+  rotate: false
+  xy: 588, 774
+  size: 291, 384
+  orig: 291, 384
+  offset: 0, 0
+  index: 10
+walk
+  rotate: false
+  xy: 881, 774
+  size: 291, 384
+  orig: 291, 384
+  offset: 0, 0
+  index: 11
 idle
   rotate: false
-  xy: 24, 0
-  size: 24, 30
-  orig: 24, 30
+  xy: 2, 2
+  size: 291, 384
+  orig: 291, 384
   offset: 0, 0
   index: 0
