@@ -103,7 +103,14 @@ public class ChaseTask extends DefaultTask implements PriorityTask {
   @Override
   public void stop() {
     super.stop();
-    movementTask.stop();
+
+    if (movementTask != null) {
+      movementTask.stop();
+    }
+
+    if (movementComponent != null) {
+      movementComponent.setMoving(false);
+    }
   }
 
   @Override

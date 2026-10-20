@@ -427,20 +427,20 @@ public class EnemyFactory {
     PhysicsUtils.setScaledCollider(enemy, 0.9f, 0.4f);
 
     // Enemy chasing AI
-    aiComponent
-        .addTask(
-            new ChaseTask(
-                target, config.chasePriority, viewDistance, maxChaseDistance, config.behaviour))
-        .addTask(
-            new WanderTask(
-                new Vector2(config.wanderRangeX, config.wanderRangeY),
-                config.wanderWaitTime,
-                config.behaviour));
+    aiComponent.addTask(
+        new ChaseTask(
+            target, config.chasePriority, viewDistance, maxChaseDistance, config.behaviour));
 
     if (!config.attackType.equals("calypso")) {
-      aiComponent.addTask(
-          new RepositionTask(
-              target, config.repositionPriority, config.repositionDistance, config.behaviour));
+      aiComponent
+          .addTask(
+              new RepositionTask(
+                  target, config.repositionPriority, config.repositionDistance, config.behaviour))
+          .addTask(
+              new WanderTask(
+                  new Vector2(config.wanderRangeX, config.wanderRangeY),
+                  config.wanderWaitTime,
+                  config.behaviour));
     }
 
     // If the enemy is a range type, add a range task.

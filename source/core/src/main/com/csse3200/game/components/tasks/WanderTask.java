@@ -116,6 +116,12 @@ public class WanderTask extends DefaultTask implements PriorityTask {
     Vector2 halfRange = wanderRange.cpy().scl(0.5f);
     Vector2 min = startPos.cpy().sub(halfRange);
     Vector2 max = startPos.cpy().add(halfRange);
-    return RandomUtils.random(min, max);
+    Vector2 target = RandomUtils.random(min, max);
+
+    if (!behaviour.equals("flying")) {
+      target.y = owner.getEntity().getPosition().y;
+    }
+
+    return target;
   }
 }

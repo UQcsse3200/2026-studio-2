@@ -1,6 +1,7 @@
 package com.csse3200.game.components;
 
 import com.badlogic.gdx.math.Vector2;
+import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.List;
 import java.util.Random;
@@ -94,6 +95,12 @@ public class EnemyTeleportComponent extends Component {
     currentTpPosition = availableTpPositions.get(random.nextInt(availableTpPositions.size()));
     entity.setPosition(currentTpPosition);
 
+    PhysicsComponent physics = entity.getComponent(PhysicsComponent.class);
+
+    if (physics != null) {
+      physics.getBody().setLinearVelocity(0f, 0f);
+      physics.getBody().setAngularVelocity(0f);
+    }
     // sprint 4: RUN TPed ANIMATION (no charge up time for teleport so animation is based on having
     // tped)
   }
