@@ -34,7 +34,8 @@ public class BlackjackDisplay extends UIComponent {
   private static final String PLACE_BET = "READY";
 
   private static final float Z_INDEX = 2f;
-  private static final float PREF_OUTER_TABLE_WIDTH = 250f;
+  private static final float PREF_OUTER_TABLE_WIDTH = 265f;
+  private static final float PREF_INFO_BOX_HEIGHT = 400f;
   private static final float CARD_WIDTH = 100f;
   private static final float CARD_HEIGHT = 145f;
   private static final float MAX_HAND_WIDTH = 700f;
@@ -369,32 +370,31 @@ public class BlackjackDisplay extends UIComponent {
     infoBox.setBackground(new TextureRegionDrawable(pixTexture).tint(Color.valueOf("#C69B43")));
 
     Table infoBoxContent = new Table();
-    //infoBoxContent.setDebug(true);
+    // infoBoxContent.setDebug(true);
     infoBoxContent.setBackground(
         new TextureRegionDrawable(pixTexture).tint(Color.valueOf("#2A1608")));
 
-    infoBoxContent.add(statusLabel).center();
+    infoBoxContent.add(statusLabel).center().pad(5f);
     infoBoxContent.row();
-    infoBoxContent.add(new Table()).fillY().expandY();
+
+    Table userInfoArea = new Table();
+    userInfoArea.add(goldLabel).padTop(3f);
+    userInfoArea.row();
+    userInfoArea.add(betSizeLabel).padTop(3f);
+    infoBoxContent.add(userInfoArea).fillY().expandY().center();
+    infoBoxContent.row();
+
+    resultLabel.setWrap(true);
+    infoBoxContent.add(resultLabel).fillX().expandX().center().padTop(10f).padBottom(12f);
     infoBoxContent.row();
 
     Table enterBetArea = new Table();
     enterBetArea.add(betLabel).height(30f).fillX().expandX();
     enterBetArea.add(betField).height(30f).fillX().expandX();
-    infoBoxContent.add(enterBetArea).fillX().expandX().pad(2f);
+    infoBoxContent.add(enterBetArea).fillX().expandX().center().padRight(3f);
 
     infoBoxContent.row();
     infoBoxContent.add(newRoundButton).width(160f).height(60f).center();
-
-    /*
-    infoBoxContent.add(goldLabel);
-    infoBoxContent.row();
-    infoBoxContent.add(betSizeLabel);
-    infoBoxContent.row();
-    infoBoxContent.add(betField);
-    infoBoxContent.row();
-    infoBoxContent.add(newRoundButton).width(192f).height(67f).pad(5f);
-    */
 
     infoBox.add(infoBoxContent).expand().fill().pad(5f).center();
     leftSide.add(infoBox).expand().fill().center();
@@ -421,15 +421,15 @@ public class BlackjackDisplay extends UIComponent {
     rightSide.add(soundButton).width(192f).height(67f).pad(5f);
     rightSide.top().right();
 
-    table.add(leftSide).prefHeight(500f).prefWidth(PREF_OUTER_TABLE_WIDTH).center();
+    table.add(leftSide).prefHeight(PREF_INFO_BOX_HEIGHT).prefWidth(PREF_OUTER_TABLE_WIDTH).center();
     table.add(middle).fill().expand();
     table.add(rightSide).fill().expandY().prefWidth(PREF_OUTER_TABLE_WIDTH);
 
     table.setFillParent(true);
     table.validate();
     table.toFront();
-    //table.setDebug(true);
-    table.pad(5f);
+    table.setDebug(false, true);
+    table.pad(7f);
     stage.addActor(table);
     buildResultOverlay();
   }
@@ -710,7 +710,7 @@ public class BlackjackDisplay extends UIComponent {
     if (inventory != null && inventory.getGold() <= 0) {
       resultLabel.setText(EMPTY_BALANCE_MESSAGE);
     } else {
-      resultLabel.setText(blackjack.getResultMessage());
+      resultLabel.setText("");
     }
   }
 
