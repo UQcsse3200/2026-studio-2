@@ -8,6 +8,7 @@ import com.csse3200.game.components.inventory.InventoryComponent;
 import com.csse3200.game.components.minigames.blackjack.Blackjack;
 import com.csse3200.game.components.minigames.blackjack.BlackjackActions;
 import com.csse3200.game.components.minigames.blackjack.BlackjackConfig;
+import com.csse3200.game.components.minigames.blackjack.BlackjackDialogue;
 import com.csse3200.game.components.minigames.blackjack.BlackjackDisplay;
 import com.csse3200.game.components.minigames.blackjack.BlackjackRulesDisplay;
 import com.csse3200.game.entities.Entity;
@@ -16,6 +17,7 @@ import com.csse3200.game.services.ServiceLocator;
 
 /** Screen for the Blackjack minigame. */
 public class BlackjackScreen extends MinigameScreen {
+  private final boolean storyMode;
   private static final String BLACKJACK_MUSIC = "sounds/minigames/blackjack/blackjack-bgm.mp3";
 
   /**
@@ -24,7 +26,13 @@ public class BlackjackScreen extends MinigameScreen {
    * @param game game used for screen changes
    */
   public BlackjackScreen(GdxGame game) {
+    this(game, false);
+  }
+
+  /** Creates Blackjack in standalone mode or as Circe's story encounter. */
+  public BlackjackScreen(GdxGame game, boolean storyMode) {
     super(game);
+    this.storyMode = storyMode;
   }
 
   @Override
@@ -77,7 +85,13 @@ public class BlackjackScreen extends MinigameScreen {
 
     return new Entity()
         .addComponent(inventoryComponent)
-        .addComponent(new BlackjackDisplay(blackjack, inventoryComponent, this::setSoundEnabled))
+        .addComponent(
+            new BlackjackDisplay(
+                blackjack,
+                inventoryComponent,
+                this::setSoundEnabled,
+                null,
+                storyMode ? () -> BlackjackDialogue.startWinCutscene(game) : null))
         .addComponent(new BlackjackRulesDisplay())
         .addComponent(new BlackjackActions(game))
         .addComponent(new InputDecorator(stage, 10));

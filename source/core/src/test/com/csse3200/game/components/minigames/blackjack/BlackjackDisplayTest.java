@@ -207,18 +207,35 @@ class BlackjackDisplayTest {
   }
 
   @Test
-  void shouldRefillGoldWhenRestartingMatch() {
+  void shouldRefillGoldWhenAcceptingOutOfGoldDialogue() {
     Blackjack blackjack = lostMatch();
     InventoryComponent inventory = new InventoryComponent(0);
     BlackjackDisplay display = new BlackjackDisplay(blackjack, inventory);
     show(display);
 
-    invoke(display, "restartMatch");
+    BlackjackDialogue dialogue = BlackjackDialogue.forMatch(blackjack);
+    assertEquals(BlackjackDialogue.Kind.OUT_OF_GOLD, dialogue.getKind());
+    dialogue.pressButton(blackjack, null);
+    inventory.setGold(blackjack.getBalance());
 
     assertEquals(Blackjack.REFILL_GOLD, inventory.getGold());
     assertEquals(Blackjack.REFILL_GOLD, blackjack.getBalance());
     assertEquals(0, blackjack.getPlayerWins());
     assertEquals(0, blackjack.getDealerWins());
+    assertEquals(Blackjack.MatchResult.IN_PROGRESS, blackjack.getMatchResult());
+  }
+
+  @Test
+  void shouldKeepRemainingGoldAfterAcceptingDefeatDialogue() {
+    Blackjack blackjack = new Blackjack(7);
+    InventoryComponent inventory = new InventoryComponent(0);
+    BlackjackDialogue dialogue = BlackjackDialogue.of(BlackjackDialogue.Kind.MATCH_LOST);
+
+    dialogue.pressButton(blackjack, null);
+    inventory.setGold(blackjack.getBalance());
+
+    assertEquals(7, inventory.getGold());
+    assertEquals(7, blackjack.getBalance());
     assertEquals(Blackjack.MatchResult.IN_PROGRESS, blackjack.getMatchResult());
   }
 
