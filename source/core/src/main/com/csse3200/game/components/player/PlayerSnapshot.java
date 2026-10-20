@@ -8,13 +8,21 @@ import java.util.List;
 
 public class PlayerSnapshot {
   private final int health;
+  private final int maxHealth;
   private final int gold;
   private final List<InventorySlot> inventory;
+  private final int rows;
+  private final int columns;
+  private final int selectedSlot;
 
-  private PlayerSnapshot(int health, int gold, List<InventorySlot> inventory) {
+  private PlayerSnapshot(int health, int maxHealth, InventoryComponent inventory) {
     this.health = health;
-    this.gold = gold;
-    this.inventory = inventory;
+    this.maxHealth = maxHealth;
+    this.gold = inventory.getGold();
+    this.inventory = inventory.getSlots();
+    this.rows = inventory.getRows();
+    this.columns = inventory.getColumns();
+    this.selectedSlot = inventory.getSelectedSlotIndex();
   }
 
   /**
@@ -28,7 +36,7 @@ public class PlayerSnapshot {
     CombatStatsComponent stats = player.getComponent(CombatStatsComponent.class);
     InventoryComponent inventory = player.getComponent(InventoryComponent.class);
 
-    return new PlayerSnapshot(stats.getHealth(), inventory.getGold(), inventory.getSlots());
+    return new PlayerSnapshot(stats.getHealth(), stats.getMaxHealth(), inventory);
   }
 
   /**
@@ -38,8 +46,18 @@ public class PlayerSnapshot {
    * @param player - the player to apply the saved PlayerSnapshot to
    */
   public void applyTo(Entity player) {
-    player.getComponent(CombatStatsComponent.class).setHealth(health);
-    player.getComponent(InventoryComponent.class).setGold(gold);
-    player.getComponent(InventoryComponent.class).setSlots(inventory);
+    CombatStatsComponent stats = player.getComponent(CombatStatsComponent.class);
+    stats.addMaxHealth(maxHealth - stats.getMaxHealth());
+    stats.setHealth(health);
+    InventoryComponent targetInventory = player.getComponent(InventoryComponent.class);
+    targetInventory.setGold(gold);
+    while (targetInventory.getRows() < rows) {
+      targetInventory.addRow();
+    }
+    while (targetInventory.getColumns() < columns) {
+      targetInventory.addColumn();
+    }
+    targetInventory.setSlots(inventory);
+    targetInventory.selectSlot(selectedSlot);
   }
 }
