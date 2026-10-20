@@ -56,6 +56,9 @@ public class LevelConfig {
   // Tutorials keyed by the checkpoint position that triggers them, e.g. "tut5" at level 1's
   // first checkpoint. Empty when a level wires no checkpoint tutorials.
   protected Map<GridPoint2, String> checkpointTutorials = new HashMap<>();
+  // Regions that auto-start a tutorial when the player stands inside them, e.g. "tut2" on the
+  // ledge above level 2's mob-spawn arena. Empty when a level wires none.
+  protected List<RegionTutorialConfig> regionTutorials = new ArrayList<>();
   protected EnemySpawnerConfig[] enemySpawners;
   protected TriggerConfig[] mapTriggers;
 
@@ -146,6 +149,16 @@ public class LevelConfig {
    */
   public String getTutorialForCheckpoint(GridPoint2 position) {
     return checkpointTutorials.get(position);
+  }
+
+  /**
+   * The regions that auto-start a tutorial when the player stands inside one, checked every frame
+   * by the level screen. Empty when the level wires none.
+   *
+   * @return the level's region-linked tutorials
+   */
+  public List<RegionTutorialConfig> getRegionTutorials() {
+    return regionTutorials;
   }
 
   public GridPoint2[] getWheelSpinSpawns() {
