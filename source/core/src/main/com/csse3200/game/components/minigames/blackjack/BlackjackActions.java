@@ -10,6 +10,11 @@ public class BlackjackActions extends Component {
   private static final Logger logger = LoggerFactory.getLogger(BlackjackActions.class);
   private final GdxGame game;
 
+  /**
+   * Creates the actions for the standalone Blackjack screen.
+   *
+   * @param game game used to switch back to the minigame select screen
+   */
   public BlackjackActions(GdxGame game) {
     this.game = game;
   }

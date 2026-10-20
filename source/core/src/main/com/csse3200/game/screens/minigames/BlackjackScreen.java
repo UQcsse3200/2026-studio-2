@@ -18,6 +18,11 @@ import com.csse3200.game.services.ServiceLocator;
 public class BlackjackScreen extends MinigameScreen {
   private static final String BLACKJACK_MUSIC = "sounds/minigames/blackjack/blackjack-bgm.mp3";
 
+  /**
+   * Creates the standalone Blackjack screen.
+   *
+   * @param game game used for screen changes
+   */
   public BlackjackScreen(GdxGame game) {
     super(game);
   }

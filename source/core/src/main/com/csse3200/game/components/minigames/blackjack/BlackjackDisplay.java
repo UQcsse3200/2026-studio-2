@@ -73,14 +73,32 @@ public class BlackjackDisplay extends UIComponent {
   private boolean revealDealerCard;
   private boolean rulesOpen;
 
+  /**
+   * Creates a display with no inventory, so rounds cannot be started.
+   *
+   * @param blackjack game being shown
+   */
   public BlackjackDisplay(Blackjack blackjack) {
     this(blackjack, null, null, null);
   }
 
+  /**
+   * Creates a display that stakes and pays out gold from the given inventory.
+   *
+   * @param blackjack game being shown
+   * @param inventory inventory holding the player's gold
+   */
   public BlackjackDisplay(Blackjack blackjack, InventoryComponent inventory) {
     this(blackjack, inventory, null, null);
   }
 
+  /**
+   * Creates a display whose sound button also controls the screen's music.
+   *
+   * @param blackjack game being shown
+   * @param inventory inventory holding the player's gold
+   * @param soundToggleCallback called with the new state when the sound button is pressed
+   */
   public BlackjackDisplay(
       Blackjack blackjack,
       InventoryComponent inventory,
@@ -88,6 +106,14 @@ public class BlackjackDisplay extends UIComponent {
     this(blackjack, inventory, soundToggleCallback, null);
   }
 
+  /**
+   * Creates a display with every option.
+   *
+   * @param blackjack game being shown
+   * @param inventory inventory holding the player's gold, or null if unavailable
+   * @param soundToggleCallback called with the new state when the sound button is pressed, or null
+   * @param backCallback run when Back is pressed; when null, a "back" event is triggered instead
+   */
   public BlackjackDisplay(
       Blackjack blackjack,
       InventoryComponent inventory,

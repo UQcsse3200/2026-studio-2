@@ -103,10 +103,22 @@ public class Blackjack {
   private int playerWins;
   private int dealerWins;
 
+  /**
+   * Creates a game with a randomly shuffled deck.
+   *
+   * @param startingBalance the player's gold at the start of the match
+   */
   public Blackjack(int startingBalance) {
     this(startingBalance, new Random());
   }
 
+  /**
+   * Creates a game that shuffles with the given random source, so tests can deal known hands.
+   *
+   * @param startingBalance the player's gold at the start of the match
+   * @param random random source used to shuffle the deck
+   * @throws IllegalArgumentException if the starting balance is negative
+   */
   public Blackjack(int startingBalance, Random random) {
     if (startingBalance < 0) {
       throw new IllegalArgumentException("Starting balance cannot be negative");

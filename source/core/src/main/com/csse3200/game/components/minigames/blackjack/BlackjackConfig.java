@@ -3,15 +3,25 @@ package com.csse3200.game.components.minigames.blackjack;
 import com.csse3200.game.components.item.ItemType;
 import java.util.List;
 
+/**
+ * Asset lists for the Blackjack minigame. Screens load {@link #TEXTURES} and {@link #SOUNDS} before
+ * building the Blackjack UI. Background music is loaded separately by each screen.
+ */
 public final class BlackjackConfig {
+  /** Every texture the Blackjack UI uses: all 52 card faces, the card back, buttons and table. */
   public static final List<String> TEXTURES = List.of(createTextures());
 
+  /** Card deal, win and lose sound effects. */
   public static final List<String> SOUNDS =
       List.of(
           "sounds/minigames/blackjack/card-deal.mp3",
           "sounds/minigames/blackjack/win.mp3",
           "sounds/minigames/blackjack/lose.mp3");
+
+  /** Item reward for winning a round. Not currently granted by the story-mode display. */
   public static final ItemType WIN_REWARD = ItemType.STANDARD_ARROW;
+
+  /** Quantity of {@link #WIN_REWARD} for winning a round. */
   public static final int WIN_REWARD_QUANTITY = 1;
 
   private static String[] createTextures() {
