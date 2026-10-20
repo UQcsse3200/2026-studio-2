@@ -137,12 +137,13 @@ loadScripts(document, 'script');</script>
 <h3>capture</h3>
 <div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="PlayerSnapshot.html" title="class in com.csse3200.game.components.player">PlayerSnapshot</a></span>&nbsp;<span class="element-name">capture</span><wbr><span class="parameters">(<a href="../../entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;player)</span></div>
 <div class="block">Capture and store the components of the player that are needed between levels (eg. health,
- gold, inventory items)</div>
+ gold, inventory items, discovered items)</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>player</code> - - the player to take a snapshot of</dd>
 <dt>Returns:</dt>
-<dd>a PlayerSnapshot component storing the gold, health and inventory of the player</dd>
+<dd>a PlayerSnapshot component storing the gold, health, inventory and discovered items of
+     the player</dd>
 </dl>
 </section>
 </li>
@@ -150,8 +151,8 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="applyTo(com.csse3200.game.entities.Entity)">
 <h3>applyTo</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">applyTo</span><wbr><span class="parameters">(<a href="../../entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;player)</span></div>
-<div class="block">Apply the stored PlayerSnapshot to the given player entity. Updating the gold, health and
- inventory components</div>
+<div class="block">Apply the stored PlayerSnapshot to the given player entity. Updating the gold, health,
+ inventory and item dictionary components</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>player</code> - - the player to apply the saved PlayerSnapshot to</dd>

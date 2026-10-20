@@ -286,7 +286,7 @@ loadScripts(document, 'script');</script>
 <dt><a href="com/csse3200/game/files/SaveFile.PlayerSaveData.html#applyTo(com.csse3200.game.entities.Entity)" class="member-name-link">applyTo(Entity)</a> - Method in class com.csse3200.game.files.<a href="com/csse3200/game/files/SaveFile.PlayerSaveData.html" title="class in com.csse3200.game.files">SaveFile.PlayerSaveData</a></dt>
 <dd>
 <div class="block">Applies this data to the given player: maximum health first (so the saved health can clamp
- correctly), then gold and inventory.</div>
+ correctly), then discovered items, gold and inventory.</div>
 </dd>
 <dt><a href="com/csse3200/game/components/item/weapons/melee/MeleeComponent.html#ARC_DEGREES" class="member-name-link">ARC_DEGREES</a> - Static variable in class com.csse3200.game.components.item.weapons.melee.<a href="com/csse3200/game/components/item/weapons/melee/MeleeComponent.html" title="class in com.csse3200.game.components.item.weapons.melee">MeleeComponent</a></dt>
 <dd>
@@ -684,7 +684,7 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="com/csse3200/game/files/SaveFile.PlayerSaveData.html#capture(com.csse3200.game.entities.Entity)" class="member-name-link">capture(Entity)</a> - Static method in class com.csse3200.game.files.<a href="com/csse3200/game/files/SaveFile.PlayerSaveData.html" title="class in com.csse3200.game.files">SaveFile.PlayerSaveData</a></dt>
 <dd>
-<div class="block">Records health, max health, gold and inventory from the given player.</div>
+<div class="block">Records health, max health, gold, inventory and discovered items from the given player.</div>
 </dd>
 <dt><a href="com/csse3200/game/components/level/RisingWaterComponent.html#captureValues(int)" class="member-name-link">captureValues(int)</a> - Method in class com.csse3200.game.components.level.<a href="com/csse3200/game/components/level/RisingWaterComponent.html" title="class in com.csse3200.game.components.level">RisingWaterComponent</a></dt>
 <dd>
@@ -1813,6 +1813,8 @@ loadScripts(document, 'script');</script>
 <dt><a href="com/csse3200/game/components/level/SpikyBallComponent.html#direction" class="member-name-link">direction</a> - Variable in class com.csse3200.game.components.level.<a href="com/csse3200/game/components/level/SpikyBallComponent.html" title="class in com.csse3200.game.components.level">SpikyBallComponent</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/tasks/RepositionTask.html#directionAwayFrom(com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2)" class="member-name-link">directionAwayFrom(Vector2, Vector2)</a> - Method in class com.csse3200.game.components.tasks.<a href="com/csse3200/game/components/tasks/RepositionTask.html" title="class in com.csse3200.game.components.tasks">RepositionTask</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/files/SaveFile.PlayerSaveData.html#discoveredItems" class="member-name-link">discoveredItems</a> - Variable in class com.csse3200.game.files.<a href="com/csse3200/game/files/SaveFile.PlayerSaveData.html" title="class in com.csse3200.game.files">SaveFile.PlayerSaveData</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/TextBoxComponent.html#dismiss()" class="member-name-link">dismiss()</a> - Method in class com.csse3200.game.components.<a href="com/csse3200/game/components/TextBoxComponent.html" title="class in com.csse3200.game.components">TextBoxComponent</a></dt>
 <dd>
@@ -5337,6 +5339,10 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Resolves <a href="com/csse3200/game/files/SaveFile.ItemSave.html#itemType"><code>SaveFile.ItemSave.itemType</code></a> to an <a href="com/csse3200/game/components/item/ItemType.html" title="enum class in com.csse3200.game.components.item"><code>ItemType</code></a>, logging and skipping unknown names
  (e.g.</div>
+</dd>
+<dt><a href="com/csse3200/game/files/SaveFile.html#resolveItemType(java.lang.String)" class="member-name-link">resolveItemType(String)</a> - Static method in class com.csse3200.game.files.<a href="com/csse3200/game/files/SaveFile.html" title="class in com.csse3200.game.files">SaveFile</a></dt>
+<dd>
+<div class="block">Resolves a saved item type name to an <a href="com/csse3200/game/components/item/ItemType.html" title="enum class in com.csse3200.game.components.item"><code>ItemType</code></a>, logging and skipping unknown names.</div>
 </dd>
 <dt><a href="com/csse3200/game/services/ResourceService.html" class="type-name-link" title="class in com.csse3200.game.services">ResourceService</a> - Class in <a href="com/csse3200/game/services/package-summary.html">com.csse3200.game.services</a></dt>
 <dd>
