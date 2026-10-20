@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.math.GridPoint2;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.csse3200.game.GdxGame;
 import com.csse3200.game.areas.GameArea;
@@ -11,6 +12,7 @@ import com.csse3200.game.areas.Level1GameArea;
 import com.csse3200.game.areas.Level2GameArea;
 import com.csse3200.game.areas.Level3GameArea;
 import com.csse3200.game.areas.terrain.TerrainFactory;
+import com.csse3200.game.areas.terrain.configs.RegionTutorialConfig;
 import com.csse3200.game.components.ButtonSound;
 import com.csse3200.game.components.GameVolume;
 import com.csse3200.game.components.SoundEffects;
@@ -98,6 +100,8 @@ public class LevelsGameScreen extends BaseGameScreen {
   // the player has a moment to look around first.
   private static final float MOVEMENT_TUTORIAL_DELAY = 3f;
   private static final String MOVEMENT_TUTORIAL = "tut1";
+  // The level 1 offer (tut0) where Calypso asks whether the player wants tutorial prompts at all.
+  private static final String TUTORIAL_CHOICE = "tut0";
 
   private float movementTutorialDelay = MOVEMENT_TUTORIAL_DELAY;
   // Whether the movement tutorial has run, or is not wanted for this save.
@@ -106,6 +110,8 @@ public class LevelsGameScreen extends BaseGameScreen {
   private TutorialComponent activeTutorial;
   // Checkpoint-linked tutorials already shown this session, so each plays at most once.
   private final Set<String> shownCheckpointTutorials = new HashSet<>();
+  // Region-linked tutorials already shown this session (e.g. tut2 on level 2's arena ledge).
+  private final Set<String> shownRegionTutorials = new HashSet<>();
 
   public LevelsGameScreen(GdxGame game) {
     super();
@@ -304,6 +310,10 @@ public class LevelsGameScreen extends BaseGameScreen {
     }
 
     updateMovementTutorial(delta);
+    if (activeTutorial != null) {
+      // Prompts with a configured deadline (tut7/tut8) dismiss themselves without input.
+      activeTutorial.tickAutoDismiss(delta);
+    }
 
     // Overlay shortcuts bypass the input handler chain, so ignore them while the terminal is
     // open. F1 still toggles the terminal itself.
@@ -343,6 +353,8 @@ public class LevelsGameScreen extends BaseGameScreen {
       player.getEvents().trigger("toggleBossView");
     }
 
+    updateRegionTutorials();
+
     physicsEngine.update();
     ServiceLocator.getEntityService().update();
     renderer.render();
@@ -354,16 +366,18 @@ public class LevelsGameScreen extends BaseGameScreen {
   }
 
   /**
-   * Auto-starts the level 1 movement tutorial a few seconds after spawning, so the player has a
-   * moment to look around first. Runs once per screen and only when the save has not already
-   * completed the tutorial; completion (reaching the final step) is persisted via {@link
-   * GdxGame#markTutorialCompleted()}.
+   * Auto-starts the level 1 tutorial offer (tut0) a few seconds after spawning, so the player has a
+   * moment to look around first. Runs once per screen and only when the save has neither completed
+   * the tutorial nor declined prompts. Y starts the movement tutorial (tut1), whose completion is
+   * persisted via {@link GdxGame#markTutorialCompleted()}; N declines prompts for this save slot
+   * via {@link GdxGame#declineTutorials()}.
    */
   private void updateMovementTutorial(float delta) {
     if (movementTutorialStarted || !LEVEL1.equals(level)) {
       return;
     }
-    if (game.isTutorialCompleted()) {
+    if (game.isTutorialCompleted() || !game.areTutorialsAccepted()) {
+      // Already seen, or this save declined the offer: no prompts at all.
       movementTutorialStarted = true;
       return;
     }
@@ -372,14 +386,38 @@ public class LevelsGameScreen extends BaseGameScreen {
       return;
     }
     movementTutorialStarted = true;
-    startNamedTutorial(MOVEMENT_TUTORIAL, game::markTutorialCompleted);
+    startNamedTutorial(TUTORIAL_CHOICE, this::onTutorialChoice);
+  }
+
+  /**
+   * Handles the tut0 offer's outcome: Y records the acceptance and starts the movement tutorial
+   * immediately; N records the decline so no tutorial auto-plays for this save slot again. Any
+   * other outcome (the offer dismissed without an answer) leaves the choice as it was.
+   */
+  private void onTutorialChoice() {
+    TutorialComponent choice = activeTutorial;
+    activeTutorial = null; // tut0 has finished; don't dispose it a second time
+    if (choice == null) {
+      return;
+    }
+    if (choice.getCompletionKeycode() == Input.Keys.Y) {
+      game.acceptTutorials();
+      startNamedTutorial(MOVEMENT_TUTORIAL, game::markTutorialCompleted);
+    } else if (choice.getCompletionKeycode() == Input.Keys.N) {
+      game.declineTutorials();
+    }
   }
 
   /**
    * Starts a named tutorial via {@link TutorialFactory}, dismissing any tutorial currently on
-   * screen. Returns null when the tutorial's config is missing or invalid.
+   * screen. Returns null when the tutorial's config is missing or invalid, or when this save has
+   * declined tutorial prompts. The terminal {@code tutorial} command bypasses this gate by calling
+   * the factory directly.
    */
   private TutorialComponent startNamedTutorial(String name, Runnable onFinished) {
+    if (!game.areTutorialsAccepted()) {
+      return null;
+    }
     if (activeTutorial != null) {
       activeTutorial.dispose();
       activeTutorial = null;
@@ -407,6 +445,23 @@ public class LevelsGameScreen extends BaseGameScreen {
     String tutorial = currentGameArea.getConfig().getTutorialForCheckpoint(position);
     if (tutorial != null && shownCheckpointTutorials.add(tutorial)) {
       startNamedTutorial(tutorial, null);
+    }
+  }
+
+  /**
+   * Starts region-linked tutorials once per session: when the player stands inside a region the
+   * level wires (e.g. tut2 on the ledge above level 2's mob-spawn arena), its tutorial plays. Reads
+   * the previous frame's position, like the boss-view check above it.
+   */
+  private void updateRegionTutorials() {
+    if (currentGameArea == null || player == null) {
+      return;
+    }
+    Vector2 position = player.getPosition();
+    for (RegionTutorialConfig region : currentGameArea.getConfig().getRegionTutorials()) {
+      if (region.contains(position) && shownRegionTutorials.add(region.tutorial)) {
+        startNamedTutorial(region.tutorial, null);
+      }
     }
   }
 

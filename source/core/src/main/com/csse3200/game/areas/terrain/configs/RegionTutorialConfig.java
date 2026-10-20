@@ -31,9 +31,6 @@ public class RegionTutorialConfig {
    * @return true when inside the region
    */
   public boolean contains(Vector2 position) {
-    return position.x >= min.x
-        && position.x < max.x
-        && position.y >= min.y
-        && position.y < max.y;
+    return position.x >= min.x && position.x < max.x && position.y >= min.y && position.y < max.y;
   }
 }

@@ -56,8 +56,8 @@ public class TutorialComponent extends InputComponent {
    *
    * @param onFinished run once the player completes the final step (not when the tutorial is
    *     dismissed early), or null for no callback
-   * @param autoDismissSeconds seconds before the textbox dismisses itself without input; 0 or
-   *     less waits forever for the player's steps
+   * @param autoDismissSeconds seconds before the textbox dismisses itself without input; 0 or less
+   *     waits forever for the player's steps
    * @throws IllegalArgumentException if a step names an unknown key or mouse button
    */
   public TutorialComponent(

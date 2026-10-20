@@ -48,6 +48,8 @@ public class GdxGame extends Game {
   // Whether the movement tutorial has been completed in this session; persisted in the save so
   // it only auto-plays once per save slot.
   private boolean tutorialCompleted = false;
+  // Whether tutorial prompts are wanted for this save; false once tut0's offer is declined.
+  private boolean tutorialsAccepted = true;
 
   private PlayerSnapshot playerSnapshot;
 
@@ -188,6 +190,7 @@ public class GdxGame extends Game {
     activeSaveSlot = slot;
     introStarted = false;
     tutorialCompleted = false;
+    tutorialsAccepted = true;
     SaveManager.write(slot, SaveManager.newGameSave(slot));
     startInitialCutscene();
   }
@@ -214,6 +217,7 @@ public class GdxGame extends Game {
     activeSaveSlot = slot;
     introStarted = true;
     tutorialCompleted = save.tutorialCompleted;
+    tutorialsAccepted = save.tutorialsAccepted;
     transitionTo(levelScreenType(save.currentLevel));
   }
 
@@ -233,6 +237,7 @@ public class GdxGame extends Game {
           SaveManager.capture(
               activeSaveSlot, level, area.getPlayer(), area.getActiveCheckpointPositions());
       save.tutorialCompleted = tutorialCompleted;
+      save.tutorialsAccepted = tutorialsAccepted;
       SaveManager.write(activeSaveSlot, save);
     } catch (RuntimeException e) {
       logger.warn("Autosave of slot {} failed: {}", activeSaveSlot, e.getMessage());
@@ -255,6 +260,43 @@ public class GdxGame extends Game {
   /** Whether the movement tutorial has been completed in this session's save. */
   public boolean isTutorialCompleted() {
     return tutorialCompleted;
+  }
+
+  /**
+   * Whether tutorial prompts are wanted for this save. False once the player declines tut0's offer,
+   * in which case no tutorial auto-plays again for this slot.
+   */
+  public boolean areTutorialsAccepted() {
+    return tutorialsAccepted;
+  }
+
+  /**
+   * Records the player accepting tut0's offer, persisting the choice when a save slot is active.
+   * The default is acceptance, so this mainly writes the explicit choice to the save.
+   */
+  public void acceptTutorials() {
+    setTutorialsAccepted(true);
+  }
+
+  /**
+   * Records the player declining tut0's offer so no tutorial prompt auto-plays for this save slot
+   * again, persisting the choice when a save slot is active.
+   */
+  public void declineTutorials() {
+    setTutorialsAccepted(false);
+  }
+
+  private void setTutorialsAccepted(boolean accepted) {
+    tutorialsAccepted = accepted;
+    if (activeSaveSlot < 0) {
+      return;
+    }
+    SaveFile save = SaveManager.read(activeSaveSlot);
+    if (save == null) {
+      return;
+    }
+    save.tutorialsAccepted = accepted;
+    SaveManager.write(activeSaveSlot, save);
   }
 
   /**
