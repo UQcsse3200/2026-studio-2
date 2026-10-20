@@ -117,9 +117,10 @@ loadScripts(document, 'script');</script>
 <div class="summary-table two-column-summary">
 <div class="table-header col-first">Constructor</div>
 <div class="table-header col-last">Description</div>
-<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(java.util.List,long,long)" class="member-name-link">EnemyTeleportComponent</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;com.badlogic.gdx.math.Vector2&gt;&nbsp;tpPositions,
+<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(java.util.List,long,long,long)" class="member-name-link">EnemyTeleportComponent</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;com.badlogic.gdx.math.Vector2&gt;&nbsp;tpPositions,
  long&nbsp;damagedTpDelay,
- long&nbsp;tpFreq)</code></div>
+ long&nbsp;tpFreq,
+ long&nbsp;hitTpCooldown)</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 </div>
 </section>
@@ -166,11 +167,12 @@ loadScripts(document, 'script');</script>
 <h2>Constructor Details</h2>
 <ul class="member-list">
 <li>
-<section class="detail" id="&lt;init&gt;(java.util.List,long,long)">
+<section class="detail" id="&lt;init&gt;(java.util.List,long,long,long)">
 <h3>EnemyTeleportComponent</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">EnemyTeleportComponent</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;com.badlogic.gdx.math.Vector2&gt;&nbsp;tpPositions,
  long&nbsp;damagedTpDelay,
- long&nbsp;tpFreq)</span></div>
+ long&nbsp;tpFreq,
+ long&nbsp;hitTpCooldown)</span></div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>tpPositions</code> - predetermined teleport locations available to enemy</dd>

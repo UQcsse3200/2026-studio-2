@@ -152,6 +152,7 @@ loadScripts(document, 'script');</script>
 <li class="circle">com.csse3200.game.components.level.<a href="com/csse3200/game/components/level/AttachableMapComponent.html" class="type-name-link" title="class in com.csse3200.game.components.level">AttachableMapComponent</a></li>
 <li class="circle">com.csse3200.game.components.minigames.blackjack.<a href="com/csse3200/game/components/minigames/blackjack/BlackjackActions.html" class="type-name-link" title="class in com.csse3200.game.components.minigames.blackjack">BlackjackActions</a></li>
 <li class="circle">com.csse3200.game.components.minigames.blackjack.<a href="com/csse3200/game/components/minigames/blackjack/BlackjackOverlayActions.html" class="type-name-link" title="class in com.csse3200.game.components.minigames.blackjack">BlackjackOverlayActions</a></li>
+<li class="circle">com.csse3200.game.components.<a href="com/csse3200/game/components/BossPhaseComponent.html" class="type-name-link" title="class in com.csse3200.game.components">BossPhaseComponent</a></li>
 <li class="circle">com.csse3200.game.components.item.weapons.bow.<a href="com/csse3200/game/components/item/weapons/bow/BowComponent.html" class="type-name-link" title="class in com.csse3200.game.components.item.weapons.bow">BowComponent</a> (implements com.csse3200.game.components.item.weapons.<a href="com/csse3200/game/components/item/weapons/PrimaryWeapon.html" title="interface in com.csse3200.game.components.item.weapons">PrimaryWeapon</a>)</li>
 <li class="circle">com.csse3200.game.components.<a href="com/csse3200/game/components/BurnStatsComponent.html" class="type-name-link" title="class in com.csse3200.game.components">BurnStatsComponent</a></li>
 <li class="circle">com.csse3200.game.components.<a href="com/csse3200/game/components/CameraComponent.html" class="type-name-link" title="class in com.csse3200.game.components">CameraComponent</a></li>
@@ -174,6 +175,7 @@ loadScripts(document, 'script');</script>
 <li class="circle">com.csse3200.game.components.npc.<a href="com/csse3200/game/components/npc/EnemyAnimationController.html" class="type-name-link" title="class in com.csse3200.game.components.npc">EnemyAnimationController</a></li>
 <li class="circle">com.csse3200.game.components.<a href="com/csse3200/game/components/EnemyDeathComponent.html" class="type-name-link" title="class in com.csse3200.game.components">EnemyDeathComponent</a></li>
 <li class="circle">com.csse3200.game.components.<a href="com/csse3200/game/components/EnemyItemDropComponent.html" class="type-name-link" title="class in com.csse3200.game.components">EnemyItemDropComponent</a></li>
+<li class="circle">com.csse3200.game.components.<a href="com/csse3200/game/components/EnemySummonComponent.html" class="type-name-link" title="class in com.csse3200.game.components">EnemySummonComponent</a></li>
 <li class="circle">com.csse3200.game.components.<a href="com/csse3200/game/components/EnemyTeleportComponent.html" class="type-name-link" title="class in com.csse3200.game.components">EnemyTeleportComponent</a></li>
 <li class="circle">com.csse3200.game.ui.<a href="com/csse3200/game/ui/GameEndActions.html" class="type-name-link" title="class in com.csse3200.game.ui">GameEndActions</a></li>
 <li class="circle">com.csse3200.game.components.npc.<a href="com/csse3200/game/components/npc/GhostAnimationController.html" class="type-name-link" title="class in com.csse3200.game.components.npc">GhostAnimationController</a></li>
@@ -249,6 +251,7 @@ loadScripts(document, 'script');</script>
 <li class="circle">com.csse3200.game.rendering.<a href="com/csse3200/game/rendering/ForegroundRenderComponent.html" class="type-name-link" title="class in com.csse3200.game.rendering">ForegroundRenderComponent</a></li>
 </ul>
 </li>
+<li class="circle">com.csse3200.game.rendering.<a href="com/csse3200/game/rendering/BossHealthRenderComponent.html" class="type-name-link" title="class in com.csse3200.game.rendering">BossHealthRenderComponent</a></li>
 <li class="circle">com.csse3200.game.rendering.<a href="com/csse3200/game/rendering/CaveEntranceRenderComponent.html" class="type-name-link" title="class in com.csse3200.game.rendering">CaveEntranceRenderComponent</a></li>
 <li class="circle">com.csse3200.game.components.minigames.cyclopsminigame.<a href="com/csse3200/game/components/minigames/cyclopsminigame/CyclopsFloorRenderComponent.html" class="type-name-link" title="class in com.csse3200.game.components.minigames.cyclopsminigame">CyclopsFloorRenderComponent</a></li>
 <li class="circle">com.csse3200.game.rendering.<a href="com/csse3200/game/rendering/DynamicTextureRenderComponent.html" class="type-name-link" title="class in com.csse3200.game.rendering">DynamicTextureRenderComponent</a> (implements com.csse3200.game.rendering.<a href="com/csse3200/game/rendering/CullingRenderable.html" title="interface in com.csse3200.game.rendering">CullingRenderable</a>)</li>
@@ -339,27 +342,19 @@ loadScripts(document, 'script');</script>
 <li class="circle">com.csse3200.game.rendering.<a href="com/csse3200/game/rendering/DebugRenderer.html" class="type-name-link" title="class in com.csse3200.game.rendering">DebugRenderer</a></li>
 <li class="circle">com.csse3200.game.ai.tasks.<a href="com/csse3200/game/ai/tasks/DefaultTask.html" class="type-name-link" title="class in com.csse3200.game.ai.tasks">DefaultTask</a> (implements com.csse3200.game.ai.tasks.<a href="com/csse3200/game/ai/tasks/Task.html" title="interface in com.csse3200.game.ai.tasks">Task</a>)
 <ul>
-<li class="circle">com.csse3200.game.components.tasks.<a href="com/csse3200/game/components/tasks/ChaseTask.html" class="type-name-link" title="class in com.csse3200.game.components.tasks">ChaseTask</a> (implements com.csse3200.game.ai.tasks.<a href="com/csse3200/game/ai/tasks/PriorityTask.html" title="interface in com.csse3200.game.ai.tasks">PriorityTask</a>)
+<li class="circle">com.csse3200.game.components.tasks.<a href="com/csse3200/game/components/tasks/ChaseTask.html" class="type-name-link" title="class in com.csse3200.game.components.tasks">ChaseTask</a> (implements com.csse3200.game.ai.tasks.<a href="com/csse3200/game/ai/tasks/PriorityTask.html" title="interface in com.csse3200.game.ai.tasks">PriorityTask</a>)</li>
+<li class="circle">com.csse3200.game.components.tasks.<a href="com/csse3200/game/components/tasks/DelayedAttackTask.html" class="type-name-link" title="class in com.csse3200.game.components.tasks">DelayedAttackTask</a> (implements com.csse3200.game.ai.tasks.<a href="com/csse3200/game/ai/tasks/PriorityTask.html" title="interface in com.csse3200.game.ai.tasks">PriorityTask</a>)
 <ul>
-<li class="circle">com.csse3200.game.components.tasks.<a href="com/csse3200/game/components/tasks/FlyingChaseTask.html" class="type-name-link" title="class in com.csse3200.game.components.tasks">FlyingChaseTask</a></li>
+<li class="circle">com.csse3200.game.components.tasks.<a href="com/csse3200/game/components/tasks/TimerAttackTask.html" class="type-name-link" title="class in com.csse3200.game.components.tasks">TimerAttackTask</a></li>
 </ul>
 </li>
-<li class="circle">com.csse3200.game.components.tasks.<a href="com/csse3200/game/components/tasks/DelayedAttackTask.html" class="type-name-link" title="class in com.csse3200.game.components.tasks">DelayedAttackTask</a> (implements com.csse3200.game.ai.tasks.<a href="com/csse3200/game/ai/tasks/PriorityTask.html" title="interface in com.csse3200.game.ai.tasks">PriorityTask</a>)</li>
 <li class="circle">com.csse3200.game.components.tasks.<a href="com/csse3200/game/components/tasks/MovementTask.html" class="type-name-link" title="class in com.csse3200.game.components.tasks">MovementTask</a></li>
 <li class="circle">com.csse3200.game.components.tasks.<a href="com/csse3200/game/components/tasks/RangedAttackTask.html" class="type-name-link" title="class in com.csse3200.game.components.tasks">RangedAttackTask</a> (implements com.csse3200.game.ai.tasks.<a href="com/csse3200/game/ai/tasks/PriorityTask.html" title="interface in com.csse3200.game.ai.tasks">PriorityTask</a>)</li>
-<li class="circle">com.csse3200.game.components.tasks.<a href="com/csse3200/game/components/tasks/RepositionTask.html" class="type-name-link" title="class in com.csse3200.game.components.tasks">RepositionTask</a> (implements com.csse3200.game.ai.tasks.<a href="com/csse3200/game/ai/tasks/PriorityTask.html" title="interface in com.csse3200.game.ai.tasks">PriorityTask</a>)
-<ul>
-<li class="circle">com.csse3200.game.components.tasks.<a href="com/csse3200/game/components/tasks/FlyingRepositionTask.html" class="type-name-link" title="class in com.csse3200.game.components.tasks">FlyingRepositionTask</a></li>
-</ul>
-</li>
+<li class="circle">com.csse3200.game.components.tasks.<a href="com/csse3200/game/components/tasks/RepositionTask.html" class="type-name-link" title="class in com.csse3200.game.components.tasks">RepositionTask</a> (implements com.csse3200.game.ai.tasks.<a href="com/csse3200/game/ai/tasks/PriorityTask.html" title="interface in com.csse3200.game.ai.tasks">PriorityTask</a>)</li>
 <li class="circle">com.csse3200.game.components.tasks.<a href="com/csse3200/game/components/tasks/SummonTask.html" class="type-name-link" title="class in com.csse3200.game.components.tasks">SummonTask</a> (implements com.csse3200.game.ai.tasks.<a href="com/csse3200/game/ai/tasks/PriorityTask.html" title="interface in com.csse3200.game.ai.tasks">PriorityTask</a>)</li>
 <li class="circle">com.csse3200.game.components.tasks.<a href="com/csse3200/game/components/tasks/SweepAttackTask.html" class="type-name-link" title="class in com.csse3200.game.components.tasks">SweepAttackTask</a> (implements com.csse3200.game.ai.tasks.<a href="com/csse3200/game/ai/tasks/PriorityTask.html" title="interface in com.csse3200.game.ai.tasks">PriorityTask</a>)</li>
 <li class="circle">com.csse3200.game.components.tasks.<a href="com/csse3200/game/components/tasks/WaitTask.html" class="type-name-link" title="class in com.csse3200.game.components.tasks">WaitTask</a></li>
-<li class="circle">com.csse3200.game.components.tasks.<a href="com/csse3200/game/components/tasks/WanderTask.html" class="type-name-link" title="class in com.csse3200.game.components.tasks">WanderTask</a> (implements com.csse3200.game.ai.tasks.<a href="com/csse3200/game/ai/tasks/PriorityTask.html" title="interface in com.csse3200.game.ai.tasks">PriorityTask</a>)
-<ul>
-<li class="circle">com.csse3200.game.components.tasks.<a href="com/csse3200/game/components/tasks/FlyingWanderTask.html" class="type-name-link" title="class in com.csse3200.game.components.tasks">FlyingWanderTask</a></li>
-</ul>
-</li>
+<li class="circle">com.csse3200.game.components.tasks.<a href="com/csse3200/game/components/tasks/WanderTask.html" class="type-name-link" title="class in com.csse3200.game.components.tasks">WanderTask</a> (implements com.csse3200.game.ai.tasks.<a href="com/csse3200/game/ai/tasks/PriorityTask.html" title="interface in com.csse3200.game.ai.tasks">PriorityTask</a>)</li>
 </ul>
 </li>
 <li class="circle">com.csse3200.game.components.tasks.<a href="com/csse3200/game/components/tasks/EdgeDetectTask.html" class="type-name-link" title="class in com.csse3200.game.components.tasks">EdgeDetectTask</a></li>
