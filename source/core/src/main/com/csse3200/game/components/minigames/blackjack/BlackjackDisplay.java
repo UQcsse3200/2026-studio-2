@@ -28,7 +28,7 @@ import com.csse3200.game.ui.UIComponent;
 
 /** Displays the Blackjack game and its cards. */
 public class BlackjackDisplay extends UIComponent {
-  private static final String EMPTY_BALANCE_MESSAGE = "Your balance is 0 - grind hard!";
+  private static final String EMPTY_BALANCE_MESSAGE = "Your balance is 0!";
 
   private static final String PLACE_BET = "READY";
 
