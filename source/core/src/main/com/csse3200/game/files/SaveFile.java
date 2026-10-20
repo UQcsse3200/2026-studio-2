@@ -30,6 +30,9 @@ public class SaveFile {
   // True once the player has won the game (level 3 win condition)
   public boolean completed;
 
+  // True once the movement tutorial has been completed, so it never auto-plays again
+  public boolean tutorialCompleted;
+
   // Level the save resumes in: "level1", "level2", "level3" or "boss"
   public String currentLevel = "level1";
 
