@@ -76,7 +76,7 @@ public class ArrowTrajectoryDisplay extends UIComponent {
     Vector2 velocity;
     Vector2 start;
     if (isDrawingBow()) {
-      velocity = direction.scl(bow.getLaunchSpeed());
+      velocity = direction.cpy().scl(bow.getLaunchSpeed());
       start = bow.getSpawnPosition(aim);
     } else {
       // Same launch as ItemUseComponent gives a thrown potion.
@@ -84,12 +84,15 @@ public class ArrowTrajectoryDisplay extends UIComponent {
           entity
               .getCenterPosition()
               .mulAdd(direction, entity.getScale().x * ItemUseComponent.POTION_SPAWN_OFFSET);
-      velocity = direction.scl(ProjectileFactory.POISON_POTION_SPEED);
+      velocity = direction.cpy().scl(ProjectileFactory.POISON_POTION_SPEED);
     }
     float gravityY = PhysicsEngine.GRAVITY_Y * ArrowProjectileComponent.ARC_GRAVITY_SCALE;
     ArrowTrajectory.compute(start, velocity, gravityY, DOT_STEP_SECONDS, points);
 
-    int visible = countUntilTerrain(start);
+    // The aim runs from the player's centre to the crosshair, so stop the line once it gets there.
+    int visible =
+        Math.min(
+            countUntilTerrain(start), countWithinReach(entity.getCenterPosition(), aim, points));
     for (int i = 0; i < visible; i++) {
       screen.set(points[i].x, points[i].y, 0f);
       camera.getCamera().project(screen);
@@ -120,6 +123,27 @@ public class ArrowTrajectoryDisplay extends UIComponent {
 
   private boolean isAimingPotion() {
     return itemUse != null && itemUse.isAimingPotion();
+  }
+
+  /**
+   * Counts the leading points that are no further along the aim than the crosshair, so the line
+   * ends at the crosshair instead of running past it.
+   *
+   * @param origin where the aim is measured from (the player's centre)
+   * @param aim vector from {@code origin} to the crosshair
+   * @param points the predicted path
+   * @return how many points to show
+   */
+  static int countWithinReach(Vector2 origin, Vector2 aim, Vector2[] points) {
+    float reach = aim.len();
+    Vector2 direction = aim.cpy().nor();
+    for (int i = 0; i < points.length; i++) {
+      float along = (points[i].x - origin.x) * direction.x + (points[i].y - origin.y) * direction.y;
+      if (along > reach) {
+        return i;
+      }
+    }
+    return points.length;
   }
 
   /** Returns how many leading points are reached before the arrow would hit terrain. */

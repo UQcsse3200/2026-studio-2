@@ -1,5 +1,6 @@
 package com.csse3200.game.components.player;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -111,5 +112,39 @@ class ArrowTrajectoryDisplayTest {
 
     // Regression: the arc latched off on death and never came back after a checkpoint restart.
     assertTrue(anyDotVisible());
+  }
+
+  @Test
+  void lineShouldStopAtTheCrosshair() {
+    // Straight to the right in 1-unit steps, with the crosshair 3.5 units right of the player.
+    Vector2[] path = {
+      new Vector2(1f, 0f),
+      new Vector2(2f, 0f),
+      new Vector2(3f, 0f),
+      new Vector2(4f, 0f),
+      new Vector2(5f, 0f)
+    };
+
+    assertEquals(
+        3,
+        ArrowTrajectoryDisplay.countWithinReach(new Vector2(0f, 0f), new Vector2(3.5f, 0f), path));
+  }
+
+  @Test
+  void lineShouldMeasureReachAlongTheAimForSteepShots() {
+    // Aiming straight up 2 units: points that rise past 2 are cut, however far sideways they are.
+    Vector2[] path = {new Vector2(0.5f, 1f), new Vector2(1f, 1.9f), new Vector2(1.5f, 2.5f)};
+
+    assertEquals(
+        2, ArrowTrajectoryDisplay.countWithinReach(new Vector2(0f, 0f), new Vector2(0f, 2f), path));
+  }
+
+  @Test
+  void lineShouldKeepEveryPointWhenTheCrosshairIsBeyondThem() {
+    Vector2[] path = {new Vector2(1f, 0f), new Vector2(2f, 0f)};
+
+    assertEquals(
+        2,
+        ArrowTrajectoryDisplay.countWithinReach(new Vector2(0f, 0f), new Vector2(10f, 0f), path));
   }
 }
