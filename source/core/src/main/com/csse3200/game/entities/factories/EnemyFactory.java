@@ -341,14 +341,17 @@ public class EnemyFactory {
         CALYPSO_SWEEP_ANCHOR_X,
         CALYPSO_SWEEP_ANCHOR_Y);
     animator.addAnimation(
-            "hurt",
-            CALYPSO_HURT_FRAME_TIME,
-            Animation.PlayMode.NORMAL,
-            CALYPSO_HURT_ANCHOR_X,
-            CALYPSO_HURT_ANCHOR_Y);
+        "hurt",
+        CALYPSO_HURT_FRAME_TIME,
+        Animation.PlayMode.NORMAL,
+        CALYPSO_HURT_ANCHOR_X,
+        CALYPSO_HURT_ANCHOR_Y);
     animator.addAnimation(
-            "laser", CALYPSO_LASER_FRAME_TIME, Animation.PlayMode.NORMAL,
-            CALYPSO_LASER_ANCHOR_X, CALYPSO_LASER_ANCHOR_Y);
+        "laser",
+        CALYPSO_LASER_FRAME_TIME,
+        Animation.PlayMode.NORMAL,
+        CALYPSO_LASER_ANCHOR_X,
+        CALYPSO_LASER_ANCHOR_Y);
     float sweepWindUp =
         sweepFrames > 0
             ? Math.min(CALYPSO_SWEEP_HIT_FRAME, sweepFrames - 1) * sweepFrameTime

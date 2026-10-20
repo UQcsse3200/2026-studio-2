@@ -31,7 +31,8 @@ public class EnemyTeleportComponent extends Component {
    * @param damagedTpDelay delay before teleporting after taking damage (milliseconds)
    * @param tpFreq frequency of periodic teleports (milliseconds)
    */
-  public EnemyTeleportComponent(List<Vector2> tpPositions, long damagedTpDelay, long tpFreq, long hitTpCooldown) {
+  public EnemyTeleportComponent(
+      List<Vector2> tpPositions, long damagedTpDelay, long tpFreq, long hitTpCooldown) {
     this.tpPositions = tpPositions;
     this.damagedTpDelay = damagedTpDelay;
     this.tpFreq = tpFreq;

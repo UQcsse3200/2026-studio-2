@@ -92,7 +92,7 @@ public class TimerAttackTask extends DelayedAttackTask {
     render.setRotation(direction > 0f ? 0f : 180f);
 
     Entity beam =
-            new Entity().addComponent(render).addComponent(new DurationComponent(attackDuration));
+        new Entity().addComponent(render).addComponent(new DurationComponent(attackDuration));
     beam.setScale(length, BEAM_THICKNESS);
     beam.setPosition(direction > 0f ? startX : startX - length, centreY - BEAM_THICKNESS / 2f);
     ServiceLocator.getEntityService().register(beam);
