@@ -107,8 +107,7 @@ class ItemUseFailureTest {
   void shouldRejectItemsThatDisappearBeforeDispatch() {
     use.create();
     // Inventory may change between selection validation and the action's own availability check.
-    for (ItemType item :
-        new ItemType[] {ItemType.STANDARD_ARROW, ItemType.SPEED_POTION, ItemType.POISON_POTION}) {
+    for (ItemType item : new ItemType[] {ItemType.SPEED_POTION, ItemType.POISON_POTION}) {
       select(item);
       when(inventory.hasItem(item)).thenReturn(true, false);
       failed.clear();

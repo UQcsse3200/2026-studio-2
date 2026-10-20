@@ -27,7 +27,9 @@ public class ProjectileFactory {
   public static final float FIRE_ARROW_SPEED = 18f;
   public static final float FIRE_ARROW_RANGE = 50f;
 
-  public static final float GRAPPLE_ARROW_SPEED = 22f;
+  // 20% slower than its 1.2x-reach tuning (22 * sqrt(1.2) = 24.1). The grapple has its own speed,
+  // separate from BowCharge.REACH_MULTIPLIER, so it can be tuned without moving the bow arrows.
+  public static final float GRAPPLE_ARROW_SPEED = 19.28f;
 
   /** How far from the player a grapple arrow can fly before it gives up; also the longest rope. */
   public static final float GRAPPLE_ARROW_RANGE = 25f;

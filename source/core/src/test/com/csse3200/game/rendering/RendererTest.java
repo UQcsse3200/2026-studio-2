@@ -89,7 +89,7 @@ class RendererTest {
     Renderer renderer =
         new Renderer(cameraComponent, 10, spriteBatch, stage, renderService, debugRenderer);
     renderer.render();
-    verify(renderService).render(spriteBatch);
+    verify(renderService).render(spriteBatch, camera);
   }
 
   @Test
@@ -105,7 +105,7 @@ class RendererTest {
     var order = inOrder(Gdx.gl, renderService);
     order.verify(Gdx.gl).glClearColor(248f / 255f, 249f / 255f, 178f / 255f, 1f);
     order.verify(Gdx.gl).glClear(GL20.GL_COLOR_BUFFER_BIT);
-    order.verify(renderService).render(spriteBatch);
+    order.verify(renderService).render(spriteBatch, camera);
   }
 
   @Test
@@ -122,7 +122,7 @@ class RendererTest {
     var order = inOrder(Gdx.gl, renderService, lighting);
     order.verify(Gdx.gl).glClearColor(248f / 255f, 249f / 255f, 178f / 255f, 1f);
     order.verify(Gdx.gl).glClear(GL20.GL_COLOR_BUFFER_BIT);
-    order.verify(renderService).render(spriteBatch);
+    order.verify(renderService).render(spriteBatch, camera);
     order.verify(lighting).render();
   }
 
@@ -146,7 +146,7 @@ class RendererTest {
 
       Gdx.gl = originalGl;
       renderer.render();
-      verify(renderService).render(spriteBatch);
+      verify(renderService).render(spriteBatch, camera);
       verify(stage).draw();
     } finally {
       Gdx.gl = originalGl;
@@ -168,7 +168,7 @@ class RendererTest {
 
       Gdx.gl = originalGl;
       renderer.render(lighting);
-      verify(renderService).render(spriteBatch);
+      verify(renderService).render(spriteBatch, camera);
       verify(lighting).render();
       verify(stage).draw();
     } finally {

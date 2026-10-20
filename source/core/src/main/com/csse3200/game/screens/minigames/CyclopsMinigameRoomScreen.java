@@ -163,7 +163,7 @@ public class CyclopsMinigameRoomScreen extends ScreenAdapter {
                 300,
                 16,
                 3,
-                "flat-earth/skin/fonts/PixeloidSans.fnt",
+                "flat-earth/skin/fonts/alagard.fnt",
                 Align.center,
                 List.of(
                     "Hmm... there's a cyclops in the way, I'll need to get past...",

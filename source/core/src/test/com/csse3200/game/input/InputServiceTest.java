@@ -146,9 +146,6 @@ class InputServiceTest {
    * handlers are called by descending priority order. As well as, that the InputService returns as
    * soon as the input is handled.
    *
-   * @param method input component method
-   * @param serviceMethod input service method
-   * @param args method args
    * @throws InvocationTargetException
    * @throws IllegalAccessException
    */

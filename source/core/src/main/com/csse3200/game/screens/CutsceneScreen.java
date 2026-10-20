@@ -299,20 +299,7 @@ public class CutsceneScreen extends ScreenAdapter {
         }
         break;
       case FADE_TEXT:
-        fadeTimer += delta;
-        if (textBox != null) {
-          textBox.setOpacity(1f - Math.min(fadeTimer / duration, 1f));
-        }
-        if (fadeTimer >= duration) {
-          if (textBox != null) {
-            textBox.dismiss();
-          }
-          fadeTimer = 0f;
-          state =
-              sceneIndex == cutscene.getDefinition().scenes.size() - 1
-                  ? State.FADE_TO_BLACK
-                  : State.FADE_TO_NEXT;
-        }
+        updateFadeText(delta, duration);
         break;
       case FADE_TO_BLACK:
         fadeTimer += delta;
@@ -327,6 +314,27 @@ public class CutsceneScreen extends ScreenAdapter {
         break;
       case TEXT_ACTIVE, COMPLETE:
         break;
+    }
+  }
+
+  /**
+   * Fades the text box out, then moves on to the next scene, or to the final fade to black after
+   * the last scene.
+   */
+  private void updateFadeText(float delta, float duration) {
+    fadeTimer += delta;
+    if (textBox != null) {
+      textBox.setOpacity(1f - Math.min(fadeTimer / duration, 1f));
+    }
+    if (fadeTimer >= duration) {
+      if (textBox != null) {
+        textBox.dismiss();
+      }
+      fadeTimer = 0f;
+      state =
+          sceneIndex == cutscene.getDefinition().scenes.size() - 1
+              ? State.FADE_TO_BLACK
+              : State.FADE_TO_NEXT;
     }
   }
 

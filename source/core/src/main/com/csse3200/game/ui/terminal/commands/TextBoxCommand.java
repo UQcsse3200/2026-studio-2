@@ -44,6 +44,9 @@ public class TextBoxCommand implements Command {
     TextConfig config = new TextConfig();
     config.pages = new ArrayList<>(List.of("Portrait preview: " + path));
     config.portraitPaths = new ArrayList<>(List.of(path));
+    config.xPos = 400f;
+    config.yPos = 300f;
+    config.maxWidth = 400;
     new TextBoxFactory().createTextBox(config);
     return true;
   }

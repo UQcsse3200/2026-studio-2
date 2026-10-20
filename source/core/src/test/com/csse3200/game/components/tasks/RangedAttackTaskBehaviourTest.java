@@ -22,6 +22,7 @@ import com.csse3200.game.services.ServiceLocator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mockito;
 
 /** Enemies that shoot: when they will, how often, and where the shot starts. */
 @ExtendWith(GameExtension.class)
@@ -40,6 +41,7 @@ class RangedAttackTaskBehaviourTest {
     world = new TaskTestWorld();
     entities = new EntityService();
     ServiceLocator.registerEntityService(entities);
+    MockServices.registerLighting();
 
     MockServices.registerLighting();
 
@@ -260,7 +262,7 @@ class RangedAttackTaskBehaviourTest {
     RangedAttackTask task = task("summon");
     world.advance(10_000);
 
-    try (var pointLights = mockConstruction(PointLightComponent.class)) {
+    try (var ignored = Mockito.mockConstruction(PointLightComponent.class)) {
       task.update();
     }
 
@@ -275,7 +277,7 @@ class RangedAttackTaskBehaviourTest {
     RangedAttackTask task = task("calypso");
     world.advance(10_000);
 
-    try (var pointLights = mockConstruction(PointLightComponent.class)) {
+    try (var ignored = Mockito.mockConstruction(PointLightComponent.class)) {
       task.update();
     }
 

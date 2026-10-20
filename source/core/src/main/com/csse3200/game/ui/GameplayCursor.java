@@ -1,6 +1,7 @@
 package com.csse3200.game.ui;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.MathUtils;
 import com.csse3200.game.components.inventory.BackpackDisplay;
 import com.csse3200.game.components.inventory.InventoryComponent;
@@ -14,8 +15,8 @@ import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.services.ServiceLocator;
 
 /**
- * Disables the mouse pointer during normal play. It only shows while a menu is open or while the
- * player holds right click to aim a bow or grapple.
+ * Disables the mouse pointer during normal play. It only shows while a menu is open (as the themed
+ * arrow) or while the player holds right click to aim a bow or grapple (as the themed crosshair).
  *
  * <p>While disabled the pointer is captured: hidden and locked to the window, so it can't click
  * outside the game. The mouse position keeps updating, so aiming still works.
@@ -31,7 +32,22 @@ public class GameplayCursor {
    *     is open
    */
   public void update(Entity player, boolean screenMenuOpen) {
-    setVisible(shouldShow(player, screenMenuOpen));
+    boolean menuOpen = isMenuOpen(player, screenMenuOpen);
+    boolean aiming = isAiming(player);
+    // Pick the image before releasing the pointer so it never appears as the wrong one.
+    if (menuOpen) {
+      ThemedCursor.use(ThemedCursor.Style.ARROW);
+    } else if (aiming) {
+      ThemedCursor.use(ThemedCursor.Style.CROSSHAIR);
+    }
+    setVisible(menuOpen || aiming, takeAimStart(player));
+  }
+
+  /** Taken every frame so a stale aim start is never used for a later release. */
+  private static GridPoint2 takeAimStart(Entity player) {
+    KeyboardPlayerInputComponent input =
+        player == null ? null : player.getComponent(KeyboardPlayerInputComponent.class);
+    return input == null ? null : input.takePendingPointerPosition();
   }
 
   /**
@@ -42,12 +58,17 @@ public class GameplayCursor {
    * @return true if a menu is open or the player is aiming
    */
   public static boolean shouldShow(Entity player, boolean screenMenuOpen) {
-    return screenMenuOpen || isGamePaused() || isPlayerMenuOpen(player) || isAiming(player);
+    return isMenuOpen(player, screenMenuOpen) || isAiming(player);
   }
 
-  /** Puts the normal pointer back, e.g. when leaving the game screen. */
+  private static boolean isMenuOpen(Entity player, boolean screenMenuOpen) {
+    return screenMenuOpen || isGamePaused() || isPlayerMenuOpen(player);
+  }
+
+  /** Puts the normal arrow pointer back, e.g. when leaving the game screen. */
   public void restore() {
-    setVisible(true);
+    ThemedCursor.use(ThemedCursor.Style.ARROW);
+    setVisible(true, null);
   }
 
   /** Puts the normal pointer back before the screen is thrown away. */
@@ -62,12 +83,12 @@ public class GameplayCursor {
     return visible;
   }
 
-  private void setVisible(boolean show) {
+  private void setVisible(boolean show, GridPoint2 position) {
     if (show == visible || Gdx.input == null) {
       return;
     }
     if (show) {
-      releasePointer();
+      releasePointer(position);
     } else {
       Gdx.input.setCursorCatched(true);
     }
@@ -75,12 +96,13 @@ public class GameplayCursor {
   }
 
   /**
-   * Releases the captured pointer where the mouse has been tracking, clamped to the window.
-   * Otherwise it would reappear wherever it was when it was captured.
+   * Releases the captured pointer at {@code position}, or where the mouse has been tracking if that
+   * is null, clamped to the window. Otherwise it would reappear wherever it was when it was
+   * captured.
    */
-  private static void releasePointer() {
-    int x = Gdx.input.getX();
-    int y = Gdx.input.getY();
+  private static void releasePointer(GridPoint2 position) {
+    int x = position == null ? Gdx.input.getX() : position.x;
+    int y = position == null ? Gdx.input.getY() : position.y;
     Gdx.input.setCursorCatched(false);
     if (Gdx.graphics != null && Gdx.graphics.getWidth() > 0 && Gdx.graphics.getHeight() > 0) {
       Gdx.input.setCursorPosition(
@@ -109,7 +131,10 @@ public class GameplayCursor {
         || (interaction != null && interaction.isShopOpen());
   }
 
-  /** Right click held with an arrow or rope arrow selected, i.e. drawing the bow or grapple. */
+  /**
+   * Right click held with an aimed item selected: drawing the bow or grapple, or lining up a potion
+   * throw.
+   */
   private static boolean isAiming(Entity player) {
     if (player == null) {
       return false;
@@ -120,6 +145,6 @@ public class GameplayCursor {
       return false;
     }
     ItemType selected = inventory.getSelectedItem();
-    return selected != null && selected.isArrow();
+    return selected != null && selected.isAimed();
   }
 }

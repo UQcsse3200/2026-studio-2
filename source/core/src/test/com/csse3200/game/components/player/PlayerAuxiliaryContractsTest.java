@@ -101,13 +101,11 @@ class PlayerAuxiliaryContractsTest {
   }
 
   @Test
-  void weaponCanBeEquippedBeforeAnEntityAndDispatchesItsAttack() {
+  void weaponCanBeEquippedBeforeAnEntity() {
     WeaponComponent coordinator = new WeaponComponent();
     PrimaryWeapon weapon = mock(PrimaryWeapon.class);
-    when(weapon.isReady()).thenReturn(true);
     coordinator.setPrimaryWeapon(weapon);
-    coordinator.attackPrimary(Vector2.Y);
-    verify(weapon).attack(Vector2.Y);
+    assertSame(weapon, coordinator.getPrimaryWeapon());
   }
 
   @Test

@@ -44,9 +44,8 @@ public class PlayerInteractionComponent extends Component {
     entity.getEvents().addListener("deleteItem", this::deleteItem);
     entity.getEvents().addListener("switchItem", this::switchItem);
     entity.getEvents().addListener("closeShop", this::onShopClosed);
-    // The shop can also be reopened from, or closed in favour of, the blackjack minigame.
+    // The shop can also be reopened from outside, e.g. after the blackjack minigame closes.
     entity.getEvents().addListener("openShop", () -> setShopDoorOpen(true));
-    entity.getEvents().addListener("openBlackjack", () -> setShopDoorOpen(false));
   }
 
   public InventoryComponent getInventory() {
