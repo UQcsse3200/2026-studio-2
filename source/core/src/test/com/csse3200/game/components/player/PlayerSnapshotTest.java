@@ -12,6 +12,64 @@ import org.junit.jupiter.api.Test;
 
 class PlayerSnapshotTest {
   @Test
+  void preservesPurchasedMaximumHealthAcrossScreens() {
+    Entity source = player(80, 10);
+    source.getComponent(CombatStatsComponent.class).addMaxHealth(25);
+    PlayerSnapshot snapshot = PlayerSnapshot.capture(source);
+    Entity restored = player(100, 0);
+
+    snapshot.applyTo(restored);
+
+    assertEquals(125, restored.getComponent(CombatStatsComponent.class).getMaxHealth());
+    assertEquals(105, restored.getComponent(CombatStatsComponent.class).getHealth());
+  }
+
+  @Test
+  void preservesExpandedInventoryAndSelectedSlotAcrossScreens() {
+    Entity source = player(80, 10);
+    InventoryComponent inventory = source.getComponent(InventoryComponent.class);
+    inventory.addRow();
+    inventory.addColumn();
+    inventory.addItem(ItemType.ROPE_ARROW, 3);
+    inventory.swapSlots(0, 35);
+    inventory.selectSlot(35);
+    PlayerSnapshot snapshot = PlayerSnapshot.capture(source);
+    Entity restored = player(100, 0);
+
+    snapshot.applyTo(restored);
+
+    InventoryComponent result = restored.getComponent(InventoryComponent.class);
+    assertEquals(4, result.getRows());
+    assertEquals(9, result.getColumns());
+    assertEquals(36, result.getCapacity());
+    assertEquals(35, result.getSelectedSlotIndex());
+    assertEquals(ItemType.ROPE_ARROW, result.getSelectedItem());
+    assertTrue(result.addRow());
+    assertEquals(45, result.getCapacity());
+  }
+
+  @Test
+  void restoringSlotsNotifiesTheHudEvenWhenTheSelectedIndexStaysTheSame() {
+    Entity source = player(80, 10);
+    source.getComponent(InventoryComponent.class).addItem(ItemType.FIRE_ARROW, 3);
+    source.getComponent(InventoryComponent.class).selectSlot(0);
+    PlayerSnapshot snapshot = PlayerSnapshot.capture(source);
+    Entity restored = player(100, 0);
+    restored.getComponent(InventoryComponent.class).addItem(ItemType.ICE_ARROW, 1);
+    restored.getComponent(InventoryComponent.class).selectSlot(0);
+    java.util.List<ItemType> updates = new java.util.ArrayList<>();
+    restored
+        .getEvents()
+        .addListener(
+            "inventoryChanged",
+            () -> updates.add(restored.getComponent(InventoryComponent.class).getSelectedItem()));
+
+    snapshot.applyTo(restored);
+
+    assertEquals(java.util.List.of(ItemType.FIRE_ARROW), updates);
+  }
+
+  @Test
   void restoresCapturedHealthGoldAndPhysicalSlotsAfterSourceChanges() {
     Entity source = player(64, 125);
     InventoryComponent inventory = source.getComponent(InventoryComponent.class);

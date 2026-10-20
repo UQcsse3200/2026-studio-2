@@ -64,6 +64,7 @@ public class LevelsGameScreen extends BaseGameScreen {
   private static final String[] mainGameAtlas = createAtlas();
 
   private boolean levelSwapQueued = false;
+  private boolean levelCompleteQueued = false;
   private GameArea currentGameArea;
   private GameArea nextGameArea;
   private String level = LEVEL1;
@@ -195,13 +196,38 @@ public class LevelsGameScreen extends BaseGameScreen {
   private void registerLevelSwap() {
     Entity levelChanger = currentGameArea.getLevelChanger();
     if (levelChanger != null) {
-      levelChanger.getEvents().addListener("triggerNextLevel", this::queueAreaSwap);
+      levelChanger.getEvents().addListener("triggerNextLevel", this::completeLevel);
       levelChanger
           .getEvents()
           .addListener(
               "triggerNextLevel",
               (String nextLevel) -> SoundEffects.play("sounds/level_complete.wav", 0.5f));
     }
+  }
+
+  /** Runs the flashback between levels without disposing the world during its update. */
+  private void completeLevel(String nextLevel) {
+    if (levelCompleteQueued) {
+      return;
+    }
+    String cutscene;
+    GdxGame.ScreenType minigame;
+    switch (nextLevel) {
+      case LEVEL2:
+        cutscene = "cutscene2";
+        minigame = GdxGame.ScreenType.CYCLOPS_MINIGAME;
+        break;
+      case LEVEL3:
+        cutscene = "cutscene4";
+        minigame = GdxGame.ScreenType.STORY_BLACKJACK;
+        break;
+      default:
+        queueAreaSwap(nextLevel);
+        return;
+    }
+    levelCompleteQueued = true;
+    game.savePlayerState(player);
+    Gdx.app.postRunnable(() -> game.playCutscene(cutscene, minigame));
   }
 
   /**

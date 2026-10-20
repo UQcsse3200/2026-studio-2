@@ -11,15 +11,23 @@ import java.util.Set;
 
 public class PlayerSnapshot {
   private final int health;
+  private final int maxHealth;
   private final int gold;
   private final List<InventorySlot> inventory;
+  private final int rows;
+  private final int columns;
+  private final int selectedSlot;
   private final Set<ItemType> discoveredItems;
 
   private PlayerSnapshot(
-      int health, int gold, List<InventorySlot> inventory, Set<ItemType> discoveredItems) {
+      int health, int maxHealth, InventoryComponent inventory, Set<ItemType> discoveredItems) {
     this.health = health;
-    this.gold = gold;
-    this.inventory = inventory;
+    this.maxHealth = maxHealth;
+    this.gold = inventory.getGold();
+    this.inventory = inventory.getSlots();
+    this.rows = inventory.getRows();
+    this.columns = inventory.getColumns();
+    this.selectedSlot = inventory.getSelectedSlotIndex();
     this.discoveredItems = discoveredItems;
   }
 
@@ -37,8 +45,7 @@ public class PlayerSnapshot {
     ItemDictionaryComponent dictionary = player.getComponent(ItemDictionaryComponent.class);
     Set<ItemType> discovered = dictionary == null ? Set.of() : dictionary.getDiscoveredItems();
 
-    return new PlayerSnapshot(
-        stats.getHealth(), inventory.getGold(), inventory.getSlots(), discovered);
+    return new PlayerSnapshot(stats.getHealth(), stats.getMaxHealth(), inventory, discovered);
   }
 
   /**
@@ -48,9 +55,19 @@ public class PlayerSnapshot {
    * @param player - the player to apply the saved PlayerSnapshot to
    */
   public void applyTo(Entity player) {
-    player.getComponent(CombatStatsComponent.class).setHealth(health);
-    player.getComponent(InventoryComponent.class).setGold(gold);
-    player.getComponent(InventoryComponent.class).setSlots(inventory);
+    CombatStatsComponent stats = player.getComponent(CombatStatsComponent.class);
+    stats.addMaxHealth(maxHealth - stats.getMaxHealth());
+    stats.setHealth(health);
+    InventoryComponent targetInventory = player.getComponent(InventoryComponent.class);
+    targetInventory.setGold(gold);
+    while (targetInventory.getRows() < rows) {
+      targetInventory.addRow();
+    }
+    while (targetInventory.getColumns() < columns) {
+      targetInventory.addColumn();
+    }
+    targetInventory.setSlots(inventory);
+    targetInventory.selectSlot(selectedSlot);
 
     ItemDictionaryComponent dictionary = player.getComponent(ItemDictionaryComponent.class);
     if (dictionary != null) {

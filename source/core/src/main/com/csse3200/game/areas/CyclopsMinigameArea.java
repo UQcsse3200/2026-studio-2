@@ -96,7 +96,9 @@ public class CyclopsMinigameArea extends GameArea {
 
   private static final String[] cyclopsMinigameMusic = {CAVE_BACKGROUND_MUSIC};
 
-  // Indexed by hearts remaining after a hit. 0 hearts is the fatal hit, which uses placeholder 4.
+  // Indexed by whole hearts left after a non-fatal hit (health / 2). A miss costs 4 HP, so the
+  // first two misses leave 3 then 1 hearts and each sounds heavier. The third miss is fatal and
+  // plays the separate death voice.
   public static final List<String> HURT_VOICE_PATH_BY_HEARTS =
       List.of(
           HURT_PLAYER_FOUR_SOUND,
@@ -265,6 +267,14 @@ public class CyclopsMinigameArea extends GameArea {
     return CAVE_FORMATION_TEXTURES[(statueNumber - 1) % CAVE_FORMATION_TEXTURES.length];
   }
 
+  /**
+   * Where the awake cyclops stands, which also sets his draw depth: half a depth offset above the
+   * floor, so he draws in front of the formations but behind the player.
+   */
+  static float cyclopsGroundY(float floorY) {
+    return floorY + STATUE_DEPTH_OFFSET / 2f;
+  }
+
   static float formationHeightFor(float playerHeight) {
     return FORMATION_HEIGHT_PER_PLAYER_HEIGHT * playerHeight;
   }
@@ -323,7 +333,17 @@ public class CyclopsMinigameArea extends GameArea {
 
     AnimationRenderComponent cyclopsAnimator =
         new AnimationRenderComponent(
-            ServiceLocator.getResourceService().getAsset(CYCLOPS_ATLAS, TextureAtlas.class));
+            ServiceLocator.getResourceService().getAsset(CYCLOPS_ATLAS, TextureAtlas.class)) {
+          // Awake, he holds one depth in front of the rocks so he can't flip depth mid-jump.
+          @Override
+          public float getZIndex() {
+            return entity.getComponent(CyclopsAnimationController.class).getZIndex();
+          }
+        };
+    // This animator is a subclass, so it can't be found by AnimationRenderComponent.class. Hand it
+    // to the controller directly.
+    CyclopsAnimationController cyclopsController =
+        new CyclopsAnimationController(minigamePlayer, cyclopsGroundY(middle.y), cyclopsAnimator);
     cyclopsAnimator.addAnimation("sleep", 0.1f, Animation.PlayMode.LOOP, CYCLOPS_BODY_COLUMN, 0f);
     cyclopsAnimator.addAnimation("idle", 0.083f, Animation.PlayMode.LOOP, CYCLOPS_BODY_COLUMN, 0f);
     cyclopsAnimator.addAnimation(
@@ -338,8 +358,7 @@ public class CyclopsMinigameArea extends GameArea {
     Entity cyclops =
         new Entity()
             .addComponent(cyclopsAnimator)
-            .addComponent(
-                new CyclopsAnimationController(minigamePlayer, middle.y + STATUE_DEPTH_OFFSET / 2f))
+            .addComponent(cyclopsController)
             .addComponent(new CyclopsSoundComponent());
     cyclopsAnimator.scaleEntity();
     cyclops.scaleWidth(CYCLOPS_FRAME_WIDTH);

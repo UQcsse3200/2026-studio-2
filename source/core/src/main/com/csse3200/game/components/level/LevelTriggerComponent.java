@@ -1,7 +1,7 @@
 package com.csse3200.game.components.level;
 
 /**
- * Sends the player to the next level. They have to stand in the entity's sensor and press F, see
+ * Sends the player to the next level. They have to stand in the entity's sensor and press E, see
  * {@link LevelEndComponent}.
  */
 public class LevelTriggerComponent extends LevelEndComponent {
