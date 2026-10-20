@@ -342,7 +342,7 @@ public class KeyboardPlayerInputComponent extends InputComponent {
     }
 
     // Reported, not consumed, so other handlers still see the movement.
-    return false;
+    return super.mouseMoved(screenX, screenY);
   }
 
   private boolean isShopOpen() {

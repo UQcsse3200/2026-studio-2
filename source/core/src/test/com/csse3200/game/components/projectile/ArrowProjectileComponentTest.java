@@ -185,8 +185,8 @@ class ArrowProjectileComponentTest {
                     12f,
                     20f,
                     ArrowType.POTION,
-                    ItemType.PoisonPotion.getPoisonDamagePerSecond(),
-                    ItemType.PoisonPotion.getPoisonDuration()));
+                    ItemType.POISON_POTION.getPoisonDamagePerSecond(),
+                    ItemType.POISON_POTION.getPoisonDuration()));
     potion.setPosition(0f, 0f);
     entityService.register(potion);
 
@@ -205,8 +205,8 @@ class ArrowProjectileComponentTest {
     triggerCollision(potion, target);
 
     assertEquals(20, target.getComponent(CombatStatsComponent.class).getHealth());
-    assertEquals(ItemType.PoisonPotion.getPoisonDamagePerSecond(), dps.get());
-    assertEquals(ItemType.PoisonPotion.getPoisonDuration(), duration.get());
+    assertEquals(ItemType.POISON_POTION.getPoisonDamagePerSecond(), dps.get());
+    assertEquals(ItemType.POISON_POTION.getPoisonDuration(), duration.get());
     assertTrue(potion.getComponent(ArrowProjectileComponent.class).isSpent());
   }
 

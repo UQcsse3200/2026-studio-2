@@ -148,7 +148,7 @@ class SandboxLifecycleTest extends UiTestSupport {
     area = null;
     assertEquals(1, entities.getEntities().size);
     assertTrue(entities.getEntities().contains(player, true));
-    assertFalse(realResources.containsAsset(ItemType.SpeedPotion.getTexturePath(), Texture.class));
+    assertFalse(realResources.containsAsset(ItemType.SPEED_POTION.getTexturePath(), Texture.class));
     player.dispose();
     assertEquals(0, stage.getActors().size);
   }

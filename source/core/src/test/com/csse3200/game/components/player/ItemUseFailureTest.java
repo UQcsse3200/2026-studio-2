@@ -62,15 +62,15 @@ class ItemUseFailureTest {
     PlayerActions actions = mock(PlayerActions.class);
     when(actions.isSpeedPotionActive()).thenReturn(true);
     player.addComponent(actions);
-    select(ItemType.SpeedPotion);
+    select(ItemType.SPEED_POTION);
     use.create();
-    assertRejected(ItemType.SpeedPotion);
+    assertRejected(ItemType.SPEED_POTION);
     verify(inventory, never()).removeItem(any(), anyInt());
   }
 
   @Test
   void shouldNotPublishSpeedBuffWhenRemovalFails() {
-    select(ItemType.SpeedPotion);
+    select(ItemType.SPEED_POTION);
     use.create();
     List<Vector2> buffs = new ArrayList<>();
     player
@@ -78,29 +78,29 @@ class ItemUseFailureTest {
         .addListener(
             "speedPotionUsed",
             (Float boost, Float duration) -> buffs.add(new Vector2(boost, duration)));
-    assertRejected(ItemType.SpeedPotion);
+    assertRejected(ItemType.SPEED_POTION);
     assertTrue(buffs.isEmpty());
-    verify(inventory).removeItem(ItemType.SpeedPotion, 1);
+    verify(inventory).removeItem(ItemType.SPEED_POTION, 1);
   }
 
   @Test
   void shouldRejectPoisonThrowWithoutWorldServicesAndPreservePotion() {
-    select(ItemType.PoisonPotion);
+    select(ItemType.POISON_POTION);
     use.create();
-    assertRejected(ItemType.PoisonPotion);
+    assertRejected(ItemType.POISON_POTION);
     verify(inventory, never()).removeItem(any(), anyInt());
   }
 
   @Test
   void shouldNotSpawnPoisonProjectileWhenRemovalFails() {
-    select(ItemType.PoisonPotion);
+    select(ItemType.POISON_POTION);
     EntityService entities = mock(EntityService.class);
     ServiceLocator.registerEntityService(entities);
     ServiceLocator.registerPhysicsService(mock(PhysicsService.class));
     use.create();
-    assertRejected(ItemType.PoisonPotion);
+    assertRejected(ItemType.POISON_POTION);
     verify(entities, never()).register(any());
-    verify(inventory).removeItem(ItemType.PoisonPotion, 1);
+    verify(inventory).removeItem(ItemType.POISON_POTION, 1);
   }
 
   @Test
@@ -108,7 +108,7 @@ class ItemUseFailureTest {
     use.create();
     // Inventory may change between selection validation and the action's own availability check.
     for (ItemType item :
-        new ItemType[] {ItemType.STANDARD_ARROW, ItemType.SpeedPotion, ItemType.PoisonPotion}) {
+        new ItemType[] {ItemType.STANDARD_ARROW, ItemType.SPEED_POTION, ItemType.POISON_POTION}) {
       select(item);
       when(inventory.hasItem(item)).thenReturn(true, false);
       failed.clear();

@@ -22,7 +22,8 @@ public class PoisonBuff extends Component {
 
     this.poisonDamagePerSecond = poisonDamagePerSecond;
     this.poisonDuration = poisonDuration;
-    poisonBuffEndTime = time.getTime() + (long) (poisonDuration * 1000f);
+    long durationMs = (long) (poisonDuration * 1000f);
+    poisonBuffEndTime = time.getTime() + durationMs;
   }
 
   public boolean isActive() {

@@ -57,8 +57,8 @@ class ItemFactoryTest {
     assertItemMapping(ItemType.HEALTH_POTION, HealthPotion.class);
     assertItemMapping(ItemType.FIRE_ARROW, Arrow.class);
     assertItemMapping(ItemType.ICE_ARROW, Arrow.class);
-    assertItemMapping(ItemType.SpeedPotion, SpeedPotion.class);
-    assertItemMapping(ItemType.PoisonPotion, PoisonPotion.class);
+    assertItemMapping(ItemType.SPEED_POTION, SpeedPotion.class);
+    assertItemMapping(ItemType.POISON_POTION, PoisonPotion.class);
   }
 
   @Test
