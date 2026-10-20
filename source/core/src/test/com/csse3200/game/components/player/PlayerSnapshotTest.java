@@ -6,6 +6,7 @@ import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.inventory.InventoryComponent;
 import com.csse3200.game.components.inventory.InventorySlot;
 import com.csse3200.game.components.item.ItemType;
+import com.csse3200.game.components.itemdictionary.ItemDictionaryComponent;
 import com.csse3200.game.entities.Entity;
 import org.junit.jupiter.api.Test;
 
@@ -142,6 +143,23 @@ class PlayerSnapshotTest {
     assertTrue(inventory.getSlots().stream().allMatch(InventorySlot::isEmpty));
     assertTrue(inventory.addItem(ItemType.STANDARD_ARROW, 1));
     assertTrue(inventory.removeItem(ItemType.STANDARD_ARROW, 1));
+  }
+
+  @Test
+  void restoresDiscoveredItemsInTheItemDictionary() {
+    Entity source = player(64, 125);
+    ItemDictionaryComponent dictionary = new ItemDictionaryComponent();
+    source.addComponent(dictionary);
+    dictionary.unlockItem(ItemType.FIRE_ARROW);
+    PlayerSnapshot snapshot = PlayerSnapshot.capture(source);
+
+    Entity restored = player(100, 0);
+    ItemDictionaryComponent restoredDictionary = new ItemDictionaryComponent();
+    restored.addComponent(restoredDictionary);
+    snapshot.applyTo(restored);
+
+    assertTrue(restoredDictionary.isDiscovered(ItemType.FIRE_ARROW));
+    assertEquals(1, restoredDictionary.getDiscoveredCount());
   }
 
   private Entity player(int health, int gold) {
