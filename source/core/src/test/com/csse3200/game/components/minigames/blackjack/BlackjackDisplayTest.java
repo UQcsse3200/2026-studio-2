@@ -48,8 +48,9 @@ class BlackjackDisplayTest {
 
     ResourceService resources = mock(ResourceService.class);
     Texture texture = mock(Texture.class);
+    Sound sound = mock(Sound.class);
     when(resources.getAsset(anyString(), eq(Texture.class))).thenReturn(texture);
-    when(resources.getAsset(anyString(), eq(Sound.class))).thenReturn(mock(Sound.class));
+    when(resources.getAsset(anyString(), eq(Sound.class))).thenReturn(sound);
     ServiceLocator.registerResourceService(resources);
   }
 
@@ -249,7 +250,7 @@ class BlackjackDisplayTest {
     BlackjackDisplay display = new BlackjackDisplay(blackjack, new InventoryComponent(100));
     Entity ui = show(display);
     java.util.List<Boolean> results = new java.util.ArrayList<>();
-    ui.getEvents().addListener("roundCompleted", (Boolean result) -> results.add(result));
+    ui.getEvents().<Boolean>addListener("roundCompleted", results::add);
     assertTrue(results.isEmpty());
 
     Table overlay = field(display, "resultOverlay", Table.class);

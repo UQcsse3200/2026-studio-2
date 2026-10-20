@@ -36,7 +36,8 @@ class LevelsGameScreenFlowTest {
     Stage stage = new Stage(new ScreenViewport(), mock(SpriteBatch.class));
     Renderer renderer = mock(Renderer.class);
     when(renderer.getCamera()).thenReturn(new CameraComponent());
-    when(renderer.getDebug()).thenReturn(mock(DebugRenderer.class));
+    DebugRenderer debug = mock(DebugRenderer.class);
+    when(renderer.getDebug()).thenReturn(debug);
     GdxGame game = mock(GdxGame.class);
     Entity player =
         new Entity()

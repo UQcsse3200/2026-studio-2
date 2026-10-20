@@ -144,7 +144,8 @@ class BlackjackScreenTest {
     GdxGame game = mock(GdxGame.class);
     screen = new BlackjackScreen(game, true);
     RenderService renderService = mock(RenderService.class);
-    when(renderService.getStage()).thenReturn(mock(Stage.class));
+    Stage stage = mock(Stage.class);
+    when(renderService.getStage()).thenReturn(stage);
     ServiceLocator.registerRenderService(renderService);
     Entity ui = screen.createUI();
     Application previousApp = Gdx.app;
@@ -171,7 +172,8 @@ class BlackjackScreenTest {
     GdxGame game = mock(GdxGame.class);
     screen = new BlackjackScreen(game, true);
     RenderService renderService = mock(RenderService.class);
-    when(renderService.getStage()).thenReturn(mock(Stage.class));
+    Stage stage = mock(Stage.class);
+    when(renderService.getStage()).thenReturn(stage);
     ServiceLocator.registerRenderService(renderService);
     Entity ui = screen.createUI();
     InventoryComponent inventory = ui.getComponent(InventoryComponent.class);
@@ -188,7 +190,8 @@ class BlackjackScreenTest {
     GdxGame game = mock(GdxGame.class);
     screen = new BlackjackScreen(game);
     RenderService renderService = mock(RenderService.class);
-    when(renderService.getStage()).thenReturn(mock(Stage.class));
+    Stage stage = mock(Stage.class);
+    when(renderService.getStage()).thenReturn(stage);
     ServiceLocator.registerRenderService(renderService);
 
     screen.createUI().getEvents().trigger("roundCompleted", true);

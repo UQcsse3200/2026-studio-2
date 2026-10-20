@@ -97,11 +97,12 @@ public class BlackjackScreen extends MinigameScreen {
           .addListener(
               "roundCompleted",
               (Boolean won) -> {
-                if (won && !leaving) {
+                boolean playerWon = Boolean.TRUE.equals(won);
+                if (playerWon && !leaving) {
                   leaving = true;
                   Gdx.app.postRunnable(
                       () -> game.playCutscene("cutscene5", GdxGame.ScreenType.LEVEL_3_GAME));
-                } else if (!won && inventory.getGold() == 0) {
+                } else if (!playerWon && inventory.getGold() == 0) {
                   // Losing the flashback must not prevent another attempt.
                   inventory.setGold(STARTING_BALANCE);
                 }
