@@ -86,7 +86,7 @@ public class LevelsGameScreen extends BaseGameScreen {
     WIN_MUSIC, LOSE_MUSIC, "sounds/Main_menu_sound.mp3"
   };
   private final Level1GameArea level1GameArea;
-  // Cheat mode (Backspace): zero gravity plus free vertical movement. Starts off.
+  // Cheat mode (terminal command "cheats"): zero gravity plus free vertical movement. Starts off.
   private boolean cheats = false;
   // Gravity scale to restore when cheat mode is switched off.
   private float gravity = 1f;
@@ -268,6 +268,29 @@ public class LevelsGameScreen extends BaseGameScreen {
     return interaction != null && interaction.consumeShopClosed();
   }
 
+  /**
+   * Moves on to the next level, for the "skipLevel" terminal command.
+   *
+   * @return true if a level swap was queued, false if there is no next level or a minigame overlay
+   *     is open
+   */
+  private boolean skipLevel() {
+    if (minigameOverlayManager.isActive()) {
+      return false;
+    }
+    String next;
+    if (level.equals(LEVEL1)) {
+      next = LEVEL2;
+    } else if (level.equals(LEVEL2)) {
+      next = LEVEL3;
+    } else {
+      logger.info("Already on the last level, nothing to skip to");
+      return false;
+    }
+    queueAreaSwap(next);
+    return true;
+  }
+
   private void toggleCheatMode() {
     cheats = !cheats;
     PhysicsComponent physics = player.getComponent(PhysicsComponent.class);
@@ -306,20 +329,6 @@ public class LevelsGameScreen extends BaseGameScreen {
       debug.setActive(!debug.getActive());
     }
 
-    if (!terminalOpen && Gdx.input.isKeyJustPressed(Input.Keys.BACKSPACE)) {
-      toggleCheatMode();
-    }
-
-    if (!minigameOverlayManager.isActive() && Gdx.input.isKeyJustPressed(Input.Keys.PAGE_UP)) {
-      if (level.equals(LEVEL1)) {
-        level = LEVEL2;
-      } else if (level.equals(LEVEL2)) {
-        level = LEVEL3;
-      } else if (level.equals(LEVEL3)) {
-        level = "none";
-      }
-      queueAreaSwap(level);
-    }
     currentGameArea.updateLevelMap();
 
     if (player.getPosition().y > 98) {
@@ -477,6 +486,7 @@ public class LevelsGameScreen extends BaseGameScreen {
           toggleCheatMode();
           return true;
         });
+    terminal.addCommand("skipLevel", args -> skipLevel());
     ui.addComponent(new InputDecorator(stage, 10))
         .addComponent(new PerformanceDisplay())
         .addComponent(new CoordinateDisplay(renderer.getCamera()))

@@ -66,6 +66,17 @@ public abstract class ArcIndicatorRenderComponent extends RenderComponent {
    */
   protected abstract float maxRange();
 
+  /**
+   * How far along the aim, from the player's centre, the arc may be drawn before it stops. By
+   * default there is no limit, so the arc runs to where the shot lands.
+   *
+   * @param aimOffset the mouse's offset from the player in world space
+   * @return the furthest distance along the aim to draw
+   */
+  protected float maxDrawReach(Vector2 aimOffset) {
+    return Float.MAX_VALUE;
+  }
+
   @Override
   protected void draw(SpriteBatch batch) {
     if (!isActive()) {
@@ -90,8 +101,11 @@ public abstract class ArcIndicatorRenderComponent extends RenderComponent {
     shapeRenderer.setProjectionMatrix(batch.getProjectionMatrix());
     shapeRenderer.begin(ShapeType.Filled);
     shapeRenderer.setColor(DOT_COLOR);
-    Vector2 endPoint = simulateArc(launchPoint(aim), aim);
-    shapeRenderer.circle(endPoint.x, endPoint.y, LANDING_DOT_RADIUS, DOT_SEGMENTS);
+    Vector2 endPoint = simulateArc(launchPoint(aim), aim, maxDrawReach(aimOffset));
+    // No landing dot when the arc was cut short before the shot lands.
+    if (endPoint != null) {
+      shapeRenderer.circle(endPoint.x, endPoint.y, LANDING_DOT_RADIUS, DOT_SEGMENTS);
+    }
     shapeRenderer.end();
     Gdx.gl.glDisable(GL20.GL_BLEND);
 
@@ -103,11 +117,12 @@ public abstract class ArcIndicatorRenderComponent extends RenderComponent {
    * gravity scaled the same way {@link ArrowProjectileComponent} configures it - drawing a dot at
    * each sample point along the way, until the path either crosses solid terrain or travels beyond
    * {@link #maxRange()} in a straight line from the player (matching the real arrow's own range
-   * check).
+   * check). It also stops, without a landing point, once the path is further along the aim than
+   * {@code drawReach}.
    *
-   * @return the point the simulated shot would land at
+   * @return the point the simulated shot would land at, or null if the arc was cut short first
    */
-  private Vector2 simulateArc(Vector2 start, Vector2 aim) {
+  private Vector2 simulateArc(Vector2 start, Vector2 aim, float drawReach) {
     Vector2 rangeOrigin = entity.getCenterPosition();
     float range = maxRange();
     Vector2 gravity =
@@ -132,6 +147,10 @@ public abstract class ArcIndicatorRenderComponent extends RenderComponent {
       }
       if (nextPos.dst(rangeOrigin) >= range) {
         return nextPos;
+      }
+      float along = (nextPos.x - rangeOrigin.x) * aim.x + (nextPos.y - rangeOrigin.y) * aim.y;
+      if (along > drawReach) {
+        return null;
       }
 
       velocity.mulAdd(gravity, SIMULATION_STEP);

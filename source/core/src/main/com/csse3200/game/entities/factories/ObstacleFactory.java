@@ -262,7 +262,7 @@ public class ObstacleFactory {
 
   /**
    * Creates a portal at the end of a level. The player swaps to the next level by standing in it
-   * and pressing F.
+   * and pressing E.
    *
    * @param nextLevelName a String representing the name of the level this component should force
    *     the game screen to swap to
@@ -302,7 +302,13 @@ public class ObstacleFactory {
             .addComponent(new PhysicsComponent().setBodyType(BodyType.StaticBody))
             .addComponent(collider)
             .addComponent(levelEnd)
-            .addComponent(render);
+            .addComponent(render)
+            .addComponent(
+                new PointLightComponent(
+                    ServiceLocator.getLightingService().getEngine().getRayHandler(),
+                    LightingDefaults.RAYS,
+                    Color.GREEN,
+                    LightingDefaults.DIST));
 
     render.scaleEntity();
     portal.scaleHeight(height);

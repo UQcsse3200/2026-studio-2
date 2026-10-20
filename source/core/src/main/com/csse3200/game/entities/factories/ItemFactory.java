@@ -44,7 +44,7 @@ public class ItemFactory {
             .addComponent(
                 new PointLightComponent(
                     ServiceLocator.getLightingService().getEngine().getRayHandler(),
-                    LightingDefaults.RAYS,
+                    100,
                     itemColour,
                     LightingDefaults.DIST));
 
@@ -150,7 +150,7 @@ public class ItemFactory {
             .addComponent(
                 new PointLightComponent(
                     ServiceLocator.getLightingService().getEngine().getRayHandler(),
-                    LightingDefaults.RAYS,
+                    100,
                     goldColour,
                     LightingDefaults.DIST));
 

@@ -9,16 +9,19 @@ import static org.mockito.Mockito.when;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
+import com.csse3200.game.components.lighting.PointLightComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.physics.components.HitboxComponent;
+import com.csse3200.game.services.MockServices;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mockito;
 
 /** Enemies that shoot: when they will, how often, and where the shot starts. */
 @ExtendWith(GameExtension.class)
@@ -37,6 +40,7 @@ class RangedAttackTaskBehaviourTest {
     world = new TaskTestWorld();
     entities = new EntityService();
     ServiceLocator.registerEntityService(entities);
+    MockServices.registerLighting();
 
     // Projectiles load a texture when built: hand out a one by one texture for any path
     Texture texture = mock(Texture.class);
@@ -245,7 +249,9 @@ class RangedAttackTaskBehaviourTest {
     RangedAttackTask task = task("summon");
     world.advance(10_000);
 
-    task.update();
+    try (var ignored = Mockito.mockConstruction(PointLightComponent.class)) {
+      task.update();
+    }
 
     assertEquals(1, shotsSoFar());
     assertEquals(
@@ -258,7 +264,9 @@ class RangedAttackTaskBehaviourTest {
     RangedAttackTask task = task("calypso");
     world.advance(10_000);
 
-    task.update();
+    try (var ignored = Mockito.mockConstruction(PointLightComponent.class)) {
+      task.update();
+    }
 
     assertEquals(1, shotsSoFar());
     assertEquals(
