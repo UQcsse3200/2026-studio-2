@@ -15,7 +15,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
@@ -68,6 +67,7 @@ public class BlackjackDisplay extends UIComponent {
   private ImageButton hitButton;
   private ImageButton standButton;
   private ImageButton backButton;
+  private ImageButton soundButton;
 
   private Label dealerTotalLabel;
   private Label playerTotalLabel;
@@ -194,53 +194,21 @@ public class BlackjackDisplay extends UIComponent {
           }
         });
 
+    betField.setTextFieldListener(
+        (textField, character) -> {
+          if (character == '\r' || character == '\n') {
+            tryStartRound();
+          }
+        });
+
     dealerCards = new Table();
     playerCards = new Table();
+
+    /* Buttons */
 
     newRoundButton =
         createImageButton(
             "images/Buttons/place_bet_up_btn.png", "images/Buttons/place_bet_down_btn.png");
-    hitButton =
-        createImageButton("images/Buttons/hit_up_btn.png", "images/Buttons/hit_down_btn.png");
-    standButton =
-        createImageButton("images/Buttons/stand_up_btn.png", "images/Buttons/stand_down_btn.png");
-    backButton =
-        createImageButton(
-            "images/Buttons/bj_back_up_btn.png", "images/Buttons/bj_back_down_btn.png");
-
-    TextButton soundButton = new TextButton("SOUND: ON", skin);
-    // Match the wooden texture used by the other Blackjack buttons.
-    com.badlogic.gdx.graphics.Texture soundUpTexture =
-        new com.badlogic.gdx.graphics.Texture(
-            com.badlogic.gdx.Gdx.files.internal("images/Buttons/sound_up_btn.png"));
-    com.badlogic.gdx.graphics.Texture soundDownTexture =
-        new com.badlogic.gdx.graphics.Texture(
-            com.badlogic.gdx.Gdx.files.internal("images/Buttons/sound_down_btn.png"));
-    soundUpTexture.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
-    soundDownTexture.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
-    TextButton.TextButtonStyle soundStyle = new TextButton.TextButtonStyle(soundButton.getStyle());
-    soundStyle.up = new TextureRegionDrawable(soundUpTexture);
-    soundStyle.down = new TextureRegionDrawable(soundDownTexture);
-    soundStyle.over = soundStyle.up;
-    soundButton.setStyle(soundStyle);
-
-    soundButton.addListener(
-        new ChangeListener() {
-          @Override
-          public void changed(ChangeEvent event, Actor actor) {
-            soundEnabled = !soundEnabled;
-            soundButton.setText(soundEnabled ? "SOUND: ON" : "SOUND: OFF");
-
-            if (soundToggleCallback != null) {
-              soundToggleCallback.accept(soundEnabled);
-            }
-
-            if (soundEnabled) {
-              ButtonSound.playClick();
-            }
-          }
-        });
-
     newRoundButton.addListener(
         new ChangeListener() {
           @Override
@@ -250,13 +218,8 @@ public class BlackjackDisplay extends UIComponent {
           }
         });
 
-    betField.setTextFieldListener(
-        (textField, character) -> {
-          if (character == '\r' || character == '\n') {
-            tryStartRound();
-          }
-        });
-
+    hitButton =
+        createImageButton("images/Buttons/hit_up_btn.png", "images/Buttons/hit_down_btn.png");
     hitButton.addListener(
         new ChangeListener() {
           @Override
@@ -273,6 +236,8 @@ public class BlackjackDisplay extends UIComponent {
           }
         });
 
+    standButton =
+        createImageButton("images/Buttons/stand_up_btn.png", "images/Buttons/stand_down_btn.png");
     standButton.addListener(
         new ChangeListener() {
           @Override
@@ -292,6 +257,9 @@ public class BlackjackDisplay extends UIComponent {
           }
         });
 
+    backButton =
+        createImageButton(
+            "images/Buttons/bj_back_up_btn.png", "images/Buttons/bj_back_down_btn.png");
     backButton.addListener(
         new com.badlogic.gdx.scenes.scene2d.InputListener() {
           @Override
@@ -326,6 +294,31 @@ public class BlackjackDisplay extends UIComponent {
             }
           }
         });
+
+    soundButton =
+        createCheckedImageButton(
+            "images/Buttons/sound_on_up_btn.png",
+            "images/Buttons/sound_on_down_btn.png",
+            "images/Buttons/sound_off_up_btn.png",
+            "images/Buttons/sound_off_down_btn.png");
+    soundButton.addListener(
+        new ChangeListener() {
+          @Override
+          public void changed(ChangeEvent event, Actor actor) {
+            soundEnabled = !soundEnabled;
+
+            if (soundToggleCallback != null) {
+              soundToggleCallback.accept(soundEnabled);
+            }
+
+            if (soundEnabled) {
+              ButtonSound.playClick();
+            }
+          }
+        });
+
+    /* User Interface */
+
     Table dealerRegion = new Table();
     dealerRegion.add(dealerLabel).padTop(45f).padBottom(-25f);
     dealerRegion.row();
@@ -649,6 +642,24 @@ public class BlackjackDisplay extends UIComponent {
     style.disabled = createDisabledDrawable(upTexture);
 
     return new ImageButton(style);
+  }
+
+  private ImageButton createCheckedImageButton(
+      String upPathOn, String downPathOn, String upPathOff, String downPathOff) {
+    ImageButton button = this.createImageButton(upPathOn, downPathOn);
+
+    Texture upOffTexture = ServiceLocator.getResourceService().getAsset(upPathOff, Texture.class);
+    upOffTexture.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
+    Texture downOffTexture =
+        ServiceLocator.getResourceService().getAsset(downPathOff, Texture.class);
+    downOffTexture.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
+
+    ImageButton.ImageButtonStyle style = button.getStyle();
+    style.checked = new TextureRegionDrawable(upOffTexture);
+    style.checkedDown = new TextureRegionDrawable(downOffTexture);
+
+    button.setStyle(style);
+    return button;
   }
 
   private SpriteDrawable createDisabledDrawable(Texture texture) {
