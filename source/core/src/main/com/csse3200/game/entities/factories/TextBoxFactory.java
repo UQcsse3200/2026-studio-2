@@ -1,8 +1,10 @@
 package com.csse3200.game.entities.factories;
 
 import com.csse3200.game.components.TextBoxComponent;
+import com.csse3200.game.entities.configs.Portrait;
 import com.csse3200.game.entities.configs.TextConfig;
 import com.csse3200.game.files.FileLoader;
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,5 +59,23 @@ public class TextBoxFactory {
     } catch (Exception e) {
       logger.error("Failed to create text box: {}", e.getMessage());
     }
+  }
+
+  /**
+   * Creates a single-page text box with a character portrait.
+   *
+   * @param text text to display in the box
+   * @param portrait portrait to display above the box
+   */
+  public void createPortraitTextBox(String text, Portrait portrait) {
+    if (text == null || portrait == null) {
+      logger.error("Failed to create portrait text box: text and portrait are required");
+      return;
+    }
+
+    TextConfig textConfig = new TextConfig();
+    textConfig.pages = List.of(text);
+    textConfig.portraitPaths = List.of(portrait.getAssetPath());
+    createTextBox(textConfig);
   }
 }
