@@ -146,10 +146,12 @@ public class SaveManager {
     }
 
     // Writing after a win must not clear the completion flag, and an autosave must not make
-    // the movement tutorial replay for a save that has already seen it.
+    // the movement tutorial replay for a save that has already seen it, nor silently re-enable
+    // tutorials for a save whose owner declined them.
     SaveFile previous = read(slot);
     save.completed = previous != null && previous.completed;
     save.tutorialCompleted = previous != null && previous.tutorialCompleted;
+    save.tutorialsAccepted = previous == null || previous.tutorialsAccepted;
     return save;
   }
 }

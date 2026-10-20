@@ -33,6 +33,10 @@ public class SaveFile {
   // True once the movement tutorial has been completed, so it never auto-plays again
   public boolean tutorialCompleted;
 
+  // False once the player declines tut0's offer: no tutorial prompt auto-plays for this slot
+  // again. Defaults to true so saves from before the offer existed keep their prompts.
+  public boolean tutorialsAccepted = true;
+
   // Level the save resumes in: "level1", "level2", "level3" or "boss"
   public String currentLevel = "level1";
 

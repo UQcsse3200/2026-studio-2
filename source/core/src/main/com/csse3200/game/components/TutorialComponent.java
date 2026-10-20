@@ -22,8 +22,11 @@ public class TutorialComponent extends InputComponent {
   private final TextBoxComponent textBox;
   private final List<Step> steps;
   private final Runnable onFinished;
+  private final float autoDismissSeconds;
   private int step = 0;
   private boolean finished = false;
+  private float elapsedSeconds = 0f;
+  private int completionKeycode = 0;
 
   /**
    * Creates a tutorial over the given textbox.
@@ -34,7 +37,7 @@ public class TutorialComponent extends InputComponent {
    * @throws IllegalArgumentException if a step names an unknown key or mouse button
    */
   public TutorialComponent(TextBoxComponent textBox, List<TutorialStepConfig> stepConfigs) {
-    this(textBox, stepConfigs, null);
+    this(textBox, stepConfigs, null, 0f);
   }
 
   /**
@@ -45,9 +48,27 @@ public class TutorialComponent extends InputComponent {
    */
   public TutorialComponent(
       TextBoxComponent textBox, List<TutorialStepConfig> stepConfigs, Runnable onFinished) {
+    this(textBox, stepConfigs, onFinished, 0f);
+  }
+
+  /**
+   * Creates a tutorial with an optional deadline and completion callback.
+   *
+   * @param onFinished run once the player completes the final step (not when the tutorial is
+   *     dismissed early), or null for no callback
+   * @param autoDismissSeconds seconds before the textbox dismisses itself without input; 0 or
+   *     less waits forever for the player's steps
+   * @throws IllegalArgumentException if a step names an unknown key or mouse button
+   */
+  public TutorialComponent(
+      TextBoxComponent textBox,
+      List<TutorialStepConfig> stepConfigs,
+      Runnable onFinished,
+      float autoDismissSeconds) {
     super(6);
     this.textBox = textBox;
     this.onFinished = onFinished;
+    this.autoDismissSeconds = autoDismissSeconds;
     this.steps = new ArrayList<>();
     if (stepConfigs != null) {
       for (TutorialStepConfig config : stepConfigs) {
@@ -59,6 +80,7 @@ public class TutorialComponent extends InputComponent {
   @Override
   public boolean keyDown(int keycode) {
     if (canObserve() && steps.get(step).markKeySeen(keycode)) {
+      completionKeycode = keycode;
       completeStep();
     }
     // Never consume the key, so the player still moves while following the tutorial.
@@ -105,6 +127,36 @@ public class TutorialComponent extends InputComponent {
     if (onFinished != null) {
       onFinished.run();
     }
+  }
+
+  /**
+   * Advances the auto-dismiss deadline, if this tutorial has one. When it elapses the textbox
+   * closes like an early dismissal: the player's steps are no longer needed and {@code onFinished}
+   * does not run. This component is registered for input rather than entity updates, so the owning
+   * screen ticks it once per frame; calls are ignored once the tutorial is finished or dismissed.
+   *
+   * @param delta seconds since the previous frame
+   */
+  public void tickAutoDismiss(float delta) {
+    if (autoDismissSeconds <= 0f || finished || textBox == null || textBox.isDismissed()) {
+      return;
+    }
+    elapsedSeconds += delta;
+    if (elapsedSeconds < autoDismissSeconds) {
+      return;
+    }
+    dispose();
+  }
+
+  /**
+   * The keycode that completed the most recent step, or 0 when no key has completed one (e.g. a
+   * mouse button did, or nothing has completed yet). Lets a choice tutorial such as tut0 report
+   * which option the player picked to its completion callback.
+   *
+   * @return the completing keycode
+   */
+  public int getCompletionKeycode() {
+    return completionKeycode;
   }
 
   @Override

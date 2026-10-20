@@ -14,6 +14,12 @@ public class TutorialConfig extends TextConfig {
   public List<TutorialStepConfig> steps = new ArrayList<>();
 
   /**
+   * Seconds the textbox stays up before dismissing itself without player input; 0 (the default)
+   * keeps the step-driven behaviour where only the player dismisses it.
+   */
+  public float autoDismissSeconds = 0f;
+
+  /**
    * Checks this config can drive a tutorial: it has one step per page, and every step lists at
    * least one input with a resolvable key or mouse button name.
    *
@@ -32,6 +38,9 @@ public class TutorialConfig extends TextConfig {
       if (problem != null) {
         return problem;
       }
+    }
+    if (autoDismissSeconds < 0) {
+      return "autoDismissSeconds must not be negative";
     }
     return null;
   }

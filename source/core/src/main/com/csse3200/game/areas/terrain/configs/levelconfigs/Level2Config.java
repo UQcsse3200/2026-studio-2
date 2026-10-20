@@ -357,6 +357,13 @@ public class Level2Config extends LevelConfig {
     checkpointTutorials.put(new GridPoint2(6, 9), "tut8");
     checkpointTutorials.put(new GridPoint2(38, 28), "tut9");
 
+    // Standing on the lone ledge above the arena's paired ledges prompts the grapple lesson
+    // (tut2): the gap between them is not crossable by foot. Half-tile margins absorb physics
+    // resting error, and the region reaches only just above the ledge, so passing below never
+    // triggers it.
+    regionTutorials.add(
+        new RegionTutorialConfig(new Vector2(28.5f, 22.5f), new Vector2(32f, 24f), "tut2"));
+
     wheelSpinSpawns = new GridPoint2[] {new GridPoint2(29, 41)};
   }
 }

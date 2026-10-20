@@ -73,7 +73,8 @@ public final class TutorialFactory {
     textBox.setPosition(config.xPos, config.yPos, Align.bottomLeft);
     textBox.create();
 
-    TutorialComponent tutorial = new TutorialComponent(textBox, config.steps, onFinished);
+    TutorialComponent tutorial =
+        new TutorialComponent(textBox, config.steps, onFinished, config.autoDismissSeconds);
     tutorial.create();
     return tutorial;
   }
