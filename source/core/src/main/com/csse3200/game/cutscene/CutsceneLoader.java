@@ -49,23 +49,36 @@ public class CutsceneLoader {
 
     List<String> imagePaths = new ArrayList<>();
     for (CutsceneScene scene : definition.scenes) {
-      if (scene == null || scene.image == null || scene.image.isBlank()) {
-        return Result.error("Cutscene contains a scene without an image");
+      String sceneError = validateScene(directory, scene);
+      if (sceneError != null) {
+        return Result.error(sceneError);
       }
-      if (!isSafeRelativePath(scene.image)) {
-        return Result.error("Invalid cutscene image path: " + scene.image);
-      }
-      FileHandle image = directory.child(scene.image);
-      if (!isJpeg(image) || !image.exists() || image.isDirectory()) {
-        return Result.error("Missing or unsupported cutscene image: " + scene.image);
-      }
-      imagePaths.add(image.path());
+      imagePaths.add(directory.child(scene.image).path());
     }
 
     if (definition.fadeDuration <= 0f) {
       definition.fadeDuration = 0.4f;
     }
     return Result.success(new LoadedCutscene(name, definition, imagePaths.toArray(new String[0])));
+  }
+
+  /**
+   * Checks that a scene has a safe, existing JPEG image inside the cutscene directory.
+   *
+   * @return an error message, or null if the scene is valid
+   */
+  private static String validateScene(FileHandle directory, CutsceneScene scene) {
+    if (scene == null || scene.image == null || scene.image.isBlank()) {
+      return "Cutscene contains a scene without an image";
+    }
+    if (!isSafeRelativePath(scene.image)) {
+      return "Invalid cutscene image path: " + scene.image;
+    }
+    FileHandle image = directory.child(scene.image);
+    if (!isJpeg(image) || !image.exists() || image.isDirectory()) {
+      return "Missing or unsupported cutscene image: " + scene.image;
+    }
+    return null;
   }
 
   private CutsceneDefinition fallback(FileHandle directory) {

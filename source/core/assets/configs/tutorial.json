@@ -8,7 +8,7 @@
   "maxWidth": 320,
   "padding": 16,
   "borderThickness": 3,
-  "fontPath": "flat-earth/skin/fonts/PixeloidSans.fnt",
+  "fontPath": "flat-earth/skin/fonts/alagard.fnt",
   "textAlignment": "left",
   "pages": [
     "Move around using A and D.",

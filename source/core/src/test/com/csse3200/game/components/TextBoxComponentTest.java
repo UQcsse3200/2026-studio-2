@@ -377,7 +377,8 @@ class TextBoxComponentTest {
     Table table = getField(component, "table");
     assertTrue(table.getHeight() > 0f);
     // Centered above the box: bottom edge on the top edge, never covering the text.
-    assertEquals(table.getX() + (table.getWidth() - 100f) / 2f, portrait.getX(), 0.01f);
+    assertEquals(
+        table.getX() + (table.getWidth() - portrait.getWidth()) / 2f, portrait.getX(), 0.01f);
     assertEquals(table.getY() + table.getHeight(), portrait.getY(), 0.01f);
   }
 

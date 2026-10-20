@@ -902,4 +902,105 @@ class PlayerAnimationControllerTest {
 
     assertEquals("death", animator.getCurrentAnimation());
   }
+
+  // ---- One-shot clips replaced before they finished ----
+  // Each of these clips' flags is only cleared when that clip finishes, and the animator can only
+  // finish the clip it's playing. A flag left behind by a replaced clip used to stay set for good,
+  // and since the flags gate every movement animation, the player's animation froze.
+
+  @Test
+  void shouldNotFreezeMovementAnimationsWhenADashCutsTheLandingShort() {
+    Entity entity = new Entity();
+    PlayerAnimationController controller = createJumpController(entity);
+    AnimationRenderComponent animator = entity.getComponent(AnimationRenderComponent.class);
+    entity.getEvents().trigger("walk", new Vector2(1f, 0f));
+    entity.getEvents().trigger("fallStart");
+    entity.getEvents().trigger("landed");
+    assertEquals("jump_land", animator.getCurrentAnimation());
+
+    entity.getEvents().trigger("dashStart"); // Shift straight after landing
+    finishClip(entity, controller);
+    entity.getEvents().trigger("walkStop");
+
+    assertEquals("idle", animator.getCurrentAnimation(), "stuck walking after stopping");
+  }
+
+  @Test
+  void shouldNotFreezeMovementAnimationsWhenABowShotCutsTheLandingShort() {
+    Entity entity = new Entity();
+    PlayerAnimationController controller = createJumpController(entity);
+    AnimationRenderComponent animator = entity.getComponent(AnimationRenderComponent.class);
+    entity.getEvents().trigger("walk", new Vector2(1f, 0f));
+    entity.getEvents().trigger("fallStart");
+    entity.getEvents().trigger("landed");
+
+    entity.getEvents().trigger("chargeStart", new Vector2(1f, 0f));
+    entity.getEvents().trigger("chargeRelease", new Vector2(1f, 0f));
+    finishClip(entity, controller); // bow_shoot ends
+    entity.getEvents().trigger("walkStop");
+
+    assertEquals("idle", animator.getCurrentAnimation());
+  }
+
+  @Test
+  void shouldNotLetWalkingCutAHitReactionShort() {
+    Entity entity = new Entity();
+    PlayerAnimationController controller = createJumpController(entity);
+    AnimationRenderComponent animator = entity.getComponent(AnimationRenderComponent.class);
+
+    entity.getEvents().trigger("hurt");
+    entity.getEvents().trigger("walk", new Vector2(1f, 0f));
+    assertEquals("hurt", animator.getCurrentAnimation(), "the hit plays out first");
+
+    finishClip(entity, controller);
+    assertEquals("walk", animator.getCurrentAnimation());
+
+    // Walking used to replace the hit, leaving "hurt" set for good and blocking every swing.
+    entity.getEvents().trigger("meleeSwing", 1);
+    assertEquals("melee", animator.getCurrentAnimation());
+  }
+
+  @Test
+  void shouldKeepTheTakeoffWhenJumpingOutOfAMeleeSwing() {
+    Entity entity = new Entity();
+    PlayerAnimationController controller = createJumpController(entity);
+    AnimationRenderComponent animator = entity.getComponent(AnimationRenderComponent.class);
+    entity.getEvents().trigger("walk", new Vector2(1f, 0f));
+    entity.getEvents().trigger("meleeSwing", 1);
+
+    entity.getEvents().trigger("jumpStart");
+    finishClip(entity, controller);
+
+    // The cut-off swing's flag fired on the takeoff finishing and dropped into walk mid-air.
+    assertEquals("jump_takeoff", animator.getCurrentAnimation());
+  }
+
+  @Test
+  void shouldNotFreezeMovementAnimationsWhenAHitCutsTheLandingShort() {
+    Entity entity = new Entity();
+    PlayerAnimationController controller = createJumpController(entity);
+    AnimationRenderComponent animator = entity.getComponent(AnimationRenderComponent.class);
+    entity.getEvents().trigger("walk", new Vector2(1f, 0f));
+    entity.getEvents().trigger("fallStart");
+    entity.getEvents().trigger("landed");
+
+    entity.getEvents().trigger("hurt");
+    finishClip(entity, controller);
+    entity.getEvents().trigger("walkStop");
+
+    assertEquals("idle", animator.getCurrentAnimation());
+  }
+
+  @Test
+  void shouldNotFreezeMovementAnimationsWhenTheInstrumentIsCutShort() {
+    Entity entity = new Entity();
+    PlayerAnimationController controller = createJumpController(entity);
+    AnimationRenderComponent animator = entity.getComponent(AnimationRenderComponent.class);
+    entity.getEvents().trigger("fallStart");
+    entity.getEvents().trigger("landed");
+
+    // The instrument can't start mid-landing, and must not strand the landing if it could.
+    entity.getEvents().trigger("instrumentStart");
+    assertEquals("jump_land", animator.getCurrentAnimation());
+  }
 }

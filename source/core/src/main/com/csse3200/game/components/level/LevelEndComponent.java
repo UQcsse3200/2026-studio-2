@@ -8,7 +8,7 @@ import com.csse3200.game.physics.BodyUserData;
 import com.csse3200.game.services.ServiceLocator;
 
 /**
- * The end of a level. The player has to walk into the entity's sensor and press F to use it. That
+ * The end of a level. The player has to walk into the entity's sensor and press E to use it. That
  * triggers a "levelEndActivated" event, so the entity can light up, and then runs {@link
  * #activate()} once, a moment later so the player sees it light up first.
  */
@@ -32,7 +32,7 @@ public abstract class LevelEndComponent extends InputComponent {
     entity.getEvents().addListener("collisionEnd", this::onCollisionEnd);
   }
 
-  /** Runs once, shortly after the player presses F while standing in range. */
+  /** Runs once, shortly after the player presses E while standing in range. */
   protected abstract void activate();
 
   /**
@@ -44,7 +44,7 @@ public abstract class LevelEndComponent extends InputComponent {
 
   @Override
   public boolean keyDown(int keycode) {
-    if (keycode != Input.Keys.F
+    if (keycode != Input.Keys.E
         || !playerInRange
         || activated
         || ServiceLocator.getEntityService().getPaused()) {
