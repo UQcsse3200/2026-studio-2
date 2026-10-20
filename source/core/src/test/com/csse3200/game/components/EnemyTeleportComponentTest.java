@@ -42,7 +42,7 @@ class EnemyTeleportComponentTest {
     Entity enemy =
         new Entity()
             .addComponent(new CombatStatsComponent(health, 1))
-            .addComponent(new EnemyTeleportComponent(spots, DAMAGED_DELAY, FREQUENCY));
+            .addComponent(new EnemyTeleportComponent(spots, DAMAGED_DELAY, FREQUENCY, 0L));
     enemy.setPosition(START);
     enemy.create();
     return enemy;

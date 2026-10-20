@@ -33,7 +33,7 @@ class RepositionTaskTest {
     player.setPosition(3f, 0f);
     enemy = world.enemyAt(5f, 0f);
     movement = TaskTestWorld.movementOf(enemy);
-    task = new RepositionTask(player, PRIORITY, DISTANCE);
+    task = new RepositionTask(player, PRIORITY, DISTANCE, "ground");
     task.create(() -> enemy);
   }
 
@@ -133,7 +133,7 @@ class RepositionTaskTest {
     var edgeWorld = new TaskTestWorld(); // a fresh world whose floor ends just ahead
     edgeWorld.addGround(-50f, 6f);
     Entity edgeEnemy = edgeWorld.enemyAt(5f, 0f);
-    RepositionTask edgeTask = new RepositionTask(player, PRIORITY, DISTANCE);
+    RepositionTask edgeTask = new RepositionTask(player, PRIORITY, DISTANCE, "ground");
     edgeTask.create(() -> edgeEnemy);
     edgeEnemy.getEvents().trigger("hitPlayer");
     edgeTask.start();

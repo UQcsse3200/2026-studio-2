@@ -34,8 +34,9 @@ public class EdgeDetectTask {
     // check if ground ahead is safe
     if (physics.raycast(start, end, PhysicsLayer.GROUND, hit)) {
       return true;
+    } else if (physics.raycast(start, end, PhysicsLayer.OBSTACLE, hit)) {
+      return true;
     }
-
-    return physics.raycast(start, end, PhysicsLayer.OBSTACLE, hit);
+    return physics.raycast(start, end, PhysicsLayer.LEDGE, hit);
   }
 }

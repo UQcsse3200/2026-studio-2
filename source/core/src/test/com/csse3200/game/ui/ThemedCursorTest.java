@@ -2,6 +2,7 @@ package com.csse3200.game.ui;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -92,10 +93,47 @@ class ThemedCursorTest {
   }
 
   @Test
+  void crosshairImageShouldBeA32PixelSquareWithItsCentreDotAtTheClickPoint() {
+    FileHandle file = Gdx.files.internal(ThemedCursor.CROSSHAIR_PATH);
+    assertTrue(file.exists());
+
+    Pixmap pixmap = new Pixmap(file);
+    try {
+      assertEquals(32, pixmap.getWidth());
+      assertEquals(32, pixmap.getHeight());
+      int hotspot = ThemedCursor.CROSSHAIR_HOTSPOT;
+      assertEquals(0xFF, pixmap.getPixel(hotspot, hotspot) & 0xFF);
+      assertEquals(0xFF, pixmap.getPixel(hotspot + 1, hotspot + 1) & 0xFF);
+    } finally {
+      pixmap.dispose();
+    }
+  }
+
+  @Test
+  void shouldUseTheCrosshairWithTheClickPointAtItsCentre() {
+    ThemedCursor.use(ThemedCursor.Style.CROSSHAIR);
+
+    int hotspot = ThemedCursor.CROSSHAIR_HOTSPOT;
+    verify(graphics).newCursor(any(Pixmap.class), eq(hotspot), eq(hotspot));
+    verify(graphics).setCursor(cursor);
+    assertEquals(ThemedCursor.Style.CROSSHAIR, ThemedCursor.getCurrent());
+  }
+
+  @Test
+  void shouldSwitchBackToTheArrow() {
+    ThemedCursor.use(ThemedCursor.Style.CROSSHAIR);
+    ThemedCursor.use(ThemedCursor.Style.ARROW);
+
+    verify(graphics).newCursor(any(Pixmap.class), eq(0), eq(0));
+    assertEquals(ThemedCursor.Style.ARROW, ThemedCursor.getCurrent());
+  }
+
+  @Test
   void shouldFreeTheCursorOnDispose() {
     ThemedCursor.install();
     ThemedCursor.dispose();
 
     verify(cursor).dispose();
+    assertNull(ThemedCursor.getCurrent());
   }
 }

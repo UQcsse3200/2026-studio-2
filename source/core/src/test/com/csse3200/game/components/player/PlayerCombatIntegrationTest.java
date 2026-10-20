@@ -62,7 +62,6 @@ class PlayerCombatIntegrationTest {
   private MockedStatic<ProjectileFactory> factory;
   private EventListener1<ItemType> itemUsed;
   private EventListener1<ItemType> itemFailed;
-  private EventListener1<Vector2> primaryAttack;
   private EventListener1<Vector2> chargeStart;
   private EventListener1<Vector2> animation;
 
@@ -107,12 +106,10 @@ class PlayerCombatIntegrationTest {
 
     itemUsed = mock(EventListener1.class);
     itemFailed = mock(EventListener1.class);
-    primaryAttack = mock(EventListener1.class);
     chargeStart = mock(EventListener1.class);
     animation = mock(EventListener1.class);
     player.getEvents().addListener("itemUsed", itemUsed);
     player.getEvents().addListener("itemUseFailed", itemFailed);
-    player.getEvents().addListener("primaryAttack", primaryAttack);
     player.getEvents().addListener("chargeStart", chargeStart);
     player.getEvents().addListener("attackAnimation", animation);
 
@@ -128,6 +125,12 @@ class PlayerCombatIntegrationTest {
         .thenReturn(projectile);
   }
 
+  /** Presses and releases right-click: draws the bow and fires at the minimum charge. */
+  private void rightClick() {
+    input.touchDown(40, 60, 0, Buttons.RIGHT);
+    input.touchUp(40, 60, 0, Buttons.RIGHT);
+  }
+
   @AfterEach
   void tearDown() {
     if (factory != null) {
@@ -141,20 +144,22 @@ class PlayerCombatIntegrationTest {
   void shouldFireOneStandardArrowWithNormalizedAimAndConsumeOneItem() {
     inventory.addItem(ItemType.STANDARD_ARROW, 2);
 
-    assertTrue(itemUse.useSelectedItem());
+    rightClick();
 
     ArgumentCaptor<Vector2> position = ArgumentCaptor.forClass(Vector2.class);
     ArgumentCaptor<Vector2> direction = ArgumentCaptor.forClass(Vector2.class);
     factory.verify(
         () ->
             ProjectileFactory.createPlayerArrow(
-                eq(player), position.capture(), direction.capture(), eq(1f)));
+                eq(player),
+                position.capture(),
+                direction.capture(),
+                eq(BowCharge.MIN_SPEED_FACTOR)));
     factory.verifyNoMoreInteractions();
     assertTrue(direction.getValue().epsilonEquals(new Vector2(0.6f, 0.8f)));
     assertTrue(position.getValue().epsilonEquals(new Vector2(2.96f, 4.28f)));
     verify(entities).register(projectile);
     assertEquals(1, inventory.getItemCount(ItemType.STANDARD_ARROW));
-    verify(primaryAttack).handle(new Vector2(3f, 4f));
     verify(itemUsed).handle(ItemType.STANDARD_ARROW);
     verify(animation).handle(new Vector2(0.6f, 0.8f));
     verify(sound).play(0.5f);
@@ -165,9 +170,12 @@ class PlayerCombatIntegrationTest {
   void shouldSelectFireFactoryAndConsumeLastArrow() {
     inventory.addItem(ItemType.FIRE_ARROW, 1);
 
-    assertTrue(itemUse.useSelectedItem());
+    rightClick();
 
-    factory.verify(() -> ProjectileFactory.createFireArrow(eq(player), any(), any(), eq(1f)));
+    factory.verify(
+        () ->
+            ProjectileFactory.createFireArrow(
+                eq(player), any(), any(), eq(BowCharge.MIN_SPEED_FACTOR)));
     factory.verifyNoMoreInteractions();
     verify(entities).register(projectile);
     assertEquals(0, inventory.getItemCount(ItemType.FIRE_ARROW));
@@ -179,9 +187,12 @@ class PlayerCombatIntegrationTest {
   void shouldSelectIceFactoryAndConsumeOneArrow() {
     inventory.addItem(ItemType.ICE_ARROW, 2);
 
-    assertTrue(itemUse.useSelectedItem());
+    rightClick();
 
-    factory.verify(() -> ProjectileFactory.createIceArrow(eq(player), any(), any(), eq(1f)));
+    factory.verify(
+        () ->
+            ProjectileFactory.createIceArrow(
+                eq(player), any(), any(), eq(BowCharge.MIN_SPEED_FACTOR)));
     factory.verifyNoMoreInteractions();
     verify(entities).register(projectile);
     assertEquals(1, inventory.getItemCount(ItemType.ICE_ARROW));
@@ -195,23 +206,24 @@ class PlayerCombatIntegrationTest {
 
     factory.verifyNoInteractions();
     verify(entities, never()).register(any());
-    verifyNoInteractions(sound, primaryAttack, itemUsed, animation);
+    verifyNoInteractions(sound, itemUsed, animation);
     assertEquals(0, inventory.getItemCount(ItemType.STANDARD_ARROW));
   }
 
   @Test
   void shouldPreserveAmmoAndRejectSecondShotDuringCooldown() {
     inventory.addItem(ItemType.STANDARD_ARROW, 3);
-    assertTrue(itemUse.useSelectedItem());
+    rightClick();
 
-    boolean accepted = itemUse.useSelectedItem();
+    rightClick();
 
     assertEquals(2, inventory.getItemCount(ItemType.STANDARD_ARROW));
-    assertFalse(accepted);
-    factory.verify(() -> ProjectileFactory.createPlayerArrow(eq(player), any(), any(), eq(1f)));
+    factory.verify(
+        () ->
+            ProjectileFactory.createPlayerArrow(
+                eq(player), any(), any(), eq(BowCharge.MIN_SPEED_FACTOR)));
     factory.verifyNoMoreInteractions();
     verify(entities).register(projectile);
-    verify(primaryAttack).handle(any());
     verify(itemUsed).handle(ItemType.STANDARD_ARROW);
     verify(itemFailed).handle(ItemType.STANDARD_ARROW);
     verify(animation).handle(any());
@@ -221,18 +233,21 @@ class PlayerCombatIntegrationTest {
   @Test
   void shouldFireAgainOnlyAfterCooldownExpires() {
     inventory.addItem(ItemType.STANDARD_ARROW, 3);
-    assertTrue(itemUse.useSelectedItem());
+    rightClick();
     when(time.getDeltaTime()).thenReturn(0.39f);
     bow.update();
-    assertFalse(itemUse.useSelectedItem());
+    rightClick();
     assertEquals(2, inventory.getItemCount(ItemType.STANDARD_ARROW));
 
     when(time.getDeltaTime()).thenReturn(0.02f);
     bow.update();
-    assertTrue(itemUse.useSelectedItem());
+    rightClick();
 
     factory.verify(
-        () -> ProjectileFactory.createPlayerArrow(eq(player), any(), any(), eq(1f)), times(2));
+        () ->
+            ProjectileFactory.createPlayerArrow(
+                eq(player), any(), any(), eq(BowCharge.MIN_SPEED_FACTOR)),
+        times(2));
     factory.verifyNoMoreInteractions();
     verify(entities, times(2)).register(projectile);
     verify(itemUsed, times(2)).handle(ItemType.STANDARD_ARROW);
@@ -244,62 +259,32 @@ class PlayerCombatIntegrationTest {
   void shouldNotBypassCooldownByChangingArrowType() {
     inventory.addItem(ItemType.STANDARD_ARROW, 2);
     inventory.addItem(ItemType.FIRE_ARROW, 2);
-    assertTrue(itemUse.useSelectedItem());
+    rightClick();
     player.getEvents().trigger("selectQuickSlot", 1);
 
-    assertFalse(itemUse.useSelectedItem());
+    rightClick();
 
     assertEquals(2, inventory.getItemCount(ItemType.FIRE_ARROW));
     assertEquals(1, inventory.getItemCount(ItemType.STANDARD_ARROW));
-    factory.verify(() -> ProjectileFactory.createPlayerArrow(eq(player), any(), any(), eq(1f)));
+    factory.verify(
+        () ->
+            ProjectileFactory.createPlayerArrow(
+                eq(player), any(), any(), eq(BowCharge.MIN_SPEED_FACTOR)));
     factory.verifyNoMoreInteractions();
     verify(entities).register(projectile);
-    verify(primaryAttack).handle(any());
     verify(itemUsed).handle(ItemType.STANDARD_ARROW);
     verify(itemFailed).handle(ItemType.FIRE_ARROW);
 
     when(time.getDeltaTime()).thenReturn(0.4f);
     bow.update();
-    assertTrue(itemUse.useSelectedItem());
-    factory.verify(() -> ProjectileFactory.createFireArrow(eq(player), any(), any(), eq(1f)));
+    rightClick();
+    factory.verify(
+        () ->
+            ProjectileFactory.createFireArrow(
+                eq(player), any(), any(), eq(BowCharge.MIN_SPEED_FACTOR)));
     verify(entities, times(2)).register(projectile);
     verify(itemUsed).handle(ItemType.FIRE_ARROW);
     assertEquals(1, inventory.getItemCount(ItemType.FIRE_ARROW));
-  }
-
-  @Test
-  void shouldPreserveAmmoWithoutEquippedWeapon() {
-    inventory.addItem(ItemType.STANDARD_ARROW, 2);
-    weapon.setPrimaryWeapon(null);
-
-    assertFalse(itemUse.useSelectedItem());
-
-    assertEquals(2, inventory.getItemCount(ItemType.STANDARD_ARROW));
-    factory.verifyNoInteractions();
-    verify(entities, never()).register(any());
-    verifyNoInteractions(sound, primaryAttack, itemUsed, animation);
-    verify(itemFailed).handle(ItemType.STANDARD_ARROW);
-  }
-
-  @Test
-  void shouldPreserveAmmoWithoutWeaponCoordinator() {
-    InventoryComponent isolatedInventory = new InventoryComponent(0);
-    ItemUseComponent isolatedItemUse = new ItemUseComponent();
-    Entity incompletePlayer =
-        new Entity().addComponent(isolatedInventory).addComponent(isolatedItemUse);
-    incompletePlayer.create();
-    incompletePlayer.getEvents().addListener("primaryAttack", primaryAttack);
-    incompletePlayer.getEvents().addListener("itemUsed", itemUsed);
-    incompletePlayer.getEvents().addListener("itemUseFailed", itemFailed);
-    isolatedInventory.addItem(ItemType.STANDARD_ARROW, 2);
-
-    assertFalse(isolatedItemUse.useSelectedItem());
-
-    assertEquals(2, isolatedInventory.getItemCount(ItemType.STANDARD_ARROW));
-    factory.verifyNoInteractions();
-    verify(entities, never()).register(any());
-    verifyNoInteractions(sound, primaryAttack, itemUsed);
-    verify(itemFailed).handle(ItemType.STANDARD_ARROW);
   }
 
   @Test
@@ -311,7 +296,7 @@ class PlayerCombatIntegrationTest {
 
     assertEquals(2, inventory.getItemCount(ItemType.STANDARD_ARROW));
     verify(itemFailed).handle(ItemType.STANDARD_ARROW);
-    verifyNoInteractions(chargeStart, itemUsed, entities, primaryAttack, animation, sound);
+    verifyNoInteractions(chargeStart, itemUsed, entities, animation, sound);
     factory.verifyNoInteractions();
   }
 
@@ -338,87 +323,6 @@ class PlayerCombatIntegrationTest {
   }
 
   @Test
-  void shouldRequireEReleaseEvenAfterBowCooldownExpires() {
-    inventory.addItem(ItemType.STANDARD_ARROW, 3);
-    assertTrue(input.keyDown(Keys.E));
-    assertTrue(input.keyDown(Keys.E));
-    when(time.getDeltaTime()).thenReturn(0.4f);
-    bow.update();
-    assertTrue(input.keyDown(Keys.E));
-    verify(entities).register(projectile);
-    assertEquals(2, inventory.getItemCount(ItemType.STANDARD_ARROW));
-    verifyNoInteractions(itemFailed);
-
-    assertTrue(input.keyUp(Keys.E));
-    assertTrue(input.keyDown(Keys.E));
-
-    verify(entities, times(2)).register(projectile);
-    verify(itemUsed, times(2)).handle(ItemType.STANDARD_ARROW);
-    assertEquals(1, inventory.getItemCount(ItemType.STANDARD_ARROW));
-  }
-
-  @Test
-  void shouldShareECooldownWithRightClick() {
-    inventory.addItem(ItemType.STANDARD_ARROW, 3);
-    input.keyDown(Keys.E);
-
-    assertTrue(input.touchDown(40, 60, 0, Buttons.RIGHT));
-
-    verify(entities).register(projectile);
-    verify(primaryAttack).handle(any());
-    verify(itemFailed).handle(ItemType.STANDARD_ARROW);
-    assertEquals(2, inventory.getItemCount(ItemType.STANDARD_ARROW));
-    input.touchUp(40, 60, 0, Buttons.RIGHT);
-    when(time.getDeltaTime()).thenReturn(0.4f);
-    bow.update();
-    input.touchDown(40, 60, 0, Buttons.RIGHT);
-    verify(chargeStart).handle(new Vector2(3f, 4f));
-    assertEquals(1, inventory.getItemCount(ItemType.STANDARD_ARROW));
-    verify(entities).register(projectile);
-
-    input.touchUp(40, 60, 0, Buttons.RIGHT);
-
-    verify(entities, times(2)).register(projectile);
-    verify(itemUsed, times(2)).handle(ItemType.STANDARD_ARROW);
-    factory.verify(
-        () ->
-            ProjectileFactory.createPlayerArrow(
-                eq(player), any(), any(), eq(BowCharge.MIN_SPEED_FACTOR)));
-  }
-
-  @Test
-  void shouldShareRightClickCooldownWithE() {
-    inventory.addItem(ItemType.STANDARD_ARROW, 3);
-    input.touchDown(40, 60, 0, Buttons.RIGHT);
-    assertEquals(2, inventory.getItemCount(ItemType.STANDARD_ARROW));
-    verify(chargeStart).handle(new Vector2(3f, 4f));
-    verify(entities, never()).register(any());
-    verifyNoInteractions(primaryAttack, itemFailed);
-
-    input.keyDown(Keys.E);
-
-    verify(itemFailed).handle(ItemType.STANDARD_ARROW);
-    assertEquals(2, inventory.getItemCount(ItemType.STANDARD_ARROW));
-    verify(entities, never()).register(any());
-    verifyNoInteractions(primaryAttack);
-
-    input.touchUp(40, 60, 0, Buttons.RIGHT);
-
-    verify(entities).register(projectile);
-    factory.verify(
-        () ->
-            ProjectileFactory.createPlayerArrow(
-                eq(player), any(), any(), eq(BowCharge.MIN_SPEED_FACTOR)));
-    when(time.getDeltaTime()).thenReturn(0.4f);
-    bow.update();
-    input.keyUp(Keys.E);
-    input.keyDown(Keys.E);
-    verify(entities, times(2)).register(projectile);
-    verify(itemUsed, times(2)).handle(ItemType.STANDARD_ARROW);
-    assertEquals(1, inventory.getItemCount(ItemType.STANDARD_ARROW));
-  }
-
-  @Test
   void shouldRejectRepeatedChargeStartsWithoutConsumingAnotherArrow() {
     inventory.addItem(ItemType.STANDARD_ARROW, 3);
 
@@ -430,7 +334,7 @@ class PlayerCombatIntegrationTest {
     verify(itemUsed).handle(ItemType.STANDARD_ARROW);
     verify(itemFailed).handle(ItemType.STANDARD_ARROW);
     verify(entities, never()).register(any());
-    verifyNoInteractions(primaryAttack, animation, sound);
+    verifyNoInteractions(animation, sound);
 
     input.touchUp(40, 60, 0, Buttons.RIGHT);
 
@@ -497,7 +401,7 @@ class PlayerCombatIntegrationTest {
     assertEquals(1, inventory.getItemCount(ItemType.STANDARD_ARROW));
     verify(itemUsed).handle(ItemType.STANDARD_ARROW);
     verify(entities, never()).register(any());
-    verifyNoInteractions(primaryAttack, animation, sound, itemFailed);
+    verifyNoInteractions(animation, sound, itemFailed);
     factory.verifyNoInteractions();
   }
 
@@ -509,7 +413,7 @@ class PlayerCombatIntegrationTest {
 
     assertEquals(2, inventory.getItemCount(ItemType.STANDARD_ARROW));
     verify(itemFailed).handle(ItemType.STANDARD_ARROW);
-    verifyNoInteractions(chargeStart, itemUsed, entities, primaryAttack, animation, sound);
+    verifyNoInteractions(chargeStart, itemUsed, entities, animation, sound);
     factory.verifyNoInteractions();
   }
 
@@ -524,7 +428,6 @@ class PlayerCombatIntegrationTest {
     player.getEvents().addListener("grappleDrawRelease", grappleDrawRelease);
     inventory.addItem(ItemType.STANDARD_ARROW, 2);
     inventory.addItem(ItemType.ROPE_ARROW, 1);
-    input.keyDown(Keys.E);
     input.keyDown(Keys.NUM_2);
 
     input.touchDown(40, 60, 0, Buttons.RIGHT);
@@ -542,9 +445,7 @@ class PlayerCombatIntegrationTest {
     assertEquals(1, inventory.getItemCount(ItemType.ROPE_ARROW));
     verify(itemUsed).handle(ItemType.ROPE_ARROW);
     verifyNoInteractions(itemFailed);
-    factory.verify(() -> ProjectileFactory.createPlayerArrow(eq(player), any(), any(), eq(1f)));
-    factory.verifyNoMoreInteractions();
-    verify(entities).register(projectile);
+    factory.verifyNoInteractions();
   }
 
   @Test
@@ -564,7 +465,7 @@ class PlayerCombatIntegrationTest {
     assertTrue(bow.isReady());
     factory.verifyNoInteractions();
     verify(entities, never()).register(any());
-    verifyNoInteractions(primaryAttack, animation, sound);
+    verifyNoInteractions(animation, sound);
 
     input.touchUp(40, 60, 0, Buttons.RIGHT);
     player.getEvents().trigger("closeShop");
@@ -572,30 +473,44 @@ class PlayerCombatIntegrationTest {
     assertTrue(bow.isReady());
     factory.verifyNoInteractions();
     verify(entities, never()).register(any());
-    verifyNoInteractions(primaryAttack, animation, sound);
+    verifyNoInteractions(animation, sound);
   }
 
   @Test
-  void shouldUsePotionWithEButNotRightClickAndPreserveItAtFullHealth() {
+  void shouldUsePotionWithRightClickAndPreserveItAtFullHealth() {
     CombatStatsComponent stats = player.getComponent(CombatStatsComponent.class);
     stats.setHealth(75);
     inventory.addItem(ItemType.HEALTH_POTION, 2);
-    input.touchDown(40, 60, 0, Buttons.RIGHT);
-    assertEquals(75, stats.getHealth());
-    assertEquals(2, inventory.getItemCount(ItemType.HEALTH_POTION));
 
-    input.keyDown(Keys.E);
+    // Right-click uses whatever is selected, so a selected potion is drunk.
+    input.touchDown(40, 60, 0, Buttons.RIGHT);
     assertEquals(100, stats.getHealth());
     assertEquals(1, inventory.getItemCount(ItemType.HEALTH_POTION));
-    input.keyUp(Keys.E);
-    input.keyDown(Keys.E);
+    input.touchUp(40, 60, 0, Buttons.RIGHT);
+
+    // Already at full health: the potion is kept rather than wasted.
+    input.touchDown(40, 60, 0, Buttons.RIGHT);
 
     assertEquals(100, stats.getHealth());
     assertEquals(1, inventory.getItemCount(ItemType.HEALTH_POTION));
     verify(itemUsed).handle(ItemType.HEALTH_POTION);
     verify(itemFailed).handle(ItemType.HEALTH_POTION);
     verify(entities, never()).register(any());
-    verifyNoInteractions(primaryAttack, animation, sound);
+    verifyNoInteractions(chargeStart, animation, sound);
     factory.verifyNoInteractions();
+  }
+
+  @Test
+  void shouldNotUseItemsWithE() {
+    CombatStatsComponent stats = player.getComponent(CombatStatsComponent.class);
+    stats.setHealth(75);
+    inventory.addItem(ItemType.HEALTH_POTION, 1);
+
+    // E is the interact key now; it no longer uses the selected item.
+    input.keyDown(Keys.E);
+
+    assertEquals(75, stats.getHealth());
+    assertEquals(1, inventory.getItemCount(ItemType.HEALTH_POTION));
+    verifyNoInteractions(itemUsed, itemFailed);
   }
 }

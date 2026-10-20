@@ -20,14 +20,14 @@
 
     "itemDrops": [
       {
-        "item": "standardArrow",
+        "item": "coin",
         "dropHealth": 10,
-        "quantity": 1
+        "quantity": 5
       },
       {
-        "item": "standardArrow",
+        "item": "coin",
         "dropHealth": 0,
-        "quantity": 2
+        "quantity": 5
       }
     ]
   },
@@ -54,13 +54,13 @@
     "itemDrops": [
       {
         "item": "standardArrow",
-        "dropHealth": 10,
+        "dropHealth": 0,
         "quantity": 1
       },
       {
-        "item": "standardArrow",
+        "item": "coin",
         "dropHealth": 0,
-        "quantity": 2
+        "quantity": 5
       }
     ]
   },
@@ -86,14 +86,9 @@
 
     "itemDrops": [
       {
-        "item": "standardArrow",
-        "dropHealth": 10,
-        "quantity": 1
-      },
-      {
-        "item": "standardArrow",
+        "item": "coin",
         "dropHealth": 0,
-        "quantity": 2
+        "quantity": 5
       }]
   },
 
@@ -118,52 +113,20 @@
 
     "itemDrops": [
       {
-        "item": "standardArrow",
+        "item": "speedPotion",
         "dropHealth": 10,
         "quantity": 1
       },
       {
-        "item": "standardArrow",
+        "item": "healthPotion",
         "dropHealth": 0,
-        "quantity": 2
+        "quantity": 1
       }]
   },
 
-  "cyclops": {
-    "health": 150,
-    "baseAttack": 2,
-    "speed": 2.0,
-    "behaviour": "chase",
-    "attackType": "cyclops",
-    "attackRange": 1.5,
-
-    "wanderRangeX": 4.0,
-    "wanderRangeY": 0.0,
-    "wanderWaitTime": 1.0,
-    "chasePriority": 10,
-    "viewDistance": 6.0,
-    "maxChaseDistance": 9.0,
-    "repositionPriority": 25,
-    "repositionDistance": 2.0,
-    "maxSpeed": 2.0,
-    "gravity": true,
-
-    "itemDrops": [
-      {
-        "item": "standardArrow",
-        "dropHealth": 10,
-        "quantity": 1
-      },
-      {
-        "item": "standardArrow",
-        "dropHealth": 0,
-        "quantity": 2
-      }
-    ]
-  },
 
   "calypso": {
-    "health": 300,
+    "health": 600,
     "baseAttack": 2,
     "speed": 4.0,
     "behaviour": "chase",
@@ -174,7 +137,7 @@
     "wanderRangeY": 0.0,
     "wanderWaitTime": 1.0,
     "chasePriority": 10,
-    "viewDistance": 50.0,
+    "viewDistance": 200.0,
     "maxChaseDistance": 9.0,
     "repositionPriority": 25,
     "repositionDistance": 2.0,
@@ -183,14 +146,14 @@
 
     "itemDrops": [
       {
-        "item": "standardArrow",
-        "dropHealth": 10,
+        "item": "healthPotion",
+        "dropHealth": 150,
         "quantity": 1
       },
       {
-        "item": "standardArrow",
-        "dropHealth": 0,
-        "quantity": 2
+        "item": "speedPotion",
+        "dropHealth": 200,
+        "quantity": 1
       }
     ]
   }

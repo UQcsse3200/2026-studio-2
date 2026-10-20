@@ -61,7 +61,7 @@ class GrappleLifecycleTest {
   }
 
   @Test
-  void shouldFireNormalizedProjectileAndKeepCooldownAcrossRejectedShots() {
+  void shouldFireNormalizedProjectileAndFireAgainStraightAway() {
     Vector2 aim = new Vector2(3f, 4f);
     grapple.fire(aim);
     assertEquals(2, entities.getEntities().size);
@@ -72,11 +72,7 @@ class GrappleLifecycleTest {
             .getDirection()
             .epsilonEquals(0.6f, 0.8f, 0.001f));
     assertEquals(new Vector2(3f, 4f), aim);
-    when(time.getDeltaTime()).thenReturn(1f);
-    grapple.update();
-    grapple.fire(Vector2.X);
-    assertEquals(2, entities.getEntities().size);
-    grapple.update();
+    // There is no cooldown, so a second shot goes out straight away.
     grapple.fire(Vector2.X);
     assertEquals(3, entities.getEntities().size);
   }
