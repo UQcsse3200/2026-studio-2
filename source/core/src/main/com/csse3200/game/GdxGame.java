@@ -234,7 +234,9 @@ public class GdxGame extends Game {
     SaveManager.write(activeSaveSlot, save);
   }
 
-  /** @return whether the active save has already completed the movement tutorial. */
+  /**
+   * @return whether the active save has already completed the movement tutorial.
+   */
   public boolean isTutorialCompleted() {
     if (activeSaveSlot < 0) {
       return false;

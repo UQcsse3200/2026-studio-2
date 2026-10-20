@@ -35,8 +35,7 @@ public class TutorialComponent extends InputComponent {
 
   /** Creates and starts the tutorial using the portrait textbox factory. */
   public static TutorialComponent start(Runnable onFinished) {
-    TextBoxComponent textBox =
-        new TextBoxFactory().createPortraitTextBox(Portrait.CALYPSO_HAPPY);
+    TextBoxComponent textBox = new TextBoxFactory().createPortraitTextBox(Portrait.CALYPSO_HAPPY);
     if (textBox == null) {
       return null;
     }

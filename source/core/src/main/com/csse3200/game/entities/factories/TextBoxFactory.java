@@ -95,11 +95,7 @@ public class TextBoxFactory {
     }
 
     TextConfig config = new TextConfig();
-    config.pages =
-        List.of(
-            "Move around using A and D.",
-            "Jump using SPACE.",
-            "Dash using SHIFT.");
+    config.pages = List.of("Move around using A and D.", "Jump using SPACE.", "Dash using SHIFT.");
 
     int pageCount = config.pages == null || config.pages.isEmpty() ? 1 : config.pages.size();
     config.portraitPaths = new ArrayList<>();
