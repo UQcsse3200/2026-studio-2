@@ -6,6 +6,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.csse3200.game.extensions.GameExtension;
@@ -53,6 +54,35 @@ class RenderServiceTest {
     renderService.unregister(renderable);
     renderService.render(spriteBatch);
     verify(renderable, times(0)).render(any());
+  }
+
+  @Test
+  void shouldSkipCullingRenderablesOutsideCamera() {
+    RenderService renderService = new RenderService();
+    CullingRenderable renderable = mock(CullingRenderable.class);
+    SpriteBatch spriteBatch = mock(SpriteBatch.class);
+    Camera camera = mock(Camera.class);
+    when(renderable.isVisible(camera)).thenReturn(false);
+    renderService.register(renderable);
+
+    renderService.render(spriteBatch, camera);
+
+    verify(renderable).isVisible(camera);
+    verify(renderable, times(0)).render(spriteBatch);
+  }
+
+  @Test
+  void shouldRenderCullingRenderablesInsideCamera() {
+    RenderService renderService = new RenderService();
+    CullingRenderable renderable = mock(CullingRenderable.class);
+    SpriteBatch spriteBatch = mock(SpriteBatch.class);
+    Camera camera = mock(Camera.class);
+    when(renderable.isVisible(camera)).thenReturn(true);
+    renderService.register(renderable);
+
+    renderService.render(spriteBatch, camera);
+
+    verify(renderable).render(spriteBatch);
   }
 
   @Test
