@@ -174,14 +174,10 @@ public abstract class GameArea implements Disposable {
   private void registerActivatable(Entity entity, ActivatableComponent activate) {
     String[] ids = activate.getIds();
 
-    for (String id : ids) {
-      // add new list to the map if the id is not present
-      if (!triggerableEntities.containsKey(id)) {
-        triggerableEntities.put(id, new ArrayList<>());
-      }
-      // add entity to the respective id's list
-      triggerableEntities.get(id).add(entity);
-    }
+           for (String id : ids) {
+         // add the entity to the id's list, creating the list if the id is not present
+         triggerableEntities.computeIfAbsent(id, key -> new ArrayList<>()).add(entity);
+       }
 
     // listen for trigger buttons' activation event call
     TriggerButtonComponent trigger = entity.getComponent(TriggerButtonComponent.class);
