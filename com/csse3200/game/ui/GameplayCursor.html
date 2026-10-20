@@ -91,8 +91,8 @@ loadScripts(document, 'script');</script>
 <hr>
 <div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">GameplayCursor</span>
 <span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></span></div>
-<div class="block">Disables the mouse pointer during normal play. It only shows while a menu is open or while the
- player holds right click to aim a bow or grapple.
+<div class="block">Disables the mouse pointer during normal play. It only shows while a menu is open (as the themed
+ arrow) or while the player holds right click to aim a bow or grapple (as the themed crosshair).
 
  <p>While disabled the pointer is captured: hidden and locked to the window, so it can't click
  outside the game. The mouse position keeps updating, so aiming still works.</div>
@@ -134,7 +134,7 @@ loadScripts(document, 'script');</script>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#restore()" class="member-name-link">restore</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Puts the normal pointer back, e.g.</div>
+<div class="block">Puts the normal arrow pointer back, e.g.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static boolean</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#shouldShow(com.csse3200.game.entities.Entity,boolean)" class="member-name-link">shouldShow</a><wbr>(<a href="../entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;player,
@@ -212,7 +212,7 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="restore()">
 <h3>restore</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">restore</span>()</div>
-<div class="block">Puts the normal pointer back, e.g. when leaving the game screen.</div>
+<div class="block">Puts the normal arrow pointer back, e.g. when leaving the game screen.</div>
 </section>
 </li>
 <li>

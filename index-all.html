@@ -98,7 +98,7 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/level/LevelEndComponent.html#activate()" class="member-name-link">activate()</a> - Method in class com.csse3200.game.components.level.<a href="com/csse3200/game/components/level/LevelEndComponent.html" title="class in com.csse3200.game.components.level">LevelEndComponent</a></dt>
 <dd>
-<div class="block">Runs once, shortly after the player presses F while standing in range.</div>
+<div class="block">Runs once, shortly after the player presses E while standing in range.</div>
 </dd>
 <dt><a href="com/csse3200/game/components/level/LevelTriggerComponent.html#activate()" class="member-name-link">activate()</a> - Method in class com.csse3200.game.components.level.<a href="com/csse3200/game/components/level/LevelTriggerComponent.html" title="class in com.csse3200.game.components.level">LevelTriggerComponent</a></dt>
 <dd>&nbsp;</dd>
@@ -315,6 +315,8 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="com/csse3200/game/components/item/weapons/bow/arrow/Arrow.html#%3Cinit%3E(com.csse3200.game.components.item.ItemType,int)" class="member-name-link">Arrow(ItemType, int)</a> - Constructor for class com.csse3200.game.components.item.weapons.bow.arrow.<a href="com/csse3200/game/components/item/weapons/bow/arrow/Arrow.html" title="class in com.csse3200.game.components.item.weapons.bow.arrow">Arrow</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/ui/ThemedCursor.Style.html#ARROW" class="member-name-link">ARROW</a> - Enum constant in enum class com.csse3200.game.ui.<a href="com/csse3200/game/ui/ThemedCursor.Style.html" title="enum class in com.csse3200.game.ui">ThemedCursor.Style</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/projectile/ArrowProjectileComponent.html" class="type-name-link" title="class in com.csse3200.game.components.projectile">ArrowProjectileComponent</a> - Class in <a href="com/csse3200/game/components/projectile/package-summary.html">com.csse3200.game.components.projectile</a></dt>
 <dd>
 <div class="block">Moves a projectile, handles parabolic flight, and triggers elemental status effects.</div>
@@ -341,7 +343,8 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="com/csse3200/game/components/player/ArrowTrajectoryDisplay.html" class="type-name-link" title="class in com.csse3200.game.components.player">ArrowTrajectoryDisplay</a> - Class in <a href="com/csse3200/game/components/player/package-summary.html">com.csse3200.game.components.player</a></dt>
 <dd>
-<div class="block">Shows a dotted preview of where the arrow will fly while the player is drawing the bow.</div>
+<div class="block">Shows a dotted preview of where a shot will fly: the arrow while the player is drawing the bow,
+ or the poison potion while they hold right click to throw it.</div>
 </dd>
 <dt><a href="com/csse3200/game/components/player/ArrowTrajectoryDisplay.html#%3Cinit%3E()" class="member-name-link">ArrowTrajectoryDisplay()</a> - Constructor for class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/ArrowTrajectoryDisplay.html" title="class in com.csse3200.game.components.player">ArrowTrajectoryDisplay</a></dt>
 <dd>&nbsp;</dd>
@@ -398,10 +401,6 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="com/csse3200/game/entities/factories/AttackFactory.html" class="type-name-link" title="class in com.csse3200.game.entities.factories">AttackFactory</a> - Class in <a href="com/csse3200/game/entities/factories/package-summary.html">com.csse3200.game.entities.factories</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="com/csse3200/game/components/item/weapons/WeaponComponent.html#attackPrimary(com.badlogic.gdx.math.Vector2)" class="member-name-link">attackPrimary(Vector2)</a> - Method in class com.csse3200.game.components.item.weapons.<a href="com/csse3200/game/components/item/weapons/WeaponComponent.html" title="class in com.csse3200.game.components.item.weapons">WeaponComponent</a></dt>
-<dd>
-<div class="block">Triggers the active primary weapon attack if equipped and ready.</div>
-</dd>
 <dt><a href="com/csse3200/game/entities/configs/EnemyConfig.html#attackRange" class="member-name-link">attackRange</a> - Variable in class com.csse3200.game.entities.configs.<a href="com/csse3200/game/entities/configs/EnemyConfig.html" title="class in com.csse3200.game.entities.configs">EnemyConfig</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/entities/configs/EnemyConfig.html#attackType" class="member-name-link">attackType</a> - Variable in class com.csse3200.game.entities.configs.<a href="com/csse3200/game/entities/configs/EnemyConfig.html" title="class in com.csse3200.game.entities.configs">EnemyConfig</a></dt>
@@ -1037,8 +1036,6 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/item/weapons/melee/MeleeComponent.html#create()" class="member-name-link">create()</a> - Method in class com.csse3200.game.components.item.weapons.melee.<a href="com/csse3200/game/components/item/weapons/melee/MeleeComponent.html" title="class in com.csse3200.game.components.item.weapons.melee">MeleeComponent</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="com/csse3200/game/components/item/weapons/WeaponComponent.html#create()" class="member-name-link">create()</a> - Method in class com.csse3200.game.components.item.weapons.<a href="com/csse3200/game/components/item/weapons/WeaponComponent.html" title="class in com.csse3200.game.components.item.weapons">WeaponComponent</a></dt>
-<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/itemdictionary/ItemDictionaryComponent.html#create()" class="member-name-link">create()</a> - Method in class com.csse3200.game.components.itemdictionary.<a href="com/csse3200/game/components/itemdictionary/ItemDictionaryComponent.html" title="class in com.csse3200.game.components.itemdictionary">ItemDictionaryComponent</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/itemdictionary/ItemDictionaryDisplay.html#create()" class="member-name-link">create()</a> - Method in class com.csse3200.game.components.itemdictionary.<a href="com/csse3200/game/components/itemdictionary/ItemDictionaryDisplay.html" title="class in com.csse3200.game.components.itemdictionary">ItemDictionaryDisplay</a></dt>
@@ -1561,6 +1558,12 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Creates a zombie entity.</div>
 </dd>
+<dt><a href="com/csse3200/game/ui/ThemedCursor.Style.html#CROSSHAIR" class="member-name-link">CROSSHAIR</a> - Enum constant in enum class com.csse3200.game.ui.<a href="com/csse3200/game/ui/ThemedCursor.Style.html" title="enum class in com.csse3200.game.ui">ThemedCursor.Style</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/ui/ThemedCursor.html#CROSSHAIR_PATH" class="member-name-link">CROSSHAIR_PATH</a> - Static variable in class com.csse3200.game.ui.<a href="com/csse3200/game/ui/ThemedCursor.html" title="class in com.csse3200.game.ui">ThemedCursor</a></dt>
+<dd>
+<div class="block">Crosshair image.</div>
+</dd>
 <dt><a href="com/csse3200/game/components/level/CrumblingPlatformComponent.html" class="type-name-link" title="class in com.csse3200.game.components.level">CrumblingPlatformComponent</a> - Class in <a href="com/csse3200/game/components/level/package-summary.html">com.csse3200.game.components.level</a></dt>
 <dd>
 <div class="block">Causes a platform to crumble after the player touches it.</div>
@@ -1591,7 +1594,7 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/ui/ThemedCursor.html#CURSOR_PATH" class="member-name-link">CURSOR_PATH</a> - Static variable in class com.csse3200.game.ui.<a href="com/csse3200/game/ui/ThemedCursor.html" title="class in com.csse3200.game.ui">ThemedCursor</a></dt>
 <dd>
-<div class="block">Pointer image.</div>
+<div class="block">Arrow pointer image.</div>
 </dd>
 <dt><a href="com/csse3200/game/ui/terminal/commands/CutsceneCommand.html" class="type-name-link" title="class in com.csse3200.game.ui.terminal.commands">CutsceneCommand</a> - Class in <a href="com/csse3200/game/ui/terminal/commands/package-summary.html">com.csse3200.game.ui.terminal.commands</a></dt>
 <dd>
@@ -1987,7 +1990,7 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/ui/ThemedCursor.html#dispose()" class="member-name-link">dispose()</a> - Static method in class com.csse3200.game.ui.<a href="com/csse3200/game/ui/ThemedCursor.html" title="class in com.csse3200.game.ui">ThemedCursor</a></dt>
 <dd>
-<div class="block">Frees the themed pointer when the game closes.</div>
+<div class="block">Frees the themed pointers when the game closes.</div>
 </dd>
 <dt><a href="com/csse3200/game/ui/TopRightButtonDisplay.html#dispose()" class="member-name-link">dispose()</a> - Method in class com.csse3200.game.ui.<a href="com/csse3200/game/ui/TopRightButtonDisplay.html" title="class in com.csse3200.game.ui">TopRightButtonDisplay</a></dt>
 <dd>&nbsp;</dd>
@@ -2664,6 +2667,8 @@ loadScripts(document, 'script');</script>
 <div class="block">Gets remaining weapon cooldown time.</div>
 </dd>
 <dt><a href="com/csse3200/game/areas/terrain/configs/CrumblingPlatformConfig.html#getCrumbleTime()" class="member-name-link">getCrumbleTime()</a> - Method in class com.csse3200.game.areas.terrain.configs.<a href="com/csse3200/game/areas/terrain/configs/CrumblingPlatformConfig.html" title="class in com.csse3200.game.areas.terrain.configs">CrumblingPlatformConfig</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/ui/ThemedCursor.html#getCurrent()" class="member-name-link">getCurrent()</a> - Static method in class com.csse3200.game.ui.<a href="com/csse3200/game/ui/ThemedCursor.html" title="class in com.csse3200.game.ui">ThemedCursor</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/rendering/AnimationRenderComponent.html#getCurrentAnimation()" class="member-name-link">getCurrentAnimation()</a> - Method in class com.csse3200.game.rendering.<a href="com/csse3200/game/rendering/AnimationRenderComponent.html" title="class in com.csse3200.game.rendering">AnimationRenderComponent</a></dt>
 <dd>
@@ -3629,7 +3634,7 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/ui/ThemedCursor.html#install()" class="member-name-link">install()</a> - Static method in class com.csse3200.game.ui.<a href="com/csse3200/game/ui/ThemedCursor.html" title="class in com.csse3200.game.ui">ThemedCursor</a></dt>
 <dd>
-<div class="block">Swaps the system pointer for the themed one.</div>
+<div class="block">Swaps the system pointer for the themed arrow.</div>
 </dd>
 <dt><a href="com/csse3200/game/components/shop/ShopComponent.PurchaseResult.html#INSUFFICIENT_GOLD" class="member-name-link">INSUFFICIENT_GOLD</a> - Enum constant in enum class com.csse3200.game.components.shop.<a href="com/csse3200/game/components/shop/ShopComponent.PurchaseResult.html" title="enum class in com.csse3200.game.components.shop">ShopComponent.PurchaseResult</a></dt>
 <dd>&nbsp;</dd>
@@ -3701,6 +3706,12 @@ loadScripts(document, 'script');</script>
 <dt><a href="com/csse3200/game/rendering/item/ArcIndicatorRenderComponent.html#isActive()" class="member-name-link">isActive()</a> - Method in class com.csse3200.game.rendering.item.<a href="com/csse3200/game/rendering/item/ArcIndicatorRenderComponent.html" title="class in com.csse3200.game.rendering.item">ArcIndicatorRenderComponent</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/rendering/item/GrappleIndicatorRenderComponent.html#isActive()" class="member-name-link">isActive()</a> - Method in class com.csse3200.game.rendering.item.<a href="com/csse3200/game/rendering/item/GrappleIndicatorRenderComponent.html" title="class in com.csse3200.game.rendering.item">GrappleIndicatorRenderComponent</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/item/ItemType.html#isAimed()" class="member-name-link">isAimed()</a> - Method in enum class com.csse3200.game.components.item.<a href="com/csse3200/game/components/item/ItemType.html" title="enum class in com.csse3200.game.components.item">ItemType</a></dt>
+<dd>
+<div class="block">Checks if the item is aimed with right click: every arrow, plus the thrown poison potion.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/player/ItemUseComponent.html#isAimingPotion()" class="member-name-link">isAimingPotion()</a> - Method in class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/ItemUseComponent.html" title="class in com.csse3200.game.components.player">ItemUseComponent</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/ui/terminal/Terminal.html#isAnyOpen()" class="member-name-link">isAnyOpen()</a> - Static method in class com.csse3200.game.ui.terminal.<a href="com/csse3200/game/ui/terminal/Terminal.html" title="class in com.csse3200.game.ui.terminal">Terminal</a></dt>
 <dd>
@@ -4371,6 +4382,14 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/entities/configs/EnemyConfig.html#maxChaseDistance" class="member-name-link">maxChaseDistance</a> - Variable in class com.csse3200.game.entities.configs.<a href="com/csse3200/game/entities/configs/EnemyConfig.html" title="class in com.csse3200.game.entities.configs">EnemyConfig</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/rendering/item/ArcIndicatorRenderComponent.html#maxDrawReach(com.badlogic.gdx.math.Vector2)" class="member-name-link">maxDrawReach(Vector2)</a> - Method in class com.csse3200.game.rendering.item.<a href="com/csse3200/game/rendering/item/ArcIndicatorRenderComponent.html" title="class in com.csse3200.game.rendering.item">ArcIndicatorRenderComponent</a></dt>
+<dd>
+<div class="block">How far along the aim, from the player's centre, the arc may be drawn before it stops.</div>
+</dd>
+<dt><a href="com/csse3200/game/rendering/item/GrappleIndicatorRenderComponent.html#maxDrawReach(com.badlogic.gdx.math.Vector2)" class="member-name-link">maxDrawReach(Vector2)</a> - Method in class com.csse3200.game.rendering.item.<a href="com/csse3200/game/rendering/item/GrappleIndicatorRenderComponent.html" title="class in com.csse3200.game.rendering.item">GrappleIndicatorRenderComponent</a></dt>
+<dd>
+<div class="block">The aim runs from the player's centre to the crosshair, so stop the arc once it gets there.</div>
+</dd>
 <dt><a href="com/csse3200/game/files/SaveFile.PlayerSaveData.html#maxHealth" class="member-name-link">maxHealth</a> - Variable in class com.csse3200.game.files.<a href="com/csse3200/game/files/SaveFile.PlayerSaveData.html" title="class in com.csse3200.game.files">SaveFile.PlayerSaveData</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/rendering/item/ArcIndicatorRenderComponent.html#maxRange()" class="member-name-link">maxRange()</a> - Method in class com.csse3200.game.rendering.item.<a href="com/csse3200/game/rendering/item/ArcIndicatorRenderComponent.html" title="class in com.csse3200.game.rendering.item">ArcIndicatorRenderComponent</a></dt>
@@ -4907,6 +4926,15 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/projectile/ArrowType.html#POTION" class="member-name-link">POTION</a> - Enum constant in enum class com.csse3200.game.components.projectile.<a href="com/csse3200/game/components/projectile/ArrowType.html" title="enum class in com.csse3200.game.components.projectile">ArrowType</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/player/ItemUseComponent.html#POTION_SPAWN_OFFSET" class="member-name-link">POTION_SPAWN_OFFSET</a> - Static variable in class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/ItemUseComponent.html" title="class in com.csse3200.game.components.player">ItemUseComponent</a></dt>
+<dd>
+<div class="block">How far in front of the thrower, as a fraction of their width, a thrown potion appears.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/player/ItemUseComponent.html#potionLaunchDirection(com.badlogic.gdx.math.Vector2,float,com.badlogic.gdx.math.Vector2)" class="member-name-link">potionLaunchDirection(Vector2, float, Vector2)</a> - Static method in class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/ItemUseComponent.html" title="class in com.csse3200.game.components.player">ItemUseComponent</a></dt>
+<dd>
+<div class="block">Direction to throw a poison potion so that, falling under gravity, its arc passes through
+ <code>target</code>.</div>
+</dd>
 <dt><a href="com/csse3200/game/physics/PhysicsContactListener.html#preSolve(com.badlogic.gdx.physics.box2d.Contact,com.badlogic.gdx.physics.box2d.Manifold)" class="member-name-link">preSolve(Contact, Manifold)</a> - Method in class com.csse3200.game.physics.<a href="com/csse3200/game/physics/PhysicsContactListener.html" title="class in com.csse3200.game.physics">PhysicsContactListener</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/shop/ShopListing.html#price()" class="member-name-link">price()</a> - Method in record class com.csse3200.game.components.shop.<a href="com/csse3200/game/components/shop/ShopListing.html" title="class in com.csse3200.game.components.shop">ShopListing</a></dt>
@@ -5300,7 +5328,7 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="com/csse3200/game/ui/GameplayCursor.html#restore()" class="member-name-link">restore()</a> - Method in class com.csse3200.game.ui.<a href="com/csse3200/game/ui/GameplayCursor.html" title="class in com.csse3200.game.ui">GameplayCursor</a></dt>
 <dd>
-<div class="block">Puts the normal pointer back, e.g.</div>
+<div class="block">Puts the normal arrow pointer back, e.g.</div>
 </dd>
 <dt><a href="com/csse3200/game/areas/GameArea.html#restoreCheckpoints(java.util.List)" class="member-name-link">restoreCheckpoints(List&lt;GridPoint2&gt;)</a> - Method in class com.csse3200.game.areas.<a href="com/csse3200/game/areas/GameArea.html" title="class in com.csse3200.game.areas">GameArea</a></dt>
 <dd>
@@ -6315,6 +6343,10 @@ loadScripts(document, 'script');</script>
 </dl>
 <h2 class="title" id="I:T">T</h2>
 <dl class="index">
+<dt><a href="com/csse3200/game/components/player/KeyboardPlayerInputComponent.html#takePendingPointerPosition()" class="member-name-link">takePendingPointerPosition()</a> - Method in class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/KeyboardPlayerInputComponent.html" title="class in com.csse3200.game.components.player">KeyboardPlayerInputComponent</a></dt>
+<dd>
+<div class="block">Where the pointer should reappear for the aim that just started, then forgets it.</div>
+</dd>
 <dt><a href="com/csse3200/game/input/InputComponent.html#tap(float,float,int,int)" class="member-name-link">tap(float, float, int, int)</a> - Method in class com.csse3200.game.input.<a href="com/csse3200/game/input/InputComponent.html" title="class in com.csse3200.game.input">InputComponent</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/input/InputService.html#tap(float,float,int,int)" class="member-name-link">tap(float, float, int, int)</a> - Method in class com.csse3200.game.input.<a href="com/csse3200/game/input/InputService.html" title="class in com.csse3200.game.input">InputService</a></dt>
@@ -6444,7 +6476,12 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="com/csse3200/game/ui/ThemedCursor.html" class="type-name-link" title="class in com.csse3200.game.ui">ThemedCursor</a> - Class in <a href="com/csse3200/game/ui/package-summary.html">com.csse3200.game.ui</a></dt>
 <dd>
-<div class="block">The game's pixel-art mouse pointer, used on every screen in place of the system arrow.</div>
+<div class="block">The game's pixel-art mouse pointers: an arrow for menus and a crosshair for aiming, used in place
+ of the system arrow.</div>
+</dd>
+<dt><a href="com/csse3200/game/ui/ThemedCursor.Style.html" class="type-name-link" title="enum class in com.csse3200.game.ui">ThemedCursor.Style</a> - Enum Class in <a href="com/csse3200/game/ui/package-summary.html">com.csse3200.game.ui</a></dt>
+<dd>
+<div class="block">Which themed pointer is showing.</div>
 </dd>
 <dt><a href="com/csse3200/game/components/minigames/blackjack/Blackjack.Rank.html#THREE" class="member-name-link">THREE</a> - Enum constant in enum class com.csse3200.game.components.minigames.blackjack.<a href="com/csse3200/game/components/minigames/blackjack/Blackjack.Rank.html" title="enum class in com.csse3200.game.components.minigames.blackjack">Blackjack.Rank</a></dt>
 <dd>&nbsp;</dd>
@@ -6974,6 +7011,10 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Updates the health UI whenever the player's health changes.</div>
 </dd>
+<dt><a href="com/csse3200/game/ui/ThemedCursor.html#use(com.csse3200.game.ui.ThemedCursor.Style)" class="member-name-link">use(ThemedCursor.Style)</a> - Static method in class com.csse3200.game.ui.<a href="com/csse3200/game/ui/ThemedCursor.html" title="class in com.csse3200.game.ui">ThemedCursor</a></dt>
+<dd>
+<div class="block">Shows the given themed pointer, loading it the first time.</div>
+</dd>
 <dt><a href="com/csse3200/game/components/item/weapons/bow/arrow/StandardArr.html#useArr()" class="member-name-link">useArr()</a> - Method in class com.csse3200.game.components.item.weapons.bow.arrow.<a href="com/csse3200/game/components/item/weapons/bow/arrow/StandardArr.html" title="class in com.csse3200.game.components.item.weapons.bow.arrow">StandardArr</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/item/consumables/Consumable.html#useConsumable()" class="member-name-link">useConsumable()</a> - Method in class com.csse3200.game.components.item.consumables.<a href="com/csse3200/game/components/item/consumables/Consumable.html" title="class in com.csse3200.game.components.item.consumables">Consumable</a></dt>
@@ -6992,7 +7033,7 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="com/csse3200/game/components/player/ItemUseComponent.html#useSelectedItem()" class="member-name-link">useSelectedItem()</a> - Method in class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/ItemUseComponent.html" title="class in com.csse3200.game.components.player">ItemUseComponent</a></dt>
 <dd>
-<div class="block">Attempts to use the currently selected item stack in the inventory.</div>
+<div class="block">Uses the selected potion: drinks a health or speed potion, or throws a poison potion.</div>
 </dd>
 </dl>
 <h2 class="title" id="I:V">V</h2>
@@ -7078,6 +7119,10 @@ loadScripts(document, 'script');</script>
 <div class="block">Returns the enum constant of this class with the specified name.</div>
 </dd>
 <dt><a href="com/csse3200/game/ui/GameEndState.html#valueOf(java.lang.String)" class="member-name-link">valueOf(String)</a> - Static method in enum class com.csse3200.game.ui.<a href="com/csse3200/game/ui/GameEndState.html" title="enum class in com.csse3200.game.ui">GameEndState</a></dt>
+<dd>
+<div class="block">Returns the enum constant of this class with the specified name.</div>
+</dd>
+<dt><a href="com/csse3200/game/ui/ThemedCursor.Style.html#valueOf(java.lang.String)" class="member-name-link">valueOf(String)</a> - Static method in enum class com.csse3200.game.ui.<a href="com/csse3200/game/ui/ThemedCursor.Style.html" title="enum class in com.csse3200.game.ui">ThemedCursor.Style</a></dt>
 <dd>
 <div class="block">Returns the enum constant of this class with the specified name.</div>
 </dd>
@@ -7177,6 +7222,11 @@ the order they are declared.</div>
 the order they are declared.</div>
 </dd>
 <dt><a href="com/csse3200/game/ui/GameEndState.html#values()" class="member-name-link">values()</a> - Static method in enum class com.csse3200.game.ui.<a href="com/csse3200/game/ui/GameEndState.html" title="enum class in com.csse3200.game.ui">GameEndState</a></dt>
+<dd>
+<div class="block">Returns an array containing the constants of this enum class, in
+the order they are declared.</div>
+</dd>
+<dt><a href="com/csse3200/game/ui/ThemedCursor.Style.html#values()" class="member-name-link">values()</a> - Static method in enum class com.csse3200.game.ui.<a href="com/csse3200/game/ui/ThemedCursor.Style.html" title="enum class in com.csse3200.game.ui">ThemedCursor.Style</a></dt>
 <dd>
 <div class="block">Returns an array containing the constants of this enum class, in
 the order they are declared.</div>

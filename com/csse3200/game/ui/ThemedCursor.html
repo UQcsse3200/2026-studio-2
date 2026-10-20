@@ -37,7 +37,7 @@ loadScripts(document, 'script');</script>
 <li>
 <p>Summary:</p>
 <ul>
-<li>Nested</li>
+<li><a href="#nested-class-summary">Nested</a></li>
 <li><a href="#field-summary">Field</a></li>
 <li>Constr</li>
 <li><a href="#method-summary">Method</a></li>
@@ -57,7 +57,7 @@ loadScripts(document, 'script');</script>
 <div id="navbar-sub-list">
 <ul class="sub-nav-list">
 <li>Summary:&nbsp;</li>
-<li>Nested&nbsp;|&nbsp;</li>
+<li><a href="#nested-class-summary">Nested</a>&nbsp;|&nbsp;</li>
 <li><a href="#field-summary">Field</a>&nbsp;|&nbsp;</li>
 <li>Constr&nbsp;|&nbsp;</li>
 <li><a href="#method-summary">Method</a></li>
@@ -91,10 +91,28 @@ loadScripts(document, 'script');</script>
 <hr>
 <div class="type-signature"><span class="modifiers">public final class </span><span class="element-name type-name-label">ThemedCursor</span>
 <span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></span></div>
-<div class="block">The game's pixel-art mouse pointer, used on every screen in place of the system arrow.</div>
+<div class="block">The game's pixel-art mouse pointers: an arrow for menus and a crosshair for aiming, used in place
+ of the system arrow.</div>
 </section>
 <section class="summary">
 <ul class="summary-list">
+<!-- ======== NESTED CLASS SUMMARY ======== -->
+<li>
+<section class="nested-class-summary" id="nested-class-summary">
+<h2>Nested Class Summary</h2>
+<div class="caption"><span>Nested Classes</span></div>
+<div class="summary-table three-column-summary">
+<div class="table-header col-first">Modifier and Type</div>
+<div class="table-header col-second">Class</div>
+<div class="table-header col-last">Description</div>
+<div class="col-first even-row-color"><code>static enum&nbsp;</code></div>
+<div class="col-second even-row-color"><code><a href="ThemedCursor.Style.html" class="type-name-link" title="enum class in com.csse3200.game.ui">ThemedCursor.Style</a></code></div>
+<div class="col-last even-row-color">
+<div class="block">Which themed pointer is showing.</div>
+</div>
+</div>
+</section>
+</li>
 <!-- =========== FIELD SUMMARY =========== -->
 <li>
 <section class="field-summary" id="field-summary">
@@ -105,9 +123,14 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-second">Field</div>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color"><code>static final <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
-<div class="col-second even-row-color"><code><a href="#CURSOR_PATH" class="member-name-link">CURSOR_PATH</a></code></div>
+<div class="col-second even-row-color"><code><a href="#CROSSHAIR_PATH" class="member-name-link">CROSSHAIR_PATH</a></code></div>
 <div class="col-last even-row-color">
-<div class="block">Pointer image.</div>
+<div class="block">Crosshair image.</div>
+</div>
+<div class="col-first odd-row-color"><code>static final <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second odd-row-color"><code><a href="#CURSOR_PATH" class="member-name-link">CURSOR_PATH</a></code></div>
+<div class="col-last odd-row-color">
+<div class="block">Arrow pointer image.</div>
 </div>
 </div>
 </section>
@@ -126,12 +149,20 @@ loadScripts(document, 'script');</script>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#dispose()" class="member-name-link">dispose</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
-<div class="block">Frees the themed pointer when the game closes.</div>
+<div class="block">Frees the themed pointers when the game closes.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="ThemedCursor.Style.html" title="enum class in com.csse3200.game.ui">ThemedCursor.Style</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#getCurrent()" class="member-name-link">getCurrent</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#install()" class="member-name-link">install</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Swaps the system pointer for the themed arrow.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#install()" class="member-name-link">install</a>()</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#use(com.csse3200.game.ui.ThemedCursor.Style)" class="member-name-link">use</a><wbr>(<a href="ThemedCursor.Style.html" title="enum class in com.csse3200.game.ui">ThemedCursor.Style</a>&nbsp;style)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
-<div class="block">Swaps the system pointer for the themed one.</div>
+<div class="block">Shows the given themed pointer, loading it the first time.</div>
 </div>
 </div>
 </div>
@@ -154,12 +185,27 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="CURSOR_PATH">
 <h3>CURSOR_PATH</h3>
 <div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">CURSOR_PATH</span></div>
-<div class="block">Pointer image. Its tip is the top-left pixel, which is the click point.</div>
+<div class="block">Arrow pointer image. Its tip is the top-left pixel, which is the click point.</div>
 <dl class="notes">
 <dt>See Also:</dt>
 <dd>
 <ul class="tag-list">
 <li><a href="../../../../constant-values.html#com.csse3200.game.ui.ThemedCursor.CURSOR_PATH">Constant Field Values</a></li>
+</ul>
+</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="CROSSHAIR_PATH">
+<h3>CROSSHAIR_PATH</h3>
+<div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">CROSSHAIR_PATH</span></div>
+<div class="block">Crosshair image. Its centre dot is the click point.</div>
+<dl class="notes">
+<dt>See Also:</dt>
+<dd>
+<ul class="tag-list">
+<li><a href="../../../../constant-values.html#com.csse3200.game.ui.ThemedCursor.CROSSHAIR_PATH">Constant Field Values</a></li>
 </ul>
 </dd>
 </dl>
@@ -177,14 +223,36 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="install()">
 <h3>install</h3>
 <div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">install</span>()</div>
-<div class="block">Swaps the system pointer for the themed one. Keeps the system pointer if it can't load.</div>
+<div class="block">Swaps the system pointer for the themed arrow. Keeps the system pointer if it can't load.</div>
+</section>
+</li>
+<li>
+<section class="detail" id="use(com.csse3200.game.ui.ThemedCursor.Style)">
+<h3>use</h3>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">use</span><wbr><span class="parameters">(<a href="ThemedCursor.Style.html" title="enum class in com.csse3200.game.ui">ThemedCursor.Style</a>&nbsp;style)</span></div>
+<div class="block">Shows the given themed pointer, loading it the first time. Does nothing if it is already
+ showing or can't load.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>style</code> - the pointer to show</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="getCurrent()">
+<h3>getCurrent</h3>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="ThemedCursor.Style.html" title="enum class in com.csse3200.game.ui">ThemedCursor.Style</a></span>&nbsp;<span class="element-name">getCurrent</span>()</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>the themed pointer currently showing, or null if none has been set</dd>
+</dl>
 </section>
 </li>
 <li>
 <section class="detail" id="dispose()">
 <h3>dispose</h3>
 <div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">dispose</span>()</div>
-<div class="block">Frees the themed pointer when the game closes.</div>
+<div class="block">Frees the themed pointers when the game closes.</div>
 </section>
 </li>
 </ul>
