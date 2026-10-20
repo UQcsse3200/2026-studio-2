@@ -68,7 +68,7 @@ class GameEndDisplayTest {
 
     assertEquals(GameEndState.LOSE, display.getState());
     assertEquals("GAME OVER!", display.getTitleText());
-    assertTrue(display.getResultText().contains("Penelepe"));
+    assertTrue(display.getResultText().contains("Penelope"));
   }
 
   @Test
