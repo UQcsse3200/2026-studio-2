@@ -1,5 +1,6 @@
 package com.csse3200.game.components.minigames.blackjack;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
@@ -46,6 +47,8 @@ public class BlackjackDisplay extends UIComponent {
   private static final float MAX_HAND_WIDTH = 700f;
   private static final float DEAL_DURATION = 0.3f;
   private static final float DEAL_GAP = 0.15f;
+  private static final float VICTORY_DIALOGUE_SECONDS = 1.5f;
+  private static final float VICTORY_FADE_SECONDS = 0.75f;
   private static final String CARD_PATH = "images/minigames/blackjack/";
   public static final String DIALOGUE_SCROLL_PATH =
       "images/minigames/blackjack/blackjack_vertical_scroll.png";
@@ -72,6 +75,8 @@ public class BlackjackDisplay extends UIComponent {
   private Table dealerCards;
   private Table playerCards;
   private Table resultOverlay;
+  private Table winFadeOverlay;
+  private boolean winTransitionScheduled;
   private Table resultPopup;
   private Cell<Table> resultPopupCell;
   private Cell<Label> resultTitleCell;
@@ -562,6 +567,35 @@ public class BlackjackDisplay extends UIComponent {
     stage.addActor(resultOverlay);
   }
 
+  /** Shows Cerci's final dialogue briefly, then fades to black before Cutscene 5. */
+  private void scheduleVictoryCutscene() {
+    if (winTransitionScheduled || storyWinCallback == null) {
+      return;
+    }
+    winTransitionScheduled = true;
+
+    Pixmap pixels = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
+    pixels.setColor(Color.BLACK);
+    pixels.fill();
+    Texture blackTexture = new Texture(pixels);
+    pixels.dispose();
+    casinoUiTextures.add(blackTexture);
+
+    winFadeOverlay = new Table();
+    winFadeOverlay.setFillParent(true);
+    winFadeOverlay.setBackground(new TextureRegionDrawable(blackTexture));
+    winFadeOverlay.getColor().a = 0f;
+    winFadeOverlay.setTouchable(Touchable.enabled);
+    stage.addActor(winFadeOverlay);
+    winFadeOverlay.toFront();
+    winFadeOverlay.addAction(
+        Actions.sequence(
+            Actions.delay(VICTORY_DIALOGUE_SECONDS),
+            Actions.fadeIn(VICTORY_FADE_SECONDS),
+            // Change screens on the next frame, not while Stage is acting its children.
+            Actions.run(() -> Gdx.app.postRunnable(storyWinCallback))));
+  }
+
   private Label.LabelStyle makeCasinoTextStyle(Label label, String hexColor) {
     Label.LabelStyle style = new Label.LabelStyle(label.getStyle());
     style.fontColor = Color.valueOf(hexColor);
@@ -636,16 +670,24 @@ public class BlackjackDisplay extends UIComponent {
 
     BlackjackDialogue dialogue = BlackjackDialogue.forMatch(blackjack);
     setDialogueScrollStyle(true);
+    boolean automaticVictory =
+        dialogue != null
+            && dialogue.getKind() == BlackjackDialogue.Kind.MATCH_WON
+            && storyWinCallback != null;
     if (dialogue != null) {
       title.setText(BlackjackDialogue.SPEAKER);
       message.setText(dialogue.getText());
-      dialogueActionLabel.setText(dialogue.getButtonText());
+      dialogueActionLabel.setText(automaticVictory ? "" : dialogue.getButtonText());
     } else {
       title.setText(roundTitle(blackjack.getLastOutcome()));
       message.setText(blackjack.getResultMessage() + "\n" + scoreText());
       dialogueActionLabel.setText("Next round");
     }
+    resultButtonCell.getActor().setVisible(!automaticVictory);
     resultOverlay.toFront();
+    if (automaticVictory) {
+      scheduleVictoryCutscene();
+    }
   }
 
   /** Uses a tall scroll for Cerci's match dialogue, retaining the original round-result panel. */
@@ -1078,6 +1120,9 @@ public class BlackjackDisplay extends UIComponent {
       resultOverlay.toFront();
     }
     entity.getEvents().trigger(BlackjackRulesDisplay.TABLE_RAISED);
+    if (winFadeOverlay != null) {
+      winFadeOverlay.toFront();
+    }
   }
 
   @Override
@@ -1096,6 +1141,9 @@ public class BlackjackDisplay extends UIComponent {
 
     if (resultOverlay != null) {
       resultOverlay.remove();
+    }
+    if (winFadeOverlay != null) {
+      winFadeOverlay.remove();
     }
 
     for (Texture casinoTexture : casinoUiTextures) {
