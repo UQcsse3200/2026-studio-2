@@ -44,7 +44,7 @@ class CheckpointLayoutTest {
 
   private static LevelConfig[] levels() {
     return new LevelConfig[] {
-      new Level1Config(), new Level2Config(new Entity()), new Level3Config(new Entity())
+      new Level1Config(), new Level2Config(new Entity()), new Level3Config(new Entity(), null)
     };
   }
 

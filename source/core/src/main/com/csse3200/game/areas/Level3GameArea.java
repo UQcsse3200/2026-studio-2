@@ -74,6 +74,7 @@ public class Level3GameArea extends GameArea {
     "images/projectiles/fire_arrow.png",
     "images/projectiles/ice_arrow.png",
     "images/projectiles/necromancer_projectile.png",
+    "images/projectiles/calypso_laser_beam.png",
     "images/items/poison_potion.png",
   };
 
@@ -99,7 +100,7 @@ public class Level3GameArea extends GameArea {
   public Level3GameArea(TerrainFactory terrainFactory, CameraComponent camera, Entity player) {
     super(camera);
 
-    config = new Level3Config(player);
+    config = new Level3Config(player, camera);
 
     this.terrainFactory = terrainFactory;
     this.camera = camera;

@@ -16,7 +16,7 @@ class WanderTaskBehaviourTest extends AbstractWanderTaskTest {
   @Override
   @SuppressWarnings("unchecked")
   <T extends DefaultTask & PriorityTask> T createTask(Vector2 range, float waitSeconds) {
-    return (T) new WanderTask(range, waitSeconds);
+    return (T) new WanderTask(range, waitSeconds, "ground");
   }
 
   @Test
@@ -34,7 +34,7 @@ class WanderTaskBehaviourTest extends AbstractWanderTaskTest {
     var edgeWorld = new TaskTestWorld();
     edgeWorld.addGround(-50f, 3f); // the floor ends before the probe at x = 2 + 1 + 0.3
     var edgeEnemy = edgeWorld.enemyAt(START.x, START.y);
-    var task = new WanderTask(NO_RANGE, WAIT_SECONDS);
+    var task = new WanderTask(NO_RANGE, WAIT_SECONDS, "ground");
     task.create(() -> edgeEnemy);
     task.start();
     edgeEnemy.setPosition(2f, 0f);
@@ -49,7 +49,7 @@ class WanderTaskBehaviourTest extends AbstractWanderTaskTest {
     var edgeWorld = new TaskTestWorld();
     edgeWorld.addGround(7.9f, 50f); // nothing under the probe at x = 8 - 0.3
     var edgeEnemy = edgeWorld.enemyAt(START.x, START.y);
-    var task = new WanderTask(NO_RANGE, WAIT_SECONDS);
+    var task = new WanderTask(NO_RANGE, WAIT_SECONDS, "ground");
     task.create(() -> edgeEnemy);
     task.start();
     edgeEnemy.setPosition(8f, 0f); // the spot at x = 5 is now to the left
@@ -63,7 +63,7 @@ class WanderTaskBehaviourTest extends AbstractWanderTaskTest {
   void shouldNotCheckForALedgeWhenTheSpotIsStraightAboveOrBelow() {
     var edgeWorld = new TaskTestWorld(); // no floor anywhere: any ledge check would stop it
     var edgeEnemy = edgeWorld.enemyAt(START.x, START.y);
-    var task = new WanderTask(NO_RANGE, WAIT_SECONDS); // its spot is (5, 0)
+    var task = new WanderTask(NO_RANGE, WAIT_SECONDS, "ground"); // its spot is (5, 0)
     task.create(() -> edgeEnemy);
     task.start();
     edgeEnemy.setPosition(START.x, 3f); // same x as the spot: it has no side to look to
