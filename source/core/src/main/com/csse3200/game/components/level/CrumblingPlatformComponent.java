@@ -34,8 +34,8 @@ public class CrumblingPlatformComponent extends PlatformGrappleComponent {
   float stateTime = 0f;
   private static final String CRUMBLE_SOUND = "sounds/rock_break.ogg";
   private static final float CRUMBLE_SOUND_INTERVAL = 0.3f;
-  private static final float MIN_CRUMBLE_VOLUME = 0.1f;
-  private static final float MAX_CRUMBLE_VOLUME = 0.6f;
+  private static final float MIN_CRUMBLE_VOLUME = 0.08f;
+  private static final float MAX_CRUMBLE_VOLUME = 0.25f;
   private float soundTimer = 0f;
 
   /**

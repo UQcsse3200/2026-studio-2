@@ -263,7 +263,7 @@ public class GrappleComponent extends Component {
     try {
       Sound arrowSound =
           ServiceLocator.getResourceService().getAsset("sounds/Arrow_release.wav", Sound.class);
-      arrowSound.play(GameVolume.scale(0.4f));
+      arrowSound.play(GameVolume.scale(0.25f));
     } catch (Exception e) {
       // skip
     }

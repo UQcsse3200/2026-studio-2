@@ -10,6 +10,7 @@ import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.components.Component;
 import com.csse3200.game.components.gamearea.GameAreaDisplay;
 import com.csse3200.game.components.level.DesertHazardRecoveryComponent;
+import com.csse3200.game.components.level.SeagullSoundComponent;
 import com.csse3200.game.components.player.KeyboardPlayerInputComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.EnemyFactory;
@@ -20,6 +21,7 @@ import com.csse3200.game.entities.factories.PlayerFactory;
 import com.csse3200.game.rendering.BackgroundRenderComponent;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.List;
+import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -134,11 +136,15 @@ public class Level1GameArea extends GameArea {
     "images/enemies/calypso.atlas",
   };
 
-  private static final String[] forestSounds = {"sounds/Impact4.ogg"};
+  private static final String[] forestSounds =
+      Stream.concat(Stream.of("sounds/Impact4.ogg"), SeagullSoundComponent.CLIPS.stream())
+          .toArray(String[]::new);
 
   private static final String BACKGROUND_MUSIC = "sounds/BGM_03_mp3.mp3";
 
-  private static final String[] forestMusic = {BACKGROUND_MUSIC};
+  public static final String AMBIENCE_MUSIC = "sounds/level1_ambience.ogg";
+
+  private static final String[] forestMusic = {BACKGROUND_MUSIC, AMBIENCE_MUSIC};
 
   private final TerrainFactory terrainFactory;
   private final CameraComponent camera;
@@ -161,6 +167,8 @@ public class Level1GameArea extends GameArea {
   @Override
   public void create() {
     loadAssets();
+    playLoopingMusic(AMBIENCE_MUSIC, 0.15f);
+    spawnEntity(new Entity().addComponent(new SeagullSoundComponent()));
     displayUI();
 
     spawnTerrain();
@@ -341,6 +349,7 @@ public class Level1GameArea extends GameArea {
     player.getEvents().trigger("grappleRelease");
     super.dispose();
     ServiceLocator.getResourceService().getAsset(BACKGROUND_MUSIC, Music.class).stop();
+    ServiceLocator.getResourceService().getAsset(AMBIENCE_MUSIC, Music.class).stop();
     this.unloadAssets();
   }
 }

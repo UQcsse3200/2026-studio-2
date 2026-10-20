@@ -162,7 +162,7 @@ class PlayerCombatIntegrationTest {
     assertEquals(1, inventory.getItemCount(ItemType.STANDARD_ARROW));
     verify(itemUsed).handle(ItemType.STANDARD_ARROW);
     verify(animation).handle(new Vector2(0.6f, 0.8f));
-    verify(sound).play(1f);
+    verify(sound).play(0.5f);
     verifyNoInteractions(itemFailed);
   }
 
@@ -227,7 +227,7 @@ class PlayerCombatIntegrationTest {
     verify(itemUsed).handle(ItemType.STANDARD_ARROW);
     verify(itemFailed).handle(ItemType.STANDARD_ARROW);
     verify(animation).handle(any());
-    verify(sound).play(1f);
+    verify(sound).play(0.5f);
   }
 
   @Test
