@@ -215,20 +215,6 @@ public class Blackjack {
     resultMessage = "";
   }
 
-  /** Places a bet before the round begins. */
-  public void placeBet(int amount) {
-    if (roundInProgress) {
-      throw new IllegalStateException("Cannot change the bet while a round is in progress");
-    }
-    if (amount <= 0) {
-      throw new IllegalArgumentException("Bet must be greater than zero");
-    }
-    if (amount > balance) {
-      throw new IllegalArgumentException("Bet cannot exceed the current balance");
-    }
-    this.bet = amount;
-  }
-
   /** Starts a fresh round using the current bet. */
   public void startNewRound() {
     if (bet <= 0) {

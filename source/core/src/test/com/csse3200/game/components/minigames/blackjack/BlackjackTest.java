@@ -32,18 +32,13 @@ class BlackjackTest {
   }
 
   @Test
-  void testRejectsInvalidBetAndRoundTransitions() {
+  void testRejectsInvalidRoundTransitions() {
     Blackjack game = new Blackjack(100, new Random(1));
 
-    assertThrows(IllegalArgumentException.class, () -> game.placeBet(0));
-    assertThrows(IllegalArgumentException.class, () -> game.placeBet(-1));
-    assertThrows(IllegalArgumentException.class, () -> game.placeBet(101));
     assertThrows(IllegalStateException.class, game::hit);
     assertThrows(IllegalStateException.class, game::stand);
 
-    game.placeBet(10);
     game.startNewRound();
-    assertThrows(IllegalStateException.class, () -> game.placeBet(5));
     assertThrows(IllegalStateException.class, game::startNewRound);
   }
 
@@ -80,15 +75,15 @@ class BlackjackTest {
   @Test
   void testNaturalBlackjackOutcomes() {
     assertResult("Push: both players have blackjack.", false, 100);
-    assertResult("Blackjack! You win.", true, 110);
-    assertResult("Dealer has blackjack. You lose.", false, 90);
+    assertResult("Blackjack! You win.", true, 101);
+    assertResult("Dealer has blackjack. You lose.", false, 99);
   }
 
   @Test
   void testDealerOutcomeBranches() {
-    assertResult("Dealer busts. You win.", true, 110);
-    assertResult("You win.", true, 110);
-    assertResult("Dealer wins.", false, 90);
+    assertResult("Dealer busts. You win.", true, 101);
+    assertResult("You win.", true, 101);
+    assertResult("Dealer wins.", false, 99);
     assertResult("Push.", false, 100);
   }
 
@@ -98,7 +93,7 @@ class BlackjackTest {
 
     assertTrue(game.isRoundOver());
     assertFalse(game.isRoundInProgress());
-    assertEquals(90, game.getBalance());
+    assertEquals(99, game.getBalance());
     assertFalse(game.isPlayerWinner());
   }
 
@@ -121,10 +116,9 @@ class BlackjackTest {
   @Test
   void testNewRoundDealsTwoCardsEach() {
     Blackjack game = new Blackjack(100, new Random(1));
-    game.placeBet(10);
     game.startNewRound();
 
-    assertEquals(10, game.getBet());
+    assertEquals(Blackjack.BET, game.getBet());
     assertEquals(2, game.getPlayerHand().size());
     assertEquals(2, game.getDealerHand().size());
     assertTrue(game.isRoundInProgress());
@@ -135,7 +129,6 @@ class BlackjackTest {
   @Test
   void testPlayerHitAddsCardAndCanBust() {
     Blackjack game = new Blackjack(100, new Random(1));
-    game.placeBet(10);
     game.startNewRound();
 
     int before = game.getPlayerHand().size();
@@ -150,7 +143,6 @@ class BlackjackTest {
   @Test
   void testDealerDrawsUntilSeventeen() {
     Blackjack game = new Blackjack(100, new Random(1));
-    game.placeBet(10);
     game.startNewRound();
 
     game.stand();
@@ -180,7 +172,6 @@ class BlackjackTest {
 
     for (int seed = 0; seed < 100; seed++) {
       Blackjack game = new Blackjack(100, new Random(seed));
-      game.placeBet(10);
       game.startNewRound();
 
       if (!game.isRoundOver()) {
@@ -200,7 +191,6 @@ class BlackjackTest {
   @Test
   void testWinnerStateResetsWhenStartingAnotherRound() {
     Blackjack game = new Blackjack(100, new Random(1));
-    game.placeBet(10);
     game.startNewRound();
 
     if (!game.isRoundOver()) {
@@ -227,19 +217,6 @@ class BlackjackTest {
 
     assertThrows(IllegalArgumentException.class, () -> game.setBalance(-1));
     assertEquals(100, game.getBalance());
-  }
-
-  @Test
-  void testBetUsesResynchronisedBalance() {
-    Blackjack game = new Blackjack(10, new Random(1));
-
-    assertThrows(IllegalArgumentException.class, () -> game.placeBet(50));
-
-    game.setBalance(100);
-    game.placeBet(50);
-
-    assertEquals(100, game.getBalance());
-    assertEquals(50, game.getBet());
   }
 
   @Test
@@ -382,7 +359,6 @@ class BlackjackTest {
   private static Blackjack resolvedGameWithAnyResult() {
     for (int seed = 0; seed < 1000; seed++) {
       Blackjack game = new Blackjack(100, new Random(seed));
-      game.placeBet(10);
       game.startNewRound();
       if (!game.isRoundOver()) {
         game.stand();
@@ -397,7 +373,6 @@ class BlackjackTest {
   private static Blackjack gameWithResult(String expectedMessage) {
     for (int seed = 0; seed < 1000; seed++) {
       Blackjack game = new Blackjack(100, new Random(seed));
-      game.placeBet(10);
       game.startNewRound();
       if (!game.isRoundOver()) {
         game.stand();
@@ -412,7 +387,6 @@ class BlackjackTest {
   private static Blackjack gameWithResultFromHit(String expectedMessage) {
     for (int seed = 0; seed < 1000; seed++) {
       Blackjack game = new Blackjack(100, new Random(seed));
-      game.placeBet(10);
       game.startNewRound();
       if (!game.isRoundOver()) {
         game.hit();

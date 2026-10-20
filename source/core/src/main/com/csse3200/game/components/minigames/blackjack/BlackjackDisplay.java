@@ -16,7 +16,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
 import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
@@ -30,8 +29,10 @@ import com.csse3200.game.ui.UIComponent;
 /** Displays the Blackjack game and its cards. */
 public class BlackjackDisplay extends UIComponent {
   private static final String EMPTY_BALANCE_MESSAGE = "Your balance is 0 - grind hard!";
+  private static final String MATCH_OVER_MESSAGE = "The match is over.";
 
   private static final String PLACE_BET = "READY";
+  private static final String MATCH_OVER = "MATCH OVER";
 
   private static final float Z_INDEX = 2f;
   private static final float CARD_WIDTH = 100f;
@@ -72,7 +73,6 @@ public class BlackjackDisplay extends UIComponent {
   private Label balanceLabel;
   private Label resultLabel;
   private Label statusLabel;
-  private TextField betField;
   private boolean goldSettled;
   private boolean dealInProgress;
   private boolean revealDealerCard;
@@ -166,26 +166,6 @@ public class BlackjackDisplay extends UIComponent {
     applyGoldInfoLabelStyle(statusLabel, 1.0f);
     applyGoldInfoLabelStyle(resultLabel, 0.92f);
 
-    betField = new TextField("", skin);
-    betField.setStyle(createCasinoBetFieldStyle());
-    betField.setAlignment(com.badlogic.gdx.utils.Align.center);
-    betField.setMessageText("Amount");
-    betField.setTextFieldFilter(new TextField.TextFieldFilter.DigitsOnlyFilter());
-
-    betField.addListener(
-        new com.badlogic.gdx.scenes.scene2d.InputListener() {
-          @Override
-          public boolean touchDown(
-              com.badlogic.gdx.scenes.scene2d.InputEvent event,
-              float x,
-              float y,
-              int pointer,
-              int button) {
-            stage.setKeyboardFocus(betField);
-            return true;
-          }
-        });
-
     dealerCards = new Table();
     playerCards = new Table();
 
@@ -209,6 +189,8 @@ public class BlackjackDisplay extends UIComponent {
             com.badlogic.gdx.Gdx.files.internal("images/Buttons/sound_down_btn.png"));
     soundUpTexture.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
     soundDownTexture.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
+    casinoUiTextures.add(soundUpTexture);
+    casinoUiTextures.add(soundDownTexture);
     TextButton.TextButtonStyle soundStyle = new TextButton.TextButtonStyle(soundButton.getStyle());
     soundStyle.up = new TextureRegionDrawable(soundUpTexture);
     soundStyle.down = new TextureRegionDrawable(soundDownTexture);
@@ -237,13 +219,6 @@ public class BlackjackDisplay extends UIComponent {
           @Override
           public void changed(ChangeEvent event, Actor actor) {
             ButtonSound.playClick();
-            tryStartRound();
-          }
-        });
-
-    betField.setTextFieldListener(
-        (textField, character) -> {
-          if (character == '\r' || character == '\n') {
             tryStartRound();
           }
         });
@@ -348,15 +323,11 @@ public class BlackjackDisplay extends UIComponent {
     playerRegion.row();
     playerRegion.add(playerTotalLabel);
 
-    // One compact status line above the buttons; only the editable amount has a border.
+    // One compact status line above the buttons.
     Table status = new Table();
     status.add(statusLabel).padRight(22f);
     status.add(balanceLabel).padRight(22f);
-    status.add(resultLabel).maxWidth(220f).padRight(16f);
-    Label betLabel = new Label("BET", skin);
-    applyGoldInfoLabelStyle(betLabel, 1.0f);
-    status.add(betLabel).padRight(9f);
-    status.add(betField).width(130f).height(34f);
+    status.add(resultLabel).maxWidth(220f);
 
     Table buttons = new Table();
 
@@ -394,31 +365,6 @@ public class BlackjackDisplay extends UIComponent {
     label.setAlignment(com.badlogic.gdx.utils.Align.center);
   }
 
-  // A restrained green felt entry with a crisp gold edge, matching the table.
-  private TextField.TextFieldStyle createCasinoBetFieldStyle() {
-    TextField.TextFieldStyle style =
-        new TextField.TextFieldStyle(skin.get(TextField.TextFieldStyle.class));
-    style.fontColor = Color.valueOf("FFE5A0");
-    style.messageFontColor = Color.valueOf("D4BA78");
-    style.background = createBetFieldBackground("103D30", "C69B43");
-    style.focusedBackground = createBetFieldBackground("174B39", "F8D978");
-    style.disabledBackground = createBetFieldBackground("26372E", "887344");
-    return style;
-  }
-
-  private NinePatchDrawable createBetFieldBackground(String fillHex, String borderHex) {
-    Pixmap pixels = new Pixmap(24, 24, Pixmap.Format.RGBA8888);
-    pixels.setColor(Color.valueOf(borderHex));
-    pixels.fill();
-    pixels.setColor(Color.valueOf(fillHex));
-    pixels.fillRectangle(2, 2, 20, 20);
-    Texture texture = new Texture(pixels);
-    pixels.dispose();
-    texture.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
-    casinoUiTextures.add(texture);
-    return new NinePatchDrawable(new NinePatch(texture, 4, 4, 4, 4));
-  }
-
   private void buildResultOverlay() {
     resultOverlay = new Table();
     resultOverlay.setFillParent(true);
@@ -451,10 +397,11 @@ public class BlackjackDisplay extends UIComponent {
             ButtonSound.playClick();
 
             if (!blackjack.isRoundInProgress()) {
+              if (blackjack.getMatchResult() == Blackjack.MatchResult.DEALER_WON) {
+                restartMatch();
+              }
               resultOverlay.setVisible(false);
               resultOverlay.setTouchable(com.badlogic.gdx.scenes.scene2d.Touchable.disabled);
-              betField.setText("");
-              stage.setKeyboardFocus(betField);
               resultLabel.setText("");
               statusLabel.setText(
                   inventory != null && inventory.getGold() <= 0
@@ -545,7 +492,7 @@ public class BlackjackDisplay extends UIComponent {
     }
 
     if (newRoundButton != null) {
-      boolean disabled = blackjack.isRoundInProgress() || dealInProgress;
+      boolean disabled = blackjack.isRoundInProgress() || dealInProgress || blackjack.isMatchOver();
       newRoundButton.setDisabled(disabled);
       newRoundButton.setTouchable(
           disabled
@@ -574,17 +521,28 @@ public class BlackjackDisplay extends UIComponent {
     Label title = resultOverlay.findActor("resultTitle");
     Label message = resultOverlay.findActor("resultMessage");
 
-    if (blackjack.isPlayerWinner()) {
-      title.setText("YOU WIN!");
-    } else if (blackjack.getResultMessage() != null
-        && blackjack.getResultMessage().startsWith("Push")) {
-      title.setText("PUSH!");
-    } else {
-      title.setText("YOU LOSE!");
+    switch (blackjack.getMatchResult()) {
+      case PLAYER_WON -> title.setText("YOU WIN THE MATCH!");
+      case DEALER_WON -> title.setText("YOU LOSE THE MATCH!");
+      case IN_PROGRESS -> title.setText(roundTitle(blackjack.getLastOutcome()));
     }
 
-    message.setText(blackjack.getResultMessage());
+    message.setText(blackjack.getResultMessage() + "\n" + scoreText());
     resultOverlay.toFront();
+  }
+
+  private static String roundTitle(Blackjack.RoundOutcome outcome) {
+    if (outcome == Blackjack.RoundOutcome.PLAYER_WIN) {
+      return "YOU WIN!";
+    }
+    if (outcome == Blackjack.RoundOutcome.PUSH) {
+      return "PUSH!";
+    }
+    return "YOU LOSE!";
+  }
+
+  private String scoreText() {
+    return "SCORE  " + blackjack.getPlayerWins() + " - " + blackjack.getDealerWins();
   }
 
   private ImageButton createImageButton(String upPath, String downPath) {
@@ -656,7 +614,8 @@ public class BlackjackDisplay extends UIComponent {
 
     playerTotalLabel.setText(
         blackjack.getPlayerHand().isEmpty() ? "TOTAL  --" : "TOTAL  " + blackjack.getPlayerTotal());
-    balanceLabel.setText("GOLD  " + getDisplayedGold() + "     STAKE  " + blackjack.getBet());
+    balanceLabel.setText(
+        "GOLD  " + getDisplayedGold() + "     STAKE  " + Blackjack.BET + "     " + scoreText());
     if (inventory != null && inventory.getGold() <= 0) {
       resultLabel.setText(EMPTY_BALANCE_MESSAGE);
     } else {
@@ -667,6 +626,8 @@ public class BlackjackDisplay extends UIComponent {
   private void refreshLabels() {
     if (dealInProgress) {
       statusLabel.setText("DEALING");
+    } else if (blackjack.isMatchOver()) {
+      statusLabel.setText(MATCH_OVER);
     } else if (blackjack.isRoundOver()) {
       statusLabel.setText("ROUND OVER");
     } else if (blackjack.isRoundInProgress()) {
@@ -791,12 +752,12 @@ public class BlackjackDisplay extends UIComponent {
       return;
     }
 
-    String result = blackjack.getResultMessage();
+    Blackjack.RoundOutcome outcome = blackjack.getLastOutcome();
 
-    if (blackjack.isPlayerWinner()) {
+    if (outcome == Blackjack.RoundOutcome.PLAYER_WIN) {
       playSound(WIN_SOUND);
       resultSoundPlayed = true;
-    } else if (result != null && !result.isEmpty() && !result.startsWith("Push")) {
+    } else if (outcome == Blackjack.RoundOutcome.DEALER_WIN) {
       playSound(LOSE_SOUND);
       resultSoundPlayed = true;
     }
@@ -812,53 +773,20 @@ public class BlackjackDisplay extends UIComponent {
       return;
     }
 
-    int availableGold = inventory.getGold();
+    if (blackjack.isMatchOver()) {
+      resultLabel.setText(MATCH_OVER_MESSAGE);
+      statusLabel.setText(MATCH_OVER);
+      return;
+    }
 
-    if (availableGold <= 0) {
-      resultLabel.setText(EMPTY_BALANCE_MESSAGE);
-      statusLabel.setText("NO GOLD");
-      betField.setText("");
+    if (!inventory.hasGold(Blackjack.BET)) {
       refreshLabels();
+      resultLabel.setText(EMPTY_BALANCE_MESSAGE);
       return;
     }
 
-    String betText = betField.getText().trim();
-
-    if (betText.isEmpty()) {
-      resultLabel.setText("Enter a bet amount.");
-      statusLabel.setText(PLACE_BET);
-      return;
-    }
-
-    int amount;
-
-    try {
-      amount = Integer.parseInt(betText);
-    } catch (NumberFormatException exception) {
-      resultLabel.setText("Invalid bet amount.");
-      return;
-    }
-
-    if (amount <= 0) {
-      resultLabel.setText("Bet must be greater than 0.");
-      return;
-    }
-
-    if (!inventory.hasGold(amount)) {
-      resultLabel.setText("Insufficient balance.");
-      statusLabel.setText(PLACE_BET);
-      return;
-    }
-
-    try {
-      blackjack.setBalance(inventory.getGold());
-      blackjack.placeBet(amount);
-    } catch (IllegalArgumentException exception) {
-      resultLabel.setText(exception.getMessage());
-      return;
-    }
-
-    inventory.addGold(-amount);
+    blackjack.setBalance(inventory.getGold());
+    inventory.addGold(-Blackjack.BET);
 
     goldSettled = false;
     resultSoundPlayed = false;
@@ -878,17 +806,32 @@ public class BlackjackDisplay extends UIComponent {
     }
 
     int bet = blackjack.getBet();
-    String result = blackjack.getResultMessage();
+    Blackjack.RoundOutcome outcome = blackjack.getLastOutcome();
 
-    if (blackjack.isPlayerWinner()) {
+    if (outcome == Blackjack.RoundOutcome.PLAYER_WIN) {
       // Return the stake plus winnings: net profit = the original bet.
       inventory.addGold(bet * 2);
-    } else if (result != null && result.startsWith("Push")) {
+    } else if (outcome == Blackjack.RoundOutcome.PUSH) {
       // Push returns the original stake.
       inventory.addGold(bet);
     }
 
+    // Keep the game's balance in step with the inventory for the end-of-round gold check.
+    blackjack.setBalance(inventory.getGold());
     goldSettled = true;
+  }
+
+  /** Starts a new match after a loss, refilling the player's gold. */
+  private void restartMatch() {
+    blackjack.resetMatch();
+    if (inventory != null) {
+      inventory.setGold(Blackjack.REFILL_GOLD);
+    }
+    goldSettled = false;
+    resultSoundPlayed = false;
+    revealDealerCard = false;
+    renderHands();
+    refreshLabels();
   }
 
   private int getDisplayedGold() {

@@ -15,7 +15,6 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.csse3200.game.components.inventory.InventoryComponent;
 import com.csse3200.game.entities.Entity;
@@ -24,6 +23,7 @@ import com.csse3200.game.rendering.RenderService;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import java.lang.reflect.Field;
+import java.util.Random;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -61,13 +61,9 @@ class BlackjackDisplayTest {
     show(display);
 
     Table table = field(display, "table", Table.class);
-    TextField betField = field(display, "betField", TextField.class);
 
     assertNotNull(table);
-    assertNotNull(betField);
     assertTrue(table.isVisible());
-    assertEquals("", betField.getText());
-    assertEquals("Amount", betField.getMessageText());
   }
 
   @Test
@@ -131,109 +127,120 @@ class BlackjackDisplayTest {
   }
 
   @Test
-  void shouldRejectBetWhenInventoryUnavailable() {
-    BlackjackDisplay display = new BlackjackDisplay(new Blackjack(100));
-    show(display);
-
-    TextField betField = field(display, "betField", TextField.class);
-    Label resultLabel = label(display, "resultLabel");
-
-    betField.setText("10");
-    invokeTryStartRound(display);
-
-    assertEquals("Player gold unavailable.", resultLabel.getText().toString());
-  }
-
-  @Test
-  void shouldRejectBetWhenPlayerHasZeroGold() {
-    InventoryComponent inventory = new InventoryComponent(0);
-    BlackjackDisplay display = new BlackjackDisplay(new Blackjack(100), inventory);
-    show(display);
-
-    TextField betField = field(display, "betField", TextField.class);
-    Label resultLabel = label(display, "resultLabel");
-    Label statusLabel = label(display, "statusLabel");
-
-    betField.setText("10");
-    invokeTryStartRound(display);
-
-    assertEquals("Your balance is 0 - grind hard!", resultLabel.getText().toString());
-    assertEquals("READY", statusLabel.getText().toString());
-    assertEquals("", betField.getText());
-    assertEquals(0, inventory.getGold());
-  }
-
-  @Test
-  void shouldRejectEmptyBet() {
-    InventoryComponent inventory = new InventoryComponent(100);
-    BlackjackDisplay display = new BlackjackDisplay(new Blackjack(100), inventory);
-    show(display);
-
-    Label resultLabel = label(display, "resultLabel");
-    Label statusLabel = label(display, "statusLabel");
-
-    invokeTryStartRound(display);
-
-    assertEquals("Enter a bet amount.", resultLabel.getText().toString());
-    assertEquals("READY", statusLabel.getText().toString());
-    assertEquals(100, inventory.getGold());
-  }
-
-  @Test
-  void shouldRejectZeroBet() {
-    InventoryComponent inventory = new InventoryComponent(100);
-    BlackjackDisplay display = new BlackjackDisplay(new Blackjack(100), inventory);
-    show(display);
-
-    TextField betField = field(display, "betField", TextField.class);
-    Label resultLabel = label(display, "resultLabel");
-
-    betField.setText("0");
-    invokeTryStartRound(display);
-
-    assertEquals("Bet must be greater than 0.", resultLabel.getText().toString());
-    assertEquals(100, inventory.getGold());
-  }
-
-  @Test
-  void shouldRejectBetGreaterThanPlayerGold() {
-    InventoryComponent inventory = new InventoryComponent(50);
+  void shouldNotStartRoundWhenInventoryUnavailable() {
     Blackjack blackjack = new Blackjack(100);
-    BlackjackDisplay display = new BlackjackDisplay(blackjack, inventory);
+    BlackjackDisplay display = new BlackjackDisplay(blackjack);
     show(display);
 
-    TextField betField = field(display, "betField", TextField.class);
-    Label resultLabel = label(display, "resultLabel");
-    Label statusLabel = label(display, "statusLabel");
+    invoke(display, "tryStartRound");
 
-    betField.setText("51");
-    invokeTryStartRound(display);
-
-    assertEquals("Insufficient balance.", resultLabel.getText().toString());
-    assertEquals("READY", statusLabel.getText().toString());
-    assertEquals(50, inventory.getGold());
+    assertEquals("Player gold unavailable.", label(display, "resultLabel").getText().toString());
     assertFalse(blackjack.isRoundInProgress());
   }
 
   @Test
-  void shouldDeductGoldForValidBet() {
-    InventoryComponent inventory = new InventoryComponent(100);
+  void shouldNotStartRoundWhenPlayerHasNoGold() {
+    InventoryComponent inventory = new InventoryComponent(0);
     Blackjack blackjack = new Blackjack(100);
     BlackjackDisplay display = new BlackjackDisplay(blackjack, inventory);
     show(display);
 
-    TextField betField = field(display, "betField", TextField.class);
-    betField.setText("10");
+    invoke(display, "tryStartRound");
 
-    invokeTryStartRound(display);
-
-    assertEquals(10, blackjack.getBet());
-    assertTrue(blackjack.isRoundInProgress() || blackjack.isRoundOver());
+    assertEquals(
+        "Your balance is 0 - grind hard!", label(display, "resultLabel").getText().toString());
+    assertEquals("READY", label(display, "statusLabel").getText().toString());
+    assertEquals(0, inventory.getGold());
+    assertFalse(blackjack.isRoundInProgress());
   }
 
-  private static void invokeTryStartRound(BlackjackDisplay display) {
+  @Test
+  void shouldStakeFixedBetWhenStartingRound() {
+    InventoryComponent inventory = new InventoryComponent(100);
+    Blackjack blackjack = new Blackjack(100, new Random(1));
+    BlackjackDisplay display = new BlackjackDisplay(blackjack, inventory);
+    show(display);
+
+    invoke(display, "tryStartRound");
+
+    assertEquals(Blackjack.BET, blackjack.getBet());
+    assertTrue(blackjack.isRoundInProgress());
+    assertEquals(100 - Blackjack.BET, inventory.getGold());
+  }
+
+  @Test
+  void shouldSettleGoldByRoundOutcome() {
+    for (int seed = 0; seed < 20; seed++) {
+      InventoryComponent inventory = new InventoryComponent(10);
+      Blackjack blackjack = new Blackjack(10, new Random(seed));
+      BlackjackDisplay display = new BlackjackDisplay(blackjack, inventory);
+      show(display);
+
+      invoke(display, "tryStartRound");
+      if (!blackjack.isRoundOver()) {
+        blackjack.stand();
+        invoke(display, "settleGoldIfRoundOver");
+      }
+
+      int expectedGold =
+          switch (blackjack.getLastOutcome()) {
+            case PLAYER_WIN -> 11;
+            case DEALER_WIN -> 9;
+            case PUSH -> 10;
+          };
+      assertEquals(expectedGold, inventory.getGold());
+      assertEquals(inventory.getGold(), blackjack.getBalance());
+    }
+  }
+
+  @Test
+  void shouldNotStartRoundWhenMatchIsOver() {
+    Blackjack blackjack = lostMatch();
+    InventoryComponent inventory = new InventoryComponent(0);
+    BlackjackDisplay display = new BlackjackDisplay(blackjack, inventory);
+    show(display);
+
+    invoke(display, "tryStartRound");
+
+    assertEquals("The match is over.", label(display, "resultLabel").getText().toString());
+    assertEquals("MATCH OVER", label(display, "statusLabel").getText().toString());
+    assertFalse(blackjack.isRoundInProgress());
+  }
+
+  @Test
+  void shouldRefillGoldWhenRestartingMatch() {
+    Blackjack blackjack = lostMatch();
+    InventoryComponent inventory = new InventoryComponent(0);
+    BlackjackDisplay display = new BlackjackDisplay(blackjack, inventory);
+    show(display);
+
+    invoke(display, "restartMatch");
+
+    assertEquals(Blackjack.REFILL_GOLD, inventory.getGold());
+    assertEquals(Blackjack.REFILL_GOLD, blackjack.getBalance());
+    assertEquals(0, blackjack.getPlayerWins());
+    assertEquals(0, blackjack.getDealerWins());
+    assertEquals(Blackjack.MatchResult.IN_PROGRESS, blackjack.getMatchResult());
+  }
+
+  /** Returns a game the player has lost by running out of gold after one round. */
+  private static Blackjack lostMatch() {
+    for (int seed = 0; seed < 100; seed++) {
+      Blackjack blackjack = new Blackjack(Blackjack.BET, new Random(seed));
+      blackjack.startNewRound();
+      if (!blackjack.isRoundOver()) {
+        blackjack.stand();
+      }
+      if (blackjack.getMatchResult() == Blackjack.MatchResult.DEALER_WON) {
+        return blackjack;
+      }
+    }
+    throw new AssertionError("Could not find a lost match");
+  }
+
+  private static void invoke(BlackjackDisplay display, String methodName) {
     try {
-      java.lang.reflect.Method method = BlackjackDisplay.class.getDeclaredMethod("tryStartRound");
+      java.lang.reflect.Method method = BlackjackDisplay.class.getDeclaredMethod(methodName);
       method.setAccessible(true);
       method.invoke(display);
     } catch (ReflectiveOperationException exception) {
