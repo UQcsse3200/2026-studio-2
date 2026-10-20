@@ -28,7 +28,7 @@ public class TextBoxComponent extends UIComponent {
   private static final Logger logger = LoggerFactory.getLogger(TextBoxComponent.class);
 
   /** Portrait image edge length in pixels. JPEG aspect is preserved via fit scaling. */
-  private static final float PORTRAIT_SIZE = 100f;
+  private static final float PORTRAIT_SIZE = 300f;
 
   /**
    * Fraction of the portrait overlapping the box's top edge. Zero keeps the portrait fully above
