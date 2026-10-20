@@ -251,7 +251,7 @@ loadScripts(document, 'script');</script>
 </li>
 <li class="circle">com.csse3200.game.rendering.<a href="com/csse3200/game/rendering/CaveEntranceRenderComponent.html" class="type-name-link" title="class in com.csse3200.game.rendering">CaveEntranceRenderComponent</a></li>
 <li class="circle">com.csse3200.game.components.minigames.cyclopsminigame.<a href="com/csse3200/game/components/minigames/cyclopsminigame/CyclopsFloorRenderComponent.html" class="type-name-link" title="class in com.csse3200.game.components.minigames.cyclopsminigame">CyclopsFloorRenderComponent</a></li>
-<li class="circle">com.csse3200.game.rendering.<a href="com/csse3200/game/rendering/DynamicTextureRenderComponent.html" class="type-name-link" title="class in com.csse3200.game.rendering">DynamicTextureRenderComponent</a></li>
+<li class="circle">com.csse3200.game.rendering.<a href="com/csse3200/game/rendering/DynamicTextureRenderComponent.html" class="type-name-link" title="class in com.csse3200.game.rendering">DynamicTextureRenderComponent</a> (implements com.csse3200.game.rendering.<a href="com/csse3200/game/rendering/CullingRenderable.html" title="interface in com.csse3200.game.rendering">CullingRenderable</a>)</li>
 <li class="circle">com.csse3200.game.rendering.<a href="com/csse3200/game/rendering/EnemyHealthRenderComponent.html" class="type-name-link" title="class in com.csse3200.game.rendering">EnemyHealthRenderComponent</a></li>
 <li class="circle">com.csse3200.game.rendering.item.<a href="com/csse3200/game/rendering/item/GrappleFailedIndicatorRenderComponent.html" class="type-name-link" title="class in com.csse3200.game.rendering.item">GrappleFailedIndicatorRenderComponent</a></li>
 <li class="circle">com.csse3200.game.rendering.item.<a href="com/csse3200/game/rendering/item/GrappleHoldRenderComponent.html" class="type-name-link" title="class in com.csse3200.game.rendering.item">GrappleHoldRenderComponent</a></li>
@@ -262,8 +262,8 @@ loadScripts(document, 'script');</script>
 <li class="circle">com.csse3200.game.rendering.<a href="com/csse3200/game/rendering/ParticleEffectsRenderingComponent.html" class="type-name-link" title="class in com.csse3200.game.rendering">ParticleEffectsRenderingComponent</a></li>
 <li class="circle">com.csse3200.game.rendering.<a href="com/csse3200/game/rendering/ShopDoorRenderComponent.html" class="type-name-link" title="class in com.csse3200.game.rendering">ShopDoorRenderComponent</a></li>
 <li class="circle">com.csse3200.game.areas.terrain.<a href="com/csse3200/game/areas/terrain/TerrainComponent.html" class="type-name-link" title="class in com.csse3200.game.areas.terrain">TerrainComponent</a></li>
-<li class="circle">com.csse3200.game.rendering.<a href="com/csse3200/game/rendering/TextureRenderComponent.html" class="type-name-link" title="class in com.csse3200.game.rendering">TextureRenderComponent</a></li>
-<li class="circle">com.csse3200.game.rendering.<a href="com/csse3200/game/rendering/TiledRenderComponent.html" class="type-name-link" title="class in com.csse3200.game.rendering">TiledRenderComponent</a></li>
+<li class="circle">com.csse3200.game.rendering.<a href="com/csse3200/game/rendering/TextureRenderComponent.html" class="type-name-link" title="class in com.csse3200.game.rendering">TextureRenderComponent</a> (implements com.csse3200.game.rendering.<a href="com/csse3200/game/rendering/CullingRenderable.html" title="interface in com.csse3200.game.rendering">CullingRenderable</a>)</li>
+<li class="circle">com.csse3200.game.rendering.<a href="com/csse3200/game/rendering/TiledRenderComponent.html" class="type-name-link" title="class in com.csse3200.game.rendering">TiledRenderComponent</a> (implements com.csse3200.game.rendering.<a href="com/csse3200/game/rendering/CullingRenderable.html" title="interface in com.csse3200.game.rendering">CullingRenderable</a>)</li>
 <li class="circle">com.csse3200.game.ui.<a href="com/csse3200/game/ui/UIComponent.html" class="type-name-link" title="class in com.csse3200.game.ui">UIComponent</a> (implements com.csse3200.game.rendering.<a href="com/csse3200/game/rendering/Renderable.html" title="interface in com.csse3200.game.rendering">Renderable</a>)
 <ul>
 <li class="circle">com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/ArrowTrajectoryDisplay.html" class="type-name-link" title="class in com.csse3200.game.components.player">ArrowTrajectoryDisplay</a></li>
@@ -435,7 +435,6 @@ loadScripts(document, 'script');</script>
 <li class="circle">com.csse3200.game.areas.terrain.configs.levelconfigs.<a href="com/csse3200/game/areas/terrain/configs/levelconfigs/Level3Config.html" class="type-name-link" title="class in com.csse3200.game.areas.terrain.configs.levelconfigs">Level3Config</a></li>
 </ul>
 </li>
-<li class="circle">com.csse3200.game.entities.factories.<a href="com/csse3200/game/entities/factories/LightFactory.html" class="type-name-link" title="class in com.csse3200.game.entities.factories">LightFactory</a></li>
 <li class="circle">com.csse3200.game.lighting.<a href="com/csse3200/game/lighting/LightingDefaults.html" class="type-name-link" title="class in com.csse3200.game.lighting">LightingDefaults</a></li>
 <li class="circle">com.csse3200.game.lighting.<a href="com/csse3200/game/lighting/LightingEngine.html" class="type-name-link" title="class in com.csse3200.game.lighting">LightingEngine</a> (implements com.badlogic.gdx.utils.Disposable)</li>
 <li class="circle">com.csse3200.game.lighting.<a href="com/csse3200/game/lighting/LightingService.html" class="type-name-link" title="class in com.csse3200.game.lighting">LightingService</a></li>
@@ -547,7 +546,11 @@ loadScripts(document, 'script');</script>
 <li class="circle">com.csse3200.game.ui.terminal.commands.<a href="com/csse3200/game/ui/terminal/commands/Command.html" class="type-name-link" title="interface in com.csse3200.game.ui.terminal.commands">Command</a></li>
 <li class="circle">java.lang.<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Comparable.html" class="type-name-link external-link" title="class or interface in java.lang">Comparable</a>&lt;T&gt;
 <ul>
-<li class="circle">com.csse3200.game.rendering.<a href="com/csse3200/game/rendering/Renderable.html" class="type-name-link" title="interface in com.csse3200.game.rendering">Renderable</a></li>
+<li class="circle">com.csse3200.game.rendering.<a href="com/csse3200/game/rendering/Renderable.html" class="type-name-link" title="interface in com.csse3200.game.rendering">Renderable</a>
+<ul>
+<li class="circle">com.csse3200.game.rendering.<a href="com/csse3200/game/rendering/CullingRenderable.html" class="type-name-link" title="interface in com.csse3200.game.rendering">CullingRenderable</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="circle">com.csse3200.game.events.listeners.<a href="com/csse3200/game/events/listeners/EventListener.html" class="type-name-link" title="interface in com.csse3200.game.events.listeners">EventListener</a>
