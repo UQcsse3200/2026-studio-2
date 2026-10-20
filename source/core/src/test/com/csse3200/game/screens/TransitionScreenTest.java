@@ -3,13 +3,20 @@ package com.csse3200.game.screens;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Matrix4;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.csse3200.game.GdxGame;
 import com.csse3200.game.GdxGame.ScreenType;
+import com.csse3200.game.entities.factories.RenderFactory;
 import com.csse3200.game.extensions.GameExtension;
+import com.csse3200.game.rendering.Renderer;
+import com.csse3200.game.screens.minigames.BlackjackScreen;
+import com.csse3200.game.services.ServiceLocator;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -133,5 +140,47 @@ class TransitionScreenTest {
 
     verify(batch).dispose();
     verify(blackPixel).dispose();
+  }
+
+  @Test
+  void fadingIntoBlackjackInitialisesItBeforeRenderingAndKeepsItsServicesOnHandoff() {
+    GdxGame game = spy(new GdxGame());
+    BlackjackScreen blackjack = new BlackjackScreen(game, true);
+    doReturn(blackjack).when(game).createScreen(ScreenType.STORY_BLACKJACK);
+    Renderer renderer = mock(Renderer.class);
+    SpriteBatch batch = mock(SpriteBatch.class);
+    Stage stage = new Stage(new ScreenViewport(), batch);
+    Texture blackPixel = mock(Texture.class);
+    TransitionScreen transition =
+        createTransitionScreen(game, null, ScreenType.STORY_BLACKJACK, batch, blackPixel);
+    try (var renders = mockStatic(RenderFactory.class)) {
+      renders
+          .when(RenderFactory::createRenderer)
+          .thenAnswer(
+              call -> {
+                ServiceLocator.getRenderService().setStage(stage);
+                return renderer;
+              });
+      game.setScreen(transition);
+
+      transition.render(0.4f);
+      var resources = ServiceLocator.getResourceService();
+      assertNotNull(resources);
+      assertTrue(stage.getActors().size > 0);
+      transition.render(0.4f);
+
+      assertSame(blackjack, game.getScreen());
+      assertSame(resources, ServiceLocator.getResourceService());
+      verify(renderer).render();
+      verify(renderer).resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+      verify(batch).dispose();
+    } finally {
+      if (game.getScreen() == blackjack) {
+        game.dispose();
+      } else {
+        transition.dispose();
+      }
+      stage.dispose();
+    }
   }
 }

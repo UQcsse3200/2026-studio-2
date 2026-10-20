@@ -27,7 +27,7 @@ import org.mockito.ArgumentCaptor;
 @ExtendWith(GameExtension.class)
 class LevelsGameScreenFlowTest {
   @ParameterizedTest
-  @CsvSource({"level2, cutscene2, CYCLOPS_MINIGAME"})
+  @CsvSource({"level2, cutscene2, CYCLOPS_MINIGAME", "level3, cutscene4, STORY_BLACKJACK"})
   void exitPreservesPlayerAndDefersTheStoryUntilAfterTheWorldUpdate(
       String nextLevel, String cutscene, GdxGame.ScreenType destination) {
     Application previousApp = Gdx.app;

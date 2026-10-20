@@ -9,9 +9,12 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.badlogic.gdx.Application;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.csse3200.game.GdxGame;
+import com.csse3200.game.components.inventory.InventoryComponent;
 import com.csse3200.game.components.minigames.blackjack.BlackjackActions;
 import com.csse3200.game.components.minigames.blackjack.BlackjackConfig;
 import com.csse3200.game.components.minigames.blackjack.BlackjackDisplay;
@@ -27,6 +30,7 @@ import java.lang.reflect.Method;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 
 /**
  * Tests the stable parts of {@link BlackjackScreen}: which assets it asks for, the components it
@@ -133,5 +137,62 @@ class BlackjackScreenTest {
 
     verify(resources).unloadAssets(BlackjackConfig.TEXTURES.toArray(String[]::new));
     verify(resources).unloadAssets(BlackjackConfig.SOUNDS.toArray(String[]::new));
+  }
+
+  @Test
+  void storyWinContinuesOnceAfterTheResultIsAcknowledged() {
+    GdxGame game = mock(GdxGame.class);
+    screen = new BlackjackScreen(game, true);
+    RenderService renderService = mock(RenderService.class);
+    when(renderService.getStage()).thenReturn(mock(Stage.class));
+    ServiceLocator.registerRenderService(renderService);
+    Entity ui = screen.createUI();
+    Application previousApp = Gdx.app;
+    Application app = mock(Application.class);
+    Gdx.app = app;
+    try {
+      ui.getEvents().trigger("roundCompleted", false);
+      verify(game, never()).playCutscene("cutscene5", GdxGame.ScreenType.LEVEL_3_GAME);
+      ui.getEvents().trigger("roundCompleted", true);
+      ui.getEvents().trigger("roundCompleted", true);
+
+      ArgumentCaptor<Runnable> next = ArgumentCaptor.forClass(Runnable.class);
+      verify(app).postRunnable(next.capture());
+      verify(game, never()).playCutscene("cutscene5", GdxGame.ScreenType.LEVEL_3_GAME);
+      next.getValue().run();
+      verify(game).playCutscene("cutscene5", GdxGame.ScreenType.LEVEL_3_GAME);
+    } finally {
+      Gdx.app = previousApp;
+    }
+  }
+
+  @Test
+  void storyLossWithNoGoldAllowsAnotherAttempt() {
+    GdxGame game = mock(GdxGame.class);
+    screen = new BlackjackScreen(game, true);
+    RenderService renderService = mock(RenderService.class);
+    when(renderService.getStage()).thenReturn(mock(Stage.class));
+    ServiceLocator.registerRenderService(renderService);
+    Entity ui = screen.createUI();
+    InventoryComponent inventory = ui.getComponent(InventoryComponent.class);
+    inventory.setGold(0);
+
+    ui.getEvents().trigger("roundCompleted", false);
+
+    org.junit.jupiter.api.Assertions.assertEquals(100, inventory.getGold());
+    verify(game, never()).playCutscene("cutscene5", GdxGame.ScreenType.LEVEL_3_GAME);
+  }
+
+  @Test
+  void ordinaryBlackjackWinDoesNotAdvanceTheStory() {
+    GdxGame game = mock(GdxGame.class);
+    screen = new BlackjackScreen(game);
+    RenderService renderService = mock(RenderService.class);
+    when(renderService.getStage()).thenReturn(mock(Stage.class));
+    ServiceLocator.registerRenderService(renderService);
+
+    screen.createUI().getEvents().trigger("roundCompleted", true);
+
+    verify(game, never()).playCutscene("cutscene5", GdxGame.ScreenType.LEVEL_3_GAME);
   }
 }

@@ -359,7 +359,8 @@ public class BlackjackDisplay extends UIComponent {
 
     ImageButton nextRoundButton =
         createImageButton(
-            "images/Buttons/newRound_up_btn.png", "images/Buttons/newRound_down_btn.png");
+            "images/Buttons/continue_up_btn.png", "images/Buttons/continue_down_btn.png");
+    nextRoundButton.setName("resultContinue");
 
     nextRoundButton.addListener(
         new ChangeListener() {
@@ -368,6 +369,7 @@ public class BlackjackDisplay extends UIComponent {
             ButtonSound.playClick();
 
             if (!blackjack.isRoundInProgress()) {
+              entity.getEvents().trigger("roundCompleted", blackjack.isPlayerWinner());
               resultOverlay.setVisible(false);
               resultOverlay.setTouchable(com.badlogic.gdx.scenes.scene2d.Touchable.disabled);
               betField.setText("");

@@ -398,6 +398,8 @@ public class GdxGame extends Game {
         return new SpinTheWheelScreen(this);
       case MINIGAME_BLACKJACK:
         return new BlackjackScreen(this);
+      case STORY_BLACKJACK:
+        return new BlackjackScreen(this, true);
       default:
         return null;
     }
@@ -416,6 +418,7 @@ public class GdxGame extends Game {
     SETTINGS_FROM_PAUSE,
     MINIGAME_SELECT,
     MINIGAME_BLACKJACK,
+    STORY_BLACKJACK,
     CYCLOPS_MINIGAME,
     MINIGAME_SPIN_THE_WHEEL
   }

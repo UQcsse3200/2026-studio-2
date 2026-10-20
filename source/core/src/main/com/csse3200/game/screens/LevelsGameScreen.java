@@ -206,6 +206,10 @@ public class LevelsGameScreen extends BaseGameScreen {
         cutscene = "cutscene2";
         minigame = GdxGame.ScreenType.CYCLOPS_MINIGAME;
         break;
+      case LEVEL3:
+        cutscene = "cutscene4";
+        minigame = GdxGame.ScreenType.STORY_BLACKJACK;
+        break;
       default:
         queueAreaSwap(nextLevel);
         return;

@@ -10,12 +10,15 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener.ChangeEvent;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.csse3200.game.components.inventory.InventoryComponent;
 import com.csse3200.game.entities.Entity;
@@ -28,6 +31,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 @ExtendWith(GameExtension.class)
 class BlackjackDisplayTest {
@@ -44,6 +49,7 @@ class BlackjackDisplayTest {
     ResourceService resources = mock(ResourceService.class);
     Texture texture = mock(Texture.class);
     when(resources.getAsset(anyString(), eq(Texture.class))).thenReturn(texture);
+    when(resources.getAsset(anyString(), eq(Sound.class))).thenReturn(mock(Sound.class));
     ServiceLocator.registerResourceService(resources);
   }
 
@@ -229,6 +235,29 @@ class BlackjackDisplayTest {
 
     assertEquals(10, blackjack.getBet());
     assertTrue(blackjack.isRoundInProgress() || blackjack.isRoundOver());
+  }
+
+  @ParameterizedTest
+  @ValueSource(booleans = {true, false})
+  void acknowledgesTheRoundResultBeforeNotifyingTheScreen(boolean won) {
+    Blackjack blackjack = mock(Blackjack.class);
+    when(blackjack.getPlayerHand()).thenReturn(java.util.List.of());
+    when(blackjack.getDealerHand()).thenReturn(java.util.List.of());
+    when(blackjack.isRoundOver()).thenReturn(true);
+    when(blackjack.isPlayerWinner()).thenReturn(won);
+    when(blackjack.getResultMessage()).thenReturn(won ? "You win." : "Dealer wins.");
+    BlackjackDisplay display = new BlackjackDisplay(blackjack, new InventoryComponent(100));
+    Entity ui = show(display);
+    java.util.List<Boolean> results = new java.util.ArrayList<>();
+    ui.getEvents().addListener("roundCompleted", (Boolean result) -> results.add(result));
+    assertTrue(results.isEmpty());
+
+    Table overlay = field(display, "resultOverlay", Table.class);
+    ImageButton next = overlay.findActor("resultContinue");
+    next.fire(new ChangeEvent());
+
+    assertEquals(java.util.List.of(won), results);
+    assertFalse(overlay.isVisible());
   }
 
   private static void invokeTryStartRound(BlackjackDisplay display) {
