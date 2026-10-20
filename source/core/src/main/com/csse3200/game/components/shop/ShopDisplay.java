@@ -280,7 +280,8 @@ public class ShopDisplay extends UIComponent {
     plaque.overFontColor = Color.WHITE;
     plaque.downFontColor = Color.WHITE;
     button.setStyle(plaque);
-    button.getLabel().setFontScale(0.8f * uiScale);
+    // A bit bigger than the gold text, so it fills the tall plaque.
+    button.getLabel().setFontScale(1.4f * uiScale);
   }
 
   /** Shows the shop page and pauses the game so the player can use the UI. */
