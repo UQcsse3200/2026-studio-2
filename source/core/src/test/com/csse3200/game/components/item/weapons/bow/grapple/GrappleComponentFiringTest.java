@@ -134,7 +134,7 @@ class GrappleComponentFiringTest {
       grapple.fire(Vector2.X.cpy());
     }
 
-    verify(sound).play(0.4f);
+    verify(sound).play(0.25f);
   }
 
   @Test

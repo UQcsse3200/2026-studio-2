@@ -14,6 +14,7 @@ import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -117,6 +118,29 @@ class Level1GameAreaTest extends AbstractAreaAssetsTest {
     invokePrivate("unloadAssets");
 
     verify(resourceService, atLeastOnce()).unloadAssets(any(String[].class));
+  }
+
+  @Test
+  void loadAssetsLoadsLevel1Ambience() throws Exception {
+    when(resourceService.loadForMillis(anyInt())).thenReturn(true);
+
+    invokePrivate("loadAssets");
+
+    verify(resourceService)
+        .loadMusic(
+            argThat(
+                (String[] music) -> Arrays.asList(music).contains(Level1GameArea.AMBIENCE_MUSIC)));
+  }
+
+  @Test
+  void unloadAssetsUnloadsLevel1Ambience() throws Exception {
+    invokePrivate("unloadAssets");
+
+    verify(resourceService)
+        .unloadAssets(
+            argThat(
+                (String[] assets) ->
+                    Arrays.asList(assets).contains(Level1GameArea.AMBIENCE_MUSIC)));
   }
 
   @Override

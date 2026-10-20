@@ -157,7 +157,7 @@ class PlayerCombatIntegrationTest {
     verify(primaryAttack).handle(new Vector2(3f, 4f));
     verify(itemUsed).handle(ItemType.STANDARD_ARROW);
     verify(animation).handle(new Vector2(0.6f, 0.8f));
-    verify(sound).play(1f);
+    verify(sound).play(0.5f);
     verifyNoInteractions(itemFailed);
   }
 
@@ -215,7 +215,7 @@ class PlayerCombatIntegrationTest {
     verify(itemUsed).handle(ItemType.STANDARD_ARROW);
     verify(itemFailed).handle(ItemType.STANDARD_ARROW);
     verify(animation).handle(any());
-    verify(sound).play(1f);
+    verify(sound).play(0.5f);
   }
 
   @Test

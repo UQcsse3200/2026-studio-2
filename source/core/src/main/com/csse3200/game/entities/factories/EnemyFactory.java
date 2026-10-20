@@ -55,6 +55,11 @@ public class EnemyFactory {
   private static final EnemyConfigs configs =
       FileLoader.readClass(EnemyConfigs.class, "configs/Enemies.json");
 
+  static final String SKELETON_DEATH_SOUND = "sounds/skeleton_death.ogg";
+  static final String VULTURE_DEATH_SOUND = "sounds/vulture_death.ogg";
+  static final String NECROMANCER_DEATH_SOUND = "sounds/necromancer_death.ogg";
+  static final String CALYPSO_DEATH_SOUND = "sounds/calypso_death.ogg";
+
   private static final float CALYPSO_SWEEP_DURATION = 0.8f;
   private static final float CALYPSO_IDLE_FRAME_TIME = 0.15f;
   private static final float CALYPSO_WALK_FRAME_TIME = 0.15f;
@@ -75,7 +80,7 @@ public class EnemyFactory {
    */
   public static Entity createSkeletonWarrior(Entity target) {
     EnemyConfig config = configs.skeletonWarrior;
-    Entity skeletonWarrior = createEnemy(target, config);
+    Entity skeletonWarrior = createEnemy(target, config, SKELETON_DEATH_SOUND);
 
     AnimationRenderComponent animator =
         new AnimationRenderComponent(
@@ -86,7 +91,7 @@ public class EnemyFactory {
 
     skeletonWarrior.addComponent(new EnemyAnimationController(target));
     skeletonWarrior.addComponent(animator);
-    skeletonWarrior.addComponent(new ChaseSoundComponent("sounds/evil cyber laugh.wav", 0.15f));
+    skeletonWarrior.addComponent(new ChaseSoundComponent("sounds/skeleton_rattle.ogg", 0.8f));
 
     // Skeleton Warrior has a charged attack (extra range melee with initial delay)
     skeletonWarrior
@@ -105,7 +110,7 @@ public class EnemyFactory {
    */
   public static Entity createSkeletonArcher(Entity target) {
     EnemyConfig config = configs.skeletonArcher;
-    Entity skeletonArcher = createEnemy(target, config);
+    Entity skeletonArcher = createEnemy(target, config, SKELETON_DEATH_SOUND);
 
     AnimationRenderComponent animator =
         new AnimationRenderComponent(
@@ -118,7 +123,7 @@ public class EnemyFactory {
         // .addComponent(new CombatStatsComponent(config.health, config.baseAttack))
         .addComponent(animator)
         .addComponent(new EnemyAnimationController(target))
-        .addComponent(new ChaseSoundComponent("sounds/evil cyber laugh.wav", 0.15f));
+        .addComponent(new ChaseSoundComponent("sounds/skeleton_rattle.ogg", 0.8f));
 
     skeletonArcher.getComponent(AnimationRenderComponent.class).scaleEntity();
 
@@ -132,7 +137,7 @@ public class EnemyFactory {
    * @return passive skeleton warrior entity
    */
   public static Entity createPassiveSkeletonWarrior() {
-    Entity skeletonWarrior = createPassiveEnemy(configs.skeletonWarrior);
+    Entity skeletonWarrior = createPassiveEnemy(configs.skeletonWarrior, SKELETON_DEATH_SOUND);
     skeletonWarrior.addComponent(new TextureRenderComponent("images/enemies/skeleton_warrior.png"));
     skeletonWarrior.getComponent(TextureRenderComponent.class).scaleEntity();
     PhysicsUtils.setScaledCollider(skeletonWarrior, 1.2f, 0.7f);
@@ -146,7 +151,7 @@ public class EnemyFactory {
    * @return passive skeleton archer entity
    */
   public static Entity createPassiveSkeletonArcher() {
-    Entity skeletonArcher = createPassiveEnemy(configs.skeletonArcher);
+    Entity skeletonArcher = createPassiveEnemy(configs.skeletonArcher, SKELETON_DEATH_SOUND);
     skeletonArcher.addComponent(new TextureRenderComponent("images/enemies/skeleton_archer.png"));
     skeletonArcher.getComponent(TextureRenderComponent.class).scaleEntity();
     PhysicsUtils.setScaledCollider(skeletonArcher, 1.2f, 0.7f);
@@ -161,7 +166,7 @@ public class EnemyFactory {
    */
   public static Entity createVulture(Entity target) {
     EnemyConfig config = configs.vulture;
-    Entity vulture = createEnemy(target, config);
+    Entity vulture = createEnemy(target, config, VULTURE_DEATH_SOUND);
 
     AnimationRenderComponent animator =
         new AnimationRenderComponent(
@@ -174,7 +179,7 @@ public class EnemyFactory {
         // .addComponent(new CombatStatsComponent(config.health, config.baseAttack))
         .addComponent(animator)
         .addComponent(new EnemyAnimationController(target))
-        .addComponent(new ChaseSoundComponent("sounds/osprey.ogg", 0.15f));
+        .addComponent(new ChaseSoundComponent("sounds/osprey.ogg", 0.25f));
 
     vulture.getComponent(AnimationRenderComponent.class).scaleEntity();
 
@@ -189,7 +194,7 @@ public class EnemyFactory {
    */
   public static Entity createNecromancer(Entity target) {
     EnemyConfig config = configs.necromancer;
-    Entity necromancer = createEnemy(target, config);
+    Entity necromancer = createEnemy(target, config, NECROMANCER_DEATH_SOUND);
 
     AnimationRenderComponent animator =
         new AnimationRenderComponent(
@@ -216,7 +221,7 @@ public class EnemyFactory {
    */
   public static Entity createCalypso(Entity target, List<Vector2> tpPositions) {
     EnemyConfig config = configs.calypso;
-    Entity calypso = createEnemy(target, config);
+    Entity calypso = createEnemy(target, config, CALYPSO_DEATH_SOUND);
 
     TextureAtlas atlas =
         ServiceLocator.getResourceService()
@@ -277,11 +282,19 @@ public class EnemyFactory {
    * @return base enemy entity, without a render component
    */
   public static Entity createEnemy(Entity target, EnemyConfig config) {
-    return createEnemy(target, config, config.viewDistance, config.maxChaseDistance);
+    return createEnemy(target, config, EnemyDeathComponent.DEFAULT_DEATH_SOUND);
+  }
+
+  private static Entity createEnemy(Entity target, EnemyConfig config, String deathSound) {
+    return createEnemy(target, config, config.viewDistance, config.maxChaseDistance, deathSound);
   }
 
   private static Entity createEnemy(
-      Entity target, EnemyConfig config, float viewDistance, float maxChaseDistance) {
+      Entity target,
+      EnemyConfig config,
+      float viewDistance,
+      float maxChaseDistance,
+      String deathSound) {
 
     AITaskComponent aiComponent = new AITaskComponent();
 
@@ -295,7 +308,7 @@ public class EnemyFactory {
             .addComponent(new HitboxComponent().setLayer(PhysicsLayer.NPC))
             .addComponent(new CombatStatsComponent(config.health, config.baseAttack))
             .addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER, 10f))
-            .addComponent(new EnemyDeathComponent())
+            .addComponent(new EnemyDeathComponent(deathSound))
             .addComponent(new PoisonStatsComponent())
             .addComponent(new BurnStatsComponent())
             .addComponent(new SlowStatsComponent())
@@ -377,13 +390,13 @@ public class EnemyFactory {
     return enemy;
   }
 
-  private static Entity createPassiveEnemy(EnemyConfig config) {
+  private static Entity createPassiveEnemy(EnemyConfig config, String deathSound) {
     return new Entity()
         .addComponent(new PhysicsComponent().setBodyType(BodyType.StaticBody))
         .addComponent(new ColliderComponent().setLayer(PhysicsLayer.CHARACTER))
         .addComponent(new HitboxComponent().setLayer(PhysicsLayer.NPC))
         .addComponent(new CombatStatsComponent(config.health, config.baseAttack))
-        .addComponent(new EnemyDeathComponent())
+        .addComponent(new EnemyDeathComponent(deathSound))
         .addComponent(new PoisonStatsComponent())
         .addComponent(new BurnStatsComponent())
         .addComponent(new SlowStatsComponent())

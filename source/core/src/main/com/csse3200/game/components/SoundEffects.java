@@ -16,7 +16,7 @@ public class SoundEffects {
           "sounds/Drink_02.wav",
           "sounds/Bottle Break.wav",
           "sounds/rock_break.ogg",
-          "sounds/evil cyber laugh.wav",
+          "sounds/skeleton_rattle.ogg",
           "sounds/shoot.ogg",
           "sounds/osprey.ogg",
           "sounds/hurt_player_1.wav",
@@ -24,9 +24,18 @@ public class SoundEffects {
           "sounds/hurt_player_3.wav",
           "sounds/hurt_player_4.wav",
           "sounds/enemy_Death.wav",
-          "sounds/rope_swing.wav",
+          "sounds/skeleton_death.ogg",
+          "sounds/vulture_death.ogg",
+          "sounds/necromancer_death.ogg",
+          "sounds/grapple_creak_1.ogg",
+          "sounds/grapple_creak_2.ogg",
+          "sounds/grapple_attach.ogg",
+          "sounds/grapple_fail.ogg",
           "sounds/itemSwitch.wav",
-          "sounds/level_complete.wav");
+          "sounds/level_complete.wav",
+          "sounds/shop_door_creak.ogg",
+          "sounds/shop_bell.ogg",
+          "sounds/shop_kaching.ogg");
 
   private SoundEffects() {}
 

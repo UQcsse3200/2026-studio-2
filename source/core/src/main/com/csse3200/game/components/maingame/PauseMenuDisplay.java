@@ -10,8 +10,10 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.csse3200.game.GdxGame;
+import com.csse3200.game.areas.Level1GameArea;
 import com.csse3200.game.components.ButtonSound;
 import com.csse3200.game.components.GameVolume;
+import com.csse3200.game.components.level.SeagullSoundComponent;
 import com.csse3200.game.components.settingsmenu.SettingsMenuDisplayInGame;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.services.ServiceLocator;
@@ -48,6 +50,13 @@ public class PauseMenuDisplay extends UIComponent {
       Music gameplay =
           ServiceLocator.getResourceService().getAsset("sounds/gameplay_bg.ogg", Music.class);
       gameplay.pause();
+      if (ServiceLocator.getResourceService()
+          .containsAsset(Level1GameArea.AMBIENCE_MUSIC, Music.class)) {
+        ServiceLocator.getResourceService()
+            .getAsset(Level1GameArea.AMBIENCE_MUSIC, Music.class)
+            .pause();
+      }
+      SeagullSoundComponent.stopAll();
       Music mainMenu =
           ServiceLocator.getResourceService().getAsset("sounds/Main_menu_sound.mp3", Music.class);
       mainMenu.setLooping(true);

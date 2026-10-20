@@ -60,7 +60,7 @@ public class ButtonSound {
       if (sound == null) {
         return;
       }
-      sound.play(GameVolume.scale(1.0f));
+      sound.play(GameVolume.scale(0.7f));
       logger.debug("ButtonSound played: {}", path);
     } catch (GdxRuntimeException e) {
       logger.warn("ButtonSound failed: {}", path, e);

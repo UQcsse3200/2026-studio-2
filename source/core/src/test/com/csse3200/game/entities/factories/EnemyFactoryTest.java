@@ -368,6 +368,30 @@ class EnemyFactoryTest {
     assertTrue(warrior.getComponent(CombatStatsComponent.class).getHealth() > 0);
   }
 
+  @Test
+  void shouldGiveEachEnemyItsOwnDeathSound() {
+    assertEquals(
+        EnemyFactory.SKELETON_DEATH_SOUND,
+        deathSoundOf(built(() -> EnemyFactory.createSkeletonWarrior(new Entity()))));
+    assertEquals(
+        EnemyFactory.SKELETON_DEATH_SOUND,
+        deathSoundOf(built(() -> EnemyFactory.createSkeletonArcher(new Entity()))));
+    assertEquals(
+        EnemyFactory.SKELETON_DEATH_SOUND,
+        deathSoundOf(built(EnemyFactory::createPassiveSkeletonWarrior)));
+    assertEquals(
+        EnemyFactory.VULTURE_DEATH_SOUND,
+        deathSoundOf(built(() -> EnemyFactory.createVulture(new Entity()))));
+    assertEquals(
+        EnemyFactory.NECROMANCER_DEATH_SOUND,
+        deathSoundOf(built(() -> EnemyFactory.createNecromancer(new Entity()))));
+    assertEquals(EnemyFactory.CALYPSO_DEATH_SOUND, deathSoundOf(calypso(new Entity())));
+  }
+
+  private static String deathSoundOf(Entity enemy) {
+    return enemy.getComponent(EnemyDeathComponent.class).getDeathSound();
+  }
+
   // --- Calypso, the boss ---
 
   private static Entity calypso(Entity target) {

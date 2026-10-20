@@ -463,7 +463,6 @@ public class ShopDisplay extends UIComponent {
         new ChangeListener() {
           @Override
           public void changed(ChangeEvent changeEvent, Actor actor) {
-            ButtonSound.playClick();
             if (shop != null) {
               shop.buy(listing);
             }
