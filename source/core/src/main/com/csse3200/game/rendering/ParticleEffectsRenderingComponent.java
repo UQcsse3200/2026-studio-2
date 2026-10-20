@@ -66,7 +66,6 @@ public class ParticleEffectsRenderingComponent extends RenderComponent {
     boolean poisoned = poisonStats != null && poisonStats.isPoisoned();
     if (!burning && !slowed && !poisoned) {
       if (pointLightComponent != null) {
-        // pointLightComponent.setColor(Color.CLEAR);
         pointLightComponent.setActive(false);
       }
       return;

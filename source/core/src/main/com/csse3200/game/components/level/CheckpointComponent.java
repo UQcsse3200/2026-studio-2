@@ -2,6 +2,7 @@ package com.csse3200.game.components.level;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.GridPoint2;
+import com.badlogic.gdx.utils.Logger;
 import com.csse3200.game.components.Component;
 import com.csse3200.game.components.lighting.PointLightComponent;
 import com.csse3200.game.components.player.PlayerActions;
@@ -49,6 +50,8 @@ public class CheckpointComponent extends Component {
     try {
       pointLightComponent = entity.getComponent(PointLightComponent.class);
     } catch (Exception e) {
+      Logger logger = new Logger("Lighting Engine");
+      logger.error("pointLightComponent is null");
       pointLightComponent = null;
     }
     // The checkpoint entity draws itself; null when the level has no checkpoint atlas.

@@ -5,12 +5,9 @@ import com.badlogic.gdx.utils.Align;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /** Defines the configs to be loaded by TextBoxFactory */
 public class TextConfig {
-  private static final Logger logger = LoggerFactory.getLogger(TextConfig.class);
   // All values are default
 
   // Scene2D positions use floating-point coordinates, including subpixel placement.
