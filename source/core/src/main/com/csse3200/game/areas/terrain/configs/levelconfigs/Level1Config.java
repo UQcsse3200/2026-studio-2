@@ -118,6 +118,10 @@ public class Level1Config extends LevelConfig {
           new CheckpointConfig(new GridPoint2(81, 17)),
         };
 
+    // The first two checkpoints teach combat basics: melee at CP1, dashing at CP2.
+    checkpointTutorials.put(new GridPoint2(16, 5), "tut5");
+    checkpointTutorials.put(new GridPoint2(19, 17), "tut6");
+
     wheelSpinSpawns = new GridPoint2[] {new GridPoint2(32, 3)};
   }
 
