@@ -13,13 +13,17 @@ import com.badlogic.gdx.utils.Array;
 import com.csse3200.game.areas.terrain.TerrainComponent;
 import com.csse3200.game.areas.terrain.TerrainFactory;
 import com.csse3200.game.areas.terrain.configs.LevelConfig;
+import com.csse3200.game.components.BossPhaseComponent;
 import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.components.level.CheckpointComponent;
 import com.csse3200.game.components.level.RespawnComponent;
 import com.csse3200.game.components.level.RisingWaterComponent;
+import com.csse3200.game.components.level.SpawnerComponent;
 import com.csse3200.game.components.player.PlayerActions;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
+import com.csse3200.game.events.listeners.EventListener0;
+import com.csse3200.game.events.listeners.EventListener1;
 import com.csse3200.game.physics.BodyUserData;
 import com.csse3200.game.physics.PhysicsService;
 import com.csse3200.game.rendering.AnimationRenderComponent;
@@ -32,7 +36,11 @@ import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Supplier;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -48,6 +56,7 @@ class Level3GameAreaTest extends AbstractAreaAssetsTest {
   private TerrainComponent terrain;
 
   private Level3GameArea area;
+  private final AtomicBoolean spawned = new AtomicBoolean();
 
   @BeforeEach
   void setUp() {
@@ -404,5 +413,83 @@ class Level3GameAreaTest extends AbstractAreaAssetsTest {
     area.config = config;
 
     assertTrue(area.requiresWorldResetOnDeath());
+  }
+
+  @Test
+  void bossSpawnIsReportedOnTheAreasDispatcherOnlyForCalypso() throws Exception {
+    Entity spawner = spawnerEntity();
+    Entity calypso = new Entity().addComponent(new BossPhaseComponent());
+
+    area.getEvents()
+        .addListener(Level3GameArea.BOSS_SPAWNED, (EventListener0) () -> spawned.set(true));
+    spawner.getEvents().trigger("spawnEntity", new Entity());
+    assertFalse(spawned.get(), "another enemy spawning must not report the boss");
+
+    spawner.getEvents().trigger("spawnEntity", calypso);
+    assertTrue(spawned.get());
+  }
+
+  @Test
+  void calypsoPhaseEventsAreForwardedToTheAreasDispatcher() throws Exception {
+    Entity spawner = spawnerEntity();
+    Entity calypso = new Entity().addComponent(new BossPhaseComponent());
+
+    List<Integer> phases = new ArrayList<>();
+    AtomicInteger changing = new AtomicInteger();
+    area.getEvents()
+        .addListener(
+            Level3GameArea.BOSS_PHASE_CHANGING, (EventListener0) changing::incrementAndGet);
+    area.getEvents()
+        .addListener(Level3GameArea.BOSS_PHASE_CHANGED, (EventListener1<Integer>) phases::add);
+
+    spawner.getEvents().trigger("spawnEntity", calypso);
+    calypso.getEvents().trigger(Level3GameArea.BOSS_PHASE_CHANGING);
+    calypso.getEvents().trigger(Level3GameArea.BOSS_PHASE_CHANGED, 2);
+
+    assertEquals(1, changing.get());
+    assertEquals(List.of(2), phases);
+  }
+
+  @Test
+  void bossCompletionIsReportedOnTheAreasDispatcher() throws Exception {
+    Entity spawner = spawnerEntity();
+
+    AtomicInteger defeated = new AtomicInteger();
+    area.getEvents()
+        .addListener(Level3GameArea.BOSS_DEFEATED, (EventListener0) defeated::incrementAndGet);
+
+    spawner.getEvents().trigger("activateByKey", Level3GameArea.BOSS_DEFEATED_TRIGGER_ID);
+    spawner.getEvents().trigger("activateByKey", "someOtherId");
+
+    assertEquals(1, defeated.get());
+  }
+
+  /** A bare spawner entity in the sixth slot, where the level config puts the boss's spawner. */
+  private Entity spawnerEntity() throws Exception {
+    Entity spawner = bareSpawner();
+    when(entityService.getEntities()).thenReturn(spawnersAround(spawner));
+    invokePrivate("listenForBossSpawn");
+    return spawner;
+  }
+
+  private static Entity bareSpawner() {
+    return new Entity()
+        .addComponent(
+            new SpawnerComponent(
+                List.<Supplier<Entity>>of(),
+                1f,
+                1,
+                false,
+                SpawnerComponent.ACTIVATION_MODE.NORMAL));
+  }
+
+  /** Five arena spawners, then the boss's, matching the order the level config declares them. */
+  private static Array<Entity> spawnersAround(Entity bossSpawner) {
+    Array<Entity> spawners = new Array<>();
+    for (int i = 0; i < 5; i++) {
+      spawners.add(bareSpawner());
+    }
+    spawners.add(bossSpawner);
+    return spawners;
   }
 }

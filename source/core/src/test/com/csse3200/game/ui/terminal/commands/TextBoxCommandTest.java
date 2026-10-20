@@ -46,7 +46,8 @@ class TextBoxCommandTest {
         "images/portraits/calyspoWorried.jpeg",
         TextBoxCommand.resolvePortraitPath("calyspoWorried"));
     assertNull(TextBoxCommand.resolvePortraitPath("calypsoWorried"));
-    assertNull(TextBoxCommand.resolvePortraitPath("calypsoHappy"));
+    // No shipped portrait uses this name, so it must resolve to nothing.
+    assertNull(TextBoxCommand.resolvePortraitPath("definitelyNotAPortrait"));
   }
 
   @Test

@@ -17,6 +17,7 @@ import com.csse3200.game.components.player.KeyboardPlayerInputComponent;
 import com.csse3200.game.components.player.PlayerStatsDisplay;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.ItemFactory;
+import com.csse3200.game.events.EventHandler;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.rendering.BackgroundRenderComponent;
 import com.csse3200.game.services.ResourceService;
@@ -53,6 +54,9 @@ public abstract class GameArea implements Disposable {
   // Notified (with the checkpoint's position) whenever one of this area's checkpoints activates;
   // used by the game screen to start checkpoint-linked tutorials. Null when nothing listens.
   private Consumer<GridPoint2> checkpointListener;
+  // The area's own event dispatcher, for lifecycle events the game screen reacts to (e.g. the boss
+  // spawning and changing phase). Separate from every entity's dispatcher.
+  protected final EventHandler events = new EventHandler();
   protected boolean mapToggled = false;
   protected float viewportWidth;
   protected float viewportHeight;
@@ -313,6 +317,14 @@ public abstract class GameArea implements Disposable {
   /** The level config this area was created from, e.g. for its checkpoint-linked tutorials. */
   public LevelConfig getConfig() {
     return config;
+  }
+
+  /**
+   * This area's event dispatcher, for the lifecycle events the game screen reacts to, such as the
+   * boss spawning and changing phase. Entity-level events are unaffected; this is the area's own.
+   */
+  public EventHandler getEvents() {
+    return events;
   }
 
   /**

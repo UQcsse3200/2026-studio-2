@@ -35,6 +35,8 @@ import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.ItemFactory;
 import com.csse3200.game.entities.factories.TutorialFactory;
 import com.csse3200.game.events.EventHandler;
+import com.csse3200.game.events.listeners.EventListener0;
+import com.csse3200.game.events.listeners.EventListener1;
 import com.csse3200.game.input.InputComponent;
 import com.csse3200.game.input.InputDecorator;
 import com.csse3200.game.physics.components.PhysicsComponent;
@@ -104,6 +106,8 @@ public class LevelsGameScreen extends BaseGameScreen {
   private static final String MOVEMENT_TUTORIAL = "tut1";
   // The level 1 offer (tut0) where Calypso asks whether the player wants tutorial prompts at all.
   private static final String TUTORIAL_CHOICE = "tut0";
+  // Calypso's mid-fight tip, shown once as she changes phase at the end of the level 3 climb.
+  private static final String BOSS_PHASE_TUTORIAL = "tut15";
 
   private float movementTutorialDelay = MOVEMENT_TUTORIAL_DELAY;
   // Whether the movement tutorial has run, or is not wanted for this save.
@@ -112,6 +116,8 @@ public class LevelsGameScreen extends BaseGameScreen {
   private TutorialComponent activeTutorial;
   // Checkpoint-linked tutorials already shown this session, so each plays at most once.
   private final Set<String> shownCheckpointTutorials = new HashSet<>();
+  // Whether Calypso's phase-change prompt has been shown this session.
+  private boolean bossPhasePromptShown = false;
   // Region-linked tutorials already shown this session (e.g. tut2 on level 2's arena ledge).
   private final Set<String> shownRegionTutorials = new HashSet<>();
 
@@ -474,6 +480,42 @@ public class LevelsGameScreen extends BaseGameScreen {
    */
   private void wireCheckpointTutorials(GameArea area) {
     area.setCheckpointListener(this::onCheckpointReached);
+    // A level 3 arena spawns Calypso: listening to the area's dispatcher, rather than only to her
+    // own events, survives the level rebuild a death before CP2 performs. Areas that own no
+    // dispatcher (only test doubles) simply report no boss.
+    if (area.getEvents() != null) {
+      area.getEvents()
+          .addListener(Level3GameArea.BOSS_SPAWNED, (EventListener0) this::onBossSpawned);
+    }
+  }
+
+  /**
+   * Starts listening for Calypso's phase changes as she enters the fight, so the phase prompt
+   * exists only while she does.
+   */
+  private void onBossSpawned() {
+    GameArea area = currentGameArea;
+    if (area == null || area.getEvents() == null) {
+      return;
+    }
+    area.getEvents()
+        .addListener(Level3GameArea.BOSS_PHASE_CHANGING, (EventListener0) this::onBossPhaseChange);
+    area.getEvents()
+        .addListener(
+            Level3GameArea.BOSS_PHASE_CHANGED, (EventListener1<Integer>) p -> onBossPhaseChange());
+  }
+
+  /**
+   * Prompts when Calypso changes phase. Her two events bracket the same transition — she begins
+   * changing, then emerges in phase 2 a few seconds later — so the first one seen starts the prompt
+   * and the rest of that fight's events are ignored.
+   */
+  private void onBossPhaseChange() {
+    if (bossPhasePromptShown) {
+      return;
+    }
+    bossPhasePromptShown = true;
+    startNamedTutorial(BOSS_PHASE_TUTORIAL, null);
   }
 
   /** Starts the tutorial wired to the checkpoint at the given position, once per session. */

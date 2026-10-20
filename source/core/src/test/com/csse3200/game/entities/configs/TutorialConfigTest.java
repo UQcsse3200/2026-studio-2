@@ -14,7 +14,11 @@ import org.junit.jupiter.params.provider.ValueSource;
 class TutorialConfigTest {
 
   @ParameterizedTest
-  @ValueSource(strings = {"tut0", "tut1", "tut2", "tut3", "tut5", "tut6", "tut7", "tut8", "tut9"})
+  @ValueSource(
+      strings = {
+        "tut0", "tut1", "tut2", "tut3", "tut5", "tut6", "tut7", "tut8", "tut9", "tut10", "tut11",
+        "tut12", "tut13", "tut14", "tut15"
+      })
   void shippedTutorialConfigsAreValid(String name) {
     TutorialConfig config = FileLoader.readClass(TutorialConfig.class, "configs/" + name + ".json");
     assertNotNull(config, name + " should load");
@@ -34,6 +38,15 @@ class TutorialConfigTest {
 
     assertNotNull(config, name + " should load");
     assertEquals(7f, config.autoDismissSeconds);
+  }
+
+  @ParameterizedTest
+  @ValueSource(strings = {"tut10", "tut11", "tut12", "tut13", "tut14", "tut15"})
+  void shortTipsDismissThemselvesAfterFiveSeconds(String name) {
+    TutorialConfig config = FileLoader.readClass(TutorialConfig.class, "configs/" + name + ".json");
+
+    assertNotNull(config, name + " should load");
+    assertEquals(5f, config.autoDismissSeconds);
   }
 
   @Test

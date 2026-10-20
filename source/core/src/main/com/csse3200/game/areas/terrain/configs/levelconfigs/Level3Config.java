@@ -490,6 +490,15 @@ public class Level3Config extends LevelConfig {
           new CheckpointConfig(new GridPoint2(13, 98)),
         };
 
+    // One short Calypso-voiced tip per checkpoint, up the whole climb: the beach start, the
+    // slippery floor, the ledge above the second enemy arena, the high climb, and the floor below
+    // the boss arena where Calypso waits. All are timed prompts that dismiss themselves.
+    checkpointTutorials.put(new GridPoint2(10, 6), "tut10");
+    checkpointTutorials.put(new GridPoint2(16, 37), "tut11");
+    checkpointTutorials.put(new GridPoint2(16, 68), "tut12");
+    checkpointTutorials.put(new GridPoint2(13, 85), "tut13");
+    checkpointTutorials.put(new GridPoint2(13, 98), "tut14");
+
     items =
         new HashMap<>(
             Map.of(
