@@ -351,6 +351,17 @@ public abstract class GameArea implements Disposable {
     }
   }
 
+  /**
+   * Whether the checkpoint at the given position has been activated in this area.
+   *
+   * @param position checkpoint position to look for
+   * @return true when a checkpoint exists at that position and has been collected
+   */
+  public boolean isCheckpointActive(GridPoint2 position) {
+    return config.getCheckpoints().stream()
+        .anyMatch(checkpoint -> checkpoint.isActive() && checkpoint.getPosition().equals(position));
+  }
+
   /** Layer repeat behaviour for background layers */
   public enum RepeatMode {
     NONE,
@@ -367,10 +378,28 @@ public abstract class GameArea implements Disposable {
   }
 
   /**
+   * Level-specific hazard reset run before the player is moved back to a checkpoint on a death
+   * restart (e.g. level 3's rising water). Default: nothing to reset.
+   */
+  protected void resetHazardState() {}
+
+  /**
+   * Whether a death restart in this area should rebuild the level's world (fresh triggers, spawners
+   * and platforms) in addition to respawning the player. Default: only respawn, keeping all world
+   * state as it was.
+   */
+  public boolean requiresWorldResetOnDeath() {
+    return false;
+  }
+
+  /**
    * Restart after death/game-over: teleport to the last checkpoint and revive with a health
    * penalty. Unlike a full level reload, checkpoint progress is kept.
    */
   public void restart() {
+    // Hazards are lowered first so the player is never dropped back in under one (level 3's
+    // water has risen well above the checkpoint by the time a mid-level death happens).
+    resetHazardState();
     GridPoint2 respawnPoint = getRespawnPoint();
     resetPlayerVelocity();
     player.setEnabled(true);
