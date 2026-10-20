@@ -26,8 +26,6 @@ import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.inventory.InventoryComponent;
 import com.csse3200.game.components.item.ItemType;
-import com.csse3200.game.components.item.weapons.PrimaryWeapon;
-import com.csse3200.game.components.item.weapons.WeaponComponent;
 import com.csse3200.game.components.npc.ShopNpcComponent;
 import com.csse3200.game.components.projectile.ArrowType;
 import com.csse3200.game.entities.Entity;
@@ -141,47 +139,6 @@ class KeyboardPlayerInputComponentTest {
   }
 
   @Test
-  void shouldUseSelectedItemOncePerEPress() {
-    PrimaryWeapon primary = mock(PrimaryWeapon.class);
-    when(primary.isReady()).thenReturn(true);
-    KeyboardPlayerInputComponent component = new KeyboardPlayerInputComponent();
-    InventoryComponent inventory = new InventoryComponent(0);
-    Entity player =
-        new Entity()
-            .addComponent(component)
-            .addComponent(inventory)
-            .addComponent(new WeaponComponent(primary))
-            .addComponent(new ItemUseComponent());
-    player.setPosition(0f, 0f);
-    Entity cameraEntity = new Entity().addComponent(new CameraComponent(camera));
-    component.setCameraComponent(cameraEntity.getComponent(CameraComponent.class));
-    inventory.addItem(ItemType.STANDARD_ARROW, 2);
-    player.getComponent(ItemUseComponent.class).create();
-
-    AtomicInteger shots = new AtomicInteger();
-    AtomicReference<Vector2> direction = new AtomicReference<>();
-    player
-        .getEvents()
-        .addListener(
-            "primaryAttack",
-            (Vector2 aimDirection) -> {
-              shots.incrementAndGet();
-              direction.set(aimDirection);
-            });
-
-    assertTrue(component.keyDown(Keys.E));
-    assertTrue(component.keyDown(Keys.E));
-    assertEquals(1, shots.get());
-    assertEquals(1, inventory.getItemCount(ItemType.STANDARD_ARROW));
-    assertTrue(direction.get().epsilonEquals(new Vector2(9.5f, 4.5f)));
-
-    assertTrue(component.keyUp(Keys.E));
-    assertTrue(component.keyDown(Keys.E));
-    assertEquals(2, shots.get());
-    assertEquals(0, inventory.getItemCount(ItemType.STANDARD_ARROW));
-  }
-
-  @Test
   void shouldNotAttackWhenItemUseComponentIsMissing() {
     KeyboardPlayerInputComponent component = new KeyboardPlayerInputComponent();
     Entity player = new Entity().addComponent(component);
@@ -204,7 +161,7 @@ class KeyboardPlayerInputComponentTest {
     AtomicInteger sprints = new AtomicInteger();
     AtomicInteger sprintStops = new AtomicInteger();
 
-    player.getEvents().<Vector2>addListener("walk", walkDirection::set);
+    player.getEvents().addListener("walk", walkDirection::set);
     player.getEvents().addListener("walkStop", walkStops::incrementAndGet);
     player.getEvents().addListener("jump", jumps::incrementAndGet);
     player.getEvents().addListener("sprint", sprints::incrementAndGet);
@@ -454,13 +411,15 @@ class KeyboardPlayerInputComponentTest {
     assertTrue(shopEntities.getPaused());
     assertTrue(interaction.isShopOpen());
 
-    assertTrue(component.keyDown(Keys.E));
+    // F is no longer bound to anything, so it neither closes the shop nor uses an item.
+    assertTrue(component.keyDown(Keys.F));
+    assertTrue(interaction.isShopOpen());
     assertEquals(2, inventory.getItemCount(ItemType.STANDARD_ARROW));
     assertTrue(component.keyDown(Keys.SPACE));
     assertEquals(0, jumps.get());
     assertTrue(component.touchDown(4, 2, 0, Buttons.LEFT));
 
-    assertTrue(component.keyDown(Keys.F));
+    assertTrue(component.keyDown(Keys.E));
     assertFalse(interaction.isShopOpen());
     assertFalse(shopEntities.getPaused());
   }

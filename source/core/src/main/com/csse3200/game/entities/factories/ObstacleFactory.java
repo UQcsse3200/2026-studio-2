@@ -262,7 +262,7 @@ public class ObstacleFactory {
 
   /**
    * Creates a portal at the end of a level. The player swaps to the next level by standing in it
-   * and pressing F.
+   * and pressing E.
    *
    * @param nextLevelName a String representing the name of the level this component should force
    *     the game screen to swap to

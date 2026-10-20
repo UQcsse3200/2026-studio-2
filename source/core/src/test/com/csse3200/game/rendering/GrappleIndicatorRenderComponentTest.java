@@ -7,6 +7,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockConstruction;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -190,7 +191,8 @@ class GrappleIndicatorRenderComponentTest {
 
   @Test
   void shouldStopDottedArcAtMaximumRangeWhenNothingToGrappleOnto() {
-    when(input.getMouseAimDirection()).thenReturn(new Vector2(10f, 0f));
+    // Crosshair well past the grapple's range, so the range is what stops the arc.
+    when(input.getMouseAimDirection()).thenReturn(new Vector2(100f, 0f));
 
     GrappleIndicatorRenderComponent renderer = renderer(grapple, inventory, input);
     Vector2 origin = renderer.getEntity().getCenterPosition();
@@ -213,6 +215,32 @@ class GrappleIndicatorRenderComponentTest {
       assertEquals(ProjectileFactory.GRAPPLE_ARROW_RANGE, distance, 1.5f);
       // And it's an arc, not a straight line: it's fallen well below the player by then.
       assertTrue(yCaptor.getValue() < origin.y - 5f);
+    }
+  }
+
+  @Test
+  void shouldStopTheArcAtTheCrosshair() {
+    // Nothing to grapple onto within range, but the crosshair is only 5 units ahead.
+    when(input.getMouseAimDirection()).thenReturn(new Vector2(5f, 0f));
+
+    GrappleIndicatorRenderComponent renderer = renderer(grapple, inventory, input);
+    Vector2 origin = renderer.getEntity().getCenterPosition();
+
+    try (MockedConstruction<ShapeRenderer> shapes = mockConstruction(ShapeRenderer.class)) {
+      renderer.render(batch);
+      ShapeRenderer shape = shapes.constructed().getFirst();
+
+      // Cut short at the crosshair, so there's no landing dot.
+      verify(shape, never())
+          .circle(
+              anyFloat(), anyFloat(), eq(ArcIndicatorRenderComponent.LANDING_DOT_RADIUS), eq(12));
+      ArgumentCaptor<Float> xCaptor = ArgumentCaptor.forClass(Float.class);
+      verify(shape, atLeastOnce())
+          .circle(
+              xCaptor.capture(), anyFloat(), eq(ArcIndicatorRenderComponent.DOT_RADIUS), eq(12));
+      for (float x : xCaptor.getAllValues()) {
+        assertTrue(x <= origin.x + 5f, "dot at x = " + x + " is past the crosshair");
+      }
     }
   }
 
