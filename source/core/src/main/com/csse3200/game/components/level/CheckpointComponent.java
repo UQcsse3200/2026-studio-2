@@ -77,7 +77,6 @@ public class CheckpointComponent extends Component {
 
   public void deactivate() {
     if (pointLightComponent != null) {
-      // pointLightComponent.setColor(Color.CLEAR);
       pointLightComponent.setActive(false);
     }
 

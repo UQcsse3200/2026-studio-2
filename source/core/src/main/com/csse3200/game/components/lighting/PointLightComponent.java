@@ -167,7 +167,7 @@ public class PointLightComponent extends Component implements Disposable {
   }
 
   public void setIntensity(float intensity) {
-    float clampedIntensity = Math.max(0f, Math.min(1f, intensity));
+    float clampedIntensity = Math.clamp(intensity, 0f, 1f);
     if (this.intensity == clampedIntensity) {
       return;
     }

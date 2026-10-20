@@ -85,42 +85,11 @@ public class LightingEngine implements Disposable {
     for (int i = 0; i < pointLights.size(); i++) {
       PointLightComponent first = pointLights.get(i);
       float currentRayCount = smoothedRayCounts.get(first);
-      float targetRayCount;
-      float nearbyLightWeight = 0f;
-      float totalRed = first.getBaseRed();
-      float totalGreen = first.getBaseGreen();
-      float totalBlue = first.getBaseBlue();
-      float totalColorWeight = 1f;
-
-      if (!first.isActive()) {
-        targetRayCount = first.getOldRayCount();
-      } else {
-        float totalRayCount = currentRayCount;
-        int overlappingLights = 1;
-        for (int j = 0; j < pointLights.size(); j++) {
-          PointLightComponent other = pointLights.get(j);
-          if (i != j && other.isActive()) {
-            float overlapStrength = getOverlapStrength(first, other);
-            if (overlapStrength > 0f) {
-              totalRayCount += smoothedRayCounts.get(other);
-              overlappingLights++;
-              nearbyLightWeight += overlapStrength;
-              totalRed += other.getSmoothedRed() * overlapStrength;
-              totalGreen += other.getSmoothedGreen() * overlapStrength;
-              totalBlue += other.getSmoothedBlue() * overlapStrength;
-              totalColorWeight += overlapStrength;
-            }
-          }
-        }
-        targetRayCount =
-            overlappingLights == 1 ? first.getOldRayCount() : totalRayCount / overlappingLights;
-      }
-
-      nextRayCounts[i] = currentRayCount + (targetRayCount - currentRayCount) * interpolation;
-      targetReds[i] = totalRed / totalColorWeight;
-      targetGreens[i] = totalGreen / totalColorWeight;
-      targetBlues[i] = totalBlue / totalColorWeight;
-      first.setIntensity(first.isActive() ? 1f / (1f + nearbyLightWeight) : 1f);
+      LightTargets targets = calculateTargets(i, first, currentRayCount);
+      nextRayCounts[i] = currentRayCount + (targets.rayCount - currentRayCount) * interpolation;
+      targetReds[i] = targets.red;
+      targetGreens[i] = targets.green;
+      targetBlues[i] = targets.blue;
     }
 
     for (int i = 0; i < pointLights.size(); i++) {
@@ -132,6 +101,67 @@ public class LightingEngine implements Disposable {
           light.getSmoothedRed() + (targetReds[i] - light.getSmoothedRed()) * interpolation,
           light.getSmoothedGreen() + (targetGreens[i] - light.getSmoothedGreen()) * interpolation,
           light.getSmoothedBlue() + (targetBlues[i] - light.getSmoothedBlue()) * interpolation);
+    }
+  }
+
+  private static LightTargets calculateTargets(
+      int lightIndex, PointLightComponent first, float currentRayCount) {
+    float targetRayCount;
+    float nearbyLightWeight = 0f;
+    float totalRed = first.getBaseRed();
+    float totalGreen = first.getBaseGreen();
+    float totalBlue = first.getBaseBlue();
+    float totalColorWeight = 1f;
+
+    if (!first.isActive()) {
+      targetRayCount = first.getOldRayCount();
+    } else {
+      float totalRayCount = currentRayCount;
+      int overlappingLights = 1;
+      for (int j = 0; j < pointLights.size(); j++) {
+        PointLightComponent other = pointLights.get(j);
+        if (lightIndex == j || !other.isActive()) {
+          continue;
+        }
+
+        float overlapStrength = getOverlapStrength(first, other);
+        if (overlapStrength <= 0f) {
+          continue;
+        }
+
+        totalRayCount += smoothedRayCounts.get(other);
+        overlappingLights++;
+        nearbyLightWeight += overlapStrength;
+        totalRed += other.getSmoothedRed() * overlapStrength;
+        totalGreen += other.getSmoothedGreen() * overlapStrength;
+        totalBlue += other.getSmoothedBlue() * overlapStrength;
+        totalColorWeight += overlapStrength;
+      }
+      targetRayCount =
+          overlappingLights == 1
+              ? first.getOldRayCount()
+              : totalRayCount / (float) overlappingLights;
+    }
+
+    first.setIntensity(first.isActive() ? 1f / (1f + nearbyLightWeight) : 1f);
+    return new LightTargets(
+        targetRayCount,
+        totalRed / totalColorWeight,
+        totalGreen / totalColorWeight,
+        totalBlue / totalColorWeight);
+  }
+
+  private static class LightTargets {
+    private final float rayCount;
+    private final float red;
+    private final float green;
+    private final float blue;
+
+    private LightTargets(float rayCount, float red, float green, float blue) {
+      this.rayCount = rayCount;
+      this.red = red;
+      this.green = green;
+      this.blue = blue;
     }
   }
 
