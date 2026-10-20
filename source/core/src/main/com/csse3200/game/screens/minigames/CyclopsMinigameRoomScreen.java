@@ -11,6 +11,7 @@ import com.badlogic.gdx.utils.Align;
 import com.csse3200.game.GdxGame;
 import com.csse3200.game.areas.CyclopsMinigameArea;
 import com.csse3200.game.areas.terrain.TerrainFactory;
+import com.csse3200.game.components.ButtonSound;
 import com.csse3200.game.components.TextBoxComponent;
 import com.csse3200.game.components.gamearea.PerformanceDisplay;
 import com.csse3200.game.components.maingame.PauseButtonDisplay;
@@ -195,6 +196,8 @@ public class CyclopsMinigameRoomScreen extends ScreenAdapter {
     resourceService.loadTextures(cyclopsMinigameTextures);
     // The pause button's own images, when the project has them
     resourceService.loadTextures(PauseButtonDisplay.extraTextures());
+    // The click sound for the pause button and the pause menu's buttons
+    ButtonSound.load(resourceService);
     ServiceLocator.getResourceService().loadAll();
   }
 
@@ -203,6 +206,7 @@ public class CyclopsMinigameRoomScreen extends ScreenAdapter {
     ResourceService resourceService = ServiceLocator.getResourceService();
     resourceService.unloadAssets(cyclopsMinigameTextures);
     resourceService.unloadAssets(PauseButtonDisplay.extraTextures());
+    ButtonSound.unload(resourceService);
   }
 
   /**
@@ -263,7 +267,7 @@ public class CyclopsMinigameRoomScreen extends ScreenAdapter {
         .addComponent(new PerformanceDisplay())
         .addComponent(new CyclopsMinigameActions(this.game))
         // Opens the pause menu, which is also how the player leaves the minigame
-        .addComponent(new PauseButtonDisplay(() -> pauseOverlay.request()))
+        .addComponent(new PauseButtonDisplay(() -> pauseOverlay.request(), true))
         .addComponent(terminal)
         .addComponent(inputComponent)
         .addComponent(new GameEndDisplay(GameEndState.LOSE))

@@ -15,13 +15,23 @@ public class PauseButtonDisplay extends TopRightButtonDisplay {
   private static final String EXIT_DOWN = "images/Buttons/exit_down_btn.png";
 
   private final Runnable onPause;
+  private final boolean instant;
+
+  /**
+   * @param onPause called when the button is clicked, a moment after the click sound
+   */
+  public PauseButtonDisplay(Runnable onPause) {
+    this(onPause, false);
+  }
 
   /**
    * @param onPause called when the button is clicked
+   * @param instant true to call it straight away, false to wait for the click sound first
    */
-  public PauseButtonDisplay(Runnable onPause) {
+  public PauseButtonDisplay(Runnable onPause, boolean instant) {
     super(240f, 80f, 90f, 20f, EXIT_UP, EXIT_DOWN);
     this.onPause = onPause;
+    this.instant = instant;
   }
 
   /** Whether the dedicated pause button images have been added to the project. */
@@ -42,6 +52,11 @@ public class PauseButtonDisplay extends TopRightButtonDisplay {
 
   @Override
   protected void onButtonClicked() {
-    ButtonSound.playClickThen(onPause);
+    if (instant) {
+      ButtonSound.playClick();
+      onPause.run();
+    } else {
+      ButtonSound.playClickThen(onPause);
+    }
   }
 }
