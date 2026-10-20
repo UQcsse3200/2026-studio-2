@@ -45,14 +45,30 @@ public class CyclopsAnimationController extends Component {
   private boolean hitLanded;
 
   public CyclopsAnimationController(Entity target, float groundY) {
+    this(target, groundY, null);
+  }
+
+  /**
+   * Creates a controller that drives the given animator. Use this when the animator is a subclass
+   * (such as one with its own draw depth), since components are looked up by their exact class.
+   *
+   * @param target the entity he attacks
+   * @param groundY the floor height he lands at
+   * @param animator his animator, or null to look up the entity's AnimationRenderComponent
+   */
+  public CyclopsAnimationController(
+      Entity target, float groundY, AnimationRenderComponent animator) {
     this.target = target;
     this.groundY = groundY;
+    this.animator = animator;
   }
 
   @Override
   public void create() {
     super.create();
-    animator = this.entity.getComponent(AnimationRenderComponent.class);
+    if (animator == null) {
+      animator = this.entity.getComponent(AnimationRenderComponent.class);
+    }
     home = entity.getPosition();
     animator.startAnimation("sleep");
 
@@ -76,6 +92,28 @@ public class CyclopsAnimationController extends Component {
 
   State getState() {
     return state;
+  }
+
+  /**
+   * Returns the animation his animator is playing. Tests use it because the animator is a subclass
+   * and so can't be found on the entity by its usual class.
+   *
+   * @return the name of the current animation
+   */
+  public String getCurrentAnimation() {
+    return animator.getCurrentAnimation();
+  }
+
+  /**
+   * Draw depth for his renderer. Awake, he keeps the floor's depth for the whole jump, attack and
+   * return, so he never drops behind a rock mid-air and pops in front of it on landing. Asleep, he
+   * sorts by position as usual, which keeps him behind the rocks on his perch. The switch only
+   * happens at home, where he doesn't overlap any rock.
+   *
+   * @return the z index to draw the cyclops at
+   */
+  public float getZIndex() {
+    return state == State.ASLEEP ? -entity.getPosition().y : -groundY;
   }
 
   /** Starts the wind up animation and moves to next animation stage after finishing */

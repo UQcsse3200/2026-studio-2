@@ -122,7 +122,7 @@ class CyclopsMinigameAreaTest {
     assertEquals(2.35f, player.getPosition().x, 0.0001f);
     assertEquals(1.5f, player.getPosition().y, 0.0001f);
     assertEquals(
-        "sleep", cyclops.getComponent(AnimationRenderComponent.class).getCurrentAnimation());
+        "sleep", cyclops.getComponent(CyclopsAnimationController.class).getCurrentAnimation());
     List<Entity> formations =
         owned.stream()
             .filter(
@@ -180,7 +180,7 @@ class CyclopsMinigameAreaTest {
     assertEquals(5.35f, player.getPosition().x, 0.0001f);
     int health = player.getComponent(CombatStatsComponent.class).getHealth();
     ServiceLocator.getCyclopsMinigameEventHandler().trigger(CyclopsMinigameLogic.CYCLOPS_HIT_EVENT);
-    assertEquals(health - 2, player.getComponent(CombatStatsComponent.class).getHealth());
+    assertEquals(health - 4, player.getComponent(CombatStatsComponent.class).getHealth());
   }
 
   @Test
