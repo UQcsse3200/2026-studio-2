@@ -16,6 +16,7 @@ import com.csse3200.game.components.TutorialComponent;
 import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.input.InputService;
 import com.csse3200.game.services.ServiceLocator;
+import java.lang.reflect.Field;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -66,6 +67,22 @@ class TutorialFactoryTest {
       assertTrue(boxes.constructed().isEmpty());
       assertTrue(tutorials.constructed().isEmpty());
     }
+  }
+
+  @Test
+  void passesTheConfiguredAutoDismissDeadlineToTheComponent() throws Exception {
+    try (MockedConstruction<TextBoxComponent> boxes = mockConstruction(TextBoxComponent.class)) {
+      TutorialComponent started = TutorialFactory.start("tut7", null);
+
+      assertNotNull(started);
+      assertEquals(7f, autoDismissSeconds(started));
+    }
+  }
+
+  private static float autoDismissSeconds(TutorialComponent tutorial) throws Exception {
+    Field field = TutorialComponent.class.getDeclaredField("autoDismissSeconds");
+    field.setAccessible(true);
+    return (float) field.get(tutorial);
   }
 
   @Test

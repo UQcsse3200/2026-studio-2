@@ -41,7 +41,7 @@ class TutorialCommandTest {
     try (MockedConstruction<TextBoxComponent> boxes = mockConstruction(TextBoxComponent.class);
         MockedConstruction<TutorialComponent> tutorials =
             mockConstruction(TutorialComponent.class)) {
-      assertTrue(new TutorialCommand().action(args("configs/tut4.json")));
+      assertTrue(new TutorialCommand().action(args("configs/tut5.json")));
       assertEquals(1, boxes.constructed().size());
       assertEquals(1, tutorials.constructed().size());
     }

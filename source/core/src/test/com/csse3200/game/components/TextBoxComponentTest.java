@@ -376,8 +376,11 @@ class TextBoxComponentTest {
     assertTrue(portrait.isVisible());
     Table table = getField(component, "table");
     assertTrue(table.getHeight() > 0f);
+    // 20% larger than the original 100px so Calypso's face reads at a glance.
+    assertEquals(120f, portrait.getWidth(), 0.01f);
+    assertEquals(120f, portrait.getHeight(), 0.01f);
     // Centered above the box: bottom edge on the top edge, never covering the text.
-    assertEquals(table.getX() + (table.getWidth() - 100f) / 2f, portrait.getX(), 0.01f);
+    assertEquals(table.getX() + (table.getWidth() - 120f) / 2f, portrait.getX(), 0.01f);
     assertEquals(table.getY() + table.getHeight(), portrait.getY(), 0.01f);
   }
 

@@ -154,6 +154,33 @@ class SaveManagerTest {
   }
 
   @Test
+  void shouldPreserveDeclinedTutorialPromptsAcrossCaptures() {
+    SaveFile previous = SaveManager.newGameSave(0);
+    previous.tutorialsAccepted = false;
+    SaveManager.write(0, previous);
+
+    // An autosave must not silently re-enable prompts for a save whose owner declined them.
+    SaveFile captured = SaveManager.capture(0, "level1", null, List.of());
+
+    assertFalse(captured.tutorialsAccepted);
+    // A brand new save accepts prompts by default.
+    assertTrue(SaveManager.newGameSave(1).tutorialsAccepted);
+  }
+
+  @Test
+  void shouldDefaultToAcceptingPromptsWhenLoadingASaveFromBeforeTheOffer() throws IOException {
+    // A save written before tut0 existed has no tutorialsAccepted entry at all.
+    Files.writeString(
+        Path.of(SaveManager.slotPath(0)),
+        "{\"slotIndex\":0,\"currentLevel\":\"level1\",\"tutorialCompleted\":false}");
+
+    SaveFile loaded = SaveManager.read(0);
+
+    assertNotNull(loaded);
+    assertTrue(loaded.tutorialsAccepted);
+  }
+
+  @Test
   void shouldCaptureAndApplyPlayerStateRoundTrip() {
     Entity player =
         new Entity()

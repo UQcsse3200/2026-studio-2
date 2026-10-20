@@ -14,7 +14,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 class TutorialConfigTest {
 
   @ParameterizedTest
-  @ValueSource(strings = {"tut1", "tut2", "tut3", "tut4", "tut5", "tut6", "tut7", "tut8", "tut9"})
+  @ValueSource(strings = {"tut0", "tut1", "tut2", "tut3", "tut5", "tut6", "tut7", "tut8", "tut9"})
   void shippedTutorialConfigsAreValid(String name) {
     TutorialConfig config = FileLoader.readClass(TutorialConfig.class, "configs/" + name + ".json");
     assertNotNull(config, name + " should load");
@@ -25,6 +25,15 @@ class TutorialConfigTest {
   @Test
   void missingStepsIsRejected() {
     assertNotNull(new TutorialConfig().validateSteps());
+  }
+
+  @ParameterizedTest
+  @ValueSource(strings = {"tut7", "tut8"})
+  void timedPromptsConfigureASevenSecondDeadline(String name) {
+    TutorialConfig config = FileLoader.readClass(TutorialConfig.class, "configs/" + name + ".json");
+
+    assertNotNull(config, name + " should load");
+    assertEquals(7f, config.autoDismissSeconds);
   }
 
   @Test
@@ -59,6 +68,15 @@ class TutorialConfigTest {
     config.pages = List.of("one");
     config.steps = List.of(new TutorialStepConfig());
     assertTrue(config.validateSteps().contains("no keys"));
+  }
+
+  @Test
+  void negativeAutoDismissIsRejected() {
+    TutorialConfig config = new TutorialConfig();
+    config.pages = List.of("one");
+    config.steps = List.of(stepWithKeys("SPACE"));
+    config.autoDismissSeconds = -1f;
+    assertTrue(config.validateSteps().contains("autoDismissSeconds"));
   }
 
   private static TutorialStepConfig stepWithKeys(String... keys) {

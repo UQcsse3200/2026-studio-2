@@ -154,6 +154,30 @@ class GdxGameSaveTest {
     assertEquals(-1, game.getActiveSaveSlot());
   }
 
+  @Test
+  void shouldPersistTheTutorialPromptChoicePerSaveSlot() {
+    game.startNewGame();
+    assertTrue(game.areTutorialsAccepted());
+
+    // Declining tut0's offer persists to the slot, so no prompt auto-plays for this save again.
+    game.declineTutorials();
+    assertFalse(game.areTutorialsAccepted());
+    assertFalse(SaveManager.read(0).tutorialsAccepted);
+
+    // Loading the slot restores whatever the file says, over the session default.
+    SaveFile accepted = SaveManager.read(0);
+    accepted.tutorialsAccepted = true;
+    SaveManager.write(0, accepted);
+    game.loadSave(0);
+    assertTrue(game.areTutorialsAccepted());
+
+    SaveFile declined = SaveManager.read(0);
+    declined.tutorialsAccepted = false;
+    SaveManager.write(0, declined);
+    game.loadSave(0);
+    assertFalse(game.areTutorialsAccepted());
+  }
+
   /** Game area with a mocked level config and a player, for testing save restoration. */
   private static class TestGameArea extends GameArea {
     private final ArrayList<CheckpointComponent> checkpoints = new ArrayList<>();

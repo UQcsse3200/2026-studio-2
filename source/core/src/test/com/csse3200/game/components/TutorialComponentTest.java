@@ -1,5 +1,6 @@
 package com.csse3200.game.components;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
@@ -161,6 +162,62 @@ class TutorialComponentTest {
     verifyNoInteractions(onFinished);
     tutorial.keyDown(Keys.SPACE);
     verify(onFinished).run();
+  }
+
+  @Test
+  void reportsTheKeyThatCompletedTheCurrentStep() {
+    TextBoxComponent text = mock(TextBoxComponent.class);
+    TutorialComponent tutorial =
+        new TutorialComponent(text, List.of(step(new String[] {"Y", "N"}, null, null)));
+    tutorial.create();
+    assertEquals(0, tutorial.getCompletionKeycode());
+    tutorial.keyDown(Keys.N);
+    assertEquals(Keys.N, tutorial.getCompletionKeycode());
+  }
+
+  @Test
+  void autoDismissClosesTheTutorialAtItsDeadlineWithoutFinishing() {
+    TextBoxComponent text = mock(TextBoxComponent.class);
+    // The UI reports dismissal after dismiss() is called, as the real textbox does.
+    doAnswer(
+            call -> {
+              when(text.isDismissed()).thenReturn(true);
+              return null;
+            })
+        .when(text)
+        .dismiss();
+    Runnable onFinished = mock(Runnable.class);
+    TutorialComponent tutorial =
+        new TutorialComponent(
+            text, List.of(step(new String[] {"TAB"}, null, null)), onFinished, 7f);
+    tutorial.create();
+
+    // Just before the deadline the prompt waits for the player, as the TAB step allows.
+    tutorial.tickAutoDismiss(6.9f);
+    verify(text, never()).dismiss();
+
+    tutorial.tickAutoDismiss(0.2f);
+    verify(text).dismiss();
+    // Auto-dismissing is an early dismissal: the completion callback must not run.
+    verify(onFinished, never()).run();
+
+    // Once closed, further ticks and late input do nothing.
+    tutorial.tickAutoDismiss(1f);
+    tutorial.keyDown(Keys.TAB);
+    verify(onFinished, never()).run();
+    verify(text, times(1)).dismiss();
+  }
+
+  @Test
+  void withoutAnAutoDismissDeadlineTheTimerNeverClosesIt() {
+    TextBoxComponent text = mock(TextBoxComponent.class);
+    TutorialComponent tutorial =
+        new TutorialComponent(text, List.of(step(new String[] {"TAB"}, null, null)));
+    tutorial.create();
+
+    tutorial.tickAutoDismiss(600f);
+
+    verify(text, never()).dismiss();
   }
 
   @Test
