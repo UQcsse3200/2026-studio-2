@@ -17,21 +17,25 @@ public class EnemyTeleportComponent extends Component {
   private final long damagedTpDelay;
   private final long tpFreq;
   private final Random random;
+  private final long hitTpCooldown;
+  private long nextHitTpTime;
 
   private long damagedTpTime;
   private long nextTpTime;
   private Vector2 currentTpPosition;
   private int prevHealth;
+  private boolean laserActive = false;
 
   /**
    * @param tpPositions predetermined teleport locations available to enemy
    * @param damagedTpDelay delay before teleporting after taking damage (milliseconds)
    * @param tpFreq frequency of periodic teleports (milliseconds)
    */
-  public EnemyTeleportComponent(List<Vector2> tpPositions, long damagedTpDelay, long tpFreq) {
+  public EnemyTeleportComponent(List<Vector2> tpPositions, long damagedTpDelay, long tpFreq, long hitTpCooldown) {
     this.tpPositions = tpPositions;
     this.damagedTpDelay = damagedTpDelay;
     this.tpFreq = tpFreq;
+    this.hitTpCooldown = hitTpCooldown;
     this.random = new Random();
 
     damagedTpTime = -1;
@@ -39,8 +43,10 @@ public class EnemyTeleportComponent extends Component {
 
   @Override
   public void create() {
-    entity.getEvents().addListener("hitPlayer", this::teleport);
+    entity.getEvents().addListener("hitPlayer", this::hitTeleport);
     entity.getEvents().addListener("updateHealth", this::damagedTeleport);
+    entity.getEvents().addListener("laserStart", () -> laserActive = true);
+    entity.getEvents().addListener("laserEnd", () -> laserActive = false);
 
     nextTpTime = ServiceLocator.getTimeSource().getTime() + tpFreq;
     prevHealth =
@@ -55,6 +61,10 @@ public class EnemyTeleportComponent extends Component {
     BossPhaseComponent phase = entity.getComponent(BossPhaseComponent.class);
 
     if (phase != null && phase.isTransitioning()) {
+      return;
+    }
+
+    if (laserActive) {
       return;
     }
 
@@ -80,6 +90,20 @@ public class EnemyTeleportComponent extends Component {
 
     long currentTime = ServiceLocator.getTimeSource().getTime();
     damagedTpTime = currentTime + damagedTpDelay;
+  }
+
+  private void hitTeleport() {
+    long currentTime = ServiceLocator.getTimeSource().getTime();
+
+    if (laserActive) {
+      return;
+    }
+
+    if (currentTime < nextHitTpTime) {
+      return;
+    }
+    nextHitTpTime = currentTime + hitTpCooldown;
+    teleport();
   }
 
   private void teleport() {

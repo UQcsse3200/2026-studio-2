@@ -28,7 +28,9 @@ public class EnemyAnimationController extends Component {
     physics = this.entity.getComponent(PhysicsComponent.class);
     animateIdle();
 
+    entity.getEvents().addListener("laserStart", this::animateLaser);
     entity.getEvents().addListener("attackStart", this::animateSweep);
+    entity.getEvents().addListener("hurt", this::animateHurt);
   }
 
   @Override
@@ -85,11 +87,38 @@ public class EnemyAnimationController extends Component {
   }
 
   void animateSweep() {
+    if ("hurt".equals(animator.getCurrentAnimation()) && !animator.isFinished()) {
+      return;
+    }
     String name = animator.hasAnimation("sweep") ? "sweep" : "attack";
     if (!animator.hasAnimation(name)) {
       return;
     }
     isAttacking = true;
     animator.startAnimation(name);
+  }
+
+  void animateHurt() {
+    if (!animator.hasAnimation("hurt")) {
+      return;
+    }
+
+    if ("laser".equals(animator.getCurrentAnimation()) && !animator.isFinished()) {
+      return;
+    }
+
+    if ("hurt".equals(animator.getCurrentAnimation()) && !animator.isFinished()) {
+      return;
+    }
+    isAttacking = true;
+    animator.startAnimation("hurt");
+  }
+
+  void animateLaser() {
+    if (!animator.hasAnimation("laser")) {
+      return;
+    }
+    isAttacking = true;
+    animator.startAnimation("laser");
   }
 }

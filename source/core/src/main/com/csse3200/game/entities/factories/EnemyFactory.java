@@ -100,6 +100,13 @@ public class EnemyFactory {
   private static final float CALYPSO_SWEEP_COOLDOWN = 1.5f;
   private static final float CALYPSO_SWEEP_ANCHOR_X = 218.5f;
   private static final float CALYPSO_SWEEP_ANCHOR_Y = 4f;
+  private static final float CALYPSO_HURT_FRAME_TIME = 0.25f;
+  private static final float CALYPSO_HURT_ANCHOR_X = 149f;
+  private static final float CALYPSO_HURT_ANCHOR_Y = 4f;
+  private static final float CALYPSO_LASER_FRAME_TIME = 0.2f;
+  private static final float CALYPSO_LASER_ANCHOR_X = 165f;
+  private static final float CALYPSO_LASER_ANCHOR_Y = 10f;
+  private static final float CALYPSO_LASER_WINDUP = 0.6f;
 
   /**
    * Creates a melee skeleton warrior that chases and attacks the target after a delay.
@@ -333,6 +340,15 @@ public class EnemyFactory {
         Animation.PlayMode.NORMAL,
         CALYPSO_SWEEP_ANCHOR_X,
         CALYPSO_SWEEP_ANCHOR_Y);
+    animator.addAnimation(
+            "hurt",
+            CALYPSO_HURT_FRAME_TIME,
+            Animation.PlayMode.NORMAL,
+            CALYPSO_HURT_ANCHOR_X,
+            CALYPSO_HURT_ANCHOR_Y);
+    animator.addAnimation(
+            "laser", CALYPSO_LASER_FRAME_TIME, Animation.PlayMode.NORMAL,
+            CALYPSO_LASER_ANCHOR_X, CALYPSO_LASER_ANCHOR_Y);
     float sweepWindUp =
         sweepFrames > 0
             ? Math.min(CALYPSO_SWEEP_HIT_FRAME, sweepFrames - 1) * sweepFrameTime
@@ -340,7 +356,7 @@ public class EnemyFactory {
 
     calypso.addComponent(new EnemyAnimationController(target));
     calypso.addComponent(animator);
-    calypso.addComponent(new EnemyTeleportComponent(tpPositions, 500L, 10000L));
+    calypso.addComponent(new EnemyTeleportComponent(tpPositions, 1500L, 10000L, 4000L));
     calypso.addComponent(new BossHealthRenderComponent(camera));
     calypso.addComponent(new BossPhaseComponent());
 
@@ -371,7 +387,7 @@ public class EnemyFactory {
     // phase2
     calypso
         .getComponent(AITaskComponent.class)
-        .addTask(new TimerAttackTask(target, 25, 100, 0, 1, 0, 15))
+        .addTask(new TimerAttackTask(target, 25, 100, CALYPSO_LASER_WINDUP, 1, 0, 15))
         .addTask(new SummonTask(target, 30, config.attackRange, 5f, "Calypso"));
 
     return calypso;
