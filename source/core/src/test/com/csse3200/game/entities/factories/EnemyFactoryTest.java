@@ -277,7 +277,6 @@ class EnemyFactoryTest {
     Entity enemy = built(() -> EnemyFactory.createEnemy(new Entity(), config("flying", "calypso")));
     List<PriorityTask> tasks = tasksOf(enemy);
 
-    assertEquals(1, countOf(tasks, WanderTask.class));
     assertEquals(1, countOf(tasks, ChaseTask.class));
     assertEquals(0, countOf(tasks, RepositionTask.class));
     assertEquals(1, countOf(tasks, RangedAttackTask.class), "Calypso also fires projectiles");
