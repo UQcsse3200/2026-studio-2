@@ -1,5 +1,6 @@
 package com.csse3200.game.components.minigames.cyclopsminigame;
 
+import com.csse3200.game.components.ButtonSound;
 import com.csse3200.game.ui.TopRightButtonDisplay;
 
 /** Displays a button to leave the cyclops minigame. */
@@ -11,6 +12,7 @@ public class CyclopsMinigameDisplay extends TopRightButtonDisplay {
 
   @Override
   protected void onButtonClicked() {
+    ButtonSound.playClick();
     entity.getEvents().trigger("exit");
   }
 }

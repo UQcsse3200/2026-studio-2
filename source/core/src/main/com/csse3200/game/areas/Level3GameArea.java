@@ -8,7 +8,9 @@ import com.csse3200.game.areas.terrain.TerrainFactory;
 import com.csse3200.game.areas.terrain.configs.levelconfigs.Level3Config;
 import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.components.CombatStatsComponent;
+import com.csse3200.game.components.level.RainSoundComponent;
 import com.csse3200.game.components.level.RisingWaterComponent;
+import com.csse3200.game.components.level.ThunderSoundComponent;
 import com.csse3200.game.components.player.PlayerActions;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.ItemFactory;
@@ -74,6 +76,7 @@ public class Level3GameArea extends GameArea {
     "images/projectiles/fire_arrow.png",
     "images/projectiles/ice_arrow.png",
     "images/projectiles/necromancer_projectile.png",
+    "images/projectiles/calypso_laser_beam.png",
     "images/items/poison_potion.png",
   };
 
@@ -87,11 +90,13 @@ public class Level3GameArea extends GameArea {
     "images/enemies/calypso.atlas"
   };
 
-  private static final String[] level3Sounds = {"sounds/Impact4.ogg"};
+  private static final String[] level3Sounds = {
+    "sounds/Impact4.ogg", ThunderSoundComponent.CLOSE_THUNDER, ThunderSoundComponent.FAR_THUNDER
+  };
 
   private static final String BACKGROUND_MUSIC = "sounds/BGM_03_mp3.mp3";
 
-  private static final String[] level3Music = {BACKGROUND_MUSIC};
+  private static final String[] level3Music = {BACKGROUND_MUSIC, RainSoundComponent.RAIN_MUSIC};
 
   private final TerrainFactory terrainFactory;
   private final CameraComponent camera;
@@ -99,7 +104,7 @@ public class Level3GameArea extends GameArea {
   public Level3GameArea(TerrainFactory terrainFactory, CameraComponent camera, Entity player) {
     super(camera);
 
-    config = new Level3Config(player);
+    config = new Level3Config(player, camera);
 
     this.terrainFactory = terrainFactory;
     this.camera = camera;
@@ -118,6 +123,9 @@ public class Level3GameArea extends GameArea {
     spawnRisingWater();
     spawnForeground();
     activateWeather();
+    playLoopingMusic(RainSoundComponent.RAIN_MUSIC, 0.25f);
+    spawnEntity(new Entity().addComponent(new RainSoundComponent(player)));
+    spawnEntity(new Entity().addComponent(new ThunderSoundComponent()));
     player.setPosition(new Vector2(config.getPlayerSpawn().x, config.getPlayerSpawn().y));
   }
 
@@ -434,6 +442,11 @@ public class Level3GameArea extends GameArea {
   public void dispose() {
     super.dispose();
     ServiceLocator.getResourceService().getAsset(BACKGROUND_MUSIC, Music.class).stop();
+    Music rain =
+        ServiceLocator.getResourceService().getAsset(RainSoundComponent.RAIN_MUSIC, Music.class);
+    if (rain != null) {
+      rain.stop();
+    }
     this.unloadAssets();
   }
 }

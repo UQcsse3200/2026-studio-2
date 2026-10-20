@@ -2,7 +2,9 @@ package com.csse3200.game.components.level;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.GridPoint2;
+import com.badlogic.gdx.utils.Logger;
 import com.csse3200.game.components.Component;
+import com.csse3200.game.components.SoundEffects;
 import com.csse3200.game.components.lighting.PointLightComponent;
 import com.csse3200.game.components.player.PlayerActions;
 import com.csse3200.game.entities.Entity;
@@ -11,7 +13,10 @@ import com.csse3200.game.services.ServiceLocator;
 
 public class CheckpointComponent extends Component {
 
+  static final String ACTIVATE_SOUND = "sounds/checkpoint.ogg";
+
   private boolean collected;
+  private boolean activateSoundPlayed = false;
   private final GridPoint2 position;
   private Entity player;
   private AnimationRenderComponent torchAnimator;
@@ -21,6 +26,7 @@ public class CheckpointComponent extends Component {
   public static final float ATLAS_WIDTH = 1.6f;
 
   public static final float ATLAS_HEIGHT = 2f;
+  Logger logger = new Logger("Lighting Engine");
 
   /**
    * Constructor for a new CheckpointComponent
@@ -46,7 +52,12 @@ public class CheckpointComponent extends Component {
 
   @Override
   public void create() {
-    pointLightComponent = entity.getComponent(PointLightComponent.class);
+    try {
+      pointLightComponent = entity.getComponent(PointLightComponent.class);
+    } catch (Exception e) {
+      logger.error(PointLightComponent.class.getSimpleName() + " could not be created. " + e);
+      pointLightComponent = null;
+    }
     // The checkpoint entity draws itself; null when the level has no checkpoint atlas.
     torchAnimator = entity.getComponent(AnimationRenderComponent.class);
   }
@@ -55,23 +66,26 @@ public class CheckpointComponent extends Component {
     if (collected) {
       return;
     }
-
-    collected = true;
+    this.collected = true;
     entity.getEvents().trigger("checkpointActivated", position);
+    if (!activateSoundPlayed) {
+      activateSoundPlayed = true;
+      SoundEffects.play(ACTIVATE_SOUND, 0.5f);
+    }
 
     if (torchAnimator != null) {
       // Swap the existing statue to its lit frame so the unlit frame isn't left behind it.
       torchAnimator.startAnimation("lit");
     }
-
     if (pointLightComponent != null) {
       pointLightComponent.setColor(new Color(228f / 255f, 112f / 255f, 37f / 255f, 1f));
+      pointLightComponent.setActive(true);
     }
   }
 
   public void deactivate() {
     if (pointLightComponent != null) {
-      pointLightComponent.setColor(Color.CLEAR);
+      pointLightComponent.setActive(false);
     }
 
     collected = false;
@@ -92,6 +106,9 @@ public class CheckpointComponent extends Component {
   /** Check if player position comes in range of checkpoint position. */
   @Override
   public void update() {
+    if (pointLightComponent != null) {
+      pointLightComponent.update();
+    }
     if (player == null) {
       for (Entity candidate : ServiceLocator.getEntityService().getEntities()) {
         if (candidate.getComponent(PlayerActions.class) != null) {

@@ -26,13 +26,12 @@ import com.csse3200.game.components.PoisonStatsComponent;
 import com.csse3200.game.components.SlowStatsComponent;
 import com.csse3200.game.components.TouchAttackComponent;
 import com.csse3200.game.components.lighting.PointLightComponent;
+import com.csse3200.game.components.npc.CalypsoSoundComponent;
 import com.csse3200.game.components.npc.ChaseSoundComponent;
 import com.csse3200.game.components.npc.EnemyAnimationController;
+import com.csse3200.game.components.npc.SummonSoundComponent;
 import com.csse3200.game.components.tasks.ChaseTask;
 import com.csse3200.game.components.tasks.DelayedAttackTask;
-import com.csse3200.game.components.tasks.FlyingChaseTask;
-import com.csse3200.game.components.tasks.FlyingRepositionTask;
-import com.csse3200.game.components.tasks.FlyingWanderTask;
 import com.csse3200.game.components.tasks.RangedAttackTask;
 import com.csse3200.game.components.tasks.RepositionTask;
 import com.csse3200.game.components.tasks.SummonTask;
@@ -245,24 +244,7 @@ class EnemyFactoryTest {
     assertEquals(1, countOf(tasks, WanderTask.class));
     assertEquals(1, countOf(tasks, ChaseTask.class));
     assertEquals(1, countOf(tasks, RepositionTask.class));
-    assertEquals(0, countOf(tasks, FlyingWanderTask.class));
-    assertEquals(0, countOf(tasks, FlyingChaseTask.class));
-    assertEquals(0, countOf(tasks, FlyingRepositionTask.class));
     assertEquals(3, tasks.size(), "and a melee enemy has no ranged attack on top");
-  }
-
-  @Test
-  void shouldGiveFlyingEnemiesFlyingMovementTasks() throws Exception {
-    Entity enemy = built(() -> EnemyFactory.createEnemy(new Entity(), config("flying", "melee")));
-    List<PriorityTask> tasks = tasksOf(enemy);
-
-    assertEquals(1, countOf(tasks, FlyingWanderTask.class));
-    assertEquals(1, countOf(tasks, FlyingChaseTask.class));
-    assertEquals(1, countOf(tasks, FlyingRepositionTask.class));
-    assertEquals(0, countOf(tasks, WanderTask.class));
-    assertEquals(0, countOf(tasks, ChaseTask.class));
-    assertEquals(0, countOf(tasks, RepositionTask.class));
-    assertEquals(3, tasks.size());
   }
 
   @Test
@@ -297,10 +279,8 @@ class EnemyFactoryTest {
     Entity enemy = built(() -> EnemyFactory.createEnemy(new Entity(), config("flying", "calypso")));
     List<PriorityTask> tasks = tasksOf(enemy);
 
-    assertEquals(1, countOf(tasks, WanderTask.class));
     assertEquals(1, countOf(tasks, ChaseTask.class));
     assertEquals(0, countOf(tasks, RepositionTask.class));
-    assertEquals(0, countOf(tasks, FlyingChaseTask.class));
     assertEquals(1, countOf(tasks, RangedAttackTask.class), "Calypso also fires projectiles");
   }
 
@@ -338,14 +318,12 @@ class EnemyFactoryTest {
         tasksOf(built(() -> EnemyFactory.createNecromancer(new Entity())));
     List<PriorityTask> vulture = tasksOf(built(() -> EnemyFactory.createVulture(new Entity())));
 
-    assertEquals(1, countOf(warrior, DelayedAttackTask.class), "warriors swing after a wind-up");
+    assertEquals(1, countOf(warrior, SweepAttackTask.class), "warriors swing after a wind-up");
     assertEquals(0, countOf(warrior, RangedAttackTask.class));
     assertEquals(1, countOf(archer, RangedAttackTask.class), "archers shoot");
     assertEquals(0, countOf(archer, DelayedAttackTask.class));
     assertEquals(1, countOf(necromancer, SummonTask.class), "necromancers summon");
     assertEquals(1, countOf(necromancer, RangedAttackTask.class));
-    assertEquals(1, countOf(vulture, FlyingChaseTask.class), "vultures fly");
-    assertEquals(0, countOf(vulture, ChaseTask.class));
   }
 
   @Test
@@ -368,11 +346,48 @@ class EnemyFactoryTest {
     assertTrue(warrior.getComponent(CombatStatsComponent.class).getHealth() > 0);
   }
 
+  @Test
+  void shouldGiveEachEnemyItsOwnDeathSound() {
+    assertEquals(
+        EnemyFactory.SKELETON_DEATH_SOUND,
+        deathSoundOf(built(() -> EnemyFactory.createSkeletonWarrior(new Entity()))));
+    assertEquals(
+        EnemyFactory.SKELETON_DEATH_SOUND,
+        deathSoundOf(built(() -> EnemyFactory.createSkeletonArcher(new Entity()))));
+    assertEquals(
+        EnemyFactory.SKELETON_DEATH_SOUND,
+        deathSoundOf(built(EnemyFactory::createPassiveSkeletonWarrior)));
+    assertEquals(
+        EnemyFactory.VULTURE_DEATH_SOUND,
+        deathSoundOf(built(() -> EnemyFactory.createVulture(new Entity()))));
+    assertEquals(
+        EnemyFactory.NECROMANCER_DEATH_SOUND,
+        deathSoundOf(built(() -> EnemyFactory.createNecromancer(new Entity()))));
+    assertEquals(EnemyFactory.CALYPSO_DEATH_SOUND, deathSoundOf(calypso(new Entity())));
+  }
+
+  @Test
+  void shouldGiveTheNecromancerItsChaseAndSummonSounds() {
+    Entity necromancer = built(() -> EnemyFactory.createNecromancer(new Entity()));
+
+    assertNotNull(necromancer.getComponent(ChaseSoundComponent.class));
+    assertNotNull(necromancer.getComponent(SummonSoundComponent.class));
+  }
+
+  @Test
+  void shouldGiveCalypsoHerOwnSounds() {
+    assertNotNull(calypso(new Entity()).getComponent(CalypsoSoundComponent.class));
+  }
+
+  private static String deathSoundOf(Entity enemy) {
+    return enemy.getComponent(EnemyDeathComponent.class).getDeathSound();
+  }
+
   // --- Calypso, the boss ---
 
   private static Entity calypso(Entity target) {
     List<Vector2> teleportSpots = List.of(new Vector2(5f, 5f), new Vector2(15f, 5f));
-    return built(() -> EnemyFactory.createCalypso(target, teleportSpots));
+    return built(() -> EnemyFactory.createCalypso(target, teleportSpots, null));
   }
 
   @Test
@@ -385,7 +400,7 @@ class EnemyFactoryTest {
     assertNotNull(boss.getComponent(AnimationRenderComponent.class));
     assertEquals(1, countOf(tasks, SweepAttackTask.class), "a telegraphed melee sweep");
     assertEquals(1, countOf(tasks, RangedAttackTask.class), "and a projectile attack");
-    assertEquals(300, boss.getComponent(CombatStatsComponent.class).getHealth());
+    assertEquals(600, boss.getComponent(CombatStatsComponent.class).getHealth());
   }
 
   @Test

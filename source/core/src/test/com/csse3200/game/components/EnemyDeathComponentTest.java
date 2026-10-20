@@ -1,6 +1,8 @@
 package com.csse3200.game.components;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -69,7 +71,35 @@ class EnemyDeathComponentTest {
     combatStats.setHealth(0);
     combatStats.setHealth(0);
 
-    verify(sound, times(1)).play(0.4f);
+    verify(sound, times(1)).play(0.6f);
     verify(entityService, times(1)).scheduleRemoval(enemy);
+  }
+
+  @Test
+  void shouldPlayItsOwnDeathSoundOnlyOnce() {
+    EntityService entityService = spy(new EntityService());
+    ServiceLocator.registerEntityService(entityService);
+    ResourceService resources = mock(ResourceService.class);
+    Sound sound = mock(Sound.class);
+    when(resources.containsAsset("sounds/skeleton_death.ogg", Sound.class)).thenReturn(true);
+    when(resources.getAsset("sounds/skeleton_death.ogg", Sound.class)).thenReturn(sound);
+    ServiceLocator.registerResourceService(resources);
+    Entity enemy = new Entity();
+    CombatStatsComponent combatStats = new CombatStatsComponent(100, 10);
+    enemy.addComponent(combatStats);
+    enemy.addComponent(new EnemyDeathComponent("sounds/skeleton_death.ogg"));
+    enemy.create();
+
+    combatStats.setHealth(0);
+    combatStats.setHealth(0);
+
+    verify(sound, times(1)).play(0.6f);
+    verify(resources, never()).getAsset(EnemyDeathComponent.DEFAULT_DEATH_SOUND, Sound.class);
+  }
+
+  @Test
+  void shouldDefaultToTheGenericDeathSound() {
+    assertEquals(
+        EnemyDeathComponent.DEFAULT_DEATH_SOUND, new EnemyDeathComponent().getDeathSound());
   }
 }

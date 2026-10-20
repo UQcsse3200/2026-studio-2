@@ -371,6 +371,8 @@ public class InventoryComponent extends Component {
     // Stored mutable so internal operations (e.g. removeItem) can update slots in place.
     // External callers still receive an immutable snapshot via getSlots().
     this.slots = new ArrayList<>(slots);
+    notifyInventoryChanged();
+    notifySelectionChanged();
   }
 
   /**

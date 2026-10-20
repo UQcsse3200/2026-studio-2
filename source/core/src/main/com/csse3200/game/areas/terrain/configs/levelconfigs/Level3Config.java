@@ -3,6 +3,7 @@ package com.csse3200.game.areas.terrain.configs.levelconfigs;
 import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.areas.terrain.configs.*;
+import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.components.item.*;
 import com.csse3200.game.components.item.consumables.HealthPotion;
 import com.csse3200.game.components.item.consumables.PoisonPotion;
@@ -37,7 +38,7 @@ public class Level3Config extends LevelConfig {
   GridPoint2 risingWaterSpawn;
   float risingWaterSpeed;
 
-  public Level3Config(Entity player) {
+  public Level3Config(Entity player, CameraComponent camera) {
     // Textures
     // TFP = Texture File Path
     platformTFP = PLATFORM_TEXTURE;
@@ -415,7 +416,8 @@ public class Level3Config extends LevelConfig {
                               new Vector2(25f, 103f),
                               new Vector2(2f, 106f),
                               new Vector2(13.5f, 106f),
-                              new Vector2(25f, 106f))))),
+                              new Vector2(25f, 106f)),
+                          camera))),
           0f,
           1,
           SpawnerComponent.ACTIVATION_MODE.NORMAL,

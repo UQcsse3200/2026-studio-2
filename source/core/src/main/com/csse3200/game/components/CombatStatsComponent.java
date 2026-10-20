@@ -184,9 +184,21 @@ public class CombatStatsComponent extends Component {
   }
 
   public void hit(CombatStatsComponent attacker) {
+    BossPhaseComponent phase;
+    if (entity == null) {
+      phase = null;
+    } else {
+      phase = entity.getComponent(BossPhaseComponent.class);
+    }
+
+    if (phase != null && phase.isTransitioning()) {
+      return;
+    }
+
     if (godMode) {
       return;
     }
+
     GameTime timeSource = ServiceLocator.getTimeSource();
     long currentTime = timeSource == null ? 0 : timeSource.getTime();
     if (currentTime < invulnerableUntil) {

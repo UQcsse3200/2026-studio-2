@@ -1,6 +1,7 @@
 package com.csse3200.game.components;
 
 import com.badlogic.gdx.math.Vector2;
+import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.List;
 import java.util.Random;
@@ -16,21 +17,26 @@ public class EnemyTeleportComponent extends Component {
   private final long damagedTpDelay;
   private final long tpFreq;
   private final Random random;
+  private final long hitTpCooldown;
+  private long nextHitTpTime;
 
   private long damagedTpTime;
   private long nextTpTime;
   private Vector2 currentTpPosition;
   private int prevHealth;
+  private boolean laserActive = false;
 
   /**
    * @param tpPositions predetermined teleport locations available to enemy
    * @param damagedTpDelay delay before teleporting after taking damage (milliseconds)
    * @param tpFreq frequency of periodic teleports (milliseconds)
    */
-  public EnemyTeleportComponent(List<Vector2> tpPositions, long damagedTpDelay, long tpFreq) {
+  public EnemyTeleportComponent(
+      List<Vector2> tpPositions, long damagedTpDelay, long tpFreq, long hitTpCooldown) {
     this.tpPositions = tpPositions;
     this.damagedTpDelay = damagedTpDelay;
     this.tpFreq = tpFreq;
+    this.hitTpCooldown = hitTpCooldown;
     this.random = new Random();
 
     damagedTpTime = -1;
@@ -38,8 +44,10 @@ public class EnemyTeleportComponent extends Component {
 
   @Override
   public void create() {
-    entity.getEvents().addListener("hitPlayer", this::teleport);
+    entity.getEvents().addListener("hitPlayer", this::hitTeleport);
     entity.getEvents().addListener("updateHealth", this::damagedTeleport);
+    entity.getEvents().addListener("laserStart", () -> laserActive = true);
+    entity.getEvents().addListener("laserEnd", () -> laserActive = false);
 
     nextTpTime = ServiceLocator.getTimeSource().getTime() + tpFreq;
     prevHealth =
@@ -50,6 +58,17 @@ public class EnemyTeleportComponent extends Component {
 
   @Override
   public void update() {
+
+    BossPhaseComponent phase = entity.getComponent(BossPhaseComponent.class);
+
+    if (phase != null && phase.isTransitioning()) {
+      return;
+    }
+
+    if (laserActive) {
+      return;
+    }
+
     long currentTime = ServiceLocator.getTimeSource().getTime();
 
     if ((damagedTpTime >= 0) && (currentTime >= damagedTpTime)) {
@@ -74,6 +93,20 @@ public class EnemyTeleportComponent extends Component {
     damagedTpTime = currentTime + damagedTpDelay;
   }
 
+  private void hitTeleport() {
+    long currentTime = ServiceLocator.getTimeSource().getTime();
+
+    if (laserActive) {
+      return;
+    }
+
+    if (currentTime < nextHitTpTime) {
+      return;
+    }
+    nextHitTpTime = currentTime + hitTpCooldown;
+    teleport();
+  }
+
   private void teleport() {
     if (tpPositions.isEmpty()) {
       return;
@@ -87,6 +120,12 @@ public class EnemyTeleportComponent extends Component {
     currentTpPosition = availableTpPositions.get(random.nextInt(availableTpPositions.size()));
     entity.setPosition(currentTpPosition);
 
+    PhysicsComponent physics = entity.getComponent(PhysicsComponent.class);
+
+    if (physics != null) {
+      physics.getBody().setLinearVelocity(0f, 0f);
+      physics.getBody().setAngularVelocity(0f);
+    }
     // sprint 4: RUN TPed ANIMATION (no charge up time for teleport so animation is based on having
     // tped)
   }

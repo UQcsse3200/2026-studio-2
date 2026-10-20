@@ -9,6 +9,7 @@ import com.csse3200.game.areas.GameArea;
 import com.csse3200.game.areas.Level1GameArea;
 import com.csse3200.game.areas.Level2GameArea;
 import com.csse3200.game.areas.Level3GameArea;
+import com.csse3200.game.areas.LevelBossGameArea;
 import com.csse3200.game.areas.terrain.TerrainFactory;
 import com.csse3200.game.components.ButtonSound;
 import com.csse3200.game.components.GameVolume;
@@ -64,6 +65,7 @@ public class LevelsGameScreen extends BaseGameScreen {
   private static final String[] mainGameAtlas = createAtlas();
 
   private boolean levelSwapQueued = false;
+  private boolean levelCompleteQueued = false;
   private GameArea currentGameArea;
   private GameArea nextGameArea;
   private String level = LEVEL1;
@@ -87,7 +89,7 @@ public class LevelsGameScreen extends BaseGameScreen {
     WIN_MUSIC, LOSE_MUSIC, "sounds/Main_menu_sound.mp3"
   };
   private final Level1GameArea level1GameArea;
-  // Cheat mode (Backspace): zero gravity plus free vertical movement. Starts off.
+  // Cheat mode (terminal command "cheats"): zero gravity plus free vertical movement. Starts off.
   private boolean cheats = false;
   // Gravity scale to restore when cheat mode is switched off.
   private float gravity = 1f;
@@ -195,13 +197,38 @@ public class LevelsGameScreen extends BaseGameScreen {
   private void registerLevelSwap() {
     Entity levelChanger = currentGameArea.getLevelChanger();
     if (levelChanger != null) {
-      levelChanger.getEvents().addListener("triggerNextLevel", this::queueAreaSwap);
+      levelChanger.getEvents().addListener("triggerNextLevel", this::completeLevel);
       levelChanger
           .getEvents()
           .addListener(
               "triggerNextLevel",
-              (String nextLevel) -> SoundEffects.play("sounds/level_complete.wav", 0.5f));
+              (String nextLevel) -> SoundEffects.play("sounds/level_complete.wav", 1.0f));
     }
+  }
+
+  /** Runs the flashback between levels without disposing the world during its update. */
+  private void completeLevel(String nextLevel) {
+    if (levelCompleteQueued) {
+      return;
+    }
+    String cutscene;
+    GdxGame.ScreenType minigame;
+    switch (nextLevel) {
+      case LEVEL2:
+        cutscene = "cutscene2";
+        minigame = GdxGame.ScreenType.CYCLOPS_MINIGAME;
+        break;
+      case LEVEL3:
+        cutscene = "cutscene4";
+        minigame = GdxGame.ScreenType.STORY_BLACKJACK;
+        break;
+      default:
+        queueAreaSwap(nextLevel);
+        return;
+    }
+    levelCompleteQueued = true;
+    game.savePlayerState(player);
+    Gdx.app.postRunnable(() -> game.playCutscene(cutscene, minigame));
   }
 
   /**
@@ -222,6 +249,9 @@ public class LevelsGameScreen extends BaseGameScreen {
         break;
       case LEVEL3:
         nextGameArea = new Level3GameArea(terrainFactory, renderer.getCamera(), player);
+        break;
+      case "boss":
+        nextGameArea = new LevelBossGameArea(terrainFactory, renderer.getCamera(), player);
         break;
       default:
         return;
@@ -269,6 +299,29 @@ public class LevelsGameScreen extends BaseGameScreen {
     return interaction != null && interaction.consumeShopClosed();
   }
 
+  /**
+   * Moves on to the next level, for the "skipLevel" terminal command.
+   *
+   * @return true if a level swap was queued, false if there is no next level or a minigame overlay
+   *     is open
+   */
+  private boolean skipLevel() {
+    if (minigameOverlayManager.isActive()) {
+      return false;
+    }
+    String next;
+    if (level.equals(LEVEL1)) {
+      next = LEVEL2;
+    } else if (level.equals(LEVEL2)) {
+      next = LEVEL3;
+    } else {
+      logger.info("Already on the last level, nothing to skip to");
+      return false;
+    }
+    queueAreaSwap(next);
+    return true;
+  }
+
   private void toggleCheatMode() {
     cheats = !cheats;
     PhysicsComponent physics = player.getComponent(PhysicsComponent.class);
@@ -307,20 +360,6 @@ public class LevelsGameScreen extends BaseGameScreen {
       debug.setActive(!debug.getActive());
     }
 
-    if (!terminalOpen && Gdx.input.isKeyJustPressed(Input.Keys.BACKSPACE)) {
-      toggleCheatMode();
-    }
-
-    if (!minigameOverlayManager.isActive() && Gdx.input.isKeyJustPressed(Input.Keys.PAGE_UP)) {
-      if (level.equals(LEVEL1)) {
-        level = LEVEL2;
-      } else if (level.equals(LEVEL2)) {
-        level = LEVEL3;
-      } else if (level.equals(LEVEL3)) {
-        level = "none";
-      }
-      queueAreaSwap(level);
-    }
     currentGameArea.updateLevelMap();
 
     if (player.getPosition().y > 98) {
@@ -479,6 +518,7 @@ public class LevelsGameScreen extends BaseGameScreen {
           toggleCheatMode();
           return true;
         });
+    terminal.addCommand("skipLevel", args -> skipLevel());
     ui.addComponent(new InputDecorator(stage, 10))
         .addComponent(new PerformanceDisplay())
         .addComponent(new CoordinateDisplay(renderer.getCamera()))

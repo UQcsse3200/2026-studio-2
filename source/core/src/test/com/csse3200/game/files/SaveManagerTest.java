@@ -9,6 +9,7 @@ import com.badlogic.gdx.math.GridPoint2;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.inventory.InventoryComponent;
 import com.csse3200.game.components.item.ItemType;
+import com.csse3200.game.components.itemdictionary.ItemDictionaryComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.extensions.GameExtension;
 import java.io.IOException;
@@ -160,6 +161,36 @@ class SaveManagerTest {
     assertEquals(12, stats.getMaxHealth());
     assertEquals(250, inventory.getGold());
     assertEquals(5, inventory.getItemCount(ItemType.STANDARD_ARROW));
+  }
+
+  @Test
+  void shouldSaveAndRestoreTheItemDictionary() {
+    ItemDictionaryComponent dictionary = new ItemDictionaryComponent();
+    Entity player =
+        new Entity()
+            .addComponent(new CombatStatsComponent(7, 12, 3))
+            .addComponent(new InventoryComponent(250))
+            .addComponent(dictionary);
+    dictionary.unlockItem(ItemType.FIRE_ARROW);
+    dictionary.unlockItem(ItemType.HEALTH_POTION);
+
+    // Write the save to disk and read it back, like quitting and loading the game.
+    SaveFile save = SaveManager.newGameSave(0);
+    save.player = SaveFile.PlayerSaveData.capture(player);
+    SaveManager.write(0, save);
+    SaveFile loaded = SaveManager.read(0);
+
+    ItemDictionaryComponent restoredDictionary = new ItemDictionaryComponent();
+    Entity restored =
+        new Entity()
+            .addComponent(new CombatStatsComponent(10, 10, 1))
+            .addComponent(new InventoryComponent(0))
+            .addComponent(restoredDictionary);
+    loaded.player.applyTo(restored);
+
+    assertTrue(restoredDictionary.isDiscovered(ItemType.FIRE_ARROW));
+    assertTrue(restoredDictionary.isDiscovered(ItemType.HEALTH_POTION));
+    assertEquals(2, restoredDictionary.getDiscoveredCount());
   }
 
   @Test

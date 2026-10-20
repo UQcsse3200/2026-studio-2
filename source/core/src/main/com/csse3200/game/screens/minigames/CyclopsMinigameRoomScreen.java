@@ -10,12 +10,12 @@ import com.badlogic.gdx.utils.Align;
 import com.csse3200.game.GdxGame;
 import com.csse3200.game.areas.CyclopsMinigameArea;
 import com.csse3200.game.areas.terrain.TerrainFactory;
+import com.csse3200.game.components.ButtonSound;
 import com.csse3200.game.components.TextBoxComponent;
 import com.csse3200.game.components.gamearea.PerformanceDisplay;
 import com.csse3200.game.components.minigames.cyclopsminigame.CyclopsMinigameActions;
 import com.csse3200.game.components.minigames.cyclopsminigame.CyclopsMinigameDisplay;
 import com.csse3200.game.components.minigames.cyclopsminigame.CyclopsMinigameLogic;
-import com.csse3200.game.cutscene.CutsceneLoader;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.entities.factories.RenderFactory;
@@ -133,6 +133,7 @@ public class CyclopsMinigameRoomScreen extends ScreenAdapter {
     logger.debug("Loading assets");
     ResourceService resourceService = ServiceLocator.getResourceService();
     resourceService.loadTextures(cyclopsMinigameTextures);
+    ButtonSound.load(resourceService);
     ServiceLocator.getResourceService().loadAll();
   }
 
@@ -140,6 +141,7 @@ public class CyclopsMinigameRoomScreen extends ScreenAdapter {
     logger.debug("Unloading assets");
     ResourceService resourceService = ServiceLocator.getResourceService();
     resourceService.unloadAssets(cyclopsMinigameTextures);
+    ButtonSound.unload(resourceService);
   }
 
   /**
@@ -163,7 +165,7 @@ public class CyclopsMinigameRoomScreen extends ScreenAdapter {
                 300,
                 16,
                 3,
-                "flat-earth/skin/fonts/PixeloidSans.fnt",
+                "flat-earth/skin/fonts/alagard.fnt",
                 Align.center,
                 List.of(
                     "Hmm... there's a cyclops in the way, I'll need to get past...",
@@ -181,17 +183,7 @@ public class CyclopsMinigameRoomScreen extends ScreenAdapter {
     Terminal terminal = new Terminal(game, GdxGame.ScreenType.LEVEL_2_GAME);
 
     ServiceLocator.getCyclopsMinigameEventHandler()
-        .addListener(
-            "win",
-            () -> {
-              CutsceneLoader loader = new CutsceneLoader();
-              CutsceneLoader.Result result = loader.load("cutscene3");
-              if (!result.isSuccess()) {
-                logger.debug("Could not start cutscene '{}': {}", "cutscene3", result.getError());
-              } else {
-                game.startCutscene(result.getCutscene(), GdxGame.ScreenType.LEVEL_2_GAME);
-              }
-            });
+        .addListener("win", () -> game.playCutscene("cutscene3", GdxGame.ScreenType.LEVEL_2_GAME));
     ServiceLocator.getCyclopsMinigameEventHandler()
         .addListener("died", CyclopsMinigameRoomScreen::showGameOver);
 

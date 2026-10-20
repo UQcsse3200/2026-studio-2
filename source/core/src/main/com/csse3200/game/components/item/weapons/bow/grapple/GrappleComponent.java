@@ -33,7 +33,9 @@ public class GrappleComponent extends Component {
   /** How far in front of the player's centre, in player widths, a fired arrow spawns. */
   public static final float SPAWN_OFFSET = 0.6f;
 
-  private static final float GRAPPLE_COOLDOWN = 2f;
+  // Seconds after a missed shot before another can be fired. Zero: the grapple can be fired again
+  // straight away, which also retires a missed shot still in flight.
+  private static final float GRAPPLE_COOLDOWN = 0f;
   private static final float SWING_FORCE = 7f;
   private static final float MAX_SWING_SPEED = 7f;
   private static final float SWING_DAMPING = 0.5f;
@@ -92,7 +94,6 @@ public class GrappleComponent extends Component {
   @Override
   public void create() {
     physicsComponent = entity.getComponent(PhysicsComponent.class);
-    entity.getEvents().<Vector2>addListener("grappleFire", this::fire);
     entity.getEvents().addListener("grappleRelease", this::release);
     entity.getEvents().addListener("grappleSwing", this::swing);
     entity.getEvents().addListener("grappleClimbStart", this::startClimbing);
@@ -262,7 +263,7 @@ public class GrappleComponent extends Component {
     try {
       Sound arrowSound =
           ServiceLocator.getResourceService().getAsset("sounds/Arrow_release.wav", Sound.class);
-      arrowSound.play(GameVolume.scale(0.4f));
+      arrowSound.play(GameVolume.scale(0.25f));
     } catch (Exception e) {
       // skip
     }

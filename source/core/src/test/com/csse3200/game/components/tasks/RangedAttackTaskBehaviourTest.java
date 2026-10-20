@@ -5,20 +5,24 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.when;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
+import com.csse3200.game.components.lighting.PointLightComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.physics.components.HitboxComponent;
+import com.csse3200.game.services.MockServices;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mockito;
 
 /** Enemies that shoot: when they will, how often, and where the shot starts. */
 @ExtendWith(GameExtension.class)
@@ -37,6 +41,9 @@ class RangedAttackTaskBehaviourTest {
     world = new TaskTestWorld();
     entities = new EntityService();
     ServiceLocator.registerEntityService(entities);
+    MockServices.registerLighting();
+
+    MockServices.registerLighting();
 
     // Projectiles load a texture when built: hand out a one by one texture for any path
     Texture texture = mock(Texture.class);
@@ -159,7 +166,9 @@ class RangedAttackTaskBehaviourTest {
     world.advance(10_000);
     assertEquals(PRIORITY, task.getPriority());
 
-    task.update();
+    try (var pointLights = mockConstruction(PointLightComponent.class)) {
+      task.update();
+    }
     assertEquals(-1, task.getPriority());
 
     world.advance((long) (COOLDOWN * 1000) - 1);
@@ -175,7 +184,9 @@ class RangedAttackTaskBehaviourTest {
     RangedAttackTask task = archerTask();
     world.advance(10_000);
 
-    task.update();
+    try (var pointLights = mockConstruction(PointLightComponent.class)) {
+      task.update();
+    }
 
     assertEquals(1, shotsSoFar());
   }
@@ -196,7 +207,9 @@ class RangedAttackTaskBehaviourTest {
     RangedAttackTask task = archerTask();
     world.advance(10_000);
 
-    task.update();
+    try (var pointLights = mockConstruction(PointLightComponent.class)) {
+      task.update();
+    }
 
     // Enemy centre (0.5, 0.5): 0.8 towards the player and 0.15 below
     Vector2 start = lastShot().getCenterPosition();
@@ -210,7 +223,9 @@ class RangedAttackTaskBehaviourTest {
     RangedAttackTask task = archerTask();
     world.advance(10_000);
 
-    task.update();
+    try (var pointLights = mockConstruction(PointLightComponent.class)) {
+      task.update();
+    }
 
     Vector2 start = lastShot().getCenterPosition();
     assertEquals(-0.3f, start.x, 0.02f, "0.8 to the left of the enemy's centre at 0.5");
@@ -233,7 +248,9 @@ class RangedAttackTaskBehaviourTest {
     RangedAttackTask task = archerTask();
     world.advance(10_000);
 
-    task.update();
+    try (var pointLights = mockConstruction(PointLightComponent.class)) {
+      task.update();
+    }
 
     HitboxComponent hitbox = lastShot().getComponent(HitboxComponent.class);
     assertNotNull(hitbox);
@@ -245,7 +262,9 @@ class RangedAttackTaskBehaviourTest {
     RangedAttackTask task = task("summon");
     world.advance(10_000);
 
-    task.update();
+    try (var ignored = Mockito.mockConstruction(PointLightComponent.class)) {
+      task.update();
+    }
 
     assertEquals(1, shotsSoFar());
     assertEquals(
@@ -258,7 +277,9 @@ class RangedAttackTaskBehaviourTest {
     RangedAttackTask task = task("calypso");
     world.advance(10_000);
 
-    task.update();
+    try (var ignored = Mockito.mockConstruction(PointLightComponent.class)) {
+      task.update();
+    }
 
     assertEquals(1, shotsSoFar());
     assertEquals(

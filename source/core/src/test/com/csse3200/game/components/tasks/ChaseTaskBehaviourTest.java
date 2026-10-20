@@ -16,7 +16,7 @@ class ChaseTaskBehaviourTest extends AbstractChaseTaskTest {
   @SuppressWarnings("unchecked")
   <T extends DefaultTask & PriorityTask> T createTask(
       Entity target, int priority, float viewDistance, float maxChaseDistance) {
-    return (T) new ChaseTask(target, priority, viewDistance, maxChaseDistance);
+    return (T) new ChaseTask(target, priority, viewDistance, maxChaseDistance, "ground");
   }
 
   /** An enemy on a floor that ends at x = 1, just ahead of it, with the same player as ever. */
@@ -30,7 +30,7 @@ class ChaseTaskBehaviourTest extends AbstractChaseTaskTest {
 
   @Test
   void shouldHoldItsGroundAtALedgeAheadOnTheRight() {
-    ChaseTask task = new ChaseTask(player, PRIORITY, VIEW_DISTANCE, MAX_CHASE_DISTANCE);
+    ChaseTask task = new ChaseTask(player, PRIORITY, VIEW_DISTANCE, MAX_CHASE_DISTANCE, "ground");
     Entity edgeEnemy = enemyAtALedge(task);
     task.start();
 
@@ -49,7 +49,7 @@ class ChaseTaskBehaviourTest extends AbstractChaseTaskTest {
     var edgeWorld = new TaskTestWorld();
     edgeWorld.addGround(4.9f, 50f); // nothing under the probe at x = 5 - 0.3
     Entity edgeEnemy = edgeWorld.enemyAt(5f, 0f);
-    ChaseTask task = new ChaseTask(player, PRIORITY, VIEW_DISTANCE, MAX_CHASE_DISTANCE);
+    ChaseTask task = new ChaseTask(player, PRIORITY, VIEW_DISTANCE, MAX_CHASE_DISTANCE, "ground");
     task.create(() -> edgeEnemy);
     player.setPosition(2f, 0f); // to the left
     task.start();
@@ -61,7 +61,7 @@ class ChaseTaskBehaviourTest extends AbstractChaseTaskTest {
 
   @Test
   void shouldChaseOverSolidFloor() {
-    ChaseTask task = new ChaseTask(player, PRIORITY, VIEW_DISTANCE, MAX_CHASE_DISTANCE);
+    ChaseTask task = new ChaseTask(player, PRIORITY, VIEW_DISTANCE, MAX_CHASE_DISTANCE, "ground");
     task.create(() -> enemy);
     task.start();
 
@@ -75,7 +75,7 @@ class ChaseTaskBehaviourTest extends AbstractChaseTaskTest {
   @Test
   void shouldGoOnceThePlayerIsOnTheOtherSideOfTheLedgeToo() {
     // The ledge only matters in the direction it is travelling: turning round clears it
-    ChaseTask task = new ChaseTask(player, PRIORITY, VIEW_DISTANCE, MAX_CHASE_DISTANCE);
+    ChaseTask task = new ChaseTask(player, PRIORITY, VIEW_DISTANCE, MAX_CHASE_DISTANCE, "ground");
     Entity edgeEnemy = enemyAtALedge(task);
     task.start();
     player.setPosition(-3f, 0f); // behind it now, over floor

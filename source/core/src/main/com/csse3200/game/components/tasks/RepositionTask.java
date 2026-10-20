@@ -11,16 +11,18 @@ public class RepositionTask extends DefaultTask implements PriorityTask {
   private final Entity target;
   private final int priority;
   private final float repositionDistance;
+  private final String behaviour;
 
   private MovementTask movementTask;
   private boolean repositionRequired;
 
   private EdgeDetectTask edgeDetector;
 
-  public RepositionTask(Entity target, int priority, float repositionDistance) {
+  public RepositionTask(Entity target, int priority, float repositionDistance, String behaviour) {
     this.target = target;
     this.priority = priority;
     this.repositionDistance = repositionDistance;
+    this.behaviour = behaviour;
   }
 
   @Override
@@ -36,6 +38,10 @@ public class RepositionTask extends DefaultTask implements PriorityTask {
   @Override
   public void start() {
     super.start();
+
+    if (!behaviour.equals("flying")) {
+      edgeDetector = new EdgeDetectTask(0.3f);
+    }
 
     Vector2 enemyPos = owner.getEntity().getPosition();
     Vector2 targetPos = target.getPosition();
@@ -55,13 +61,15 @@ public class RepositionTask extends DefaultTask implements PriorityTask {
     Vector2 enemyPos = owner.getEntity().getPosition();
     Vector2 targetPos = target.getPosition();
     float direction = Math.signum(enemyPos.x - targetPos.x);
-    if (!canStep(owner.getEntity(), direction)) {
-      movementTask.stop();
-      status = Status.FINISHED;
-      repositionRequired = false;
-      return;
-    }
 
+    if (!behaviour.equals("flying")) {
+      if (!edgeDetector.isGroundAhead(owner.getEntity(), direction)) {
+        movementTask.stop();
+        status = Status.FINISHED;
+        repositionRequired = false;
+        return;
+      }
+    }
     movementTask.update();
 
     if (movementTask.getStatus() != Status.ACTIVE) {
@@ -75,20 +83,10 @@ public class RepositionTask extends DefaultTask implements PriorityTask {
    */
   protected Vector2 directionAwayFrom(Vector2 enemyPos, Vector2 targetPos) {
     Vector2 away = enemyPos.cpy().sub(targetPos);
-    away.y = 0;
-    return away.nor();
-  }
-
-  /**
-   * @param direction 1 to step right, -1 to step left
-   * @return false if the enemy must not step that way. On the ground that is when there is no floor
-   *     ahead, so it does not back off the edge of a platform.
-   */
-  protected boolean canStep(Entity enemy, float direction) {
-    if (edgeDetector == null) {
-      edgeDetector = new EdgeDetectTask(0.3f);
+    if (!behaviour.equals("flying")) {
+      away.y = 0;
     }
-    return edgeDetector.isGroundAhead(enemy, direction);
+    return away.nor();
   }
 
   @Override
