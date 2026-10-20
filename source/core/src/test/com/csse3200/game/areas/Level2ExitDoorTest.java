@@ -17,6 +17,7 @@ import com.csse3200.game.areas.terrain.TerrainComponent;
 import com.csse3200.game.areas.terrain.TerrainFactory;
 import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.components.level.LevelTriggerComponent;
+import com.csse3200.game.components.lighting.PointLightComponent;
 import com.csse3200.game.components.player.PlayerActions;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
@@ -29,6 +30,7 @@ import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.rendering.CaveEntranceRenderComponent;
 import com.csse3200.game.rendering.RenderService;
 import com.csse3200.game.services.GameTime;
+import com.csse3200.game.services.MockServices;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import java.lang.reflect.Method;
@@ -63,6 +65,7 @@ class Level2ExitDoorTest {
     GameTime time = mock(GameTime.class);
     when(time.getDeltaTime()).thenReturn(STEP);
     ServiceLocator.registerTimeSource(time);
+    MockServices.registerLighting();
     physics = new PhysicsService();
     ServiceLocator.registerPhysicsService(physics);
     entityService = new EntityService();
@@ -95,7 +98,9 @@ class Level2ExitDoorTest {
     area.terrain = terrain;
     Method spawnExitDoor = Level2GameArea.class.getDeclaredMethod("spawnExitDoor");
     spawnExitDoor.setAccessible(true);
-    spawnExitDoor.invoke(area);
+    try (var ignored = mockConstruction(PointLightComponent.class)) {
+      spawnExitDoor.invoke(area);
+    }
 
     door = area.getLevelChanger();
     door.getEvents().addListener("triggerNextLevel", (String level) -> requestedLevels.add(level));
