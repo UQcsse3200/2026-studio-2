@@ -150,6 +150,46 @@ class TutorialComponentTest {
         () -> new TutorialComponent(text, List.of(step(null, new String[] {"LEFTY"}, null))));
   }
 
+  @Test
+  void onFinishedRunsWhenTheFinalStepCompletes() {
+    TextBoxComponent text = mock(TextBoxComponent.class);
+    Runnable onFinished = mock(Runnable.class);
+    TutorialComponent tutorial =
+        new TutorialComponent(text, List.of(step(new String[] {"SPACE"}, null, null)), onFinished);
+    tutorial.create();
+    tutorial.keyDown(Keys.A);
+    verifyNoInteractions(onFinished);
+    tutorial.keyDown(Keys.SPACE);
+    verify(onFinished).run();
+  }
+
+  @Test
+  void onFinishedDoesNotRunWhenDismissedEarly() {
+    TextBoxComponent text = mock(TextBoxComponent.class);
+    // The UI reports dismissal after dismiss() is called, as the real textbox does.
+    doAnswer(
+            call -> {
+              when(text.isDismissed()).thenReturn(true);
+              return null;
+            })
+        .when(text)
+        .dismiss();
+    Runnable onFinished = mock(Runnable.class);
+    TutorialComponent tutorial =
+        new TutorialComponent(
+            text,
+            List.of(step(new String[] {"SPACE"}, null, null), step(new String[] {"A"}, null, null)),
+            onFinished);
+    tutorial.create();
+    tutorial.keyDown(Keys.SPACE);
+    // The tutorial is dismissed before its final step, e.g. its screen ends.
+    tutorial.dispose();
+    // A late input must neither advance the dismissed tutorial nor fire the callback.
+    tutorial.keyDown(Keys.A);
+    verify(onFinished, never()).run();
+    verify(text).dismiss();
+  }
+
   private static List<TutorialStepConfig> movementSteps() {
     TutorialStepConfig move = step(new String[] {"A", "D"}, null, null);
     move.requireAll = true;

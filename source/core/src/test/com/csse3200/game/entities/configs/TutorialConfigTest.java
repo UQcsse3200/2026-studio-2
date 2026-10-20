@@ -14,7 +14,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 class TutorialConfigTest {
 
   @ParameterizedTest
-  @ValueSource(strings = {"tut1", "tut2", "tut3", "tut4"})
+  @ValueSource(strings = {"tut1", "tut2", "tut3", "tut4", "tut5", "tut6"})
   void shippedTutorialConfigsAreValid(String name) {
     TutorialConfig config = FileLoader.readClass(TutorialConfig.class, "configs/" + name + ".json");
     assertNotNull(config, name + " should load");
