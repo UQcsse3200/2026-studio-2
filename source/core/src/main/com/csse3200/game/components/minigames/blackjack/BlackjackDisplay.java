@@ -34,6 +34,7 @@ public class BlackjackDisplay extends UIComponent {
   private static final String PLACE_BET = "READY";
 
   private static final float Z_INDEX = 2f;
+  private static final float PREF_WIDTH = 200f;
   private static final float CARD_WIDTH = 100f;
   private static final float CARD_HEIGHT = 145f;
   private static final float MAX_HAND_WIDTH = 700f;
@@ -358,30 +359,37 @@ public class BlackjackDisplay extends UIComponent {
     status.add(betLabel).padRight(9f);
     status.add(betField).width(130f).height(34f);
 
+    Table tempTable = new Table();
+
+    Table middle = new Table();
+    middle.add(dealerRegion).expandX().fillX().height(245f).top();
+    middle.row();
+    middle.add(centerRegion).expand().center();
+    middle.row();
+    middle.add(playerRegion).expandX().fillX().height(220f).bottom();
+    middle.row();
+    middle.add(status).expandX().fillX().center();
+
     Table buttons = new Table();
-
-    buttons.add(newRoundButton).width(192f).height(67f).pad(5f);
-    buttons.add(hitButton).width(192f).height(67f).pad(5f);
-    buttons.add(standButton).width(192f).height(67f).pad(5f);
     buttons.add(backButton).width(192f).height(67f).pad(5f);
+    buttons.row();
     buttons.add(soundButton).width(192f).height(67f).pad(5f);
+    buttons.row();
+    buttons.add(newRoundButton).width(192f).height(67f).pad(5f);
+    buttons.row();
+    buttons.add(hitButton).width(192f).height(67f).pad(5f);
+    buttons.row();
+    buttons.add(standButton).width(192f).height(67f).pad(5f);
 
-    table.add(dealerRegion).expandX().fillX().height(245f).top();
-    table.row();
-    table.add(centerRegion).expand().center();
-    table.row();
-    table.add(playerRegion).expandX().fillX().height(220f).bottom();
-    table.row();
-    table.add(status).height(52f).center();
-    table.row();
-    table.add(buttons).height(85f).padBottom(12f).center();
+    table.add(tempTable).fill().prefWidth(PREF_WIDTH);
+    table.add(middle).fill().expandX();
+    table.add(buttons).fill().prefWidth(PREF_WIDTH);
 
-    stage.addActor(table);
-
-    table.pack();
     table.setFillParent(true);
-    table.validate();
+    table.pack();
     table.toFront();
+    table.setDebug(true);
+    stage.addActor(table);
     buildResultOverlay();
   }
 
