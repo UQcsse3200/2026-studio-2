@@ -20,7 +20,15 @@
     "images/portraits/calypsoWorried.jpeg"
   ],
   "steps": [
-    {"keys": ["TAB"]},
-    {"keys": ["TAB"]}
+    {
+      "keys": [
+        "TAB"
+      ]
+    },
+    {
+      "keys": [
+        "TAB"
+      ]
+    }
   ]
 }

@@ -20,7 +20,15 @@
     "images/portraits/calypsoRegret.jpeg"
   ],
   "steps": [
-    {"keys": ["TAB"]},
-    {"keys": ["TAB"]}
+    {
+      "keys": [
+        "TAB"
+      ]
+    },
+    {
+      "keys": [
+        "TAB"
+      ]
+    }
   ]
 }

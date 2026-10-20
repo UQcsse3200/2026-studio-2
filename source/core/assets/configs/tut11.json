@@ -20,11 +20,22 @@
     "images/portraits/calypsoWorried.jpeg",
     "images/portraits/calypsoRegret.jpeg",
     "images/portraits/calypsoRegret.jpeg"
-
   ],
   "steps": [
-    {"keys": ["TAB"]},
-    {"keys": ["TAB"]},
-    {"keys": ["TAB"]}
+    {
+      "keys": [
+        "TAB"
+      ]
+    },
+    {
+      "keys": [
+        "TAB"
+      ]
+    },
+    {
+      "keys": [
+        "TAB"
+      ]
+    }
   ]
 }

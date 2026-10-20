@@ -20,7 +20,15 @@
     "images/portraits/calypsoOminous.jpeg"
   ],
   "steps": [
-    {"keys": ["TAB"]},
-    {"keys": ["TAB"]}
+    {
+      "keys": [
+        "TAB"
+      ]
+    },
+    {
+      "keys": [
+        "TAB"
+      ]
+    }
   ]
 }
