@@ -49,11 +49,11 @@ public class Level1Config extends LevelConfig {
     // one tile left so its widened body clears the original wall at x=63.
     movingPlatforms =
         new MovingPlatformConfig[] {
-          moving(new GridPoint2(8, 15), new GridPoint2(8, 15), new GridPoint2(14, 15), 2, 0, 0),
-          moving(new GridPoint2(25, 15), new GridPoint2(25, 15), new GridPoint2(36, 15), 3, 0, 0),
-          moving(new GridPoint2(60, 9), new GridPoint2(60, 2), new GridPoint2(60, 9), 0, 2, 10),
-          moving(new GridPoint2(60, 10), new GridPoint2(60, 10), new GridPoint2(60, 15), 0, 2, 0),
-          moving(new GridPoint2(75, 1), new GridPoint2(75, 1), new GridPoint2(75, 17), 0, 2.5f, 10),
+          moving(8, 15, 8, 15, 14, 15, 2, 0, 0),
+          moving(25, 15, 25, 15, 36, 15, 3, 0, 0),
+          moving(60, 9, 60, 2, 60, 9, 0, 2, 10),
+          moving(60, 10, 60, 10, 60, 15, 0, 2, 0),
+          moving(75, 1, 75, 1, 75, 17, 0, 2.5f, 10),
         };
 
     spikes =
@@ -122,20 +122,23 @@ public class Level1Config extends LevelConfig {
   }
 
   private MovingPlatformConfig moving(
-      GridPoint2 position,
-      GridPoint2 from,
-      GridPoint2 to,
+      int x,
+      int y,
+      int fromX,
+      int fromY,
+      int toX,
+      int toY,
       float speedX,
       float speedY,
       int grapple) {
     return new MovingPlatformConfig(
-        position,
+        new GridPoint2(x, y),
         3,
         1,
         grapple,
         platformTFP,
-        new Vector2(from.x, from.y),
-        new Vector2(to.x, to.y),
+        new Vector2(fromX, fromY),
+        new Vector2(toX, toY),
         new Vector2(speedX, speedY),
         new String[] {});
   }
