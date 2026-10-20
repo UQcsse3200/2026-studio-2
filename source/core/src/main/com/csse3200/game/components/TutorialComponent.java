@@ -1,5 +1,6 @@
 package com.csse3200.game.components;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.csse3200.game.entities.configs.Portrait;
 import com.csse3200.game.entities.factories.TextBoxFactory;
@@ -20,6 +21,7 @@ public class TutorialComponent extends InputComponent {
   private boolean seenA = false;
   private boolean seenD = false;
   private boolean finished = false;
+  private boolean disposed = false;
 
   public TutorialComponent(TextBoxComponent textBox) {
     this(textBox, () -> {});
@@ -91,11 +93,16 @@ public class TutorialComponent extends InputComponent {
     textBox.dismiss();
     finished = true;
     onFinished.run();
-    dispose();
+    // Removing this input handler during keyDown can skip the player's SHIFT handler.
+    Gdx.app.postRunnable(this::dispose);
   }
 
   @Override
   public void dispose() {
+    if (disposed) {
+      return;
+    }
+    disposed = true;
     if (textBox != null && !textBox.isDismissed()) {
       textBox.dismiss();
     }

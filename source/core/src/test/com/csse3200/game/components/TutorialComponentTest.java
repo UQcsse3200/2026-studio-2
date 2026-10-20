@@ -7,6 +7,7 @@ import com.badlogic.gdx.Input.Keys;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.extensions.GameExtension;
+import com.csse3200.game.input.InputComponent;
 import com.csse3200.game.input.InputService;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.terminal.Terminal;
@@ -54,6 +55,24 @@ class TutorialComponentTest {
     verify(text).dismiss();
     assertFalse(tutorial.keyDown(Keys.A));
     verify(text, times(3)).advance();
+  }
+
+  @ParameterizedTest
+  @ValueSource(ints = {Keys.SHIFT_LEFT, Keys.SHIFT_RIGHT})
+  void finishingTutorialForwardsSameShiftPressToPlayer(int shift) {
+    TextBoxComponent text = mock(TextBoxComponent.class);
+    TutorialComponent tutorial = new TutorialComponent(text);
+    tutorial.create();
+    InputComponent playerInput = mock(InputComponent.class);
+    ServiceLocator.getInputService().register(playerInput);
+
+    InputService input = ServiceLocator.getInputService();
+    input.keyDown(Keys.A);
+    input.keyDown(Keys.D);
+    input.keyDown(Keys.SPACE);
+    input.keyDown(shift);
+
+    verify(playerInput).keyDown(shift);
   }
 
   @Test
