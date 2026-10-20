@@ -24,6 +24,7 @@ import com.csse3200.game.services.ServiceLocator;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.function.Consumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,6 +50,9 @@ public abstract class GameArea implements Disposable {
   protected KeyboardPlayerInputComponent input;
   protected Entity levelChanger;
   protected LevelConfig config;
+  // Notified (with the checkpoint's position) whenever one of this area's checkpoints activates;
+  // used by the game screen to start checkpoint-linked tutorials. Null when nothing listens.
+  private Consumer<GridPoint2> checkpointListener;
   protected boolean mapToggled = false;
   protected float viewportWidth;
   protected float viewportHeight;
@@ -306,6 +310,21 @@ public abstract class GameArea implements Disposable {
     }
   }
 
+  /** The level config this area was created from, e.g. for its checkpoint-linked tutorials. */
+  public LevelConfig getConfig() {
+    return config;
+  }
+
+  /**
+   * Sets a callback fired with a checkpoint's position whenever it activates, after the autosave it
+   * triggers. Used by the game screen to start checkpoint-linked tutorials.
+   *
+   * @param checkpointListener callback to run, or null to stop listening
+   */
+  public void setCheckpointListener(Consumer<GridPoint2> checkpointListener) {
+    this.checkpointListener = checkpointListener;
+  }
+
   /** Represents functionality that all game areas should use when a checkpoint is encountered */
   protected void onCheckpointActivated(GridPoint2 position) {
     // currently no functionality is required by all game areas, however, this method is required
@@ -315,6 +334,9 @@ public abstract class GameArea implements Disposable {
     // (calling super) so checkpoint saves happen for every level.
     if (ServiceLocator.getGameSaveEventHandler() != null) {
       ServiceLocator.getGameSaveEventHandler().trigger("autosave");
+    }
+    if (checkpointListener != null) {
+      checkpointListener.accept(position);
     }
   }
 
