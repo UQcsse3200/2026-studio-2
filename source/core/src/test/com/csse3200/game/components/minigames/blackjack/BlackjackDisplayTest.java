@@ -157,7 +157,7 @@ class BlackjackDisplayTest {
     betField.setText("10");
     invokeTryStartRound(display);
 
-    assertEquals("Your balance is 0 - grind hard!", resultLabel.getText().toString());
+    assertEquals("Your balance is 0!", resultLabel.getText().toString());
     assertEquals("READY", statusLabel.getText().toString());
     assertEquals("", betField.getText());
     assertEquals(0, inventory.getGold());
