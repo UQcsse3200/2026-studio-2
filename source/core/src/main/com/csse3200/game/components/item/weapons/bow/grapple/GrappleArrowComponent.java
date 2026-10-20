@@ -10,14 +10,10 @@ import com.csse3200.game.components.level.SlipperyPlatformComponent;
 import com.csse3200.game.components.projectile.ArrowProjectileComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.physics.BodyUserData;
-import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.services.ServiceLocator;
 
 /** Rides on a fired grapple arrow and hooks the player onto solid ground or a platform. */
 public class GrappleArrowComponent extends Component {
-  /** The grapple only sticks to solid terrain - not enemies, boundary walls, or trigger zones. */
-  private static final short GRAPPLE_TARGETS = PhysicsLayer.SOLID; // GROUND | OBSTACLE
-
   /**
    * The arrow must get this far from the shooter before it can hook, so it doesn't grab the
    * platform the player is standing on the instant it spawns.
@@ -91,10 +87,7 @@ public class GrappleArrowComponent extends Component {
     if (spent) {
       return;
     }
-    // Sensors share layers with real terrain (the rising water's surface is an OBSTACLE sensor)
-    // but have nothing solid to hook onto, so the layer alone isn't enough.
-    if (other.isSensor()
-        || !PhysicsLayer.contains(GRAPPLE_TARGETS, other.getFilterData().categoryBits)) {
+    if (GrappleComponent.isGrappleSurface(other)) {
       return;
     }
     // Any terrain the arrow reaches ends its flight, whether or not it makes a hook. Otherwise an

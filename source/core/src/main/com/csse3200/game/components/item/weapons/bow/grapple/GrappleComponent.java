@@ -3,6 +3,7 @@ package com.csse3200.game.components.item.weapons.bow.grapple;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.Joint;
@@ -515,13 +516,26 @@ public class GrappleComponent extends Component {
     return length;
   }
 
+  /**
+   * Whether the grapple can hook onto, or bend its rope around, this fixture: solid terrain only.
+   * Sensors share terrain layers but have no surface (e.g. the rising water). Dynamic bodies move
+   * and can be destroyed at any moment (e.g. spiky balls, which vanish on contact), leaving the
+   * rope holding a body that no longer exists, which crashes Box2D.
+   *
+   * @param fixture the fixture to check
+   * @return true if the grapple may use it
+   */
+  static boolean isGrappleSurface(Fixture fixture) {
+    return fixture.isSensor()
+            || fixture.getBody().getType() == BodyDef.BodyType.DynamicBody
+            || !PhysicsLayer.contains(PhysicsLayer.SOLID, fixture.getFilterData().categoryBits);
+  }
+
   private static RopeRayHit findObstruction(World world, Vector2 from, Vector2 to) {
     RopeRayHit closest = new RopeRayHit();
     RayCastCallback callback =
         (fixture, point, normal, fraction) -> {
-          // Sensors (e.g. the rising water's surface) aren't solid, so the rope can't bend on them.
-          if (fixture.isSensor()
-              || !PhysicsLayer.contains(PhysicsLayer.SOLID, fixture.getFilterData().categoryBits)) {
+          if (isGrappleSurface(fixture)) {
             return -1f;
           }
           // The grapple anchor's own fixture is expected at the end of every ray.

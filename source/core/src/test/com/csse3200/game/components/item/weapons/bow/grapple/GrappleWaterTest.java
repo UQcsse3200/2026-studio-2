@@ -30,9 +30,11 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
- * Covers grappling around the rising water in level 3. Its surface is a moving sensor on the
- * OBSTACLE layer, and touching it respawns the player from inside a collision callback - which used
- * to destroy the rope's joint mid physics step and crash the game.
+ * Covers what the grapple may hook onto or bend its rope around, and letting go safely. Two kinds
+ * of fixture share terrain layers but must be skipped: the rising water's surface in level 3 (a
+ * sensor), and spiky balls (moving bodies that vanish on contact). Touching the water also respawns
+ * the player from inside a collision callback, which used to destroy the rope's joint mid physics
+ * step and crash the game.
  */
 @ExtendWith(GameExtension.class)
 class GrappleWaterTest {
@@ -151,6 +153,27 @@ class GrappleWaterTest {
     arrow.create();
     arrow.setPosition(5f, 0f);
     arrow.getEvents().trigger("collisionStart", (Fixture) null, target);
+  }
+
+  @Test
+  void shouldNotHookOntoASpikyBall() {
+    // Spiky balls are moving obstacles that vanish on contact: hooking one left a rope on a body
+    // that no longer existed, which crashed the game.
+    Body ball = createBox(BodyDef.BodyType.DynamicBody, new Vector2(5f, 0f), 0.4f, 0.4f, false);
+
+    fireArrowInto(ball.getFixtureList().first());
+    grapple.update();
+
+    assertFalse(grapple.isAttached());
+  }
+
+  @Test
+  void shouldNotBendTheRopeAroundASpikyBall() {
+    Vector2 anchor = new Vector2(0f, 10f);
+    Vector2 playerPoint = new Vector2(0f, 0f);
+    createBox(BodyDef.BodyType.DynamicBody, new Vector2(0f, 5f), 0.4f, 0.4f, false);
+
+    assertTrue(GrappleComponent.traceContacts(world, anchor, playerPoint).isEmpty());
   }
 
   @Test
