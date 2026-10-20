@@ -304,8 +304,11 @@ public class GdxGame extends Game {
   public void finishTransition(Screen toScreen) {
     Screen transitionScreen = getScreen();
     transitioning = false;
-    setScreen(toScreen);
+    // TransitionScreen already showed and resized the destination before fading it in.
+    // Calling setScreen here would initialise screens that use show() a second time.
+    screen = toScreen;
     if (transitionScreen != null) {
+      transitionScreen.hide();
       transitionScreen.dispose();
     }
   }
