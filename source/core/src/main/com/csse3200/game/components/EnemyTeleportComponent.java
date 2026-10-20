@@ -53,7 +53,7 @@ public class EnemyTeleportComponent extends Component {
 
     BossPhaseComponent phase = entity.getComponent(BossPhaseComponent.class);
 
-    if (phase.isTransitioning()) {
+    if (phase != null && phase.isTransitioning()) {
       return;
     }
 
