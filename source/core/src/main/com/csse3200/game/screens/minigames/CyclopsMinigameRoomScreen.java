@@ -14,7 +14,6 @@ import com.csse3200.game.areas.terrain.TerrainFactory;
 import com.csse3200.game.components.ButtonSound;
 import com.csse3200.game.components.TextBoxComponent;
 import com.csse3200.game.components.gamearea.PerformanceDisplay;
-import com.csse3200.game.components.maingame.PauseButtonDisplay;
 import com.csse3200.game.components.maingame.PauseMenuOverlay;
 import com.csse3200.game.components.minigames.cyclopsminigame.CyclopsMinigameActions;
 import com.csse3200.game.components.minigames.cyclopsminigame.CyclopsMinigameLogic;
@@ -194,9 +193,7 @@ public class CyclopsMinigameRoomScreen extends ScreenAdapter {
     logger.debug("Loading assets");
     ResourceService resourceService = ServiceLocator.getResourceService();
     resourceService.loadTextures(cyclopsMinigameTextures);
-    // The pause button's own images, when the project has them
-    resourceService.loadTextures(PauseButtonDisplay.extraTextures());
-    // The click sound for the pause button and the pause menu's buttons
+    // The click sound for the pause menu's buttons
     ButtonSound.load(resourceService);
     ServiceLocator.getResourceService().loadAll();
   }
@@ -205,7 +202,6 @@ public class CyclopsMinigameRoomScreen extends ScreenAdapter {
     logger.debug("Unloading assets");
     ResourceService resourceService = ServiceLocator.getResourceService();
     resourceService.unloadAssets(cyclopsMinigameTextures);
-    resourceService.unloadAssets(PauseButtonDisplay.extraTextures());
     ButtonSound.unload(resourceService);
   }
 
@@ -266,8 +262,6 @@ public class CyclopsMinigameRoomScreen extends ScreenAdapter {
     ui.addComponent(new InputDecorator(stage, 10))
         .addComponent(new PerformanceDisplay())
         .addComponent(new CyclopsMinigameActions(this.game))
-        // Opens the pause menu, which is also how the player leaves the minigame
-        .addComponent(new PauseButtonDisplay(() -> pauseOverlay.request(), true))
         .addComponent(terminal)
         .addComponent(inputComponent)
         .addComponent(new GameEndDisplay(GameEndState.LOSE))
