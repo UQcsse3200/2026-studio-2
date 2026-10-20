@@ -47,8 +47,8 @@ public class ShopDisplay extends UIComponent {
   private static final float ITEM_ICON_SHARE = 0.9f;
 
   // Layout of shop_bg.png as fractions of its width/height: the counter the items are laid out on,
-  // the dark panel that shows the gold and the merchant's messages, and the plaques for the
-  // buttons.
+  // the dark panel that shows the gold and the merchant's messages, and the one tall plaque for the
+  // Close button.
   private static final float SCENE_TABLE_TOP = 0.535f;
   private static final float SCENE_TABLE_HEIGHT = 0.228f;
   // Height of one item's slot. It is about the icon's size, so the icons rest on the tabletop.
@@ -60,7 +60,7 @@ public class ShopDisplay extends UIComponent {
   private static final float SCENE_PANEL_HEIGHT = 0.18f;
   private static final float SCENE_PLAQUE_COLUMN_LEFT = 0.744f;
   private static final float SCENE_PLAQUE_WIDTH = 0.186f;
-  private static final float SCENE_PLAQUE_HEIGHT = 0.077f;
+  private static final float SCENE_PLAQUE_HEIGHT = 0.178f;
   private static final int LISTING_COLUMNS = 6;
   private static final float REFERENCE_HEIGHT = 720f;
   // How much of the screen the shop window fills, leaving a margin around it.
