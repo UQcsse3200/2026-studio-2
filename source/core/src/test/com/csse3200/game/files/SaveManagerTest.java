@@ -1,6 +1,7 @@
 package com.csse3200.game.files;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -136,6 +137,20 @@ class SaveManagerTest {
 
     // A null player (a new game with no started level) is safe to capture.
     assertNull(SaveManager.capture(1, "level1", null, List.of()).player);
+  }
+
+  @Test
+  void shouldPreserveTutorialCompletedAcrossCaptures() {
+    SaveFile previous = SaveManager.newGameSave(0);
+    previous.tutorialCompleted = true;
+    SaveManager.write(0, previous);
+
+    // An autosave must not make the movement tutorial replay for a save that has seen it.
+    SaveFile captured = SaveManager.capture(0, "level1", null, List.of());
+
+    assertTrue(captured.tutorialCompleted);
+    // A brand new save starts with the tutorial unseen.
+    assertFalse(SaveManager.newGameSave(1).tutorialCompleted);
   }
 
   @Test

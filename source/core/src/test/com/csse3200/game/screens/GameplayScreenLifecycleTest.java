@@ -6,6 +6,7 @@ import static org.mockito.Mockito.*;
 import box2dLight.RayHandler;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
@@ -15,20 +16,25 @@ import com.csse3200.game.areas.GameArea;
 import com.csse3200.game.areas.Level1GameArea;
 import com.csse3200.game.areas.Level3GameArea;
 import com.csse3200.game.areas.terrain.TerrainFactory;
+import com.csse3200.game.areas.terrain.configs.levelconfigs.Level1Config;
 import com.csse3200.game.components.CameraComponent;
+import com.csse3200.game.components.TutorialComponent;
 import com.csse3200.game.components.maingame.MainGameActions;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.RenderFactory;
+import com.csse3200.game.entities.factories.TutorialFactory;
 import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.rendering.DebugRenderer;
 import com.csse3200.game.rendering.Renderer;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.GameEndActions;
 import java.lang.reflect.Field;
+import java.util.function.Consumer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.mockito.ArgumentCaptor;
 import org.mockito.MockedConstruction;
 import org.mockito.MockedStatic;
 
@@ -123,6 +129,58 @@ class GameplayScreenLifecycleTest {
       assertFalse(swapQueued(fixture));
       assertNull(nextArea(fixture));
       assertTrue(rebuilds.constructed().isEmpty());
+    }
+  }
+
+  @Test
+  void movementTutorialStartsAfterDelayAndCompletionIsSaved() {
+    try (ScreenFixture fixture = new ScreenFixture(true);
+        MockedStatic<TutorialFactory> tutorials = mockStatic(TutorialFactory.class)) {
+      TutorialComponent tutorial = mock(TutorialComponent.class);
+      tutorials.when(() -> TutorialFactory.start(eq("tut1"), any())).thenReturn(tutorial);
+
+      // The movement tutorial waits a few seconds after spawning so the player can look around.
+      fixture.screen.render(1f);
+      fixture.screen.render(1f);
+      tutorials.verify(() -> TutorialFactory.start(anyString(), any()), never());
+
+      fixture.screen.render(1f);
+      fixture.screen.render(1f);
+      tutorials.verify(() -> TutorialFactory.start(eq("tut1"), any()), times(1));
+
+      // It never restarts on later frames.
+      fixture.screen.render(1f);
+      tutorials.verify(() -> TutorialFactory.start(eq("tut1"), any()), times(1));
+
+      // Completing it (reaching the final step) persists the seen flag to the save.
+      ArgumentCaptor<Runnable> onFinished = ArgumentCaptor.forClass(Runnable.class);
+      tutorials.verify(() -> TutorialFactory.start(eq("tut1"), onFinished.capture()), times(1));
+      onFinished.getValue().run();
+      verify(fixture.game).markTutorialCompleted();
+    }
+  }
+
+  @Test
+  void checkpointActivationsStartTheirTutorialsOnce() {
+    try (ScreenFixture fixture = new ScreenFixture(true);
+        MockedStatic<TutorialFactory> tutorials = mockStatic(TutorialFactory.class)) {
+      Level1GameArea area = fixture.levelAreas.constructed().getFirst();
+      when(area.getConfig()).thenReturn(new Level1Config());
+      @SuppressWarnings("unchecked")
+      ArgumentCaptor<Consumer<GridPoint2>> listener = ArgumentCaptor.forClass(Consumer.class);
+      verify(area).setCheckpointListener(listener.capture());
+
+      // Level 1's first checkpoint teaches melee; reaching it again must not replay the lesson.
+      listener.getValue().accept(new GridPoint2(16, 5));
+      listener.getValue().accept(new GridPoint2(16, 5));
+      tutorials.verify(() -> TutorialFactory.start(eq("tut5"), any()), times(1));
+
+      listener.getValue().accept(new GridPoint2(19, 17));
+      tutorials.verify(() -> TutorialFactory.start(eq("tut6"), any()), times(1));
+
+      // A checkpoint with no wired tutorial starts nothing.
+      listener.getValue().accept(new GridPoint2(44, 17));
+      tutorials.verify(() -> TutorialFactory.start(anyString(), any()), times(2));
     }
   }
 
