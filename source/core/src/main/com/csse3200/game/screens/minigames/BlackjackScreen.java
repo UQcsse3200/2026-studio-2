@@ -4,10 +4,12 @@ import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.csse3200.game.GdxGame;
 import com.csse3200.game.components.GameVolume;
+import com.csse3200.game.components.inventory.InventoryComponent;
 import com.csse3200.game.components.minigames.blackjack.Blackjack;
 import com.csse3200.game.components.minigames.blackjack.BlackjackActions;
 import com.csse3200.game.components.minigames.blackjack.BlackjackConfig;
 import com.csse3200.game.components.minigames.blackjack.BlackjackDisplay;
+import com.csse3200.game.components.minigames.blackjack.BlackjackRulesDisplay;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.input.InputDecorator;
 import com.csse3200.game.services.ServiceLocator;
@@ -16,6 +18,11 @@ import com.csse3200.game.services.ServiceLocator;
 public class BlackjackScreen extends MinigameScreen {
   private static final String BLACKJACK_MUSIC = "sounds/minigames/blackjack/blackjack-bgm.mp3";
 
+  /**
+   * Creates the standalone Blackjack screen.
+   *
+   * @param game game used for screen changes
+   */
   public BlackjackScreen(GdxGame game) {
     super(game);
   }
@@ -65,9 +72,13 @@ public class BlackjackScreen extends MinigameScreen {
     Stage stage = ServiceLocator.getRenderService().getStage();
 
     Blackjack blackjack = new Blackjack(100);
+    // Temporary substitute until the player's inventory is passed in.
+    InventoryComponent inventoryComponent = new InventoryComponent(100);
 
     return new Entity()
-        .addComponent(new BlackjackDisplay(blackjack, null, this::setSoundEnabled))
+        .addComponent(inventoryComponent)
+        .addComponent(new BlackjackDisplay(blackjack, inventoryComponent, this::setSoundEnabled))
+        .addComponent(new BlackjackRulesDisplay())
         .addComponent(new BlackjackActions(game))
         .addComponent(new InputDecorator(stage, 10));
   }

@@ -24,6 +24,7 @@ import com.csse3200.game.screens.TransitionScreen;
 import com.csse3200.game.screens.minigames.BlackjackScreen;
 import com.csse3200.game.screens.minigames.CyclopsMinigameRoomScreen;
 import com.csse3200.game.screens.minigames.spinthewheel.SpinTheWheelScreen;
+import com.csse3200.game.ui.ThemedCursor;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -70,6 +71,7 @@ public class GdxGame extends Game {
     logger.info("Creating game");
     loadSettings();
     applyDefaultClearColor();
+    ThemedCursor.install();
 
     setScreen(ScreenType.MAIN_MENU);
   }
@@ -341,6 +343,7 @@ public class GdxGame extends Game {
     if (getScreen() != null) {
       getScreen().dispose();
     }
+    ThemedCursor.dispose();
   }
 
   /**

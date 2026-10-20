@@ -21,6 +21,7 @@ public class CyclopsSoundComponent extends Component {
   private Sound snore;
   private Sound roar;
 
+  /** Creates the CyclopsSoundComponent with necessary events and loads required assets */
   @Override
   public void create() {
     ResourceService resources = ServiceLocator.getResourceService();
@@ -46,15 +47,18 @@ public class CyclopsSoundComponent extends Component {
     startSnoring();
   }
 
+  /** Disposes of the CyclopsSoundComponent and stops any sound effects */
   @Override
   public void dispose() {
     snore.stop();
   }
 
+  /** Starts playing the snoring sound effects on loop */
   private void startSnoring() {
     snore.loop(GameVolume.scale(SNORE_VOLUME));
   }
 
+  /** Stops the snoring sound effect and starts the roar sound effect */
   private void wakeUp() {
     snore.stop();
     roar.play(GameVolume.scale(ROAR_VOLUME));

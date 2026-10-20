@@ -28,14 +28,26 @@ public class BlackjackOverlay {
   private boolean openRequested;
   private boolean closing;
 
+  /** Creates an overlay with no player, so no gold is available. */
   public BlackjackOverlay() {
     this(null, new MinigameOverlayManager());
   }
 
+  /**
+   * Creates an overlay that plays with the given player's gold.
+   *
+   * @param player player entity whose inventory holds the gold
+   */
   public BlackjackOverlay(Entity player) {
     this(player, new MinigameOverlayManager());
   }
 
+  /**
+   * Creates an overlay that shares an overlay manager with other minigame overlays.
+   *
+   * @param player player entity whose inventory holds the gold
+   * @param overlayManager manager ensuring only one minigame overlay is open at a time
+   */
   public BlackjackOverlay(Entity player, MinigameOverlayManager overlayManager) {
 
     this.player = player;
@@ -45,6 +57,11 @@ public class BlackjackOverlay {
     this.overlayManager = overlayManager;
   }
 
+  /**
+   * Asks for the overlay to open and pauses the game. The overlay is built on the next {@link
+   * #afterRender()}, so the blurred backdrop captures a fully drawn frame. Ignored if this or
+   * another minigame overlay is already open.
+   */
   public void request() {
     if (overlay != null || openRequested) {
       return;
@@ -60,6 +77,7 @@ public class BlackjackOverlay {
     ServiceLocator.getEntityService().setPaused(true);
   }
 
+  /** Opens a requested overlay. Call once per frame, after the game has been rendered. */
   public void afterRender() {
     if (!openRequested) {
       return;
