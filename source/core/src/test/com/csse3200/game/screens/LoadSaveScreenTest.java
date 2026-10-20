@@ -77,6 +77,8 @@ class LoadSaveScreenTest {
           resourceService.containsAsset("images/backgrounds/main_menu_bg.png", Texture.class));
       assertTrue(resourceService.containsAsset("images/Buttons/back_up_btn.png", Texture.class));
       assertTrue(resourceService.containsAsset("images/Buttons/back_down_btn.png", Texture.class));
+      assertTrue(resourceService.containsAsset("images/Buttons/x_up_btn.png", Texture.class));
+      assertTrue(resourceService.containsAsset("images/Buttons/x_down_btn.png", Texture.class));
 
       // Render and resize.
       screen.render(1f / 60f);

@@ -27,8 +27,12 @@ import org.slf4j.LoggerFactory;
 public class TextBoxComponent extends UIComponent {
   private static final Logger logger = LoggerFactory.getLogger(TextBoxComponent.class);
 
-  /** Portrait image edge length in pixels. JPEG aspect is preserved via fit scaling. */
-  private static final float PORTRAIT_SIZE = 120f;
+  /**
+   * Portrait edge length as a fraction of the window height, so the portrait scales with the window
+   * (windowed, half-screen or maximised) instead of staying a fixed pixel size. JPEG aspect is
+   * preserved via fit scaling.
+   */
+  private static final float PORTRAIT_HEIGHT_FRACTION = 0.18f * 1.1f;
 
   /**
    * Fraction of the portrait overlapping the box's top edge. Zero keeps the portrait fully above
@@ -39,6 +43,9 @@ public class TextBoxComponent extends UIComponent {
   private float posX;
   private float posY;
   private int posAlign = Align.top;
+  // When set, the box ignores posX/posY and is pinned bottom-centre of the window each frame.
+  private boolean bottomCentered = false;
+  private float bottomMarginFraction = 0.06f;
   private final Color textColor;
   private final Color backgroundColour;
   private final Color borderColour;
@@ -209,7 +216,7 @@ public class TextBoxComponent extends UIComponent {
     if (portraitImage == null) {
       portraitImage = new Image();
       portraitImage.setScaling(Scaling.fit);
-      portraitImage.setSize(PORTRAIT_SIZE, PORTRAIT_SIZE);
+      portraitImage.setSize(portraitSize(), portraitSize());
       portraitImage.setVisible(false);
       stage.addActor(portraitImage);
     }
@@ -225,16 +232,23 @@ public class TextBoxComponent extends UIComponent {
   /**
    * Pins the portrait centered above the box's top edge, connected to but never covering the text.
    * Tracks the live table bounds so it follows the box as typing packs it taller and under either
-   * alignment mode.
+   * alignment mode, and re-sizes it from the current window height so a window resize is honoured.
    */
   private void layoutPortrait() {
     if (portraitImage == null || portraitTexture == null) {
       return;
     }
-    float x = table.getX() + (table.getWidth() - PORTRAIT_SIZE) / 2f;
-    float y = table.getY() + table.getHeight() - PORTRAIT_SIZE * PORTRAIT_OVERLAP;
+    float size = portraitSize();
+    portraitImage.setSize(size, size);
+    float x = table.getX() + (table.getWidth() - size) / 2f;
+    float y = table.getY() + table.getHeight() - size * PORTRAIT_OVERLAP;
     portraitImage.setPosition(x, y);
     portraitImage.setVisible(table.isVisible());
+  }
+
+  /** The portrait's edge length for the current window, never smaller than a legible minimum. */
+  private static float portraitSize() {
+    return Math.max(32f, Gdx.graphics.getHeight() * PORTRAIT_HEIGHT_FRACTION);
   }
 
   /** Repositions the textbox table, e.g. to track a responsive layout each frame. */
@@ -260,6 +274,39 @@ public class TextBoxComponent extends UIComponent {
     if (table != null) {
       table.toFront();
     }
+  }
+
+  /**
+   * Anchors the box to the bottom-centre of the window, recomputed every frame so it stays centred
+   * (and clears the bottom edge) as the box grows while its text types in. Intended for fixed-size
+   * screens such as cutscenes, where the config's absolute position would otherwise drift.
+   *
+   * @param bottomMargin fraction of the window height to leave between the box's bottom edge and
+   *     the bottom of the window
+   */
+  public void setBottomCentered(float bottomMargin) {
+    this.bottomCentered = true;
+    this.bottomMarginFraction = bottomMargin;
+  }
+
+  /** The table's current width, or 0 before the box has been created/packed. */
+  public float getTableWidth() {
+    return table == null ? 0f : table.getWidth();
+  }
+
+  /** The table's current height, or 0 before the box has been created/packed. */
+  public float getTableHeight() {
+    return table == null ? 0f : table.getHeight();
+  }
+
+  /** The table's current x position, or 0 before the box has been created/packed. */
+  public float getTableX() {
+    return table == null ? 0f : table.getX();
+  }
+
+  /** The table's current y position, or 0 before the box has been created/packed. */
+  public float getTableY() {
+    return table == null ? 0f : table.getY();
   }
 
   /** Dismisses the textbox and removes its scene2d actors. */
@@ -460,6 +507,14 @@ public class TextBoxComponent extends UIComponent {
 
     // Position with the stored alignment (top by default, see setPosition).
     table.setPosition(x, y, posAlign);
+
+    if (bottomCentered) {
+      // Re-centre from the live packed size every frame so the box stays centred as it grows.
+      float centerX = (Gdx.graphics.getWidth() - table.getWidth()) / 2f;
+      float bottomY = Gdx.graphics.getHeight() * bottomMarginFraction;
+      table.setPosition(centerX, bottomY, Align.bottom | Align.left);
+    }
+
     table.setVisible(true);
     label.setVisible(true);
     layoutPortrait();

@@ -234,6 +234,10 @@ public class CutsceneScreen extends ScreenAdapter {
             config.portraitPaths);
     textBox.setExternallyControlled(true);
     textBox.create();
+    // Cutscene configs carry absolute pixel positions tuned for one resolution; a ScreenViewport
+    // (world units = pixels, no scaling) makes those drift off-centre at any other window size, so
+    // pin the box bottom-centre of the live window instead.
+    textBox.setBottomCentered(0.06f);
     fadeOverlay.toFront();
     skipTable.toFront();
     fadeTimer = 0f;
@@ -251,7 +255,11 @@ public class CutsceneScreen extends ScreenAdapter {
     if (music != null) {
       music.stop();
     }
-    game.transitionTo(destination);
+    if (destination == GdxGame.ScreenType.MAIN_MENU) {
+      game.transitionTo(new ThankYouScreen(game), CutsceneScreen.EXIT_FADE_DURATION);
+    } else {
+      game.transitionTo(destination);
+    }
   }
 
   ImageButton getSkipButton() {
@@ -315,7 +323,13 @@ public class CutsceneScreen extends ScreenAdapter {
           input.dispose();
           stageInput.dispose();
           // Fade the destination screen in slowly so the cutscene ends gradually.
-          game.transitionTo(destination, EXIT_FADE_DURATION);
+          if (destination == GdxGame.ScreenType.MAIN_MENU) {
+            // After the closing cutscene, show a thank-you message over black then exit to main
+            // menu.
+            game.transitionTo(new ThankYouScreen(game), EXIT_FADE_DURATION);
+          } else {
+            game.transitionTo(destination, EXIT_FADE_DURATION);
+          }
         }
         break;
       case TEXT_ACTIVE, COMPLETE:

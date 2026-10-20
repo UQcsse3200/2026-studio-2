@@ -127,6 +127,16 @@ public class GdxGame extends Game {
     transitionTo(screenType, TransitionScreen.DEFAULT_FADE_DURATION);
   }
 
+  /** Fades to a pre-created screen (used for ad-hoc end screens). */
+  public void transitionTo(Screen toScreen, float fadeDuration) {
+    if (transitioning) {
+      return;
+    }
+    logger.info("Transitioning to custom screen");
+    transitioning = true;
+    setScreen(new TransitionScreen(this, getScreen(), toScreen, fadeDuration));
+  }
+
   /**
    * Fades the current screen to black, swaps to the target screen, then fades back in, using the
    * given length for each fade phase. Ignored if a transition is already in progress.
@@ -174,7 +184,7 @@ public class GdxGame extends Game {
     // logging for if the cutscene is not available, and fallback to level 1
     CutsceneLoader.Result result = new CutsceneLoader().load("cutscene1");
     if (!result.isSuccess()) {
-      logger.debug("Initial cutscene unavailable: {}", result.getError());
+      logger.warn("Initial cutscene unavailable, skipping to level 1: {}", result.getError());
       transitionTo(ScreenType.LEVEL_1_GAME);
       return;
     }

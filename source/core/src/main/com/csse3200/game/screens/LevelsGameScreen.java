@@ -36,7 +36,6 @@ import com.csse3200.game.entities.factories.ItemFactory;
 import com.csse3200.game.entities.factories.TutorialFactory;
 import com.csse3200.game.events.EventHandler;
 import com.csse3200.game.events.listeners.EventListener0;
-import com.csse3200.game.events.listeners.EventListener1;
 import com.csse3200.game.input.InputComponent;
 import com.csse3200.game.input.InputDecorator;
 import com.csse3200.game.physics.components.PhysicsComponent;
@@ -490,8 +489,9 @@ public class LevelsGameScreen extends BaseGameScreen {
   }
 
   /**
-   * Starts listening for Calypso's phase changes as she enters the fight, so the phase prompt
-   * exists only while she does.
+   * Starts listening as Calypso enters the fight. Only her "begins changing" event is used, so the
+   * phase prompt lands at the very start of the transition rather than after she emerges in phase 2
+   * a few seconds later.
    */
   private void onBossSpawned() {
     GameArea area = currentGameArea;
@@ -501,14 +501,12 @@ public class LevelsGameScreen extends BaseGameScreen {
     area.getEvents()
         .addListener(Level3GameArea.BOSS_PHASE_CHANGING, (EventListener0) this::onBossPhaseChange);
     area.getEvents()
-        .addListener(
-            Level3GameArea.BOSS_PHASE_CHANGED, (EventListener1<Integer>) p -> onBossPhaseChange());
+        .addListener(Level3GameArea.BOSS_DEFEATED, (EventListener0) this::onBossDefeated);
   }
 
   /**
-   * Prompts when Calypso changes phase. Her two events bracket the same transition — she begins
-   * changing, then emerges in phase 2 a few seconds later — so the first one seen starts the prompt
-   * and the rest of that fight's events are ignored.
+   * Prompts at the start of Calypso's phase change. The once-per-fight guard also covers a rebuild
+   * that re-wires her fresh events, so the prompt still plays at most once per fight.
    */
   private void onBossPhaseChange() {
     if (bossPhasePromptShown) {
@@ -516,6 +514,18 @@ public class LevelsGameScreen extends BaseGameScreen {
     }
     bossPhasePromptShown = true;
     startNamedTutorial(BOSS_PHASE_TUTORIAL, null);
+  }
+
+  /**
+   * When Calypso is defeated, play the closing cutscene, which fades to black and ends the game.
+   */
+  private void onBossDefeated() {
+    // Avoid queuing again if the game is already in a transition/end state.
+    if (levelCompleteQueued) {
+      return;
+    }
+    levelCompleteQueued = true;
+    game.playCutscene("cutscene6", GdxGame.ScreenType.MAIN_MENU);
   }
 
   /** Starts the tutorial wired to the checkpoint at the given position, once per session. */

@@ -25,9 +25,12 @@ public class LoadSaveScreen extends MenuScreen {
 
   private static final String[] loadSaveTextures = {
     "images/ui/title_odysseus_logo.png",
+    "images/ui/scroll_bg.png",
     "images/backgrounds/main_menu_bg.png",
     "images/Buttons/back_up_btn.png",
-    "images/Buttons/back_down_btn.png"
+    "images/Buttons/back_down_btn.png",
+    "images/Buttons/x_up_btn.png",
+    "images/Buttons/x_down_btn.png"
   };
   private static final String LOAD_SAVE_MUSIC = "sounds/Main_menu_sound.mp3";
   private static final String[] LOAD_SAVE_MUSIC_FILES = {LOAD_SAVE_MUSIC};

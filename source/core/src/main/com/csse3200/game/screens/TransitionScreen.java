@@ -24,7 +24,8 @@ public class TransitionScreen implements Screen {
   }
 
   private final GdxGame game;
-  private final ScreenType targetType;
+  private Screen preloadedScreen;
+  private ScreenType targetType;
   private final SpriteBatch batch;
   private final Texture blackPixel;
   private final float fadeDuration;
@@ -33,6 +34,23 @@ public class TransitionScreen implements Screen {
   private Screen toScreen;
   private Phase phase = Phase.FADE_OUT;
   private float timer = 0f;
+
+  public TransitionScreen(
+      GdxGame game, Screen fromScreen, Screen targetScreen, float fadeDuration) {
+    this.game = game;
+    this.fromScreen = fromScreen;
+    this.targetType = null;
+    this.preloadedScreen = targetScreen;
+    this.fadeDuration = fadeDuration;
+
+    Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
+    pixmap.setColor(Color.BLACK);
+    pixmap.fill();
+    blackPixel = new Texture(pixmap);
+    pixmap.dispose();
+
+    batch = new SpriteBatch();
+  }
 
   /**
    * @param game the game instance, used to build the target screen and hand off once faded in
@@ -123,7 +141,12 @@ public class TransitionScreen implements Screen {
       fromScreen.dispose();
       fromScreen = null;
     }
-    toScreen = game.createScreen(targetType);
+    if (preloadedScreen != null) {
+      toScreen = preloadedScreen;
+      preloadedScreen = null;
+    } else {
+      toScreen = game.createScreen(targetType);
+    }
     if (toScreen != null) {
       toScreen.show();
       toScreen.resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
