@@ -70,9 +70,11 @@ public class BlackjackDisplay extends UIComponent {
 
   private Label dealerTotalLabel;
   private Label playerTotalLabel;
-  private Label balanceLabel;
+  private Label goldLabel;
+  private Label betSizeLabel;
   private Label resultLabel;
   private Label statusLabel;
+  private Label betLabel;
   private TextField betField;
   private boolean goldSettled;
   private boolean dealInProgress;
@@ -156,16 +158,20 @@ public class BlackjackDisplay extends UIComponent {
 
     dealerTotalLabel = new Label("", skin);
     playerTotalLabel = new Label("", skin);
-    balanceLabel = new Label("", skin);
+    goldLabel = new Label("", skin);
+    betSizeLabel = new Label("", skin);
     resultLabel = new Label("", skin);
     statusLabel = new Label(PLACE_BET, skin);
+    betLabel = new Label("BET", skin);
 
     // Gold text directly on the felt: no navy panels behind the scoreboard or HUD.
     applyGoldInfoLabelStyle(dealerTotalLabel, 1.05f);
     applyGoldInfoLabelStyle(playerTotalLabel, 1.05f);
-    applyGoldInfoLabelStyle(balanceLabel, 1.0f);
+    applyGoldInfoLabelStyle(goldLabel, 1.0f);
+    applyGoldInfoLabelStyle(betSizeLabel, 1.0f);
     applyGoldInfoLabelStyle(statusLabel, 1.0f);
     applyGoldInfoLabelStyle(resultLabel, 0.92f);
+    applyGoldInfoLabelStyle(betLabel, 1.0f);
 
     betField = new TextField("", skin);
     betField.setStyle(createCasinoBetFieldStyle());
@@ -363,12 +369,32 @@ public class BlackjackDisplay extends UIComponent {
     infoBox.setBackground(new TextureRegionDrawable(pixTexture).tint(Color.valueOf("#C69B43")));
 
     Table infoBoxContent = new Table();
+    //infoBoxContent.setDebug(true);
     infoBoxContent.setBackground(
         new TextureRegionDrawable(pixTexture).tint(Color.valueOf("#2A1608")));
 
-    infoBoxContent.add(balanceLabel);
+    infoBoxContent.add(statusLabel).center();
     infoBoxContent.row();
-    infoBoxContent.add(betField).width(100f).height(30f);
+    infoBoxContent.add(new Table()).fillY().expandY();
+    infoBoxContent.row();
+
+    Table enterBetArea = new Table();
+    enterBetArea.add(betLabel).height(30f).fillX().expandX();
+    enterBetArea.add(betField).height(30f).fillX().expandX();
+    infoBoxContent.add(enterBetArea).fillX().expandX().pad(2f);
+
+    infoBoxContent.row();
+    infoBoxContent.add(newRoundButton).width(160f).height(60f).center();
+
+    /*
+    infoBoxContent.add(goldLabel);
+    infoBoxContent.row();
+    infoBoxContent.add(betSizeLabel);
+    infoBoxContent.row();
+    infoBoxContent.add(betField);
+    infoBoxContent.row();
+    infoBoxContent.add(newRoundButton).width(192f).height(67f).pad(5f);
+    */
 
     infoBox.add(infoBoxContent).expand().fill().pad(5f).center();
     leftSide.add(infoBox).expand().fill().center();
@@ -382,7 +408,6 @@ public class BlackjackDisplay extends UIComponent {
     middle.add(playerRegion).expandX().fillX().height(220f).bottom();
 
     Table middleBottom = new Table();
-    middleBottom.add(newRoundButton).width(192f).height(67f).pad(5f);
     middleBottom.add(hitButton).width(192f).height(67f).pad(5f);
     middleBottom.add(standButton).width(192f).height(67f).pad(5f);
 
@@ -396,14 +421,14 @@ public class BlackjackDisplay extends UIComponent {
     rightSide.add(soundButton).width(192f).height(67f).pad(5f);
     rightSide.top().right();
 
-    table.add(leftSide).prefHeight(400f).prefWidth(PREF_OUTER_TABLE_WIDTH).center();
+    table.add(leftSide).prefHeight(500f).prefWidth(PREF_OUTER_TABLE_WIDTH).center();
     table.add(middle).fill().expand();
     table.add(rightSide).fill().expandY().prefWidth(PREF_OUTER_TABLE_WIDTH);
 
     table.setFillParent(true);
     table.validate();
     table.toFront();
-    table.setDebug(true);
+    //table.setDebug(true);
     table.pad(5f);
     stage.addActor(table);
     buildResultOverlay();
@@ -680,7 +705,8 @@ public class BlackjackDisplay extends UIComponent {
 
     playerTotalLabel.setText(
         blackjack.getPlayerHand().isEmpty() ? "TOTAL  --" : "TOTAL  " + blackjack.getPlayerTotal());
-    balanceLabel.setText("GOLD  " + getDisplayedGold() + "     STAKE  " + blackjack.getBet());
+    goldLabel.setText("GOLD:  " + getDisplayedGold());
+    betSizeLabel.setText("STAKE:  " + blackjack.getBet());
     if (inventory != null && inventory.getGold() <= 0) {
       resultLabel.setText(EMPTY_BALANCE_MESSAGE);
     } else {
