@@ -38,7 +38,14 @@ public class SoundEffects {
           "sounds/shop_kaching.ogg",
           "sounds/checkpoint.ogg",
           "sounds/necromancer_whisper.ogg",
-          "sounds/necromancer_summon.ogg");
+          "sounds/necromancer_summon.ogg",
+          "sounds/calypso_windup.ogg",
+          "sounds/calypso_hit.ogg",
+          "sounds/calypso_teleport.ogg",
+          "sounds/calypso_hurt.ogg",
+          "sounds/calypso_death.ogg",
+          "sounds/calypso_phase_start.ogg",
+          "sounds/calypso_phase2.ogg");
 
   private SoundEffects() {}
 

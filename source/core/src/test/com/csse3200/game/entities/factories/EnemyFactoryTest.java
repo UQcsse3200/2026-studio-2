@@ -26,6 +26,7 @@ import com.csse3200.game.components.PoisonStatsComponent;
 import com.csse3200.game.components.SlowStatsComponent;
 import com.csse3200.game.components.TouchAttackComponent;
 import com.csse3200.game.components.lighting.PointLightComponent;
+import com.csse3200.game.components.npc.CalypsoSoundComponent;
 import com.csse3200.game.components.npc.ChaseSoundComponent;
 import com.csse3200.game.components.npc.EnemyAnimationController;
 import com.csse3200.game.components.npc.SummonSoundComponent;
@@ -395,6 +396,11 @@ class EnemyFactoryTest {
 
     assertNotNull(necromancer.getComponent(ChaseSoundComponent.class));
     assertNotNull(necromancer.getComponent(SummonSoundComponent.class));
+  }
+
+  @Test
+  void shouldGiveCalypsoHerOwnSounds() {
+    assertNotNull(calypso(new Entity()).getComponent(CalypsoSoundComponent.class));
   }
 
   private static String deathSoundOf(Entity enemy) {

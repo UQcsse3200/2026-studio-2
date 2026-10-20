@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.components.Component;
+import com.csse3200.game.components.GameVolume;
 import com.csse3200.game.rendering.AnimationRenderComponent;
 import com.csse3200.game.services.ServiceLocator;
 
@@ -416,7 +417,7 @@ public class PlayerAnimationController extends Component {
     if (instrumentMusic == null) {
       instrumentMusic = Gdx.audio.newMusic(Gdx.files.internal("sounds/instrument_loop.wav"));
       instrumentMusic.setLooping(true);
-      instrumentMusic.setVolume(INSTRUMENT_VOLUME);
+      GameVolume.setMusicVolume(instrumentMusic, INSTRUMENT_VOLUME);
     }
     instrumentMusic.play();
     instrumentMusicPlaying = true;
