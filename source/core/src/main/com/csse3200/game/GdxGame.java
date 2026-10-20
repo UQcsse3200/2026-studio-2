@@ -7,6 +7,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.math.GridPoint2;
 import com.csse3200.game.areas.GameArea;
+import com.csse3200.game.components.player.PlayerActions;
 import com.csse3200.game.components.player.PlayerSnapshot;
 import com.csse3200.game.cutscene.CutsceneLoader;
 import com.csse3200.game.entities.Entity;
@@ -24,6 +25,7 @@ import com.csse3200.game.screens.TransitionScreen;
 import com.csse3200.game.screens.minigames.BlackjackScreen;
 import com.csse3200.game.screens.minigames.CyclopsMinigameRoomScreen;
 import com.csse3200.game.screens.minigames.spinthewheel.SpinTheWheelScreen;
+import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.ThemedCursor;
 import java.util.ArrayList;
 import java.util.List;
@@ -101,6 +103,9 @@ public class GdxGame extends Game {
    * @param screenType screen type
    */
   public void setScreen(ScreenType screenType) {
+    if (screenType == ScreenType.MINIGAME_BLACKJACK) {
+      capturePlayerBeforeBlackjack();
+    }
     logger.info("Setting game screen to {}", screenType);
     Screen currentScreen = getScreen();
     if (currentScreen != null) {
@@ -116,6 +121,9 @@ public class GdxGame extends Game {
    * @param screenType screen type to transition to
    */
   public void transitionTo(ScreenType screenType) {
+    if (screenType == ScreenType.MINIGAME_BLACKJACK) {
+      capturePlayerBeforeBlackjack();
+    }
     if (transitioning) {
       return;
     }
@@ -126,6 +134,9 @@ public class GdxGame extends Game {
 
   /** Starts a validated cutscene and creates the destination level after it completes. */
   public void startCutscene(CutsceneLoader.LoadedCutscene cutscene, ScreenType destination) {
+    if (destination == ScreenType.MINIGAME_BLACKJACK) {
+      capturePlayerBeforeBlackjack();
+    }
     logger.info("Starting cutscene {}", cutscene.getName());
     Screen currentScreen = getScreen();
     if (currentScreen != null) {
@@ -321,6 +332,32 @@ public class GdxGame extends Game {
       return;
     }
     playerSnapshot = PlayerSnapshot.capture(player);
+  }
+
+  /** Capture the actual player's gold before opening Blackjack or its entry cutscene. */
+  private void capturePlayerBeforeBlackjack() {
+    if (playerSnapshot != null || ServiceLocator.getEntityService() == null) {
+      return;
+    }
+    for (Entity entity : ServiceLocator.getEntityService().getEntities()) {
+      if (entity.getComponent(PlayerActions.class) != null) {
+        savePlayerState(entity);
+        return;
+      }
+    }
+    logger.warn("No live player found before Blackjack; saved gold was not captured");
+  }
+
+  /** Returns the saved player's gold, or null when no player state has been captured. */
+  public Integer getSavedPlayerGold() {
+    return playerSnapshot == null ? null : playerSnapshot.getGold();
+  }
+
+  /** Updates only the player's saved gold without changing health or inventory items. */
+  public void updateSavedPlayerGold(int gold) {
+    if (playerSnapshot != null) {
+      playerSnapshot = playerSnapshot.withGold(gold);
+    }
   }
 
   /**

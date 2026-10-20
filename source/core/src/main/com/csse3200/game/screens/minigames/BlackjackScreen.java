@@ -79,9 +79,21 @@ public class BlackjackScreen extends MinigameScreen {
   protected Entity createUI() {
     Stage stage = ServiceLocator.getRenderService().getStage();
 
-    Blackjack blackjack = new Blackjack(100);
-    // Temporary substitute until the player's inventory is passed in.
-    InventoryComponent inventoryComponent = new InventoryComponent(100);
+    // The player's gold is transferred via a snapshot across screen disposal.
+    // A standalone launch without a player keeps its 100-gold practice balance.
+    Integer savedGold = game.getSavedPlayerGold();
+    int startingGold = savedGold != null ? savedGold : 100;
+    Blackjack blackjack = new Blackjack(startingGold);
+    InventoryComponent inventoryComponent =
+        savedGold != null
+            ? new InventoryComponent(startingGold) {
+              @Override
+              public void setGold(int gold) {
+                super.setGold(gold);
+                game.updateSavedPlayerGold(getGold());
+              }
+            }
+            : new InventoryComponent(startingGold);
 
     return new Entity()
         .addComponent(inventoryComponent)

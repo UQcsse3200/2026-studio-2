@@ -31,6 +31,19 @@ public class PlayerSnapshot {
     return new PlayerSnapshot(stats.getHealth(), inventory.getGold(), inventory.getSlots());
   }
 
+  /** Returns the saved player's gold without consuming the snapshot. */
+  public int getGold() {
+    return gold;
+  }
+
+  /** Returns a snapshot with updated gold, preserving the saved health and inventory. */
+  public PlayerSnapshot withGold(int updatedGold) {
+    if (updatedGold < 0) {
+      throw new IllegalArgumentException("Gold cannot be negative");
+    }
+    return new PlayerSnapshot(health, updatedGold, inventory);
+  }
+
   /**
    * Apply the stored PlayerSnapshot to the given player entity. Updating the gold, health and
    * inventory components
