@@ -2,10 +2,7 @@ package com.csse3200.game.components.minigames.blackjack;
 
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.NinePatch;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -17,8 +14,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
-import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.csse3200.game.components.ButtonSound;
 import com.csse3200.game.components.GameVolume;
@@ -76,6 +71,7 @@ public class BlackjackDisplay extends UIComponent {
   private boolean goldSettled;
   private boolean dealInProgress;
   private boolean revealDealerCard;
+  private boolean rulesOpen;
 
   public BlackjackDisplay(Blackjack blackjack) {
     this(blackjack, null, null, null);
@@ -106,8 +102,17 @@ public class BlackjackDisplay extends UIComponent {
   @Override
   public void create() {
     super.create();
+    entity.getEvents().addListener(BlackjackRulesDisplay.RULES_OPENED, () -> setRulesOpen(true));
+    entity.getEvents().addListener(BlackjackRulesDisplay.RULES_CLOSED, () -> setRulesOpen(false));
     buildUI();
     refresh();
+    // Components are created in no fixed order, so let the rules layer move back on top.
+    entity.getEvents().trigger(BlackjackRulesDisplay.TABLE_RAISED);
+  }
+
+  private void setRulesOpen(boolean open) {
+    rulesOpen = open;
+    updateResultOverlay();
   }
 
   private void buildUI() {
@@ -170,14 +175,17 @@ public class BlackjackDisplay extends UIComponent {
     playerCards = new Table();
 
     newRoundButton =
-        createImageButton(
+        BlackjackUiStyles.imageButton(
             "images/Buttons/newRound_up_btn.png", "images/Buttons/newRound_down_btn.png");
     hitButton =
-        createImageButton("images/Buttons/hit_up_btn.png", "images/Buttons/hit_down_btn.png");
+        BlackjackUiStyles.imageButton(
+            "images/Buttons/hit_up_btn.png", "images/Buttons/hit_down_btn.png");
     standButton =
-        createImageButton("images/Buttons/stand_up_btn.png", "images/Buttons/stand_down_btn.png");
+        BlackjackUiStyles.imageButton(
+            "images/Buttons/stand_up_btn.png", "images/Buttons/stand_down_btn.png");
     backButton =
-        createImageButton("images/Buttons/back_up_btn.png", "images/Buttons/back_down_btn.png");
+        BlackjackUiStyles.imageButton(
+            "images/Buttons/back_up_btn.png", "images/Buttons/back_down_btn.png");
 
     TextButton soundButton = new TextButton("SOUND: ON", skin);
     // Match the wooden texture used by the other Blackjack buttons.
@@ -372,7 +380,7 @@ public class BlackjackDisplay extends UIComponent {
     resultOverlay.setTouchable(com.badlogic.gdx.scenes.scene2d.Touchable.disabled);
 
     Table popup = new Table();
-    popup.setBackground(createResultBackground());
+    popup.setBackground(BlackjackUiStyles.parchment(casinoUiTextures));
 
     Label title = new Label("", skin);
     title.setName("resultTitle");
@@ -387,7 +395,7 @@ public class BlackjackDisplay extends UIComponent {
     message.setWrap(true);
 
     ImageButton nextRoundButton =
-        createImageButton(
+        BlackjackUiStyles.imageButton(
             "images/Buttons/newRound_up_btn.png", "images/Buttons/newRound_down_btn.png");
 
     nextRoundButton.addListener(
@@ -428,49 +436,14 @@ public class BlackjackDisplay extends UIComponent {
     return style;
   }
 
-  private NinePatchDrawable createResultBackground() {
-    int rodHeight = 24;
-    int paperEdge = 16;
-    int width = 80;
-    int height = 72;
-
-    Pixmap pixmap = new Pixmap(width, height, Pixmap.Format.RGBA8888);
-
-    Color parchment = new Color(0.82f, 0.68f, 0.43f, 1f);
-    Color wood = new Color(0.35f, 0.18f, 0.08f, 1f);
-    Color edge = new Color(0.55f, 0.38f, 0.20f, 1f);
-
-    pixmap.setColor(parchment);
-    pixmap.fillRectangle(paperEdge, 0, width - paperEdge * 2, height);
-
-    pixmap.setColor(edge);
-    pixmap.fillRectangle(paperEdge, 0, 4, height);
-    pixmap.fillRectangle(width - paperEdge - 4, 0, 4, height);
-
-    pixmap.setColor(wood);
-    pixmap.fillRectangle(0, 0, width, rodHeight);
-    pixmap.fillRectangle(0, height - rodHeight, width, rodHeight);
-
-    int knobRadius = 8;
-    pixmap.fillCircle(knobRadius, knobRadius, knobRadius);
-    pixmap.fillCircle(width - knobRadius, knobRadius, knobRadius);
-    pixmap.fillCircle(knobRadius, height - knobRadius, knobRadius);
-    pixmap.fillCircle(width - knobRadius, height - knobRadius, knobRadius);
-
-    Texture texture = new Texture(pixmap);
-    pixmap.dispose();
-
-    NinePatch patch = new NinePatch(texture, paperEdge, paperEdge, rodHeight, rodHeight);
-    return new NinePatchDrawable(patch);
-  }
-
   private void updateResultOverlay() {
     if (resultOverlay == null) {
       return;
     }
 
     boolean showResult = blackjack.isRoundOver();
-    boolean showOverlay = showResult && !dealInProgress;
+    // While the rules are open the result waits, so it never covers the rules panel.
+    boolean showOverlay = showResult && !dealInProgress && !rulesOpen;
     if (showOverlay && !resultOverlay.isVisible()) {
       resultOverlay.getColor().a = 0f;
       resultOverlay.setVisible(true);
@@ -483,7 +456,8 @@ public class BlackjackDisplay extends UIComponent {
     }
 
     if (hitButton != null) {
-      boolean disabled = !blackjack.isRoundInProgress() || showResult || dealInProgress;
+      boolean disabled =
+          !blackjack.isRoundInProgress() || showResult || dealInProgress || rulesOpen;
       hitButton.setDisabled(disabled);
       hitButton.setTouchable(
           disabled
@@ -492,7 +466,8 @@ public class BlackjackDisplay extends UIComponent {
     }
 
     if (newRoundButton != null) {
-      boolean disabled = blackjack.isRoundInProgress() || dealInProgress || blackjack.isMatchOver();
+      boolean disabled =
+          blackjack.isRoundInProgress() || dealInProgress || blackjack.isMatchOver() || rulesOpen;
       newRoundButton.setDisabled(disabled);
       newRoundButton.setTouchable(
           disabled
@@ -501,7 +476,8 @@ public class BlackjackDisplay extends UIComponent {
     }
 
     if (standButton != null) {
-      boolean disabled = !blackjack.isRoundInProgress() || showResult || dealInProgress;
+      boolean disabled =
+          !blackjack.isRoundInProgress() || showResult || dealInProgress || rulesOpen;
       standButton.setDisabled(disabled);
       standButton.setTouchable(
           disabled
@@ -514,7 +490,7 @@ public class BlackjackDisplay extends UIComponent {
       backButton.setTouchable(com.badlogic.gdx.scenes.scene2d.Touchable.enabled);
     }
 
-    if (!showResult || dealInProgress) {
+    if (!showOverlay) {
       return;
     }
 
@@ -543,27 +519,6 @@ public class BlackjackDisplay extends UIComponent {
 
   private String scoreText() {
     return "SCORE  " + blackjack.getPlayerWins() + " - " + blackjack.getDealerWins();
-  }
-
-  private ImageButton createImageButton(String upPath, String downPath) {
-    Texture upTexture = ServiceLocator.getResourceService().getAsset(upPath, Texture.class);
-    Texture downTexture = ServiceLocator.getResourceService().getAsset(downPath, Texture.class);
-
-    upTexture.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
-    downTexture.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
-
-    ImageButton.ImageButtonStyle style = new ImageButton.ImageButtonStyle();
-    style.up = new TextureRegionDrawable(upTexture);
-    style.down = new TextureRegionDrawable(downTexture);
-    style.disabled = createDisabledDrawable(upTexture);
-
-    return new ImageButton(style);
-  }
-
-  private SpriteDrawable createDisabledDrawable(Texture texture) {
-    Sprite sprite = new Sprite(texture);
-    sprite.setColor(0.45f, 0.45f, 0.45f, 0.75f);
-    return new SpriteDrawable(sprite);
   }
 
   private void refresh() {
@@ -916,6 +871,7 @@ public class BlackjackDisplay extends UIComponent {
     if (resultOverlay != null && resultOverlay.isVisible()) {
       resultOverlay.toFront();
     }
+    entity.getEvents().trigger(BlackjackRulesDisplay.TABLE_RAISED);
   }
 
   @Override

@@ -9,6 +9,7 @@ import com.csse3200.game.components.minigames.blackjack.Blackjack;
 import com.csse3200.game.components.minigames.blackjack.BlackjackActions;
 import com.csse3200.game.components.minigames.blackjack.BlackjackConfig;
 import com.csse3200.game.components.minigames.blackjack.BlackjackDisplay;
+import com.csse3200.game.components.minigames.blackjack.BlackjackRulesDisplay;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.input.InputDecorator;
 import com.csse3200.game.services.ServiceLocator;
@@ -72,6 +73,7 @@ public class BlackjackScreen extends MinigameScreen {
     return new Entity()
         .addComponent(inventoryComponent)
         .addComponent(new BlackjackDisplay(blackjack, inventoryComponent, this::setSoundEnabled))
+        .addComponent(new BlackjackRulesDisplay())
         .addComponent(new BlackjackActions(game))
         .addComponent(new InputDecorator(stage, 10));
   }
