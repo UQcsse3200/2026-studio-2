@@ -35,8 +35,6 @@ public class GameEndActions extends Component {
 
   /** Restarts from the last checkpoint with a health penalty, or reloads level 1 as fallback. */
   private void onRestart() {
-    game.setScreen(game.getCurrentScreen());
-    /*
     if (restartHandler != null) {
       logger.info("Restart requested, respawning at last checkpoint.");
       restartHandler.run();
@@ -44,8 +42,6 @@ public class GameEndActions extends Component {
     }
     logger.info("Restart requested. No reset system is currently implemented.");
     game.transitionTo(GdxGame.ScreenType.LEVEL_1_GAME);
-
-     */
   }
 
   /** Exits the application. */

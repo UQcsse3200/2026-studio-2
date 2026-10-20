@@ -47,9 +47,6 @@ public class GdxGame extends Game {
 
   private PlayerSnapshot playerSnapshot;
 
-  private ScreenType previousScreen = null;
-  private ScreenType currentScreen = null;
-
   /**
    * Slot being written to during this play session; -1 when no save is active (e.g. Sandbox or a
    * session started without going through Play/Continue), in which case autosaves are skipped.
@@ -104,24 +101,12 @@ public class GdxGame extends Game {
    * @param screenType screen type
    */
   public void setScreen(ScreenType screenType) {
-    if (currentScreen != null) {
-      previousScreen = currentScreen;
-    }
-    currentScreen = screenType;
     logger.info("Setting game screen to {}", screenType);
     Screen currentScreen = getScreen();
     if (currentScreen != null) {
       currentScreen.dispose();
     }
     setScreen(createScreen(screenType));
-  }
-
-  public ScreenType getPreviousScreen() {
-    return previousScreen;
-  }
-
-  public ScreenType getCurrentScreen() {
-    return currentScreen;
   }
 
   /**
