@@ -15,6 +15,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.csse3200.game.components.ButtonSound;
 import com.csse3200.game.components.inventory.InventoryComponent;
 import com.csse3200.game.components.inventory.InventorySlotStyle;
 import com.csse3200.game.components.item.ItemType;
@@ -120,6 +121,7 @@ public class ShopDisplay extends UIComponent {
           @Override
           public void changed(ChangeEvent changeEvent, Actor actor) {
             logger.debug("Shop close button clicked");
+            ButtonSound.playClick();
             entity.getEvents().trigger("closeShop");
           }
         });
@@ -398,6 +400,7 @@ public class ShopDisplay extends UIComponent {
         new ChangeListener() {
           @Override
           public void changed(ChangeEvent changeEvent, Actor actor) {
+            ButtonSound.playClick();
             selectedListing = item.isChecked() ? listing : null;
             updateDetails();
           }
@@ -460,6 +463,7 @@ public class ShopDisplay extends UIComponent {
         new ChangeListener() {
           @Override
           public void changed(ChangeEvent changeEvent, Actor actor) {
+            ButtonSound.playClick();
             if (shop != null) {
               shop.buy(listing);
             }

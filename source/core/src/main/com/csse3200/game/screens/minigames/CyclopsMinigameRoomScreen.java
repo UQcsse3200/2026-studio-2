@@ -10,6 +10,7 @@ import com.badlogic.gdx.utils.Align;
 import com.csse3200.game.GdxGame;
 import com.csse3200.game.areas.CyclopsMinigameArea;
 import com.csse3200.game.areas.terrain.TerrainFactory;
+import com.csse3200.game.components.ButtonSound;
 import com.csse3200.game.components.TextBoxComponent;
 import com.csse3200.game.components.gamearea.PerformanceDisplay;
 import com.csse3200.game.components.minigames.cyclopsminigame.CyclopsMinigameActions;
@@ -133,6 +134,7 @@ public class CyclopsMinigameRoomScreen extends ScreenAdapter {
     logger.debug("Loading assets");
     ResourceService resourceService = ServiceLocator.getResourceService();
     resourceService.loadTextures(cyclopsMinigameTextures);
+    ButtonSound.load(resourceService);
     ServiceLocator.getResourceService().loadAll();
   }
 
@@ -140,6 +142,7 @@ public class CyclopsMinigameRoomScreen extends ScreenAdapter {
     logger.debug("Unloading assets");
     ResourceService resourceService = ServiceLocator.getResourceService();
     resourceService.unloadAssets(cyclopsMinigameTextures);
+    ButtonSound.unload(resourceService);
   }
 
   /**

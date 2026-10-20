@@ -11,6 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
+import com.csse3200.game.components.ButtonSound;
 import com.csse3200.game.components.inventory.InventorySlotStyle;
 import com.csse3200.game.components.item.ItemType;
 import com.csse3200.game.services.ServiceLocator;
@@ -154,6 +155,7 @@ public class ItemDictionaryDisplay extends UIComponent {
         new ClickListener() {
           @Override
           public void clicked(InputEvent event, float x, float y) {
+            ButtonSound.playClick();
             showDetailsPage(itemType);
           }
         });
@@ -203,6 +205,7 @@ public class ItemDictionaryDisplay extends UIComponent {
         new ClickListener() {
           @Override
           public void clicked(InputEvent event, float x, float y) {
+            ButtonSound.playClick();
             showGridPage();
           }
         });

@@ -53,7 +53,13 @@ public class ButtonSound {
 
   private static void playSafe(String path) {
     try {
+      if (ServiceLocator.getResourceService() == null) {
+        return;
+      }
       Sound sound = ServiceLocator.getResourceService().getAsset(path, Sound.class);
+      if (sound == null) {
+        return;
+      }
       sound.play(GameVolume.scale(1.0f));
       logger.debug("ButtonSound played: {}", path);
     } catch (GdxRuntimeException e) {
