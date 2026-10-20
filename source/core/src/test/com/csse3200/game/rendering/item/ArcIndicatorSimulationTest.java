@@ -87,6 +87,55 @@ class ArcIndicatorSimulationTest {
   }
 
   @Test
+  void aDrawReachStopsTheArcAtTheCrosshairWithoutALandingDot() {
+    // Range would let it fly 2 units, but the crosshair is only 1 unit along the aim.
+    ArcIndicatorRenderComponent preview =
+        new ArcIndicatorRenderComponent() {
+          protected boolean isActive() {
+            return true;
+          }
+
+          protected Vector2 aimOffset() {
+            return new Vector2(1f, 0f);
+          }
+
+          protected Vector2 launchPoint(Vector2 aim) {
+            return entity.getCenterPosition();
+          }
+
+          protected float launchSpeed() {
+            return 1f;
+          }
+
+          protected float maxRange() {
+            return 2f;
+          }
+
+          @Override
+          protected float maxDrawReach(Vector2 aimOffset) {
+            return aimOffset.len();
+          }
+        };
+    new Entity().addComponent(preview);
+    preview.create();
+
+    try (var shapes = mockConstruction(ShapeRenderer.class)) {
+      preview.render(batch);
+      ShapeRenderer shape = shapes.constructed().getFirst();
+      verify(shape, never())
+          .circle(
+              anyFloat(), anyFloat(), eq(ArcIndicatorRenderComponent.LANDING_DOT_RADIUS), eq(12));
+      ArgumentCaptor<Float> dotX = ArgumentCaptor.forClass(Float.class);
+      verify(shape, atLeastOnce())
+          .circle(dotX.capture(), eq(0.5f), eq(ArcIndicatorRenderComponent.DOT_RADIUS), eq(12));
+      // The entity's centre is at x = 0.5, so the crosshair is at x = 1.5.
+      for (float x : dotX.getAllValues()) {
+        assertTrue(x <= 1.5f, "dot at x = " + x + " is past the crosshair");
+      }
+    }
+  }
+
+  @Test
   void nonSolidCollidersDoNotShortenThePreview() {
     assertEquals(
         2.51f, previewEndWithBlocker(PhysicsLayer.NPC, false, BodyDef.BodyType.StaticBody), 0.001f);

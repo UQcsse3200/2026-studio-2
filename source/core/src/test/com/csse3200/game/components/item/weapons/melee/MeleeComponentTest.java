@@ -222,14 +222,12 @@ class MeleeComponentTest {
   }
 
   @Test
-  void cooldownRejectsNewSwingAfterAnimationEnds() {
+  void nextSwingCanStartAsSoonAsTheLastEnds() {
     player.getEvents().trigger("meleeStart");
     run(4);
     assertFalse(melee.isSwinging());
     assertEquals(0f, melee.getSwingProgress());
-    player.getEvents().trigger("meleeStart");
-    assertFalse(melee.isSwinging());
-    run(1);
+    // There is no cooldown, so the next swing starts straight away.
     player.getEvents().trigger("meleeStart");
     assertTrue(melee.isSwinging());
   }
