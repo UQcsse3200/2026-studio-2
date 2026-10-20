@@ -10,15 +10,16 @@
   "borderThickness": 3,
   "fontPath": "flat-earth/skin/fonts/PixeloidSans.fnt",
   "textAlignment": "left",
-
   "pages": [
-    "Move around using A and D.",
-    "Jump using SPACE.",
-    "Dash using SHIFT."
+    "My love, Be careful.. You're still not healed fully. Walk around using A and D.",
+    "Be careful when jumping with SPACE..."
+  ],
+  "portraitPaths": [
+    "images/portraits/calypsoWorried.png",
+    "images/portraits/calypsoContemplating.png"
   ],
   "steps": [
     {"keys": ["A", "D"], "requireAll": true},
-    {"keys": ["SPACE"]},
-    {"keys": ["SHIFT_LEFT", "SHIFT_RIGHT"]}
+    {"keys": ["SPACE"]}
   ]
 }

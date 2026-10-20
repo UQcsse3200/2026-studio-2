@@ -1,0 +1,28 @@
+{
+  "xPos": 20,
+  "yPos": 150,
+  "textColour": "Color.BLACK",
+  "backgroundColour": "Color.TAN",
+  "borderColour": "Color.BROWN",
+  "charsPerSecond": 30,
+  "maxWidth": 320,
+  "padding": 16,
+  "borderThickness": 3,
+  "fontPath": "flat-earth/skin/fonts/PixeloidSans.fnt",
+  "textAlignment": "left",
+  "pages": [
+    "SHIFT dashes you forward, and quickly gathers itself again. Use it to cross what legs cannot.",
+    "Now leap with SPACE.",
+    "And press SHIFT again in midair. One such gift per leap; I am generous, not reckless."
+  ],
+  "portraitPaths": [
+    "images/portraits/calypsoHappy.png",
+    "images/portraits/calypsoFrustrated.png",
+    "images/portraits/calypsoHappy.png"
+  ],
+  "steps": [
+    {"keys": ["SHIFT_LEFT", "SHIFT_RIGHT"]},
+    {"keys": ["SPACE"]},
+    {"keys": ["SHIFT_LEFT", "SHIFT_RIGHT"]}
+  ]
+}
