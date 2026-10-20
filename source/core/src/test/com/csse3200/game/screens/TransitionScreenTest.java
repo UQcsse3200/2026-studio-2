@@ -1,5 +1,6 @@
 package com.csse3200.game.screens;
 
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import com.badlogic.gdx.Screen;
@@ -70,6 +71,9 @@ class TransitionScreenTest {
       // First half of fade-in.
       transition.render(HALF_FADE);
       verify(toScreen).render(HALF_FADE);
+      var lifecycle = inOrder(toScreen);
+      lifecycle.verify(toScreen).show();
+      lifecycle.verify(toScreen).render(HALF_FADE);
       verify(game, never()).finishTransition(any());
 
       // Complete fade-in.

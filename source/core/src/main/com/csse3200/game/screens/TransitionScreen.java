@@ -82,6 +82,10 @@ public class TransitionScreen implements Screen {
           fromScreen = null;
         }
         toScreen = game.createScreen(targetType);
+        if (toScreen != null) {
+          toScreen.show();
+          toScreen.resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        }
         phase = Phase.FADE_IN;
         timer = 0f;
       }
