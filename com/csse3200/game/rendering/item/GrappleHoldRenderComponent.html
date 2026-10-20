@@ -101,7 +101,9 @@ loadScripts(document, 'script');</script>
 <span class="extends-implements">extends <a href="../RenderComponent.html" title="class in com.csse3200.game.rendering">RenderComponent</a></span></div>
 <div class="block">Draws the player hanging from the grapple rope. The art contains a short length of rope, and the
  whole image is turned every frame so that rope lies along the real rope where it leaves the
- player. While it is drawing, the player's normal animation is hidden.</div>
+ player. It only shows while the player actually hangs from the rope: off the ground, below the
+ hook, and not mid-way through another action. While it is drawing, the player's normal animation
+ is hidden.</div>
 </section>
 <section class="summary">
 <ul class="summary-list">

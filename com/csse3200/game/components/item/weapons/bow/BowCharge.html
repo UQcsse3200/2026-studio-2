@@ -107,16 +107,26 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-second">Field</div>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color"><code>static final float</code></div>
-<div class="col-second even-row-color"><code><a href="#MAX_CHARGE_SECONDS" class="member-name-link">MAX_CHARGE_SECONDS</a></code></div>
+<div class="col-second even-row-color"><code><a href="#GRAPPLE_CHARGE_RATE" class="member-name-link">GRAPPLE_CHARGE_RATE</a></code></div>
 <div class="col-last even-row-color">
-<div class="block">How long a draw takes to reach full power.</div>
+<div class="block">How many times faster the grapple draws than a standard arrow.</div>
 </div>
 <div class="col-first odd-row-color"><code>static final float</code></div>
-<div class="col-second odd-row-color"><code><a href="#MAX_SPEED_FACTOR" class="member-name-link">MAX_SPEED_FACTOR</a></code></div>
+<div class="col-second odd-row-color"><code><a href="#MAX_CHARGE_SECONDS" class="member-name-link">MAX_CHARGE_SECONDS</a></code></div>
+<div class="col-last odd-row-color">
+<div class="block">How long a standard draw takes to reach full power.</div>
+</div>
+<div class="col-first even-row-color"><code>static final float</code></div>
+<div class="col-second even-row-color"><code><a href="#MAX_SPEED_FACTOR" class="member-name-link">MAX_SPEED_FACTOR</a></code></div>
+<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><code>static final float</code></div>
+<div class="col-second odd-row-color"><code><a href="#MIN_SPEED_FACTOR" class="member-name-link">MIN_SPEED_FACTOR</a></code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code>static final float</code></div>
-<div class="col-second even-row-color"><code><a href="#MIN_SPEED_FACTOR" class="member-name-link">MIN_SPEED_FACTOR</a></code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-second even-row-color"><code><a href="#REACH_MULTIPLIER" class="member-name-link">REACH_MULTIPLIER</a></code></div>
+<div class="col-last even-row-color">
+<div class="block">How much further every charged shot flies than the base tuning, as a multiple of distance.</div>
+</div>
 </div>
 </section>
 </li>
@@ -155,7 +165,7 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="MAX_CHARGE_SECONDS">
 <h3>MAX_CHARGE_SECONDS</h3>
 <div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type">float</span>&nbsp;<span class="element-name">MAX_CHARGE_SECONDS</span></div>
-<div class="block">How long a draw takes to reach full power.</div>
+<div class="block">How long a standard draw takes to reach full power.</div>
 <dl class="notes">
 <dt>See Also:</dt>
 <dd>
@@ -167,28 +177,45 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li>
-<section class="detail" id="MIN_SPEED_FACTOR">
-<h3>MIN_SPEED_FACTOR</h3>
-<div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type">float</span>&nbsp;<span class="element-name">MIN_SPEED_FACTOR</span></div>
+<section class="detail" id="REACH_MULTIPLIER">
+<h3>REACH_MULTIPLIER</h3>
+<div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type">float</span>&nbsp;<span class="element-name">REACH_MULTIPLIER</span></div>
+<div class="block">How much further every charged shot flies than the base tuning, as a multiple of distance. The
+ single knob for arrow reach: 1.2 would mean 20% further, at every charge level, for the bow and
+ the grapple alike.</div>
 <dl class="notes">
 <dt>See Also:</dt>
 <dd>
 <ul class="tag-list">
-<li><a href="../../../../../../../constant-values.html#com.csse3200.game.components.item.weapons.bow.BowCharge.MIN_SPEED_FACTOR">Constant Field Values</a></li>
+<li><a href="../../../../../../../constant-values.html#com.csse3200.game.components.item.weapons.bow.BowCharge.REACH_MULTIPLIER">Constant Field Values</a></li>
 </ul>
 </dd>
 </dl>
 </section>
 </li>
 <li>
+<section class="detail" id="MIN_SPEED_FACTOR">
+<h3>MIN_SPEED_FACTOR</h3>
+<div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type">float</span>&nbsp;<span class="element-name">MIN_SPEED_FACTOR</span></div>
+</section>
+</li>
+<li>
 <section class="detail" id="MAX_SPEED_FACTOR">
 <h3>MAX_SPEED_FACTOR</h3>
 <div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type">float</span>&nbsp;<span class="element-name">MAX_SPEED_FACTOR</span></div>
+</section>
+</li>
+<li>
+<section class="detail" id="GRAPPLE_CHARGE_RATE">
+<h3>GRAPPLE_CHARGE_RATE</h3>
+<div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type">float</span>&nbsp;<span class="element-name">GRAPPLE_CHARGE_RATE</span></div>
+<div class="block">How many times faster the grapple draws than a standard arrow. A rate rather than its own
+ duration, so it stays proportionate if <a href="#MAX_CHARGE_SECONDS"><code>MAX_CHARGE_SECONDS</code></a> is retuned.</div>
 <dl class="notes">
 <dt>See Also:</dt>
 <dd>
 <ul class="tag-list">
-<li><a href="../../../../../../../constant-values.html#com.csse3200.game.components.item.weapons.bow.BowCharge.MAX_SPEED_FACTOR">Constant Field Values</a></li>
+<li><a href="../../../../../../../constant-values.html#com.csse3200.game.components.item.weapons.bow.BowCharge.GRAPPLE_CHARGE_RATE">Constant Field Values</a></li>
 </ul>
 </dd>
 </dl>
