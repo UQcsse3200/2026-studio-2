@@ -433,7 +433,7 @@ public class BlackjackDisplay extends UIComponent {
 
     /* Right Column */
     Table rightSide = new Table();
-    rightSide.add(backButton).width(192f).height(67f).pad(5f);
+
     rightSide.row();
     rightSide.add(soundButton).width(192f).height(67f).pad(5f);
     rightSide.top().right();
