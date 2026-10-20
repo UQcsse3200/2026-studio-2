@@ -5,6 +5,7 @@ import com.badlogic.gdx.Input.Buttons;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -26,6 +27,12 @@ public class KeyboardPlayerInputComponent extends InputComponent {
   private static final int RIGHT = 1;
   private static final int UP = 2;
   private static final int DOWN = 3;
+  // How far in front of the player, in world units, a right-click aim starts while the pointer is
+  // hidden.
+  static final float AIM_START_DISTANCE = 3f;
+  // Height of the aim start as a fraction of the player's height from their feet: roughly head
+  // level.
+  static final float AIM_START_HEIGHT = 0.85f;
   private final boolean[] keysHeld = new boolean[4];
   private final Set<Integer> heldKeys = new HashSet<>();
   private boolean sprintHeld;
@@ -34,6 +41,7 @@ public class KeyboardPlayerInputComponent extends InputComponent {
   private boolean attackHeld;
   private boolean dead;
   private boolean rightMouseHeld;
+  private GridPoint2 pendingPointerPosition;
   private boolean cheats = false;
 
   public KeyboardPlayerInputComponent() {
@@ -299,9 +307,51 @@ public class KeyboardPlayerInputComponent extends InputComponent {
     }
     if (button == Buttons.RIGHT) {
       rightMouseHeld = true;
+      // While the pointer is hidden the player can't see where it is, so start every aim from the
+      // same spot in front of them. The pointer is shown there once it is released.
+      if (Gdx.input != null && Gdx.input.isCursorCatched()) {
+        GridPoint2 aimStart = getAimStartScreenPosition();
+        if (aimStart != null) {
+          pendingPointerPosition = aimStart;
+          return triggerAimedEvent("shoot", aimStart.x, aimStart.y);
+        }
+      }
       return triggerAimedEvent("shoot", screenX, screenY);
     }
     return false;
+  }
+
+  /**
+   * Where the pointer should reappear for the aim that just started, then forgets it.
+   *
+   * @return the aim start in input coordinates, or null if no aim started while it was hidden
+   */
+  public GridPoint2 takePendingPointerPosition() {
+    GridPoint2 position = pendingPointerPosition;
+    pendingPointerPosition = null;
+    return position;
+  }
+
+  /**
+   * Screen position a fixed distance in front of the player, at head height, in the direction they
+   * are facing.
+   *
+   * @return the position in input coordinates (y down), or null if the camera is unavailable
+   */
+  GridPoint2 getAimStartScreenPosition() {
+    if (cameraComponent == null || Gdx.graphics == null) {
+      return null;
+    }
+    PlayerActions actions = entity.getComponent(PlayerActions.class);
+    int facing = actions == null ? 1 : actions.getFacingDirection();
+    Vector2 centre = entity.getCenterPosition();
+    float headHeight = entity.getPosition().y + entity.getScale().y * AIM_START_HEIGHT;
+    Vector3 screen =
+        cameraComponent
+            .getCamera()
+            .project(new Vector3(centre.x + facing * AIM_START_DISTANCE, headHeight, 0f));
+    // Camera.project measures y up from the bottom; input coordinates measure it down from the top.
+    return new GridPoint2(Math.round(screen.x), Math.round(Gdx.graphics.getHeight() - screen.y));
   }
 
   /**
