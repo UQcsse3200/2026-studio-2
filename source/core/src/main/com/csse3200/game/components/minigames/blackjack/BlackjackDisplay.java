@@ -389,18 +389,15 @@ public class BlackjackDisplay extends UIComponent {
     infoBoxContent.row();
 
     Table enterBetArea = new Table();
-    enterBetArea.add(betLabel).height(30f).fillX().expandX();
+    enterBetArea.add(betLabel).height(30f).width(10f).expandX();
     enterBetArea.add(betField).height(30f).fillX().expandX();
     infoBoxContent.add(enterBetArea).fillX().expandX().center().padRight(4f);
 
-    infoBoxContent.row();
-    infoBoxContent.add(newRoundButton).width(160f).height(60f).center();
-
     infoBox.add(infoBoxContent).expand().fill().pad(5f).center();
-    leftSide.add(infoBox).expand().fill().center();
+    leftSide.add(infoBox).expand().fill().center().padBottom(5f);
 
     leftSide.row();
-    leftSide.add(newRoundButton).width(160f).height(60f).center();
+    leftSide.add(newRoundButton).width(160f).height(60f).center().padTop(10f);
 
     /* Middle Column */
     Table middle = new Table();
