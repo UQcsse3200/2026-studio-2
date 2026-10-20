@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Group;
+import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
@@ -69,13 +70,12 @@ public class BlackjackDisplay extends UIComponent {
   private ImageButton backButton;
   private ImageButton soundButton;
 
-  private Label dealerTotalLabel;
-  private Label playerTotalLabel;
+  private Label dealerLabel;
+  private Label playerLabel;
   private Label goldLabel;
   private Label betSizeLabel;
   private Label resultLabel;
   private Label statusLabel;
-  private Label betLabel;
   private TextField betField;
   private boolean goldSettled;
   private boolean dealInProgress;
@@ -139,8 +139,8 @@ public class BlackjackDisplay extends UIComponent {
 
     table.setBackground(new TextureRegionDrawable(backgroundTexture));
 
-    Label dealerLabel = new Label("DEALER", skin);
-    Label playerLabel = new Label("PLAYER", skin);
+    dealerLabel = new Label("DEALER", skin);
+    playerLabel = new Label("PLAYER", skin);
 
     // Give the player and dealer titles their own gold-themed styles.
     Label.LabelStyle dealerStyle = new Label.LabelStyle(dealerLabel.getStyle());
@@ -151,23 +151,18 @@ public class BlackjackDisplay extends UIComponent {
     playerStyle.fontColor = Color.valueOf("F5D78B");
     playerLabel.setStyle(playerStyle);
 
-    dealerLabel.setFontScale(1.55f);
-    playerLabel.setFontScale(1.55f);
-
     dealerLabel.setAlignment(com.badlogic.gdx.utils.Align.center);
     playerLabel.setAlignment(com.badlogic.gdx.utils.Align.center);
 
-    dealerTotalLabel = new Label("", skin);
-    playerTotalLabel = new Label("", skin);
     goldLabel = new Label("", skin);
     betSizeLabel = new Label("", skin);
     resultLabel = new Label("", skin);
     statusLabel = new Label(PLACE_BET, skin);
-    betLabel = new Label("BET", skin);
+    Label betLabel = new Label("BET", skin);
 
     // Gold text directly on the felt: no navy panels behind the scoreboard or HUD.
-    applyGoldInfoLabelStyle(dealerTotalLabel, 1.05f);
-    applyGoldInfoLabelStyle(playerTotalLabel, 1.05f);
+    applyGoldInfoLabelStyle(dealerLabel, 1.40f);
+    applyGoldInfoLabelStyle(playerLabel, 1.40f);
     applyGoldInfoLabelStyle(goldLabel, 1.0f);
     applyGoldInfoLabelStyle(betSizeLabel, 1.0f);
     applyGoldInfoLabelStyle(statusLabel, 1.0f);
@@ -320,11 +315,9 @@ public class BlackjackDisplay extends UIComponent {
     /* User Interface */
 
     Table dealerRegion = new Table();
-    dealerRegion.add(dealerLabel).padTop(45f).padBottom(-25f);
+    dealerRegion.add(dealerCards).height(CARD_HEIGHT + 20f).padTop(40f);
     dealerRegion.row();
-    dealerRegion.add(dealerCards).height(CARD_HEIGHT + 20f).padTop(55f);
-    dealerRegion.row();
-    dealerRegion.add(dealerTotalLabel).padTop(4f);
+    dealerRegion.add(dealerLabel);
 
     Table centerRegion = new Table();
     Group deckGroup = new Group();
@@ -344,11 +337,9 @@ public class BlackjackDisplay extends UIComponent {
     centerRegion.add(deckGroup).size(CARD_WIDTH + 12f, CARD_HEIGHT + 8f);
 
     Table playerRegion = new Table();
-    playerRegion.add(playerLabel).padBottom(4f);
+    playerRegion.add(playerLabel);
     playerRegion.row();
     playerRegion.add(playerCards).height(CARD_HEIGHT + 20f).padBottom(8f);
-    playerRegion.row();
-    playerRegion.add(playerTotalLabel);
 
     /* Left Column  */
     Table leftSide = new Table();
@@ -394,6 +385,7 @@ public class BlackjackDisplay extends UIComponent {
 
     /* Middle Column */
     Table middle = new Table();
+    middle.setDebug(true, true);
     middle.add(dealerRegion).expandX().fillX().height(245f).top();
     middle.row();
     middle.add(centerRegion).expand().center();
@@ -421,7 +413,6 @@ public class BlackjackDisplay extends UIComponent {
     table.setFillParent(true);
     table.validate();
     table.toFront();
-    table.setDebug(false, true);
     table.pad(7f);
     stage.addActor(table);
     buildResultOverlay();
@@ -609,6 +600,11 @@ public class BlackjackDisplay extends UIComponent {
       backButton.setTouchable(com.badlogic.gdx.scenes.scene2d.Touchable.enabled);
     }
 
+    if (soundButton != null) {
+      soundButton.setDisabled(false);
+      soundButton.setTouchable(Touchable.enabled);
+    }
+
     if (!showResult || dealInProgress) {
       return;
     }
@@ -707,15 +703,15 @@ public class BlackjackDisplay extends UIComponent {
   /** Updates the hand totals, the gold and bet line, and the result message. */
   private void refreshTotalsAndResult() {
     if (blackjack.getDealerHand().isEmpty()) {
-      dealerTotalLabel.setText("TOTAL  --");
+      dealerLabel.setText("DEALER");
     } else if (blackjack.isRoundInProgress() && !blackjack.isRoundOver()) {
-      dealerTotalLabel.setText("TOTAL  ??");
+      dealerLabel.setText("DEALER -- ??");
     } else {
-      dealerTotalLabel.setText("TOTAL  " + blackjack.getDealerTotal());
+      dealerLabel.setText("DEALER -- " + blackjack.getDealerTotal());
     }
 
-    playerTotalLabel.setText(
-        blackjack.getPlayerHand().isEmpty() ? "TOTAL  --" : "TOTAL  " + blackjack.getPlayerTotal());
+    playerLabel.setText(
+        blackjack.getPlayerHand().isEmpty() ? "PLAYER" : "PLAYER -- " + blackjack.getPlayerTotal());
     goldLabel.setText("GOLD:  " + getDisplayedGold());
     betSizeLabel.setText("STAKE:  " + blackjack.getBet());
     if (inventory != null && inventory.getGold() <= 0) {
