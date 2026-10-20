@@ -48,20 +48,21 @@ public class CyclopsMinigameRoomScreen extends ScreenAdapter {
     "images/health/red_heart.png",
     "images/Buttons/exit_up_btn.png",
     "images/Buttons/exit_down_btn.png",
-    // The pause menu's buttons, settings screen and controls picture
+    // The pause menu's buttons and the settings screen
     "images/Buttons/continue_up_btn.png",
     "images/Buttons/continue_down_btn.png",
     "images/Buttons/settings_up_btn.png",
     "images/Buttons/settings_down_btn.png",
     "images/Buttons/quit_up_btn.png",
     "images/Buttons/quit_down_btn.png",
+    // PauseMenuDisplay loads the Controls button's images even though the button is hidden here
     "images/Buttons/control_up_btn.png",
     "images/Buttons/control_down_btn.png",
+    "images/ui/controls_graphic.png",
     "images/Buttons/apply_up_btn.png",
     "images/Buttons/apply_down_btn.png",
     "images/Buttons/back_up_btn.png",
     "images/Buttons/back_down_btn.png",
-    "images/ui/controls_graphic.png",
     "images/ui/settings_box.png",
     "images/backgrounds/main_menu_bg_2.png",
     "images/Buttons/restart_up_btn.png",
@@ -72,6 +73,8 @@ public class CyclopsMinigameRoomScreen extends ScreenAdapter {
     "images/Buttons/exit_game_down_btn.png",
     "images/ui/scroll_bg.png"
   };
+  // The settings screen shows the cave instead of the sea. The cave area loads this texture.
+  private static final String SETTINGS_BACKGROUND = "images/minigames/Cyclops/cave_background.png";
   private static final Vector2 CAMERA_POSITION = new Vector2(7.5f, 7.5f);
 
   private final GdxGame game;
@@ -86,7 +89,7 @@ public class CyclopsMinigameRoomScreen extends ScreenAdapter {
 
   public CyclopsMinigameRoomScreen(GdxGame game) {
     this.game = game;
-    this.pauseOverlay = new PauseMenuOverlay(game);
+    this.pauseOverlay = new PauseMenuOverlay(game, false, SETTINGS_BACKGROUND);
 
     logger.debug("Initialising cyclops minigame screen services");
     ServiceLocator.registerTimeSource(new GameTime());
