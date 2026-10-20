@@ -15,10 +15,11 @@
     "Go on... Take a sip of that potion over there, hold it in your hand and press E."
   ],
   "portraitPaths": [
-    "images/portraits/calypsoWorried.png",
-    "images/portraits/calypsoEncouraging.png"
+    "images/portraits/calyspoWorried.jpeg",
+    "images/portraits/calypsoEncouraging.jpeg"
   ],
   "steps": [
+    {"keys": ["D"]},
     {"keys": ["E"]}
   ]
 }

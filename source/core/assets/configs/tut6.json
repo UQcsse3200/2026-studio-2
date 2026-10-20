@@ -16,9 +16,9 @@
     "And press SHIFT again in midair. One such gift per leap; I am generous, not reckless."
   ],
   "portraitPaths": [
-    "images/portraits/calypsoHappy.png",
-    "images/portraits/calypsoFrustrated.png",
-    "images/portraits/calypsoHappy.png"
+    "images/portraits/calypsoEncouraging.jpeg",
+    "images/portraits/calyspoWorried.jpeg",
+    "images/portraits/calypsoEncouraging.jpeg"
   ],
   "steps": [
     {"keys": ["SHIFT_LEFT", "SHIFT_RIGHT"]},

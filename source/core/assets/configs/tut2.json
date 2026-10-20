@@ -17,10 +17,10 @@
     "The rope holds; I tied it myself. Press W to climb, S to descend. Do try to come back in one piece."
   ],
   "portraitPaths": [
-    "images/portraits/calypsoFrustrated.png",
-    "images/portraits/calypsoHappy.png",
-    "images/portraits/calypsoHappy.png",
-    "images/portraits/calypsoRegret.png"
+    "images/portraits/calyspoWorried.jpeg",
+    "images/portraits/calypsoEncouraging.jpeg",
+    "images/portraits/calypsoEncouraging.jpeg",
+    "images/portraits/calyspoWorried.jpeg"
   ],
   "steps": [
     {"keys": ["TAB"]},

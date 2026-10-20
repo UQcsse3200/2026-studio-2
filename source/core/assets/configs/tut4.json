@@ -16,9 +16,9 @@
     "Release, and let fly. Miss, and I shall never let you forget it."
   ],
   "portraitPaths": [
-    "images/portraits/calypsoFrustrated.png",
-    "images/portraits/calypsoHappy.png",
-    "images/portraits/calypsoHappy.png"
+    "images/portraits/calyspoWorried.jpeg",
+    "images/portraits/calypsoEncouraging.jpeg",
+    "images/portraits/calypsoEncouraging.jpeg"
   ],
   "steps": [
     {"keys": ["TAB"]},

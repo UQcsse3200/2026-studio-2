@@ -15,8 +15,8 @@
     "Be careful when jumping with SPACE..."
   ],
   "portraitPaths": [
-    "images/portraits/calypsoWorried.png",
-    "images/portraits/calypsoContemplating.png"
+    "images/portraits/calyspoWorried.jpeg",
+    "images/portraits/calypsoEncouraging.jpeg"
   ],
   "steps": [
     {"keys": ["A", "D"], "requireAll": true},

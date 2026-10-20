@@ -15,8 +15,8 @@
     "Step in close and swing again. Timing beats flailing, though both amuse me."
   ],
   "portraitPaths": [
-    "images/portraits/calypsoFrustrated.png",
-    "images/portraits/calypsoHappy.png"
+    "images/portraits/calyspoWorried.jpeg",
+    "images/portraits/calypsoEncouraging.jpeg"
   ],
   "steps": [
     {"mouse": ["LEFT"]},
