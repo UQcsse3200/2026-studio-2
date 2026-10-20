@@ -31,6 +31,8 @@ import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.ScreenBlur;
 import java.util.List;
+import java.util.Objects;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -152,7 +154,7 @@ class SpinTheWheelOverlayTest {
     overlay.request();
     overlay.afterRender();
 
-    openWheel().getComponent(SpinTheWheelDisplay.class).award(ITEMS.get(0));
+    Objects.requireNonNull(openWheel()).getComponent(SpinTheWheelDisplay.class).award(ITEMS.getFirst());
 
     assertEquals(
         3, player.getComponent(InventoryComponent.class).getItemCount(ItemType.STANDARD_ARROW));
@@ -165,7 +167,7 @@ class SpinTheWheelOverlayTest {
     overlay.request();
     overlay.afterRender();
 
-    openWheel().getEvents().trigger("back");
+    Objects.requireNonNull(openWheel()).getEvents().trigger("back");
     entityService.update();
 
     assertFalse(entityService.getPaused());
