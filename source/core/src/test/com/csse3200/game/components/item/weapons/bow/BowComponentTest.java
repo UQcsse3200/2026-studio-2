@@ -13,6 +13,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.components.projectile.ArrowType;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
+import com.csse3200.game.entities.factories.ProjectileFactory;
 import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.services.GameTime;
 import com.csse3200.game.services.ResourceService;
@@ -27,9 +28,9 @@ class BowComponentTest {
   // These mirror BowCharge's tuning constants - they are gameplay-feel knobs, so update them here
   // whenever they are retuned there. Expected values below are derived from them
   // rather than hardcoded, so a retune only needs changing in one place.
-  private static final float MIN_CHARGE_SPEED_FACTOR = 0.3f;
-  private static final float MAX_CHARGE_SPEED_FACTOR = 1.5f;
-  private static final long MAX_CHARGE_MS = 1500L;
+  private static final float MIN_CHARGE_SPEED_FACTOR = BowCharge.MIN_SPEED_FACTOR;
+  private static final float MAX_CHARGE_SPEED_FACTOR = BowCharge.MAX_SPEED_FACTOR;
+  private static final long MAX_CHARGE_MS = (long) (BowCharge.MAX_CHARGE_SECONDS * 1000f);
 
   private EntityService entityService;
   private Sound attackSound;
@@ -278,16 +279,20 @@ class BowComponentTest {
       ArrowType.POTION,
       ArrowType.POISON
     };
-    float[] speeds = {5.4f, 4.8f, 5.4f, 6.6f, 3.6f, 5.4f};
-    for (int i = 0; i < types.length; i++) {
-      bow.setArrowType(types[i]);
-      assertEquals(speeds[i], bow.getLaunchSpeed(), 0.0001f);
+    // Not drawing: each type's base speed at the weakest charge.
+    for (ArrowType type : types) {
+      bow.setArrowType(type);
+      assertEquals(
+          ProjectileFactory.getBaseSpeed(type) * MIN_CHARGE_SPEED_FACTOR,
+          bow.getLaunchSpeed(),
+          0.0001f);
     }
     bow.setArrowType(ArrowType.ICE);
     when(gameTime.getTime()).thenReturn(0L);
     player.getEvents().trigger("chargeStart", Vector2.X);
-    when(gameTime.getTime()).thenReturn(1500L);
-    assertEquals(24f, bow.getLaunchSpeed(), 0.0001f);
+    when(gameTime.getTime()).thenReturn(MAX_CHARGE_MS);
+    assertEquals(
+        ProjectileFactory.ICE_ARROW_SPEED * MAX_CHARGE_SPEED_FACTOR, bow.getLaunchSpeed(), 0.0001f);
     assertEquals(-20f, bow.getArrowGravityY(), 0.0001f);
   }
 }

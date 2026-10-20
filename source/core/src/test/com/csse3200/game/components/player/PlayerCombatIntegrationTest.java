@@ -26,6 +26,7 @@ import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.inventory.InventoryComponent;
 import com.csse3200.game.components.item.ItemType;
 import com.csse3200.game.components.item.weapons.WeaponComponent;
+import com.csse3200.game.components.item.weapons.bow.BowCharge;
 import com.csse3200.game.components.item.weapons.bow.BowComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
@@ -379,7 +380,10 @@ class PlayerCombatIntegrationTest {
 
     verify(entities, times(2)).register(projectile);
     verify(itemUsed, times(2)).handle(ItemType.STANDARD_ARROW);
-    factory.verify(() -> ProjectileFactory.createPlayerArrow(eq(player), any(), any(), eq(0.3f)));
+    factory.verify(
+        () ->
+            ProjectileFactory.createPlayerArrow(
+                eq(player), any(), any(), eq(BowCharge.MIN_SPEED_FACTOR)));
   }
 
   @Test
@@ -401,7 +405,10 @@ class PlayerCombatIntegrationTest {
     input.touchUp(40, 60, 0, Buttons.RIGHT);
 
     verify(entities).register(projectile);
-    factory.verify(() -> ProjectileFactory.createPlayerArrow(eq(player), any(), any(), eq(0.3f)));
+    factory.verify(
+        () ->
+            ProjectileFactory.createPlayerArrow(
+                eq(player), any(), any(), eq(BowCharge.MIN_SPEED_FACTOR)));
     when(time.getDeltaTime()).thenReturn(0.4f);
     bow.update();
     input.keyUp(Keys.E);
@@ -428,7 +435,10 @@ class PlayerCombatIntegrationTest {
     input.touchUp(40, 60, 0, Buttons.RIGHT);
 
     verify(entities).register(projectile);
-    factory.verify(() -> ProjectileFactory.createPlayerArrow(eq(player), any(), any(), eq(0.3f)));
+    factory.verify(
+        () ->
+            ProjectileFactory.createPlayerArrow(
+                eq(player), any(), any(), eq(BowCharge.MIN_SPEED_FACTOR)));
   }
 
   @Test
@@ -443,7 +453,10 @@ class PlayerCombatIntegrationTest {
     assertEquals(ItemType.FIRE_ARROW, inventory.getSelectedItem());
     assertEquals(1, inventory.getItemCount(ItemType.STANDARD_ARROW));
     assertEquals(2, inventory.getItemCount(ItemType.FIRE_ARROW));
-    factory.verify(() -> ProjectileFactory.createPlayerArrow(eq(player), any(), any(), eq(0.3f)));
+    factory.verify(
+        () ->
+            ProjectileFactory.createPlayerArrow(
+                eq(player), any(), any(), eq(BowCharge.MIN_SPEED_FACTOR)));
     factory.verifyNoMoreInteractions();
     verify(entities).register(projectile);
     verify(itemUsed).handle(ItemType.STANDARD_ARROW);
@@ -463,7 +476,10 @@ class PlayerCombatIntegrationTest {
 
     input.touchUp(40, 60, 0, Buttons.RIGHT);
 
-    factory.verify(() -> ProjectileFactory.createPlayerArrow(eq(player), any(), any(), eq(0.3f)));
+    factory.verify(
+        () ->
+            ProjectileFactory.createPlayerArrow(
+                eq(player), any(), any(), eq(BowCharge.MIN_SPEED_FACTOR)));
     factory.verifyNoMoreInteractions();
     verify(entities).register(projectile);
     verify(itemUsed).handle(ItemType.STANDARD_ARROW);

@@ -25,11 +25,13 @@ import com.csse3200.game.components.inventory.InventoryComponent;
 import com.csse3200.game.components.item.ItemType;
 import com.csse3200.game.components.item.weapons.bow.grapple.GrappleComponent;
 import com.csse3200.game.components.player.KeyboardPlayerInputComponent;
+import com.csse3200.game.components.projectile.ArrowProjectileComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.ProjectileFactory;
 import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.physics.PhysicsService;
+import com.csse3200.game.rendering.item.ArcIndicatorRenderComponent;
 import com.csse3200.game.rendering.item.GrappleIndicatorRenderComponent;
 import com.csse3200.game.services.ServiceLocator;
 import org.junit.jupiter.api.AfterEach;
@@ -163,19 +165,26 @@ class GrappleIndicatorRenderComponentTest {
       assertEquals(1, shapes.constructed().size());
       ShapeRenderer shape = shapes.constructed().getFirst();
 
-      verify(shape).setColor(Color.WHITE);
+      verify(shape).setColor(new Color(1f, 1f, 1f, ArcIndicatorRenderComponent.DOT_OPACITY));
 
       // Small dots spaced along the arc, plus one bigger dot at the landing point.
-      verify(shape, atLeastOnce()).circle(anyFloat(), anyFloat(), eq(0.05f), eq(12));
+      verify(shape, atLeastOnce())
+          .circle(anyFloat(), anyFloat(), eq(ArcIndicatorRenderComponent.DOT_RADIUS), eq(12));
 
       ArgumentCaptor<Float> xCaptor = ArgumentCaptor.forClass(Float.class);
       ArgumentCaptor<Float> yCaptor = ArgumentCaptor.forClass(Float.class);
-      verify(shape).circle(xCaptor.capture(), yCaptor.capture(), eq(0.15f), eq(12));
+      verify(shape)
+          .circle(
+              xCaptor.capture(),
+              yCaptor.capture(),
+              eq(ArcIndicatorRenderComponent.LANDING_DOT_RADIUS),
+              eq(12));
       // The wall pins the landing x, but under gravity the arc has already dropped by the time it
       // gets there. The arrow spawns 0.6 ahead of the player, so it only has 9.4 left to cover:
       // time-to-wall = 9.4 / GRAPPLE_ARROW_SPEED, drop = 0.5 * effective gravity (20) * t^2.
       assertEquals(origin.x + 10f, xCaptor.getValue(), 0.05f);
-      assertEquals(origin.y - 1.826f, yCaptor.getValue(), 0.15f);
+      assertEquals(
+          origin.y - dropToWall(ProjectileFactory.GRAPPLE_ARROW_SPEED), yCaptor.getValue(), 0.15f);
     }
   }
 
@@ -192,7 +201,12 @@ class GrappleIndicatorRenderComponentTest {
 
       ArgumentCaptor<Float> xCaptor = ArgumentCaptor.forClass(Float.class);
       ArgumentCaptor<Float> yCaptor = ArgumentCaptor.forClass(Float.class);
-      verify(shape).circle(xCaptor.capture(), yCaptor.capture(), eq(0.15f), eq(12));
+      verify(shape)
+          .circle(
+              xCaptor.capture(),
+              yCaptor.capture(),
+              eq(ArcIndicatorRenderComponent.LANDING_DOT_RADIUS),
+              eq(12));
       // No obstruction, so the preview reaches all the way out to the grapple's maximum range - as
       // a straight-line distance from the player, not just a fixed horizontal offset any more.
       float distance = new Vector2(xCaptor.getValue(), yCaptor.getValue()).dst(origin.x, origin.y);
@@ -204,8 +218,8 @@ class GrappleIndicatorRenderComponentTest {
 
   @Test
   void shouldLandLowerForAWeakerChargeBecauseTheArrowIsSlower() {
-    // Barely charged, the grapple is launched at 22 * 0.5 = 11, so it hangs in the air longer on
-    // the way to the wall and sags a lot more than a normal-speed shot would.
+    // Barely charged, the grapple is launched at half its base speed, so it hangs in the air longer
+    // on the way to the wall and sags a lot more than a normal-speed shot would.
     when(grapple.currentSpeedMultiplier()).thenReturn(0.5f);
     when(input.getMouseAimDirection()).thenReturn(new Vector2(10f, 0f));
 
@@ -219,11 +233,29 @@ class GrappleIndicatorRenderComponentTest {
 
       ArgumentCaptor<Float> xCaptor = ArgumentCaptor.forClass(Float.class);
       ArgumentCaptor<Float> yCaptor = ArgumentCaptor.forClass(Float.class);
-      verify(shape).circle(xCaptor.capture(), yCaptor.capture(), eq(0.15f), eq(12));
-      // 9.4 left to cover at speed 11: t = 0.8545s, drop = 0.5 * 20 * t^2 = 7.30.
+      verify(shape)
+          .circle(
+              xCaptor.capture(),
+              yCaptor.capture(),
+              eq(ArcIndicatorRenderComponent.LANDING_DOT_RADIUS),
+              eq(12));
+      // 9.4 left to cover at half speed: four times the drop of a full-speed shot.
       assertEquals(origin.x + 10f, xCaptor.getValue(), 0.05f);
-      assertEquals(origin.y - 7.303f, yCaptor.getValue(), 0.25f);
+      assertEquals(
+          origin.y - dropToWall(ProjectileFactory.GRAPPLE_ARROW_SPEED * 0.5f),
+          yCaptor.getValue(),
+          0.25f);
     }
+  }
+
+  /**
+   * How far a shot launched flat at {@code speed} has fallen by the time it reaches the test wall:
+   * it spawns 0.6 ahead of the player, leaving 9.4 to cover, under the arrows' effective gravity.
+   */
+  private static float dropToWall(float speed) {
+    float secondsToWall = 9.4f / speed;
+    float effectiveGravity = 50f * ArrowProjectileComponent.ARC_GRAVITY_SCALE;
+    return 0.5f * effectiveGravity * secondsToWall * secondsToWall;
   }
 
   @Test

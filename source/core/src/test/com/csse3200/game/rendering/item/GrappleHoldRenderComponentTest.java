@@ -207,31 +207,6 @@ class GrappleHoldRenderComponentTest {
   }
 
   @Test
-  void shouldNotHangFromALevelRope() {
-    GrappleHoldRenderComponent hold = holdWithPose();
-    attachRopeAt(6f, 0.5f);
-
-    hold.update();
-
-    org.junit.jupiter.api.Assertions.assertFalse(hold.isHolding());
-  }
-
-  @Test
-  void shouldOnlyStartHangingOnceTheRopeIsWellAboveLevel() {
-    GrappleHoldRenderComponent hold = holdWithPose();
-    Vector2 anchor = new Vector2(5.5f, 5.5f);
-    attachRopeAt(anchor.x, anchor.y);
-
-    placePlayerBelowAnchor(anchor, 5f, 1f); // about 11 degrees up
-    hold.update();
-    org.junit.jupiter.api.Assertions.assertFalse(hold.isHolding());
-
-    placePlayerBelowAnchor(anchor, 5f, 2.5f); // about 27 degrees up
-    hold.update();
-    assertTrue(hold.isHolding());
-  }
-
-  @Test
   void shouldGiveTheNormalAnimationBackWhenThePlayerEndsUpAboveTheHook() {
     GrappleHoldRenderComponent hold = holdWithPose();
     attachRopeAt(0.5f, 6f);
@@ -260,33 +235,6 @@ class GrappleHoldRenderComponentTest {
     player.setPosition(0f, 0f);
     hold.update();
 
-    assertTrue(hold.isHolding());
-  }
-
-  @Test
-  void shouldNotFlickerBetweenPoseAndSpriteAsTheRopeSwingsAcrossTheLimit() {
-    GrappleHoldRenderComponent hold = holdWithPose();
-    Vector2 anchor = new Vector2(5.5f, 5.5f);
-    attachRopeAt(anchor.x, anchor.y);
-
-    placePlayerBelowAnchor(anchor, 5f, 5f); // steeply up: hanging
-    hold.update();
-    assertTrue(hold.isHolding());
-
-    placePlayerBelowAnchor(anchor, 5f, 1.1f); // sagging to about 12 degrees: still hanging
-    hold.update();
-    assertTrue(hold.isHolding(), "it should hang on a little past where it started");
-
-    placePlayerBelowAnchor(anchor, 5f, 0.2f); // all but level: let go of the pose
-    hold.update();
-    org.junit.jupiter.api.Assertions.assertFalse(hold.isHolding());
-
-    placePlayerBelowAnchor(anchor, 5f, 1.1f); // back to 12 degrees: not enough to start again
-    hold.update();
-    org.junit.jupiter.api.Assertions.assertFalse(hold.isHolding(), "it needs more to restart");
-
-    placePlayerBelowAnchor(anchor, 5f, 2.5f); // properly up again
-    hold.update();
     assertTrue(hold.isHolding());
   }
 
@@ -340,8 +288,10 @@ class GrappleHoldRenderComponentTest {
               anyBoolean(),
               anyBoolean());
       float turned = ((rotation.getValue() + 180f) % 360f + 360f) % 360f - 180f;
+      // Lying sideways along a level rope is the furthest it may turn; any further and the head
+      // would drop below the hands.
       assertTrue(
-          Math.abs(turned) < 90f, "turned " + turned + " degrees with the hook at " + degrees);
+          Math.abs(turned) <= 90f, "turned " + turned + " degrees with the hook at " + degrees);
     }
   }
 

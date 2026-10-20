@@ -23,8 +23,9 @@ import com.csse3200.game.ui.UIComponent;
 public class ArrowTrajectoryDisplay extends UIComponent {
   private static final int DOT_COUNT = 18;
   private static final float DOT_STEP_SECONDS = 0.06f;
-  private static final float DOT_SIZE = 9f;
-  private static final float MAX_ALPHA = 0.9f;
+  private static final float DOT_SIZE = 4.5f;
+  // Opacity of the nearest dot; the rest fade out further along the arc.
+  private static final float MAX_ALPHA = 0.75f;
   private static final int DOT_TEXTURE_SIZE = 16;
 
   private final Vector2[] points = new Vector2[DOT_COUNT];
@@ -44,6 +45,8 @@ public class ArrowTrajectoryDisplay extends UIComponent {
     bow = entity.getComponent(BowComponent.class);
     input = entity.getComponent(KeyboardPlayerInputComponent.class);
     entity.getEvents().addListener("death", () -> dead = true);
+    // A checkpoint restart brings the player back; without this the arc stayed off for good.
+    entity.getEvents().addListener("revive", () -> dead = false);
 
     dotTexture = createDotTexture();
     for (int i = 0; i < DOT_COUNT; i++) {
