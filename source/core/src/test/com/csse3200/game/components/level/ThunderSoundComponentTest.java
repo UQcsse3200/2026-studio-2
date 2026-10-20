@@ -83,4 +83,37 @@ class ThunderSoundComponentTest {
     assertFalse(ThunderSoundComponent.crossed(19.9f, 0.1f, 5f));
     assertTrue(ThunderSoundComponent.crossed(19.9f, 5.2f, 5f));
   }
+
+  @Test
+  void shouldStopBothThundersOnPause() {
+    ThunderSoundComponent.stopAll();
+
+    verify(close).stop();
+    verify(far).stop();
+  }
+
+  @Test
+  void shouldStopBothThundersWhenDisposed() {
+    thunder.dispose();
+
+    verify(close).stop();
+    verify(far).stop();
+  }
+
+  @Test
+  void shouldDoNothingWithoutATimeSource() {
+    ServiceLocator.registerTimeSource(null);
+
+    thunder.update();
+
+    verify(close, never()).play(anyFloat());
+    verify(far, never()).play(anyFloat());
+  }
+
+  @Test
+  void shouldNotCrashStoppingWithoutAResourceService() {
+    ServiceLocator.registerResourceService(null);
+
+    org.junit.jupiter.api.Assertions.assertDoesNotThrow(ThunderSoundComponent::stopAll);
+  }
 }
