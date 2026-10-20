@@ -16,7 +16,7 @@ public final class BlackjackDialogue {
   private static final Logger logger = LoggerFactory.getLogger(BlackjackDialogue.class);
 
   /** Who speaks the dialogue. */
-  public static final String SPEAKER = "Serci";
+  public static final String SPEAKER = "Cerci";
 
   /** Cutscene played after the player wins the match. */
   static final String WIN_CUTSCENE = "cutscene5";

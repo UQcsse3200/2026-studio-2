@@ -202,7 +202,7 @@ public class BlackjackDisplay extends UIComponent {
 
     table.setBackground(new TextureRegionDrawable(backgroundTexture));
 
-    dealerLabel = new Label("SERCI", skin);
+    dealerLabel = new Label("CERCI", skin);
     playerLabel = new Label("PLAYER", skin);
 
     // Give the player and dealer titles their own gold-themed styles.
@@ -648,7 +648,7 @@ public class BlackjackDisplay extends UIComponent {
     resultOverlay.toFront();
   }
 
-  /** Uses a tall scroll for Serci's match dialogue, retaining the original round-result panel. */
+  /** Uses a tall scroll for Cerci's match dialogue, retaining the original round-result panel. */
   private void setDialogueScrollStyle(boolean dialogueVisible) {
     if (resultPopup == null || resultPopupCell == null) {
       return;
@@ -767,11 +767,11 @@ public class BlackjackDisplay extends UIComponent {
   /** Updates the hand totals, the gold and bet line, and the result message. */
   private void refreshTotalsAndResult() {
     if (blackjack.getDealerHand().isEmpty()) {
-      dealerLabel.setText("SERCI");
+      dealerLabel.setText("CERCI");
     } else if (blackjack.isRoundInProgress() && !blackjack.isRoundOver()) {
-      dealerLabel.setText("SERCI -- ??");
+      dealerLabel.setText("CERCI -- ??");
     } else {
-      dealerLabel.setText("SERCI -- " + blackjack.getDealerTotal());
+      dealerLabel.setText("CERCI -- " + blackjack.getDealerTotal());
     }
 
     playerLabel.setText(
