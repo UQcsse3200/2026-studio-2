@@ -229,11 +229,11 @@ class GrappleComponentTest {
     }
 
     assertFalse(grapple.isCharging());
-    assertTrue(grapple.isOnCooldown());
+    assertFalse(grapple.isOnCooldown());
   }
 
   @Test
-  void shouldClearCooldownOnceTheGrappleActivates() {
+  void shouldStayOffCooldownThroughAShotAndAGrapple() {
     ServiceLocator.registerEntityService(new EntityService());
     ServiceLocator.registerRenderService(new RenderService());
     Entity player =
@@ -243,12 +243,12 @@ class GrappleComponentTest {
     Body anchor = createAnchorBody();
 
     grapple.fire(Vector2.X.cpy());
-    assertTrue(grapple.isOnCooldown());
+    // There is no cooldown, so a missed shot can be followed up straight away.
+    assertFalse(grapple.isOnCooldown());
 
     grapple.attachTo(anchor, new Vector2(5f, 6f));
 
-    // A successful grapple should let you detach and fire again immediately to chain swings - the
-    // cooldown only exists to stop a missed shot being spammed for free.
+    // And a successful grapple lets you detach and fire again immediately to chain swings.
     assertFalse(grapple.isOnCooldown());
   }
 
@@ -348,7 +348,7 @@ class GrappleComponentTest {
   }
 
   @Test
-  void shouldIgnoreChargeStartWithoutDirectionOrWhileAttachedOrOnCooldown() {
+  void shouldIgnoreChargeStartWithoutDirectionOrWhileAttached() {
     Entity player = createAttachedPlayer();
     GrappleComponent grapple = player.getComponent(GrappleComponent.class);
     Body anchor = createAnchorBody();
@@ -367,8 +367,9 @@ class GrappleComponentTest {
     ServiceLocator.registerEntityService(new EntityService());
     ServiceLocator.registerRenderService(new RenderService());
     grapple.fire(Vector2.X.cpy());
+    // There is no cooldown, so a fresh draw can start straight after a shot.
     grapple.startCharge(Vector2.X.cpy());
-    assertFalse(grapple.isCharging());
+    assertTrue(grapple.isCharging());
   }
 
   @Test
@@ -435,7 +436,7 @@ class GrappleComponentTest {
     }
 
     assertFalse(grapple.isCharging());
-    assertTrue(grapple.isOnCooldown());
+    assertFalse(grapple.isOnCooldown());
   }
 
   @Test
