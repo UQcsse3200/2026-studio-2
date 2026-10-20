@@ -1,9 +1,8 @@
 package com.csse3200.game.components;
 
 import com.badlogic.gdx.Input.Keys;
-import com.badlogic.gdx.utils.Align;
-import com.csse3200.game.entities.configs.TextConfig;
-import com.csse3200.game.files.FileLoader;
+import com.csse3200.game.entities.configs.Portrait;
+import com.csse3200.game.entities.factories.TextBoxFactory;
 import com.csse3200.game.input.InputComponent;
 import com.csse3200.game.ui.terminal.Terminal;
 
@@ -32,31 +31,13 @@ public class TutorialComponent extends InputComponent {
     this.onFinished = onFinished == null ? () -> {} : onFinished;
   }
 
-  /** Loads and starts the configured tutorial without going through the terminal command. */
-  public static TutorialComponent start(String configPath, Runnable onFinished) {
-    TextConfig config = FileLoader.readClass(TextConfig.class, configPath);
-    if (config == null) {
+  /** Creates and starts the tutorial using the portrait textbox factory. */
+  public static TutorialComponent start(Runnable onFinished) {
+    TextBoxComponent textBox =
+        new TextBoxFactory().createPortraitTextBox(Portrait.CALYPSO_HAPPY);
+    if (textBox == null) {
       return null;
     }
-    TextBoxComponent textBox =
-        new TextBoxComponent(
-            config.xPos,
-            config.yPos,
-            config.getTextColour(),
-            config.getBackgroundColour(),
-            config.getBorderColour(),
-            config.charsPerSecond,
-            config.maxWidth,
-            config.padding,
-            config.borderThickness,
-            config.fontPath,
-            config.getTextAlignment(),
-            config.pages,
-            config.portraitPaths);
-    textBox.setExternallyControlled(true);
-    textBox.setPosition(config.xPos, config.yPos, Align.bottomLeft);
-    textBox.create();
-
     TutorialComponent tutorial = new TutorialComponent(textBox, onFinished);
     tutorial.create();
     return tutorial;

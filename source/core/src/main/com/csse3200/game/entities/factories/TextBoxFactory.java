@@ -1,9 +1,11 @@
 package com.csse3200.game.entities.factories;
 
+import com.badlogic.gdx.utils.Align;
 import com.csse3200.game.components.TextBoxComponent;
 import com.csse3200.game.entities.configs.Portrait;
 import com.csse3200.game.entities.configs.TextConfig;
 import com.csse3200.game.files.FileLoader;
+import java.util.ArrayList;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -77,5 +79,57 @@ public class TextBoxFactory {
     textConfig.pages = List.of(text);
     textConfig.portraitPaths = List.of(portrait.getAssetPath());
     createTextBox(textConfig);
+  }
+
+  /**
+   * Creates the externally controlled tutorial textbox with a portrait and no caller-supplied text.
+   * Uses the same default {@link TextConfig} layout as the regular portrait textbox factory.
+   *
+   * @param portrait portrait to display for every tutorial page
+   * @return the created textbox, or {@code null} if the portrait is invalid
+   */
+  public TextBoxComponent createPortraitTextBox(Portrait portrait) {
+    if (portrait == null) {
+      logger.error("Failed to create tutorial portrait text box: portrait is required");
+      return null;
+    }
+
+    TextConfig config = new TextConfig();
+    config.pages =
+        List.of(
+            "Move around using A and D.",
+            "Jump using SPACE.",
+            "Dash using SHIFT.");
+
+    int pageCount = config.pages == null || config.pages.isEmpty() ? 1 : config.pages.size();
+    config.portraitPaths = new ArrayList<>();
+    for (int page = 0; page < pageCount; page++) {
+      config.portraitPaths.add(portrait.getAssetPath());
+    }
+
+    try {
+      TextBoxComponent textBox =
+          new TextBoxComponent(
+              config.xPos,
+              config.yPos,
+              config.getTextColour(),
+              config.getBackgroundColour(),
+              config.getBorderColour(),
+              config.charsPerSecond,
+              config.maxWidth,
+              config.padding,
+              config.borderThickness,
+              config.fontPath,
+              config.getTextAlignment(),
+              config.pages,
+              config.portraitPaths);
+      textBox.setExternallyControlled(true);
+      textBox.setPosition(config.xPos, config.yPos, Align.bottomLeft);
+      textBox.create();
+      return textBox;
+    } catch (Exception e) {
+      logger.error("Failed to create tutorial portrait text box: {}", e.getMessage());
+      return null;
+    }
   }
 }

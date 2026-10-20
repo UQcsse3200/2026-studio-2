@@ -142,8 +142,7 @@ public class LevelsGameScreen extends BaseGameScreen {
     game.applyPendingSavePlayer(player);
     game.applyPendingSaveWorld(currentGameArea, level);
     if (startTutorial && !game.isTutorialCompleted()) {
-      tutorial =
-          TutorialComponent.start("configs/tutorial.json", game::markTutorialCompleted);
+      tutorial = TutorialComponent.start(game::markTutorialCompleted);
     }
     player.getEvents().addListener("respawnAtCheckpoint", () -> currentGameArea.respawn());
     player.getEvents().addListener("toggleMap", () -> currentGameArea.toggleLevelMap());
