@@ -4,6 +4,7 @@ import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.csse3200.game.GdxGame;
 import com.csse3200.game.components.GameVolume;
+import com.csse3200.game.components.inventory.InventoryComponent;
 import com.csse3200.game.components.minigames.blackjack.Blackjack;
 import com.csse3200.game.components.minigames.blackjack.BlackjackActions;
 import com.csse3200.game.components.minigames.blackjack.BlackjackConfig;
@@ -65,9 +66,12 @@ public class BlackjackScreen extends MinigameScreen {
     Stage stage = ServiceLocator.getRenderService().getStage();
 
     Blackjack blackjack = new Blackjack(100);
+    // Temporary substitute until the player's inventory is passed in.
+    InventoryComponent inventoryComponent = new InventoryComponent(100);
 
     return new Entity()
-        .addComponent(new BlackjackDisplay(blackjack, null, this::setSoundEnabled))
+        .addComponent(inventoryComponent)
+        .addComponent(new BlackjackDisplay(blackjack, inventoryComponent, this::setSoundEnabled))
         .addComponent(new BlackjackActions(game))
         .addComponent(new InputDecorator(stage, 10));
   }
