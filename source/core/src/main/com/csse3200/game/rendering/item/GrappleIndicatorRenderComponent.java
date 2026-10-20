@@ -58,4 +58,10 @@ public class GrappleIndicatorRenderComponent extends ArcIndicatorRenderComponent
   protected float maxRange() {
     return ProjectileFactory.GRAPPLE_ARROW_RANGE;
   }
+
+  /** The aim runs from the player's centre to the crosshair, so stop the arc once it gets there. */
+  @Override
+  protected float maxDrawReach(Vector2 aimOffset) {
+    return aimOffset.len();
+  }
 }

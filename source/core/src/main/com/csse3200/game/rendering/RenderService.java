@@ -1,5 +1,6 @@
 package com.csse3200.game.rendering;
 
+import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -54,6 +55,16 @@ public class RenderService implements Disposable {
    * @param batch batch to render to.
    */
   public void render(SpriteBatch batch) {
+    render(batch, null);
+  }
+
+  /**
+   * Render visible objects to the given batch. Renderables without known bounds are always drawn.
+   *
+   * @param batch batch to render to
+   * @param camera camera defining the visible world area
+   */
+  public void render(SpriteBatch batch, Camera camera) {
     // The stage is drawn with this same batch and leaves its last tint on it (the arrow wheel fades
     // arrows the player has run out of, for instance). Start from plain white so nothing in the
     // world inherits that and comes out tinted or see-through.
@@ -64,6 +75,11 @@ public class RenderService implements Disposable {
       layer.sort();
 
       for (Renderable renderable : layer) {
+        if (camera != null
+            && renderable instanceof CullingRenderable cullingRenderable
+            && !cullingRenderable.isVisible(camera)) {
+          continue;
+        }
         renderable.render(batch);
       }
     }

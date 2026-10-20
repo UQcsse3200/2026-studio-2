@@ -4,7 +4,6 @@ import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.ai.tasks.DefaultTask;
 import com.csse3200.game.ai.tasks.PriorityTask;
 import com.csse3200.game.ai.tasks.Task;
-import com.csse3200.game.entities.Entity;
 import com.csse3200.game.utils.math.RandomUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,6 +17,7 @@ public class WanderTask extends DefaultTask implements PriorityTask {
 
   private final Vector2 wanderRange;
   private final float waitTime;
+  private final String behaviour;
   private Vector2 startPos;
   private MovementTask movementTask;
   private WaitTask waitTask;
@@ -29,10 +29,12 @@ public class WanderTask extends DefaultTask implements PriorityTask {
    * @param wanderRange Distance in X and Y the entity can move from its position when start() is
    *     called.
    * @param waitTime How long in seconds to wait between wandering.
+   * @param behaviour Entity movement behaviour (flying vs non-flying)
    */
-  public WanderTask(Vector2 wanderRange, float waitTime) {
+  public WanderTask(Vector2 wanderRange, float waitTime, String behaviour) {
     this.wanderRange = wanderRange;
     this.waitTime = waitTime;
+    this.behaviour = behaviour;
   }
 
   @Override
@@ -45,6 +47,10 @@ public class WanderTask extends DefaultTask implements PriorityTask {
     super.start();
 
     startPos = owner.getEntity().getPosition();
+
+    if (!behaviour.equals("flying")) {
+      edgeDetector = new EdgeDetectTask(0.3f);
+    }
 
     waitTask = new WaitTask(waitTime);
     waitTask.create(owner);
@@ -69,31 +75,21 @@ public class WanderTask extends DefaultTask implements PriorityTask {
     }
 
     // Edge detection
-    if (currentTask == movementTask) {
-      Vector2 currentPos = owner.getEntity().getPosition();
+    if (!behaviour.equals("flying")) {
+      if (currentTask == movementTask) {
+        Vector2 currentPos = owner.getEntity().getPosition();
 
-      float direction = Math.signum(wanderTarget.x - currentPos.x);
+        float direction = Math.signum(wanderTarget.x - currentPos.x);
 
-      if (direction != 0 && !canStep(owner.getEntity(), direction)) {
-        movementTask.stop();
-        startWaiting();
-        return;
+        if (direction != 0 && !edgeDetector.isGroundAhead(owner.getEntity(), direction)) {
+          movementTask.stop();
+          startWaiting();
+          return;
+        }
       }
     }
 
     currentTask.update();
-  }
-
-  /**
-   * @param direction 1 to step right, -1 to step left
-   * @return false if the wanderer must not step that way. On the ground that is when there is no
-   *     floor ahead, so it does not wander off the edge of a platform.
-   */
-  protected boolean canStep(Entity enemy, float direction) {
-    if (edgeDetector == null) {
-      edgeDetector = new EdgeDetectTask(0.3f);
-    }
-    return edgeDetector.isGroundAhead(enemy, direction);
   }
 
   private void startWaiting() {
@@ -120,6 +116,12 @@ public class WanderTask extends DefaultTask implements PriorityTask {
     Vector2 halfRange = wanderRange.cpy().scl(0.5f);
     Vector2 min = startPos.cpy().sub(halfRange);
     Vector2 max = startPos.cpy().add(halfRange);
-    return RandomUtils.random(min, max);
+    Vector2 target = RandomUtils.random(min, max);
+
+    if (!behaviour.equals("flying")) {
+      target.y = owner.getEntity().getPosition().y;
+    }
+
+    return target;
   }
 }

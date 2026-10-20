@@ -447,6 +447,40 @@ class CyclopsMinigameLogicTest {
   }
 
   @Test
+  void missCostsTwoHearts() {
+    assertEquals(4, CyclopsMinigameLogic.MISS_DAMAGE);
+  }
+
+  @Test
+  void twoMissesLeaveThePlayerAlive() {
+    CombatStatsComponent stats = givePlayerHealth(10);
+    int[] healthAfterEachMiss = {6, 2};
+
+    for (int expectedHealth : healthAfterEachMiss) {
+      minigameLogic.changeState(CyclopsMinigameLogic.State.CAUGHT);
+      minigameLogic.takeCyclopsHit();
+
+      assertEquals(expectedHealth, stats.getHealth());
+      assertFalse(stats.isDead());
+      assertEquals(CyclopsMinigameLogic.State.LOSS, minigameLogic.state);
+    }
+  }
+
+  @Test
+  void thirdMissKillsThePlayer() {
+    CombatStatsComponent stats = givePlayerHealth(10);
+
+    for (int miss = 0; miss < 3; miss++) {
+      minigameLogic.changeState(CyclopsMinigameLogic.State.CAUGHT);
+      minigameLogic.takeCyclopsHit();
+    }
+
+    assertEquals(0, stats.getHealth());
+    assertTrue(stats.isDead());
+    assertEquals(CyclopsMinigameLogic.State.DEATH, minigameLogic.state);
+  }
+
+  @Test
   void deathStopsMinigameInsteadOfRestarting() {
     GridPoint2 start = new GridPoint2(1, 0);
     minigameLogic.setSafeLocations(List.of(start));

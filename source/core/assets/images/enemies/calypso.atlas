@@ -100,3 +100,99 @@ sweep
   orig: 489, 391
   offset: 0, 0
   index: 5
+
+calypso_laser.png
+size: 2760, 460
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+laser
+  rotate: false
+  xy: 0, 0
+  size: 552, 460
+  orig: 552, 460
+  offset: 0, 0
+  index: 0
+laser
+  rotate: false
+  xy: 552, 0
+  size: 552, 460
+  orig: 552, 460
+  offset: 0, 0
+  index: 1
+laser
+  rotate: false
+  xy: 1104, 0
+  size: 552, 460
+  orig: 552, 460
+  offset: 0, 0
+  index: 2
+laser
+  rotate: false
+  xy: 1656, 0
+  size: 552, 460
+  orig: 552, 460
+  offset: 0, 0
+  index: 3
+laser
+  rotate: false
+  xy: 1656, 0
+  size: 552, 460
+  orig: 552, 460
+  offset: 0, 0
+  index: 4
+laser
+  rotate: false
+  xy: 1656, 0
+  size: 552, 460
+  orig: 552, 460
+  offset: 0, 0
+  index: 5
+laser
+  rotate: false
+  xy: 1656, 0
+  size: 552, 460
+  orig: 552, 460
+  offset: 0, 0
+  index: 6
+laser
+  rotate: false
+  xy: 1656, 0
+  size: 552, 460
+  orig: 552, 460
+  offset: 0, 0
+  index: 7
+laser
+  rotate: false
+  xy: 2208, 0
+  size: 552, 460
+  orig: 552, 460
+  offset: 0, 0
+  index: 8
+
+calypso_injure.png
+size: 1059, 317
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+hurt
+  rotate: false
+  xy: 0, 0
+  size: 353, 317
+  orig: 353, 317
+  offset: 0, 0
+  index: 0
+hurt
+  rotate: false
+  xy: 353, 0
+  size: 353, 317
+  orig: 353, 317
+  offset: 0, 0
+  index: 1
+hurt
+  rotate: false
+  xy: 706, 0
+  size: 353, 317
+  orig: 353, 317
+  offset: 0, 0
+  index: 2

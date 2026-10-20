@@ -71,7 +71,7 @@ public class GameEndDisplay extends UIComponent {
   private static String resultTextFor(GameEndState state) {
     return state == GameEndState.WIN
         ? "You are getting closer to home, but the journey is not over yet..."
-        : "What would Penelepe say...";
+        : "What would Penelope say...";
   }
 
   public GameEndState getState() {
@@ -191,7 +191,7 @@ public class GameEndDisplay extends UIComponent {
             (int) (stage.getWidth() * MESSAGE_WIDTH_FRACTION),
             10,
             3,
-            null,
+            "flat-earth/skin/fonts/alagard.fnt",
             Align.center,
             List.of(resultText),
             List.of());

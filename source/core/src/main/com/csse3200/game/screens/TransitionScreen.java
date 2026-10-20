@@ -99,13 +99,7 @@ public class TransitionScreen implements Screen {
       alpha = Math.min(timer / fadeDuration, 1f);
 
       if (timer >= fadeDuration) {
-        if (fromScreen != null) {
-          fromScreen.dispose();
-          fromScreen = null;
-        }
-        toScreen = game.createScreen(targetType);
-        phase = Phase.FADE_IN;
-        timer = 0f;
+        startFadeIn();
       }
     } else {
       if (toScreen != null) {
@@ -122,6 +116,20 @@ public class TransitionScreen implements Screen {
     }
 
     drawOverlay(alpha);
+  }
+
+  private void startFadeIn() {
+    if (fromScreen != null) {
+      fromScreen.dispose();
+      fromScreen = null;
+    }
+    toScreen = game.createScreen(targetType);
+    if (toScreen != null) {
+      toScreen.show();
+      toScreen.resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+    }
+    phase = Phase.FADE_IN;
+    timer = 0f;
   }
 
   private void drawOverlay(float alpha) {

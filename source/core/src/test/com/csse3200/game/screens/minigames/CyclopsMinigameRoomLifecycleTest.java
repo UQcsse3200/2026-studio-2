@@ -141,7 +141,7 @@ class CyclopsMinigameRoomLifecycleTest {
   }
 
   @Test
-  void missingWinCutsceneKeepsTheCurrentScreenUsable() {
+  void missingWinCutsceneContinuesToLevelTwo() {
     try (Room room = new Room(true)) {
       Files files = Gdx.files;
       try {
@@ -150,6 +150,7 @@ class CyclopsMinigameRoomLifecycleTest {
         ServiceLocator.getCyclopsMinigameEventHandler().trigger("win");
         verify(room.game, never()).startCutscene(any(), any());
         verify(room.game, never()).setScreen(any(GdxGame.ScreenType.class));
+        verify(room.game).transitionTo(GdxGame.ScreenType.LEVEL_2_GAME);
         room.frame(false);
         verify(room.renderer).render();
       } finally {
@@ -189,6 +190,7 @@ class CyclopsMinigameRoomLifecycleTest {
     }
 
     private void initialise(boolean skipIntro) {
+      doCallRealMethod().when(game).playCutscene(anyString(), any());
       Gdx.input = input;
       ServiceLocator.registerCyclopsMinigameEventHandler(new EventHandler());
       ServiceLocator.registerGameEndEventHandler(new EventHandler());

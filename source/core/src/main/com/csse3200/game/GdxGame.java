@@ -79,7 +79,9 @@ public class GdxGame extends Game {
     applyDefaultClearColor();
     ThemedCursor.install();
 
+    // setScreen(ScreenType.LEVEL_BOSS_GAME);
     setScreen(ScreenType.MAIN_MENU);
+    // setScreen(ScreenType.LEVEL_3_GAME);
   }
 
   /**
@@ -149,6 +151,17 @@ public class GdxGame extends Game {
       currentScreen.dispose();
     }
     setScreen(new CutsceneScreen(this, cutscene, destination));
+  }
+
+  /** Plays a story cutscene, continuing to its destination if the cutscene is unavailable. */
+  public void playCutscene(String name, ScreenType destination) {
+    CutsceneLoader.Result result = new CutsceneLoader().load(name);
+    if (result.isSuccess()) {
+      startCutscene(result.getCutscene(), destination);
+    } else {
+      logger.warn("Cutscene {} unavailable: {}", name, result.getError());
+      transitionTo(destination);
+    }
   }
 
   /** Starts the initial cutscene once per game session, then falls back to level 1. */
@@ -317,6 +330,9 @@ public class GdxGame extends Game {
   }
 
   /**
+   * @return whether the active save has already completed the movement tutorial.
+   */
+  /**
    * Applies the loaded save's player stats (health, max health, gold, inventory) to the player
    * entity as soon as it exists. No-op when no save is being loaded or the save has no recorded
    * player state (a brand-new game keeps the level defaults).
@@ -386,8 +402,11 @@ public class GdxGame extends Game {
   public void finishTransition(Screen toScreen) {
     Screen transitionScreen = getScreen();
     transitioning = false;
-    setScreen(toScreen);
+    // TransitionScreen already showed and resized the destination before fading it in.
+    // Calling setScreen here would initialise screens that use show() a second time.
+    screen = toScreen;
     if (transitionScreen != null) {
+      transitionScreen.hide();
       transitionScreen.dispose();
     }
   }
@@ -466,6 +485,8 @@ public class GdxGame extends Game {
         return new SpinTheWheelScreen(this);
       case MINIGAME_BLACKJACK:
         return new BlackjackScreen(this);
+      case STORY_BLACKJACK:
+        return new BlackjackScreen(this, true);
       default:
         return null;
     }
@@ -484,6 +505,7 @@ public class GdxGame extends Game {
     SETTINGS_FROM_PAUSE,
     MINIGAME_SELECT,
     MINIGAME_BLACKJACK,
+    STORY_BLACKJACK,
     CYCLOPS_MINIGAME,
     MINIGAME_SPIN_THE_WHEEL
   }

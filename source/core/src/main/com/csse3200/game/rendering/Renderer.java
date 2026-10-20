@@ -109,7 +109,7 @@ public class Renderer implements Disposable {
     // bleed into the next frame.
     batch.setColor(1f, 1f, 1f, 1f);
     batch.begin();
-    renderService.render(batch);
+    renderService.render(batch, camera.getCamera());
     batch.end();
     debugRenderer.render(projMatrix);
 
@@ -129,7 +129,7 @@ public class Renderer implements Disposable {
     gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
     batch.begin();
-    renderService.render(batch);
+    renderService.render(batch, camera.getCamera());
     batch.end();
 
     lightingEngine.render();

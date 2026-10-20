@@ -21,7 +21,7 @@ import org.slf4j.LoggerFactory;
 public class BobbingArrowIndicator {
   private static final Logger logger = LoggerFactory.getLogger(BobbingArrowIndicator.class);
 
-  private static final String FONT_PATH = "flat-earth/skin/fonts/PixeloidSans.fnt";
+  private static final String FONT_PATH = "flat-earth/skin/fonts/alagard.fnt";
   private static final float LABEL_HEIGHT = 0.3f;
   private static final Color LABEL_COLOR = Color.WHITE;
   private static final Color LABEL_SHADOW_COLOR = new Color(0f, 0f, 0f, 0.8f);

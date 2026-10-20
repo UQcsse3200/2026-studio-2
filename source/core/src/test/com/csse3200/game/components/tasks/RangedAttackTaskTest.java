@@ -4,11 +4,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.when;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.csse3200.game.components.CombatStatsComponent;
+import com.csse3200.game.components.lighting.PointLightComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.extensions.GameExtension;
@@ -42,6 +44,7 @@ class RangedAttackTaskTest {
     ServiceLocator.registerEntityService(entities);
     ServiceLocator.registerRenderService(new RenderService());
     MockServices.registerTextures();
+    MockServices.registerLighting();
     time = mock(GameTime.class);
     when(time.getTime()).thenReturn(1000L);
     ServiceLocator.registerTimeSource(time);
@@ -67,7 +70,9 @@ class RangedAttackTaskTest {
     assertEquals(-1, task.getPriority());
     when(time.getTime()).thenReturn(2000L);
     assertEquals(10, task.getPriority());
-    task.update();
+    try (var pointLights = mockConstruction(PointLightComponent.class)) {
+      task.update();
+    }
 
     assertEquals(1, entities.getEntities().size);
     Entity projectile = entities.getEntities().first();
@@ -103,7 +108,9 @@ class RangedAttackTaskTest {
     RangedAttackTask task = new RangedAttackTask(player, 10, 10f, 1f, 7, 5f, 3f, attackType);
     task.create(() -> enemy);
     task.start();
-    task.update();
+    try (var pointLights = mockConstruction(PointLightComponent.class)) {
+      task.update();
+    }
     Entity projectile = entities.getEntities().peek();
     Fixture hitbox = projectile.getComponent(HitboxComponent.class).getFixture();
 

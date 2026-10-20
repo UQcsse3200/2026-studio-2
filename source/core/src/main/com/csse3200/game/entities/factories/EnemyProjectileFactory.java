@@ -1,14 +1,17 @@
 package com.csse3200.game.entities.factories;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.ProjectileAttackComponent;
 import com.csse3200.game.components.ProjectileComponent;
+import com.csse3200.game.components.lighting.PointLightComponent;
 import com.csse3200.game.components.projectile.ArrowProjectileComponent;
 import com.csse3200.game.components.projectile.ArrowTrajectory;
 import com.csse3200.game.components.projectile.ArrowType;
 import com.csse3200.game.entities.Entity;
+import com.csse3200.game.lighting.LightingDefaults;
 import com.csse3200.game.physics.PhysicsEngine;
 import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.physics.PhysicsUtils;
@@ -18,6 +21,7 @@ import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.physics.components.PhysicsMovementComponent;
 import com.csse3200.game.rendering.TextureRenderComponent;
 import com.csse3200.game.rendering.item.ArrowRenderComponent;
+import com.csse3200.game.services.ServiceLocator;
 
 /** Factory for creating enemy projectiles. The player's are made by {@link ProjectileFactory}. */
 public class EnemyProjectileFactory {
@@ -95,7 +99,13 @@ public class EnemyProjectileFactory {
                     .setLayer(PhysicsLayer.ENEMY_PROJECTILE)
                     .excludeCollisionLayers(PhysicsLayer.LEDGE))
             .addComponent(
-                new TextureRenderComponent("images/projectiles/necromancer_projectile.png"));
+                new TextureRenderComponent("images/projectiles/necromancer_projectile.png"))
+            .addComponent(
+                new PointLightComponent(
+                    ServiceLocator.getLightingService().getEngine().getRayHandler(),
+                    LightingDefaults.RAYS,
+                    new Color(0.4f, 0f, 0.65f, 1f),
+                    LightingDefaults.DIST));
 
     projectile.getComponent(TextureRenderComponent.class).scaleEntity();
     projectile.setScale(projectile.getScale().scl(0.8f));
@@ -136,7 +146,13 @@ public class EnemyProjectileFactory {
                     .excludeCollisionLayers(PhysicsLayer.LEDGE))
             // Temporary asset until the Calypso projectile sprite is available.
             .addComponent(
-                new TextureRenderComponent("images/projectiles/necromancer_projectile.png"));
+                new TextureRenderComponent("images/projectiles/necromancer_projectile.png"))
+            .addComponent(
+                new PointLightComponent(
+                    ServiceLocator.getLightingService().getEngine().getRayHandler(),
+                    LightingDefaults.RAYS,
+                    new Color(0.4f, 0f, 0.65f, 1f),
+                    LightingDefaults.DIST));
 
     projectile.getComponent(TextureRenderComponent.class).scaleEntity();
     projectile.setScale(projectile.getScale().scl(0.8f));

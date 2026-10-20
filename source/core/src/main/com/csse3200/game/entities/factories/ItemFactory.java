@@ -44,7 +44,7 @@ public class ItemFactory {
             .addComponent(
                 new PointLightComponent(
                     ServiceLocator.getLightingService().getEngine().getRayHandler(),
-                    LightingDefaults.RAYS,
+                    100,
                     itemColour,
                     LightingDefaults.DIST));
 
@@ -88,6 +88,7 @@ public class ItemFactory {
       case "iceArrow", "coldArrow" -> createItem(ItemType.ICE_ARROW, quantity);
       case "speedPotion" -> createItem(ItemType.SPEED_POTION, quantity);
       case "poisonPotion" -> createItem(ItemType.POISON_POTION, quantity);
+      case "coin" -> createGold(quantity);
       default -> throw new IllegalArgumentException("Unknown item type: " + itemName);
     };
   }
@@ -150,7 +151,7 @@ public class ItemFactory {
             .addComponent(
                 new PointLightComponent(
                     ServiceLocator.getLightingService().getEngine().getRayHandler(),
-                    LightingDefaults.RAYS,
+                    100,
                     goldColour,
                     LightingDefaults.DIST));
 
