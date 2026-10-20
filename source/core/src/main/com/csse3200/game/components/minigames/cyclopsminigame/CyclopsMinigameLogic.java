@@ -5,6 +5,9 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.csse3200.game.areas.terrain.TerrainComponent;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.Component;
@@ -80,7 +83,7 @@ public class CyclopsMinigameLogic extends Component {
   /* Audio/Sound Effects */
   Sound walkingSound;
   private long walkingSoundID;
-  private static final String WALKING_SOUND_PATH = "sounds/walkingSounds/walkingSound.mp3";
+  public static final String WALKING_SOUND_PATH = "sounds/walkingSounds/walkingSound.mp3";
   private static final float WALKING_SOUND_VOLUME = 0.4f;
 
   Sound hitSound;
@@ -271,7 +274,32 @@ public class CyclopsMinigameLogic extends Component {
    * @return - True whether the BUTTON was pressed, otherwise False
    */
   private boolean stopPressed() {
-    return Gdx.input.isButtonJustPressed(BUTTON);
+    return Gdx.input.isButtonJustPressed(BUTTON) && !clickIsOnUiButton();
+  }
+
+  /**
+   * Whether the mouse is over a UI button, such as the pause button. A click on a button belongs to
+   * the button and must not also count as a move in the minigame.
+   *
+   * @return true if a button is under the mouse
+   */
+  public static boolean clickIsOnUiButton() {
+    if (ServiceLocator.getRenderService() == null) {
+      return false;
+    }
+    Stage stage = ServiceLocator.getRenderService().getStage();
+    if (stage == null) {
+      return false;
+    }
+    Vector2 point = stage.screenToStageCoordinates(new Vector2(Gdx.input.getX(), Gdx.input.getY()));
+    for (Actor actor = stage.hit(point.x, point.y, true);
+        actor != null;
+        actor = actor.getParent()) {
+      if (actor instanceof Button) {
+        return true;
+      }
+    }
+    return false;
   }
 
   /** Load the sound effects used */
