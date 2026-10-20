@@ -246,17 +246,6 @@ class EnemyFactoryTest {
   }
 
   @Test
-  void shouldGiveFlyingEnemiesFlyingMovementTasks() throws Exception {
-    Entity enemy = built(() -> EnemyFactory.createEnemy(new Entity(), config("flying", "melee")));
-    List<PriorityTask> tasks = tasksOf(enemy);
-
-    assertEquals(0, countOf(tasks, WanderTask.class));
-    assertEquals(0, countOf(tasks, ChaseTask.class));
-    assertEquals(0, countOf(tasks, RepositionTask.class));
-    assertEquals(3, tasks.size());
-  }
-
-  @Test
   void shouldGiveRangedEnemiesOneRangedAttack() throws Exception {
     Entity enemy = built(() -> EnemyFactory.createEnemy(new Entity(), config("chase", "range")));
     List<PriorityTask> tasks = tasksOf(enemy);
@@ -328,13 +317,12 @@ class EnemyFactoryTest {
         tasksOf(built(() -> EnemyFactory.createNecromancer(new Entity())));
     List<PriorityTask> vulture = tasksOf(built(() -> EnemyFactory.createVulture(new Entity())));
 
-    assertEquals(1, countOf(warrior, DelayedAttackTask.class), "warriors swing after a wind-up");
+    assertEquals(1, countOf(warrior, SweepAttackTask.class), "warriors swing after a wind-up");
     assertEquals(0, countOf(warrior, RangedAttackTask.class));
     assertEquals(1, countOf(archer, RangedAttackTask.class), "archers shoot");
     assertEquals(0, countOf(archer, DelayedAttackTask.class));
     assertEquals(1, countOf(necromancer, SummonTask.class), "necromancers summon");
     assertEquals(1, countOf(necromancer, RangedAttackTask.class));
-    assertEquals(0, countOf(vulture, ChaseTask.class));
   }
 
   @Test

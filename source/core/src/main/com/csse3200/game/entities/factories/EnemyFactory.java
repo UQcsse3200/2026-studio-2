@@ -128,6 +128,7 @@ public class EnemyFactory {
 
     skeletonWarrior.addComponent(new EnemyAnimationController(target));
     skeletonWarrior.addComponent(animator);
+    skeletonWarrior.addComponent(new ChaseSoundComponent("sounds/evil cyber laugh.wav", 0.15f));
 
     animator.scaleEntity();
     float charHeight = target.getScale().y * WARRIOR_HEIGHT_VS_PLAYER;
@@ -145,6 +146,7 @@ public class EnemyFactory {
             new Vector2(bodyWidth, charHeight * 0.9f),
             PhysicsComponent.AlignX.CENTER,
             PhysicsComponent.AlignY.BOTTOM);
+
 
     float attackFrameTime = WARRIOR_ATTACK_DELAY / (WARRIOR_STRIKE_FRAME + 0.5f);
     float swordReach = WARRIOR_SWORD_REACH_PX * pxToWorld;
