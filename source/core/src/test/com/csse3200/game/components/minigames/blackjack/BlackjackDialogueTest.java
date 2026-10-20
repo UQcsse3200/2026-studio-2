@@ -69,7 +69,7 @@ class BlackjackDialogueTest {
       assertFalse(dialogue.getText().isBlank());
       assertFalse(dialogue.getButtonText().isBlank());
     }
-    assertEquals("Circe", BlackjackDialogue.SPEAKER);
+    assertEquals("Serci", BlackjackDialogue.SPEAKER);
   }
 
   @Test

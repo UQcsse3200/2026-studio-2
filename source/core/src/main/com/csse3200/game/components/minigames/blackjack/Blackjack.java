@@ -284,7 +284,7 @@ public class Blackjack {
     dealCard(playerHand);
 
     if (calculateHandValue(playerHand) > 21) {
-      finishRound(RoundOutcome.DEALER_WIN, "Bust! Dealer wins.");
+      finishRound(RoundOutcome.DEALER_WIN, "Bust! Serci wins.");
     }
   }
 
@@ -360,7 +360,7 @@ public class Blackjack {
     } else if (playerTotal == 21) {
       finishRound(RoundOutcome.PLAYER_WIN, "Blackjack! You win.");
     } else {
-      finishRound(RoundOutcome.DEALER_WIN, "Dealer has blackjack. You lose.");
+      finishRound(RoundOutcome.DEALER_WIN, "Serci has blackjack. You lose.");
     }
   }
 
@@ -369,11 +369,11 @@ public class Blackjack {
     int dealerTotal = calculateHandValue(dealerHand);
 
     if (dealerTotal > 21) {
-      finishRound(RoundOutcome.PLAYER_WIN, "Dealer busts. You win.");
+      finishRound(RoundOutcome.PLAYER_WIN, "Serci busts. You win.");
     } else if (playerTotal > dealerTotal) {
       finishRound(RoundOutcome.PLAYER_WIN, "You win.");
     } else if (playerTotal < dealerTotal) {
-      finishRound(RoundOutcome.DEALER_WIN, "Dealer wins.");
+      finishRound(RoundOutcome.DEALER_WIN, "Serci wins.");
     } else {
       finishRound(RoundOutcome.PUSH, "Push.");
     }

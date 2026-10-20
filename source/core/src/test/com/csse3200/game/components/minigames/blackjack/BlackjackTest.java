@@ -76,20 +76,20 @@ class BlackjackTest {
   void testNaturalBlackjackOutcomes() {
     assertResult("Push: both players have blackjack.", false, 100);
     assertResult("Blackjack! You win.", true, 101);
-    assertResult("Dealer has blackjack. You lose.", false, 99);
+    assertResult("Serci has blackjack. You lose.", false, 99);
   }
 
   @Test
   void testDealerOutcomeBranches() {
-    assertResult("Dealer busts. You win.", true, 101);
+    assertResult("Serci busts. You win.", true, 101);
     assertResult("You win.", true, 101);
-    assertResult("Dealer wins.", false, 99);
+    assertResult("Serci wins.", false, 99);
     assertResult("Push.", false, 100);
   }
 
   @Test
   void testPlayerBustSettlesLoss() {
-    Blackjack game = gameWithResultFromHit("Bust! Dealer wins.");
+    Blackjack game = gameWithResultFromHit("Bust! Serci wins.");
 
     assertTrue(game.isRoundOver());
     assertFalse(game.isRoundInProgress());
