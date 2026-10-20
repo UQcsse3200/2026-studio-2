@@ -66,6 +66,29 @@ public class Blackjack {
     }
   }
 
+  /** Result of a single resolved round. */
+  public enum RoundOutcome {
+    PLAYER_WIN,
+    DEALER_WIN,
+    PUSH
+  }
+
+  /** State of the best-of-five match. */
+  public enum MatchResult {
+    IN_PROGRESS,
+    PLAYER_WON,
+    DEALER_WON
+  }
+
+  /** Round wins needed to take the best-of-five match. */
+  public static final int WINS_NEEDED = 3;
+
+  /** Fixed gold staked on every round. */
+  public static final int BET = 1;
+
+  /** Gold the player is given when a lost match is restarted. */
+  public static final int REFILL_GOLD = 10;
+
   private final List<Card> deck = new ArrayList<>();
   private final List<Card> playerHand = new ArrayList<>();
   private final List<Card> dealerHand = new ArrayList<>();
@@ -75,8 +98,10 @@ public class Blackjack {
   private int bet;
   private boolean roundInProgress;
   private boolean roundOver;
-  private boolean playerWon;
+  private RoundOutcome lastOutcome;
   private String resultMessage;
+  private int playerWins;
+  private int dealerWins;
 
   public Blackjack(int startingBalance) {
     this(startingBalance, new Random());
@@ -88,9 +113,8 @@ public class Blackjack {
     }
     this.random = random;
     this.balance = startingBalance;
-    this.bet = 0;
+    this.bet = BET;
     this.resultMessage = "";
-    this.playerWon = false;
     resetDeck();
   }
 
@@ -139,7 +163,56 @@ public class Blackjack {
 
   /** Returns true when the most recently resolved round was won by the player. */
   public boolean isPlayerWinner() {
-    return roundOver && playerWon;
+    return roundOver && lastOutcome == RoundOutcome.PLAYER_WIN;
+  }
+
+  /** Returns the outcome of the most recently resolved round, or null if none has ended. */
+  public RoundOutcome getLastOutcome() {
+    return roundOver ? lastOutcome : null;
+  }
+
+  /** Returns the number of rounds the player has won in the current match. */
+  public int getPlayerWins() {
+    return playerWins;
+  }
+
+  /** Returns the number of rounds the dealer has won in the current match. */
+  public int getDealerWins() {
+    return dealerWins;
+  }
+
+  /**
+   * Returns the state of the current match. The player wins on reaching {@link #WINS_NEEDED}. The
+   * player loses when the dealer reaches it, or when a round ends and the player can no longer
+   * afford the next {@link #BET}.
+   */
+  public MatchResult getMatchResult() {
+    if (playerWins >= WINS_NEEDED) {
+      return MatchResult.PLAYER_WON;
+    }
+    if (dealerWins >= WINS_NEEDED || (roundOver && balance < BET)) {
+      return MatchResult.DEALER_WON;
+    }
+    return MatchResult.IN_PROGRESS;
+  }
+
+  /** Returns true once the current match has a winner. */
+  public boolean isMatchOver() {
+    return getMatchResult() != MatchResult.IN_PROGRESS;
+  }
+
+  /** Starts a fresh match: clears the score and hands, and refills the balance. */
+  public void resetMatch() {
+    playerWins = 0;
+    dealerWins = 0;
+    balance = REFILL_GOLD;
+    bet = BET;
+    playerHand.clear();
+    dealerHand.clear();
+    roundInProgress = false;
+    roundOver = false;
+    lastOutcome = null;
+    resultMessage = "";
   }
 
   /** Places a bet before the round begins. */
@@ -164,11 +237,17 @@ public class Blackjack {
     if (roundInProgress) {
       throw new IllegalStateException("A round is already in progress");
     }
+    if (isMatchOver()) {
+      throw new IllegalStateException("The match is over");
+    }
+    if (bet > balance) {
+      throw new IllegalStateException("Not enough balance for the bet");
+    }
 
     playerHand.clear();
     dealerHand.clear();
     roundOver = false;
-    playerWon = false;
+    lastOutcome = null;
     resultMessage = "";
 
     resetDeck();
@@ -198,11 +277,7 @@ public class Blackjack {
     dealCard(playerHand);
 
     if (calculateHandValue(playerHand) > 21) {
-      balance -= bet;
-      playerWon = false;
-      resultMessage = "Bust! Dealer wins.";
-      roundInProgress = false;
-      roundOver = true;
+      finishRound(RoundOutcome.DEALER_WIN, "Bust! Dealer wins.");
     }
   }
 
@@ -220,8 +295,6 @@ public class Blackjack {
     }
 
     resolveDealerOutcome();
-    roundInProgress = false;
-    roundOver = true;
   }
 
   /** Returns the current total value of a hand, treating aces as 11 when possible. */
@@ -276,20 +349,12 @@ public class Blackjack {
     int dealerTotal = calculateHandValue(dealerHand);
 
     if (playerTotal == 21 && dealerTotal == 21) {
-      playerWon = false;
-      resultMessage = "Push: both players have blackjack.";
+      finishRound(RoundOutcome.PUSH, "Push: both players have blackjack.");
     } else if (playerTotal == 21) {
-      balance += bet;
-      playerWon = true;
-      resultMessage = "Blackjack! You win.";
+      finishRound(RoundOutcome.PLAYER_WIN, "Blackjack! You win.");
     } else {
-      balance -= bet;
-      playerWon = false;
-      resultMessage = "Dealer has blackjack. You lose.";
+      finishRound(RoundOutcome.DEALER_WIN, "Dealer has blackjack. You lose.");
     }
-
-    roundInProgress = false;
-    roundOver = true;
   }
 
   private void resolveDealerOutcome() {
@@ -297,20 +362,34 @@ public class Blackjack {
     int dealerTotal = calculateHandValue(dealerHand);
 
     if (dealerTotal > 21) {
-      balance += bet;
-      playerWon = true;
-      resultMessage = "Dealer busts. You win.";
+      finishRound(RoundOutcome.PLAYER_WIN, "Dealer busts. You win.");
     } else if (playerTotal > dealerTotal) {
-      balance += bet;
-      playerWon = true;
-      resultMessage = "You win.";
+      finishRound(RoundOutcome.PLAYER_WIN, "You win.");
     } else if (playerTotal < dealerTotal) {
-      balance -= bet;
-      playerWon = false;
-      resultMessage = "Dealer wins.";
+      finishRound(RoundOutcome.DEALER_WIN, "Dealer wins.");
     } else {
-      playerWon = false;
-      resultMessage = "Push.";
+      finishRound(RoundOutcome.PUSH, "Push.");
     }
+  }
+
+  /** Ends the round: settles the balance, updates the match score and records the result. */
+  private void finishRound(RoundOutcome outcome, String message) {
+    switch (outcome) {
+      case PLAYER_WIN -> {
+        balance += bet;
+        playerWins++;
+      }
+      case DEALER_WIN -> {
+        balance -= bet;
+        dealerWins++;
+      }
+      case PUSH -> {
+        // A push returns the stake and does not count towards the match.
+      }
+    }
+    lastOutcome = outcome;
+    resultMessage = message;
+    roundInProgress = false;
+    roundOver = true;
   }
 }

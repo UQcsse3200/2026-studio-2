@@ -3,11 +3,16 @@ package com.csse3200.game.components.minigames.blackjack;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.csse3200.game.components.minigames.blackjack.Blackjack.MatchResult;
+import com.csse3200.game.components.minigames.blackjack.Blackjack.RoundOutcome;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 import org.junit.jupiter.api.Test;
 
 class BlackjackTest {
@@ -30,7 +35,6 @@ class BlackjackTest {
   void testRejectsInvalidBetAndRoundTransitions() {
     Blackjack game = new Blackjack(100, new Random(1));
 
-    assertThrows(IllegalStateException.class, game::startNewRound);
     assertThrows(IllegalArgumentException.class, () -> game.placeBet(0));
     assertThrows(IllegalArgumentException.class, () -> game.placeBet(-1));
     assertThrows(IllegalArgumentException.class, () -> game.placeBet(101));
@@ -103,11 +107,15 @@ class BlackjackTest {
     Blackjack game = new Blackjack(100, new Random(1));
 
     assertEquals(100, game.getBalance());
-    assertEquals(0, game.getBet());
+    assertEquals(Blackjack.BET, game.getBet());
     assertEquals(0, game.getPlayerHand().size());
     assertEquals(0, game.getDealerHand().size());
     assertFalse(game.isRoundInProgress());
     assertFalse(game.isPlayerWinner());
+    assertNull(game.getLastOutcome());
+    assertEquals(0, game.getPlayerWins());
+    assertEquals(0, game.getDealerWins());
+    assertEquals(Blackjack.MatchResult.IN_PROGRESS, game.getMatchResult());
   }
 
   @Test
@@ -232,6 +240,143 @@ class BlackjackTest {
 
     assertEquals(100, game.getBalance());
     assertEquals(50, game.getBet());
+  }
+
+  @Test
+  void testCannotStartRoundWithoutEnoughBalance() {
+    Blackjack game = new Blackjack(0, new Random(1));
+
+    assertThrows(IllegalStateException.class, game::startNewRound);
+    // The gold check only applies once a round has ended.
+    assertEquals(MatchResult.IN_PROGRESS, game.getMatchResult());
+  }
+
+  @Test
+  void testLastOutcomeIsNullWhileRoundInProgress() {
+    for (int seed = 0; seed < 100; seed++) {
+      Blackjack game = new Blackjack(10, new Random(seed));
+      game.startNewRound();
+      if (game.isRoundInProgress()) {
+        assertNull(game.getLastOutcome());
+        return;
+      }
+    }
+    throw new AssertionError("Could not find a round that stays in progress");
+  }
+
+  @Test
+  void testEachOutcomeUpdatesScoreAndBalance() {
+    Set<RoundOutcome> seen = EnumSet.noneOf(RoundOutcome.class);
+
+    for (int seed = 0; seed < 500; seed++) {
+      Blackjack game = new Blackjack(10, new Random(seed));
+      RoundOutcome outcome = playRound(game);
+      seen.add(outcome);
+
+      switch (outcome) {
+        case PLAYER_WIN -> {
+          assertEquals(1, game.getPlayerWins());
+          assertEquals(0, game.getDealerWins());
+          assertEquals(11, game.getBalance());
+          assertTrue(game.isPlayerWinner());
+        }
+        case DEALER_WIN -> {
+          assertEquals(0, game.getPlayerWins());
+          assertEquals(1, game.getDealerWins());
+          assertEquals(9, game.getBalance());
+          assertFalse(game.isPlayerWinner());
+        }
+        case PUSH -> {
+          // Draws do not count towards the match and return the stake.
+          assertEquals(0, game.getPlayerWins());
+          assertEquals(0, game.getDealerWins());
+          assertEquals(10, game.getBalance());
+          assertFalse(game.isPlayerWinner());
+        }
+      }
+      assertEquals(MatchResult.IN_PROGRESS, game.getMatchResult());
+    }
+
+    assertEquals(EnumSet.allOf(RoundOutcome.class), seen);
+  }
+
+  @Test
+  void testMatchEndsWhenEitherSideReachesThreeWins() {
+    Set<MatchResult> seen = EnumSet.noneOf(MatchResult.class);
+
+    for (int seed = 0; seed < 50; seed++) {
+      Blackjack game = new Blackjack(100, new Random(seed));
+      int rounds = 0;
+      while (!game.isMatchOver()) {
+        assertTrue(game.getPlayerWins() < Blackjack.WINS_NEEDED);
+        assertTrue(game.getDealerWins() < Blackjack.WINS_NEEDED);
+        playRound(game);
+        rounds++;
+        assertTrue(rounds < 100, "Match should finish");
+      }
+
+      MatchResult result = game.getMatchResult();
+      seen.add(result);
+      if (result == MatchResult.PLAYER_WON) {
+        assertEquals(Blackjack.WINS_NEEDED, game.getPlayerWins());
+        assertTrue(game.getDealerWins() < Blackjack.WINS_NEEDED);
+      } else {
+        assertEquals(Blackjack.WINS_NEEDED, game.getDealerWins());
+        assertTrue(game.getPlayerWins() < Blackjack.WINS_NEEDED);
+      }
+      assertThrows(IllegalStateException.class, game::startNewRound);
+    }
+
+    assertEquals(EnumSet.of(MatchResult.PLAYER_WON, MatchResult.DEALER_WON), seen);
+  }
+
+  @Test
+  void testRunningOutOfGoldLosesTheMatch() {
+    Blackjack game = gameThatRanOutOfGold();
+
+    assertEquals(0, game.getBalance());
+    assertEquals(1, game.getDealerWins());
+    assertEquals(MatchResult.DEALER_WON, game.getMatchResult());
+    assertTrue(game.isMatchOver());
+    assertThrows(IllegalStateException.class, game::startNewRound);
+  }
+
+  @Test
+  void testResetMatchRefillsGoldAndClearsScore() {
+    Blackjack game = gameThatRanOutOfGold();
+
+    game.resetMatch();
+
+    assertEquals(Blackjack.REFILL_GOLD, game.getBalance());
+    assertEquals(Blackjack.BET, game.getBet());
+    assertEquals(0, game.getPlayerWins());
+    assertEquals(0, game.getDealerWins());
+    assertEquals(MatchResult.IN_PROGRESS, game.getMatchResult());
+    assertFalse(game.isRoundOver());
+    assertFalse(game.isRoundInProgress());
+    assertNull(game.getLastOutcome());
+    assertTrue(game.getPlayerHand().isEmpty());
+    assertTrue(game.getDealerHand().isEmpty());
+
+    assertNotNull(playRound(game));
+  }
+
+  private static RoundOutcome playRound(Blackjack game) {
+    game.startNewRound();
+    if (!game.isRoundOver()) {
+      game.stand();
+    }
+    return game.getLastOutcome();
+  }
+
+  private static Blackjack gameThatRanOutOfGold() {
+    for (int seed = 0; seed < 100; seed++) {
+      Blackjack game = new Blackjack(Blackjack.BET, new Random(seed));
+      if (playRound(game) == RoundOutcome.DEALER_WIN) {
+        return game;
+      }
+    }
+    throw new AssertionError("Could not find a losing round");
   }
 
   private static Blackjack resolvedGameWithAnyResult() {
