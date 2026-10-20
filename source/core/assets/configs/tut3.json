@@ -26,7 +26,7 @@
   ],
   "steps": [
     {"keys": ["D"]},
-    {"keys": ["E"]},
+    {"keys": ["E"], "mouse": ["RIGHT"], "requireAll": true},
     {"keys": ["TAB"]},
     {"mouse": ["RIGHT"]},
     {"mouseUp": ["RIGHT"]}
