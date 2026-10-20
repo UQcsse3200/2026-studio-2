@@ -165,6 +165,11 @@ public class LevelsGameScreen extends BaseGameScreen {
   private void restartAtCheckpoint() {
     if (currentGameArea != null) {
       currentGameArea.restart();
+      if (currentGameArea.requiresWorldResetOnDeath()) {
+        // Rebuild the level world so one-shot triggers, spawners and platforms start
+        // un-triggered; the player keeps its state and lands at the fresh area's spawn.
+        queueAreaSwap(LEVEL3);
+      }
     }
     if (gameEndDisplay != null) {
       gameEndDisplay.hide();

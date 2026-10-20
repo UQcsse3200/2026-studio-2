@@ -93,6 +93,12 @@ public class Level3GameArea extends GameArea {
 
   private static final String[] level3Music = {BACKGROUND_MUSIC};
 
+  /**
+   * Checkpoint 2, at the top of the arena-1 climb: a death before it would leave the player below a
+   * one-shot arena trigger whose floor (TP1) has already turned solid, so the world is rebuilt.
+   */
+  private static final GridPoint2 ARENA_2_CHECKPOINT = new GridPoint2(16, 37);
+
   private final TerrainFactory terrainFactory;
   private final CameraComponent camera;
 
@@ -374,10 +380,34 @@ public class Level3GameArea extends GameArea {
       return;
     }
 
+    lowerWaterToCheckpoint();
+    player.getEvents().trigger("respawnAtCheckpoint");
+  }
+
+  /**
+   * Drops the rising water back to the height stored when the last checkpoint was encountered, so a
+   * respawn point is never left below the surface.
+   */
+  private void lowerWaterToCheckpoint() {
+    if (water == null) {
+      return;
+    }
     water
         .getEvents()
         .trigger("setHeight", water.getComponent(RisingWaterComponent.class).getStoredHeight());
-    player.getEvents().trigger("respawnAtCheckpoint");
+  }
+
+  @Override
+  protected void resetHazardState() {
+    lowerWaterToCheckpoint();
+  }
+
+  @Override
+  public boolean requiresWorldResetOnDeath() {
+    // Before CP2 a plain respawn drops the player below the arena: its entry trigger has already
+    // fired once (so it can never re-arm) and the arena floor TP1 is solid, blocking re-entry.
+    // Rebuilding the level gives back the exact state the level was proven traversable in.
+    return !isCheckpointActive(ARENA_2_CHECKPOINT);
   }
 
   @Override
