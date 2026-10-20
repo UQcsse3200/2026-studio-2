@@ -29,7 +29,10 @@ public class BlackjackScreen extends MinigameScreen {
     this(game, false);
   }
 
-  /** Creates Blackjack in standalone mode or as Circe's story encounter. */
+  /**
+   * Creates Blackjack in standalone mode or as the story encounter. Winning the match plays the win
+   * cutscene and continues to the next level in both modes.
+   */
   public BlackjackScreen(GdxGame game, boolean storyMode) {
     super(game);
     this.storyMode = storyMode;
@@ -103,7 +106,7 @@ public class BlackjackScreen extends MinigameScreen {
                 inventoryComponent,
                 this::setSoundEnabled,
                 null,
-                storyMode ? () -> BlackjackDialogue.startWinCutscene(game) : null))
+                () -> BlackjackDialogue.startWinCutscene(game)))
         .addComponent(new BlackjackRulesDisplay())
         .addComponent(new BlackjackActions(game))
         .addComponent(new InputDecorator(stage, 10));

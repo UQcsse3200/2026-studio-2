@@ -1,7 +1,9 @@
 package com.csse3200.game.components.minigames.blackjack;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
@@ -9,21 +11,27 @@ import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.csse3200.game.components.ButtonSound;
 import com.csse3200.game.ui.UIComponent;
 import java.util.ArrayList;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * Shows an "i" button in the top-left corner of the Blackjack table that opens a parchment panel
- * listing the rules.
+ * Shows an "i" button in the top-left corner of the Blackjack table that opens the rules on a
+ * pixel-art scroll.
  *
  * <p>Fires {@link #RULES_OPENED} and {@link #RULES_CLOSED} on its entity so the game display can
  * lock its buttons while the rules are shown. Listens for {@link #TABLE_RAISED} to stay above the
  * table, since components are created in no fixed order.
  */
 public class BlackjackRulesDisplay extends UIComponent {
+  private static final Logger logger = LoggerFactory.getLogger(BlackjackRulesDisplay.class);
+
   /** Fired when the rules panel opens. */
   public static final String RULES_OPENED = "blackjackRulesOpened";
 
@@ -52,21 +60,50 @@ public class BlackjackRulesDisplay extends UIComponent {
           "Face cards are worth 10. Aces are 1 or 11.",
           "Circe draws until she reaches 17.");
 
+  /** Bold pixel font the game's other text uses, closest to the Controls screen lettering. */
+  private static final String RULES_FONT_PATH = "flat-earth/skin/fonts/PixeloidSans-Bold.fnt";
+
+  /**
+   * The scroll artwork, 159 x 79 pixels at its native size. It is only ever enlarged by a whole
+   * number, so its pixels stay square and sharp.
+   */
+  static final String SCROLL_PATH = "images/ui/blackjack_scroll.png";
+
+  private static final int SCROLL_WIDTH = 159;
+  private static final int SCROLL_HEIGHT = 79;
+
+  /** Parchment margins in artwork pixels: keeps text clear of the rods and the torn edges. */
+  private static final int MARGIN_LEFT = 17;
+
+  private static final int MARGIN_RIGHT = 17;
+  private static final int MARGIN_TOP = 13;
+  private static final int MARGIN_BOTTOM = 11;
+
+  /** Share of the window the scroll may fill, so it never touches the screen edges. */
+  private static final float MAX_WIDTH_SHARE = 0.95f;
+
+  private static final float MAX_HEIGHT_SHARE = 0.92f;
+
+  /**
+   * Font scale for each artwork pixel of enlargement. Text is sized from the scroll's scale so it
+   * grows and shrinks with the parchment and always fits on it.
+   */
+  private static final float FONT_PER_SCALE = 0.17f;
+
+  private static final float TITLE_RATIO = 1.35f;
+  private static final float HEADING_RATIO = 1.15f;
+
   private static final float INFO_BUTTON_SIZE = 56f;
   private static final float SCREEN_PADDING = 16f;
 
-  /** Width of the text column. The parchment adds its own edge padding around it. */
-  private static final float TEXT_WIDTH = 420f;
-
-  /** Clears the parchment's brown side strip, which stretches with the panel to about 45px. */
-  private static final float SIDE_PADDING = 60f;
-
-  private static final String HEADING_COLOUR = "6B3C14";
-  private static final String TEXT_COLOUR = "4B301B";
+  /** Dark brown ink, sampled from the lettering on the Controls screen. */
+  private static final String INK_COLOUR = "200A01";
 
   private final List<Texture> ownedTextures = new ArrayList<>();
+  private BitmapFont rulesFont;
   private Table corner;
   private Table rulesOverlay;
+  private int builtScale;
   private ImageButton infoButton;
   private ImageButton closeButton;
   private boolean open;
@@ -74,6 +111,7 @@ public class BlackjackRulesDisplay extends UIComponent {
   @Override
   public void create() {
     super.create();
+    rulesFont = loadRulesFont();
     buildInfoButton();
     buildRulesOverlay();
     entity.getEvents().addListener(TABLE_RAISED, this::raise);
@@ -97,15 +135,39 @@ public class BlackjackRulesDisplay extends UIComponent {
     stage.addActor(corner);
   }
 
+  /** Whole-number enlargement of the scroll that fits the current window. */
+  private int scrollScale() {
+    float byWidth = stage.getWidth() * MAX_WIDTH_SHARE / SCROLL_WIDTH;
+    float byHeight = stage.getHeight() * MAX_HEIGHT_SHARE / SCROLL_HEIGHT;
+    return Math.max(1, (int) Math.min(byWidth, byHeight));
+  }
+
+  /** Loads the scroll artwork, or returns the older generated parchment if it cannot load. */
+  private Drawable scrollBackground() {
+    try {
+      Texture texture = new Texture(Gdx.files.internal(SCROLL_PATH));
+      texture.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
+      ownedTextures.add(texture);
+      return new TextureRegionDrawable(texture);
+    } catch (RuntimeException e) {
+      logger.warn("Could not load scroll {}: {}", SCROLL_PATH, e.getMessage());
+      return BlackjackUiStyles.parchment(ownedTextures);
+    }
+  }
+
   private void buildRulesOverlay() {
+    int scale = scrollScale();
+    builtScale = scale;
+    float fontScale = FONT_PER_SCALE * scale;
+
     rulesOverlay = new Table();
     rulesOverlay.setFillParent(true);
     rulesOverlay.setVisible(false);
     rulesOverlay.setTouchable(Touchable.disabled);
 
     Label title = new Label("HOW TO PLAY", skin);
-    title.setStyle(textStyle(title, HEADING_COLOUR));
-    title.setFontScale(1.5f);
+    title.setStyle(textStyle(title));
+    title.setFontScale(fontScale * TITLE_RATIO);
     title.setAlignment(Align.center);
 
     closeButton = BlackjackUiStyles.imageButton(CLOSE_UP_PATH, CLOSE_DOWN_PATH);
@@ -118,44 +180,93 @@ public class BlackjackRulesDisplay extends UIComponent {
           }
         });
 
+    float columnWidth = (SCROLL_WIDTH - MARGIN_LEFT - MARGIN_RIGHT - 4) * scale / 2f;
+
     Table rules = new Table();
     rules.setName("rulesList");
-    addSection(rules, "THE MATCH", MATCH_RULES);
-    addSection(rules, "THE CARDS", CARD_RULES);
+    rules.top();
+    Table matchColumn = section("THE MATCH", MATCH_RULES, columnWidth, fontScale, scale);
+    Table cardsColumn = section("THE CARDS", CARD_RULES, columnWidth, fontScale, scale);
+    rules.add(matchColumn).top().width(columnWidth);
+    rules.add().width(4f * scale);
+    rules.add(cardsColumn).top().width(columnWidth);
 
-    // No fixed width on the popup: the parchment sizes itself around the content, including the
-    // padding its own edges add, so text can never spill onto the wooden rods.
+    // The popup is exactly the scroll's size; the margins keep the text on the parchment.
     Table popup = new Table();
-    popup.setBackground(BlackjackUiStyles.parchment(ownedTextures));
-    popup.add(title).padTop(28f);
+    popup.setBackground(scrollBackground());
+    popup.padTop(MARGIN_TOP * scale);
+    popup.padLeft(MARGIN_LEFT * scale);
+    popup.padRight(MARGIN_RIGHT * scale);
+    popup.padBottom(MARGIN_BOTTOM * scale);
+    popup.top();
+    popup.add(title).padBottom(1.5f * scale);
     popup.row();
-    popup.add(rules).width(TEXT_WIDTH).padTop(8f).padLeft(SIDE_PADDING).padRight(SIDE_PADDING);
+    popup.add(rules).expandY().top();
     popup.row();
-    popup.add(closeButton).width(180f).height(60f).padTop(18f).padBottom(28f);
+    popup.add(closeButton).width(21f * scale).height(7f * scale);
 
-    rulesOverlay.add(popup);
+    rulesOverlay
+        .add(popup)
+        .width((float) SCROLL_WIDTH * scale)
+        .height((float) SCROLL_HEIGHT * scale);
     stage.addActor(rulesOverlay);
   }
 
-  private void addSection(Table rules, String heading, List<String> lines) {
+  private Table section(
+      String heading, List<String> lines, float width, float fontScale, int scale) {
+    Table column = new Table();
+    column.top().left();
+
     Label headingLabel = new Label(heading, skin);
-    headingLabel.setStyle(textStyle(headingLabel, HEADING_COLOUR));
-    headingLabel.setFontScale(1.1f);
-    rules.add(headingLabel).left().padTop(14f).padBottom(6f);
-    rules.row();
+    headingLabel.setStyle(textStyle(headingLabel));
+    headingLabel.setFontScale(fontScale * HEADING_RATIO);
+    column.add(headingLabel).left().padBottom(1.2f * scale);
+    column.row();
 
     for (String line : lines) {
       Label lineLabel = new Label("-  " + line, skin);
-      lineLabel.setStyle(textStyle(lineLabel, TEXT_COLOUR));
+      lineLabel.setStyle(textStyle(lineLabel));
+      lineLabel.setFontScale(fontScale);
       lineLabel.setWrap(true);
-      rules.add(lineLabel).width(TEXT_WIDTH).left().padBottom(5f);
-      rules.row();
+      column.add(lineLabel).width(width).left().padBottom(0.6f * scale);
+      column.row();
+    }
+    return column;
+  }
+
+  /** Rebuilds the panel when the window has changed enough to need a different scroll size. */
+  private void rebuildIfResized() {
+    if (scrollScale() == builtScale) {
+      return;
+    }
+    rulesOverlay.remove();
+    for (Texture texture : ownedTextures) {
+      texture.dispose();
+    }
+    ownedTextures.clear();
+    buildRulesOverlay();
+  }
+
+  /** Loads the rules font, or returns null so the skin's own font is used if it cannot load. */
+  private static BitmapFont loadRulesFont() {
+    try {
+      BitmapFont font = new BitmapFont(Gdx.files.internal(RULES_FONT_PATH));
+      font.getRegion()
+          .getTexture()
+          .setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+      return font;
+    } catch (RuntimeException e) {
+      logger.warn("Could not load rules font {}: {}", RULES_FONT_PATH, e.getMessage());
+      return null;
     }
   }
 
-  private static Label.LabelStyle textStyle(Label label, String hexColor) {
+  private Label.LabelStyle textStyle(Label label) {
     Label.LabelStyle style = new Label.LabelStyle(label.getStyle());
-    style.fontColor = Color.valueOf(hexColor);
+    if (rulesFont != null) {
+      style.font = rulesFont;
+    }
+    style.fontColor = Color.valueOf(INK_COLOUR);
     return style;
   }
 
@@ -165,6 +276,7 @@ public class BlackjackRulesDisplay extends UIComponent {
       return;
     }
     open = true;
+    rebuildIfResized();
     rulesOverlay.setVisible(true);
     rulesOverlay.setTouchable(Touchable.enabled);
     rulesOverlay.toFront();
@@ -211,6 +323,10 @@ public class BlackjackRulesDisplay extends UIComponent {
       texture.dispose();
     }
     ownedTextures.clear();
+    if (rulesFont != null) {
+      rulesFont.dispose();
+      rulesFont = null;
+    }
     super.dispose();
   }
 }

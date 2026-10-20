@@ -13,7 +13,7 @@ public class BlackjackActions extends Component {
   /**
    * Creates the actions for the standalone Blackjack screen.
    *
-   * @param game game used to switch back to the minigame select screen
+   * @param game game used to switch back to the main menu
    */
   public BlackjackActions(GdxGame game) {
     this.game = game;
@@ -25,7 +25,7 @@ public class BlackjackActions extends Component {
   }
 
   private void onBack() {
-    logger.info("Returning to minigame select");
-    game.setScreen(GdxGame.ScreenType.MINIGAME_SELECT);
+    logger.info("Returning to main menu");
+    game.setScreen(GdxGame.ScreenType.MAIN_MENU);
   }
 }
