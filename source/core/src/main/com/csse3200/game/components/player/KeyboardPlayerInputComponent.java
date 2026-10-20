@@ -133,45 +133,45 @@ public class KeyboardPlayerInputComponent extends InputComponent {
   }
 
   private boolean handleActionKey(int keycode) {
-      return switch (keycode) {
-          case Keys.SPACE -> {
-              triggerJumpEvent();
-              yield true;
-          }
-          case Keys.E -> {
-              entity.getEvents().trigger("interact");
-              yield true;
-          }
-          case Keys.B -> {
-              entity.getEvents().trigger("toggleBackpack");
-              yield true;
-          }
-          case Keys.R -> {
-              entity.getEvents().trigger("dropItem");
-              yield true;
-          }
-          case Keys.FORWARD_DEL -> {
-              entity.getEvents().trigger("deleteItem");
-              yield true;
-          }
-          case Keys.PERIOD -> {
-              entity.getEvents().trigger("switchItem", 1);
-              yield true;
-          }
-          case Keys.COMMA -> {
-              entity.getEvents().trigger("switchItem", -1);
-              yield true;
-          }
-          case Keys.TAB -> {
-              entity.getEvents().trigger("openArrowWheel");
-              yield true;
-          }
-          case Keys.Q -> {
-              entity.getEvents().trigger("instrumentStart");
-              yield true;
-          }
-          default -> false;
-      };
+    return switch (keycode) {
+      case Keys.SPACE -> {
+        triggerJumpEvent();
+        yield true;
+      }
+      case Keys.E -> {
+        entity.getEvents().trigger("interact");
+        yield true;
+      }
+      case Keys.B -> {
+        entity.getEvents().trigger("toggleBackpack");
+        yield true;
+      }
+      case Keys.R -> {
+        entity.getEvents().trigger("dropItem");
+        yield true;
+      }
+      case Keys.FORWARD_DEL -> {
+        entity.getEvents().trigger("deleteItem");
+        yield true;
+      }
+      case Keys.PERIOD -> {
+        entity.getEvents().trigger("switchItem", 1);
+        yield true;
+      }
+      case Keys.COMMA -> {
+        entity.getEvents().trigger("switchItem", -1);
+        yield true;
+      }
+      case Keys.TAB -> {
+        entity.getEvents().trigger("openArrowWheel");
+        yield true;
+      }
+      case Keys.Q -> {
+        entity.getEvents().trigger("instrumentStart");
+        yield true;
+      }
+      default -> false;
+    };
   }
 
   /**
@@ -188,11 +188,11 @@ public class KeyboardPlayerInputComponent extends InputComponent {
     if (handleMovementKey(keycode, false)) {
       return true;
     }
-      if (keycode == Keys.TAB) {
-          entity.getEvents().trigger("closeArrowWheel");
-          return true;
-      }
-      return false;
+    if (keycode == Keys.TAB) {
+      entity.getEvents().trigger("closeArrowWheel");
+      return true;
+    }
+    return false;
   }
 
   private boolean handleMovementKey(int keycode, boolean pressed) {
