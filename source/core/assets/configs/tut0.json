@@ -1,0 +1,22 @@
+{
+  "xPos": 20,
+  "yPos": 150,
+  "textColour": "Color.BLACK",
+  "backgroundColour": "Color.TAN",
+  "borderColour": "Color.BROWN",
+  "charsPerSecond": 30,
+  "maxWidth": 320,
+  "padding": 16,
+  "borderThickness": 3,
+  "fontPath": "flat-earth/skin/fonts/PixeloidSans.fnt",
+  "textAlignment": "left",
+  "pages": [
+    "Do you need my assistance, love? Press Y for yes, N for no."
+  ],
+  "portraitPaths": [
+    "images/portraits/calypsoEncouraging.jpeg"
+  ],
+  "steps": [
+    {"keys": ["Y", "N"]}
+  ]
+}

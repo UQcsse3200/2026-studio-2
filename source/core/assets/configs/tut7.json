@@ -10,6 +10,7 @@
   "borderThickness": 3,
   "fontPath": "flat-earth/skin/fonts/PixeloidSans.fnt",
   "textAlignment": "left",
+  "autoDismissSeconds": 7,
   "pages": [
     "Not bad, hero. You have not drowned, fallen, or been eaten. I find my hopes rising, which is inconvenient for my reputation."
   ],

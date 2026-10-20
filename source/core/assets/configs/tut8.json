@@ -10,6 +10,7 @@
   "borderThickness": 3,
   "fontPath": "flat-earth/skin/fonts/PixeloidSans.fnt",
   "textAlignment": "left",
+  "autoDismissSeconds": 7,
   "pages": [
     "Careful, Odysseus. These machinations were made by someone who came before me... and they were not kind."
   ],
