@@ -1,5 +1,6 @@
 package com.csse3200.game.input;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.Mockito.*;
 
 import com.badlogic.gdx.math.Vector2;
@@ -39,6 +40,42 @@ class InputServiceTest {
 
     inputService.keyDown(keycode);
     verify(inputComponent, times(0)).keyDown(keycode);
+  }
+
+  @Test
+  void shouldTolerateHandlersChangingDuringDispatch() {
+    InputComponent late = spy(InputComponent.class);
+    when(late.getPriority()).thenReturn(1);
+    InputComponent other = spy(InputComponent.class);
+    when(other.getPriority()).thenReturn(5);
+    InputService inputService = new InputService();
+    InputComponent mutator = mock(InputComponent.class);
+    when(mutator.getPriority()).thenReturn(10);
+    // Tutorial-style completion: a handler removes itself and starts a new one mid-keypress.
+    when(mutator.keyDown(1))
+        .thenAnswer(
+            call -> {
+              inputService.unregister(mutator);
+              inputService.register(late);
+              return false;
+            });
+
+    inputService.register(mutator);
+    inputService.register(other);
+
+    assertDoesNotThrow(() -> inputService.keyDown(1));
+
+    // The in-flight event still reaches every handler registered when it arrived, exactly once,
+    // and nothing registered during dispatch sees it.
+    verify(mutator, times(1)).keyDown(1);
+    verify(other, times(1)).keyDown(1);
+    verify(late, never()).keyDown(1);
+
+    // Later events reach the newly registered handler and skip the removed one.
+    inputService.keyDown(2);
+    verify(late, times(1)).keyDown(2);
+    verify(other, times(1)).keyDown(2);
+    verify(mutator, times(0)).keyDown(2);
   }
 
   @Test
