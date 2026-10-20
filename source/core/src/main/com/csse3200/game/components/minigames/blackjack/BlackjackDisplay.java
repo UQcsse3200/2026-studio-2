@@ -501,6 +501,8 @@ public class BlackjackDisplay extends UIComponent {
                       ? EMPTY_BALANCE_MESSAGE
                       : PLACE_BET);
               refreshLabels();
+              // Deal the next round now, so the player does not have to press New Round again.
+              tryStartRound();
             }
           }
         });

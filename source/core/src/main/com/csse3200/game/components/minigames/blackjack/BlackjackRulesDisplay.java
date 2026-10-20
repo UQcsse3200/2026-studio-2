@@ -1,7 +1,9 @@
 package com.csse3200.game.components.minigames.blackjack;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
@@ -14,6 +16,8 @@ import com.csse3200.game.components.ButtonSound;
 import com.csse3200.game.ui.UIComponent;
 import java.util.ArrayList;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Shows an "i" button in the top-left corner of the Blackjack table that opens a parchment panel
@@ -24,6 +28,8 @@ import java.util.List;
  * table, since components are created in no fixed order.
  */
 public class BlackjackRulesDisplay extends UIComponent {
+  private static final Logger logger = LoggerFactory.getLogger(BlackjackRulesDisplay.class);
+
   /** Fired when the rules panel opens. */
   public static final String RULES_OPENED = "blackjackRulesOpened";
 
@@ -52,19 +58,27 @@ public class BlackjackRulesDisplay extends UIComponent {
           "Face cards are worth 10. Aces are 1 or 11.",
           "Circe draws until she reaches 17.");
 
+  /** Bold pixel font the game's other text uses, closest to the Controls screen lettering. */
+  private static final String RULES_FONT_PATH = "flat-earth/skin/fonts/PixeloidSans-Bold.fnt";
+
+  private static final float TITLE_SCALE = 2f;
+  private static final float HEADING_SCALE = 1.5f;
+  private static final float BODY_SCALE = 1.5f;
+
   private static final float INFO_BUTTON_SIZE = 56f;
   private static final float SCREEN_PADDING = 16f;
 
   /** Width of the text column. The parchment adds its own edge padding around it. */
-  private static final float TEXT_WIDTH = 420f;
+  private static final float TEXT_WIDTH = 480f;
 
   /** Clears the parchment's brown side strip, which stretches with the panel to about 45px. */
   private static final float SIDE_PADDING = 60f;
 
-  private static final String HEADING_COLOUR = "6B3C14";
-  private static final String TEXT_COLOUR = "4B301B";
+  /** Dark brown ink, sampled from the lettering on the Controls screen. */
+  private static final String INK_COLOUR = "200A01";
 
   private final List<Texture> ownedTextures = new ArrayList<>();
+  private BitmapFont rulesFont;
   private Table corner;
   private Table rulesOverlay;
   private ImageButton infoButton;
@@ -74,6 +88,7 @@ public class BlackjackRulesDisplay extends UIComponent {
   @Override
   public void create() {
     super.create();
+    rulesFont = loadRulesFont();
     buildInfoButton();
     buildRulesOverlay();
     entity.getEvents().addListener(TABLE_RAISED, this::raise);
@@ -104,8 +119,8 @@ public class BlackjackRulesDisplay extends UIComponent {
     rulesOverlay.setTouchable(Touchable.disabled);
 
     Label title = new Label("HOW TO PLAY", skin);
-    title.setStyle(textStyle(title, HEADING_COLOUR));
-    title.setFontScale(1.5f);
+    title.setStyle(textStyle(title));
+    title.setFontScale(TITLE_SCALE);
     title.setAlignment(Align.center);
 
     closeButton = BlackjackUiStyles.imageButton(CLOSE_UP_PATH, CLOSE_DOWN_PATH);
@@ -139,23 +154,41 @@ public class BlackjackRulesDisplay extends UIComponent {
 
   private void addSection(Table rules, String heading, List<String> lines) {
     Label headingLabel = new Label(heading, skin);
-    headingLabel.setStyle(textStyle(headingLabel, HEADING_COLOUR));
-    headingLabel.setFontScale(1.1f);
+    headingLabel.setStyle(textStyle(headingLabel));
+    headingLabel.setFontScale(HEADING_SCALE);
     rules.add(headingLabel).left().padTop(14f).padBottom(6f);
     rules.row();
 
     for (String line : lines) {
       Label lineLabel = new Label("-  " + line, skin);
-      lineLabel.setStyle(textStyle(lineLabel, TEXT_COLOUR));
+      lineLabel.setStyle(textStyle(lineLabel));
+      lineLabel.setFontScale(BODY_SCALE);
       lineLabel.setWrap(true);
       rules.add(lineLabel).width(TEXT_WIDTH).left().padBottom(5f);
       rules.row();
     }
   }
 
-  private static Label.LabelStyle textStyle(Label label, String hexColor) {
+  /** Loads the rules font, or returns null so the skin's own font is used if it cannot load. */
+  private static BitmapFont loadRulesFont() {
+    try {
+      BitmapFont font = new BitmapFont(Gdx.files.internal(RULES_FONT_PATH));
+      font.getRegion()
+          .getTexture()
+          .setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+      return font;
+    } catch (RuntimeException e) {
+      logger.warn("Could not load rules font {}: {}", RULES_FONT_PATH, e.getMessage());
+      return null;
+    }
+  }
+
+  private Label.LabelStyle textStyle(Label label) {
     Label.LabelStyle style = new Label.LabelStyle(label.getStyle());
-    style.fontColor = Color.valueOf(hexColor);
+    if (rulesFont != null) {
+      style.font = rulesFont;
+    }
+    style.fontColor = Color.valueOf(INK_COLOUR);
     return style;
   }
 
@@ -211,6 +244,10 @@ public class BlackjackRulesDisplay extends UIComponent {
       texture.dispose();
     }
     ownedTextures.clear();
+    if (rulesFont != null) {
+      rulesFont.dispose();
+      rulesFont = null;
+    }
     super.dispose();
   }
 }
