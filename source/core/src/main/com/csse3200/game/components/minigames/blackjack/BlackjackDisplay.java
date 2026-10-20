@@ -370,23 +370,27 @@ public class BlackjackDisplay extends UIComponent {
     middle.row();
     middle.add(status).expandX().fillX().center();
 
-    Table buttons = new Table();
-    buttons.add(backButton).width(192f).height(67f).pad(5f);
-    buttons.row();
-    buttons.add(soundButton).width(192f).height(67f).pad(5f);
+    Table rightSide = new Table();
+    rightSide.add(backButton).width(192f).height(67f).pad(5f);
+    rightSide.row();
+    rightSide.add(soundButton).width(192f).height(67f).pad(5f);
+    rightSide.top().right();
+
+    /*
     buttons.row();
     buttons.add(newRoundButton).width(192f).height(67f).pad(5f);
     buttons.row();
     buttons.add(hitButton).width(192f).height(67f).pad(5f);
     buttons.row();
     buttons.add(standButton).width(192f).height(67f).pad(5f);
+    */
 
-    table.add(tempTable).fill().prefWidth(PREF_WIDTH);
-    table.add(middle).fill().expandX();
-    table.add(buttons).fill().prefWidth(PREF_WIDTH);
+    table.add(tempTable).fill().expandY().prefWidth(PREF_WIDTH);
+    table.add(middle).fill().expand();
+    table.add(rightSide).fill().expandY().prefWidth(PREF_WIDTH);
 
     table.setFillParent(true);
-    table.pack();
+    table.validate();
     table.toFront();
     table.setDebug(true);
     stage.addActor(table);
