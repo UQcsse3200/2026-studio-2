@@ -367,7 +367,7 @@ public class InventoryComponent extends Component {
   }
 
   public void setSlots(List<InventorySlot> slots) {
-    this.slots = List.copyOf(slots);
+    this.slots = new ArrayList<>(slots);
   }
 
   /**

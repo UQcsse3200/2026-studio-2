@@ -359,10 +359,9 @@ public class LevelsGameScreen extends ScreenAdapter {
     // open. F1 still toggles the terminal itself.
     boolean terminalOpen = terminal != null && terminal.isOpen();
     if (!terminalOpen
-            && !minigameOverlayManager.isActive()
-            && Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
-      if (!closeInventoryOverlay()
-              && !ServiceLocator.getEntityService().getSettingsOpen()) {
+        && !minigameOverlayManager.isActive()
+        && Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
+      if (!closeInventoryOverlay() && !ServiceLocator.getEntityService().getSettingsOpen()) {
         pauseOverlay.request();
       }
     }

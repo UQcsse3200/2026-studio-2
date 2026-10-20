@@ -15,7 +15,6 @@ import com.csse3200.game.components.inventory.InventorySlotStyle;
 import com.csse3200.game.components.item.ItemType;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.UIComponent;
-import com.csse3200.game.ui.terminal.Terminal;
 
 /**
  * Displays the player's item dictionary.
@@ -59,7 +58,7 @@ public class ItemDictionaryDisplay extends UIComponent {
     contentTable.pad(25f);
 
     entity.getEvents().addListener("itemDictionaryChanged", this::refresh);
-
+    entity.getEvents().addListener("toggleDictionary", this::toggleDictionary);
     entity.getEvents().addListener("backpackOpened", this::hideDictionary);
 
     table.add(contentTable);
@@ -379,9 +378,7 @@ public class ItemDictionaryDisplay extends UIComponent {
     }
 
     // The I shortcut polls raw input, bypassing the handler chain, so check the terminal directly.
-    if (Gdx.input.isKeyJustPressed(Input.Keys.I) && !Terminal.isAnyOpen()) {
-      toggleDictionary();
-    }
+
   }
 
   @Override

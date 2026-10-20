@@ -9,9 +9,12 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.csse3200.game.components.CameraComponent;
+import com.csse3200.game.components.inventory.BackpackDisplay;
+import com.csse3200.game.components.itemdictionary.ItemDictionaryDisplay;
 import com.csse3200.game.input.InputComponent;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.services.ServiceLocator;
+import com.csse3200.game.ui.terminal.Terminal;
 
 /** Input handler for player keyboard and mouse controls. */
 public class KeyboardPlayerInputComponent extends InputComponent {
@@ -79,7 +82,15 @@ public class KeyboardPlayerInputComponent extends InputComponent {
     }
     // Block gameplay controls while paused.
     // Preserve F for the existing shop interaction.
-    if (isGamePaused() && !isShopOpen()) {
+    BackpackDisplay backpack = entity.getComponent(BackpackDisplay.class);
+    ItemDictionaryDisplay dictionary = entity.getComponent(ItemDictionaryDisplay.class);
+
+    boolean inventoryOpen =
+        (backpack != null && backpack.isBackpackVisible())
+            || (dictionary != null && dictionary.isDictionaryVisible());
+    boolean inventoryKey = keycode == Keys.B || keycode == Keys.I;
+
+    if (isGamePaused() && !isShopOpen() && !(inventoryOpen && inventoryKey)) {
       return true;
     }
     switch (keycode) {
@@ -149,6 +160,11 @@ public class KeyboardPlayerInputComponent extends InputComponent {
         return true;
       case Keys.B:
         entity.getEvents().trigger("toggleBackpack");
+        return true;
+      case Keys.I:
+        if (!Terminal.isAnyOpen()) {
+          entity.getEvents().trigger("toggleDictionary");
+        }
         return true;
       case Keys.R:
         entity.getEvents().trigger("dropItem");
