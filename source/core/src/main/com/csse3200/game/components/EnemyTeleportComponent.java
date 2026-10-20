@@ -88,6 +88,9 @@ public class EnemyTeleportComponent extends Component {
 
     List<Vector2> availableTpPositions =
         tpPositions.stream().filter(pos -> !pos.equals(currentTpPosition)).toList();
+    if (availableTpPositions.isEmpty()) {
+      return; // the only position is the one it is already at
+    }
     currentTpPosition = availableTpPositions.get(random.nextInt(availableTpPositions.size()));
     entity.setPosition(currentTpPosition);
 
