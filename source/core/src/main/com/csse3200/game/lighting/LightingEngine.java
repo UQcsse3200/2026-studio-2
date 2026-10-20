@@ -77,16 +77,22 @@ public class LightingEngine implements Disposable {
     float deltaTime = Math.max(0f, ServiceLocator.getTimeSource().getDeltaTime());
     float interpolation = 1f - (float) Math.exp(-RAY_COUNT_EQUALISATION_RATE * deltaTime);
     float[] nextRayCounts = new float[pointLights.size()];
+    float[] targetReds = new float[pointLights.size()];
+    float[] targetGreens = new float[pointLights.size()];
+    float[] targetBlues = new float[pointLights.size()];
 
     for (int i = 0; i < pointLights.size(); i++) {
       PointLightComponent first = pointLights.get(i);
       float currentRayCount = smoothedRayCounts.get(first);
       float targetRayCount;
       float nearbyLightWeight = 0f;
+      float totalRed = first.getBaseRed();
+      float totalGreen = first.getBaseGreen();
+      float totalBlue = first.getBaseBlue();
+      float totalColorWeight = 1f;
 
       if (!first.isActive()) {
         targetRayCount = first.getOldRayCount();
-        first.setIntensity(1f);
       } else {
         float totalRayCount = currentRayCount;
         int overlappingLights = 1;
@@ -98,15 +104,22 @@ public class LightingEngine implements Disposable {
               totalRayCount += smoothedRayCounts.get(other);
               overlappingLights++;
               nearbyLightWeight += overlapStrength;
+              totalRed += other.getSmoothedRed() * overlapStrength;
+              totalGreen += other.getSmoothedGreen() * overlapStrength;
+              totalBlue += other.getSmoothedBlue() * overlapStrength;
+              totalColorWeight += overlapStrength;
             }
           }
         }
         targetRayCount =
             overlappingLights == 1 ? first.getOldRayCount() : totalRayCount / overlappingLights;
-        first.setIntensity(1f / (1f + nearbyLightWeight));
       }
 
       nextRayCounts[i] = currentRayCount + (targetRayCount - currentRayCount) * interpolation;
+      targetReds[i] = totalRed / totalColorWeight;
+      targetGreens[i] = totalGreen / totalColorWeight;
+      targetBlues[i] = totalBlue / totalColorWeight;
+      first.setIntensity(first.isActive() ? 1f / (1f + nearbyLightWeight) : 1f);
     }
 
     for (int i = 0; i < pointLights.size(); i++) {
@@ -114,6 +127,10 @@ public class LightingEngine implements Disposable {
       float smoothedRayCount = nextRayCounts[i];
       smoothedRayCounts.put(light, smoothedRayCount);
       light.setRayCount(Math.max(MIN_RAYS, Math.round(smoothedRayCount)));
+      light.setSmoothedColor(
+          light.getSmoothedRed() + (targetReds[i] - light.getSmoothedRed()) * interpolation,
+          light.getSmoothedGreen() + (targetGreens[i] - light.getSmoothedGreen()) * interpolation,
+          light.getSmoothedBlue() + (targetBlues[i] - light.getSmoothedBlue()) * interpolation);
     }
   }
 

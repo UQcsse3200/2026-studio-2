@@ -21,6 +21,7 @@ public class PointLightComponent extends Component implements Disposable {
   private int rays;
   private final int oldRayCount;
   private final Color color;
+  private final Color smoothedColor;
   private float intensity = 1f;
   private float distance;
   private boolean isActive = true;
@@ -37,6 +38,7 @@ public class PointLightComponent extends Component implements Disposable {
     this.rays = rays;
     this.oldRayCount = rays;
     this.color = new Color(color);
+    this.smoothedColor = new Color(color);
     this.distance = distance;
   }
 
@@ -135,6 +137,35 @@ public class PointLightComponent extends Component implements Disposable {
     return this;
   }
 
+  public float getBaseRed() {
+    return color.r;
+  }
+
+  public float getBaseGreen() {
+    return color.g;
+  }
+
+  public float getBaseBlue() {
+    return color.b;
+  }
+
+  public float getSmoothedRed() {
+    return smoothedColor.r;
+  }
+
+  public float getSmoothedGreen() {
+    return smoothedColor.g;
+  }
+
+  public float getSmoothedBlue() {
+    return smoothedColor.b;
+  }
+
+  public void setSmoothedColor(float red, float green, float blue) {
+    smoothedColor.set(red, green, blue, color.a);
+    applyEffectiveColor();
+  }
+
   public void setIntensity(float intensity) {
     float clampedIntensity = Math.max(0f, Math.min(1f, intensity));
     if (this.intensity == clampedIntensity) {
@@ -145,7 +176,11 @@ public class PointLightComponent extends Component implements Disposable {
   }
 
   private Color getEffectiveColor() {
-    return new Color(color.r * intensity, color.g * intensity, color.b * intensity, color.a);
+    return new Color(
+        smoothedColor.r * intensity,
+        smoothedColor.g * intensity,
+        smoothedColor.b * intensity,
+        color.a);
   }
 
   private void applyEffectiveColor() {
