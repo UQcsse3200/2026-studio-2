@@ -8,8 +8,8 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.RayCastCallback;
+import com.csse3200.game.components.item.weapons.bow.grapple.GrappleComponent;
 import com.csse3200.game.components.projectile.ArrowProjectileComponent;
-import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.rendering.RenderComponent;
 import com.csse3200.game.services.ServiceLocator;
 
@@ -142,7 +142,8 @@ public abstract class ArcIndicatorRenderComponent extends RenderComponent {
   }
 
   /**
-   * Same "solid terrain only" filter the real arrows stick to, so the preview never lies.
+   * Same filter the real grapple arrow uses, so the preview never lies: it passes through the
+   * water's surface and spiky balls exactly as the arrow does.
    *
    * @return the closest point hit on solid terrain, or null if the ray reaches {@code to} clear
    */
@@ -150,7 +151,7 @@ public abstract class ArcIndicatorRenderComponent extends RenderComponent {
     Vector2[] hitPoint = new Vector2[1];
     RayCastCallback callback =
         (fixture, point, normal, fraction) -> {
-          if (!PhysicsLayer.contains(PhysicsLayer.SOLID, fixture.getFilterData().categoryBits)) {
+          if (!GrappleComponent.isGrappleSurface(fixture)) {
             return -1f;
           }
           hitPoint[0] = point.cpy();

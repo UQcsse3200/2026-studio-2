@@ -87,7 +87,7 @@ public class GrappleArrowComponent extends Component {
     if (spent) {
       return;
     }
-    if (GrappleComponent.isGrappleSurface(other)) {
+    if (!GrappleComponent.isGrappleSurface(other)) {
       return;
     }
     // Any terrain the arrow reaches ends its flight, whether or not it makes a hook. Otherwise an

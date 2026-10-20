@@ -840,6 +840,37 @@ class PlayerActionsTest {
   }
 
   @Test
+  void shouldAnnounceLettingGoOfTheRopeWhenJumpingFromTheGround() {
+    GrappleComponent grapple = new GrappleComponent();
+    Entity player = createPlayerWithGrapple(grapple);
+    createGroundUnderPlayer();
+    attachRopeAbovePlayer(grapple);
+    player.update();
+    AtomicInteger releases = countEvent(player, "grappleRelease");
+
+    player.getEvents().trigger("jump");
+
+    // Through the event, not the grapple directly, so a slippery platform hears it too. Otherwise
+    // its grapple timer kept running and later dropped whatever rope the player was on by then.
+    assertEquals(1, releases.get());
+    assertFalse(grapple.isAttached());
+  }
+
+  @Test
+  void shouldAnnounceLettingGoOfTheRopeWhenKickingOffIt() {
+    GrappleComponent grapple = new GrappleComponent();
+    Entity player = createPlayerWithGrapple(grapple);
+    attachRopeAbovePlayer(grapple);
+    player.update(); // hanging in the air
+    AtomicInteger releases = countEvent(player, "grappleRelease");
+
+    player.getEvents().trigger("jump");
+
+    assertEquals(1, releases.get());
+    assertFalse(grapple.isAttached());
+  }
+
+  @Test
   void shouldLetGoOfTheRopeWhenJumpingFromTheGround() {
     GrappleComponent grapple = new GrappleComponent();
     Entity player = createPlayerWithGrapple(grapple);

@@ -88,13 +88,51 @@ class ArcIndicatorSimulationTest {
 
   @Test
   void nonSolidCollidersDoNotShortenThePreview() {
-    Body body = physics.getPhysics().createBody(new BodyDef());
+    assertEquals(
+        2.51f, previewEndWithBlocker(PhysicsLayer.NPC, false, BodyDef.BodyType.StaticBody), 0.001f);
+  }
+
+  @Test
+  void theWaterSurfaceDoesNotShortenThePreview() {
+    // A sensor on a terrain layer: the grapple arrow passes through it, so the preview must too.
+    assertEquals(
+        2.51f,
+        previewEndWithBlocker(PhysicsLayer.OBSTACLE, true, BodyDef.BodyType.StaticBody),
+        0.001f);
+  }
+
+  @Test
+  void spikyBallsDoNotShortenThePreview() {
+    // A moving solid on a terrain layer: the grapple arrow passes through it, so the preview must
+    // too.
+    assertEquals(
+        2.51f,
+        previewEndWithBlocker(PhysicsLayer.OBSTACLE, false, BodyDef.BodyType.DynamicBody),
+        0.001f);
+  }
+
+  @Test
+  void solidTerrainStillShortensThePreview() {
+    assertTrue(
+        previewEndWithBlocker(PhysicsLayer.OBSTACLE, false, BodyDef.BodyType.StaticBody) < 1.5f);
+  }
+
+  /**
+   * Puts a thin wall across the preview's path at x = 1.5 and reports where the preview's landing
+   * dot ends up. With nothing in the way it reaches its range, at x = 2.51.
+   */
+  private float previewEndWithBlocker(short layer, boolean sensor, BodyDef.BodyType type) {
+    BodyDef def = new BodyDef();
+    def.type = type;
+    Body body = physics.getPhysics().createBody(def);
+    body.setGravityScale(0f);
     PolygonShape box = new PolygonShape();
     box.setAsBox(0.1f, 1f, new Vector2(1.5f, 0.5f), 0f);
     Fixture fixture = body.createFixture(box, 0f);
     box.dispose();
+    fixture.setSensor(sensor);
     Filter filter = fixture.getFilterData();
-    filter.categoryBits = PhysicsLayer.NPC;
+    filter.categoryBits = layer;
     fixture.setFilterData(filter);
     try (var shapes = mockConstruction(ShapeRenderer.class)) {
       preview(2f).render(batch);
@@ -105,7 +143,7 @@ class ArcIndicatorSimulationTest {
               eq(0.5f),
               eq(ArcIndicatorRenderComponent.LANDING_DOT_RADIUS),
               eq(12));
-      assertEquals(2.51f, endpointX.getValue(), 0.001f);
+      return endpointX.getValue();
     }
   }
 }

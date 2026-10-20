@@ -525,17 +525,17 @@ public class GrappleComponent extends Component {
    * @param fixture the fixture to check
    * @return true if the grapple may use it
    */
-  static boolean isGrappleSurface(Fixture fixture) {
-    return fixture.isSensor()
-            || fixture.getBody().getType() == BodyDef.BodyType.DynamicBody
-            || !PhysicsLayer.contains(PhysicsLayer.SOLID, fixture.getFilterData().categoryBits);
+  public static boolean isGrappleSurface(Fixture fixture) {
+    return !fixture.isSensor()
+        && fixture.getBody().getType() != BodyDef.BodyType.DynamicBody
+        && PhysicsLayer.contains(PhysicsLayer.SOLID, fixture.getFilterData().categoryBits);
   }
 
   private static RopeRayHit findObstruction(World world, Vector2 from, Vector2 to) {
     RopeRayHit closest = new RopeRayHit();
     RayCastCallback callback =
         (fixture, point, normal, fraction) -> {
-          if (isGrappleSurface(fixture)) {
+          if (!isGrappleSurface(fixture)) {
             return -1f;
           }
           // The grapple anchor's own fixture is expected at the end of every ray.

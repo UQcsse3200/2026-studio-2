@@ -374,7 +374,7 @@ public class PlayerActions extends Component {
       if (isDashing) {
         endDash();
       }
-      grapple.release();
+      letGoOfRope();
       airDashUsed = false;
       dashCooldownRemaining = 0f;
       body.applyLinearImpulse(
@@ -392,8 +392,8 @@ public class PlayerActions extends Component {
     if (isGrounded) {
       if (isGrappling()) {
         // Standing with a rope out: jumping lets go of it, rather than leaping into a swing from
-        // the ground. Only an attached rope - release() would also cancel a shot still in flight.
-        grapple.release();
+        // the ground. Only an attached rope - releasing would also cancel a shot still in flight.
+        letGoOfRope();
       }
       airDashUsed = false;
       dashCooldownRemaining = 0f;
@@ -402,6 +402,15 @@ public class PlayerActions extends Component {
       entity.getEvents().trigger("jumpStart");
       entity.getEvents().trigger("jumpAccepted");
     }
+  }
+
+  /**
+   * Lets go of the rope through the "grappleRelease" event rather than calling the grapple
+   * directly, so everything listening hears it too - notably a slippery platform, whose grapple
+   * timer would otherwise keep running and later drop whatever rope the player is on by then.
+   */
+  private void letGoOfRope() {
+    entity.getEvents().trigger("grappleRelease");
   }
 
   // one para is the extraMutiplier, another one is the time the potion last
