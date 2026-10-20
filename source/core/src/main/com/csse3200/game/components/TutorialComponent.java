@@ -21,6 +21,7 @@ import java.util.Set;
 public class TutorialComponent extends InputComponent {
   private final TextBoxComponent textBox;
   private final List<Step> steps;
+  private final Runnable onFinished;
   private int step = 0;
   private boolean finished = false;
 
@@ -33,8 +34,20 @@ public class TutorialComponent extends InputComponent {
    * @throws IllegalArgumentException if a step names an unknown key or mouse button
    */
   public TutorialComponent(TextBoxComponent textBox, List<TutorialStepConfig> stepConfigs) {
+    this(textBox, stepConfigs, null);
+  }
+
+  /**
+   * Creates a tutorial that reports completion, e.g. to persist a "seen" flag in the save.
+   *
+   * @param onFinished run once the player completes the final step (not when the tutorial is
+   *     dismissed early), or null for no callback
+   */
+  public TutorialComponent(
+      TextBoxComponent textBox, List<TutorialStepConfig> stepConfigs, Runnable onFinished) {
     super(6);
     this.textBox = textBox;
+    this.onFinished = onFinished;
     this.steps = new ArrayList<>();
     if (stepConfigs != null) {
       for (TutorialStepConfig config : stepConfigs) {
@@ -89,6 +102,9 @@ public class TutorialComponent extends InputComponent {
     textBox.dismiss();
     finished = true;
     dispose();
+    if (onFinished != null) {
+      onFinished.run();
+    }
   }
 
   @Override
