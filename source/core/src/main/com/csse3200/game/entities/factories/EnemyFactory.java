@@ -147,7 +147,6 @@ public class EnemyFactory {
             PhysicsComponent.AlignX.CENTER,
             PhysicsComponent.AlignY.BOTTOM);
 
-
     float attackFrameTime = WARRIOR_ATTACK_DELAY / (WARRIOR_STRIKE_FRAME + 0.5f);
     float swordReach = WARRIOR_SWORD_REACH_PX * pxToWorld;
 

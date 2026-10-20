@@ -38,8 +38,7 @@ class ChaseTaskTest {
     Entity target = new Entity();
     target.setPosition(2f, 2f);
 
-    AITaskComponent ai = new AITaskComponent()
-            .addTask(new ChaseTask(target, 10, 5, 10, "ground"));
+    AITaskComponent ai = new AITaskComponent().addTask(new ChaseTask(target, 10, 5, 10, "ground"));
     Entity entity = makePhysicsEntity().addComponent(ai);
     entity.create();
     entity.setPosition(0f, 0f);

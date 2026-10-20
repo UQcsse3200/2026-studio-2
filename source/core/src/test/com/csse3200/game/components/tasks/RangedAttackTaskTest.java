@@ -59,7 +59,7 @@ class RangedAttackTaskTest {
   @ParameterizedTest
   @CsvSource({"calypso, -4, 1.7", "calypso, 8, 3.3", "summon, -4, 1.7", "summon, 8, 3.3"})
   void firesConfiguredProjectileTowardsTargetFromTheFacingSide(
-          String attackType, float targetX, float expectedSpawnX) {
+      String attackType, float targetX, float expectedSpawnX) {
     Entity enemy = new Entity();
     enemy.setPosition(2f, 3f);
     Entity target = new Entity();
@@ -80,13 +80,13 @@ class RangedAttackTaskTest {
     assertEquals(3.35f, projectile.getCenterPosition().y, 0.001f);
     assertEquals(7, projectile.getComponent(CombatStatsComponent.class).getBaseAttack());
     assertEquals(
-            attackType.equals("calypso") ? PhysicsLayer.NPC : PhysicsLayer.ENEMY_PROJECTILE,
-            projectile.getComponent(HitboxComponent.class).getLayer());
+        attackType.equals("calypso") ? PhysicsLayer.NPC : PhysicsLayer.ENEMY_PROJECTILE,
+        projectile.getComponent(HitboxComponent.class).getLayer());
     PhysicsMovementComponent movement = projectile.getComponent(PhysicsMovementComponent.class);
     assertEquals(new Vector2(targetX + 0.5f, 3.5f), movement.getTarget());
     movement.update();
     Vector2 velocity =
-            projectile.getComponent(PhysicsComponent.class).getBody().getLinearVelocity();
+        projectile.getComponent(PhysicsComponent.class).getBody().getLinearVelocity();
     assertEquals(5f, velocity.len(), 0.001f);
     assertTrue(velocity.x * (targetX - 2f) > 0f);
     assertEquals(-1, task.getPriority(), "firing starts the cooldown again");
@@ -115,22 +115,22 @@ class RangedAttackTaskTest {
     Fixture hitbox = projectile.getComponent(HitboxComponent.class).getFixture();
 
     projectile
-            .getEvents()
-            .trigger(
-                    "collisionStart", hitbox, bystander.getComponent(HitboxComponent.class).getFixture());
+        .getEvents()
+        .trigger(
+            "collisionStart", hitbox, bystander.getComponent(HitboxComponent.class).getFixture());
     assertEquals(20, bystander.getComponent(CombatStatsComponent.class).getHealth());
     projectile
-            .getEvents()
-            .trigger("collisionStart", hitbox, player.getComponent(HitboxComponent.class).getFixture());
+        .getEvents()
+        .trigger("collisionStart", hitbox, player.getComponent(HitboxComponent.class).getFixture());
     assertEquals(13, player.getComponent(CombatStatsComponent.class).getHealth());
   }
 
   private Entity character(short layer) {
     Entity character =
-            new Entity()
-                    .addComponent(new PhysicsComponent())
-                    .addComponent(new HitboxComponent().setLayer(layer))
-                    .addComponent(new CombatStatsComponent(20, 0));
+        new Entity()
+            .addComponent(new PhysicsComponent())
+            .addComponent(new HitboxComponent().setLayer(layer))
+            .addComponent(new CombatStatsComponent(20, 0));
     entities.register(character);
     return character;
   }
