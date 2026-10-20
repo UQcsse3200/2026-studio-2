@@ -1,6 +1,9 @@
 package com.csse3200.game.components;
 
 import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.utils.Align;
+import com.csse3200.game.entities.configs.TextConfig;
+import com.csse3200.game.files.FileLoader;
 import com.csse3200.game.input.InputComponent;
 import com.csse3200.game.ui.terminal.Terminal;
 
@@ -13,14 +16,50 @@ import com.csse3200.game.ui.terminal.Terminal;
  */
 public class TutorialComponent extends InputComponent {
   private final TextBoxComponent textBox;
+  private final Runnable onFinished;
   private int step = 0;
   private boolean seenA = false;
   private boolean seenD = false;
   private boolean finished = false;
 
   public TutorialComponent(TextBoxComponent textBox) {
+    this(textBox, () -> {});
+  }
+
+  public TutorialComponent(TextBoxComponent textBox, Runnable onFinished) {
     super(6);
     this.textBox = textBox;
+    this.onFinished = onFinished == null ? () -> {} : onFinished;
+  }
+
+  /** Loads and starts the configured tutorial without going through the terminal command. */
+  public static TutorialComponent start(String configPath, Runnable onFinished) {
+    TextConfig config = FileLoader.readClass(TextConfig.class, configPath);
+    if (config == null) {
+      return null;
+    }
+    TextBoxComponent textBox =
+        new TextBoxComponent(
+            config.xPos,
+            config.yPos,
+            config.getTextColour(),
+            config.getBackgroundColour(),
+            config.getBorderColour(),
+            config.charsPerSecond,
+            config.maxWidth,
+            config.padding,
+            config.borderThickness,
+            config.fontPath,
+            config.getTextAlignment(),
+            config.pages,
+            config.portraitPaths);
+    textBox.setExternallyControlled(true);
+    textBox.setPosition(config.xPos, config.yPos, Align.bottomLeft);
+    textBox.create();
+
+    TutorialComponent tutorial = new TutorialComponent(textBox, onFinished);
+    tutorial.create();
+    return tutorial;
   }
 
   @Override
@@ -70,6 +109,7 @@ public class TutorialComponent extends InputComponent {
     textBox.advance();
     textBox.dismiss();
     finished = true;
+    onFinished.run();
     dispose();
   }
 
