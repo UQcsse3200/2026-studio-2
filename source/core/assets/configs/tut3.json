@@ -1,0 +1,28 @@
+{
+  "xPos": 20,
+  "yPos": 150,
+  "textColour": "Color.BLACK",
+  "backgroundColour": "Color.TAN",
+  "borderColour": "Color.BROWN",
+  "charsPerSecond": 30,
+  "maxWidth": 320,
+  "padding": 16,
+  "borderThickness": 3,
+  "fontPath": "flat-earth/skin/fonts/PixeloidSans.fnt",
+  "textAlignment": "left",
+  "pages": [
+    "You carry potions, Odysseus. I should know, I watched you pack. Press B and look in your pack.",
+    "Health mends you. Speed quickens you. Poison... well. Choose a potion with the number keys.",
+    "Selected? Turn to the right mouse button. Drink it, or hurl it at whatever is unwise enough to stand near you."
+  ],
+  "portraitPaths": [
+    "images/portraits/calypsoRegret.png",
+    "images/portraits/calypsoHappy.png",
+    "images/portraits/calypsoFrustrated.png"
+  ],
+  "steps": [
+    {"keys": ["B"]},
+    {"keys": ["NUM_1", "NUM_2", "NUM_3", "NUM_4", "NUM_5", "NUM_6", "NUM_7", "NUM_8", "NUM_9"]},
+    {"mouse": ["RIGHT"]}
+  ]
+}
