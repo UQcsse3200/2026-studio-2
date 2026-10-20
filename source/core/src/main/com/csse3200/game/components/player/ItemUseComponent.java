@@ -5,7 +5,6 @@ import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.Component;
 import com.csse3200.game.components.inventory.InventoryComponent;
 import com.csse3200.game.components.item.ItemType;
-import com.csse3200.game.components.item.weapons.PrimaryWeapon;
 import com.csse3200.game.components.item.weapons.WeaponComponent;
 import com.csse3200.game.entities.factories.ProjectileFactory;
 import com.csse3200.game.services.ServiceLocator;
@@ -15,8 +14,8 @@ import org.slf4j.LoggerFactory;
 /**
  * Bridges input events and inventory selection with active combat, health, and grapple logic.
  *
- * <p>Listens for player input events ("attack", "useItem", "shoot", "stopShoot") and routes
- * execution based on the currently selected item in the player's inventory.
+ * <p>Listens for player input events ("shoot", "stopShoot", and "attack" from touch input) and
+ * routes execution based on the currently selected item in the player's inventory.
  */
 public class ItemUseComponent extends Component {
   private static final String ITEM_USED = "itemUsed";
@@ -33,7 +32,6 @@ public class ItemUseComponent extends Component {
     combatStats = entity.getComponent(CombatStatsComponent.class);
 
     entity.getEvents().addListener("attack", this::useSelectedItem);
-    entity.getEvents().addListener("useItem", this::useSelectedItem);
     entity.getEvents().addListener("shoot", this::shootSelectedArrow);
     entity.getEvents().addListener("stopShoot", this::stopShootSelectedArrow);
   }
@@ -56,7 +54,12 @@ public class ItemUseComponent extends Component {
       return;
     }
     ItemType selected = inventory.getSelectedItem();
-    if (selected == null || !selected.isArrow() || !inventory.hasItem(selected)) {
+    if (selected == null || !inventory.hasItem(selected)) {
+      return;
+    }
+    if (!selected.isArrow()) {
+      // Right-click uses whatever is selected: arrows are drawn and fired, potions drunk or thrown.
+      useSelectedItem();
       return;
     }
 
@@ -105,9 +108,10 @@ public class ItemUseComponent extends Component {
   }
 
   /**
-   * Attempts to use the currently selected item stack in the inventory.
+   * Uses the selected potion: drinks a health or speed potion, or throws a poison potion. Arrows
+   * aren't used directly; they're fired by drawing the bow (see {@link #shootSelectedArrow}).
    *
-   * @return true if the item was successfully used or fired
+   * @return true if a potion was used
    */
   public boolean useSelectedItem() {
     if (inventory == null) {
@@ -120,40 +124,11 @@ public class ItemUseComponent extends Component {
     }
 
     return switch (selected) {
-      case STANDARD_ARROW, FIRE_ARROW, ICE_ARROW, ROPE_ARROW ->
-          useArrow(selected, getAimDirection());
+      case STANDARD_ARROW, FIRE_ARROW, ICE_ARROW, ROPE_ARROW -> false;
       case HEALTH_POTION -> useHealthPotion();
       case SPEED_POTION -> useSpeedPotion();
       case POISON_POTION -> usePoisonPotion();
     };
-  }
-
-  private boolean useArrow(ItemType arrowItem, Vector2 direction) {
-    if (!inventory.hasItem(arrowItem)) {
-      entity.getEvents().trigger(ITEM_USE_FAILED, arrowItem);
-      return false;
-    }
-
-    if (arrowItem == ItemType.ROPE_ARROW) {
-      entity.getEvents().trigger("grappleFire", direction);
-    } else {
-      // Dispatch is synchronous, so check readiness before publishing the attack or using ammo.
-      WeaponComponent weapons = entity.getComponent(WeaponComponent.class);
-      PrimaryWeapon primary = weapons == null ? null : weapons.getPrimaryWeapon();
-      if (primary == null || !primary.isReady()) {
-        entity.getEvents().trigger(ITEM_USE_FAILED, arrowItem);
-        return false;
-      }
-
-      // Configure bow variant and trigger primary weapon execution via WeaponComponent
-      entity.getEvents().trigger("setArrowType", arrowItem.toArrowType());
-      entity.getEvents().trigger("primaryAttack", direction);
-
-      inventory.removeItem(arrowItem, 1);
-    }
-
-    entity.getEvents().trigger(ITEM_USED, arrowItem);
-    return true;
   }
 
   private boolean useHealthPotion() {

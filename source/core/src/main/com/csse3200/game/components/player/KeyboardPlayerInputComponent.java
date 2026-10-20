@@ -31,7 +31,6 @@ public class KeyboardPlayerInputComponent extends InputComponent {
   private boolean sprintHeld;
   private boolean inputSyncPending;
   private CameraComponent cameraComponent;
-  private boolean attackHeld;
   private boolean dead;
   private boolean rightMouseHeld;
   private boolean cheats = false;
@@ -79,7 +78,7 @@ public class KeyboardPlayerInputComponent extends InputComponent {
       return false;
     }
     if (isShopOpen()) {
-      if (keycode == Keys.F) {
+      if (keycode == Keys.E) {
         entity.getEvents().trigger("interact");
       }
       return true;
@@ -121,7 +120,6 @@ public class KeyboardPlayerInputComponent extends InputComponent {
           Keys.NUM_9,
           Keys.SPACE,
           Keys.E,
-          Keys.F,
           Keys.B,
           Keys.R,
           Keys.FORWARD_DEL,
@@ -135,40 +133,45 @@ public class KeyboardPlayerInputComponent extends InputComponent {
   }
 
   private boolean handleActionKey(int keycode) {
-    switch (keycode) {
-      case Keys.SPACE:
-        triggerJumpEvent();
-        return true;
-      case Keys.E:
-        triggerAttackOrItemUse();
-        return true;
-      case Keys.F:
-        entity.getEvents().trigger("interact");
-        return true;
-      case Keys.B:
-        entity.getEvents().trigger("toggleBackpack");
-        return true;
-      case Keys.R:
-        entity.getEvents().trigger("dropItem");
-        return true;
-      case Keys.FORWARD_DEL:
-        entity.getEvents().trigger("deleteItem");
-        return true;
-      case Keys.PERIOD:
-        entity.getEvents().trigger("switchItem", 1);
-        return true;
-      case Keys.COMMA:
-        entity.getEvents().trigger("switchItem", -1);
-        return true;
-      case Keys.TAB:
-        entity.getEvents().trigger("openArrowWheel");
-        return true;
-      case Keys.Q:
-        entity.getEvents().trigger("instrumentStart");
-        return true;
-      default:
-        return false;
-    }
+      return switch (keycode) {
+          case Keys.SPACE -> {
+              triggerJumpEvent();
+              yield true;
+          }
+          case Keys.E -> {
+              entity.getEvents().trigger("interact");
+              yield true;
+          }
+          case Keys.B -> {
+              entity.getEvents().trigger("toggleBackpack");
+              yield true;
+          }
+          case Keys.R -> {
+              entity.getEvents().trigger("dropItem");
+              yield true;
+          }
+          case Keys.FORWARD_DEL -> {
+              entity.getEvents().trigger("deleteItem");
+              yield true;
+          }
+          case Keys.PERIOD -> {
+              entity.getEvents().trigger("switchItem", 1);
+              yield true;
+          }
+          case Keys.COMMA -> {
+              entity.getEvents().trigger("switchItem", -1);
+              yield true;
+          }
+          case Keys.TAB -> {
+              entity.getEvents().trigger("openArrowWheel");
+              yield true;
+          }
+          case Keys.Q -> {
+              entity.getEvents().trigger("instrumentStart");
+              yield true;
+          }
+          default -> false;
+      };
   }
 
   /**
@@ -185,16 +188,11 @@ public class KeyboardPlayerInputComponent extends InputComponent {
     if (handleMovementKey(keycode, false)) {
       return true;
     }
-    switch (keycode) {
-      case Keys.E:
-        attackHeld = false;
-        return true;
-      case Keys.TAB:
-        entity.getEvents().trigger("closeArrowWheel");
-        return true;
-      default:
-        return false;
-    }
+      if (keycode == Keys.TAB) {
+          entity.getEvents().trigger("closeArrowWheel");
+          return true;
+      }
+      return false;
   }
 
   private boolean handleMovementKey(int keycode, boolean pressed) {
@@ -258,7 +256,6 @@ public class KeyboardPlayerInputComponent extends InputComponent {
     heldKeys.clear();
     Arrays.fill(keysHeld, false);
     sprintHeld = false;
-    attackHeld = false;
     rightMouseHeld = false;
   }
 
@@ -276,8 +273,9 @@ public class KeyboardPlayerInputComponent extends InputComponent {
   }
 
   /**
-   * Left click swings the melee weapon in the direction the player is facing. Right click fires the
-   * selected arrow toward the clicked world position.
+   * Left click swings the melee weapon in the direction the player is facing. Right click uses the
+   * selected item: an arrow is drawn and fired toward the clicked world position, and a potion is
+   * drunk or thrown.
    *
    * @return whether the input was processed
    * @see InputProcessor#touchDown(int, int, int, int)
@@ -411,18 +409,6 @@ public class KeyboardPlayerInputComponent extends InputComponent {
   private boolean isArrowWheelOpen() {
     ArrowWheelComponent wheel = entity.getComponent(ArrowWheelComponent.class);
     return wheel != null && wheel.isOpen();
-  }
-
-  private void triggerAttackOrItemUse() {
-    if (attackHeld || isArrowWheelOpen()) {
-      return;
-    }
-    attackHeld = true;
-
-    ItemUseComponent itemUse = entity.getComponent(ItemUseComponent.class);
-    if (itemUse != null) {
-      itemUse.useSelectedItem();
-    }
   }
 
   private void triggerSprintEvent() {

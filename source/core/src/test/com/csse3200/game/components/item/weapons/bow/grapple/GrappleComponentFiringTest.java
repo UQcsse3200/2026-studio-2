@@ -89,11 +89,11 @@ class GrappleComponentFiringTest {
   }
 
   @Test
-  void shouldFireAFullSpeedArrowWhenTheGrappleFireEventIsTriggered() {
+  void shouldFireAFullSpeedArrowWhenFiredDirectly() {
     Entity arrow = new Entity();
     try (MockedStatic<ProjectileFactory> factory = arrowFactoryReturning(arrow)) {
-      // This is the instant path (the attack key), which skips the charge entirely.
-      player.getEvents().trigger("grappleFire", new Vector2(1f, 0f));
+      // Firing directly (without a charge) launches the arrow at full speed.
+      grapple.fire(new Vector2(1f, 0f));
 
       factory.verify(
           () ->

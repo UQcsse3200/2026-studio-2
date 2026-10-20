@@ -1,8 +1,6 @@
 package com.csse3200.game.components.player;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -32,11 +30,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 @ExtendWith(GameExtension.class)
 class ItemUseComponentTest {
-  private GameTime time;
 
   @BeforeEach
   void beforeEach() {
-    time = mock(GameTime.class);
+    GameTime time = mock(GameTime.class);
     when(time.getTime()).thenReturn(0L);
     ServiceLocator.registerTimeSource(time);
 
@@ -49,37 +46,32 @@ class ItemUseComponentTest {
   }
 
   @Test
-  void shouldFireStandardArrowBeforeConsumingAmmo() {
+  void shouldUseSelectedPotionWhenAttackEventFires() {
     Entity player = createPlayer();
     InventoryComponent inventory = player.getComponent(InventoryComponent.class);
-    inventory.addItem(ItemType.STANDARD_ARROW, 3);
-
-    AtomicReference<ArrowType> bowType = new AtomicReference<>();
-    player.getEvents().<ArrowType>addListener("setArrowType", bowType::set);
-    player
-        .getEvents()
-        .addListener(
-            "primaryAttack",
-            (Vector2 ignored) -> assertEquals(3, inventory.getItemCount(ItemType.STANDARD_ARROW)));
-
-    assertTrue(player.getComponent(ItemUseComponent.class).useSelectedItem());
-    assertEquals(ArrowType.STANDARD, bowType.get());
-    assertEquals(2, inventory.getItemCount(ItemType.STANDARD_ARROW));
-  }
-
-  @Test
-  void shouldUseStandardArrowWhenAttackEventFires() {
-    Entity player = createPlayer();
-    InventoryComponent inventory = player.getComponent(InventoryComponent.class);
-    inventory.addItem(ItemType.STANDARD_ARROW, 1);
-
-    AtomicInteger fired = new AtomicInteger();
-    player.getEvents().addListener("primaryAttack", (Vector2 ignored) -> fired.incrementAndGet());
+    CombatStatsComponent combat = player.getComponent(CombatStatsComponent.class);
+    combat.setHealth(40);
+    inventory.addItem(ItemType.HEALTH_POTION, 1);
 
     player.getEvents().trigger("attack");
 
-    assertEquals(1, fired.get());
-    assertEquals(0, inventory.getItemCount(ItemType.STANDARD_ARROW));
+    assertTrue(combat.getHealth() > 40);
+    assertEquals(0, inventory.getItemCount(ItemType.HEALTH_POTION));
+  }
+
+  @Test
+  void shouldNotUseArrowsDirectly() {
+    Entity player = createPlayer();
+    InventoryComponent inventory = player.getComponent(InventoryComponent.class);
+    inventory.addItem(ItemType.STANDARD_ARROW, 2);
+    AtomicInteger used = new AtomicInteger();
+    player.getEvents().addListener("itemUsed", (ItemType ignored) -> used.incrementAndGet());
+
+    // Arrows are fired by drawing the bow, not used outright like a potion.
+    assertFalse(player.getComponent(ItemUseComponent.class).useSelectedItem());
+
+    assertEquals(2, inventory.getItemCount(ItemType.STANDARD_ARROW));
+    assertEquals(0, used.get());
   }
 
   @Test
@@ -89,7 +81,7 @@ class ItemUseComponentTest {
     player.getEvents().addListener("primaryAttack", attackDirection::set);
 
     assertFalse(player.getComponent(ItemUseComponent.class).useSelectedItem());
-    assertEquals(null, attackDirection.get());
+    assertNull(attackDirection.get());
   }
 
   @Test
@@ -127,42 +119,13 @@ class ItemUseComponentTest {
     inventory.addItem(ItemType.HEALTH_POTION, 1);
 
     AtomicReference<ItemType> failed = new AtomicReference<>();
-    player.getEvents().<ItemType>addListener("itemUseFailed", failed::set);
+    player.getEvents().addListener("itemUseFailed", failed::set);
 
     assertTrue(combat.isHealthFull());
     assertFalse(player.getComponent(ItemUseComponent.class).useSelectedItem());
     assertEquals(CombatStatsComponent.MAX_HEALTH, combat.getHealth());
     assertEquals(1, inventory.getItemCount(ItemType.HEALTH_POTION));
     assertEquals(ItemType.HEALTH_POTION, failed.get());
-  }
-
-  @Test
-  void shouldFireGrappleAndNotConsumeRopeArrow() {
-    Entity player = createPlayer();
-    InventoryComponent inventory = player.getComponent(InventoryComponent.class);
-    inventory.addItem(ItemType.ROPE_ARROW, 1);
-
-    AtomicReference<Vector2> grappleDir = new AtomicReference<>();
-    player.getEvents().addListener("grappleFire", grappleDir::set);
-
-    assertEquals(ItemType.ROPE_ARROW, inventory.getSelectedItem());
-    assertTrue(player.getComponent(ItemUseComponent.class).useSelectedItem());
-    assertEquals(1, inventory.getItemCount(ItemType.ROPE_ARROW));
-    assertFalse(grappleDir.get().isZero());
-  }
-
-  @Test
-  void shouldTriggerItemUsedForRopeArrow() {
-    Entity player = createPlayer();
-    InventoryComponent inventory = player.getComponent(InventoryComponent.class);
-    inventory.addItem(ItemType.ROPE_ARROW, 1);
-    inventory.selectNext();
-
-    ItemType[] used = {null};
-    player.getEvents().addListener("itemUsed", (ItemType type) -> used[0] = type);
-
-    assertTrue(player.getComponent(ItemUseComponent.class).useSelectedItem());
-    assertEquals(ItemType.ROPE_ARROW, used[0]);
   }
 
   @Test
@@ -211,7 +174,7 @@ class ItemUseComponentTest {
     AtomicReference<ItemType> failed = new AtomicReference<>();
     AtomicInteger drawStarts = new AtomicInteger();
     AtomicInteger used = new AtomicInteger();
-    player.getEvents().<ItemType>addListener("itemUseFailed", failed::set);
+    player.getEvents().addListener("itemUseFailed", failed::set);
     player
         .getEvents()
         .addListener("grappleDrawStart", (Vector2 ignored) -> drawStarts.incrementAndGet());
@@ -235,7 +198,7 @@ class ItemUseComponentTest {
     player
         .getEvents()
         .addListener("setArrowType", (ArrowType ignored) -> bowTypeChanges.incrementAndGet());
-    player.getEvents().<ItemType>addListener("itemUsed", used::set);
+    player.getEvents().addListener("itemUsed", used::set);
 
     player.getEvents().trigger("shoot", new Vector2(1f, 0f));
 
@@ -322,7 +285,7 @@ class ItemUseComponentTest {
   }
 
   @Test
-  void shouldIgnoreShootEventWhenConsumableSelected() {
+  void shouldUseSelectedPotionOnShootEvent() {
     Entity player = createPlayer();
     InventoryComponent inventory = player.getComponent(InventoryComponent.class);
     CombatStatsComponent combat = player.getComponent(CombatStatsComponent.class);
@@ -331,10 +294,11 @@ class ItemUseComponentTest {
 
     assertEquals(ItemType.HEALTH_POTION, inventory.getSelectedItem());
 
+    // Right-click uses whatever is selected, so a selected potion is drunk.
     player.getEvents().trigger("shoot", new Vector2(1f, 0f));
 
-    assertEquals(40, combat.getHealth());
-    assertEquals(1, inventory.getItemCount(ItemType.HEALTH_POTION));
+    assertTrue(combat.getHealth() > 40);
+    assertEquals(0, inventory.getItemCount(ItemType.HEALTH_POTION));
   }
 
   @Test
@@ -394,16 +358,6 @@ class ItemUseComponentTest {
   }
 
   @Test
-  void shouldFireFireArrowThroughBowAndConsumeAmmo() {
-    assertArrowUsesBowType(ItemType.FIRE_ARROW, ArrowType.FIRE);
-  }
-
-  @Test
-  void shouldFireIceArrowThroughBowAndConsumeAmmo() {
-    assertArrowUsesBowType(ItemType.ICE_ARROW, ArrowType.ICE);
-  }
-
-  @Test
   void shouldTriggerSpeedPotionBuffAndConsumePotion() {
     Entity player = createPlayer();
     InventoryComponent inventory = player.getComponent(InventoryComponent.class);
@@ -457,22 +411,6 @@ class ItemUseComponentTest {
     assertEquals(0, inventory.getItemCount(ItemType.POISON_POTION));
   }
 
-  private void assertArrowUsesBowType(ItemType itemType, ArrowType expectedArrowType) {
-    Entity player = createPlayer();
-    InventoryComponent inventory = player.getComponent(InventoryComponent.class);
-    inventory.addItem(itemType, 2);
-
-    AtomicReference<ArrowType> bowType = new AtomicReference<>();
-    AtomicInteger shots = new AtomicInteger();
-    player.getEvents().<ArrowType>addListener("setArrowType", bowType::set);
-    player.getEvents().addListener("primaryAttack", (Vector2 ignored) -> shots.incrementAndGet());
-
-    assertTrue(player.getComponent(ItemUseComponent.class).useSelectedItem());
-    assertEquals(expectedArrowType, bowType.get());
-    assertEquals(1, shots.get());
-    assertEquals(1, inventory.getItemCount(itemType));
-  }
-
   @Test
   void shouldChargeAndReleaseFireArrowThroughShootHold() {
     Entity player = createPlayer();
@@ -481,7 +419,7 @@ class ItemUseComponentTest {
 
     AtomicReference<ArrowType> bowType = new AtomicReference<>();
     int[] releases = {0};
-    player.getEvents().<ArrowType>addListener("setArrowType", bowType::set);
+    player.getEvents().addListener("setArrowType", bowType::set);
     player.getEvents().addListener("chargeRelease", (Vector2 ignored) -> releases[0]++);
 
     player.getEvents().trigger("shoot", new Vector2(1f, 0f));
@@ -501,7 +439,7 @@ class ItemUseComponentTest {
 
     AtomicReference<ArrowType> bowType = new AtomicReference<>();
     int[] releases = {0};
-    player.getEvents().<ArrowType>addListener("setArrowType", bowType::set);
+    player.getEvents().addListener("setArrowType", bowType::set);
     player.getEvents().addListener("chargeRelease", (Vector2 ignored) -> releases[0]++);
 
     player.getEvents().trigger("shoot", new Vector2(1f, 0f));

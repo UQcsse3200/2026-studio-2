@@ -92,7 +92,6 @@ public class GrappleComponent extends Component {
   @Override
   public void create() {
     physicsComponent = entity.getComponent(PhysicsComponent.class);
-    entity.getEvents().<Vector2>addListener("grappleFire", this::fire);
     entity.getEvents().addListener("grappleRelease", this::release);
     entity.getEvents().addListener("grappleSwing", this::swing);
     entity.getEvents().addListener("grappleClimbStart", this::startClimbing);
