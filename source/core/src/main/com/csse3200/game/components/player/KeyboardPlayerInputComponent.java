@@ -570,5 +570,4 @@ public class KeyboardPlayerInputComponent extends InputComponent {
       entity.getEvents().trigger("grappleDescendStart");
     }
   }
-
 }
