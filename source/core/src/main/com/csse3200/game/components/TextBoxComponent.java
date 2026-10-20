@@ -442,20 +442,10 @@ public class TextBoxComponent extends UIComponent {
     // On TAB: skip to the full page if it's still typing; otherwise move to the next page,
     // or dismiss the box entirely if this was the last page. Externally controlled boxes (e.g.
     // cutscenes, game-end screens) own advancement themselves, so TAB must not dismiss them.
-    if (!externallyControlled && Gdx.input.isKeyJustPressed(Keys.TAB)) {
-      if (!fullyRevealed) {
-        this.revealedChars = fullContent.length();
-        this.label.setText(fullContent);
-        this.table.pack();
-      } else if (this.currentPageIndex < this.pages.size() - 1) {
-        this.currentPageIndex++;
-        // next frame's content-changed check (above) will reset typing state automatically
-      } else {
-        this.dismissed = true;
-        this.table.setVisible(false);
-        this.dispose();
-        return;
-      }
+    if (!externallyControlled
+        && Gdx.input.isKeyJustPressed(Keys.TAB)
+        && handleTabPress(fullyRevealed)) {
+      return;
     }
 
     float x = this.posX;
@@ -473,6 +463,30 @@ public class TextBoxComponent extends UIComponent {
     table.setVisible(true);
     label.setVisible(true);
     layoutPortrait();
+  }
+
+  /**
+   * Handles a TAB press: skips to the full page if it is still typing, otherwise moves to the next
+   * page, or dismisses the box if this was the last page.
+   *
+   * @param fullyRevealed whether the current page has finished typing
+   * @return true if the box was dismissed
+   */
+  private boolean handleTabPress(boolean fullyRevealed) {
+    if (!fullyRevealed) {
+      this.revealedChars = fullContent.length();
+      this.label.setText(fullContent);
+      this.table.pack();
+    } else if (this.currentPageIndex < this.pages.size() - 1) {
+      this.currentPageIndex++;
+      // next frame's content-changed check in draw() will reset typing state automatically
+    } else {
+      this.dismissed = true;
+      this.table.setVisible(false);
+      this.dispose();
+      return true;
+    }
+    return false;
   }
 
   @Override
