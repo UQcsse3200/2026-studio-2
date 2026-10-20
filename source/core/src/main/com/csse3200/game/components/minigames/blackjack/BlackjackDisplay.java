@@ -199,13 +199,14 @@ public class BlackjackDisplay extends UIComponent {
 
     newRoundButton =
         createImageButton(
-            "images/Buttons/newRound_up_btn.png", "images/Buttons/newRound_down_btn.png");
+            "images/Buttons/place_bet_up_btn.png", "images/Buttons/place_bet_down_btn.png");
     hitButton =
         createImageButton("images/Buttons/hit_up_btn.png", "images/Buttons/hit_down_btn.png");
     standButton =
         createImageButton("images/Buttons/stand_up_btn.png", "images/Buttons/stand_down_btn.png");
     backButton =
-        createImageButton("images/Buttons/back_up_btn.png", "images/Buttons/back_down_btn.png");
+        createImageButton(
+            "images/Buttons/bj_back_up_btn.png", "images/Buttons/bj_back_down_btn.png");
 
     TextButton soundButton = new TextButton("SOUND: ON", skin);
     // Match the wooden texture used by the other Blackjack buttons.
@@ -370,7 +371,6 @@ public class BlackjackDisplay extends UIComponent {
     infoBox.setBackground(new TextureRegionDrawable(pixTexture).tint(Color.valueOf("#C69B43")));
 
     Table infoBoxContent = new Table();
-    // infoBoxContent.setDebug(true);
     infoBoxContent.setBackground(
         new TextureRegionDrawable(pixTexture).tint(Color.valueOf("#2A1608")));
 
@@ -391,13 +391,16 @@ public class BlackjackDisplay extends UIComponent {
     Table enterBetArea = new Table();
     enterBetArea.add(betLabel).height(30f).fillX().expandX();
     enterBetArea.add(betField).height(30f).fillX().expandX();
-    infoBoxContent.add(enterBetArea).fillX().expandX().center().padRight(3f);
+    infoBoxContent.add(enterBetArea).fillX().expandX().center().padRight(4f);
 
     infoBoxContent.row();
     infoBoxContent.add(newRoundButton).width(160f).height(60f).center();
 
     infoBox.add(infoBoxContent).expand().fill().pad(5f).center();
     leftSide.add(infoBox).expand().fill().center();
+
+    leftSide.row();
+    leftSide.add(newRoundButton).width(160f).height(60f).center();
 
     /* Middle Column */
     Table middle = new Table();
@@ -491,7 +494,7 @@ public class BlackjackDisplay extends UIComponent {
 
     ImageButton nextRoundButton =
         createImageButton(
-            "images/Buttons/newRound_up_btn.png", "images/Buttons/newRound_down_btn.png");
+            "images/Buttons/place_bet_up_btn.png", "images/Buttons/place_bet_down_btn.png");
 
     nextRoundButton.addListener(
         new ChangeListener() {
