@@ -69,7 +69,6 @@ public class LevelsGameScreen extends BaseGameScreen {
   private String level = LEVEL1;
 
   private final GdxGame game;
-  private final boolean startTutorial;
   private final SpinTheWheelOverlay wheelOverlay;
   private final PauseMenuOverlay pauseOverlay;
   private final BlackjackOverlay blackjackOverlay;
