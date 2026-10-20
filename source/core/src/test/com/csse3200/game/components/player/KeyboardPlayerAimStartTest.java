@@ -3,6 +3,7 @@ package com.csse3200.game.components.player;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -16,6 +17,8 @@ import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.csse3200.game.components.CameraComponent;
+import com.csse3200.game.components.inventory.InventoryComponent;
+import com.csse3200.game.components.item.ItemType;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.extensions.GameExtension;
@@ -78,6 +81,50 @@ class KeyboardPlayerAimStartTest {
   }
 
   @Test
+  void shouldStartTheGrappleAimOnASteepUpwardAngle() {
+    when(input.isCursorCatched()).thenReturn(true);
+    Entity player = playerAt(4f, 6f);
+    player.addComponent(inventoryHolding(ItemType.ROPE_ARROW));
+    AtomicReference<Vector2> aim = recordShots(player);
+
+    player.getComponent(KeyboardPlayerInputComponent.class).touchDown(1200, 20, 0, Buttons.RIGHT);
+
+    assertNotNull(aim.get());
+    assertEquals(KeyboardPlayerInputComponent.GRAPPLE_AIM_START_ANGLE, aim.get().angleDeg(), 1f);
+  }
+
+  @Test
+  void shouldMirrorTheGrappleAngleWhenFacingLeft() {
+    when(input.isCursorCatched()).thenReturn(true);
+    Entity player = playerAt(4f, 6f);
+    player.addComponent(inventoryHolding(ItemType.ROPE_ARROW));
+    PlayerActions actions = new PlayerActions();
+    player.addComponent(actions);
+    actions.walk(new Vector2(-1f, 0f));
+    AtomicReference<Vector2> aim = recordShots(player);
+
+    player.getComponent(KeyboardPlayerInputComponent.class).touchDown(1200, 20, 0, Buttons.RIGHT);
+
+    assertNotNull(aim.get());
+    assertEquals(
+        180f - KeyboardPlayerInputComponent.GRAPPLE_AIM_START_ANGLE, aim.get().angleDeg(), 1f);
+  }
+
+  @Test
+  void shouldKeepTheHeadLevelStartForOtherArrows() {
+    when(input.isCursorCatched()).thenReturn(true);
+    Entity player = playerAt(4f, 6f);
+    player.addComponent(inventoryHolding(ItemType.STANDARD_ARROW));
+    AtomicReference<Vector2> aim = recordShots(player);
+
+    player.getComponent(KeyboardPlayerInputComponent.class).touchDown(1200, 20, 0, Buttons.RIGHT);
+
+    assertNotNull(aim.get());
+    assertEquals(KeyboardPlayerInputComponent.AIM_START_DISTANCE, aim.get().x, 0.2f);
+    assertTrue(aim.get().angleDeg() < 20f);
+  }
+
+  @Test
   void shouldRememberWhereThePointerShouldReappearOnce() {
     when(input.isCursorCatched()).thenReturn(true);
     Entity player = playerAt(4f, 6f);
@@ -132,6 +179,13 @@ class KeyboardPlayerAimStartTest {
     player.setPosition(x, y);
     component.setCameraComponent(new CameraComponent(camera));
     return player;
+  }
+
+  private static InventoryComponent inventoryHolding(ItemType item) {
+    InventoryComponent inventory = new InventoryComponent(0);
+    inventory.addItem(item, 1);
+    inventory.selectSlot(0);
+    return inventory;
   }
 
   private static AtomicReference<Vector2> recordShots(Entity player) {

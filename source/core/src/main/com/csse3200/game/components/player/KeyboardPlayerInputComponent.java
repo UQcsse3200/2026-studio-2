@@ -6,11 +6,14 @@ import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.math.GridPoint2;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.components.CombatStatsComponent;
+import com.csse3200.game.components.inventory.InventoryComponent;
+import com.csse3200.game.components.item.ItemType;
 import com.csse3200.game.input.InputComponent;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.services.ServiceLocator;
@@ -33,6 +36,9 @@ public class KeyboardPlayerInputComponent extends InputComponent {
   // Height of the aim start as a fraction of the player's height from their feet: roughly head
   // level.
   static final float AIM_START_HEIGHT = 0.85f;
+  // The grapple usually needs to reach a ledge above, so its aim starts on this steep upward angle
+  // (degrees above horizontal, towards the way the player faces) instead of at head level.
+  static final float GRAPPLE_AIM_START_ANGLE = 60f;
   private final boolean[] keysHeld = new boolean[4];
   private final Set<Integer> heldKeys = new HashSet<>();
   private boolean sprintHeld;
@@ -334,7 +340,8 @@ public class KeyboardPlayerInputComponent extends InputComponent {
 
   /**
    * Screen position a fixed distance in front of the player, at head height, in the direction they
-   * are facing.
+   * are facing. With the rope arrow selected it is instead on a steep upward angle, since the
+   * grapple is usually aimed at something above.
    *
    * @return the position in input coordinates (y down), or null if the camera is unavailable
    */
@@ -345,13 +352,27 @@ public class KeyboardPlayerInputComponent extends InputComponent {
     PlayerActions actions = entity.getComponent(PlayerActions.class);
     int facing = actions == null ? 1 : actions.getFacingDirection();
     Vector2 centre = entity.getCenterPosition();
-    float headHeight = entity.getPosition().y + entity.getScale().y * AIM_START_HEIGHT;
-    Vector3 screen =
-        cameraComponent
-            .getCamera()
-            .project(new Vector3(centre.x + facing * AIM_START_DISTANCE, headHeight, 0f));
+    Vector3 start;
+    if (isGrappleSelected()) {
+      // Aim directions are measured from the centre, so start the angle there.
+      float radians = GRAPPLE_AIM_START_ANGLE * MathUtils.degreesToRadians;
+      start =
+          new Vector3(
+              centre.x + facing * AIM_START_DISTANCE * MathUtils.cos(radians),
+              centre.y + AIM_START_DISTANCE * MathUtils.sin(radians),
+              0f);
+    } else {
+      float headHeight = entity.getPosition().y + entity.getScale().y * AIM_START_HEIGHT;
+      start = new Vector3(centre.x + facing * AIM_START_DISTANCE, headHeight, 0f);
+    }
+    Vector3 screen = cameraComponent.getCamera().project(start);
     // Camera.project measures y up from the bottom; input coordinates measure it down from the top.
     return new GridPoint2(Math.round(screen.x), Math.round(Gdx.graphics.getHeight() - screen.y));
+  }
+
+  private boolean isGrappleSelected() {
+    InventoryComponent inventory = entity.getComponent(InventoryComponent.class);
+    return inventory != null && inventory.getSelectedItem() == ItemType.ROPE_ARROW;
   }
 
   /**
