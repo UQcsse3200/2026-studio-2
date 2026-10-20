@@ -3,6 +3,7 @@ package com.csse3200.game.screens;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.csse3200.game.GdxGame;
 import com.csse3200.game.areas.GameArea;
@@ -13,6 +14,7 @@ import com.csse3200.game.areas.terrain.TerrainFactory;
 import com.csse3200.game.components.ButtonSound;
 import com.csse3200.game.components.GameVolume;
 import com.csse3200.game.components.SoundEffects;
+import com.csse3200.game.components.TutorialComponent;
 import com.csse3200.game.components.gamearea.CoordinateDisplay;
 import com.csse3200.game.components.gamearea.PerformanceDisplay;
 import com.csse3200.game.components.item.ItemAssets;
@@ -28,6 +30,7 @@ import com.csse3200.game.components.player.KeyboardPlayerInputComponent;
 import com.csse3200.game.components.player.PlayerInteractionComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.ItemFactory;
+import com.csse3200.game.entities.factories.TutorialFactory;
 import com.csse3200.game.events.EventHandler;
 import com.csse3200.game.input.InputComponent;
 import com.csse3200.game.input.InputDecorator;
@@ -41,7 +44,9 @@ import com.csse3200.game.ui.GameplayCursor;
 import com.csse3200.game.ui.terminal.Terminal;
 import com.csse3200.game.ui.terminal.TerminalDisplay;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -89,6 +94,19 @@ public class LevelsGameScreen extends BaseGameScreen {
   // Gravity scale to restore when cheat mode is switched off.
   private float gravity = 1f;
 
+  // The movement tutorial (tut1) auto-starts this many seconds after spawning in level 1, so
+  // the player has a moment to look around first.
+  private static final float MOVEMENT_TUTORIAL_DELAY = 3f;
+  private static final String MOVEMENT_TUTORIAL = "tut1";
+
+  private float movementTutorialDelay = MOVEMENT_TUTORIAL_DELAY;
+  // Whether the movement tutorial has run, or is not wanted for this save.
+  private boolean movementTutorialStarted = false;
+  // Tutorial currently on screen, so a new one can dismiss it and dispose can clean it up.
+  private TutorialComponent activeTutorial;
+  // Checkpoint-linked tutorials already shown this session, so each plays at most once.
+  private final Set<String> shownCheckpointTutorials = new HashSet<>();
+
   public LevelsGameScreen(GdxGame game) {
     super();
     this.game = game;
@@ -113,6 +131,7 @@ public class LevelsGameScreen extends BaseGameScreen {
 
     currentGameArea = level1GameArea;
     registerLevelSwap();
+    wireCheckpointTutorials(level1GameArea);
 
     // Checkpoints are the game's save points: GameArea forwards every activation here.
     ServiceLocator.getGameSaveEventHandler()
@@ -242,6 +261,7 @@ public class LevelsGameScreen extends BaseGameScreen {
     currentGameArea = nextGameArea;
     nextGameArea = null;
     registerLevelSwap();
+    wireCheckpointTutorials(currentGameArea);
 
     renderer.getCamera().setTarget(currentGameArea.getPlayer());
     if (wasMapToggled) {
@@ -282,6 +302,8 @@ public class LevelsGameScreen extends BaseGameScreen {
       performLevelSwap();
       levelSwapQueued = false;
     }
+
+    updateMovementTutorial(delta);
 
     // Overlay shortcuts bypass the input handler chain, so ignore them while the terminal is
     // open. F1 still toggles the terminal itself.
@@ -331,6 +353,63 @@ public class LevelsGameScreen extends BaseGameScreen {
     updateCursor();
   }
 
+  /**
+   * Auto-starts the level 1 movement tutorial a few seconds after spawning, so the player has a
+   * moment to look around first. Runs once per screen and only when the save has not already
+   * completed the tutorial; completion (reaching the final step) is persisted via {@link
+   * GdxGame#markTutorialCompleted()}.
+   */
+  private void updateMovementTutorial(float delta) {
+    if (movementTutorialStarted || !LEVEL1.equals(level)) {
+      return;
+    }
+    if (game.isTutorialCompleted()) {
+      movementTutorialStarted = true;
+      return;
+    }
+    if (movementTutorialDelay > 0f) {
+      movementTutorialDelay -= delta;
+      return;
+    }
+    movementTutorialStarted = true;
+    startNamedTutorial(MOVEMENT_TUTORIAL, game::markTutorialCompleted);
+  }
+
+  /**
+   * Starts a named tutorial via {@link TutorialFactory}, dismissing any tutorial currently on
+   * screen. Returns null when the tutorial's config is missing or invalid.
+   */
+  private TutorialComponent startNamedTutorial(String name, Runnable onFinished) {
+    if (activeTutorial != null) {
+      activeTutorial.dispose();
+      activeTutorial = null;
+    }
+    activeTutorial = TutorialFactory.start(name, onFinished);
+    if (activeTutorial == null) {
+      logger.warn("Could not start tutorial {}", name);
+    }
+    return activeTutorial;
+  }
+
+  /**
+   * Wires checkpoint-linked tutorials for a game area: when one of its checkpoints activates, the
+   * level config may name a tutorial (e.g. tut5 at level 1's first checkpoint) to auto-start.
+   */
+  private void wireCheckpointTutorials(GameArea area) {
+    area.setCheckpointListener(this::onCheckpointReached);
+  }
+
+  /** Starts the tutorial wired to the checkpoint at the given position, once per session. */
+  private void onCheckpointReached(GridPoint2 position) {
+    if (currentGameArea == null) {
+      return;
+    }
+    String tutorial = currentGameArea.getConfig().getTutorialForCheckpoint(position);
+    if (tutorial != null && shownCheckpointTutorials.add(tutorial)) {
+      startNamedTutorial(tutorial, null);
+    }
+  }
+
   /** Hides the pointer during normal play and shows it for menus and while aiming. */
   private void updateCursor() {
     boolean screenMenuOpen =
@@ -347,6 +426,10 @@ public class LevelsGameScreen extends BaseGameScreen {
 
   @Override
   public void dispose() {
+    if (activeTutorial != null) {
+      activeTutorial.dispose();
+      activeTutorial = null;
+    }
     cursor.dispose();
     super.dispose();
   }

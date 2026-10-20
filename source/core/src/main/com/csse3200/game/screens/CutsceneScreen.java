@@ -49,6 +49,12 @@ public class CutsceneScreen extends ScreenAdapter {
   private static final float SKIP_BUTTON_HEIGHT = 70f;
   private static final float SKIP_BUTTON_PAD = 20f;
 
+  /**
+   * Length of the final fade from the cutscene to gameplay. Longer than the mid-cutscene fades so
+   * the exit into gameplay feels gradual; skipping keeps the quicker default.
+   */
+  static final float EXIT_FADE_DURATION = 0.8f;
+
   private enum State {
     FADE_IN,
     TEXT_ACTIVE,
@@ -303,13 +309,13 @@ public class CutsceneScreen extends ScreenAdapter {
         break;
       case FADE_TO_BLACK:
         fadeTimer += delta;
-        setFadeAlpha(Math.min(fadeTimer / duration, 1f));
-        if (fadeTimer >= duration) {
+        setFadeAlpha(Math.min(fadeTimer / EXIT_FADE_DURATION, 1f));
+        if (fadeTimer >= EXIT_FADE_DURATION) {
           state = State.COMPLETE;
           input.dispose();
           stageInput.dispose();
-          // Fade the destination screen in from black instead of swapping instantly.
-          game.transitionTo(destination);
+          // Fade the destination screen in slowly so the cutscene ends gradually.
+          game.transitionTo(destination, EXIT_FADE_DURATION);
         }
         break;
       case TEXT_ACTIVE, COMPLETE:

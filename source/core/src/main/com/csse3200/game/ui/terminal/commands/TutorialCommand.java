@@ -1,9 +1,8 @@
 package com.csse3200.game.ui.terminal.commands;
 
-import com.badlogic.gdx.utils.Align;
-import com.csse3200.game.components.TextBoxComponent;
 import com.csse3200.game.components.TutorialComponent;
 import com.csse3200.game.entities.configs.TutorialConfig;
+import com.csse3200.game.entities.factories.TutorialFactory;
 import com.csse3200.game.files.FileLoader;
 import java.util.ArrayList;
 import org.slf4j.Logger;
@@ -44,14 +43,8 @@ public class TutorialCommand implements Command {
       return false;
     }
 
-    String problem = config.validateSteps();
-    if (problem != null) {
-      logger.error("Invalid tutorial config {}: {}", path, problem);
-      return false;
-    }
-
-    restartTutorial(config);
-    return true;
+    restartTutorial(path, config);
+    return activeTutorial != null;
   }
 
   /**
@@ -69,32 +62,15 @@ public class TutorialCommand implements Command {
     return TUTORIAL_DIRECTORY + name + ".json";
   }
 
-  private void restartTutorial(TutorialConfig config) {
+  private void restartTutorial(String path, TutorialConfig config) {
     if (activeTutorial != null) {
       activeTutorial.dispose();
       activeTutorial = null;
     }
 
-    TextBoxComponent textBox =
-        new TextBoxComponent(
-            config.xPos,
-            config.yPos,
-            config.getTextColour(),
-            config.getBackgroundColour(),
-            config.getBorderColour(),
-            config.charsPerSecond,
-            config.maxWidth,
-            config.padding,
-            config.borderThickness,
-            config.fontPath,
-            config.getTextAlignment(),
-            config.pages,
-            config.portraitPaths);
-    textBox.setExternallyControlled(true);
-    textBox.setPosition(config.xPos, config.yPos, Align.bottomLeft);
-    textBox.create();
-
-    activeTutorial = new TutorialComponent(textBox, config.steps);
-    activeTutorial.create();
+    activeTutorial = TutorialFactory.start(config, null);
+    if (activeTutorial == null) {
+      logger.error("Could not start tutorial from {}", path);
+    }
   }
 }
