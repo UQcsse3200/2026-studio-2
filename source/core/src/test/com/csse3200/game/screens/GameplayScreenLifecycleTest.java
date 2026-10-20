@@ -11,7 +11,9 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.csse3200.game.GdxGame;
 import com.csse3200.game.areas.ForestGameArea;
+import com.csse3200.game.areas.GameArea;
 import com.csse3200.game.areas.Level1GameArea;
+import com.csse3200.game.areas.Level3GameArea;
 import com.csse3200.game.areas.terrain.TerrainFactory;
 import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.components.maingame.MainGameActions;
@@ -21,6 +23,8 @@ import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.rendering.DebugRenderer;
 import com.csse3200.game.rendering.Renderer;
 import com.csse3200.game.services.ServiceLocator;
+import com.csse3200.game.ui.GameEndActions;
+import java.lang.reflect.Field;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -87,6 +91,62 @@ class GameplayScreenLifecycleTest {
       assertEquals(22f, fixture.camera.getCamera().position.x);
       assertEquals(9f, fixture.camera.getCamera().position.y);
     }
+  }
+
+  @Test
+  void deathRestartQueuesWorldRebuildWhenAreaRequestsIt() throws Exception {
+    try (ScreenFixture fixture = new ScreenFixture(true);
+        MockedConstruction<Level3GameArea> rebuilds = mockConstruction(Level3GameArea.class)) {
+      Level1GameArea area = fixture.levelAreas.constructed().getFirst();
+      when(area.requiresWorldResetOnDeath()).thenReturn(true);
+
+      triggerRestart();
+
+      verify(area).restart();
+      // The world rebuild is queued as a normal level swap: a fresh area with un-triggered
+      // triggers, spawners and platforms, created on the next render frame.
+      assertTrue(swapQueued(fixture));
+      assertEquals(rebuilds.constructed().getFirst(), nextArea(fixture));
+    }
+  }
+
+  @Test
+  void deathRestartOnlyRespawnsWhenWorldRebuildNotNeeded() throws Exception {
+    try (ScreenFixture fixture = new ScreenFixture(true);
+        MockedConstruction<Level3GameArea> rebuilds = mockConstruction(Level3GameArea.class)) {
+      Level1GameArea area = fixture.levelAreas.constructed().getFirst();
+      when(area.requiresWorldResetOnDeath()).thenReturn(false);
+
+      triggerRestart();
+
+      verify(area).restart();
+      assertFalse(swapQueued(fixture));
+      assertNull(nextArea(fixture));
+      assertTrue(rebuilds.constructed().isEmpty());
+    }
+  }
+
+  /** Fires the game-over panel's restart button event, which runs the screen's restart handler. */
+  private static void triggerRestart() {
+    for (Entity entity : ServiceLocator.getEntityService().getEntities()) {
+      if (entity.getComponent(GameEndActions.class) != null) {
+        entity.getEvents().trigger("restart");
+        return;
+      }
+    }
+    fail("No entity with a GameEndActions component found");
+  }
+
+  private static boolean swapQueued(ScreenFixture fixture) throws Exception {
+    Field field = LevelsGameScreen.class.getDeclaredField("levelSwapQueued");
+    field.setAccessible(true);
+    return (boolean) field.get(fixture.screen);
+  }
+
+  private static GameArea nextArea(ScreenFixture fixture) throws Exception {
+    Field field = LevelsGameScreen.class.getDeclaredField("nextGameArea");
+    field.setAccessible(true);
+    return (GameArea) field.get(fixture.screen);
   }
 
   /** Real screens, services, UI and assets, with rendering and map generation isolated. */
