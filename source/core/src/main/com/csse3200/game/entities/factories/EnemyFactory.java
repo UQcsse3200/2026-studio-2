@@ -8,6 +8,7 @@ import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.csse3200.game.ai.tasks.AITaskComponent;
 import com.csse3200.game.components.BossPhaseComponent;
 import com.csse3200.game.components.BurnStatsComponent;
+import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.EnemyDeathComponent;
 import com.csse3200.game.components.EnemyItemDropComponent;
@@ -38,6 +39,7 @@ import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.physics.components.PhysicsMovementComponent;
 import com.csse3200.game.rendering.AnimationRenderComponent;
+import com.csse3200.game.rendering.BossHealthRenderComponent;
 import com.csse3200.game.rendering.EnemyHealthRenderComponent;
 import com.csse3200.game.rendering.ParticleEffectsRenderingComponent;
 import com.csse3200.game.rendering.TextureRenderComponent;
@@ -310,9 +312,8 @@ public class EnemyFactory {
    * @param target entity the enemy will chase and attack
    * @return cyclops entity
    */
-  public static Entity createCalypso(Entity target, List<Vector2> tpPositions
-      // CameraComponent camera
-      ) {
+  public static Entity createCalypso(
+      Entity target, List<Vector2> tpPositions, CameraComponent camera) {
     EnemyConfig config = configs.calypso;
     Entity calypso = createEnemy(target, config);
 
@@ -339,9 +340,7 @@ public class EnemyFactory {
     calypso.addComponent(new EnemyAnimationController(target));
     calypso.addComponent(animator);
     calypso.addComponent(new EnemyTeleportComponent(tpPositions, 500L, 10000L));
-    // calypso.addComponent(new BossHealthRenderComponent(camera));
-    calypso.addComponent(
-        new EnemyHealthRenderComponent()); //  TEMP while boss health bar being fixed
+    calypso.addComponent(new BossHealthRenderComponent(camera));
     calypso.addComponent(new BossPhaseComponent());
 
     animator.scaleEntity();

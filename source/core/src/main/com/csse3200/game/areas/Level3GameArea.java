@@ -99,7 +99,7 @@ public class Level3GameArea extends GameArea {
   public Level3GameArea(TerrainFactory terrainFactory, CameraComponent camera, Entity player) {
     super(camera);
 
-    config = new Level3Config(player);
+    config = new Level3Config(player, camera);
 
     this.terrainFactory = terrainFactory;
     this.camera = camera;

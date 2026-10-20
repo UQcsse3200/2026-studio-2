@@ -84,11 +84,7 @@ public class LevelBossGameArea extends GameArea {
   }
 
   private void spawnCalypso() {
-    Entity calypso =
-        EnemyFactory.createCalypso(
-            player, CALYPSO_TP_POSITIONS
-            // camera
-            );
+    Entity calypso = EnemyFactory.createCalypso(player, CALYPSO_TP_POSITIONS, camera);
 
     spawnEntityAt(calypso, CALYPSO_SPAWN, true, true);
   }
