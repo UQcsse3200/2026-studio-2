@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.ProjectileComponent;
+import com.csse3200.game.components.lighting.PointLightComponent;
 import com.csse3200.game.components.projectile.ArrowProjectileComponent;
 import com.csse3200.game.components.projectile.ArrowType;
 import com.csse3200.game.entities.Entity;
@@ -104,5 +105,24 @@ class ProjectileFactoryTest {
 
     assertEquals(9, projectile.getComponent(CombatStatsComponent.class).getBaseAttack());
     assertNotNull(projectile.getComponent(ProjectileComponent.class));
+    assertMagicProjectileLight(projectile);
+  }
+
+  @Test
+  void shouldCreateCalypsoProjectileWithConfiguredMagicLight() {
+    Entity projectile =
+        EnemyProjectileFactory.createCalypsoProjectile(new Vector2(3f, 4f), 9, 5f, 3f);
+
+    assertEquals(9, projectile.getComponent(CombatStatsComponent.class).getBaseAttack());
+    assertNotNull(projectile.getComponent(ProjectileComponent.class));
+    assertMagicProjectileLight(projectile);
+  }
+
+  private static void assertMagicProjectileLight(Entity projectile) {
+    PointLightComponent light = projectile.getComponent(PointLightComponent.class);
+    assertNotNull(light);
+    assertEquals(0.4f, light.getBaseRed(), 0.001f);
+    assertEquals(0f, light.getBaseGreen(), 0.001f);
+    assertEquals(0.65f, light.getBaseBlue(), 0.001f);
   }
 }

@@ -70,7 +70,6 @@ public class LightingEngine implements Disposable {
    * over the entire screen which can be adjusted using the setAmbientLight function.
    */
   public void render() {
-    // updateOverlappingRayCounts();
     rayHandler.setCombinedMatrix(camera.getProjectionMatrix());
     rayHandler.updateAndRender();
   }

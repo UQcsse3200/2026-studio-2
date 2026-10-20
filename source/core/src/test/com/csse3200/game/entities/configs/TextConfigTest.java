@@ -18,5 +18,6 @@ class TextConfigTest {
 
     assertEquals(x, config.xPos, 0.001f);
     assertEquals(y, config.yPos, 0.001f);
+    assertEquals("flat-earth/skin/fonts/alagard.fnt", config.fontPath);
   }
 }
