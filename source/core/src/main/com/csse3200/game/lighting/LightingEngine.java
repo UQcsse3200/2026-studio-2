@@ -47,11 +47,13 @@ public class LightingEngine implements Disposable {
     }
     pointLights.add(light);
     smoothedRayCounts.put(light, (float) light.getRayCount());
+    updateOverlappingRayCounts();
   }
 
   public static void removePointLight(PointLightComponent light) {
     pointLights.remove(light);
     smoothedRayCounts.remove(light);
+    updateOverlappingRayCounts();
   }
 
   public RayHandler getRayHandler() {
@@ -68,7 +70,7 @@ public class LightingEngine implements Disposable {
    * over the entire screen which can be adjusted using the setAmbientLight function.
    */
   public void render() {
-    updateOverlappingRayCounts();
+    // updateOverlappingRayCounts();
     rayHandler.setCombinedMatrix(camera.getProjectionMatrix());
     rayHandler.updateAndRender();
   }

@@ -302,7 +302,13 @@ public class ObstacleFactory {
             .addComponent(new PhysicsComponent().setBodyType(BodyType.StaticBody))
             .addComponent(collider)
             .addComponent(levelEnd)
-            .addComponent(render);
+            .addComponent(render)
+            .addComponent(
+                new PointLightComponent(
+                    ServiceLocator.getLightingService().getEngine().getRayHandler(),
+                    LightingDefaults.RAYS,
+                    Color.GREEN,
+                    LightingDefaults.DIST));
 
     render.scaleEntity();
     portal.scaleHeight(height);
