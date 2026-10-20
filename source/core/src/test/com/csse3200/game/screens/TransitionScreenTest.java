@@ -145,14 +145,14 @@ class TransitionScreenTest {
   @Test
   void fadingIntoBlackjackInitialisesItBeforeRenderingAndKeepsItsServicesOnHandoff() {
     GdxGame game = spy(new GdxGame());
-BlackjackScreen blackjack = new BlackjackScreen(game, true);
-doReturn(blackjack).when(game).createScreen(ScreenType.STORY_BLACKJACK);
+    BlackjackScreen blackjack = new BlackjackScreen(game, true);
+    doReturn(blackjack).when(game).createScreen(ScreenType.STORY_BLACKJACK);
     Renderer renderer = mock(Renderer.class);
     SpriteBatch batch = mock(SpriteBatch.class);
     Stage stage = new Stage(new ScreenViewport(), batch);
     Texture blackPixel = mock(Texture.class);
     TransitionScreen transition =
-createTransitionScreen(game, null, ScreenType.STORY_BLACKJACK, batch, blackPixel);
+        createTransitionScreen(game, null, ScreenType.STORY_BLACKJACK, batch, blackPixel);
     try (var renders = mockStatic(RenderFactory.class)) {
       renders
           .when(RenderFactory::createRenderer)

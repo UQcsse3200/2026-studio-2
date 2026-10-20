@@ -16,7 +16,7 @@ class BlackjackConfigTest {
 
   @Test
   void shouldContainEveryBlackjackTexture() {
-assertEquals(71, BlackjackConfig.TEXTURES.size());
+    assertEquals(71, BlackjackConfig.TEXTURES.size());
     assertTrue(BlackjackConfig.TEXTURES.stream().allMatch(path -> path != null && !path.isBlank()));
 
     for (String path : BlackjackConfig.TEXTURES) {
@@ -51,7 +51,6 @@ assertEquals(71, BlackjackConfig.TEXTURES.size());
     assertTrue(paths.contains("images/Buttons/info_up_btn.png"));
     assertTrue(paths.contains("images/Buttons/info_down_btn.png"));
   }
-
 
   @Test
   void shouldContainBlackjackSounds() {
