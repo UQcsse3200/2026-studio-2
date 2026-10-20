@@ -16,6 +16,7 @@ import com.csse3200.game.components.item.weapons.bow.arrow.Arrow;
 import com.csse3200.game.components.lighting.PointLightComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.extensions.GameExtension;
+import com.csse3200.game.lighting.LightingDefaults;
 import com.csse3200.game.physics.PhysicsService;
 import com.csse3200.game.services.MockServices;
 import com.csse3200.game.services.ServiceLocator;
@@ -102,7 +103,22 @@ class ItemFactoryTest {
   void shouldCreateWheelTokenWithGlow() {
     Entity entity = ItemFactory.createWheelToken();
 
-    assertNotNull(entity.getComponent(PointLightComponent.class));
+    PointLightComponent light = entity.getComponent(PointLightComponent.class);
+    assertNotNull(light);
+    assertEquals(LightingDefaults.RAYS, light.getRayCount());
+    assertEquals(2f, light.getDistance());
+  }
+
+  @Test
+  void itemAndGoldLightsUseTheConfiguredRayCount() {
+    PointLightComponent itemLight =
+        ItemFactory.createStandardArrow(1).getComponent(PointLightComponent.class);
+    PointLightComponent goldLight =
+        ItemFactory.createGold().getComponent(PointLightComponent.class);
+
+    assertEquals(100, itemLight.getRayCount());
+    assertEquals(100, goldLight.getRayCount());
+    assertEquals(1f, itemLight.getBaseRed());
   }
 
   private static void assertItemMapping(ItemType type, Class<? extends Item> expectedClass) {

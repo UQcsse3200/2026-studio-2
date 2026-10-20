@@ -2,20 +2,24 @@ package com.csse3200.game.rendering;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.anyFloat;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Matrix4;
 import com.csse3200.game.components.BurnStatsComponent;
 import com.csse3200.game.components.PoisonStatsComponent;
 import com.csse3200.game.components.SlowStatsComponent;
+import com.csse3200.game.components.lighting.PointLightComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.physics.components.PhysicsMovementComponent;
@@ -228,6 +232,33 @@ class ParticleEffectsRenderingComponentTest {
           entity.getComponent(ParticleEffectsRenderingComponent.class);
 
       assertEquals(-3.99f, component.getZIndex(), 0.0001f);
+      component.dispose();
+    }
+  }
+
+  @Test
+  void shouldEnableAndColourTheLightOnlyWhileAnEffectIsActive() {
+    useClockAndProjection();
+    PointLightComponent light = mock(PointLightComponent.class);
+
+    try (MockedConstruction<ShapeRenderer> renderers = mockConstruction(ShapeRenderer.class)) {
+      BurnStatsComponent burn = new BurnStatsComponent();
+      Entity entity =
+          new Entity()
+              .addComponent(burn)
+              .addComponent(light)
+              .addComponent(new ParticleEffectsRenderingComponent());
+      entity.create();
+      ParticleEffectsRenderingComponent component =
+          entity.getComponent(ParticleEffectsRenderingComponent.class);
+
+      component.render(batch);
+      burn.applyBurn(1f, 5f);
+      component.render(batch);
+
+      verify(light).setActive(false);
+      verify(light).setActive(true);
+      verify(light).setColor(argThat(color -> color.equals(new Color(0.55f, 0.05f, 0.02f, 1f))));
       component.dispose();
     }
   }

@@ -47,7 +47,7 @@ public enum ItemType {
       0.3f,
       0,
       true,
-      10f,
+      3f,
       5f,
       0f,
       0f,
@@ -247,6 +247,15 @@ public enum ItemType {
       case STANDARD_ARROW, ROPE_ARROW, FIRE_ARROW, ICE_ARROW -> true;
       case HEALTH_POTION, SPEED_POTION, POISON_POTION -> false;
     };
+  }
+
+  /**
+   * Checks if the item is aimed with right click: every arrow, plus the thrown poison potion.
+   *
+   * @return true for items that show the crosshair and trajectory while right click is held
+   */
+  public boolean isAimed() {
+    return isArrow() || this == POISON_POTION;
   }
 
   /** Converts this inventory item type into its corresponding combat arrow type. */

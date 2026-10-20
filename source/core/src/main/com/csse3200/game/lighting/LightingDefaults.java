@@ -1,7 +1,5 @@
 package com.csse3200.game.lighting;
 
-import com.badlogic.gdx.graphics.Color;
-
 public final class LightingDefaults {
   private LightingDefaults() {} // do not initialise
 
@@ -10,8 +8,4 @@ public final class LightingDefaults {
   // Light Defaults
   public static final int RAYS = 128;
   public static final float DIST = 4f;
-
-  // Colours
-  public static final Color NORMAL_COLOR =
-      new Color(230f / 255f, 210f / 255f, 140f / 255f, 70f / 100f);
 }

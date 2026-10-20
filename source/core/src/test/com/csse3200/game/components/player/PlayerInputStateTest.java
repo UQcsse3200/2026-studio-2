@@ -259,30 +259,18 @@ class PlayerInputStateTest {
   }
 
   @Test
-  void shouldConsumeNoPotionWhenEIsPressedWhilePaused() {
-    var inventory = new InventoryComponent(0);
-    inventory.addItem(ItemType.HEALTH_POTION, 1);
-    var stats = new CombatStatsComponent(8, 10, 1);
-    var use = new ItemUseComponent();
-    input = new KeyboardPlayerInputComponent();
-    player =
-        new Entity()
-            .addComponent(input)
-            .addComponent(inventory)
-            .addComponent(stats)
-            .addComponent(use);
-    player.create();
+  void shouldSwallowInteractWhenEIsPressedWhilePaused() {
+    List<String> actions = new ArrayList<>();
+    player.getEvents().addListener("interact", () -> actions.add("interact"));
     when(ServiceLocator.getEntityService().getPaused()).thenReturn(true);
 
-    input.keyDown(Keys.E);
+    assertTrue(input.keyDown(Keys.E));
 
-    assertEquals(8, stats.getHealth());
-    assertEquals(1, inventory.getItemCount(ItemType.HEALTH_POTION));
+    assertTrue(actions.isEmpty());
     input.keyUp(Keys.E);
     when(ServiceLocator.getEntityService().getPaused()).thenReturn(false);
-    input.keyDown(Keys.E);
-    assertEquals(10, stats.getHealth());
-    assertEquals(0, inventory.getItemCount(ItemType.HEALTH_POTION));
+    assertTrue(input.keyDown(Keys.E));
+    assertEquals(List.of("interact"), actions);
   }
 
   @Test
@@ -349,7 +337,7 @@ class PlayerInputStateTest {
     player.getEvents().<Integer>addListener("switchItem", switches::add);
     assertTrue(input.keyDown(Keys.M));
     assertTrue(input.keyDown(Keys.B));
-    assertTrue(input.keyDown(Keys.F));
+    assertTrue(input.keyDown(Keys.E));
     assertTrue(input.keyDown(Keys.PERIOD));
     assertTrue(input.keyDown(Keys.COMMA));
     assertEquals(List.of("toggleMap", "toggleBackpack", "interact"), actions);
@@ -388,7 +376,6 @@ class PlayerInputStateTest {
           Keys.NUM_9,
           Keys.SPACE,
           Keys.E,
-          Keys.F,
           Keys.B,
           Keys.R,
           Keys.FORWARD_DEL,
@@ -400,6 +387,7 @@ class PlayerInputStateTest {
       assertTrue(input.keyDown(key));
     }
     assertFalse(input.keyDown(Keys.F12));
+    assertFalse(input.keyDown(Keys.F));
     assertTrue(actions.isEmpty());
     assertTrue(events.isEmpty());
     assertTrue(slots.isEmpty());
@@ -467,14 +455,17 @@ class PlayerInputStateTest {
             .addComponent(inventory)
             .addComponent(stats)
             .addComponent(use);
+    Camera camera = mock(Camera.class);
+    when(camera.unproject(any(Vector3.class))).thenAnswer(call -> call.getArgument(0));
+    input.setCameraComponent(new CameraComponent(camera));
     player.create();
     input.keyDown(Keys.TAB);
     assertFalse(input.touchDown(10, 10, 0, Buttons.RIGHT));
-    input.keyDown(Keys.E);
     assertEquals(5, stats.getHealth());
     assertEquals(1, inventory.getItemCount(ItemType.HEALTH_POTION));
+    input.touchUp(10, 10, 0, Buttons.RIGHT);
     input.keyUp(Keys.TAB);
-    input.keyDown(Keys.E);
+    assertTrue(input.touchDown(10, 10, 0, Buttons.RIGHT));
     assertEquals(10, stats.getHealth());
   }
 

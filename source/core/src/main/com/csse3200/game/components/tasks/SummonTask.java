@@ -19,7 +19,8 @@ public class SummonTask extends DefaultTask implements PriorityTask {
 
   private long lastSummonTime;
   private int currentSummonCount = 0;
-  private int MAX_SUMMON_COUNT = 2;
+  private int NECROMANCER_MAX_SUMMS = 2;
+  private int CALYPSO_MAX_SUMMS = 5;
 
   /**
    * Creates a summon attack task
@@ -73,8 +74,18 @@ public class SummonTask extends DefaultTask implements PriorityTask {
 
     boolean canSummon = currentTime - lastSummonTime >= cooldown * 1000;
 
-    if (canSummon && currentSummonCount < MAX_SUMMON_COUNT && distance <= attackRange) {
-      return priority;
+    if (summonerType.equals("Necromancer")) {
+      if (canSummon && currentSummonCount < NECROMANCER_MAX_SUMMS && distance <= attackRange) {
+        return priority;
+      }
+    } else if (summonerType.equals("Calypso")) {
+      if (canSummon && currentSummonCount < CALYPSO_MAX_SUMMS && distance <= attackRange) {
+        return priority;
+      }
+    } else {
+      if (canSummon && distance <= attackRange) {
+        return priority;
+      }
     }
 
     return -1;
@@ -103,15 +114,14 @@ public class SummonTask extends DefaultTask implements PriorityTask {
       float spawnY = y + offset[1];
 
       if (!isSpawnPositionOccupied(spawnX, spawnY)) {
-        if (currentSummonCount < MAX_SUMMON_COUNT) {
-          Entity skeletonWarrior = EnemyFactory.createSkeletonWarrior(target);
-          skeletonWarrior.getComponent(EnemySummonComponent.class).setSummonedStatus(true);
-          skeletonWarrior.getComponent(EnemySummonComponent.class).setSummoner(necromancer);
-          skeletonWarrior.setPosition(spawnX, spawnY);
-          currentSummonCount++;
-          necromancer.getEvents().trigger("spawnEntity", skeletonWarrior);
-          return;
-        }
+
+        Entity skeletonWarrior = EnemyFactory.createSkeletonWarrior(target);
+        skeletonWarrior.getComponent(EnemySummonComponent.class).setSummonedStatus(true);
+        skeletonWarrior.getComponent(EnemySummonComponent.class).setSummoner(necromancer);
+        skeletonWarrior.setPosition(spawnX, spawnY);
+        currentSummonCount++;
+        necromancer.getEvents().trigger("spawnEntity", skeletonWarrior);
+        return;
       }
     }
 

@@ -1,6 +1,8 @@
 package com.csse3200.game.areas.terrain.configs;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -10,6 +12,8 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.components.item.ItemComponent;
+import com.csse3200.game.components.level.CheckpointComponent;
+import com.csse3200.game.components.lighting.PointLightComponent;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.entities.factories.ItemFactory;
 import com.csse3200.game.extensions.GameExtension;
@@ -65,6 +69,29 @@ class LevelConfigTest {
     assertEquals(1, levelConfig.entities.size());
     assertEquals(pos, levelConfig.entities.getFirst().pos);
     assertEquals(size, levelConfig.entities.getFirst().entity.getScale());
+  }
+
+  @Test
+  void shouldCreateCheckpointWithInactiveWarmLight() {
+    GridPoint2 position = new GridPoint2(3, 4);
+    LevelConfig levelConfig = new LevelConfig();
+    levelConfig.checkpoints = new CheckpointConfig[] {new CheckpointConfig(position)};
+
+    levelConfig.createEntities();
+
+    var checkpoint = levelConfig.entities.getFirst().entity;
+    assertNotNull(checkpoint.getComponent(CheckpointComponent.class));
+    assertEquals(position, levelConfig.entities.getFirst().pos);
+    assertEquals(
+        new Vector2(CheckpointComponent.ATLAS_WIDTH, CheckpointComponent.ATLAS_HEIGHT),
+        checkpoint.getScale());
+
+    PointLightComponent light = checkpoint.getComponent(PointLightComponent.class);
+    assertNotNull(light);
+    assertFalse(light.isActive());
+    assertEquals(0.75f, light.getBaseRed(), 0.001f);
+    assertEquals(0.2f, light.getBaseGreen(), 0.001f);
+    assertEquals(0f, light.getBaseBlue(), 0.001f);
   }
 
   @Test

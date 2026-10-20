@@ -124,30 +124,35 @@ public class Level3GameArea extends GameArea {
 
   private void activateWeather() {
     for (Entity entity : ServiceLocator.getEntityService().getEntities()) {
-      if (entity.getComponent(AnimationRenderComponent.class) != null) {
-        entity.getComponent(AnimationRenderComponent.class).toggleWeather();
-      }
-      if (entity.getComponent(BackgroundRenderComponent.class) != null) {
-        entity.getComponent(BackgroundRenderComponent.class).toggleWeather();
-      }
-      if (entity.getComponent(DynamicTextureRenderComponent.class) != null) {
-        entity.getComponent(DynamicTextureRenderComponent.class).toggleWeather();
-      }
-      if (entity.getComponent(RotatableAnimationRenderComponent.class) != null) {
-        entity.getComponent(RotatableAnimationRenderComponent.class).toggleWeather();
-      }
-      if (entity.getComponent(TextureRenderComponent.class) != null) {
-        entity.getComponent(TextureRenderComponent.class).toggleWeather();
-      }
-      if (entity.getComponent(TiledRenderComponent.class) != null) {
-        entity.getComponent(TiledRenderComponent.class).toggleWeather();
-      }
-      if (entity.getComponent(GrappleSideRenderComponent.class) != null) {
-        entity.getComponent(GrappleSideRenderComponent.class).toggleWeather();
-      }
-      if (entity.getComponent(ForegroundRenderComponent.class) != null) {
-        entity.getComponent(ForegroundRenderComponent.class).toggleWeather();
-      }
+      toggleEntityWeather(entity);
+    }
+  }
+
+  /** Toggles weather on every weather-aware render component attached to the entity. */
+  private static void toggleEntityWeather(Entity entity) {
+    if (entity.getComponent(AnimationRenderComponent.class) != null) {
+      entity.getComponent(AnimationRenderComponent.class).toggleWeather();
+    }
+    if (entity.getComponent(BackgroundRenderComponent.class) != null) {
+      entity.getComponent(BackgroundRenderComponent.class).toggleWeather();
+    }
+    if (entity.getComponent(DynamicTextureRenderComponent.class) != null) {
+      entity.getComponent(DynamicTextureRenderComponent.class).toggleWeather();
+    }
+    if (entity.getComponent(RotatableAnimationRenderComponent.class) != null) {
+      entity.getComponent(RotatableAnimationRenderComponent.class).toggleWeather();
+    }
+    if (entity.getComponent(TextureRenderComponent.class) != null) {
+      entity.getComponent(TextureRenderComponent.class).toggleWeather();
+    }
+    if (entity.getComponent(TiledRenderComponent.class) != null) {
+      entity.getComponent(TiledRenderComponent.class).toggleWeather();
+    }
+    if (entity.getComponent(GrappleSideRenderComponent.class) != null) {
+      entity.getComponent(GrappleSideRenderComponent.class).toggleWeather();
+    }
+    if (entity.getComponent(ForegroundRenderComponent.class) != null) {
+      entity.getComponent(ForegroundRenderComponent.class).toggleWeather();
     }
   }
 

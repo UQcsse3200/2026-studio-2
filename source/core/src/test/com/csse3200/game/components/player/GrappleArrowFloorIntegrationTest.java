@@ -95,6 +95,14 @@ class GrappleArrowFloorIntegrationTest {
   private record Flight(boolean gone, float lowestPoint, float highestPoint, float furthestRight) {}
 
   /** Fires from beside the shooter and steps the world until the arrow is gone or gives up. */
+  /**
+   * Launches at 33 whatever the grapple's tuning: fast enough to climb past the grapple's range
+   * when shot straight up, which the range tests below rely on. A full draw at the current, slower
+   * speed peaks short of the range and falls back down.
+   */
+  private static final float PAST_RANGE_SPEED_MULTIPLIER =
+      33f / ProjectileFactory.GRAPPLE_ARROW_SPEED;
+
   private Flight fire(Vector2 aim) {
     return fire(aim, 1f);
   }
@@ -162,7 +170,7 @@ class GrappleArrowFloorIntegrationTest {
   @Test
   void shouldShowTheMarkerWhereTheArrowRanOutOfRange() {
     // Straight up, with nothing there to hit: the arrow gives up in mid-air.
-    Flight flight = fire(new Vector2(0f, 1f), 1.5f);
+    Flight flight = fire(new Vector2(0f, 1f), PAST_RANGE_SPEED_MULTIPLIER);
 
     assertTrue(flight.gone());
     assertEquals(1, failures.size(), "an arrow that flew its range should also show the X");
@@ -187,9 +195,9 @@ class GrappleArrowFloorIntegrationTest {
 
   @Test
   void shouldGiveUpOnceItHasFlownTheGrappleRange() {
-    // A fully charged shot straight up would climb to about 28 units before turning round. The
-    // range cuts it off a few units short of that, as it passes 25 from the shooter.
-    Flight flight = fire(new Vector2(0f, 1f), 1.5f);
+    // Launched at 33 straight up, it would climb to about 28 units before turning round. The range
+    // cuts it off a few units short of that, as it passes 25 from the shooter.
+    Flight flight = fire(new Vector2(0f, 1f), PAST_RANGE_SPEED_MULTIPLIER);
 
     assertTrue(flight.gone(), "the arrow should have been removed");
     assertDidNotHook();

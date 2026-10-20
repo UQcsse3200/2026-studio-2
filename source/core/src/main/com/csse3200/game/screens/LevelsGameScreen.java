@@ -14,6 +14,7 @@ import com.csse3200.game.areas.terrain.TerrainFactory;
 import com.csse3200.game.components.ButtonSound;
 import com.csse3200.game.components.GameVolume;
 import com.csse3200.game.components.SoundEffects;
+import com.csse3200.game.components.TutorialComponent;
 import com.csse3200.game.components.gamearea.CoordinateDisplay;
 import com.csse3200.game.components.gamearea.PerformanceDisplay;
 import com.csse3200.game.components.item.ItemAssets;
@@ -69,11 +70,13 @@ public class LevelsGameScreen extends BaseGameScreen {
   private String level = LEVEL1;
 
   private final GdxGame game;
+  private final boolean startTutorial;
   private final SpinTheWheelOverlay wheelOverlay;
   private final PauseMenuOverlay pauseOverlay;
   private final BlackjackOverlay blackjackOverlay;
   private final MinigameOverlayManager minigameOverlayManager;
   private Entity player;
+  private TutorialComponent tutorial;
   private GameEndDisplay gameEndDisplay;
   private Terminal terminal;
   private final GameplayCursor cursor = new GameplayCursor();
@@ -85,14 +88,19 @@ public class LevelsGameScreen extends BaseGameScreen {
     WIN_MUSIC, LOSE_MUSIC, "sounds/Main_menu_sound.mp3"
   };
   private final Level1GameArea level1GameArea;
-  // Cheat mode (Backspace): zero gravity plus free vertical movement. Starts off.
+  // Cheat mode (terminal command "cheats"): zero gravity plus free vertical movement. Starts off.
   private boolean cheats = false;
   // Gravity scale to restore when cheat mode is switched off.
   private float gravity = 1f;
 
   public LevelsGameScreen(GdxGame game) {
+    this(game, true);
+  }
+
+  public LevelsGameScreen(GdxGame game, boolean startTutorial) {
     super();
     this.game = game;
+    this.startTutorial = startTutorial;
 
     // Only this screen uses the save handler, so it is registered here; BaseGameScreen sets up
     // everything the game screens share
@@ -134,6 +142,9 @@ public class LevelsGameScreen extends BaseGameScreen {
     // save is in level 1; saves in other levels are restored after their area swap instead.
     game.applyPendingSavePlayer(player);
     game.applyPendingSaveWorld(currentGameArea, level);
+    if (startTutorial && !game.isTutorialCompleted()) {
+      tutorial = TutorialComponent.start(game::markTutorialCompleted);
+    }
     player.getEvents().addListener("respawnAtCheckpoint", () -> currentGameArea.respawn());
     player.getEvents().addListener("toggleMap", () -> currentGameArea.toggleLevelMap());
     player.getEvents().addListener("toggleBossView", () -> currentGameArea.toggleBossCamera());
@@ -262,6 +273,29 @@ public class LevelsGameScreen extends BaseGameScreen {
     return interaction != null && interaction.consumeShopClosed();
   }
 
+  /**
+   * Moves on to the next level, for the "skipLevel" terminal command.
+   *
+   * @return true if a level swap was queued, false if there is no next level or a minigame overlay
+   *     is open
+   */
+  private boolean skipLevel() {
+    if (minigameOverlayManager.isActive()) {
+      return false;
+    }
+    String next;
+    if (level.equals(LEVEL1)) {
+      next = LEVEL2;
+    } else if (level.equals(LEVEL2)) {
+      next = LEVEL3;
+    } else {
+      logger.info("Already on the last level, nothing to skip to");
+      return false;
+    }
+    queueAreaSwap(next);
+    return true;
+  }
+
   private void toggleCheatMode() {
     cheats = !cheats;
     PhysicsComponent physics = player.getComponent(PhysicsComponent.class);
@@ -300,20 +334,6 @@ public class LevelsGameScreen extends BaseGameScreen {
       debug.setActive(!debug.getActive());
     }
 
-    if (!terminalOpen && Gdx.input.isKeyJustPressed(Input.Keys.BACKSPACE)) {
-      toggleCheatMode();
-    }
-
-    if (!minigameOverlayManager.isActive() && Gdx.input.isKeyJustPressed(Input.Keys.PAGE_UP)) {
-      if (level.equals(LEVEL1)) {
-        level = LEVEL2;
-      } else if (level.equals(LEVEL2)) {
-        level = LEVEL3;
-      } else if (level.equals(LEVEL3)) {
-        level = "none";
-      }
-      queueAreaSwap(level);
-    }
     currentGameArea.updateLevelMap();
 
     if (player.getPosition().y > 98) {
@@ -346,6 +366,9 @@ public class LevelsGameScreen extends BaseGameScreen {
 
   @Override
   public void dispose() {
+    if (tutorial != null) {
+      tutorial.dispose();
+    }
     cursor.dispose();
     super.dispose();
   }
@@ -469,6 +492,7 @@ public class LevelsGameScreen extends BaseGameScreen {
           toggleCheatMode();
           return true;
         });
+    terminal.addCommand("skipLevel", args -> skipLevel());
     ui.addComponent(new InputDecorator(stage, 10))
         .addComponent(new PerformanceDisplay())
         .addComponent(new CoordinateDisplay(renderer.getCamera()))

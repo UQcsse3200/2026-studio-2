@@ -390,7 +390,7 @@ public class EnemyFactory {
     // phase2
     calypso
         .getComponent(AITaskComponent.class)
-        .addTask(new TimerAttackTask(target, 25, 100, CALYPSO_LASER_WINDUP, 1, 0, 15))
+        .addTask(new TimerAttackTask(target, 25, 100, CALYPSO_LASER_WINDUP, 4, 0, 15))
         .addTask(new SummonTask(target, 30, config.attackRange, 5f, "Calypso"));
 
     return calypso;
@@ -493,7 +493,7 @@ public class EnemyFactory {
       // Standard projectile attack. Other Calypso attacks are added separately.
       aiComponent.addTask(
           new RangedAttackTask(
-              target, 20, 50f, 7f, config.baseAttack, 4.5f, 5f, config.attackType));
+              target, 10, 50f, 7f, config.baseAttack, 4.5f, 5f, config.attackType));
     }
 
     return enemy;

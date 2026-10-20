@@ -125,36 +125,25 @@ class PlayerActionsTest {
   }
 
   @Test
-  void shouldNotReportFallingWhileGrappledAndResumeAfterRelease() {
+  void shouldReannounceTheFallAfterLatchingOnButNotAgainAfterRelease() {
     GrappleComponent grapple = new GrappleComponent();
-    Entity player =
-        new Entity()
-            .addComponent(new PhysicsComponent())
-            .addComponent(grapple)
-            .addComponent(new PlayerActions());
-    player.create();
+    Entity player = createPlayerWithGrapple(grapple);
     AtomicInteger falls = countEvent(player, "fallStart");
     player.getComponent(PhysicsComponent.class).getBody().setLinearVelocity(0f, -5f);
 
     player.update();
     assertEquals(1, falls.get(), "descending freely should report a fall");
 
-    // Latch onto a rope and stay attached until the release event.
-    BodyDef anchorDef = new BodyDef();
-    anchorDef.type = BodyDef.BodyType.StaticBody;
-    anchorDef.position.set(0f, 5f);
-    Body anchor = ServiceLocator.getPhysicsService().getPhysics().createBody(anchorDef);
-    grapple.attachTo(anchor, new Vector2(0f, 5f));
-    grapple.update(); // builds the queued joint
-    assertTrue(grapple.isAttached());
-
+    attachRopeAbovePlayer(grapple);
     player.update();
-    assertEquals(1, falls.get(), "swinging is not falling");
+    // Latching on resets the air state, so the descent on the rope is a fresh fall. The hanging
+    // pose
+    // hides the fall clip while swinging, but the state must be there to land from.
+    assertEquals(2, falls.get());
 
-    // Back in free air and still descending, so the fall is reported again.
     player.getEvents().trigger("grappleRelease");
     player.update();
-    assertEquals(2, falls.get());
+    assertEquals(2, falls.get(), "still the same fall after letting go");
   }
 
   @Test
@@ -703,5 +692,238 @@ class PlayerActionsTest {
     player.getEvents().trigger("walk", new Vector2(-1f, 0f));
     player.getEvents().trigger("dash");
     assertEquals(-14f, player.getComponent(PhysicsComponent.class).getBody().getLinearVelocity().x);
+  }
+
+  // ---- Ground detection at the edges of ledges and enemies ----
+
+  /**
+   * A static box on the given layer. The player in these tests sits at the origin with a 1x1 scale,
+   * so their feet span x = 0 to 1 at y = 0.
+   */
+  private void createBox(float x, float y, float halfWidth, float halfHeight, short layer) {
+    BodyDef bodyDef = new BodyDef();
+    bodyDef.type = BodyDef.BodyType.StaticBody;
+    bodyDef.position.set(x, y);
+    Body body = ServiceLocator.getPhysicsService().getPhysics().createBody(bodyDef);
+    PolygonShape box = new PolygonShape();
+    box.setAsBox(halfWidth, halfHeight);
+    FixtureDef fixtureDef = new FixtureDef();
+    fixtureDef.shape = box;
+    fixtureDef.filter.categoryBits = layer;
+    body.createFixture(fixtureDef);
+    box.dispose();
+  }
+
+  /** Falls for a frame, then lands with only part of the body over {@code surface}. */
+  private int landingsAfterLandingOn(Runnable surface) {
+    Entity player = createPlayer();
+    AtomicInteger landings = countEvent(player, "landed");
+    player.getComponent(PhysicsComponent.class).getBody().setLinearVelocity(0f, -5f);
+    player.update(); // airborne and falling
+
+    surface.run();
+    player.update();
+    return landings.get();
+  }
+
+  @Test
+  void shouldLandOnALedgeWithOnlyTheLeftFootOverIt() {
+    // The ledge ends at x = 0.25, so the centre of the body (x = 0.5) is past its edge.
+    int landings =
+        landingsAfterLandingOn(() -> createBox(0.1f, -0.2f, 0.15f, 0.1f, PhysicsLayer.OBSTACLE));
+
+    // Regression: only the centre was checked, so this read as still falling.
+    assertEquals(1, landings);
+  }
+
+  @Test
+  void shouldLandOnAnEnemyWithOnlyTheRightFootOverIt() {
+    // An enemy's collider is narrower than the enemy, so landing off-centre on one is common.
+    int landings =
+        landingsAfterLandingOn(() -> createBox(0.9f, -0.2f, 0.15f, 0.1f, PhysicsLayer.CHARACTER));
+
+    assertEquals(1, landings);
+  }
+
+  @Test
+  void shouldJumpFromTheEdgeOfALedge() {
+    Entity player = createPlayer();
+    createBox(0.1f, -0.2f, 0.15f, 0.1f, PhysicsLayer.OBSTACLE);
+    player.update(); // standing with only the left foot on the ledge
+    PhysicsComponent physics = player.getComponent(PhysicsComponent.class);
+
+    player.getEvents().trigger("jump");
+    when(gameTime.getTime()).thenReturn(1_000L);
+    player.update();
+
+    assertTrue(physics.getBody().getLinearVelocity().y > 0f, "standing on the edge counts");
+  }
+
+  @Test
+  void shouldNotTreatAWallBesideThePlayerAsGround() {
+    // A tall wall starting just past the right edge of the body, reaching well below the feet.
+    int landings =
+        landingsAfterLandingOn(() -> createBox(1.5f, -2f, 0.5f, 3f, PhysicsLayer.OBSTACLE));
+
+    assertEquals(0, landings, "sliding down a wall is not standing on it");
+  }
+
+  // ---- A rope out while standing on the ground ----
+
+  private Entity createPlayerWithGrapple(GrappleComponent grapple) {
+    Entity player =
+        new Entity()
+            .addComponent(new PhysicsComponent())
+            .addComponent(grapple)
+            .addComponent(new PlayerActions());
+    player.create();
+    return player;
+  }
+
+  private void attachRopeAbovePlayer(GrappleComponent grapple) {
+    BodyDef anchorDef = new BodyDef();
+    anchorDef.type = BodyDef.BodyType.StaticBody;
+    anchorDef.position.set(0.5f, 5f);
+    Body anchor = ServiceLocator.getPhysicsService().getPhysics().createBody(anchorDef);
+    grapple.attachTo(anchor, new Vector2(0.5f, 5f));
+    grapple.update(); // builds the queued joint
+    assertTrue(grapple.isAttached());
+  }
+
+  @Test
+  void shouldWalkInsteadOfSwingingOnTheGroundWithARopeOut() {
+    GrappleComponent grapple = new GrappleComponent();
+    Entity player = createPlayerWithGrapple(grapple);
+    createGroundUnderPlayer();
+    attachRopeAbovePlayer(grapple);
+    AtomicInteger swings = new AtomicInteger();
+    player.getEvents().addListener("grappleSwing", (Float direction) -> swings.incrementAndGet());
+    player.update(); // standing on the ground, rope attached
+
+    player.getEvents().trigger("walk", new Vector2(1f, 0f));
+    player.update();
+
+    // Regression: movement keys only pushed the swing, so the player couldn't walk off.
+    assertEquals(0, swings.get());
+    assertTrue(player.getComponent(PhysicsComponent.class).getBody().getLinearVelocity().x > 0f);
+    assertFalse(player.getComponent(PlayerActions.class).isSwinging());
+  }
+
+  @Test
+  void shouldSwingInsteadOfWalkingWhileHanging() {
+    GrappleComponent grapple = new GrappleComponent();
+    Entity player = createPlayerWithGrapple(grapple);
+    attachRopeAbovePlayer(grapple);
+    AtomicInteger swings = new AtomicInteger();
+    player.getEvents().addListener("grappleSwing", (Float direction) -> swings.incrementAndGet());
+
+    player.getEvents().trigger("walk", new Vector2(1f, 0f));
+    player.update();
+
+    assertEquals(1, swings.get());
+    assertTrue(player.getComponent(PlayerActions.class).isSwinging());
+  }
+
+  @Test
+  void shouldStopOnTheGroundWithARopeOut() {
+    GrappleComponent grapple = new GrappleComponent();
+    Entity player = createPlayerWithGrapple(grapple);
+    createGroundUnderPlayer();
+    attachRopeAbovePlayer(grapple);
+    player.update();
+    Body body = player.getComponent(PhysicsComponent.class).getBody();
+    body.setLinearVelocity(4f, 0f);
+
+    player.getEvents().trigger("walkStop");
+
+    assertEquals(0f, body.getLinearVelocity().x, 0.0001f);
+  }
+
+  @Test
+  void shouldAnnounceLettingGoOfTheRopeWhenJumpingFromTheGround() {
+    GrappleComponent grapple = new GrappleComponent();
+    Entity player = createPlayerWithGrapple(grapple);
+    createGroundUnderPlayer();
+    attachRopeAbovePlayer(grapple);
+    player.update();
+    AtomicInteger releases = countEvent(player, "grappleRelease");
+
+    player.getEvents().trigger("jump");
+
+    // Through the event, not the grapple directly, so a slippery platform hears it too. Otherwise
+    // its grapple timer kept running and later dropped whatever rope the player was on by then.
+    assertEquals(1, releases.get());
+    assertFalse(grapple.isAttached());
+  }
+
+  @Test
+  void shouldAnnounceLettingGoOfTheRopeWhenKickingOffIt() {
+    GrappleComponent grapple = new GrappleComponent();
+    Entity player = createPlayerWithGrapple(grapple);
+    attachRopeAbovePlayer(grapple);
+    player.update(); // hanging in the air
+    AtomicInteger releases = countEvent(player, "grappleRelease");
+
+    player.getEvents().trigger("jump");
+
+    assertEquals(1, releases.get());
+    assertFalse(grapple.isAttached());
+  }
+
+  @Test
+  void shouldLetGoOfTheRopeWhenJumpingFromTheGround() {
+    GrappleComponent grapple = new GrappleComponent();
+    Entity player = createPlayerWithGrapple(grapple);
+    createGroundUnderPlayer();
+    attachRopeAbovePlayer(grapple);
+    player.update();
+    AtomicInteger jumps = countEvent(player, "jumpStart");
+    Body body = player.getComponent(PhysicsComponent.class).getBody();
+
+    player.getEvents().trigger("jump");
+
+    // Jumping into a swing from the ground looked wrong, so the rope is let go of instead.
+    assertFalse(grapple.isAttached());
+    // And it's a normal jump with its crouch, not the instant kick meant for hanging from the rope.
+    assertEquals(1, jumps.get());
+    assertEquals(0f, body.getLinearVelocity().y);
+    when(gameTime.getTime()).thenReturn(1_000L);
+    player.update();
+    assertTrue(body.getLinearVelocity().y > 0f);
+  }
+
+  @Test
+  void shouldNotCancelAGrappleShotStillInFlightWhenJumping() {
+    GrappleComponent grapple = new GrappleComponent();
+    Entity player = createPlayerWithGrapple(grapple);
+    createGroundUnderPlayer();
+    player.update();
+    // The arrow has struck but the rope isn't built until the grapple's next update, just as when
+    // a shot lands mid-crouch.
+    BodyDef anchorDef = new BodyDef();
+    anchorDef.type = BodyDef.BodyType.StaticBody;
+    anchorDef.position.set(0.5f, 5f);
+    Body anchor = ServiceLocator.getPhysicsService().getPhysics().createBody(anchorDef);
+    grapple.attachTo(anchor, new Vector2(0.5f, 5f));
+
+    player.getEvents().trigger("jump");
+    grapple.update();
+
+    assertTrue(grapple.isAttached(), "only an attached rope is let go of");
+  }
+
+  @Test
+  void shouldLandOnAPlatformWhileOnTheRope() {
+    GrappleComponent grapple = new GrappleComponent();
+    Entity player = createPlayerWithGrapple(grapple);
+    attachRopeAbovePlayer(grapple);
+    AtomicInteger landings = countEvent(player, "landed");
+    player.getComponent(PhysicsComponent.class).getBody().setLinearVelocity(0f, -5f);
+    player.update(); // swinging down
+
+    createGroundUnderPlayer();
+    player.update();
+
+    assertEquals(1, landings.get());
   }
 }

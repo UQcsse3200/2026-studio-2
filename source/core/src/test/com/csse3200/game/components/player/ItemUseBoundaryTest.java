@@ -70,7 +70,7 @@ class ItemUseBoundaryTest {
   }
 
   @Test
-  void shouldRejectBowUseAndChargeWithNoPrimaryWeapon() {
+  void shouldRejectChargeWithNoPrimaryWeapon() {
     for (boolean equippedComponent : new boolean[] {false, true}) {
       InventoryComponent inventory = new InventoryComponent(0);
       inventory.addItem(ItemType.STANDARD_ARROW, 2);
@@ -82,9 +82,8 @@ class ItemUseBoundaryTest {
       player.create();
       List<ItemType> failed = new ArrayList<>();
       player.getEvents().<ItemType>addListener("itemUseFailed", failed::add);
-      assertFalse(use.useSelectedItem());
       use.shootSelectedArrow(new Vector2(1, 0));
-      assertEquals(List.of(ItemType.STANDARD_ARROW, ItemType.STANDARD_ARROW), failed);
+      assertEquals(List.of(ItemType.STANDARD_ARROW), failed);
       assertEquals(2, inventory.getItemCount(ItemType.STANDARD_ARROW));
     }
   }
@@ -145,23 +144,22 @@ class ItemUseBoundaryTest {
     try {
       Gdx.input = mock(Input.class);
       InventoryComponent inventory = new InventoryComponent(0);
-      inventory.addItem(ItemType.ROPE_ARROW, 1);
       KeyboardPlayerInputComponent input = new KeyboardPlayerInputComponent();
       ItemUseComponent use = new ItemUseComponent();
       Entity player = new Entity().addComponent(inventory).addComponent(input).addComponent(use);
       use.create();
+      // Releasing the shoot button fires a charged shot toward the current aim.
       List<Vector2> shots = new ArrayList<>();
-      player.getEvents().<Vector2>addListener("grappleFire", shots::add);
-      assertTrue(use.useSelectedItem());
+      player.getEvents().<Vector2>addListener("chargeRelease", shots::add);
+      use.stopShootSelectedArrow(); // no camera
       Camera camera = mock(Camera.class);
       when(camera.unproject(any(Vector3.class))).thenReturn(new Vector3(0.5f, 0.5f, 0));
       input.setCameraComponent(new CameraComponent(camera));
-      assertTrue(use.useSelectedItem());
+      use.stopShootSelectedArrow(); // aiming at the player themselves
       when(camera.unproject(any(Vector3.class)))
           .thenThrow(new IllegalStateException("camera unavailable"));
-      assertTrue(use.useSelectedItem());
+      use.stopShootSelectedArrow(); // camera throws
       assertEquals(List.of(new Vector2(1, 0), new Vector2(1, 0), new Vector2(1, 0)), shots);
-      assertEquals(1, inventory.getItemCount(ItemType.ROPE_ARROW));
     } finally {
       Gdx.input = original;
     }
