@@ -215,9 +215,18 @@ public class Blackjack {
 
   /** Starts a fresh match: clears the score and hands, and refills the balance. */
   public void resetMatch() {
+    clearMatch();
+    balance = REFILL_GOLD;
+  }
+
+  /** Starts a fresh match like {@link #resetMatch()}, but keeps the gold the player has left. */
+  public void restartMatchKeepingGold() {
+    clearMatch();
+  }
+
+  private void clearMatch() {
     playerWins = 0;
     dealerWins = 0;
-    balance = REFILL_GOLD;
     bet = BET;
     playerHand.clear();
     dealerHand.clear();
