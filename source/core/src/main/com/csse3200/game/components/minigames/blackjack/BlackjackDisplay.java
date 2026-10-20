@@ -34,7 +34,7 @@ public class BlackjackDisplay extends UIComponent {
   private static final String PLACE_BET = "READY";
 
   private static final float Z_INDEX = 2f;
-  private static final float PREF_WIDTH = 200f;
+  private static final float PREF_OUTER_TABLE_WIDTH = 250f;
   private static final float CARD_WIDTH = 100f;
   private static final float CARD_HEIGHT = 145f;
   private static final float MAX_HAND_WIDTH = 700f;
@@ -349,50 +349,62 @@ public class BlackjackDisplay extends UIComponent {
     playerRegion.row();
     playerRegion.add(playerTotalLabel);
 
-    // One compact status line above the buttons; only the editable amount has a border.
-    Table status = new Table();
-    status.add(statusLabel).padRight(22f);
-    status.add(balanceLabel).padRight(22f);
-    status.add(resultLabel).maxWidth(220f).padRight(16f);
-    Label betLabel = new Label("BET", skin);
-    applyGoldInfoLabelStyle(betLabel, 1.0f);
-    status.add(betLabel).padRight(9f);
-    status.add(betField).width(130f).height(34f);
+    /* Left Column  */
+    Table leftSide = new Table();
 
-    Table tempTable = new Table();
+    Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
+    pixmap.setColor(Color.WHITE);
+    pixmap.fill();
+    Texture pixTexture = new Texture(pixmap);
+    pixmap.dispose();
+    casinoUiTextures.add(pixTexture);
 
+    Table infoBox = new Table();
+    infoBox.setBackground(new TextureRegionDrawable(pixTexture).tint(Color.valueOf("#C69B43")));
+
+    Table infoBoxContent = new Table();
+    infoBoxContent.setBackground(
+        new TextureRegionDrawable(pixTexture).tint(Color.valueOf("#2A1608")));
+
+    infoBoxContent.add(balanceLabel);
+    infoBoxContent.row();
+    infoBoxContent.add(betField).width(100f).height(30f);
+
+    infoBox.add(infoBoxContent).expand().fill().pad(5f).center();
+    leftSide.add(infoBox).expand().fill().center();
+
+    /* Middle Column */
     Table middle = new Table();
     middle.add(dealerRegion).expandX().fillX().height(245f).top();
     middle.row();
     middle.add(centerRegion).expand().center();
     middle.row();
     middle.add(playerRegion).expandX().fillX().height(220f).bottom();
-    middle.row();
-    middle.add(status).expandX().fillX().center();
 
+    Table middleBottom = new Table();
+    middleBottom.add(newRoundButton).width(192f).height(67f).pad(5f);
+    middleBottom.add(hitButton).width(192f).height(67f).pad(5f);
+    middleBottom.add(standButton).width(192f).height(67f).pad(5f);
+
+    middle.row();
+    middle.add(middleBottom).expandX().fillX();
+
+    /* Right Column */
     Table rightSide = new Table();
     rightSide.add(backButton).width(192f).height(67f).pad(5f);
     rightSide.row();
     rightSide.add(soundButton).width(192f).height(67f).pad(5f);
     rightSide.top().right();
 
-    /*
-    buttons.row();
-    buttons.add(newRoundButton).width(192f).height(67f).pad(5f);
-    buttons.row();
-    buttons.add(hitButton).width(192f).height(67f).pad(5f);
-    buttons.row();
-    buttons.add(standButton).width(192f).height(67f).pad(5f);
-    */
-
-    table.add(tempTable).fill().expandY().prefWidth(PREF_WIDTH);
+    table.add(leftSide).prefHeight(400f).prefWidth(PREF_OUTER_TABLE_WIDTH).center();
     table.add(middle).fill().expand();
-    table.add(rightSide).fill().expandY().prefWidth(PREF_WIDTH);
+    table.add(rightSide).fill().expandY().prefWidth(PREF_OUTER_TABLE_WIDTH);
 
     table.setFillParent(true);
     table.validate();
     table.toFront();
     table.setDebug(true);
+    table.pad(5f);
     stage.addActor(table);
     buildResultOverlay();
   }
