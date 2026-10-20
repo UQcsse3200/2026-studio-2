@@ -229,11 +229,11 @@ class GrappleComponentTest {
     }
 
     assertFalse(grapple.isCharging());
-    assertTrue(grapple.isOnCooldown());
+    assertFalse(grapple.isOnCooldown());
   }
 
   @Test
-  void shouldClearCooldownOnceTheGrappleActivates() {
+  void shouldStayOffCooldownThroughAShotAndAGrapple() {
     ServiceLocator.registerEntityService(new EntityService());
     ServiceLocator.registerRenderService(new RenderService());
     Entity player =
@@ -243,12 +243,12 @@ class GrappleComponentTest {
     Body anchor = createAnchorBody();
 
     grapple.fire(Vector2.X.cpy());
-    assertTrue(grapple.isOnCooldown());
+    // There is no cooldown, so a missed shot can be followed up straight away.
+    assertFalse(grapple.isOnCooldown());
 
     grapple.attachTo(anchor, new Vector2(5f, 6f));
 
-    // A successful grapple should let you detach and fire again immediately to chain swings - the
-    // cooldown only exists to stop a missed shot being spammed for free.
+    // And a successful grapple lets you detach and fire again immediately to chain swings.
     assertFalse(grapple.isOnCooldown());
   }
 
@@ -348,7 +348,7 @@ class GrappleComponentTest {
   }
 
   @Test
-  void shouldIgnoreChargeStartWithoutDirectionOrWhileAttachedOrOnCooldown() {
+  void shouldIgnoreChargeStartWithoutDirectionOrWhileAttached() {
     Entity player = createAttachedPlayer();
     GrappleComponent grapple = player.getComponent(GrappleComponent.class);
     Body anchor = createAnchorBody();
@@ -367,8 +367,9 @@ class GrappleComponentTest {
     ServiceLocator.registerEntityService(new EntityService());
     ServiceLocator.registerRenderService(new RenderService());
     grapple.fire(Vector2.X.cpy());
+    // There is no cooldown, so a fresh draw can start straight after a shot.
     grapple.startCharge(Vector2.X.cpy());
-    assertFalse(grapple.isCharging());
+    assertTrue(grapple.isCharging());
   }
 
   @Test
@@ -378,6 +379,10 @@ class GrappleComponentTest {
     grapple.releaseCharge(Vector2.X.cpy());
     assertFalse(grapple.isCharging());
   }
+
+  private static final long BOW_FULL_DRAW_MS = (long) (BowCharge.MAX_CHARGE_SECONDS * 1000f);
+  private static final long GRAPPLE_FULL_DRAW_MS =
+      (long) (BOW_FULL_DRAW_MS / BowCharge.GRAPPLE_CHARGE_RATE);
 
   @Test
   void shouldChargeSpeedLikeTheBowAndClampAtFullDraw() {
@@ -392,10 +397,16 @@ class GrappleComponentTest {
     // A tap starts out weak, exactly as the bow's does.
     assertEquals(BowCharge.MIN_SPEED_FACTOR, grapple.currentSpeedMultiplier(), 0.001f);
 
-    // Halfway through the 1.5s draw, halfway between the minimum and full-draw factors.
-    when(gameTime.getTime()).thenReturn(750L);
+    // Halfway through the grapple's own, shorter draw: halfway between the minimum and full-draw
+    // factors. The bow would still be well short of halfway at this point.
+    when(gameTime.getTime()).thenReturn(GRAPPLE_FULL_DRAW_MS / 2);
     float halfway = (BowCharge.MIN_SPEED_FACTOR + BowCharge.MAX_SPEED_FACTOR) / 2f;
     assertEquals(halfway, grapple.currentSpeedMultiplier(), 0.001f);
+    assertTrue(halfway > BowCharge.speedMultiplier(GRAPPLE_FULL_DRAW_MS / 2));
+
+    // A full grapple draw already reaches full power.
+    when(gameTime.getTime()).thenReturn(GRAPPLE_FULL_DRAW_MS);
+    assertEquals(BowCharge.MAX_SPEED_FACTOR, grapple.currentSpeedMultiplier(), 0.001f);
 
     // Held well past a full draw - clamps there rather than overshooting.
     when(gameTime.getTime()).thenReturn(10_000L);
@@ -413,8 +424,8 @@ class GrappleComponentTest {
     when(gameTime.getTime()).thenReturn(0L);
     grapple.startCharge(Vector2.X.cpy());
 
-    when(gameTime.getTime()).thenReturn(750L);
-    float expected = BowCharge.speedMultiplier(750L);
+    when(gameTime.getTime()).thenReturn(GRAPPLE_FULL_DRAW_MS / 2);
+    float expected = BowCharge.speedMultiplier(BOW_FULL_DRAW_MS / 2);
     try (MockedStatic<ProjectileFactory> factory = mockStatic(ProjectileFactory.class)) {
       factory
           .when(() -> ProjectileFactory.createGrappleArrow(eq(player), any(), any(), eq(expected)))
@@ -425,7 +436,7 @@ class GrappleComponentTest {
     }
 
     assertFalse(grapple.isCharging());
-    assertTrue(grapple.isOnCooldown());
+    assertFalse(grapple.isOnCooldown());
   }
 
   @Test

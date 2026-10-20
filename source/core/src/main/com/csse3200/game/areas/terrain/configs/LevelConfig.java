@@ -339,6 +339,16 @@ public class LevelConfig {
 
     for (CheckpointConfig c : checkpoints) {
       Entity checkpoint = new Entity();
+      checkpoint
+          .addComponent(new CheckpointComponent(false, c.getPosition(), checkpointAtlas))
+          .addComponent(
+              new PointLightComponent(
+                  ServiceLocator.getLightingService().getEngine().getRayHandler(),
+                  LightingDefaults.RAYS,
+                  new Color(0.75f, 0.2f, 0f, 1f),
+                  LightingDefaults.DIST));
+      checkpoint.setScale(1f, 1.5f);
+      checkpoint.getComponent(PointLightComponent.class).setActive(false);
 
       checkpoint
           .addComponent(new CheckpointComponent(false, c.getPosition(), checkpointAtlas))

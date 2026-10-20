@@ -5,6 +5,7 @@ import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.inventory.InventoryComponent;
 import com.csse3200.game.components.inventory.InventorySlot;
 import com.csse3200.game.components.item.ItemType;
+import com.csse3200.game.components.itemdictionary.ItemDictionaryComponent;
 import com.csse3200.game.entities.Entity;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +31,9 @@ public class SaveFile {
   // True once the player has won the game (level 3 win condition)
   public boolean completed;
 
+  // True once the movement tutorial has been completed.
+  public boolean tutorialCompleted;
+
   // Level the save resumes in: "level1", "level2", "level3" or "boss"
   public String currentLevel = "level1";
 
@@ -51,8 +55,11 @@ public class SaveFile {
     // Only occupied slots; empty positions are rebuilt from the default inventory
     public List<ItemSave> inventory = new ArrayList<>();
 
+    // Names of the items the player has discovered, so the Item Dictionary survives a reload
+    public List<String> discoveredItems = new ArrayList<>();
+
     /**
-     * Records health, max health, gold and inventory from the given player.
+     * Records health, max health, gold, inventory and discovered items from the given player.
      *
      * @param player player entity to capture from
      * @return captured player data, or null if the player has no saveable components
@@ -80,12 +87,19 @@ public class SaveFile {
           data.inventory.add(new ItemSave(index, slot.getItemType().name(), slot.getQuantity()));
         }
       }
+
+      ItemDictionaryComponent dictionary = player.getComponent(ItemDictionaryComponent.class);
+      if (dictionary != null) {
+        for (ItemType type : dictionary.getDiscoveredItems()) {
+          data.discoveredItems.add(type.name());
+        }
+      }
       return data;
     }
 
     /**
      * Applies this data to the given player: maximum health first (so the saved health can clamp
-     * correctly), then gold and inventory.
+     * correctly), then discovered items, gold and inventory.
      *
      * @param player player entity to update
      */
@@ -95,6 +109,16 @@ public class SaveFile {
         // addMaxHealth also heals by the same amount; setHealth afterwards fixes the exact value.
         stats.addMaxHealth(maxHealth - stats.getMaxHealth());
         stats.setHealth(health);
+      }
+
+      ItemDictionaryComponent dictionary = player.getComponent(ItemDictionaryComponent.class);
+      if (dictionary != null && discoveredItems != null) {
+        for (String name : discoveredItems) {
+          ItemType type = SaveFile.resolveItemType(name);
+          if (type != null) {
+            dictionary.unlockItem(type);
+          }
+        }
       }
 
       InventoryComponent inventoryComponent = player.getComponent(InventoryComponent.class);
@@ -159,13 +183,23 @@ public class SaveFile {
    * @return the item type, or null when it cannot be resolved
    */
   public static ItemType resolveItemType(ItemSave item) {
-    if (item == null || item.itemType == null) {
+    return item == null ? null : resolveItemType(item.itemType);
+  }
+
+  /**
+   * Resolves a saved item type name to an {@link ItemType}, logging and skipping unknown names.
+   *
+   * @param name saved item type name, e.g. "FIRE_ARROW"
+   * @return the item type, or null when it cannot be resolved
+   */
+  public static ItemType resolveItemType(String name) {
+    if (name == null) {
       return null;
     }
     try {
-      return ItemType.valueOf(item.itemType);
+      return ItemType.valueOf(name);
     } catch (IllegalArgumentException e) {
-      logger.warn("Skipping unknown saved item type {}", item.itemType);
+      logger.warn("Skipping unknown saved item type {}", name);
       return null;
     }
   }

@@ -3,6 +3,7 @@ package com.csse3200.game.components.item.weapons.bow.grapple;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.Joint;
@@ -32,7 +33,9 @@ public class GrappleComponent extends Component {
   /** How far in front of the player's centre, in player widths, a fired arrow spawns. */
   public static final float SPAWN_OFFSET = 0.6f;
 
-  private static final float GRAPPLE_COOLDOWN = 2f;
+  // Seconds after a missed shot before another can be fired. Zero: the grapple can be fired again
+  // straight away, which also retires a missed shot still in flight.
+  private static final float GRAPPLE_COOLDOWN = 0f;
   private static final float SWING_FORCE = 7f;
   private static final float MAX_SWING_SPEED = 7f;
   private static final float SWING_DAMPING = 0.5f;
@@ -81,6 +84,9 @@ public class GrappleComponent extends Component {
   // and attach a rope back to wherever the player died.
   private Entity pendingArrow;
 
+  // A release requested mid physics step, which Box2D forbids, carried out on the next update.
+  private boolean releasePending;
+
   // Reused when checking the joint is still alive, to avoid allocating every frame
   private final Array<Joint> liveJoints = new Array<>();
   private final Array<Body> liveBodies = new Array<>();
@@ -88,7 +94,6 @@ public class GrappleComponent extends Component {
   @Override
   public void create() {
     physicsComponent = entity.getComponent(PhysicsComponent.class);
-    entity.getEvents().<Vector2>addListener("grappleFire", this::fire);
     entity.getEvents().addListener("grappleRelease", this::release);
     entity.getEvents().addListener("grappleSwing", this::swing);
     entity.getEvents().addListener("grappleClimbStart", this::startClimbing);
@@ -157,7 +162,9 @@ public class GrappleComponent extends Component {
       return 1f;
     }
     long now = ServiceLocator.getTimeSource().getTime();
-    return BowCharge.speedMultiplier(now - chargeStartTimeMs);
+    // Counting the draw time faster is what makes the grapple reach full power sooner.
+    long effectiveDrawMs = (long) ((now - chargeStartTimeMs) * BowCharge.GRAPPLE_CHARGE_RATE);
+    return BowCharge.speedMultiplier(effectiveDrawMs);
   }
 
   /**
@@ -181,6 +188,10 @@ public class GrappleComponent extends Component {
 
   @Override
   public void update() {
+    if (releasePending) {
+      releasePending = false;
+      release();
+    }
     if (cooldownRemaining > 0f) {
       cooldownRemaining -= ServiceLocator.getTimeSource().getDeltaTime();
     }
@@ -394,7 +405,7 @@ public class GrappleComponent extends Component {
   }
 
   private RopeContact activeContact() {
-    return ropeContacts.isEmpty() ? null : ropeContacts.get(ropeContacts.size() - 1);
+    return ropeContacts.isEmpty() ? null : ropeContacts.getLast();
   }
 
   private boolean sameContact(RopeContact first, RopeContact second) {
@@ -506,11 +517,26 @@ public class GrappleComponent extends Component {
     return length;
   }
 
+  /**
+   * Whether the grapple can hook onto, or bend its rope around, this fixture: solid terrain only.
+   * Sensors share terrain layers but have no surface (e.g. the rising water). Dynamic bodies move
+   * and can be destroyed at any moment (e.g. spiky balls, which vanish on contact), leaving the
+   * rope holding a body that no longer exists, which crashes Box2D.
+   *
+   * @param fixture the fixture to check
+   * @return true if the grapple may use it
+   */
+  public static boolean isGrappleSurface(Fixture fixture) {
+    return !fixture.isSensor()
+        && fixture.getBody().getType() != BodyDef.BodyType.DynamicBody
+        && PhysicsLayer.contains(PhysicsLayer.SOLID, fixture.getFilterData().categoryBits);
+  }
+
   private static RopeRayHit findObstruction(World world, Vector2 from, Vector2 to) {
     RopeRayHit closest = new RopeRayHit();
     RayCastCallback callback =
         (fixture, point, normal, fraction) -> {
-          if (!PhysicsLayer.contains(PhysicsLayer.SOLID, fixture.getFilterData().categoryBits)) {
+          if (!isGrappleSurface(fixture)) {
             return -1f;
           }
           // The grapple anchor's own fixture is expected at the end of every ray.
@@ -616,11 +642,21 @@ public class GrappleComponent extends Component {
     return vertex;
   }
 
-  /** Detaches the rope, restoring free movement. Momentum carries over. */
+  /**
+   * Detaches the rope, restoring free movement. Momentum carries over.
+   *
+   * <p>Safe to call from a collision callback. Those run inside the physics step, where Box2D
+   * aborts the whole game if a joint is destroyed, so the rope is then let go on the next update
+   * instead. (Touching rising water used to do exactly that, by respawning the player mid-step.)
+   */
   public void release() {
     pendingAnchorBody = null;
     pendingAnchorPoint = null;
     cancelFlight();
+    if (isAttached() && ServiceLocator.getPhysicsService().getPhysics().getWorld().isLocked()) {
+      releasePending = true;
+      return;
+    }
     if (isAttached()) {
       ServiceLocator.getPhysicsService().getPhysics().getWorld().destroyJoint(ropeJoint);
       forgetJoint();

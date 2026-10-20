@@ -32,7 +32,7 @@ public class MeleeComponent extends Component {
   public static final int RAY_COUNT = 9;
 
   /** Seconds each frame of the melee animation is shown. Raise it to slow the swing down. */
-  public static final float FRAME_DURATION = 0.06f;
+  public static final float FRAME_DURATION = 1f / 30f;
 
   /** Number of frames in the melee animation. */
   public static final int FRAME_COUNT = 12;
@@ -43,8 +43,11 @@ public class MeleeComponent extends Component {
   /** Seconds from the start of the swing until the arc lands, at about the fifth frame. */
   public static final float HIT_DELAY = FRAME_DURATION * 4.5f;
 
-  /** Seconds after a swing finishes before another can start. */
-  public static final float COOLDOWN = 0.15f;
+  /**
+   * Seconds after a swing finishes before another can start. Zero: the next swing can start at
+   * once.
+   */
+  public static final float COOLDOWN = 0f;
 
   private boolean swinging = false;
   private boolean hitApplied = false;

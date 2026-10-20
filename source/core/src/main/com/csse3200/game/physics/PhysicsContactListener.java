@@ -46,8 +46,8 @@ public class PhysicsContactListener implements ContactListener {
     // if we have cached values, we need to check each contact for the initial contact that
     // triggered the ledge drop to signal to the PlayerActions we completed the ledge drop and
     // delete the cached references
-    // TODO: can be refactored perhaps to use the collisionEnd event trigger and respond to it on
-    //  the PlayerActions component instead of checking every contact after we move through a ledge
+    // Possible future refactor: use the collisionEnd event trigger and respond to it on the
+    // PlayerActions component instead of checking every contact after we move through a ledge
     if (ledgeFixture != null
         && playerActions != null
         && (contact.getFixtureA() == ledgeFixture || contact.getFixtureB() == ledgeFixture)) {
@@ -94,10 +94,10 @@ public class PhysicsContactListener implements ContactListener {
       // determine if either fixture is a player, early return if not
       boolean playerFixtureA = entityA.getComponent(PlayerActions.class) != null;
       boolean playerFixtureB = entityB.getComponent(PlayerActions.class) != null;
-      Fixture playerFixture = playerFixtureA ? fixtureA : playerFixtureB ? fixtureB : null;
-      if (playerFixture == null) {
+      if (!playerFixtureA && !playerFixtureB) {
         return;
       }
+      Fixture playerFixture = playerFixtureA ? fixtureA : fixtureB;
 
       Entity player = playerFixtureA ? entityA : entityB;
       PlayerActions actions = player.getComponent(PlayerActions.class);

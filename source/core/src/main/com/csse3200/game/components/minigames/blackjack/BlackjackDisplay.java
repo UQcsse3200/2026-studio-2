@@ -514,6 +514,7 @@ public class BlackjackDisplay extends UIComponent {
     ImageButton nextRoundButton =
         createImageButton(
             "images/Buttons/new_round_up_btn.png", "images/Buttons/new_round_down_btn.png");
+    nextRoundButton.setName("resultContinue");
 
     nextRoundButton.addListener(
         new ChangeListener() {
@@ -525,7 +526,6 @@ public class BlackjackDisplay extends UIComponent {
               BlackjackDialogue dialogue = BlackjackDialogue.forMatch(blackjack);
               if (dialogue != null) {
                 dialogue.pressButton(blackjack, storyWinCallback);
-                // The story screen transitions only after the victory dialogue is acknowledged.
                 if (dialogue.getKind() == BlackjackDialogue.Kind.MATCH_WON) {
                   if (storyWinCallback != null) {
                     return;

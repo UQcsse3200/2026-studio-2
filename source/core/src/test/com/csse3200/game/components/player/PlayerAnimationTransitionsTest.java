@@ -464,6 +464,8 @@ class PlayerAnimationTransitionsTest {
     assertEquals("sleep", controller.getAnimator().getCurrentAnimation());
     controller.playAnimation("walk");
     assertEquals("walk", animator.getCurrentAnimation());
+    // refreshAnimation() fills the gap the rope pose leaves when it stops the animator.
+    animator.stopAnimation();
     controller.refreshAnimation();
     assertEquals("idle", animator.getCurrentAnimation());
   }

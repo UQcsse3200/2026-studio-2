@@ -9,7 +9,7 @@ import com.csse3200.game.services.ServiceLocator;
 /** Builds the shared animated backdrop for the main menu and save selection screen. */
 final class MenuBackground {
   private static final float OVERSCAN = 1.03f;
-  private static final float SHAKE_AMOUNT = 15f;
+  private static final float SHAKE_AMOUNT = 12f;
   private static final float SHAKE_DURATION = 1f;
 
   private MenuBackground() {}

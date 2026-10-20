@@ -89,11 +89,11 @@ class GrappleComponentFiringTest {
   }
 
   @Test
-  void shouldFireAFullSpeedArrowWhenTheGrappleFireEventIsTriggered() {
+  void shouldFireAFullSpeedArrowWhenFiredDirectly() {
     Entity arrow = new Entity();
     try (MockedStatic<ProjectileFactory> factory = arrowFactoryReturning(arrow)) {
-      // This is the instant path (the attack key), which skips the charge entirely.
-      player.getEvents().trigger("grappleFire", new Vector2(1f, 0f));
+      // Firing directly (without a charge) launches the arrow at full speed.
+      grapple.fire(new Vector2(1f, 0f));
 
       factory.verify(
           () ->
@@ -102,7 +102,8 @@ class GrappleComponentFiringTest {
     }
     verify(entities).register(arrow);
     assertNotNull(arrow.getComponent(GrappleArrowComponent.class));
-    assertTrue(grapple.isOnCooldown());
+    // There is no cooldown, so it can be fired again straight away.
+    assertFalse(grapple.isOnCooldown());
   }
 
   @Test
@@ -149,21 +150,12 @@ class GrappleComponentFiringTest {
   }
 
   @Test
-  void shouldNotFireWhileOnCooldownThenFireAgainOnceItsElapsed() {
-    when(gameTime.getDeltaTime()).thenReturn(1f);
+  void shouldFireAgainStraightAwayBecauseThereIsNoCooldown() {
     try (MockedStatic<ProjectileFactory> factory = arrowFactoryReturning(new Entity())) {
       grapple.fire(Vector2.X.cpy());
-      grapple.fire(Vector2.X.cpy());
-      verifyArrowsCreated(factory, 1);
-
-      // The cooldown is 2 seconds: one second leaves it running, two clears it.
-      grapple.update();
-      assertTrue(grapple.isOnCooldown());
-      grapple.fire(Vector2.X.cpy());
-      verifyArrowsCreated(factory, 1);
-
-      grapple.update();
       assertFalse(grapple.isOnCooldown());
+
+      // A second shot replaces the first one straight away.
       grapple.fire(Vector2.X.cpy());
       verifyArrowsCreated(factory, 2);
     }
@@ -201,15 +193,18 @@ class GrappleComponentFiringTest {
       assertEquals(1, drawFires.get());
       verifyArrowsCreated(factory, 1);
 
-      // Now on cooldown: a press does nothing at all, so no draw animation may play for it.
+      // There is no cooldown, so the next press starts a fresh draw straight away.
       grapple.startCharge(Vector2.X.cpy());
-      assertEquals(1, drawStarts.get());
-      assertFalse(grapple.isCharging());
+      assertEquals(2, drawStarts.get());
+      assertTrue(grapple.isCharging());
+      grapple.releaseCharge(Vector2.X.cpy());
+      assertEquals(2, drawFires.get());
+      verifyArrowsCreated(factory, 2);
 
       // And a release with nothing drawn fires nothing and plays nothing.
       grapple.releaseCharge(Vector2.X.cpy());
-      assertEquals(1, drawFires.get());
-      verifyArrowsCreated(factory, 1);
+      assertEquals(2, drawFires.get());
+      verifyArrowsCreated(factory, 2);
     }
   }
 

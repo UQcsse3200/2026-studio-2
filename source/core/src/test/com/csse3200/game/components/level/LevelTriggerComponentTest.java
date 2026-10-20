@@ -46,8 +46,8 @@ class LevelTriggerComponentTest {
   }
 
   @Test
-  void shouldNotTriggerWhenFIsPressedOutOfRange() {
-    assertFalse(trigger.keyDown(Input.Keys.F));
+  void shouldNotTriggerWhenEIsPressedOutOfRange() {
+    assertFalse(trigger.keyDown(Input.Keys.E));
     assertEquals(0, transitions.get());
   }
 
@@ -60,11 +60,11 @@ class LevelTriggerComponentTest {
   }
 
   @Test
-  void shouldTriggerOnlyOnceWhenPlayerInRangePressesF() {
+  void shouldTriggerOnlyOnceWhenPlayerInRangePressesE() {
     enter(playerFixture());
 
-    assertTrue(trigger.keyDown(Input.Keys.F));
-    assertFalse(trigger.keyDown(Input.Keys.F));
+    assertTrue(trigger.keyDown(Input.Keys.E));
+    assertFalse(trigger.keyDown(Input.Keys.E));
     trigger.update();
     trigger.update();
     assertEquals(1, transitions.get());
@@ -79,7 +79,7 @@ class LevelTriggerComponentTest {
     ServiceLocator.registerTimeSource(time);
     enter(playerFixture());
 
-    trigger.keyDown(Input.Keys.F);
+    trigger.keyDown(Input.Keys.E);
     assertEquals(1, lit.get());
     trigger.update();
     assertEquals(0, transitions.get());
@@ -92,7 +92,7 @@ class LevelTriggerComponentTest {
   void shouldIgnoreOtherKeys() {
     enter(playerFixture());
 
-    assertFalse(trigger.keyDown(Input.Keys.E));
+    assertFalse(trigger.keyDown(Input.Keys.F));
     assertEquals(0, transitions.get());
   }
 
@@ -104,7 +104,7 @@ class LevelTriggerComponentTest {
     enter(enemy);
 
     assertFalse(trigger.isPlayerInRange());
-    assertFalse(trigger.keyDown(Input.Keys.F));
+    assertFalse(trigger.keyDown(Input.Keys.E));
     assertEquals(0, transitions.get());
   }
 
@@ -115,7 +115,7 @@ class LevelTriggerComponentTest {
     portal.getEvents().trigger("collisionEnd", mock(Fixture.class), player);
 
     assertFalse(trigger.isPlayerInRange());
-    assertFalse(trigger.keyDown(Input.Keys.F));
+    assertFalse(trigger.keyDown(Input.Keys.E));
     assertEquals(0, transitions.get());
   }
 
@@ -126,7 +126,7 @@ class LevelTriggerComponentTest {
     when(pausedService.getPaused()).thenReturn(true);
     ServiceLocator.registerEntityService(pausedService);
 
-    assertFalse(trigger.keyDown(Input.Keys.F));
+    assertFalse(trigger.keyDown(Input.Keys.E));
     assertEquals(0, transitions.get());
   }
 

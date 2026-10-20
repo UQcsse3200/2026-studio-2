@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.components.item.weapons.bow.grapple.GrappleComponent;
+import com.csse3200.game.components.player.PlayerActions;
 import com.csse3200.game.components.player.PlayerAnimationController;
 import com.csse3200.game.rendering.AnimationRenderComponent;
 import com.csse3200.game.rendering.RenderComponent;
@@ -13,7 +14,9 @@ import java.util.List;
 /**
  * Draws the player hanging from the grapple rope. The art contains a short length of rope, and the
  * whole image is turned every frame so that rope lies along the real rope where it leaves the
- * player. While it is drawing, the player's normal animation is hidden.
+ * player. It only shows while the player actually hangs from the rope: off the ground, below the
+ * hook, and not mid-way through another action. While it is drawing, the player's normal animation
+ * is hidden.
  */
 public class GrappleHoldRenderComponent extends RenderComponent {
   private static final String TEXTURE_PATH = "images/player/player_rope_hold.png";
@@ -34,25 +37,12 @@ public class GrappleHoldRenderComponent extends RenderComponent {
   /** Rope points closer to the player than this are skipped when working out the direction. */
   private static final float MIN_ROPE_LENGTH = 0.2f;
 
-  /**
-   * How far above level the rope must point, as the sine of its angle, before the player starts
-   * hanging from it. A rope that is level or points down means they are beside or above the hook,
-   * not hanging from it, and the pose would turn them head-down.
-   */
-  private static final float START_HANGING_ELEVATION = 0.3f;
-
-  /**
-   * Once hanging, the rope can sag this close to level before they stop. Lower than the start
-   * threshold so swinging past the limit doesn't flicker between the pose and the normal sprite.
-   */
-  private static final float KEEP_HANGING_ELEVATION = 0.1f;
-
   private Texture texture;
   private GrappleComponent grapple;
   private AnimationRenderComponent animator;
   private PlayerAnimationController controller;
+  private PlayerActions actions;
 
-  private boolean wasAttached = false;
   private boolean holding = false;
   private boolean flipped = false;
   private float rotation = 0f;
@@ -64,6 +54,7 @@ public class GrappleHoldRenderComponent extends RenderComponent {
     grapple = entity.getComponent(GrappleComponent.class);
     animator = entity.getComponent(AnimationRenderComponent.class);
     controller = entity.getComponent(PlayerAnimationController.class);
+    actions = entity.getComponent(PlayerActions.class);
 
     // Skip the pose, rather than crash, if the image is missing.
     if (Gdx.files != null && Gdx.files.internal(TEXTURE_PATH).exists()) {
@@ -87,45 +78,51 @@ public class GrappleHoldRenderComponent extends RenderComponent {
   @Override
   public void update() {
     boolean wasHanging = holding;
-    holding = false;
-
-    boolean attached = grapple != null && grapple.isAttached();
-    if (wasAttached && !attached && controller != null) {
-      // The rope has been let go, so bring back the normal idle / walk animation.
+    holding = updateHolding();
+    if (wasHanging && !holding && controller != null) {
+      // The pose hid the normal animation while it drew. It has stopped - the player let go,
+      // landed, or ended up beside or above the hook - so bring the normal animation back.
       controller.refreshAnimation();
     }
-    wasAttached = attached;
+  }
+
+  /**
+   * Works out this frame's pose and, when it should show, hides the normal animation under it.
+   *
+   * @return whether the pose draws this frame
+   */
+  private boolean updateHolding() {
+    boolean attached = grapple != null && grapple.isAttached();
     if (!attached || animator == null || texture == null) {
-      return;
+      return false;
+    }
+    // Only while hanging. A player standing on a platform with a rope out walks normally.
+    if (actions != null && !actions.isSwinging()) {
+      return false;
     }
 
     // Action clips must finish before hiding the animator, otherwise their controller state
     // cannot complete and the normal sprite cannot resume after detaching.
     if (controller != null && controller.isPlayingActionAnimation()) {
-      return;
+      return false;
     }
     // Also protect hurt and death when no controller is present.
     String current = animator.getCurrentAnimation();
     if ("hurt".equals(current) || "death".equals(current)) {
-      return;
+      return false;
     }
 
     Vector2 centre = entity.getCenterPosition();
     Vector2 next = nextRopePoint(centre);
     if (next == null) {
-      return;
+      return false;
     }
     Vector2 up = next.cpy().sub(centre).nor();
 
-    // Only hang from a rope that goes up. The player can end up above the hook they landed on, by
-    // climbing or swinging over it, and the rope then points down: the pose would flip them
-    // upside-down, so give them back their normal animation until the rope goes up again.
-    float minimumElevation = wasHanging ? KEEP_HANGING_ELEVATION : START_HANGING_ELEVATION;
-    if (up.y < minimumElevation) {
-      if (wasHanging && controller != null) {
-        controller.refreshAnimation();
-      }
-      return;
+    if (up.y < 0f) {
+      // The rope runs down to an anchor below the player: it's slack and isn't holding them up,
+      // so hanging from it (upside down, with this art) would make no sense.
+      return false;
     }
 
     gripPosition.set(centre).mulAdd(up, GRIP_OFFSET);
@@ -134,7 +131,7 @@ public class GrappleHoldRenderComponent extends RenderComponent {
     flipped = animator.isFlipX();
 
     animator.stopAnimation();
-    holding = true;
+    return true;
   }
 
   /**

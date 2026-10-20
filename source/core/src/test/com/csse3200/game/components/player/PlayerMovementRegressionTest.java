@@ -181,10 +181,13 @@ class PlayerMovementRegressionTest {
   void shouldReleaseGrappleOnJumpWithUpwardBoostAndPreserveHorizontalMomentum() {
     when(grapple.isAttached()).thenReturn(true);
     body.setLinearVelocity(4f, -2f);
+    int[] releases = {0};
+    player.getEvents().addListener("grappleRelease", () -> releases[0]++);
 
     player.getEvents().trigger("jump");
 
-    verify(grapple).release();
+    // Announced as the event, which the grapple acts on, so slippery platforms hear it too.
+    assertEquals(1, releases[0]);
     assertEquals(4f, body.getLinearVelocity().x);
     assertTrue(body.getLinearVelocity().y > 0f);
   }

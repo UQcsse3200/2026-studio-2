@@ -148,6 +148,7 @@ public class SaveManager {
     // Writing after a win must not clear the completion flag.
     SaveFile previous = read(slot);
     save.completed = previous != null && previous.completed;
+    save.tutorialCompleted = previous != null && previous.tutorialCompleted;
     return save;
   }
 }

@@ -10,9 +10,11 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
@@ -28,6 +30,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 @ExtendWith(GameExtension.class)
 class BlackjackDisplayTest {
@@ -43,7 +47,9 @@ class BlackjackDisplayTest {
 
     ResourceService resources = mock(ResourceService.class);
     Texture texture = mock(Texture.class);
+    Sound sound = mock(Sound.class);
     when(resources.getAsset(anyString(), eq(Texture.class))).thenReturn(texture);
+    when(resources.getAsset(anyString(), eq(Sound.class))).thenReturn(sound);
     ServiceLocator.registerResourceService(resources);
   }
 
@@ -254,7 +260,7 @@ class BlackjackDisplayTest {
     throw new AssertionError("Could not find a lost match");
   }
 
-  private static void invoke(BlackjackDisplay display, String methodName) {
+private static void invoke(BlackjackDisplay display, String methodName) {
     try {
       java.lang.reflect.Method method = BlackjackDisplay.class.getDeclaredMethod(methodName);
       method.setAccessible(true);

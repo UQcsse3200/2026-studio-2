@@ -37,16 +37,16 @@ class MenuBackgroundTest extends UiTestSupport {
     for (int cycle = 0; cycle < 2; cycle++) {
       background.act(0.25f);
       // libGDX approximates sine with a lookup table; allow a hundredth of a pixel.
-      assertEquals(-21.8033f, background.getX(), 0.01f);
+      assertEquals(-22.241827f, background.getX(), 0.01f);
       assertEquals(-13.5f, background.getY(), 0.001f);
       background.act(0.75f);
-      assertEquals(-9f, background.getX(), 0.001f);
+      assertEquals(-12.0f, background.getX(), 0.001f);
       assertEquals(-13.5f, background.getY(), 0.001f);
       background.act(1f);
       assertEquals(-24f, background.getX(), 0.001f);
-      assertEquals(1.5f, background.getY(), 0.001f);
+      assertEquals(-1.5f, background.getY(), 0.001f);
       background.act(1f);
-      assertEquals(-39f, background.getX(), 0.001f);
+      assertEquals(-36.0f, background.getX(), 0.001f);
       assertEquals(-13.5f, background.getY(), 0.001f);
       background.act(1f);
       assertEquals(-24f, background.getX(), 0.001f);

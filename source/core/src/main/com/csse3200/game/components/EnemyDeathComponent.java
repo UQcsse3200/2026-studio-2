@@ -1,5 +1,6 @@
 package com.csse3200.game.components;
 
+import com.csse3200.game.entities.Entity;
 import com.csse3200.game.services.ServiceLocator;
 
 public class EnemyDeathComponent extends Component {
@@ -19,10 +20,15 @@ public class EnemyDeathComponent extends Component {
       dead = true;
       SoundEffects.play("sounds/enemy_Death.wav", 0.4f);
       entity.getEvents().trigger("enemyDied", entity);
+
+      // Special behaviour for summoned enemies
+      EnemySummonComponent summonComponent = entity.getComponent(EnemySummonComponent.class);
+      if (summonComponent != null && summonComponent.getSummonedStatus()) {
+        Entity summoner = summonComponent.getSummoner();
+        summoner.getEvents().trigger("summonedEnemyDied");
+      }
+
       ServiceLocator.getEntityService().scheduleRemoval(entity);
     }
   }
-
-  // @Override ...  super.dispose();
-  // dispose of event listener?
 }

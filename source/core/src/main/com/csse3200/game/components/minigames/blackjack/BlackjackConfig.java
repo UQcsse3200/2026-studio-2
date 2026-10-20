@@ -1,3 +1,4 @@
+
 package com.csse3200.game.components.minigames.blackjack;
 
 import com.csse3200.game.components.item.ItemType;
@@ -48,14 +49,18 @@ public final class BlackjackConfig {
     textures[index++] = "images/Buttons/hit_down_btn.png";
     textures[index++] = "images/Buttons/stand_up_btn.png";
     textures[index++] = "images/Buttons/stand_down_btn.png";
+
     textures[index++] = "images/Buttons/new_round_up_btn.png";
     textures[index++] = "images/Buttons/new_round_down_btn.png";
+
     textures[index++] = "images/Buttons/sound_off_up_btn.png";
     textures[index++] = "images/Buttons/sound_on_up_btn.png";
     textures[index++] = "images/Buttons/sound_off_down_btn.png";
     textures[index++] = "images/Buttons/sound_on_down_btn.png";
+
     textures[index++] = BlackjackRulesDisplay.INFO_UP_PATH;
     textures[index++] = BlackjackRulesDisplay.INFO_DOWN_PATH;
+
     textures[index++] = "images/minigames/blackjack/blackjack_table_background.png";
     textures[index] = "images/minigames/blackjack/blackjack_vertical_scroll.png";
 
