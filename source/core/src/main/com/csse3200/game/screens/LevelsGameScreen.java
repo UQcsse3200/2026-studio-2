@@ -18,7 +18,6 @@ import com.csse3200.game.components.gamearea.CoordinateDisplay;
 import com.csse3200.game.components.gamearea.PerformanceDisplay;
 import com.csse3200.game.components.item.ItemAssets;
 import com.csse3200.game.components.maingame.MainGameActions;
-import com.csse3200.game.components.maingame.PauseButtonDisplay;
 import com.csse3200.game.components.maingame.PauseMenuOverlay;
 import com.csse3200.game.components.minigames.MinigameOverlayManager;
 import com.csse3200.game.components.minigames.blackjack.BlackjackConfig;
@@ -407,7 +406,6 @@ public class LevelsGameScreen extends BaseGameScreen {
     // disposed textures as black boxes in the next level.
     paths.add(ItemFactory.GOLD_TEXTURE);
     paths.add("images/projectiles/poison_arrow.png");
-    paths.addAll(List.of(PauseButtonDisplay.extraTextures()));
     paths.addAll(WheelConfig.TEXTURES);
     paths.addAll(BlackjackConfig.TEXTURES);
     paths.addAll(List.of(ItemAssets.getTextures()));
@@ -486,7 +484,6 @@ public class LevelsGameScreen extends BaseGameScreen {
         // Keep this a lambda: pauseOverlay is assigned after createUI() runs in the constructor,
         // and a
         // method reference would read it (still null) immediately.
-        .addComponent(new PauseButtonDisplay(() -> pauseOverlay.request()))
         .addComponent(gameEndDisplay) // Add GameEndDisplay component to the UI entity
         .addComponent(new GameEndActions(this.game, this::restartAtCheckpoint))
         .addComponent(terminal)
