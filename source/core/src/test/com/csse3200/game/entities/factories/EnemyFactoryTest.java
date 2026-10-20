@@ -361,7 +361,7 @@ class EnemyFactoryTest {
     assertNotNull(boss.getComponent(AnimationRenderComponent.class));
     assertEquals(1, countOf(tasks, SweepAttackTask.class), "a telegraphed melee sweep");
     assertEquals(1, countOf(tasks, RangedAttackTask.class), "and a projectile attack");
-    assertEquals(300, boss.getComponent(CombatStatsComponent.class).getHealth());
+    assertEquals(600, boss.getComponent(CombatStatsComponent.class).getHealth());
   }
 
   @Test
