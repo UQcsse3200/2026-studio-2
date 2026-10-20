@@ -5,6 +5,8 @@ import com.badlogic.gdx.Input.Buttons;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.graphics.Cursor;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -35,6 +37,12 @@ public class KeyboardPlayerInputComponent extends InputComponent {
   private boolean dead;
   private boolean rightMouseHeld;
   private boolean cheats = false;
+  private Cursor cursorNormal;
+  private Cursor cursorCrosshairs;
+  private static final int CURSOR_NORMAL_X = 0;
+  private static final int CURSOR_NORMAL_Y = 0;
+  private static final int CURSOR_CROSSHAIRS_X = 16;
+  private static final int CURSOR_CROSSHAIRS_Y = 16;
 
   public KeyboardPlayerInputComponent() {
     super(5);
@@ -49,6 +57,16 @@ public class KeyboardPlayerInputComponent extends InputComponent {
     entity.getEvents().addListener("openShop", this::releaseHeldGameplayInput);
     entity.getEvents().addListener("closeShop", this::syncReleasedShootButton);
     entity.getEvents().addListener("releaseHeldGameplayInput", this::releaseHeldGameplayInput);
+    cursorNormal =
+        Gdx.graphics.newCursor(
+            new Pixmap(Gdx.files.internal("images/ui/cursor.png")),
+            CURSOR_NORMAL_X,
+            CURSOR_NORMAL_Y);
+    cursorCrosshairs =
+        Gdx.graphics.newCursor(
+            new Pixmap(Gdx.files.internal("images/ui/cursor_crosshairs.png")),
+            CURSOR_CROSSHAIRS_X,
+            CURSOR_CROSSHAIRS_Y);
   }
 
   /**
@@ -299,6 +317,7 @@ public class KeyboardPlayerInputComponent extends InputComponent {
     }
     if (button == Buttons.RIGHT) {
       rightMouseHeld = true;
+      Gdx.graphics.setCursor(cursorCrosshairs);
       return triggerAimedEvent("shoot", screenX, screenY);
     }
     return false;
@@ -333,7 +352,9 @@ public class KeyboardPlayerInputComponent extends InputComponent {
     }
 
     if (button == Buttons.RIGHT) {
-      // Clear even if the shop is open. The overlay may still deliver this event, and swallowing
+        Gdx.graphics.setCursor(cursorNormal);
+
+        // Clear even if the shop is open. The overlay may still deliver this event, and swallowing
       // it without cancelling leaves the bow stuck charging after the shop closes.
       clearHeldShootButton(isShopOpen() || isPaused());
       return true;
