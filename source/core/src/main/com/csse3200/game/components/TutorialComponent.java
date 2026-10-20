@@ -1,6 +1,9 @@
 package com.csse3200.game.components;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
+import com.csse3200.game.entities.configs.Portrait;
+import com.csse3200.game.entities.factories.TextBoxFactory;
 import com.csse3200.game.input.InputComponent;
 import com.csse3200.game.ui.terminal.Terminal;
 
@@ -13,14 +16,32 @@ import com.csse3200.game.ui.terminal.Terminal;
  */
 public class TutorialComponent extends InputComponent {
   private final TextBoxComponent textBox;
+  private final Runnable onFinished;
   private int step = 0;
   private boolean seenA = false;
   private boolean seenD = false;
   private boolean finished = false;
+  private boolean disposed = false;
 
   public TutorialComponent(TextBoxComponent textBox) {
+    this(textBox, () -> {});
+  }
+
+  public TutorialComponent(TextBoxComponent textBox, Runnable onFinished) {
     super(6);
     this.textBox = textBox;
+    this.onFinished = onFinished == null ? () -> {} : onFinished;
+  }
+
+  /** Creates and starts the tutorial using the portrait textbox factory. */
+  public static TutorialComponent start(Runnable onFinished) {
+    TextBoxComponent textBox = new TextBoxFactory().createPortraitTextBox(Portrait.CALYPSO_HAPPY);
+    if (textBox == null) {
+      return null;
+    }
+    TutorialComponent tutorial = new TutorialComponent(textBox, onFinished);
+    tutorial.create();
+    return tutorial;
   }
 
   @Override
@@ -70,11 +91,17 @@ public class TutorialComponent extends InputComponent {
     textBox.advance();
     textBox.dismiss();
     finished = true;
-    dispose();
+    onFinished.run();
+    // Removing this input handler during keyDown can skip the player's SHIFT handler.
+    Gdx.app.postRunnable(this::dispose);
   }
 
   @Override
   public void dispose() {
+    if (disposed) {
+      return;
+    }
+    disposed = true;
     if (textBox != null && !textBox.isDismissed()) {
       textBox.dismiss();
     }

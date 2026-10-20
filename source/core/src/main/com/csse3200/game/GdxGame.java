@@ -235,6 +235,30 @@ public class GdxGame extends Game {
   }
 
   /**
+   * @return whether the active save has already completed the movement tutorial.
+   */
+  public boolean isTutorialCompleted() {
+    if (activeSaveSlot < 0) {
+      return false;
+    }
+    SaveFile save = pendingSave != null ? pendingSave : SaveManager.read(activeSaveSlot);
+    return save != null && save.tutorialCompleted;
+  }
+
+  /** Persists tutorial completion immediately, without waiting for a checkpoint autosave. */
+  public void markTutorialCompleted() {
+    if (activeSaveSlot < 0) {
+      return;
+    }
+    SaveFile save = SaveManager.read(activeSaveSlot);
+    if (save == null) {
+      return;
+    }
+    save.tutorialCompleted = true;
+    SaveManager.write(activeSaveSlot, save);
+  }
+
+  /**
    * Applies the loaded save's player stats (health, max health, gold, inventory) to the player
    * entity as soon as it exists. No-op when no save is being loaded or the save has no recorded
    * player state (a brand-new game keeps the level defaults).
@@ -365,15 +389,15 @@ public class GdxGame extends Game {
       case SANDBOX:
         return new SandboxGameScreen(this);
       case LEVEL_2_GAME:
-        LevelsGameScreen screen2 = new LevelsGameScreen(this);
+        LevelsGameScreen screen2 = new LevelsGameScreen(this, false);
         screen2.queueAreaSwap(LEVEL_2);
         return screen2;
       case LEVEL_3_GAME:
-        LevelsGameScreen screen3 = new LevelsGameScreen(this);
+        LevelsGameScreen screen3 = new LevelsGameScreen(this, false);
         screen3.queueAreaSwap(LEVEL_3);
         return screen3;
       case LEVEL_BOSS_GAME:
-        LevelsGameScreen bossScreen = new LevelsGameScreen(this);
+        LevelsGameScreen bossScreen = new LevelsGameScreen(this, false);
         bossScreen.queueAreaSwap("boss");
         return bossScreen;
       case SETTINGS:

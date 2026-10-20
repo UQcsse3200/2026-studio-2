@@ -13,6 +13,7 @@ import com.csse3200.game.areas.terrain.TerrainFactory;
 import com.csse3200.game.components.ButtonSound;
 import com.csse3200.game.components.GameVolume;
 import com.csse3200.game.components.SoundEffects;
+import com.csse3200.game.components.TutorialComponent;
 import com.csse3200.game.components.gamearea.CoordinateDisplay;
 import com.csse3200.game.components.gamearea.PerformanceDisplay;
 import com.csse3200.game.components.item.ItemAssets;
@@ -68,11 +69,13 @@ public class LevelsGameScreen extends BaseGameScreen {
   private String level = LEVEL1;
 
   private final GdxGame game;
+  private final boolean startTutorial;
   private final SpinTheWheelOverlay wheelOverlay;
   private final PauseMenuOverlay pauseOverlay;
   private final BlackjackOverlay blackjackOverlay;
   private final MinigameOverlayManager minigameOverlayManager;
   private Entity player;
+  private TutorialComponent tutorial;
   private GameEndDisplay gameEndDisplay;
   private Terminal terminal;
   private final GameplayCursor cursor = new GameplayCursor();
@@ -90,8 +93,13 @@ public class LevelsGameScreen extends BaseGameScreen {
   private float gravity = 1f;
 
   public LevelsGameScreen(GdxGame game) {
+    this(game, true);
+  }
+
+  public LevelsGameScreen(GdxGame game, boolean startTutorial) {
     super();
     this.game = game;
+    this.startTutorial = startTutorial;
 
     // Only this screen uses the save handler, so it is registered here; BaseGameScreen sets up
     // everything the game screens share
@@ -133,6 +141,9 @@ public class LevelsGameScreen extends BaseGameScreen {
     // save is in level 1; saves in other levels are restored after their area swap instead.
     game.applyPendingSavePlayer(player);
     game.applyPendingSaveWorld(currentGameArea, level);
+    if (startTutorial && !game.isTutorialCompleted()) {
+      tutorial = TutorialComponent.start(game::markTutorialCompleted);
+    }
     player.getEvents().addListener("respawnAtCheckpoint", () -> currentGameArea.respawn());
     player.getEvents().addListener("toggleMap", () -> currentGameArea.toggleLevelMap());
     player.getEvents().addListener("toggleBossView", () -> currentGameArea.toggleBossCamera());
@@ -342,6 +353,9 @@ public class LevelsGameScreen extends BaseGameScreen {
 
   @Override
   public void dispose() {
+    if (tutorial != null) {
+      tutorial.dispose();
+    }
     cursor.dispose();
     super.dispose();
   }
