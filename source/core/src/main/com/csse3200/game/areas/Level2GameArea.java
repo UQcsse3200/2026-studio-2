@@ -190,9 +190,9 @@ public class Level2GameArea extends GameArea {
 
   private void spawnTorches() {
     GridPoint2[] torchSpawns = {
-      new GridPoint2(10, 41),
+      new GridPoint2(10, 40),
       new GridPoint2(2, 8),
-      new GridPoint2(10, 8),
+      new GridPoint2(12, 8),
       new GridPoint2(37, 28),
       new GridPoint2(43, 8),
       new GridPoint2(38, 8),

@@ -339,7 +339,7 @@ public class Level3GameArea extends GameArea {
   private void spawnTorches() {
     GridPoint2[] guideTorches = {
       new GridPoint2(19, 11),
-      new GridPoint2(18, 16),
+      new GridPoint2(18, 15),
       new GridPoint2(5, 22),
       new GridPoint2(7, 28),
       new GridPoint2(11, 37),
@@ -348,7 +348,7 @@ public class Level3GameArea extends GameArea {
       new GridPoint2(17, 68),
       new GridPoint2(14, 81),
       new GridPoint2(26, 85),
-      new GridPoint2(11, 95),
+      new GridPoint2(11, 94),
       new GridPoint2(3, 107),
       new GridPoint2(23, 107),
       new GridPoint2(3, 101),

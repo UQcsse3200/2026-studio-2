@@ -62,9 +62,7 @@ public class Level3Config extends LevelConfig {
           new PlatformConfig(new GridPoint2(6, 10), 3, 1, 11, platformTFP), // P3
           new PlatformConfig(new GridPoint2(17, 10), 3, 1, 0, platformTFP), // P4
           new PlatformConfig(new GridPoint2(12, 12), 3, 1, 0, platformTFP), // P5
-          new PlatformConfig(new GridPoint2(25, 14), 3, 1, 0, platformTFP), // P6
-          new PlatformConfig(new GridPoint2(29, 17), 3, 1, 0, platformTFP), // P6
-          new PlatformConfig(new GridPoint2(25, 20), 3, 1, 0, platformTFP), // P6
+          new PlatformConfig(new GridPoint2(24, 14), 3, 1, 0, platformTFP), // P6
           new PlatformConfig(new GridPoint2(7, 18), 3, 1, 0, platformTFP), // P7
           new PlatformConfig(new GridPoint2(20, 19), 3, 3, 8, groundTFP), // P9
           new PlatformConfig(new GridPoint2(3, 21), 3, 1, 3, platformTFP), // P10
@@ -359,7 +357,7 @@ public class Level3Config extends LevelConfig {
               180f,
               new String[] {ENEMY_ARENA2_COMPLETE},
               4f,
-              false,
+              true,
               SpawnerComponent.ACTIVATION_MODE.TOGGLE), // SBT2
         };
 
@@ -471,7 +469,7 @@ public class Level3Config extends LevelConfig {
               new String[] {ENEMY_ARENA2, WATER_STOP},
               true),
           new TriggerConfig(
-              new GridPoint2(12, 100),
+              new GridPoint2(12, 99),
               new Vector2(3f, 1f),
               new String[] {BOSS_ARENA, WATER_STOP},
               true)
