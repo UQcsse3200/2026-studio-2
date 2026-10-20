@@ -1,6 +1,7 @@
 package com.csse3200.game.screens.minigames;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -9,14 +10,14 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.badlogic.gdx.Application;
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.csse3200.game.GdxGame;
 import com.csse3200.game.components.inventory.InventoryComponent;
+import com.csse3200.game.components.minigames.blackjack.Blackjack;
 import com.csse3200.game.components.minigames.blackjack.BlackjackActions;
 import com.csse3200.game.components.minigames.blackjack.BlackjackConfig;
+import com.csse3200.game.components.minigames.blackjack.BlackjackDialogue;
 import com.csse3200.game.components.minigames.blackjack.BlackjackDisplay;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
@@ -26,11 +27,11 @@ import com.csse3200.game.rendering.RenderService;
 import com.csse3200.game.rendering.Renderer;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
 
 /**
  * Tests the stable parts of {@link BlackjackScreen}: which assets it asks for, the components it
@@ -139,63 +140,71 @@ class BlackjackScreenTest {
     verify(resources).unloadAssets(BlackjackConfig.SOUNDS.toArray(String[]::new));
   }
 
-  @Test
-  void storyWinContinuesOnceAfterTheResultIsAcknowledged() {
-    GdxGame game = mock(GdxGame.class);
-    screen = new BlackjackScreen(game, true);
+  private Entity createUiFor(GdxGame game, boolean storyMode) {
+    screen = new BlackjackScreen(game, storyMode);
     RenderService renderService = mock(RenderService.class);
-    Stage stage = mock(Stage.class);
-    when(renderService.getStage()).thenReturn(stage);
+    when(renderService.getStage()).thenReturn(mock(Stage.class));
     ServiceLocator.registerRenderService(renderService);
-    Entity ui = screen.createUI();
-    Application previousApp = Gdx.app;
-    Application app = mock(Application.class);
-    Gdx.app = app;
-    try {
-      ui.getEvents().trigger("roundCompleted", false);
-      verify(game, never()).playCutscene("cutscene5", GdxGame.ScreenType.LEVEL_3_GAME);
-      ui.getEvents().trigger("roundCompleted", true);
-      ui.getEvents().trigger("roundCompleted", true);
+    return screen.createUI();
+  }
 
-      ArgumentCaptor<Runnable> next = ArgumentCaptor.forClass(Runnable.class);
-      verify(app).postRunnable(next.capture());
-      verify(game, never()).playCutscene("cutscene5", GdxGame.ScreenType.LEVEL_3_GAME);
-      next.getValue().run();
-      verify(game).playCutscene("cutscene5", GdxGame.ScreenType.LEVEL_3_GAME);
-    } finally {
-      Gdx.app = previousApp;
-    }
+  /** The inventory used for betting is held by the display, not retrieved by component subclass. */
+  private static InventoryComponent displayInventory(BlackjackDisplay display) throws Exception {
+    Field field = BlackjackDisplay.class.getDeclaredField("inventory");
+    field.setAccessible(true);
+    return (InventoryComponent) field.get(display);
   }
 
   @Test
-  void storyLossWithNoGoldAllowsAnotherAttempt() {
+  void storyBlackjackStartsWithSavedGoldAndSynchronizesChanges() throws Exception {
     GdxGame game = mock(GdxGame.class);
-    screen = new BlackjackScreen(game, true);
-    RenderService renderService = mock(RenderService.class);
-    Stage stage = mock(Stage.class);
-    when(renderService.getStage()).thenReturn(stage);
-    ServiceLocator.registerRenderService(renderService);
-    Entity ui = screen.createUI();
-    InventoryComponent inventory = ui.getComponent(InventoryComponent.class);
-    inventory.setGold(0);
+    when(game.getSavedPlayerGold()).thenReturn(25);
 
-    ui.getEvents().trigger("roundCompleted", false);
+    Entity ui = createUiFor(game, true);
+    BlackjackDisplay display = ui.getComponent(BlackjackDisplay.class);
+    InventoryComponent inventory = displayInventory(display);
 
-    org.junit.jupiter.api.Assertions.assertEquals(100, inventory.getGold());
+    assertNotNull(inventory);
+    assertEquals(25, inventory.getGold());
+    inventory.setGold(24);
+    verify(game).updateSavedPlayerGold(24);
+  }
+
+  @Test
+  void storyBlackjackProvidesVictoryCallbackWithoutAdvancingOnSingleRoundEvent() throws Exception {
+    GdxGame game = mock(GdxGame.class);
+    Entity ui = createUiFor(game, true);
+    BlackjackDisplay display = ui.getComponent(BlackjackDisplay.class);
+    Field field = BlackjackDisplay.class.getDeclaredField("storyWinCallback");
+    field.setAccessible(true);
+
+    assertNotNull(field.get(display));
+    // The legacy single-round event must not skip the best-of-five match.
+    ui.getEvents().trigger("roundCompleted", true);
     verify(game, never()).playCutscene("cutscene5", GdxGame.ScreenType.LEVEL_3_GAME);
   }
 
   @Test
-  void ordinaryBlackjackWinDoesNotAdvanceTheStory() {
+  void outOfGoldDialogueRefillsTenGoldAndAllowsMatchRetry() {
+    Blackjack blackjack = new Blackjack(1);
+    blackjack.setBalance(0);
+
+    BlackjackDialogue.of(BlackjackDialogue.Kind.OUT_OF_GOLD).pressButton(blackjack, null);
+
+    assertEquals(Blackjack.REFILL_GOLD, blackjack.getBalance());
+    assertEquals(0, blackjack.getPlayerWins());
+    assertEquals(0, blackjack.getDealerWins());
+  }
+
+  @Test
+  void blackjackWithoutSavedPlayerKeepsPracticeBalance() throws Exception {
     GdxGame game = mock(GdxGame.class);
-    screen = new BlackjackScreen(game);
-    RenderService renderService = mock(RenderService.class);
-    Stage stage = mock(Stage.class);
-    when(renderService.getStage()).thenReturn(stage);
-    ServiceLocator.registerRenderService(renderService);
+    when(game.getSavedPlayerGold()).thenReturn((Integer) null);
+    Entity ui = createUiFor(game, false);
+    InventoryComponent inventory = displayInventory(ui.getComponent(BlackjackDisplay.class));
 
-    screen.createUI().getEvents().trigger("roundCompleted", true);
-
-    verify(game, never()).playCutscene("cutscene5", GdxGame.ScreenType.LEVEL_3_GAME);
+    assertEquals(100, inventory.getGold());
+    inventory.setGold(99);
+    verify(game, never()).updateSavedPlayerGold(99);
   }
 }

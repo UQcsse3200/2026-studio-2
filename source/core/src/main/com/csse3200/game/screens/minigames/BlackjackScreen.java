@@ -1,6 +1,5 @@
 package com.csse3200.game.screens.minigames;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.csse3200.game.GdxGame;
@@ -21,7 +20,7 @@ public class BlackjackScreen extends MinigameScreen {
   private final boolean storyMode;
   private static final String BLACKJACK_MUSIC = "sounds/minigames/blackjack/blackjack-bgm.mp3";
   private static final int STARTING_BALANCE = 100;
-  private final boolean storyMode;
+
   private boolean leaving = false;
 
   /**
@@ -32,12 +31,13 @@ public class BlackjackScreen extends MinigameScreen {
   public BlackjackScreen(GdxGame game) {
     this(game, false);
   }
-/**
- * Creates Blackjack in standalone mode or as the story encounter.
- * Winning the match plays Cutscene 5 and continues to Level 3 in both modes.
- *
- * @param storyMode whether Blackjack is launched as part of the Level 2 story
- */
+
+  /**
+   * Creates Blackjack in standalone mode or as the story encounter. Winning the match plays
+   * Cutscene 5 and continues to Level 3 in both modes.
+   *
+   * @param storyMode whether Blackjack is launched as part of the Level 2 story
+   */
   public BlackjackScreen(GdxGame game, boolean storyMode) {
     super(game);
     this.storyMode = storyMode;
@@ -87,7 +87,6 @@ public class BlackjackScreen extends MinigameScreen {
   protected Entity createUI() {
     Stage stage = ServiceLocator.getRenderService().getStage();
 
-
     // The player's gold is transferred via a snapshot across screen disposal.
     // A standalone launch without a player keeps its 100-gold practice balance.
     Integer savedGold = game.getSavedPlayerGold();
@@ -117,6 +116,5 @@ public class BlackjackScreen extends MinigameScreen {
         .addComponent(new BlackjackRulesDisplay())
         .addComponent(new BlackjackActions(game))
         .addComponent(new InputDecorator(stage, 10));
-
   }
 }
