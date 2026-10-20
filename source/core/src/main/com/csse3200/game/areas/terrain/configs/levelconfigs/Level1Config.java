@@ -134,8 +134,8 @@ public class Level1Config extends LevelConfig {
         1,
         grapple,
         platformTFP,
-        new Vector2(from.x, from.y),
-        new Vector2(to.x, to.y),
+        new Vector2((float) from.x, (float) from.y),
+        new Vector2((float) to.x, (float) to.y),
         new Vector2(speedX, speedY),
         new String[] {});
   }
