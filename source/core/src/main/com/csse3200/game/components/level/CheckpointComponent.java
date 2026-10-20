@@ -22,6 +22,7 @@ public class CheckpointComponent extends Component {
   public static final float ATLAS_WIDTH = 1.6f;
 
   public static final float ATLAS_HEIGHT = 2f;
+  Logger logger = new Logger("Lighting Engine");
 
   /**
    * Constructor for a new CheckpointComponent
@@ -50,8 +51,7 @@ public class CheckpointComponent extends Component {
     try {
       pointLightComponent = entity.getComponent(PointLightComponent.class);
     } catch (Exception e) {
-      Logger logger = new Logger("Lighting Engine");
-      logger.error("pointLightComponent is null");
+      logger.error(PointLightComponent.class.getSimpleName() + " could not be created. " + e);
       pointLightComponent = null;
     }
     // The checkpoint entity draws itself; null when the level has no checkpoint atlas.

@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Disposable;
 import com.csse3200.game.components.Component;
+import com.csse3200.game.lighting.LightingEngine;
 import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.services.ServiceLocator;
 
@@ -17,8 +18,10 @@ public class PointLightComponent extends Component implements Disposable {
   private final RayHandler rayHandler;
   private PointLight circleLight;
 
-  private final int rays;
+  private int rays;
+  private final int oldRayCount;
   private final Color color;
+  private float intensity = 1f;
   private float distance;
   private boolean isActive = true;
 
@@ -32,6 +35,7 @@ public class PointLightComponent extends Component implements Disposable {
   public PointLightComponent(RayHandler rayHandler, int rays, Color color, float distance) {
     this.rayHandler = rayHandler;
     this.rays = rays;
+    this.oldRayCount = rays;
     this.color = new Color(color);
     this.distance = distance;
   }
@@ -40,7 +44,12 @@ public class PointLightComponent extends Component implements Disposable {
   public void create() {
     // Initial position uses the entity's centre
     Vector2 p = entity.getPosition();
-    circleLight = new PointLight(rayHandler, rays, color, distance, p.x, p.y);
+    createLight(p.x, p.y, rays);
+    LightingEngine.addPointLight(this);
+  }
+
+  private void createLight(float x, float y, int rayCount) {
+    circleLight = new PointLight(rayHandler, rayCount, getEffectiveColor(), distance, x, y);
     circleLight.setSoftnessLength(1f);
     circleLight.setXray(false);
 
@@ -50,13 +59,47 @@ public class PointLightComponent extends Component implements Disposable {
     short maskBits = (short) ~(PhysicsLayer.DEFAULT | PhysicsLayer.CHARACTER);
     short groupIndex = 0;
     circleLight.setContactFilter(categoryBits, groupIndex, maskBits);
+    if (!isActive) {
+      circleLight.setActive(false);
+    }
+  }
+
+  public int getRayCount() {
+    return rays;
+  }
+
+  public float getLightX() {
+    return circleLight.getX();
+  }
+
+  public float getLightY() {
+    return circleLight.getY();
+  }
+
+  public float getLightDistance() {
+    return circleLight.getDistance();
+  }
+
+  public void setRayCount(int rayCount) {
+    if (circleLight == null || circleLight.getRayNum() == rayCount) {
+      return;
+    }
+    this.rays = rayCount;
   }
 
   @Override
   public void update() {
-    if (circleLight == null) return;
+    if (circleLight == null) {
+      return;
+    }
     if (circleLight.isActive() != this.isActive) {
       circleLight.setActive(this.isActive);
+    }
+    if (circleLight.getRayNum() != this.rays) {
+      float x = circleLight.getX();
+      float y = circleLight.getY();
+      circleLight.remove();
+      createLight(x, y, this.rays);
     }
 
     // get the amount of time passed
@@ -79,6 +122,7 @@ public class PointLightComponent extends Component implements Disposable {
 
   @Override
   public void dispose() {
+    LightingEngine.removePointLight(this);
     if (circleLight != null) {
       circleLight.remove();
       circleLight = null;
@@ -87,12 +131,34 @@ public class PointLightComponent extends Component implements Disposable {
 
   public PointLightComponent setColor(Color c) {
     this.color.set(c);
-    if (circleLight != null) circleLight.setColor(c);
+    applyEffectiveColor();
     return this;
+  }
+
+  public void setIntensity(float intensity) {
+    float clampedIntensity = Math.max(0f, Math.min(1f, intensity));
+    if (this.intensity == clampedIntensity) {
+      return;
+    }
+    this.intensity = clampedIntensity;
+    applyEffectiveColor();
+  }
+
+  private Color getEffectiveColor() {
+    return new Color(color.r * intensity, color.g * intensity, color.b * intensity, color.a);
+  }
+
+  private void applyEffectiveColor() {
+    if (circleLight != null) {
+      circleLight.setColor(getEffectiveColor());
+    }
   }
 
   public PointLightComponent setDistance(float d) {
     this.distance = d;
+    if (circleLight != null) {
+      circleLight.setDistance(d);
+    }
     return this;
   }
 
@@ -106,5 +172,9 @@ public class PointLightComponent extends Component implements Disposable {
 
   public float getDistance() {
     return distance;
+  }
+
+  public int getOldRayCount() {
+    return oldRayCount;
   }
 }
