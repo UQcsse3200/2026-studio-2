@@ -202,16 +202,24 @@ loadScripts(document, 'script');</script>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">The slot currently being written to, or -1 when no save is active.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#loadSave(int)" class="member-name-link">loadSave</a><wbr>(int&nbsp;slot)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isTutorialCompleted()" class="member-name-link">isTutorialCompleted</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#loadSave(int)" class="member-name-link">loadSave</a><wbr>(int&nbsp;slot)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Loads a save slot: records it as the active slot, queues its state for the gameplay screen and
  transitions to the saved level, skipping the intro cutscene.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#markSaveCompleted()" class="member-name-link">markSaveCompleted</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#markSaveCompleted()" class="member-name-link">markSaveCompleted</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Flags the active save as completed (won the game) so the save-select screen can show it.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#markTutorialCompleted()" class="member-name-link">markTutorialCompleted</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Persists tutorial completion immediately, without waiting for a checkpoint autosave.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#restorePlayerState(com.csse3200.game.entities.Entity)" class="member-name-link">restorePlayerState</a><wbr>(<a href="entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;player)</code></div>
@@ -378,6 +386,23 @@ loadScripts(document, 'script');</script>
 <h3>markSaveCompleted</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">markSaveCompleted</span>()</div>
 <div class="block">Flags the active save as completed (won the game) so the save-select screen can show it.</div>
+</section>
+</li>
+<li>
+<section class="detail" id="isTutorialCompleted()">
+<h3>isTutorialCompleted</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">isTutorialCompleted</span>()</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>whether the active save has already completed the movement tutorial.</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="markTutorialCompleted()">
+<h3>markTutorialCompleted</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">markTutorialCompleted</span>()</div>
+<div class="block">Persists tutorial completion immediately, without waiting for a checkpoint autosave.</div>
 </section>
 </li>
 <li>

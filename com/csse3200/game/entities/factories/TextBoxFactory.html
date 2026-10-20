@@ -118,6 +118,17 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-first">Modifier and Type</div>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../../components/TextBoxComponent.html" title="class in com.csse3200.game.components">TextBoxComponent</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#createPortraitTextBox(com.csse3200.game.entities.configs.Portrait)" class="member-name-link">createPortraitTextBox</a><wbr>(<a href="../configs/Portrait.html" title="enum class in com.csse3200.game.entities.configs">Portrait</a>&nbsp;portrait)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Creates the externally controlled tutorial textbox with a portrait and no caller-supplied text.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#createPortraitTextBox(java.lang.String,com.csse3200.game.entities.configs.Portrait)" class="member-name-link">createPortraitTextBox</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;text,
+ <a href="../configs/Portrait.html" title="enum class in com.csse3200.game.entities.configs">Portrait</a>&nbsp;portrait)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Creates a single-page text box with a character portrait.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#createTextBox(com.csse3200.game.entities.configs.TextConfig)" class="member-name-link">createTextBox</a><wbr>(<a href="../configs/TextConfig.html" title="class in com.csse3200.game.entities.configs">TextConfig</a>&nbsp;textConfig)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
@@ -178,6 +189,33 @@ loadScripts(document, 'script');</script>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>textConfig</code> - the text box config to display</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="createPortraitTextBox(java.lang.String,com.csse3200.game.entities.configs.Portrait)">
+<h3>createPortraitTextBox</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">createPortraitTextBox</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;text,
+ <a href="../configs/Portrait.html" title="enum class in com.csse3200.game.entities.configs">Portrait</a>&nbsp;portrait)</span></div>
+<div class="block">Creates a single-page text box with a character portrait.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>text</code> - text to display in the box</dd>
+<dd><code>portrait</code> - portrait to display above the box</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="createPortraitTextBox(com.csse3200.game.entities.configs.Portrait)">
+<h3>createPortraitTextBox</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../../components/TextBoxComponent.html" title="class in com.csse3200.game.components">TextBoxComponent</a></span>&nbsp;<span class="element-name">createPortraitTextBox</span><wbr><span class="parameters">(<a href="../configs/Portrait.html" title="enum class in com.csse3200.game.entities.configs">Portrait</a>&nbsp;portrait)</span></div>
+<div class="block">Creates the externally controlled tutorial textbox with a portrait and no caller-supplied text.
+ Uses the same default <a href="../configs/TextConfig.html" title="class in com.csse3200.game.entities.configs"><code>TextConfig</code></a> layout as the regular portrait textbox factory.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>portrait</code> - portrait to display for every tutorial page</dd>
+<dt>Returns:</dt>
+<dd>the created textbox, or <code>null</code> if the portrait is invalid</dd>
 </dl>
 </section>
 </li>
