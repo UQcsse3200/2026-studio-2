@@ -12,6 +12,9 @@ import static org.mockito.Mockito.when;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -122,8 +125,8 @@ class BlackjackRulesDisplayTest {
     Table overlay = field(rules, "rulesOverlay", Table.class);
     Table list = overlay.findActor("rulesList");
     List<String> shown = new ArrayList<>();
-    for (com.badlogic.gdx.scenes.scene2d.Actor actor : list.getChildren()) {
-      shown.add(((Label) actor).getText().toString());
+    for (Label label : labelsIn(list)) {
+      shown.add(label.getText().toString());
     }
 
     assertTrue(shown.contains("THE MATCH"));
@@ -139,7 +142,7 @@ class BlackjackRulesDisplayTest {
   }
 
   @Test
-  void shouldKeepRulesTextInsideTheParchment() {
+  void shouldKeepRulesTextInsideTheScroll() {
     BlackjackRulesDisplay rules = new BlackjackRulesDisplay();
     new Entity().addComponent(rules).create();
     rules.openRules();
@@ -151,19 +154,25 @@ class BlackjackRulesDisplayTest {
     Table popup = (Table) list.getParent();
     popup.validate();
     list.validate();
+    ImageButton closeButton = field(rules, "closeButton", ImageButton.class);
 
-    // The parchment is an 80px image with fixed 16px sides and 24px rods. Its 4px brown strip sits
-    // in the 48px stretched middle, so on screen it grows with the panel width.
-    float sideBand = 16f + 4f * (popup.getWidth() - 32f) / 48f;
-    for (com.badlogic.gdx.scenes.scene2d.Actor line : list.getChildren()) {
-      com.badlogic.gdx.math.Vector2 bottomLeft =
-          line.localToActorCoordinates(popup, new com.badlogic.gdx.math.Vector2(0, 0));
-      float right = bottomLeft.x + line.getWidth();
-      float top = bottomLeft.y + line.getHeight();
-      assertTrue(bottomLeft.x >= sideBand + 8f, "left edge of " + line);
-      assertTrue(right <= popup.getWidth() - sideBand - 8f, "right edge of " + line);
-      assertTrue(bottomLeft.y >= 24f, "bottom edge of " + line);
-      assertTrue(top <= popup.getHeight() - 24f, "top edge of " + line);
+    // The scroll is 159 x 79 art pixels, enlarged by a whole number. Text must stay inside its
+    // margins (17px sides, 13px top, 11px bottom) and above the close button.
+    float scale = popup.getWidth() / 159f;
+    assertEquals(Math.round(scale), scale, 0.001f, "scroll scaled by a whole number");
+    assertEquals(79f * scale, popup.getHeight(), 0.001f);
+
+    float buttonTop =
+        closeButton.localToActorCoordinates(popup, new Vector2(0, 0)).y + closeButton.getHeight();
+    for (Label label : labelsIn(list)) {
+      Vector2 bottomLeft = label.localToActorCoordinates(popup, new Vector2(0, 0));
+      float right = bottomLeft.x + label.getWidth();
+      float top = bottomLeft.y + label.getHeight();
+      assertTrue(bottomLeft.x >= 17f * scale, "left edge of " + label);
+      assertTrue(right <= popup.getWidth() - 17f * scale, "right edge of " + label);
+      assertTrue(bottomLeft.y >= 11f * scale, "bottom edge of " + label);
+      assertTrue(bottomLeft.y >= buttonTop, "label overlaps close button: " + label);
+      assertTrue(top <= popup.getHeight() - 13f * scale, "top edge of " + label);
     }
   }
 
@@ -224,6 +233,18 @@ class BlackjackRulesDisplayTest {
             BlackjackRulesDisplay.RULES_CLOSED,
             () -> events.add(BlackjackRulesDisplay.RULES_CLOSED));
     return events;
+  }
+
+  private static List<Label> labelsIn(Group group) {
+    List<Label> labels = new ArrayList<>();
+    for (Actor child : group.getChildren()) {
+      if (child instanceof Label label) {
+        labels.add(label);
+      } else if (child instanceof Group nested) {
+        labels.addAll(labelsIn(nested));
+      }
+    }
+    return labels;
   }
 
   private static void click(ImageButton button) {
