@@ -48,7 +48,8 @@ class GameplayCursorTest {
     Graphics graphics = mock(Graphics.class);
     when(graphics.getWidth()).thenReturn(1280);
     when(graphics.getHeight()).thenReturn(720);
-    when(graphics.newCursor(any(Pixmap.class), anyInt(), anyInt())).thenReturn(mock(Cursor.class));
+    Cursor themedCursor = mock(Cursor.class);
+    when(graphics.newCursor(any(Pixmap.class), anyInt(), anyInt())).thenReturn(themedCursor);
     Gdx.graphics = graphics;
     ThemedCursor.dispose();
   }
@@ -193,19 +194,20 @@ class GameplayCursorTest {
         .thenAnswer(call -> call.<Vector3>getArgument(0).set(640f, 300f, 0f));
     when(camera.unproject(any(Vector3.class)))
         .thenAnswer(call -> call.<Vector3>getArgument(0).set(5f, 0f, 0f));
-    KeyboardPlayerInputComponent input = player.getComponent(KeyboardPlayerInputComponent.class);
-    input.setCameraComponent(new CameraComponent(camera));
+    KeyboardPlayerInputComponent playerInput =
+        player.getComponent(KeyboardPlayerInputComponent.class);
+    playerInput.setCameraComponent(new CameraComponent(camera));
     cursor.update(player, false);
-    when(this.input.isCursorCatched()).thenReturn(true);
+    when(input.isCursorCatched()).thenReturn(true);
     // The stale tracked position, which should be ignored.
-    when(this.input.getX()).thenReturn(5000);
-    when(this.input.getY()).thenReturn(-200);
+    when(input.getX()).thenReturn(5000);
+    when(input.getY()).thenReturn(-200);
 
-    input.touchDown(5000, -200, 0, Buttons.RIGHT);
+    playerInput.touchDown(5000, -200, 0, Buttons.RIGHT);
     cursor.update(player, false);
 
     assertTrue(cursor.isVisible());
-    verify(this.input).setCursorPosition(640, 420);
+    verify(input).setCursorPosition(640, 420);
   }
 
   @Test
