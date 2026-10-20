@@ -1,0 +1,76 @@
+{
+  "fadeDuration": 0.4,
+  "music": "sounds/Main_menu_sound.mp3",
+  "scenes": [
+    {
+      "image": "scene1.jpeg",
+      "text": {
+        "xPos": 600,
+        "yPos": 150,
+        "charsPerSecond": 20,
+        "maxWidth": 600,
+        "padding": 16,
+        "borderThickness": 3,
+        "textAlignment": "center",
+        "pages": [
+          "Calypso fell to her knees, her fingers digging into the earth beneath her.",
+          "For centuries, she had watched the world pass her by, until fate brought a mortal to her shores. The thought of losing him was unbearable.",
+          "She had fought gods and defied destiny in her own way, yet she could not make one man choose to stay.",
+          "And now, after everything, he was leaving her behind."
+        ]
+      }
+    },
+    {
+      "image": "scene2.jpeg",
+      "text": {
+        "xPos": 600,
+        "yPos": 150,
+        "charsPerSecond": 20,
+        "maxWidth": 600,
+        "padding": 16,
+        "borderThickness": 3,
+        "textAlignment": "center",
+        "pages": [
+          "Odysseus approached her, his weapon lowered. He had no wish to see her suffer, but neither could he surrender the life that awaited him beyond the sea.",
+          "He spoke not of duty or destiny, but of love. Of how it could not be demanded, nor held captive, nor earned through sacrifice alone.",
+          "To love someone was to wish for their happiness, even when it lay beyond your reach. And sometimes, it meant finding the strength to let them go...."
+        ]
+      }
+    },
+    {
+      "image": "scene3.jpeg",
+      "text": {
+        "xPos": 600,
+        "yPos": 150,
+        "charsPerSecond": 20,
+        "maxWidth": 600,
+        "padding": 16,
+        "borderThickness": 3,
+        "textAlignment": "center",
+        "pages": [
+          "For a long while, Calypso said nothing. Then, slowly, her fingers loosened around the hilt of her sword. It fell into the sand.",
+          "She reached for Odysseus, and he held her as she wept. She still loved him. Perhaps she always would. But at last, she understood that love could not be made a prison, no matter how beautiful its walls.",
+          "And so, with an aching heart, Calypso gave him the one thing she had struggled most to offer, his freedom."
+        ]
+      }
+    },
+    {
+      "image": "scene4.jpeg",
+      "text": {
+        "xPos": 600,
+        "yPos": 150,
+        "charsPerSecond": 20,
+        "maxWidth": 600,
+        "padding": 16,
+        "borderThickness": 3,
+        "textAlignment": "center",
+        "pages": [
+          "From the wreckage of his old life, Odysseus built a vessel for the journey ahead. And Calypso, who had once done everything to keep him on her island, helped him prepare to leave it.",
+          "At dawn, he sailed toward Ithaca, toward the home and the wife he had never stopped longing for. Calypso watched until his boat dwindled into the vastness of the sea.",
+          "The island fell quiet once more. She was alone, as she had been for centuries. Yet this time, she had not been abandoned against her will, nor had she kept someone against his.",
+          "For the first time, she had loved someone enough to let him go."
+        ]
+      }
+    }
+  ]
+}

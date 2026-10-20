@@ -1,0 +1,26 @@
+{
+  "xPos": 20,
+  "yPos": 150,
+  "textColour": "Color.BLACK",
+  "backgroundColour": "Color.TAN",
+  "borderColour": "Color.BROWN",
+  "charsPerSecond": 30,
+  "maxWidth": 320,
+  "padding": 16,
+  "borderThickness": 3,
+  "fontPath": "flat-earth/skin/fonts/PixeloidSans.fnt",
+  "textAlignment": "left",
+  "autoDismissSeconds": 5,
+  "pages": [
+    "And what awaits you in Ithica now? Your throne has surely been usurped, your dear Penelope has surely been taken by another, and your son Telemachus is surely a man grown now, and has no need of you.",
+    "...Perhaps I've been too patient with you, my love..."
+  ],
+  "portraitPaths": [
+    "images/portraits/calypsoArgumentative.jpeg",
+    "images/portraits/calypsoOminous.jpeg"
+  ],
+  "steps": [
+    {"keys": ["TAB"]},
+    {"keys": ["TAB"]}
+  ]
+}
