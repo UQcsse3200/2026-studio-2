@@ -1,5 +1,6 @@
 package com.csse3200.game.rendering;
 
+import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -8,7 +9,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.components.level.RotatableMapComponent;
 import com.csse3200.game.services.ServiceLocator;
 
-public class DynamicTextureRenderComponent extends RenderComponent {
+public class DynamicTextureRenderComponent extends RenderComponent implements CullingRenderable {
   private Texture texture;
   private TextureRegion textureRegion;
   private RotatableMapComponent rotateComponent;
@@ -91,5 +92,14 @@ public class DynamicTextureRenderComponent extends RenderComponent {
     batch.draw(
         textureRegion, drawX, drawY, width / 2f, height / 2f, width, height, 1f, 1f, rotation);
     batch.setColor(prevColor);
+  }
+
+  @Override
+  public boolean isVisible(Camera camera) {
+    Vector2 position = entity.getPosition();
+    Vector2 scale = entity.getScale();
+    float rotation = rotateComponent != null ? rotateComponent.getRotation() : 0f;
+    return RenderCulling.isVisible(
+        camera.frustum, position.x, position.y, scale.x, scale.y, rotation);
   }
 }

@@ -1,5 +1,6 @@
 package com.csse3200.game.rendering;
 
+import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -7,7 +8,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.services.ServiceLocator;
 
-public class TiledRenderComponent extends RenderComponent {
+public class TiledRenderComponent extends RenderComponent implements CullingRenderable {
   private final TextureRegion textureRegion;
   private final float tileWorldSize;
   private static final int WATER_LAYER = 11;
@@ -36,6 +37,13 @@ public class TiledRenderComponent extends RenderComponent {
 
     batch.draw(textureRegion, position.x, position.y, scale.x, scale.y);
     batch.setColor(prevColor);
+  }
+
+  @Override
+  public boolean isVisible(Camera camera) {
+    Vector2 position = entity.getPosition();
+    Vector2 scale = entity.getScale();
+    return RenderCulling.isVisible(camera.frustum, position.x, position.y, scale.x, scale.y, 0f);
   }
 
   @Override
