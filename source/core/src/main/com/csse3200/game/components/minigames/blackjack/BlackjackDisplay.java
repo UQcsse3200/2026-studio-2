@@ -385,7 +385,6 @@ public class BlackjackDisplay extends UIComponent {
 
     /* Middle Column */
     Table middle = new Table();
-    middle.setDebug(true, true);
     middle.add(dealerRegion).expandX().fillX().height(245f).top();
     middle.row();
     middle.add(centerRegion).expand().center();
