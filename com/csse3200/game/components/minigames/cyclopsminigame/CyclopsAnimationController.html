@@ -129,6 +129,12 @@ loadScripts(document, 'script');</script>
 <div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(com.csse3200.game.entities.Entity,float)" class="member-name-link">CyclopsAnimationController</a><wbr>(<a href="../../../entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;target,
  float&nbsp;groundY)</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
+<div class="col-constructor-name odd-row-color"><code><a href="#%3Cinit%3E(com.csse3200.game.entities.Entity,float,com.csse3200.game.rendering.AnimationRenderComponent)" class="member-name-link">CyclopsAnimationController</a><wbr>(<a href="../../../entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;target,
+ float&nbsp;groundY,
+ <a href="../../../rendering/AnimationRenderComponent.html" title="class in com.csse3200.game.rendering">AnimationRenderComponent</a>&nbsp;animator)</code></div>
+<div class="col-last odd-row-color">
+<div class="block">Creates a controller that drives the given animator.</div>
+</div>
 </div>
 </section>
 </li>
@@ -147,6 +153,16 @@ loadScripts(document, 'script');</script>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#create()" class="member-name-link">create</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Called when the entity is created and registered.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getCurrentAnimation()" class="member-name-link">getCurrentAnimation</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns the animation his animator is playing.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>float</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getZIndex()" class="member-name-link">getZIndex</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Draw depth for his renderer.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#update()" class="member-name-link">update</a>()</code></div>
@@ -216,6 +232,22 @@ loadScripts(document, 'script');</script>
  float&nbsp;groundY)</span></div>
 </section>
 </li>
+<li>
+<section class="detail" id="&lt;init&gt;(com.csse3200.game.entities.Entity,float,com.csse3200.game.rendering.AnimationRenderComponent)">
+<h3>CyclopsAnimationController</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">CyclopsAnimationController</span><wbr><span class="parameters">(<a href="../../../entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;target,
+ float&nbsp;groundY,
+ <a href="../../../rendering/AnimationRenderComponent.html" title="class in com.csse3200.game.rendering">AnimationRenderComponent</a>&nbsp;animator)</span></div>
+<div class="block">Creates a controller that drives the given animator. Use this when the animator is a subclass
+ (such as one with its own draw depth), since components are looked up by their exact class.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>target</code> - the entity he attacks</dd>
+<dd><code>groundY</code> - the floor height he lands at</dd>
+<dd><code>animator</code> - his animator, or null to look up the entity's AnimationRenderComponent</dd>
+</dl>
+</section>
+</li>
 </ul>
 </section>
 </li>
@@ -247,6 +279,32 @@ loadScripts(document, 'script');</script>
 <dl class="notes">
 <dt>Overrides:</dt>
 <dd><code><a href="../../Component.html#update()">update</a></code>&nbsp;in class&nbsp;<code><a href="../../Component.html" title="class in com.csse3200.game.components">Component</a></code></dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="getCurrentAnimation()">
+<h3>getCurrentAnimation</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">getCurrentAnimation</span>()</div>
+<div class="block">Returns the animation his animator is playing. Tests use it because the animator is a subclass
+ and so can't be found on the entity by its usual class.</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>the name of the current animation</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="getZIndex()">
+<h3>getZIndex</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">float</span>&nbsp;<span class="element-name">getZIndex</span>()</div>
+<div class="block">Draw depth for his renderer. Awake, he keeps the floor's depth for the whole jump, attack and
+ return, so he never drops behind a rock mid-air and pops in front of it on landing. Asleep, he
+ sorts by position as usual, which keeps him behind the rocks on his perch. The switch only
+ happens at home, where he doesn't overlap any rock.</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>the z index to draw the cyclops at</dd>
 </dl>
 </section>
 </li>
