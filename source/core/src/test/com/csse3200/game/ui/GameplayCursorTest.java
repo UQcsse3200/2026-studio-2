@@ -1,7 +1,9 @@
 package com.csse3200.game.ui;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.mock;
@@ -14,6 +16,11 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Graphics;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Input.Buttons;
+import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.graphics.Cursor;
+import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.math.Vector3;
+import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.components.inventory.InventoryComponent;
 import com.csse3200.game.components.item.ItemType;
 import com.csse3200.game.components.player.ArrowWheelComponent;
@@ -22,6 +29,7 @@ import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.services.ServiceLocator;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -40,7 +48,15 @@ class GameplayCursorTest {
     Graphics graphics = mock(Graphics.class);
     when(graphics.getWidth()).thenReturn(1280);
     when(graphics.getHeight()).thenReturn(720);
+    Cursor themedCursor = mock(Cursor.class);
+    when(graphics.newCursor(any(Pixmap.class), anyInt(), anyInt())).thenReturn(themedCursor);
     Gdx.graphics = graphics;
+    ThemedCursor.dispose();
+  }
+
+  @AfterEach
+  void tearDown() {
+    ThemedCursor.dispose();
   }
 
   @Test
@@ -80,6 +96,13 @@ class GameplayCursorTest {
   @Test
   void shouldShowWhileAimingTheGrapple() {
     Entity player = playerHolding(ItemType.ROPE_ARROW);
+    holdRightClick(player);
+    assertTrue(GameplayCursor.shouldShow(player, false));
+  }
+
+  @Test
+  void shouldShowWhileAimingAPoisonPotion() {
+    Entity player = playerHolding(ItemType.POISON_POTION);
     holdRightClick(player);
     assertTrue(GameplayCursor.shouldShow(player, false));
   }
@@ -159,6 +182,77 @@ class GameplayCursorTest {
     cursor.update(null, true);
 
     verify(input).setCursorPosition(1279, 0);
+  }
+
+  @Test
+  void shouldReleaseThePointerWhereTheAimStartedWhenAimingFromHidden() {
+    GameplayCursor cursor = new GameplayCursor();
+    Entity player = playerHolding(ItemType.STANDARD_ARROW);
+    Camera camera = mock(Camera.class);
+    // Every world point projects to (640, 300), i.e. input position (640, 420) on a 720px screen.
+    when(camera.project(any(Vector3.class)))
+        .thenAnswer(call -> call.<Vector3>getArgument(0).set(640f, 300f, 0f));
+    when(camera.unproject(any(Vector3.class)))
+        .thenAnswer(call -> call.<Vector3>getArgument(0).set(5f, 0f, 0f));
+    KeyboardPlayerInputComponent playerInput =
+        player.getComponent(KeyboardPlayerInputComponent.class);
+    playerInput.setCameraComponent(new CameraComponent(camera));
+    cursor.update(player, false);
+    when(input.isCursorCatched()).thenReturn(true);
+    // The stale tracked position, which should be ignored.
+    when(input.getX()).thenReturn(5000);
+    when(input.getY()).thenReturn(-200);
+
+    playerInput.touchDown(5000, -200, 0, Buttons.RIGHT);
+    cursor.update(player, false);
+
+    assertTrue(cursor.isVisible());
+    verify(input).setCursorPosition(640, 420);
+  }
+
+  @Test
+  void shouldShowTheCrosshairWhileAiming() {
+    GameplayCursor cursor = new GameplayCursor();
+    Entity player = playerHolding(ItemType.STANDARD_ARROW);
+    holdRightClick(player);
+
+    cursor.update(player, false);
+
+    assertEquals(ThemedCursor.Style.CROSSHAIR, ThemedCursor.getCurrent());
+  }
+
+  @Test
+  void shouldShowTheArrowInMenus() {
+    GameplayCursor cursor = new GameplayCursor();
+
+    cursor.update(null, true);
+
+    assertEquals(ThemedCursor.Style.ARROW, ThemedCursor.getCurrent());
+  }
+
+  @Test
+  void shouldSwitchToTheArrowIfAMenuOpensWhileAiming() {
+    GameplayCursor cursor = new GameplayCursor();
+    Entity player = playerHolding(ItemType.STANDARD_ARROW);
+    holdRightClick(player);
+    cursor.update(player, false);
+
+    when(entityService.getPaused()).thenReturn(true);
+    cursor.update(player, false);
+
+    assertEquals(ThemedCursor.Style.ARROW, ThemedCursor.getCurrent());
+  }
+
+  @Test
+  void shouldPutTheArrowBackWhenLeavingTheScreen() {
+    GameplayCursor cursor = new GameplayCursor();
+    Entity player = playerHolding(ItemType.STANDARD_ARROW);
+    holdRightClick(player);
+    cursor.update(player, false);
+
+    cursor.restore();
+
+    assertEquals(ThemedCursor.Style.ARROW, ThemedCursor.getCurrent());
   }
 
   @Test
