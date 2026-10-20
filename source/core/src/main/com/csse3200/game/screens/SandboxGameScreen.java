@@ -2,7 +2,6 @@ package com.csse3200.game.screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.csse3200.game.GdxGame;
 import com.csse3200.game.areas.SandboxGameArea;
@@ -16,6 +15,8 @@ import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.entities.factories.RenderFactory;
 import com.csse3200.game.input.InputDecorator;
 import com.csse3200.game.input.InputService;
+import com.csse3200.game.lighting.LightingEngine;
+import com.csse3200.game.lighting.LightingService;
 import com.csse3200.game.physics.PhysicsEngine;
 import com.csse3200.game.physics.PhysicsService;
 import com.csse3200.game.rendering.RenderService;
@@ -27,12 +28,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /** Screen containing the isolated inventory developer sandbox. */
-public class SandboxGameScreen extends ScreenAdapter {
+public class SandboxGameScreen extends RenderedScreen {
   private static final Logger logger = LoggerFactory.getLogger(SandboxGameScreen.class);
 
   private final Renderer renderer;
   private final PhysicsEngine physicsEngine;
   private final SandboxGameArea sandboxGameArea;
+  private final LightingEngine lightingEngine;
   private boolean inventoryPaused = false;
 
   /**
@@ -54,6 +56,11 @@ public class SandboxGameScreen extends ScreenAdapter {
     ServiceLocator.registerRenderService(new RenderService());
 
     renderer = RenderFactory.createRenderer();
+
+    LightingService lightingService =
+        new LightingService(renderer.getCamera(), physicsEngine.getWorld());
+    ServiceLocator.registerLightingService(lightingService);
+    lightingEngine = lightingService.getEngine();
 
     TerrainFactory terrainFactory = new TerrainFactory(renderer.getCamera());
     sandboxGameArea = new SandboxGameArea(terrainFactory, renderer.getCamera());
@@ -138,22 +145,12 @@ public class SandboxGameScreen extends ScreenAdapter {
     updateInventoryPauseState();
 
     renderer.render();
+    renderer.render(lightingEngine);
   }
 
   @Override
-  public void resize(int width, int height) {
-    renderer.resize(width, height);
-    logger.trace("Resized sandbox renderer: ({} x {})", width, height);
-  }
-
-  @Override
-  public void pause() {
-    logger.info("Sandbox paused");
-  }
-
-  @Override
-  public void resume() {
-    logger.info("Sandbox resumed");
+  protected Renderer getRenderer() {
+    return renderer;
   }
 
   @Override
@@ -162,6 +159,7 @@ public class SandboxGameScreen extends ScreenAdapter {
     ServiceLocator.getEntityService().dispose();
     ServiceLocator.getRenderService().dispose();
     renderer.dispose();
+    lightingEngine.dispose();
     ServiceLocator.getResourceService().dispose();
     physicsEngine.dispose();
     ServiceLocator.clear();

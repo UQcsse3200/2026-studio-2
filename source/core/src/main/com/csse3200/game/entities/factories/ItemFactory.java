@@ -1,5 +1,6 @@
 package com.csse3200.game.entities.factories;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.csse3200.game.components.item.GoldPickupComponent;
 import com.csse3200.game.components.item.Item;
@@ -10,17 +11,21 @@ import com.csse3200.game.components.item.consumables.HealthPotion;
 import com.csse3200.game.components.item.consumables.PoisonPotion;
 import com.csse3200.game.components.item.consumables.SpeedPotion;
 import com.csse3200.game.components.item.weapons.bow.arrow.Arrow;
+import com.csse3200.game.components.lighting.PointLightComponent;
 import com.csse3200.game.entities.Entity;
+import com.csse3200.game.lighting.LightingDefaults;
 import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.rendering.TextureRenderComponent;
+import com.csse3200.game.services.ServiceLocator;
 
 /** Factory to create item entities that sit in the world for the player to find or pick up. */
 public class ItemFactory {
   private static final float ITEM_HEIGHT = 0.85f;
   public static final String GOLD_TEXTURE = "images/items/gold_coin.png";
   public static final String WHEEL_TOKEN_TEXTURE = "images/minigames/spinthewheel/wheel-token.png";
+  private static final float WHEEL_TOKEN_GLOW_DIST = 2f;
 
   /**
    * Creates a world entity for an item using the texture from its {@code ItemType}.
@@ -29,12 +34,19 @@ public class ItemFactory {
    * @return item entity
    */
   public static Entity createItem(Item item) {
+    Color itemColour = new Color(1, 1, 1, 0.5f);
     Entity itemEntity =
         new Entity()
             .addComponent(new TextureRenderComponent(item.getItemType().getTexturePath()))
             .addComponent(new PhysicsComponent().setBodyType(BodyType.StaticBody))
             .addComponent(new HitboxComponent().setLayer(PhysicsLayer.DEFAULT))
-            .addComponent(new ItemComponent(item));
+            .addComponent(new ItemComponent(item))
+            .addComponent(
+                new PointLightComponent(
+                    ServiceLocator.getLightingService().getEngine().getRayHandler(),
+                    100,
+                    itemColour,
+                    LightingDefaults.DIST));
 
     itemEntity.getComponent(TextureRenderComponent.class).scaleEntity();
     itemEntity.scaleHeight(ITEM_HEIGHT);
@@ -76,6 +88,7 @@ public class ItemFactory {
       case "iceArrow", "coldArrow" -> createItem(ItemType.ICE_ARROW, quantity);
       case "speedPotion" -> createItem(ItemType.SPEED_POTION, quantity);
       case "poisonPotion" -> createItem(ItemType.POISON_POTION, quantity);
+      case "coin" -> createGold(quantity);
       default -> throw new IllegalArgumentException("Unknown item type: " + itemName);
     };
   }
@@ -128,12 +141,19 @@ public class ItemFactory {
    * @return gold pickup entity
    */
   public static Entity createGold(int amount) {
+    Color goldColour = new Color(255, 215, 0, 0.6f);
     Entity gold =
         new Entity()
             .addComponent(new TextureRenderComponent(GOLD_TEXTURE))
             .addComponent(new PhysicsComponent().setBodyType(BodyType.StaticBody))
             .addComponent(new HitboxComponent().setLayer(PhysicsLayer.DEFAULT))
-            .addComponent(new GoldPickupComponent(amount));
+            .addComponent(new GoldPickupComponent(amount))
+            .addComponent(
+                new PointLightComponent(
+                    ServiceLocator.getLightingService().getEngine().getRayHandler(),
+                    100,
+                    goldColour,
+                    LightingDefaults.DIST));
 
     gold.getComponent(TextureRenderComponent.class).scaleEntity();
     gold.scaleHeight(ITEM_HEIGHT);
@@ -146,12 +166,19 @@ public class ItemFactory {
    * @return wheel token pickup entity
    */
   public static Entity createWheelToken() {
+    Color tokenGlowColour = new Color(1f, 0.84f, 0f, 0.7f);
     Entity token =
         new Entity()
             .addComponent(new TextureRenderComponent(WHEEL_TOKEN_TEXTURE))
             .addComponent(new PhysicsComponent().setBodyType(BodyType.StaticBody))
             .addComponent(new HitboxComponent().setLayer(PhysicsLayer.DEFAULT))
-            .addComponent(new WheelTokenPickupComponent());
+            .addComponent(new WheelTokenPickupComponent())
+            .addComponent(
+                new PointLightComponent(
+                    ServiceLocator.getLightingService().getEngine().getRayHandler(),
+                    LightingDefaults.RAYS,
+                    tokenGlowColour,
+                    WHEEL_TOKEN_GLOW_DIST));
 
     token.getComponent(TextureRenderComponent.class).scaleEntity();
     token.scaleHeight(ITEM_HEIGHT);

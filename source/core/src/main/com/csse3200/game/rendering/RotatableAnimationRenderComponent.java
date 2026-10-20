@@ -1,5 +1,6 @@
 package com.csse3200.game.rendering;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -9,7 +10,8 @@ import com.csse3200.game.components.level.RotatableMapComponent;
 public class RotatableAnimationRenderComponent extends AnimationRenderComponent {
   private final TextureRegion renderRegion = new TextureRegion();
   private RotatableMapComponent rotateComponent;
-  private float rotation;
+  private boolean flashing = false;
+  private float flashTime = 0f;
 
   public RotatableAnimationRenderComponent(TextureAtlas atlas) {
     super(atlas);
@@ -21,6 +23,16 @@ public class RotatableAnimationRenderComponent extends AnimationRenderComponent 
     rotateComponent = entity.getComponent(RotatableMapComponent.class);
   }
 
+  /**
+   * Enables or disables a pulsing brightness effect to draw attention to this entity.
+   *
+   * @param flashing true to pulse, false to draw normally
+   */
+  public void setFlashing(boolean flashing) {
+    this.flashing = flashing;
+    this.flashTime = 0f;
+  }
+
   @Override
   protected void draw(SpriteBatch batch) {
     if (currentAnimation == null) {
@@ -30,18 +42,10 @@ public class RotatableAnimationRenderComponent extends AnimationRenderComponent 
     Vector2 pos = entity.getPosition();
     Vector2 scale = entity.getScale();
 
-    float width;
-    float height;
-    if (defaultRegionWidthPx > 0f) {
-      float unitsPerPixel = scale.x / defaultRegionWidthPx;
-      width = region.getRegionWidth() * unitsPerPixel;
-      height = region.getRegionHeight() * unitsPerPixel;
-    } else {
-      width = scale.x;
-      height = scale.y;
-    }
+    float width = frameWidth(region, scale);
+    float height = frameHeight(region, scale);
 
-    rotation = rotateComponent.getRotation();
+    float rotation = rotateComponent.getRotation();
 
     // recreate the adjustments in a local texture region so we can use the correct overload
     renderRegion.setRegion(region);
@@ -49,8 +53,16 @@ public class RotatableAnimationRenderComponent extends AnimationRenderComponent 
       renderRegion.flip(true, false);
     }
 
+    Color prevColor = batch.getColor().cpy();
+    if (flashing) {
+      float pulse = 0.65f + 0.35f * (0.5f + 0.5f * (float) Math.sin(flashTime * 6f));
+      Color c = batch.getColor();
+      batch.setColor(c.r * pulse, c.g * pulse, c.b * pulse, c.a);
+      flashTime += timeSource.getDeltaTime();
+    }
     batch.draw(
         renderRegion, pos.x, pos.y, width / 2f, height / 2f, width, height, 1f, 1f, rotation);
+    batch.setColor(prevColor);
     animationPlayTime += timeSource.getDeltaTime();
   }
 }

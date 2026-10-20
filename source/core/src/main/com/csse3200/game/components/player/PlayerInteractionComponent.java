@@ -22,13 +22,19 @@ import org.slf4j.LoggerFactory;
  * <p>Requires an InventoryComponent on this entity.
  */
 public class PlayerInteractionComponent extends Component {
+  private static final String INTERACTION_FAILED = "interactionFailed";
   private static final Logger logger = LoggerFactory.getLogger(PlayerInteractionComponent.class);
 
   /** Maximum distance, in metres, at which the player can interact with an item or NPC. */
   public static final float INTERACTION_RANGE = 1.5f;
 
+  /** Distance in metres at which gold is collected without pressing interact. */
+  public static final float GOLD_PICKUP_RANGE = 0.75f;
+
   private InventoryComponent inventory;
   private boolean shopOpen;
+  private boolean shopClosedSinceLastCheck;
+  private Entity activeShopNpc;
 
   @Override
   public void create() {
@@ -38,6 +44,29 @@ public class PlayerInteractionComponent extends Component {
     entity.getEvents().addListener("deleteItem", this::deleteItem);
     entity.getEvents().addListener("switchItem", this::switchItem);
     entity.getEvents().addListener("closeShop", this::onShopClosed);
+    // The shop can also be reopened from outside, e.g. after the blackjack minigame closes.
+    entity.getEvents().addListener("openShop", () -> setShopDoorOpen(true));
+  }
+
+  public InventoryComponent getInventory() {
+    return inventory;
+  }
+
+  /** Collects every nearby coin. EntityService suppresses updates while the game is paused. */
+  @Override
+  public void update() {
+    if (shopOpen) {
+      return;
+    }
+    for (Entity candidate : ServiceLocator.getEntityService().getEntities()) {
+      GoldPickupComponent gold = candidate.getComponent(GoldPickupComponent.class);
+      if (gold != null
+          && !gold.isCollected()
+          && entity.getCenterPosition().dst2(candidate.getCenterPosition())
+              <= GOLD_PICKUP_RANGE * GOLD_PICKUP_RANGE) {
+        pickupGold(candidate);
+      }
+    }
   }
 
   /**
@@ -55,6 +84,7 @@ public class PlayerInteractionComponent extends Component {
     Entity shopNpc = findNearestShopNpc();
     if (shopNpc != null) {
       shopOpen = true;
+      activeShopNpc = shopNpc;
       entity.getEvents().trigger("openShop");
       return true;
     }
@@ -65,7 +95,7 @@ public class PlayerInteractionComponent extends Component {
     Entity target = nearer(nearer(gold, item), token);
     if (target == null) {
       logger.debug("No interactable entity in range of {}", entity);
-      entity.getEvents().trigger("interactionFailed");
+      entity.getEvents().trigger(INTERACTION_FAILED);
       return false;
     }
     if (target.getComponent(GoldPickupComponent.class) != null) {
@@ -84,8 +114,29 @@ public class PlayerInteractionComponent extends Component {
     return shopOpen;
   }
 
+  /**
+   * Reports whether the shop has closed since this was last called, and clears the answer. The
+   * screens use it so that an Esc press that closed the shop doesn't also open the pause menu.
+   *
+   * @return true if the shop closed since the last call
+   */
+  public boolean consumeShopClosed() {
+    boolean closed = shopClosedSinceLastCheck;
+    shopClosedSinceLastCheck = false;
+    return closed;
+  }
+
   private void onShopClosed() {
     shopOpen = false;
+    shopClosedSinceLastCheck = true;
+    setShopDoorOpen(false);
+  }
+
+  /** Tells the shopkeeper the player is using, so its door can open and close with the shop. */
+  private void setShopDoorOpen(boolean open) {
+    if (activeShopNpc != null) {
+      activeShopNpc.getEvents().trigger(open ? "shopOpened" : "shopClosed");
+    }
   }
 
   /**
@@ -97,13 +148,13 @@ public class PlayerInteractionComponent extends Component {
    */
   boolean pickup(Entity itemEntity) {
     if (itemEntity == null || !isInRange(itemEntity)) {
-      entity.getEvents().trigger("interactionFailed");
+      entity.getEvents().trigger(INTERACTION_FAILED);
       return false;
     }
 
     ItemComponent itemComponent = itemEntity.getComponent(ItemComponent.class);
     if (itemComponent == null) {
-      entity.getEvents().trigger("interactionFailed");
+      entity.getEvents().trigger(INTERACTION_FAILED);
       return false;
     }
 
@@ -120,26 +171,31 @@ public class PlayerInteractionComponent extends Component {
   }
 
   /**
-   * Collects a gold coin, adding its value to the player's gold and removing it from the world.
+   * Collects a gold coin, adding its value and scheduling removal after the current entity update.
    *
    * @param goldEntity gold pickup entity
    * @return true if gold was collected
    */
   boolean pickupGold(Entity goldEntity) {
     if (goldEntity == null || !isInRange(goldEntity)) {
-      entity.getEvents().trigger("interactionFailed");
+      entity.getEvents().trigger(INTERACTION_FAILED);
       return false;
     }
 
     GoldPickupComponent goldPickup = goldEntity.getComponent(GoldPickupComponent.class);
     if (goldPickup == null) {
-      entity.getEvents().trigger("interactionFailed");
+      entity.getEvents().trigger(INTERACTION_FAILED);
+      return false;
+    }
+
+    if (!goldPickup.tryCollect()) {
       return false;
     }
 
     int amount = goldPickup.getAmount();
+    // Immediate disposal here can skip another entity in EntityService's update loop.
+    ServiceLocator.getEntityService().scheduleRemoval(goldEntity);
     inventory.addGold(amount);
-    goldEntity.dispose();
     entity.getEvents().trigger("goldPickedUp", amount);
     return true;
   }
@@ -155,7 +211,7 @@ public class PlayerInteractionComponent extends Component {
     if (tokenEntity == null
         || !isInRange(tokenEntity)
         || tokenEntity.getComponent(WheelTokenPickupComponent.class) == null) {
-      entity.getEvents().trigger("interactionFailed");
+      entity.getEvents().trigger(INTERACTION_FAILED);
       return false;
     }
 
@@ -172,14 +228,14 @@ public class PlayerInteractionComponent extends Component {
   boolean dropItem() {
     ItemType selected = inventory.getSelectedItem();
     if (selected == null) {
-      entity.getEvents().trigger("interactionFailed");
+      entity.getEvents().trigger(INTERACTION_FAILED);
       return false;
     }
 
     int quantity = inventory.getItemCount(selected);
 
     if (!inventory.removeItem(selected, quantity)) {
-      entity.getEvents().trigger("interactionFailed");
+      entity.getEvents().trigger(INTERACTION_FAILED);
       return false;
     }
 
@@ -199,14 +255,14 @@ public class PlayerInteractionComponent extends Component {
   boolean deleteItem() {
     ItemType selected = inventory.getSelectedItem();
     if (selected == null) {
-      entity.getEvents().trigger("interactionFailed");
+      entity.getEvents().trigger(INTERACTION_FAILED);
       return false;
     }
 
     int quantity = inventory.getItemCount(selected);
 
     if (!inventory.removeItem(selected, quantity)) {
-      entity.getEvents().trigger("interactionFailed");
+      entity.getEvents().trigger(INTERACTION_FAILED);
       return false;
     }
 
@@ -301,7 +357,10 @@ public class PlayerInteractionComponent extends Component {
 
     Array<Entity> entities = ServiceLocator.getEntityService().getEntities();
     for (Entity candidate : entities) {
-      if (candidate.equals(entity) || candidate.getComponent(type) == null) {
+      GoldPickupComponent gold = candidate.getComponent(GoldPickupComponent.class);
+      if (candidate.equals(entity)
+          || candidate.getComponent(type) == null
+          || (gold != null && gold.isCollected())) {
         continue;
       }
 

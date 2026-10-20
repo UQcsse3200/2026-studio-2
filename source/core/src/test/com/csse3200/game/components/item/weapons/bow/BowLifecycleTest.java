@@ -63,7 +63,7 @@ class BowLifecycleTest {
     when(time.getTime()).thenReturn(2500L);
     player.getEvents().trigger("chargeRelease", Vector2.X.cpy());
 
-    assertEquals(List.of(1.5f), speeds);
+    assertEquals(List.of(BowCharge.MAX_SPEED_FACTOR), speeds);
     assertEquals(2, entities.getEntities().size);
   }
 
@@ -75,7 +75,7 @@ class BowLifecycleTest {
     assertFalse(bow.isReady());
 
     bow.releaseCharge(Vector2.X.cpy());
-    assertEquals(List.of(0.3f), speeds);
+    assertEquals(List.of(BowCharge.MIN_SPEED_FACTOR), speeds);
     assertEquals(List.of(Vector2.X), directions);
   }
 
@@ -153,7 +153,7 @@ class BowLifecycleTest {
     bow.update();
     bow.releaseCharge(Vector2.X.cpy());
 
-    assertEquals(List.of(1.5f), speeds);
+    assertEquals(List.of(BowCharge.MAX_SPEED_FACTOR), speeds);
     assertEquals(0.4f, bow.getCooldownRemaining(), 1e-6f);
     assertFalse(bow.isReady());
     bow.update();
@@ -172,7 +172,7 @@ class BowLifecycleTest {
 
     bow.startCharge(Vector2.Y.cpy());
     bow.releaseCharge(Vector2.Y.cpy());
-    assertEquals(List.of(0.3f), speeds);
+    assertEquals(List.of(BowCharge.MIN_SPEED_FACTOR), speeds);
   }
 
   @Test
@@ -184,13 +184,13 @@ class BowLifecycleTest {
     assertEquals(2, entities.getEntities().size);
     assertEquals(List.of(Vector2.X), animations);
     assertFalse(bow.isReady());
-    verify(resources, never()).getAsset("sounds/Impact4.ogg", Sound.class);
+    verify(resources, never()).getAsset("sounds/shoot.ogg", Sound.class);
   }
 
   @Test
   void nullSoundAssetDoesNotPreventShotOrAnimation() {
     ResourceService resources = mock(ResourceService.class);
-    when(resources.containsAsset("sounds/Impact4.ogg", Sound.class)).thenReturn(true);
+    when(resources.containsAsset("sounds/shoot.ogg", Sound.class)).thenReturn(true);
     ServiceLocator.registerResourceService(resources);
     bow.attack(Vector2.X.cpy());
 
@@ -198,6 +198,6 @@ class BowLifecycleTest {
     assertEquals(List.of(Vector2.X), animations);
     assertEquals(List.of(1f), speeds);
     assertFalse(bow.isReady());
-    verify(resources).getAsset("sounds/Impact4.ogg", Sound.class);
+    verify(resources).getAsset("sounds/shoot.ogg", Sound.class);
   }
 }

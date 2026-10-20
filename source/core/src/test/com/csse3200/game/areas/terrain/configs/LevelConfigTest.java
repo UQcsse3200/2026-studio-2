@@ -1,6 +1,8 @@
 package com.csse3200.game.areas.terrain.configs;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -10,10 +12,13 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.components.item.ItemComponent;
-import com.csse3200.game.components.item.weapons.bow.arrow.*;
+import com.csse3200.game.components.level.CheckpointComponent;
+import com.csse3200.game.components.lighting.PointLightComponent;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.entities.factories.ItemFactory;
 import com.csse3200.game.extensions.GameExtension;
+import com.csse3200.game.lighting.LightingEngine;
+import com.csse3200.game.lighting.LightingService;
 import com.csse3200.game.physics.PhysicsService;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
@@ -26,15 +31,26 @@ import org.junit.jupiter.api.extension.ExtendWith;
 @ExtendWith(GameExtension.class)
 class LevelConfigTest {
   @BeforeEach
-  public void setUp() {
+  void setUp() {
     ServiceLocator.registerEntityService(new EntityService());
     ServiceLocator.registerPhysicsService(new PhysicsService());
+
+    LightingEngine lightingEngine = mock(LightingEngine.class);
+    box2dLight.RayHandler rayHandlerMock = mock(box2dLight.RayHandler.class);
+    when(lightingEngine.getRayHandler()).thenReturn(rayHandlerMock);
+    LightingService lightingService = mock(LightingService.class);
+    when(lightingService.getEngine()).thenReturn(lightingEngine);
+    ServiceLocator.registerLightingService(lightingService);
 
     ResourceService resourceService = mock(ResourceService.class);
     ServiceLocator.registerResourceService(resourceService);
 
     Texture mockTexture = mock(Texture.class);
     TextureAtlas mockAtlas = mock(TextureAtlas.class);
+    TextureAtlas.AtlasRegion mockRegion = mock(TextureAtlas.AtlasRegion.class);
+    when(mockRegion.getRegionWidth()).thenReturn(1);
+    when(mockRegion.getRegionHeight()).thenReturn(1);
+    when(mockAtlas.findRegion(anyString())).thenReturn(mockRegion);
 
     when(resourceService.getAsset(anyString(), eq(Texture.class))).thenReturn(mockTexture);
     when(resourceService.getAsset(anyString(), eq(TextureAtlas.class))).thenReturn(mockAtlas);
@@ -53,6 +69,29 @@ class LevelConfigTest {
     assertEquals(1, levelConfig.entities.size());
     assertEquals(pos, levelConfig.entities.getFirst().pos);
     assertEquals(size, levelConfig.entities.getFirst().entity.getScale());
+  }
+
+  @Test
+  void shouldCreateCheckpointWithInactiveWarmLight() {
+    GridPoint2 position = new GridPoint2(3, 4);
+    LevelConfig levelConfig = new LevelConfig();
+    levelConfig.checkpoints = new CheckpointConfig[] {new CheckpointConfig(position)};
+
+    levelConfig.createEntities();
+
+    var checkpoint = levelConfig.entities.getFirst().entity;
+    assertNotNull(checkpoint.getComponent(CheckpointComponent.class));
+    assertEquals(position, levelConfig.entities.getFirst().pos);
+    assertEquals(
+        new Vector2(CheckpointComponent.ATLAS_WIDTH, CheckpointComponent.ATLAS_HEIGHT),
+        checkpoint.getScale());
+
+    PointLightComponent light = checkpoint.getComponent(PointLightComponent.class);
+    assertNotNull(light);
+    assertFalse(light.isActive());
+    assertEquals(0.75f, light.getBaseRed(), 0.001f);
+    assertEquals(0.2f, light.getBaseGreen(), 0.001f);
+    assertEquals(0f, light.getBaseBlue(), 0.001f);
   }
 
   @Test
@@ -117,7 +156,7 @@ class LevelConfigTest {
     levelConfig.triggerablePlatforms =
         new TriggerablePlatformConfig[] {
           new TriggerablePlatformConfig(
-              pos, (int) size.x, (int) size.y, 0, "", new String[] {"test"}, false)
+              pos, (int) size.x, (int) size.y, 0, "", new String[] {"test"}, false, false)
         };
     levelConfig.createEntities();
 

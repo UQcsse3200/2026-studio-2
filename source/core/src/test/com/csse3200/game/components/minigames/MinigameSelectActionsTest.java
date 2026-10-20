@@ -46,4 +46,15 @@ class MinigameSelectActionsTest {
 
     verify(game).setScreen(GdxGame.ScreenType.MINIGAME_SPIN_THE_WHEEL);
   }
+
+  @Test
+  void shouldRouteBlackjackSelectionWithoutConstructingItsScreen() {
+    GdxGame game = mock(GdxGame.class);
+    Entity ui = new Entity().addComponent(new MinigameSelectActions(game));
+    ui.create();
+
+    ui.getEvents().trigger("selectMinigame", MinigameType.BLACKJACK);
+
+    verify(game).setScreen(GdxGame.ScreenType.MINIGAME_BLACKJACK);
+  }
 }

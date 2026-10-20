@@ -14,6 +14,7 @@ import com.badlogic.gdx.utils.Array;
 import com.csse3200.game.GdxGame;
 import com.csse3200.game.GdxGame.ScreenType;
 import com.csse3200.game.components.ButtonSound;
+import com.csse3200.game.components.GameVolume;
 import com.csse3200.game.files.UserSettings;
 import com.csse3200.game.files.UserSettings.DisplaySettings;
 import com.csse3200.game.services.ServiceLocator;
@@ -31,10 +32,14 @@ public class SettingsMenuDisplay extends UIComponent {
   private final GdxGame game;
 
   private Table rootTable;
+  // Kept so a subclass that outlives its stage (the in-game menu) can tidy them up on dispose
+  protected Table menuBoxTable;
+  protected Image background;
   private TextField fpsText;
   private CheckBox fullScreenCheck;
   private CheckBox vsyncCheck;
   private Slider uiScaleSlider;
+  private Slider volumeSlider;
   private SelectBox<StringDecorator<DisplayMode>> displayModeSelect;
 
   private ScreenType returnScreen;
@@ -45,6 +50,11 @@ public class SettingsMenuDisplay extends UIComponent {
     this.returnScreen = returnScreen;
   }
 
+  /** For menus that decide for themselves where leaving the menu goes, by overriding leave(). */
+  protected SettingsMenuDisplay(GdxGame game) {
+    this(game, null);
+  }
+
   @Override
   public void create() {
     super.create();
@@ -52,10 +62,10 @@ public class SettingsMenuDisplay extends UIComponent {
   }
 
   private void addActors() {
-    float screenWidth = Gdx.graphics.getWidth();
-    float screenHeight = Gdx.graphics.getHeight();
-    float pad = screenHeight * 0.02f;
-    Image background =
+    int screenWidth = Gdx.graphics.getWidth();
+    int screenHeight = Gdx.graphics.getHeight();
+
+    background =
         new Image(
             ServiceLocator.getResourceService()
                 .getAsset("images/backgrounds/main_menu_bg_2.png", Texture.class));
@@ -71,7 +81,7 @@ public class SettingsMenuDisplay extends UIComponent {
     background.setSize(bgWidth, bgHeight);
     background.setPosition(-(bgWidth - screenWidth) / 2f, -(bgHeight - screenHeight) / 2f);
     stage.addActor(background);
-    Table menuBoxTable = new Table();
+    menuBoxTable = new Table();
     Table settingsTable = makeSettingsTable();
     Table menuBtns = makeMenuBtns();
 
@@ -112,6 +122,11 @@ public class SettingsMenuDisplay extends UIComponent {
     uiScaleSlider.setValue(settings.uiScale);
     Label uiScaleValue = new Label(String.format("%.2fx", settings.uiScale), skin);
 
+    Label volumeLabel = new Label("Volume:", skin);
+    volumeSlider = new Slider(0f, 1f, 0.05f, false, skin);
+    volumeSlider.setValue(settings.volume);
+    Label volumeValue = new Label(Math.round(settings.volume * 100) + "%", skin);
+
     Label displayModeLabel = new Label("Resolution:", skin);
     displayModeSelect = new SelectBox<>(skin);
     Monitor selectedMonitor = Gdx.graphics.getMonitor();
@@ -141,6 +156,14 @@ public class SettingsMenuDisplay extends UIComponent {
     table.add(uiScaleTable).left();
 
     table.row().padTop(10f);
+    Table volumeTable = new Table();
+    volumeTable.add(volumeSlider).width(100).left();
+    volumeTable.add(volumeValue).left().padLeft(5f).expandX();
+
+    table.add(volumeLabel).right().padRight(15f);
+    table.add(volumeTable).left();
+
+    table.row().padTop(10f);
     table.add(displayModeLabel).right().padRight(15f);
     table.add(displayModeSelect).left();
 
@@ -149,6 +172,13 @@ public class SettingsMenuDisplay extends UIComponent {
         (Event event) -> {
           float value = uiScaleSlider.getValue();
           uiScaleValue.setText(String.format("%.2fx", value));
+          return true;
+        });
+    volumeSlider.addListener(
+        (Event event) -> {
+          float value = volumeSlider.getValue();
+          volumeValue.setText(Math.round(value * 100) + "%");
+          GameVolume.set(value);
           return true;
         });
 
@@ -216,7 +246,7 @@ public class SettingsMenuDisplay extends UIComponent {
           @Override
           public void changed(ChangeEvent changeEvent, Actor actor) {
             logger.debug("Exit button clicked");
-            ButtonSound.playClickThen(SettingsMenuDisplay.this::exitMenu);
+            onExitClicked();
           }
         });
 
@@ -245,13 +275,26 @@ public class SettingsMenuDisplay extends UIComponent {
     }
     settings.fullscreen = fullScreenCheck.isChecked();
     settings.uiScale = uiScaleSlider.getValue();
+    settings.volume = volumeSlider.getValue();
     settings.displayMode = new DisplaySettings(displayModeSelect.getSelected().object);
     settings.vsync = vsyncCheck.isChecked();
 
     UserSettings.set(settings, true);
   }
 
-  private void exitMenu() {
+  /** What happens when the exit button is pressed: click, then leave the menu. */
+  protected void onExitClicked() {
+    ButtonSound.playClickThen(this::exitMenu);
+  }
+
+  /** Puts the volume back to the saved setting (it is changed live by the slider), then leaves. */
+  protected void exitMenu() {
+    GameVolume.set(UserSettings.get().volume);
+    leave();
+  }
+
+  /** Where the menu goes once it has been exited. */
+  protected void leave() {
     game.setScreen(returnScreen);
   }
 

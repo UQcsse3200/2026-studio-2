@@ -28,6 +28,7 @@ import com.csse3200.game.components.level.SpikyBallComponent;
 import com.csse3200.game.components.level.TriggerButtonComponent;
 import com.csse3200.game.components.level.TriggerablePlatformComponent;
 import com.csse3200.game.components.level.WinConditionComponent;
+import com.csse3200.game.components.lighting.PointLightComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.physics.PhysicsService;
@@ -35,6 +36,7 @@ import com.csse3200.game.physics.components.ColliderComponent;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.rendering.TextureRenderComponent;
 import com.csse3200.game.rendering.TiledRenderComponent;
+import com.csse3200.game.services.MockServices;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import org.junit.jupiter.api.BeforeEach;
@@ -48,6 +50,7 @@ class ObstacleFactoryTest {
   void setUp() {
     PhysicsService physicsService = new PhysicsService();
     ServiceLocator.registerPhysicsService(physicsService);
+    MockServices.registerLighting();
     Texture texture = mock(Texture.class);
     when(texture.getWidth()).thenReturn(1);
     when(texture.getHeight()).thenReturn(1);
@@ -58,6 +61,9 @@ class ObstacleFactoryTest {
         .thenReturn(texture);
     TextureAtlas atlas = mock(TextureAtlas.class);
     AtlasRegion region = mock(AtlasRegion.class);
+    when(region.getRegionWidth()).thenReturn(1);
+    when(region.getRegionHeight()).thenReturn(1);
+    when(atlas.findRegion(org.mockito.ArgumentMatchers.anyString())).thenReturn(region);
     when(atlas.findRegions(org.mockito.ArgumentMatchers.anyString()))
         .thenReturn(new com.badlogic.gdx.utils.Array<>(new AtlasRegion[] {region}));
     when(resources.getAsset(
@@ -91,6 +97,11 @@ class ObstacleFactoryTest {
     Entity trigger = ObstacleFactory.createNextLevelTriggerEntity("level2");
 
     assertNotNull(trigger.getComponent(LevelTriggerComponent.class));
+    PointLightComponent light = trigger.getComponent(PointLightComponent.class);
+    assertNotNull(light);
+    assertEquals(0f, light.getBaseRed());
+    assertEquals(1f, light.getBaseGreen());
+    assertEquals(0f, light.getBaseBlue());
   }
 
   @Test
@@ -165,7 +176,14 @@ class ObstacleFactoryTest {
   void shouldCreateTriggerablePlatformWithActivationComponents() {
     TriggerablePlatformConfig config =
         new TriggerablePlatformConfig(
-            new GridPoint2(1, 2), 3, 1, 0, "images/platform.png", new String[] {"switch"}, true);
+            new GridPoint2(1, 2),
+            3,
+            1,
+            0,
+            "images/platform.png",
+            new String[] {"switch"},
+            true,
+            false);
 
     Entity platform = ObstacleFactory.createTriggerablePlatform(config);
 

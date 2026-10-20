@@ -16,27 +16,86 @@ import java.util.Set;
  * and consumes ammo. A type the player has no arrows for cannot be chosen.
  */
 public class ArrowWheelComponent extends Component {
+  private static final String ARROW_SELECTED = "arrowSelected";
   private final Set<ArrowType> available = EnumSet.allOf(ArrowType.class);
 
   private InventoryComponent inventory;
+  private ItemType previousInventorySelection;
+  private boolean selectedArrowDepleted;
   private boolean bowEquipped = true;
   private boolean open = false;
   private ArrowType highlighted;
   private ArrowType selected = ArrowType.STANDARD;
+  private final Vector2 screenCentre = new Vector2();
+  private boolean hasScreenCentre = false;
 
   @Override
   public void create() {
     inventory = entity.getComponent(InventoryComponent.class);
+    previousInventorySelection = inventory == null ? null : inventory.getSelectedItem();
     entity.getEvents().addListener("openArrowWheel", this::open);
     entity.getEvents().addListener("closeArrowWheel", this::close);
     entity.getEvents().addListener("arrowWheelPointerMoved", this::highlightFromPointer);
     entity.getEvents().addListener("bowEquipped", this::setBowEquipped);
-    entity.getEvents().addListener("inventorySelectionChanged", this::selectNextAvailable);
+    entity.getEvents().addListener("inventorySelectionChanged", this::syncInventorySelection);
+    // Quantity changes may require selecting another slot. Do this on a different event so
+    // selectSlot never republishes inventorySelectionChanged inside its own dispatch.
+    entity.getEvents().addListener("inventoryChanged", this::handleInventoryChanged);
+  }
+
+  /** Mirrors hotbar arrow choices without changing a deliberately selected potion or rope. */
+  private void syncInventorySelection() {
+    if (inventory == null) {
+      return;
+    }
+    if (previousInventorySelection != null
+        && previousInventorySelection.isArrow()
+        && isWheelType(previousInventorySelection.toArrowType())
+        && !inventory.hasItem(previousInventorySelection)) {
+      selectedArrowDepleted = true;
+    }
+    ItemType item = inventory.getSelectedItem();
+    previousInventorySelection = item;
+    if (item == null || !item.isArrow()) {
+      return;
+    }
+    ArrowType type = item.toArrowType();
+    if (isAvailable(type) && selected != type) {
+      selected = type;
+      entity.getEvents().trigger(ARROW_SELECTED, selected);
+    }
+  }
+
+  private void handleInventoryChanged() {
+    if (selectedArrowDepleted) {
+      selectedArrowDepleted = false;
+      selectNextAvailable();
+    }
   }
 
   /** Returns whether the wheel should currently be drawn. */
   public boolean isOpen() {
     return open;
+  }
+
+  /**
+   * Records where the wheel is drawn, so the pointer can be measured from its centre rather than
+   * the screen's.
+   *
+   * @param x centre in screen pixels from the left edge
+   * @param yFromTop centre in screen pixels from the top edge
+   */
+  public void setScreenCentre(float x, float yFromTop) {
+    screenCentre.set(x, yFromTop);
+    hasScreenCentre = true;
+  }
+
+  /**
+   * @return the wheel's centre in screen pixels (x from the left, y from the top), or null if the
+   *     wheel hasn't been placed on screen
+   */
+  public Vector2 getScreenCentre() {
+    return hasScreenCentre ? screenCentre : null;
   }
 
   /** Returns the arrow type under the pointer, or null when closed or aimed at the centre. */
@@ -61,7 +120,7 @@ public class ArrowWheelComponent extends Component {
       return true;
     }
     ItemType arrowItem = arrowItemFor(type);
-    return arrowItem != null && inventory.hasItem(arrowItem);
+    return inventory.hasItem(arrowItem);
   }
 
   /** Only types displayed on the wheel may be selected or unlocked. */
@@ -128,7 +187,7 @@ public class ArrowWheelComponent extends Component {
 
     selected = candidate;
     selectInventorySlotFor(selected);
-    entity.getEvents().trigger("arrowSelected", selected);
+    entity.getEvents().trigger(ARROW_SELECTED, selected);
     return true;
   }
 
@@ -151,7 +210,7 @@ public class ArrowWheelComponent extends Component {
       if (isAvailable(type)) {
         selected = type;
         selectInventorySlotFor(selected);
-        entity.getEvents().trigger("arrowSelected", selected);
+        entity.getEvents().trigger(ARROW_SELECTED, selected);
         return selected;
       }
     }
@@ -165,12 +224,12 @@ public class ArrowWheelComponent extends Component {
       return;
     }
     ItemType arrowItem = arrowItemFor(type);
-    for (int i = 0; i < inventory.getSlotCount(); i++) {
-      if (inventory.getSlot(i).getItemType() == arrowItem) {
-        inventory.selectSlot(i);
-        return;
-      }
+    // Both callers have just confirmed availability, so this inventory contains a matching slot.
+    int slotIndex = 0;
+    while (inventory.getSlot(slotIndex).getItemType() != arrowItem) {
+      slotIndex++;
     }
+    inventory.selectSlot(slotIndex);
   }
 
   /** Returns the inventory item that fires as this arrow type, or null if there isn't one. */

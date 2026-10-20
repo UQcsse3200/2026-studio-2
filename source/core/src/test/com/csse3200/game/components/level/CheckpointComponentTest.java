@@ -1,37 +1,49 @@
 package com.csse3200.game.components.level;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
 import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.utils.Array;
+import com.csse3200.game.components.lighting.PointLightComponent;
 import com.csse3200.game.components.player.PlayerActions;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
+import com.csse3200.game.rendering.AnimationRenderComponent;
+import com.csse3200.game.rendering.RenderService;
+import com.csse3200.game.rendering.TextureRenderComponent;
 import com.csse3200.game.services.ServiceLocator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class CheckpointComponentTest {
   /** Note: this test relies on checkpoint collect range being +- 1 for both x and y */
-  private boolean collected;
-
-  private GridPoint2 position;
   private Entity player;
+
   private Entity checkpointEntity;
   CheckpointComponent checkpointComponent;
+  TextureRenderComponent textureRenderComponent;
+  EntityService entityService;
 
   @BeforeEach
   void beforeEach() {
     Array<Entity> entities = new Array<>();
     checkpointComponent = new CheckpointComponent(false, new GridPoint2(10, 10));
+    textureRenderComponent = mock(TextureRenderComponent.class);
     checkpointEntity = new Entity();
     checkpointEntity.addComponent(checkpointComponent);
+    checkpointEntity.addComponent(textureRenderComponent);
+
     player = new Entity();
     player.addComponent(new PlayerActions());
     entities.add(player);
-    EntityService entityService = mock(EntityService.class);
+    entityService = mock(EntityService.class);
     when(entityService.getEntities()).thenReturn(entities);
     ServiceLocator.registerEntityService(entityService);
   }
@@ -91,5 +103,91 @@ public class CheckpointComponentTest {
     player.setPosition(11, 9);
     checkpointComponent.update();
     assertFalse(checkpointComponent.isActive());
+  }
+
+  @Test
+  void shouldNotActivatedCollectedCheckpoint() {
+    checkpointComponent = new CheckpointComponent(true, new GridPoint2(0, 0));
+    assertTrue(checkpointComponent.isActive());
+    checkpointComponent.activate();
+    assertTrue(checkpointComponent.isActive());
+
+    // ensure activate method doesn't attempt to spawn another lit checkpoint entity
+    // ensures early return
+    verify(entityService, never()).register(any(Entity.class));
+  }
+
+  @Test
+  void shouldRepeatPlayerFindingIfNoPlayerFound() {
+    entityService.scheduleForDisposal(player);
+
+    checkpointComponent.update();
+    verify(entityService, atLeastOnce()).getEntities();
+    checkpointComponent.update();
+    verify(entityService, atLeastOnce()).getEntities();
+  }
+
+  @Test
+  void shouldContinueSearchingUntilItFindsThePlayer() {
+    Array<Entity> candidates = new Array<>();
+    candidates.add(new Entity());
+    candidates.add(player);
+    when(entityService.getEntities()).thenReturn(candidates);
+    player.setPosition(10f, 10f);
+
+    checkpointComponent.update();
+
+    assertTrue(checkpointComponent.isActive());
+  }
+
+  @Test
+  void shouldRemainInactiveWhenThereIsNoPlayer() {
+    when(entityService.getEntities()).thenReturn(new Array<>());
+
+    checkpointComponent.update();
+
+    assertFalse(checkpointComponent.isActive());
+  }
+
+  @Test
+  void shouldSwitchOwnAnimationOnActivateAndDeactivate() {
+    TextureAtlas atlas = mock(TextureAtlas.class);
+    Array<AtlasRegion> regions = new Array<>();
+    regions.add(mock(AtlasRegion.class));
+    when(atlas.findRegions(anyString())).thenReturn(regions);
+    ServiceLocator.registerRenderService(new RenderService());
+
+    AnimationRenderComponent animator = new AnimationRenderComponent(atlas);
+    animator.addAnimation("unlit", 0.2f, Animation.PlayMode.LOOP);
+    animator.addAnimation("lit", 0.2f, Animation.PlayMode.LOOP);
+    CheckpointComponent checkpoint = new CheckpointComponent(false, new GridPoint2(0, 0));
+    Entity entity = new Entity().addComponent(checkpoint).addComponent(animator);
+    entity.create();
+    animator.startAnimation("unlit");
+
+    checkpoint.activate();
+    assertEquals("lit", animator.getCurrentAnimation());
+    checkpoint.deactivate();
+    assertEquals("unlit", animator.getCurrentAnimation());
+  }
+
+  @Test
+  void shouldActivateAndDeactivateItsLight() {
+    PointLightComponent light = mock(PointLightComponent.class);
+    CheckpointComponent checkpoint = new CheckpointComponent(false, new GridPoint2(10, 10));
+    Entity entity = new Entity().addComponent(checkpoint).addComponent(light);
+    entity.create();
+
+    checkpoint.update();
+    checkpoint.activate();
+    checkpoint.activate();
+    checkpoint.deactivate();
+
+    verify(light).update();
+    verify(light)
+        .setColor(
+            argThat(color -> color.equals(new Color(228f / 255f, 112f / 255f, 37f / 255f, 1f))));
+    verify(light).setActive(true);
+    verify(light).setActive(false);
   }
 }

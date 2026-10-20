@@ -3,12 +3,41 @@ package com.csse3200.game.ui.terminal;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-import com.csse3200.game.extensions.GameExtension;
+import com.csse3200.game.components.player.KeyboardPlayerInputComponent;
+import com.csse3200.game.entities.Entity;
+import com.csse3200.game.entities.EntityService;
+import com.csse3200.game.input.InputService;
+import com.csse3200.game.services.ServiceLocator;
+import java.util.concurrent.atomic.AtomicBoolean;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 
-@ExtendWith(GameExtension.class)
-class TouchTerminalInputComponentTest {
+class TouchTerminalInputComponentTest extends AbstractTerminalInputComponentTest {
+  @Test
+  void createdInputRegistersAndUsesItsEntityTerminal() {
+    InputService inputs = mock(InputService.class);
+    ServiceLocator.registerInputService(inputs);
+    Terminal terminal = new Terminal();
+    TouchTerminalInputComponent input = new TouchTerminalInputComponent();
+    new Entity().addComponent(terminal).addComponent(input);
+    input.create();
+    verify(inputs).register(input);
+    assertEquals(10, input.getPriority());
+    assertFalse(input.keyTyped('a'));
+    input.scrolled(0f, -1f);
+    assertTrue(terminal.isOpen());
+    input.scrolled(1f, 0f);
+    assertTrue(terminal.isOpen());
+    assertTrue(input.keyTyped('a'));
+    assertEquals("a", terminal.getEnteredMessage());
+    input.dispose();
+    verify(inputs).unregister(input);
+  }
+
+  @Override
+  TerminalInputComponent createInput(Terminal terminal) {
+    return new TouchTerminalInputComponent(terminal);
+  }
+
   @Test
   void shouldSetTerminalOpenClose() {
     Terminal terminal = spy(Terminal.class);
@@ -27,34 +56,21 @@ class TouchTerminalInputComponentTest {
   }
 
   @Test
-  void shouldUpdateMessageOnKeyTyped() {
-    Terminal terminal = mock(Terminal.class);
-    when(terminal.isOpen()).thenReturn(true);
-    KeyboardTerminalInputComponent terminalInput = new KeyboardTerminalInputComponent(terminal);
+  void shouldReleaseHeldPlayerInputWhenTerminalScrolledOpen() {
+    ServiceLocator.registerInputService(new InputService());
+    EntityService entityService = new EntityService();
+    ServiceLocator.registerEntityService(entityService);
 
-    terminalInput.keyTyped('a');
-    terminalInput.keyTyped('b');
-    verify(terminal).appendToMessage('a');
-    verify(terminal).appendToMessage('b');
+    Entity player = new Entity().addComponent(new KeyboardPlayerInputComponent());
+    entityService.register(player);
+    AtomicBoolean released = new AtomicBoolean(false);
+    player.getEvents().addListener("releaseHeldGameplayInput", () -> released.set(true));
 
-    terminalInput.keyTyped('\b');
-    verify(terminal).handleBackspace();
+    Terminal terminal = new Terminal();
+    TouchTerminalInputComponent terminalInput = new TouchTerminalInputComponent(terminal);
 
-    terminalInput.keyTyped('\n');
-    verify(terminal).processMessage();
-  }
-
-  @Test
-  void shouldHandleMessageWhenTerminalOpen() {
-    Terminal terminal = mock(Terminal.class);
-    KeyboardTerminalInputComponent terminalInput = new KeyboardTerminalInputComponent(terminal);
-
-    when(terminal.isOpen()).thenReturn(true);
-    assertTrue(terminalInput.keyDown('a'));
-    assertTrue(terminalInput.keyUp('a'));
-
-    when(terminal.isOpen()).thenReturn(false);
-    assertFalse(terminalInput.keyDown('a'));
-    assertFalse(terminalInput.keyUp('a'));
+    terminalInput.scrolled(0, -1);
+    assertTrue(terminal.isOpen());
+    assertTrue(released.get());
   }
 }

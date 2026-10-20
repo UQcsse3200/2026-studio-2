@@ -249,6 +249,15 @@ public enum ItemType {
     };
   }
 
+  /**
+   * Checks if the item is aimed with right click: every arrow, plus the thrown poison potion.
+   *
+   * @return true for items that show the crosshair and trajectory while right click is held
+   */
+  public boolean isAimed() {
+    return isArrow() || this == POISON_POTION;
+  }
+
   /** Converts this inventory item type into its corresponding combat arrow type. */
   public ArrowType toArrowType() {
     return switch (this) {

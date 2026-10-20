@@ -7,19 +7,18 @@ import static org.mockito.Mockito.*;
 import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.math.GridPoint2;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
-import com.csse3200.game.areas.terrain.TerrainComponent;
 import com.csse3200.game.areas.terrain.TerrainFactory;
 import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.components.inventory.InventoryComponent;
 import com.csse3200.game.components.item.ItemComponent;
 import com.csse3200.game.components.item.ItemType;
+import com.csse3200.game.components.lighting.PointLightComponent;
 import com.csse3200.game.components.sandbox.SandboxEnemyType;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.input.InputService;
 import com.csse3200.game.physics.components.PhysicsComponent;
+import com.csse3200.game.services.MockServices;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.UiTestSupport;
@@ -31,28 +30,23 @@ import java.util.Locale;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedConstruction;
 
 class SandboxLifecycleTest extends UiTestSupport {
   private SandboxGameArea area;
   private ResourceService realResources;
+  private MockedConstruction<PointLightComponent> pointLights;
 
   @BeforeEach
   void createSandbox() {
     ServiceLocator.registerInputService(new InputService());
     realResources = new ResourceService();
     ServiceLocator.registerResourceService(realResources);
+    MockServices.registerLighting();
     TerrainFactory factory = mock(TerrainFactory.class);
-    TerrainComponent terrain = mock(TerrainComponent.class);
-    when(factory.createTerrain(any())).thenReturn(terrain);
-    when(terrain.getTileSize()).thenReturn(1f);
-    when(terrain.getMapBounds(0)).thenReturn(new GridPoint2(50, 30));
-    when(terrain.tileToWorldPosition(any()))
-        .thenAnswer(
-            call -> {
-              GridPoint2 tile = call.getArgument(0);
-              return new Vector2(tile.x, tile.y);
-            });
+    MockServices.stubFlatTerrain(factory);
     area = new SandboxGameArea(factory, new CameraComponent());
+    pointLights = mockConstruction(PointLightComponent.class);
     area.create();
   }
 
@@ -64,6 +58,9 @@ class SandboxLifecycleTest extends UiTestSupport {
     entities.dispose();
     if (realResources != null) {
       realResources.dispose();
+    }
+    if (pointLights != null) {
+      pointLights.close();
     }
   }
 

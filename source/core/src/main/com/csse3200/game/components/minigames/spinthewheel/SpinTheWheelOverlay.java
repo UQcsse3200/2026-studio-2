@@ -23,6 +23,7 @@ public class SpinTheWheelOverlay {
   private Entity overlay;
   private final InventoryComponent inventory;
   private final MinigameOverlayManager overlayManager;
+  private final Entity player;
 
   /**
    * @param items the items to show on the wheel
@@ -40,6 +41,7 @@ public class SpinTheWheelOverlay {
   public SpinTheWheelOverlay(
       List<WheelItem> items, Entity player, MinigameOverlayManager overlayManager) {
     this.items = items;
+    this.player = player;
     this.inventory = player.getComponent(InventoryComponent.class);
     this.overlayManager = overlayManager;
   }
@@ -53,6 +55,9 @@ public class SpinTheWheelOverlay {
     logger.debug("Opening the wheel overlay");
     openRequested = true;
     ServiceLocator.getEntityService().setPaused(true);
+    // The wheel takes every key while it's open, so the player never hears keys being let go. Drop
+    // whatever was held now, or a key held on the way in stays "held" after the wheel closes.
+    player.getEvents().trigger("releaseHeldGameplayInput");
   }
 
   /**

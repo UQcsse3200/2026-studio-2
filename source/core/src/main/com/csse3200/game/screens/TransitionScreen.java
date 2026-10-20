@@ -51,6 +51,19 @@ public class TransitionScreen implements Screen {
     batch = new SpriteBatch();
   }
 
+  TransitionScreen(
+      GdxGame game,
+      Screen fromScreen,
+      ScreenType targetType,
+      SpriteBatch batch,
+      Texture blackPixel) {
+    this.game = game;
+    this.fromScreen = fromScreen;
+    this.targetType = targetType;
+    this.batch = batch;
+    this.blackPixel = blackPixel;
+  }
+
   @Override
   public void render(float delta) {
     float alpha;
@@ -64,13 +77,7 @@ public class TransitionScreen implements Screen {
       alpha = Math.min(timer / FADE_DURATION, 1f);
 
       if (timer >= FADE_DURATION) {
-        if (fromScreen != null) {
-          fromScreen.dispose();
-          fromScreen = null;
-        }
-        toScreen = game.createScreen(targetType);
-        phase = Phase.FADE_IN;
-        timer = 0f;
+        startFadeIn();
       }
     } else {
       if (toScreen != null) {
@@ -87,6 +94,20 @@ public class TransitionScreen implements Screen {
     }
 
     drawOverlay(alpha);
+  }
+
+  private void startFadeIn() {
+    if (fromScreen != null) {
+      fromScreen.dispose();
+      fromScreen = null;
+    }
+    toScreen = game.createScreen(targetType);
+    if (toScreen != null) {
+      toScreen.show();
+      toScreen.resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+    }
+    phase = Phase.FADE_IN;
+    timer = 0f;
   }
 
   private void drawOverlay(float alpha) {
@@ -112,16 +133,24 @@ public class TransitionScreen implements Screen {
   }
 
   @Override
-  public void show() {}
+  public void show() {
+    // The constructor has already prepared the transition resources.
+  }
 
   @Override
-  public void pause() {}
+  public void pause() {
+    // The transition has no separate pause or resume state.
+  }
 
   @Override
-  public void resume() {}
+  public void resume() {
+    // The transition has no separate pause or resume state.
+  }
 
   @Override
-  public void hide() {}
+  public void hide() {
+    // Transition resources are released by dispose().
+  }
 
   @Override
   public void dispose() {

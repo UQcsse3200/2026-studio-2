@@ -1,26 +1,25 @@
 package com.csse3200.game.screens;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+import box2dLight.RayHandler;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.GridPoint2;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.csse3200.game.GdxGame;
-import com.csse3200.game.areas.terrain.TerrainComponent;
 import com.csse3200.game.areas.terrain.TerrainFactory;
 import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.components.item.ItemType;
+import com.csse3200.game.components.lighting.PointLightComponent;
 import com.csse3200.game.components.maingame.MainGameActions;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.entities.factories.RenderFactory;
 import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.rendering.Renderer;
+import com.csse3200.game.services.MockServices;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import org.junit.jupiter.api.Test;
@@ -38,20 +37,13 @@ class SandboxGameScreenTest {
     SandboxGameScreen screen = null;
     // Only native rendering and terrain construction are replaced; services and entities are real.
     try (var renders = mockStatic(RenderFactory.class);
+        var rayHandlers = mockConstruction(RayHandler.class);
+        var pointLights = mockConstruction(PointLightComponent.class);
         var terrainFactories =
             mockConstruction(
                 TerrainFactory.class,
                 (factory, context) -> {
-                  TerrainComponent terrain = mock(TerrainComponent.class);
-                  when(factory.createTerrain(any())).thenReturn(terrain);
-                  when(terrain.getTileSize()).thenReturn(1f);
-                  when(terrain.getMapBounds(0)).thenReturn(new GridPoint2(50, 30));
-                  when(terrain.tileToWorldPosition(any()))
-                      .thenAnswer(
-                          call -> {
-                            GridPoint2 tile = call.getArgument(0);
-                            return new Vector2(tile.x, tile.y);
-                          });
+                  MockServices.stubFlatTerrain(factory);
                 })) {
       renders
           .when(RenderFactory::createRenderer)
@@ -63,6 +55,9 @@ class SandboxGameScreenTest {
       screen = new SandboxGameScreen(game);
       EntityService entities = ServiceLocator.getEntityService();
       ResourceService resources = ServiceLocator.getResourceService();
+      assertNotNull(ServiceLocator.getLightingService());
+      assertNotNull(ServiceLocator.getLightingService().getEngine());
+      assertNotNull(ServiceLocator.getLightingService().getEngine().getRayHandler());
       assertFalse(entities.getEntities().isEmpty());
       assertTrue(stage.getActors().size > 0);
       for (ItemType type : ItemType.values()) {

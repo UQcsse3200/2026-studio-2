@@ -4,6 +4,8 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.csse3200.game.components.Component;
 import com.csse3200.game.components.item.weapons.bow.grapple.GrappleComponent;
+import com.csse3200.game.components.level.SlipperyPlatformComponent;
+import com.csse3200.game.physics.BodyUserData;
 import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.physics.raycast.RaycastHit;
@@ -12,7 +14,7 @@ import com.csse3200.game.services.ServiceLocator;
 
 /** Action component for interacting with the player */
 public class PlayerActions extends Component {
-  private static final float JUMP_FORCE = 22f;
+  private static final float JUMP_FORCE = 41f;
   private static final Vector2 MAX_SPEED = new Vector2(5f, 5f); // Metres per second
   private static final float SPRINT_MULTIPLIER = 1.75f;
   private static final float ROPE_JUMP_MULTIPLIER = 0.7f;
@@ -25,6 +27,16 @@ public class PlayerActions extends Component {
   private static final float DASH_RECOVERY = 0.1f;
   private static final float DASH_RECOVERY_CONTROL = 0.2f;
   private static final float SPRINT_RELEASE_GRACE = 0.12f;
+  // How fast the player must be descending before it counts as a fall, so a scuff over a tile seam
+  // or the moment of hang time at the apex doesn't flicker the animation.
+  private static final float FALL_SPEED_THRESHOLD = 1f;
+  // If a jump's impulse fires but the player never leaves the ground (jumping under a low ceiling),
+  // give up waiting after this long and report a landing so the animation can recover.
+  private static final long LIFTOFF_GRACE_MS = 200;
+  // How far below the feet the ground check looks.
+  private static final float GROUND_RAY_LENGTH = 0.15f;
+  // How far in from each side of the collider the foot rays sit, so walls don't read as floor.
+  private static final float FOOT_INSET = 0.05f;
 
   private float extraSpeedMultiplier = 1f; // The Speed multiplier
   private long speedPotionEndTimeMs = 0; // The time that speed_potion ends
@@ -48,6 +60,14 @@ public class PlayerActions extends Component {
   public boolean droppingFromLedge = false;
   private boolean dead = false;
   private long jumpImpulseAt = -1; // Timestamp to apply the queued jump impulse, -1 if none queued
+  private boolean airborne = false; // Has left the ground since the last landing
+  private boolean falling = false; // "fallStart" already reported for this airborne stretch
+  private long liftoffDeadline =
+      -1; // When to give up waiting for a queued jump to leave the ground
+  private float decelerationTraction = 1f;
+  private float traction = 1f;
+  private Vector2 physicsHelperNewPosition;
+  private boolean physicsHelperRequestedPositionChange = false;
 
   /**
    * The direction the player is currently facing.
@@ -72,18 +92,21 @@ public class PlayerActions extends Component {
     entity.getEvents().addListener("updateLedgeDrop", this::setLedgeDropping);
     entity.getEvents().addListener("speedPotionUsed", this::applySpeedPotion);
     entity.getEvents().addListener("death", this::die);
+    entity.getEvents().addListener("revive", this::revive);
+    entity.getEvents().addListener("grappleAttached", this::onGrappleAttached);
+    entity.getEvents().addListener("physicsPositionRequest", this::setPhysicsHelperNewPosition);
   }
 
   @Override
   public void update() {
+    if (dead) {
+      return;
+    }
+    handlePhysicsHelperRequest();
     boolean wasGrounded = isGrounded;
     isGrounded = checkGrounded();
     checkJumpWindup();
-
-    // The grapple is a hold action: let go of right click and the rope drops
-    if (isGrappling() && !isRightMouseHeld()) {
-      grapple.release();
-    }
+    updateAirState();
 
     if (isGrounded && !wasGrounded) {
       airDashUsed = false;
@@ -101,7 +124,7 @@ public class PlayerActions extends Component {
 
     if (dashRecoveryRemaining > 0f) {
       dashRecoveryRemaining -= ServiceLocator.getTimeSource().getDeltaTime();
-      if (!isGrappling()) {
+      if (!isSwinging()) {
         updateSpeed();
       }
       return;
@@ -110,7 +133,7 @@ public class PlayerActions extends Component {
     if (!moving) {
       return;
     }
-    if (isGrappling()) {
+    if (isSwinging()) {
       // Walking is off while swinging, movement keys just add speed to the arc
       entity.getEvents().trigger("grappleSwing", walkDirection.x);
     } else {
@@ -154,25 +177,66 @@ public class PlayerActions extends Component {
     return grapple != null && grapple.isAttached();
   }
 
+  /**
+   * Hanging from the rope, as opposed to merely having one out. A player standing on a platform
+   * with a rope attached walks, sprints and jumps exactly as they would without it, so this - not
+   * {@link #isGrappling()} - is what switches movement over to swinging.
+   *
+   * @return true while a rope is attached and the player is off the ground
+   */
+  public boolean isSwinging() {
+    return isGrappling() && !isGrounded;
+  }
+
   /** Applies the queued ground-jump impulse once its short wind-up has elapsed. */
   private void checkJumpWindup() {
     if (jumpImpulseAt < 0) {
-      return;
-    }
-    if (dead) {
-      jumpImpulseAt = -1;
       return;
     }
     if (ServiceLocator.getTimeSource().getTime() >= jumpImpulseAt) {
       jumpImpulseAt = -1;
       Body body = physicsComponent.getBody();
       body.applyLinearImpulse(new Vector2(0, JUMP_FORCE), body.getWorldCenter(), true);
+      liftoffDeadline = ServiceLocator.getTimeSource().getTime() + LIFTOFF_GRACE_MS;
     }
   }
 
-  private boolean isRightMouseHeld() {
-    KeyboardPlayerInputComponent input = entity.getComponent(KeyboardPlayerInputComponent.class);
-    return input != null && input.isRightMouseHeld();
+  /**
+   * Tracks whether the player is airborne, rising or falling, and announces the transitions the
+   * animation controller needs: "fallStart" the moment a descent begins, and "landed" on touchdown.
+   * Velocity-driven rather than jump-driven, so walking off a ledge or dropping through a platform
+   * reports a fall too.
+   */
+  private void updateAirState() {
+    if (jumpImpulseAt >= 0) {
+      // Still crouching through the wind-up with both feet on the ground.
+      return;
+    }
+
+    if (!isGrounded) {
+      airborne = true;
+      liftoffDeadline = -1;
+      if (!falling && !isDashing) {
+        float verticalVelocity = physicsComponent.getBody().getLinearVelocity().y;
+        if (verticalVelocity < -FALL_SPEED_THRESHOLD) {
+          falling = true;
+          entity.getEvents().trigger("fallStart");
+        }
+      }
+      return;
+    }
+
+    if (airborne) {
+      airborne = false;
+      falling = false;
+      liftoffDeadline = -1;
+      entity.getEvents().trigger("landed");
+    } else if (liftoffDeadline >= 0
+        && ServiceLocator.getTimeSource().getTime() >= liftoffDeadline) {
+      // The jump fired but never got off the ground, e.g. straight into a low ceiling.
+      liftoffDeadline = -1;
+      entity.getEvents().trigger("landed");
+    }
   }
 
   private void updateSpeed() {
@@ -184,7 +248,7 @@ public class PlayerActions extends Component {
 
     // Reduced control while recovering from a dash; otherwise full control on the ground and
     // weak in the air so swing momentum isn't wiped on landing.
-    float control = isGrounded ? 1f : AIR_CONTROL;
+    float control = isGrounded ? traction : AIR_CONTROL;
     if (dashRecoveryRemaining > 0f) {
       control = DASH_RECOVERY_CONTROL;
     }
@@ -194,25 +258,79 @@ public class PlayerActions extends Component {
     body.applyLinearImpulse(new Vector2(impulseX, 0), body.getWorldCenter(), true);
   }
 
-  /** Short ray down from the player's feet to see if we're standing on something. */
+  /**
+   * Short ray down from the player's feet to see if we're standing on something. Enemy bodies count
+   * as ground, so landing on one plays the landing recovery and lets you jump straight back off
+   * instead of looping the fall animation on their head.
+   */
   private boolean checkGrounded() {
-    Vector2 position = entity.getCenterPosition();
-    float halfHeight = entity.getScale().y / 2f;
-    Vector2 rayStart = position.cpy().sub(0, halfHeight);
-    Vector2 rayEnd = rayStart.cpy().sub(0, 0.15f);
+    Vector2 feet = entity.getCenterPosition().sub(0, entity.getScale().y / 2f);
+    // A ray at each foot as well as the centre. With only the centre ray, landing with the middle
+    // of the body past the edge of a ledge or an enemy left the player standing there but never
+    // "grounded": stuck in the fall animation and unable to jump. The feet are inset slightly so a
+    // wall the player is pressed against doesn't count as floor.
+    float footOffset = Math.max(0f, entity.getScale().x / 2f - FOOT_INSET);
     RaycastHit hit = new RaycastHit();
+    boolean grounded =
+        castGroundRay(feet, hit)
+            || castGroundRay(feet.cpy().sub(footOffset, 0f), hit)
+            || castGroundRay(feet.cpy().add(footOffset, 0f), hit);
+
+    decelerationTraction = 1f;
+    // if we're grounded, we need to check if we're on a slippery platform and update the player's
+    // traction used in the updateSpeed() method accordingly
+    if (grounded && hit.fixture != null) {
+      // get raw data and check if it's user data is a proper BodyUserData
+      Object userData = hit.fixture.getBody().getUserData();
+      if (userData instanceof BodyUserData data && data.entity != null) {
+        SlipperyPlatformComponent slipperyPlatform =
+            data.entity.getComponent(SlipperyPlatformComponent.class);
+        if (slipperyPlatform != null) {
+          decelerationTraction = slipperyPlatform.getSlipperiness();
+        }
+      }
+    }
+
+    return grounded;
+  }
+
+  /** Casts a short ray straight down from {@code start}, recording what it hit in {@code hit}. */
+  private boolean castGroundRay(Vector2 start, RaycastHit hit) {
+    Vector2 end = start.cpy().sub(0, GROUND_RAY_LENGTH);
     return ServiceLocator.getPhysicsService()
         .getPhysics()
-        .raycast(rayStart, rayEnd, PhysicsLayer.SOLID, hit);
+        .raycast(start, end, PhysicsLayer.STANDABLE, hit);
   }
 
   /** Stops the player permanently reacting to input once they've died. */
   void die() {
     dead = true;
+    resetMovementState();
     Body body = physicsComponent.getBody();
     Vector2 velocity = body.getLinearVelocity();
     body.setLinearVelocity(0f, velocity.y);
     stopWalking();
+  }
+
+  /** Revives the player after a checkpoint restart so input and movement work again. */
+  void revive() {
+    dead = false;
+    resetMovementState();
+    stopWalking();
+  }
+
+  private void resetMovementState() {
+    onHurtInterruptDash();
+    isSprinting = false;
+    sprintStopPending = false;
+    sprintStopGraceRemaining = 0f;
+    dashCooldownRemaining = 0f;
+    airDashUsed = false;
+    jumpImpulseAt = -1;
+    liftoffDeadline = -1;
+    airborne = false;
+    falling = false;
+    droppingFromLedge = false;
   }
 
   /**
@@ -224,6 +342,7 @@ public class PlayerActions extends Component {
     if (dead) {
       return;
     }
+    traction = 1f;
     this.walkDirection = direction;
     if (direction.x != 0) {
       facingDirection = direction.x > 0 ? 1 : -1;
@@ -234,39 +353,64 @@ public class PlayerActions extends Component {
   /** Stops the player from walking. */
   void stopWalking() {
     this.walkDirection = Vector2.Zero.cpy();
-    if (!isDashing && !isGrappling()) {
+    if (!isDashing && !isSwinging()) {
+      traction = decelerationTraction;
       updateSpeed();
     }
     moving = false;
   }
 
-  /** Jump off the ground, or let go of the rope with a kick upward. */
+  /** Jump off the ground, or let go of the rope with a kick upward while hanging from it. */
   void jump() {
-    if (dead || jumpImpulseAt >= 0) {
+    if (dead) {
       return;
     }
     Body body = physicsComponent.getBody();
 
-    if (isGrappling()) {
+    if (isSwinging()) {
+      // A ground jump queued just before the rope latched on would otherwise still fire its
+      // impulse on top of the rope kick. Drop it; this jump replaces it.
+      jumpImpulseAt = -1;
       if (isDashing) {
         endDash();
       }
-      grapple.release();
+      letGoOfRope();
       airDashUsed = false;
       dashCooldownRemaining = 0f;
       body.applyLinearImpulse(
           new Vector2(0, JUMP_FORCE * ROPE_JUMP_MULTIPLIER), body.getWorldCenter(), true);
+      entity.getEvents().trigger("jumpAccepted");
+      return;
+    }
+
+    // A ground jump is already winding up. Re-queueing would restart the crouch and push the
+    // liftoff further away with every press.
+    if (jumpImpulseAt >= 0) {
       return;
     }
 
     if (isGrounded) {
+      if (isGrappling()) {
+        // Standing with a rope out: jumping lets go of it, rather than leaping into a swing from
+        // the ground. Only an attached rope - releasing would also cancel a shot still in flight.
+        letGoOfRope();
+      }
       airDashUsed = false;
       dashCooldownRemaining = 0f;
-      body.applyLinearImpulse(new Vector2(0, JUMP_FORCE), body.getWorldCenter(), true);
       isGrounded = false;
       jumpImpulseAt = ServiceLocator.getTimeSource().getTime() + JUMP_WINDUP_MS;
       entity.getEvents().trigger("jumpStart");
+      entity.getEvents().trigger("jumpAccepted");
     }
+  }
+
+  /**
+   * Lets go of the rope through the "grappleRelease" event rather than calling the grapple
+   * directly, so everything listening hears it too - notably a slippery platform, whose grapple
+   * timer would otherwise keep running and later drop whatever rope the player is on by then.
+   */
+  private void letGoOfRope() {
+    entity.getEvents().trigger("grappleRelease");
   }
 
   // one para is the extraMutiplier, another one is the time the potion last
@@ -289,7 +433,7 @@ public class PlayerActions extends Component {
 
     this.isSprinting = true;
     dash();
-    if (!isDashing && !isGrappling()) {
+    if (!isDashing && !isSwinging()) {
       updateSpeed();
     }
   }
@@ -308,14 +452,14 @@ public class PlayerActions extends Component {
   private void confirmStopSprinting() {
     sprintStopPending = false;
     isSprinting = false;
-    if (!isDashing && !isGrappling()) {
+    if (!isDashing && !isSwinging()) {
       updateSpeed();
     }
     entity.getEvents().trigger("sprintEnd");
   }
 
   void dash() {
-    if (isDashing || dashCooldownRemaining > 0f) {
+    if (dead || isDashing || dashCooldownRemaining > 0f) {
       return;
     }
     if (isGrappling()) {
@@ -366,6 +510,14 @@ public class PlayerActions extends Component {
     body.setGravityScale(storedGravityScale);
   }
 
+  /**
+   * Latching on resets the fall, so a descent on the rope is announced afresh: the animation
+   * controller forgets the air state on attachment, and the two must agree again by touchdown.
+   */
+  private void onGrappleAttached() {
+    falling = false;
+  }
+
   private void onHurtInterruptDash() {
     if (isDashing) {
       endDash();
@@ -392,6 +544,19 @@ public class PlayerActions extends Component {
         body.setAwake(true); // force awaken the body to respond to the current contact
       }
     }
+  }
+
+  private void handlePhysicsHelperRequest() {
+    if (physicsHelperRequestedPositionChange && physicsHelperNewPosition != null) {
+      entity.setPosition(physicsHelperNewPosition);
+    }
+    physicsHelperRequestedPositionChange = false;
+    physicsHelperNewPosition = null;
+  }
+
+  private void setPhysicsHelperNewPosition(Vector2 position) {
+    physicsHelperNewPosition = position;
+    physicsHelperRequestedPositionChange = true;
   }
 
   public boolean isSpeedPotionActive() {

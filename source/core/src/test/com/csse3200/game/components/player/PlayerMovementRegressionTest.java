@@ -67,7 +67,10 @@ class PlayerMovementRegressionTest {
     doReturn(grounded)
         .when(engine)
         .raycast(
-            any(Vector2.class), any(Vector2.class), eq(PhysicsLayer.SOLID), any(RaycastHit.class));
+            any(Vector2.class),
+            any(Vector2.class),
+            eq(PhysicsLayer.STANDABLE),
+            any(RaycastHit.class));
   }
 
   private void advance(float seconds) {
@@ -178,24 +181,31 @@ class PlayerMovementRegressionTest {
   void shouldReleaseGrappleOnJumpWithUpwardBoostAndPreserveHorizontalMomentum() {
     when(grapple.isAttached()).thenReturn(true);
     body.setLinearVelocity(4f, -2f);
+    int[] releases = {0};
+    player.getEvents().addListener("grappleRelease", () -> releases[0]++);
 
     player.getEvents().trigger("jump");
 
-    verify(grapple).release();
+    // Announced as the event, which the grapple acts on, so slippery platforms hear it too.
+    assertEquals(1, releases[0]);
     assertEquals(4f, body.getLinearVelocity().x);
     assertTrue(body.getLinearVelocity().y > 0f);
   }
 
   @Test
-  void shouldKeepGrappleWhileMouseHeldAndReleaseWhenLetGo() {
+  void shouldKeepGrappleAttachedAcrossFramesRegardlessOfMouseHoldState() {
+    // The shot fires on button-release, so the mouse is never "held" by the time the arrow lands
+    // and attaches - an active swing must not auto-drop just because it isn't held. Release only
+    // happens through the explicit "grappleRelease" event (the next shoot-button press), not
+    // every-frame polling here.
     when(grapple.isAttached()).thenReturn(true);
-    when(input.isRightMouseHeld()).thenReturn(true);
+    when(input.isRightMouseHeld()).thenReturn(false);
     advance(0.02f);
     verify(grapple, never()).release();
 
-    when(input.isRightMouseHeld()).thenReturn(false);
+    when(input.isRightMouseHeld()).thenReturn(true);
     advance(0.02f);
-    verify(grapple).release();
+    verify(grapple, never()).release();
   }
 
   @Test

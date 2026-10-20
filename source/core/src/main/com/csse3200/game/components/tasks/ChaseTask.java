@@ -6,6 +6,7 @@ import com.csse3200.game.ai.tasks.PriorityTask;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.physics.PhysicsEngine;
 import com.csse3200.game.physics.PhysicsLayer;
+import com.csse3200.game.physics.components.PhysicsMovementComponent;
 import com.csse3200.game.physics.raycast.RaycastHit;
 import com.csse3200.game.rendering.DebugRenderer;
 import com.csse3200.game.services.ServiceLocator;
@@ -16,22 +17,32 @@ public class ChaseTask extends DefaultTask implements PriorityTask {
   private final int priority;
   private final float viewDistance;
   private final float maxChaseDistance;
+  private final String chaseBehaviour;
   private final PhysicsEngine physics;
   private final DebugRenderer debugRenderer;
   private final RaycastHit hit = new RaycastHit();
   private MovementTask movementTask;
+  private EdgeDetectTask edgeDetector;
+  private PhysicsMovementComponent movementComponent;
 
   /**
    * @param target The entity to chase.
    * @param priority Task priority when chasing (0 when not chasing).
    * @param viewDistance Maximum distance from the entity at which chasing can start.
    * @param maxChaseDistance Maximum distance from the entity while chasing before giving up.
+   * @param chaseBehaviour flying or non-flying chasing behaviour.
    */
-  public ChaseTask(Entity target, int priority, float viewDistance, float maxChaseDistance) {
+  public ChaseTask(
+      Entity target,
+      int priority,
+      float viewDistance,
+      float maxChaseDistance,
+      String chaseBehaviour) {
     this.target = target;
     this.priority = priority;
     this.viewDistance = viewDistance;
     this.maxChaseDistance = maxChaseDistance;
+    this.chaseBehaviour = chaseBehaviour;
     physics = ServiceLocator.getPhysicsService().getPhysics();
     debugRenderer = ServiceLocator.getRenderService().getDebug();
   }
@@ -39,6 +50,12 @@ public class ChaseTask extends DefaultTask implements PriorityTask {
   @Override
   public void start() {
     super.start();
+    if (!chaseBehaviour.equals("flying")) {
+      edgeDetector = new EdgeDetectTask(0.3f);
+    }
+
+    movementComponent = owner.getEntity().getComponent(PhysicsMovementComponent.class);
+
     movementTask = new MovementTask(target.getPosition());
     movementTask.create(owner);
     movementTask.start();
@@ -48,17 +65,52 @@ public class ChaseTask extends DefaultTask implements PriorityTask {
 
   @Override
   public void update() {
+    Entity enemy = owner.getEntity();
+
+    float direction = target.getPosition().x >= enemy.getPosition().x ? 1f : -1f;
+
+    if (target.getPosition().x >= enemy.getPosition().x) {
+      direction = 1f;
+    } else {
+      direction = -1f;
+    }
+
+    if (!chaseBehaviour.equals("flying")) {
+      if (!canAdvance(enemy, direction)) {
+        movementComponent.setMoving(false);
+        return;
+      }
+    }
+
     movementTask.setTarget(target.getPosition());
+    movementComponent.setMoving(true);
     movementTask.update();
+
     if (movementTask.getStatus() != Status.ACTIVE) {
       movementTask.start();
     }
   }
 
+  /**
+   * @param direction 1 to move right, -1 to move left
+   * @return false if the chaser has to hold still rather than step that way. On the ground that is
+   *     when there is no floor ahead, so it does not walk off the edge of a platform.
+   */
+  protected boolean canAdvance(Entity enemy, float direction) {
+    return edgeDetector.isGroundAhead(enemy, direction);
+  }
+
   @Override
   public void stop() {
     super.stop();
-    movementTask.stop();
+
+    if (movementTask != null) {
+      movementTask.stop();
+    }
+
+    if (movementComponent != null) {
+      movementComponent.setMoving(false);
+    }
   }
 
   @Override
@@ -99,6 +151,7 @@ public class ChaseTask extends DefaultTask implements PriorityTask {
       debugRenderer.drawLine(from, hit.point);
       return false;
     }
+
     debugRenderer.drawLine(from, to);
     return true;
   }

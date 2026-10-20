@@ -1,14 +1,15 @@
 package com.csse3200.game.components.player;
 
-import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.Component;
 import com.csse3200.game.components.inventory.InventoryComponent;
 import com.csse3200.game.components.item.ItemType;
-import com.csse3200.game.components.item.weapons.PrimaryWeapon;
 import com.csse3200.game.components.item.weapons.WeaponComponent;
+import com.csse3200.game.components.projectile.ArrowProjectileComponent;
+import com.csse3200.game.components.projectile.ArrowTrajectory;
 import com.csse3200.game.entities.factories.ProjectileFactory;
+import com.csse3200.game.physics.PhysicsEngine;
 import com.csse3200.game.services.ServiceLocator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,15 +17,21 @@ import org.slf4j.LoggerFactory;
 /**
  * Bridges input events and inventory selection with active combat, health, and grapple logic.
  *
- * <p>Listens for player input events ("attack", "useItem", "shoot", "stopShoot") and routes
- * execution based on the currently selected item in the player's inventory.
+ * <p>Listens for player input events ("shoot", "stopShoot", and "attack" from touch input) and
+ * routes execution based on the currently selected item in the player's inventory.
  */
 public class ItemUseComponent extends Component {
+  private static final String ITEM_USED = "itemUsed";
+  private static final String ITEM_USE_FAILED = "itemUseFailed";
   private static final Logger logger = LoggerFactory.getLogger(ItemUseComponent.class);
   private static final Vector2 DEFAULT_AIM = new Vector2(1f, 0f);
 
+  /** How far in front of the thrower, as a fraction of their width, a thrown potion appears. */
+  public static final float POTION_SPAWN_OFFSET = 0.8f;
+
   private InventoryComponent inventory;
   private CombatStatsComponent combatStats;
+  private boolean aimingPotion;
 
   @Override
   public void create() {
@@ -32,19 +39,24 @@ public class ItemUseComponent extends Component {
     combatStats = entity.getComponent(CombatStatsComponent.class);
 
     entity.getEvents().addListener("attack", this::useSelectedItem);
-    entity.getEvents().addListener("useItem", this::useSelectedItem);
     entity.getEvents().addListener("shoot", this::shootSelectedArrow);
     entity.getEvents().addListener("stopShoot", this::stopShootSelectedArrow);
+    // A menu stealing the release, or dying mid-aim, drops the potion aim without throwing.
+    entity.getEvents().addListener("chargeCancel", this::cancelPotionAim);
+    entity.getEvents().addListener("death", this::cancelPotionAim);
   }
 
   /**
-   * Starts using the selected arrow item on shoot-button-down. Consumables are ignored here so
-   * holding or clicking the shoot button never accidentally drinks a potion.
+   * Uses the selected item on shoot-button-down. Health and speed potions are drunk straight away.
+   * The poison potion is thrown, so it aims like the bow: holding shows its arc and releasing
+   * throws it.
    *
-   * <p>The rope arrow still fires instantly (unchanged). Other arrows lock in their type and spend
-   * their ammo immediately, same as before, but no longer fire right away - the shot is now held as
-   * a charge and only actually fires when {@link #stopShootSelectedArrow()} releases it, with power
-   * scaling based on how long the button was held.
+   * <p>Every arrow, including the rope arrow, is held as a charge and only actually fires when
+   * {@link #stopShootSelectedArrow()} releases the button, with power (and for the grapple, reach)
+   * scaling based on how long it was held. The rope arrow fires on its own dedicated event rather
+   * than the bow's "chargeStart"/"chargeRelease", so the two weapons never cross-trigger each other
+   * off the same shared broadcast, and doesn't spend ammo or lock in a bow arrow type, since
+   * GrappleComponent, not BowComponent, is what actually fires it.
    *
    * @param direction Input direction from mouse aim or controller
    */
@@ -53,58 +65,73 @@ public class ItemUseComponent extends Component {
       return;
     }
     ItemType selected = inventory.getSelectedItem();
-    if (selected == null || !selected.isArrow() || !inventory.hasItem(selected)) {
+    if (selected == null || !inventory.hasItem(selected)) {
+      return;
+    }
+    if (selected == ItemType.POISON_POTION) {
+      // Thrown, so it aims like the bow: holding shows its arc and releasing throws it.
+      aimingPotion = true;
+      return;
+    }
+    if (!selected.isArrow()) {
+      // Right-click uses whatever else is selected: health and speed potions are drunk.
+      useSelectedItem();
+      return;
+    }
+
+    if (direction == null || direction.isZero()) {
+      entity.getEvents().trigger(ITEM_USE_FAILED, selected);
       return;
     }
 
     if (selected == ItemType.ROPE_ARROW) {
-      useSelectedItem();
-      logger.debug("Arrow sound should play now");
-      try {
-        Sound arrowSound =
-            ServiceLocator.getResourceService().getAsset("sounds/Arrow_release.wav", Sound.class);
-        arrowSound.play(0.4f);
-      } catch (Exception e) {
-      }
+      entity.getEvents().trigger(ITEM_USED, selected);
+      entity.getEvents().trigger("grappleDrawStart", direction);
       return;
     }
 
     // Reject before reserving ammo. Readiness also covers a bow that already has a paid arrow
     // charging, so repeat clicks and the alternate attack input cannot consume another arrow.
-    if (direction == null || direction.isZero() || !isPrimaryWeaponReady()) {
-      entity.getEvents().trigger("itemUseFailed", selected);
+    if (!isPrimaryWeaponReady()) {
+      entity.getEvents().trigger(ITEM_USE_FAILED, selected);
       return;
     }
 
     entity.getEvents().trigger("setArrowType", selected.toArrowType());
-    if (selected.consumesAmmo()) {
-      inventory.removeItem(selected, 1);
-    }
-    entity.getEvents().trigger("itemUsed", selected);
+    inventory.removeItem(selected, 1);
+    entity.getEvents().trigger(ITEM_USED, selected);
     entity.getEvents().trigger("chargeStart", direction);
   }
 
   /**
-   * Releases the grapple and any charging shot when the shoot button comes back up.
+   * Detaches an active swing and releases any charging shot - bow or grapple - when the shoot
+   * button comes back up.
    *
-   * <p>Both are signalled unconditionally rather than picking one based on the current selection:
-   * spending the last arrow in a slot auto-advances the inventory to the next occupied slot, so the
-   * item selected on release is not necessarily the one that started the draw. GrappleComponent
-   * ignores a release when no rope is attached, and BowComponent ignores one when nothing is
-   * charging, so signalling both is safe and guarantees a charge can never be left hanging.
+   * <p>All three events are signalled unconditionally rather than picking one based on the current
+   * selection: spending the last arrow in a slot auto-advances the inventory to the next occupied
+   * slot, so the item selected on release is not necessarily the one that started the draw.
+   * GrappleComponent ignores a release when no rope is attached and a charge release when it isn't
+   * charging, and BowComponent ignores a release when nothing is charging, so signalling all three
+   * is safe and guarantees a charge can never be left hanging.
    */
   void stopShootSelectedArrow() {
     if (inventory == null) {
       return;
     }
+    if (aimingPotion) {
+      aimingPotion = false;
+      usePoisonPotion(getPotionAimDirection());
+    }
     entity.getEvents().trigger("grappleRelease");
+    entity.getEvents().trigger("grappleDrawRelease", getAimDirection());
     entity.getEvents().trigger("chargeRelease", getAimDirection());
   }
 
   /**
-   * Attempts to use the currently selected item stack in the inventory.
+   * Uses the selected potion: drinks a health or speed potion, or throws a poison potion. Arrows
+   * aren't used directly; they're fired by drawing the bow (see {@link #shootSelectedArrow}).
    *
-   * @return true if the item was successfully used or fired
+   * @return true if a potion was used
    */
   public boolean useSelectedItem() {
     if (inventory == null) {
@@ -117,77 +144,46 @@ public class ItemUseComponent extends Component {
     }
 
     return switch (selected) {
-      case STANDARD_ARROW, FIRE_ARROW, ICE_ARROW, ROPE_ARROW ->
-          useArrow(selected, getAimDirection());
+      case STANDARD_ARROW, FIRE_ARROW, ICE_ARROW, ROPE_ARROW -> false;
       case HEALTH_POTION -> useHealthPotion();
       case SPEED_POTION -> useSpeedPotion();
-      case POISON_POTION -> usePoisonPotion();
+      case POISON_POTION -> usePoisonPotion(getAimDirection());
     };
-  }
-
-  private boolean useArrow(ItemType arrowItem, Vector2 direction) {
-    if (direction == null || direction.isZero() || !inventory.hasItem(arrowItem)) {
-      entity.getEvents().trigger("itemUseFailed", arrowItem);
-      return false;
-    }
-
-    if (arrowItem == ItemType.ROPE_ARROW) {
-      entity.getEvents().trigger("grappleFire", direction);
-    } else {
-      // Dispatch is synchronous, so check readiness before publishing the attack or using ammo.
-      WeaponComponent weapons = entity.getComponent(WeaponComponent.class);
-      PrimaryWeapon primary = weapons == null ? null : weapons.getPrimaryWeapon();
-      if (primary == null || !primary.isReady()) {
-        entity.getEvents().trigger("itemUseFailed", arrowItem);
-        return false;
-      }
-
-      // Configure bow variant and trigger primary weapon execution via WeaponComponent
-      entity.getEvents().trigger("setArrowType", arrowItem.toArrowType());
-      entity.getEvents().trigger("primaryAttack", direction);
-
-      if (arrowItem.consumesAmmo()) {
-        inventory.removeItem(arrowItem, 1);
-      }
-    }
-
-    entity.getEvents().trigger("itemUsed", arrowItem);
-    return true;
   }
 
   private boolean useHealthPotion() {
     if (combatStats == null || combatStats.isHealthFull()) {
       logger.debug("Cannot use health potion: health is already full or stats missing.");
-      entity.getEvents().trigger("itemUseFailed", ItemType.HEALTH_POTION);
+      entity.getEvents().trigger(ITEM_USE_FAILED, ItemType.HEALTH_POTION);
       return false;
     }
 
     if (!inventory.removeItem(ItemType.HEALTH_POTION, 1)) {
-      entity.getEvents().trigger("itemUseFailed", ItemType.HEALTH_POTION);
+      entity.getEvents().trigger(ITEM_USE_FAILED, ItemType.HEALTH_POTION);
       return false;
     }
 
     combatStats.addHealth(ItemType.HEALTH_POTION.getHealAmount());
-    entity.getEvents().trigger("itemUsed", ItemType.HEALTH_POTION);
+    entity.getEvents().trigger(ITEM_USED, ItemType.HEALTH_POTION);
     return true;
   }
 
   private boolean useSpeedPotion() {
     if (!inventory.hasItem(ItemType.SPEED_POTION)) {
       logger.debug("No speed potion available to use");
-      entity.getEvents().trigger("itemUseFailed", ItemType.SPEED_POTION);
+      entity.getEvents().trigger(ITEM_USE_FAILED, ItemType.SPEED_POTION);
       return false;
     }
 
     PlayerActions playerActions = entity.getComponent(PlayerActions.class);
     if (playerActions != null && playerActions.isSpeedPotionActive()) {
       logger.debug("Speed potion buff is already active");
-      entity.getEvents().trigger("itemUseFailed", ItemType.SPEED_POTION);
+      entity.getEvents().trigger(ITEM_USE_FAILED, ItemType.SPEED_POTION);
       return false;
     }
 
     if (!inventory.removeItem(ItemType.SPEED_POTION, 1)) {
-      entity.getEvents().trigger("itemUseFailed", ItemType.SPEED_POTION);
+      entity.getEvents().trigger(ITEM_USE_FAILED, ItemType.SPEED_POTION);
       return false;
     }
 
@@ -197,38 +193,73 @@ public class ItemUseComponent extends Component {
             "speedPotionUsed",
             ItemType.SPEED_POTION.getSpeedBoost(),
             ItemType.SPEED_POTION.getDuration());
-    entity.getEvents().trigger("itemUsed", ItemType.SPEED_POTION);
+    entity.getEvents().trigger(ITEM_USED, ItemType.SPEED_POTION);
     return true;
   }
 
-  private boolean usePoisonPotion() {
+  /**
+   * @return true while right click is held to aim a poison potion, before it is thrown
+   */
+  public boolean isAimingPotion() {
+    return aimingPotion;
+  }
+
+  /** Throw direction for an aimed potion: one whose arc lands on the crosshair. */
+  private Vector2 getPotionAimDirection() {
+    Vector2 centre = entity.getCenterPosition();
+    Vector2 target = centre.cpy().add(getAimDirection());
+    return potionLaunchDirection(centre, entity.getScale().x, target);
+  }
+
+  /**
+   * Direction to throw a poison potion so that, falling under gravity, its arc passes through
+   * {@code target}. If the target is out of reach it is the throw that gets closest.
+   *
+   * @param centre the thrower's centre
+   * @param throwerWidth the thrower's width, which sets how far ahead the potion appears
+   * @param target the world point to land on
+   * @return unit throw direction
+   */
+  public static Vector2 potionLaunchDirection(Vector2 centre, float throwerWidth, Vector2 target) {
+    float speed = ProjectileFactory.POISON_POTION_SPEED;
+    float gravityY = PhysicsEngine.GRAVITY_Y * ArrowProjectileComponent.ARC_GRAVITY_SCALE;
+    // Where the potion appears depends on the throw direction, so aim once from the centre and
+    // then again from where that throw would appear.
+    Vector2 direction = ArrowTrajectory.launchDirection(centre, target, speed, gravityY);
+    Vector2 spawn = centre.cpy().mulAdd(direction, throwerWidth * POTION_SPAWN_OFFSET);
+    return ArrowTrajectory.launchDirection(spawn, target, speed, gravityY);
+  }
+
+  private void cancelPotionAim() {
+    aimingPotion = false;
+  }
+
+  private boolean usePoisonPotion(Vector2 direction) {
     if (!inventory.hasItem(ItemType.POISON_POTION)) {
       logger.debug("No poison potion available to use");
-      entity.getEvents().trigger("itemUseFailed", ItemType.POISON_POTION);
+      entity.getEvents().trigger(ITEM_USE_FAILED, ItemType.POISON_POTION);
       return false;
     }
 
-    Vector2 direction = getAimDirection();
-    if (direction == null
-        || direction.isZero()
-        || ServiceLocator.getEntityService() == null
-        || ServiceLocator.getPhysicsService() == null) {
-      entity.getEvents().trigger("itemUseFailed", ItemType.POISON_POTION);
+    if (ServiceLocator.getEntityService() == null || ServiceLocator.getPhysicsService() == null) {
+      entity.getEvents().trigger(ITEM_USE_FAILED, ItemType.POISON_POTION);
       return false;
     }
 
     if (!inventory.removeItem(ItemType.POISON_POTION, 1)) {
-      entity.getEvents().trigger("itemUseFailed", ItemType.POISON_POTION);
+      entity.getEvents().trigger(ITEM_USE_FAILED, ItemType.POISON_POTION);
       return false;
     }
 
     Vector2 throwDirection = direction.cpy().nor();
     Vector2 spawnPosition =
-        entity.getCenterPosition().mulAdd(throwDirection, entity.getScale().x * 0.8f);
+        entity
+            .getCenterPosition()
+            .mulAdd(throwDirection, entity.getScale().x * POTION_SPAWN_OFFSET);
     ServiceLocator.getEntityService()
         .register(
             ProjectileFactory.createThrownPoisonPotion(entity, spawnPosition, throwDirection));
-    entity.getEvents().trigger("itemUsed", ItemType.POISON_POTION);
+    entity.getEvents().trigger(ITEM_USED, ItemType.POISON_POTION);
     return true;
   }
 

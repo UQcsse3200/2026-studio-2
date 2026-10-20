@@ -9,16 +9,21 @@ buildscript {
 }
 
 plugins {
-    id "org.sonarqube" version "4.4.1.3373"
+    id "org.sonarqube" version "7.5.0.8588"
     id "jacoco"
     id "com.diffplug.spotless" version "7.2.1"
 }
 
-sonarqube {
+sonar {
     properties {
         property "sonar.projectKey", "UQcsse3200_2026-studio-2"
     	property "sonar.organization", "uqcsse3200"
         property "sonar.host.url", "https://sonarcloud.io"
+        // Temporarily exclude S9395 until its conflict with S1905 is resolved upstream.
+        // https://community.sonarsource.com/t/java-s9395-clashes-with-java-s1905/189375
+        property "sonar.issue.ignore.multicriteria", "s9395"
+        property "sonar.issue.ignore.multicriteria.s9395.ruleKey", "java:S9395"
+        property "sonar.issue.ignore.multicriteria.s9395.resourceKey", "**/*.java"
     }
 }
 
@@ -50,9 +55,14 @@ allprojects {
     apply plugin: "idea"
     apply plugin: 'jacoco'
 
+    jacoco {
+        // Java 21 support, including filtering compiler-generated switch branches.
+        toolVersion = '0.8.11'
+    }
+
     version = '1.0'
     ext {
-        appName = "csse3200-game"
+        appName = "ODYSSEUS"
         gdxVersion = '1.11.0'
         roboVMVersion = '2.3.16'
         box2DLightsVersion = '1.5'
@@ -110,6 +120,7 @@ project(":core") {
         // libGDX
         api "com.badlogicgames.gdx:gdx:$gdxVersion"
         api "com.badlogicgames.gdx:gdx-box2d:$gdxVersion"
+        api "com.badlogicgames.box2dlights:box2dlights:$box2DLightsVersion"
         api "com.badlogicgames.gdx-controllers:gdx-controllers-core:$gdxControllersVersion"
         api "net.dermetfan.libgdx-utils:libgdx-utils:$gdxUtilsVersion"
         api "net.dermetfan.libgdx-utils:libgdx-utils-box2d:$gdxUtilsVersion"
@@ -120,6 +131,7 @@ project(":core") {
 
         // Unit Testing
         testImplementation "org.junit.jupiter:junit-jupiter-api:$junit5Version"
+        testImplementation "org.junit.jupiter:junit-jupiter-params:$junit5Version"
         testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:$junit5Version'
         testImplementation("org.junit.vintage:junit-vintage-engine:$junit5Version") {
             because 'Allows JUnit 3 and JUnit 4 tests to run'

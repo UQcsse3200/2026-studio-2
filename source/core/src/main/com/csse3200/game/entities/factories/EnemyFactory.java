@@ -1,26 +1,37 @@
 package com.csse3200.game.entities.factories;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.csse3200.game.ai.tasks.AITaskComponent;
+import com.csse3200.game.components.BossPhaseComponent;
 import com.csse3200.game.components.BurnStatsComponent;
+import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.EnemyDeathComponent;
 import com.csse3200.game.components.EnemyItemDropComponent;
+import com.csse3200.game.components.EnemySummonComponent;
+import com.csse3200.game.components.EnemyTeleportComponent;
 import com.csse3200.game.components.PoisonStatsComponent;
 import com.csse3200.game.components.SlowStatsComponent;
-import com.csse3200.game.components.npc.SkeletonAnimationController;
+import com.csse3200.game.components.TouchAttackComponent;
+import com.csse3200.game.components.lighting.PointLightComponent;
+import com.csse3200.game.components.npc.ChaseSoundComponent;
+import com.csse3200.game.components.npc.EnemyAnimationController;
+import com.csse3200.game.components.tasks.*;
 import com.csse3200.game.components.tasks.ChaseTask;
-import com.csse3200.game.components.tasks.DelayedAttackTask;
 import com.csse3200.game.components.tasks.RangedAttackTask;
+import com.csse3200.game.components.tasks.RepositionTask;
 import com.csse3200.game.components.tasks.SummonTask;
+import com.csse3200.game.components.tasks.SweepAttackTask;
 import com.csse3200.game.components.tasks.WanderTask;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.EnemyConfig;
 import com.csse3200.game.entities.configs.EnemyConfigs;
 import com.csse3200.game.files.FileLoader;
+import com.csse3200.game.lighting.LightingDefaults;
 import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.physics.PhysicsUtils;
 import com.csse3200.game.physics.components.ColliderComponent;
@@ -28,11 +39,12 @@ import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.physics.components.PhysicsMovementComponent;
 import com.csse3200.game.rendering.AnimationRenderComponent;
+import com.csse3200.game.rendering.BossHealthRenderComponent;
 import com.csse3200.game.rendering.EnemyHealthRenderComponent;
 import com.csse3200.game.rendering.ParticleEffectsRenderingComponent;
-import com.csse3200.game.rendering.StatusEffectRenderComponent;
 import com.csse3200.game.rendering.TextureRenderComponent;
 import com.csse3200.game.services.ServiceLocator;
+import java.util.List;
 
 /**
  * Factory to create enemy entities.
@@ -44,6 +56,58 @@ public class EnemyFactory {
   private static final EnemyConfigs configs =
       FileLoader.readClass(EnemyConfigs.class, "configs/Enemies.json");
 
+  // Necromancer variables
+  private static final float NECRO_HEIGHT_VS_PLAYER = 1f;
+  private static final float NECRO_FRAME_WIDTH_PX = 308f;
+  private static final float NECRO_FRAME_HEIGHT_PX = 392f;
+  private static final float NECRO_BODY_HEIGHT_PX = 363f;
+  private static final float NECRO_ANCHOR_X = 156f;
+  private static final float NECRO_ANCHOR_Y = 4f;
+  private static final float NECRO_FRAME_TIME = 0.2f;
+
+  // Skeleton archer variables
+  private static final float ARCHER_HEIGHT_VS_PLAYER = 1f;
+  private static final float ARCHER_FRAME_WIDTH_PX = 300f;
+  private static final float ARCHER_FRAME_HEIGHT_PX = 392f;
+  private static final float ARCHER_BODY_HEIGHT_PX = 328f;
+  private static final float ARCHER_ANCHOR_X = 112f;
+  private static final float ARCHER_ANCHOR_Y = 4f;
+  private static final float ARCHER_FRAME_TIME = 0.08f;
+
+  // Skeleton warrior variables
+  private static final float WARRIOR_HEIGHT_VS_PLAYER = 1f;
+  private static final float WARRIOR_FRAME_WIDTH_PX = 346f;
+  private static final float WARRIOR_FRAME_HEIGHT_PX = 316f;
+  private static final float WARRIOR_BODY_HEIGHT_PX = 308f;
+  private static final float WARRIOR_ANCHOR_X = 133f;
+  private static final float WARRIOR_ANCHOR_Y = 5f;
+  private static final float WARRIOR_FRAME_TIME = 0.15f;
+  private static final float WARRIOR_ATTACK_DELAY = 0.5f;
+  private static final int WARRIOR_STRIKE_FRAME = 2;
+  private static final float WARRIOR_SWORD_REACH_PX = 208f;
+  private static final int WARRIOR_ATTACK_FRAMES = 5;
+  private static final float WARRIOR_ATTACK_COOLDOWN = 0.5f;
+
+  // Calypso variables
+  private static final float CALYPSO_SWEEP_DURATION = 0.8f;
+  private static final float CALYPSO_IDLE_FRAME_TIME = 0.15f;
+  private static final float CALYPSO_WALK_FRAME_TIME = 0.15f;
+  private static final float CALYPSO_WIDTH = 1f;
+  private static final int CALYPSO_SWEEP_HIT_FRAME = 2;
+  private static final int CALYPSO_SWEEP_PRIORITY = 22;
+  private static final float CALYPSO_SWEEP_RANGE = 1.0f;
+  private static final float CALYPSO_SWEEP_HEIGHT = 1.5f;
+  private static final float CALYPSO_SWEEP_COOLDOWN = 1.5f;
+  private static final float CALYPSO_SWEEP_ANCHOR_X = 218.5f;
+  private static final float CALYPSO_SWEEP_ANCHOR_Y = 4f;
+  private static final float CALYPSO_HURT_FRAME_TIME = 0.25f;
+  private static final float CALYPSO_HURT_ANCHOR_X = 149f;
+  private static final float CALYPSO_HURT_ANCHOR_Y = 4f;
+  private static final float CALYPSO_LASER_FRAME_TIME = 0.2f;
+  private static final float CALYPSO_LASER_ANCHOR_X = 165f;
+  private static final float CALYPSO_LASER_ANCHOR_Y = 10f;
+  private static final float CALYPSO_LASER_WINDUP = 0.6f;
+
   /**
    * Creates a melee skeleton warrior that chases and attacks the target after a delay.
    *
@@ -54,19 +118,56 @@ public class EnemyFactory {
     EnemyConfig config = configs.skeletonWarrior;
     Entity skeletonWarrior = createEnemy(target, config);
 
-    AnimationRenderComponent animator =
-        new AnimationRenderComponent(
-            ServiceLocator.getResourceService()
-                .getAsset("images/enemies/skeleton_warrior.atlas", TextureAtlas.class));
-    animator.addAnimation("walk", 0.15f, Animation.PlayMode.LOOP);
-    animator.addAnimation("idle", 0.15f, Animation.PlayMode.LOOP);
+    TextureAtlas atlas =
+        ServiceLocator.getResourceService()
+            .getAsset("images/enemies/skeleton_warrior.atlas", TextureAtlas.class);
+    AnimationRenderComponent animator = new AnimationRenderComponent(atlas);
+    animator.addAnimation(
+        "walk", WARRIOR_FRAME_TIME, Animation.PlayMode.LOOP, WARRIOR_ANCHOR_X, WARRIOR_ANCHOR_Y);
+    animator.addAnimation(
+        "idle", WARRIOR_FRAME_TIME, Animation.PlayMode.LOOP, WARRIOR_ANCHOR_X, WARRIOR_ANCHOR_Y);
+    animator.addAnimation(
+        "attack",
+        WARRIOR_ATTACK_DELAY / (WARRIOR_STRIKE_FRAME + 0.5f),
+        Animation.PlayMode.NORMAL,
+        WARRIOR_ANCHOR_X,
+        WARRIOR_ANCHOR_Y);
 
-    skeletonWarrior.addComponent(new SkeletonAnimationController(target));
+    skeletonWarrior.addComponent(new EnemyAnimationController(target));
     skeletonWarrior.addComponent(animator);
+    skeletonWarrior.addComponent(new ChaseSoundComponent("sounds/evil cyber laugh.wav", 0.15f));
+
+    animator.scaleEntity();
+    float charHeight = target.getScale().y * WARRIOR_HEIGHT_VS_PLAYER;
+    float pxToWorld = charHeight / WARRIOR_BODY_HEIGHT_PX;
+    skeletonWarrior.setScale(
+        WARRIOR_FRAME_WIDTH_PX * pxToWorld, WARRIOR_FRAME_HEIGHT_PX * pxToWorld);
+
+    float bodyWidth = charHeight * 0.5f;
+    Vector2 scale = skeletonWarrior.getScale();
+    PhysicsUtils.setScaledCollider(
+        skeletonWarrior, bodyWidth / scale.x, 0.4f * charHeight / scale.y);
+    skeletonWarrior
+        .getComponent(HitboxComponent.class)
+        .setAsBoxAligned(
+            new Vector2(bodyWidth, charHeight * 0.9f),
+            PhysicsComponent.AlignX.CENTER,
+            PhysicsComponent.AlignY.BOTTOM);
+
+    float attackFrameTime = WARRIOR_ATTACK_DELAY / (WARRIOR_STRIKE_FRAME + 0.5f);
+    float swordReach = WARRIOR_SWORD_REACH_PX * pxToWorld;
 
     skeletonWarrior
         .getComponent(AITaskComponent.class)
-        .addTask(new DelayedAttackTask(target, 20, 0.8f, 0.5f));
+        .addTask(
+            new SweepAttackTask(
+                target,
+                20,
+                swordReach,
+                charHeight,
+                WARRIOR_ATTACK_DELAY,
+                WARRIOR_ATTACK_FRAMES * attackFrameTime,
+                WARRIOR_ATTACK_COOLDOWN));
 
     return skeletonWarrior;
   }
@@ -79,23 +180,41 @@ public class EnemyFactory {
    */
   public static Entity createSkeletonArcher(Entity target) {
     EnemyConfig config = configs.skeletonArcher;
-    Entity SkeletonArcher = createEnemy(target, config);
+    Entity skeletonArcher = createEnemy(target, config);
 
     AnimationRenderComponent animator =
         new AnimationRenderComponent(
             ServiceLocator.getResourceService()
                 .getAsset("images/enemies/skeleton_archer.atlas", TextureAtlas.class));
-    animator.addAnimation("walk", 0.15f, Animation.PlayMode.LOOP);
-    animator.addAnimation("idle", 0.15f, Animation.PlayMode.LOOP);
+    animator.addAnimation(
+        "walk", ARCHER_FRAME_TIME, Animation.PlayMode.LOOP, ARCHER_ANCHOR_X, ARCHER_ANCHOR_Y);
+    animator.addAnimation(
+        "idle", ARCHER_FRAME_TIME, Animation.PlayMode.LOOP, ARCHER_ANCHOR_X, ARCHER_ANCHOR_Y);
 
-    SkeletonArcher
-        // .addComponent(new CombatStatsComponent(config.health, config.baseAttack))
+    skeletonArcher
         .addComponent(animator)
-        .addComponent(new SkeletonAnimationController(target));
+        .addComponent(new EnemyAnimationController(target))
+        .addComponent(new ChaseSoundComponent("sounds/evil cyber laugh.wav", 0.15f));
 
-    SkeletonArcher.getComponent(AnimationRenderComponent.class).scaleEntity();
+    animator.scaleEntity();
+    float charHeight = target.getScale().y * ARCHER_HEIGHT_VS_PLAYER;
+    float pxToWorld = charHeight / ARCHER_BODY_HEIGHT_PX;
+    skeletonArcher.setScale(ARCHER_FRAME_WIDTH_PX * pxToWorld, ARCHER_FRAME_HEIGHT_PX * pxToWorld);
 
-    return SkeletonArcher;
+    float bodyWidth = charHeight * 0.45f;
+    Vector2 scale = skeletonArcher.getScale();
+    PhysicsUtils.setScaledCollider(
+        skeletonArcher, bodyWidth / scale.x, 0.4f * charHeight / scale.y);
+    skeletonArcher
+        .getComponent(HitboxComponent.class)
+        .setAsBoxAligned(
+            new Vector2(bodyWidth, charHeight * 0.9f),
+            PhysicsComponent.AlignX.CENTER,
+            PhysicsComponent.AlignY.BOTTOM);
+
+    // skeletonArcher.getComponent(AnimationRenderComponent.class).scaleEntity();
+
+    return skeletonArcher;
   }
 
   /**
@@ -134,7 +253,7 @@ public class EnemyFactory {
    */
   public static Entity createVulture(Entity target) {
     EnemyConfig config = configs.vulture;
-    Entity Vulture = createEnemy(target, config);
+    Entity vulture = createEnemy(target, config);
 
     AnimationRenderComponent animator =
         new AnimationRenderComponent(
@@ -143,17 +262,15 @@ public class EnemyFactory {
     animator.addAnimation("walk", 0.15f, Animation.PlayMode.LOOP);
     animator.addAnimation("idle", 0.15f, Animation.PlayMode.LOOP);
 
-    Vulture
+    vulture
         // .addComponent(new CombatStatsComponent(config.health, config.baseAttack))
         .addComponent(animator)
-        .addComponent(new SkeletonAnimationController(target));
+        .addComponent(new EnemyAnimationController(target))
+        .addComponent(new ChaseSoundComponent("sounds/osprey.ogg", 0.15f));
 
-    Vulture.getComponent(AnimationRenderComponent.class).scaleEntity();
+    vulture.getComponent(AnimationRenderComponent.class).scaleEntity();
 
-    Vulture.getComponent(AITaskComponent.class)
-        .addTask(new DelayedAttackTask(target, 20, 0.8f, 0.5f));
-
-    return Vulture;
+    return vulture;
   }
 
   /**
@@ -164,23 +281,119 @@ public class EnemyFactory {
    */
   public static Entity createNecromancer(Entity target) {
     EnemyConfig config = configs.necromancer;
-    Entity Necromancer = createEnemy(target, config);
+    Entity necromancer = createEnemy(target, config);
 
     AnimationRenderComponent animator =
         new AnimationRenderComponent(
             ServiceLocator.getResourceService()
                 .getAsset("images/enemies/necromancer.atlas", TextureAtlas.class));
-    animator.addAnimation("walk", 0.15f, Animation.PlayMode.LOOP);
-    animator.addAnimation("idle", 0.15f, Animation.PlayMode.LOOP);
+    animator.addAnimation(
+        "walk", NECRO_FRAME_TIME, Animation.PlayMode.LOOP, NECRO_ANCHOR_X, NECRO_ANCHOR_Y);
+    animator.addAnimation(
+        "idle", NECRO_FRAME_TIME, Animation.PlayMode.LOOP, NECRO_ANCHOR_X, NECRO_ANCHOR_Y);
 
-    Necromancer
-        // .addComponent(new CombatStatsComponent(config.health, config.baseAttack))
-        .addComponent(animator)
-        .addComponent(new SkeletonAnimationController(target));
+    necromancer.addComponent(animator).addComponent(new EnemyAnimationController(target));
 
-    Necromancer.getComponent(AnimationRenderComponent.class).scaleEntity();
+    animator.scaleEntity();
+    float charHeight = target.getScale().y * NECRO_HEIGHT_VS_PLAYER;
+    float pxToWorld = charHeight / NECRO_BODY_HEIGHT_PX;
+    necromancer.setScale(NECRO_FRAME_WIDTH_PX * pxToWorld, NECRO_FRAME_HEIGHT_PX * pxToWorld);
 
-    return Necromancer;
+    float bodyWidth = charHeight * 0.45f;
+    Vector2 scale = necromancer.getScale();
+    PhysicsUtils.setScaledCollider(necromancer, bodyWidth / scale.x, 0.4f * charHeight / scale.y);
+    necromancer
+        .getComponent(HitboxComponent.class)
+        .setAsBoxAligned(
+            new Vector2(bodyWidth, charHeight * 0.9f),
+            PhysicsComponent.AlignX.CENTER,
+            PhysicsComponent.AlignY.BOTTOM);
+
+    // necromancer.getComponent(AnimationRenderComponent.class).scaleEntity();
+
+    return necromancer;
+  }
+
+  /**
+   * Creates a calypso mainboss
+   *
+   * @param target entity the enemy will chase and attack
+   * @return cyclops entity
+   */
+  public static Entity createCalypso(
+      Entity target, List<Vector2> tpPositions, CameraComponent camera) {
+    EnemyConfig config = configs.calypso;
+    Entity calypso = createEnemy(target, config);
+
+    TextureAtlas atlas =
+        ServiceLocator.getResourceService()
+            .getAsset("images/enemies/calypso.atlas", TextureAtlas.class);
+    AnimationRenderComponent animator = new AnimationRenderComponent(atlas);
+    animator.addAnimation("idle", CALYPSO_IDLE_FRAME_TIME, Animation.PlayMode.LOOP);
+    animator.addAnimation("walk", CALYPSO_WALK_FRAME_TIME, Animation.PlayMode.LOOP);
+
+    int sweepFrames = atlas.findRegions("sweep").size;
+    float sweepFrameTime = sweepFrames > 0 ? CALYPSO_SWEEP_DURATION / sweepFrames : 0f;
+    animator.addAnimation(
+        "sweep",
+        sweepFrameTime,
+        Animation.PlayMode.NORMAL,
+        CALYPSO_SWEEP_ANCHOR_X,
+        CALYPSO_SWEEP_ANCHOR_Y);
+    animator.addAnimation(
+        "hurt",
+        CALYPSO_HURT_FRAME_TIME,
+        Animation.PlayMode.NORMAL,
+        CALYPSO_HURT_ANCHOR_X,
+        CALYPSO_HURT_ANCHOR_Y);
+    animator.addAnimation(
+        "laser",
+        CALYPSO_LASER_FRAME_TIME,
+        Animation.PlayMode.NORMAL,
+        CALYPSO_LASER_ANCHOR_X,
+        CALYPSO_LASER_ANCHOR_Y);
+    float sweepWindUp =
+        sweepFrames > 0
+            ? Math.min(CALYPSO_SWEEP_HIT_FRAME, sweepFrames - 1) * sweepFrameTime
+            : CALYPSO_SWEEP_DURATION / 2f;
+
+    calypso.addComponent(new EnemyAnimationController(target));
+    calypso.addComponent(animator);
+    calypso.addComponent(new EnemyTeleportComponent(tpPositions, 1500L, 10000L, 4000L));
+    calypso.addComponent(new BossHealthRenderComponent(camera));
+    calypso.addComponent(new BossPhaseComponent());
+
+    animator.scaleEntity();
+    float targetHeight = target.getScale().y;
+    if (targetHeight > 0f) {
+      calypso.scaleHeight(targetHeight);
+    } else {
+      calypso.scaleWidth(CALYPSO_WIDTH);
+    }
+    PhysicsUtils.setScaledCollider(calypso, 0.55f, 0.4f);
+    float sweepRange = CALYPSO_SWEEP_RANGE * calypso.getScale().x;
+
+    // Telegraphed melee sweep: triggers "attackStart" (plays the sweep animation) and "hitPlayer"
+    // when it connects (EnemyTeleportComponent / RepositionTask react to that).
+    calypso
+        .getComponent(AITaskComponent.class)
+        .addTask(
+            new SweepAttackTask(
+                target,
+                CALYPSO_SWEEP_PRIORITY,
+                sweepRange,
+                CALYPSO_SWEEP_HEIGHT,
+                sweepWindUp,
+                CALYPSO_SWEEP_DURATION,
+                CALYPSO_SWEEP_COOLDOWN));
+
+    // phase2
+    calypso
+        .getComponent(AITaskComponent.class)
+        .addTask(new TimerAttackTask(target, 25, 100, CALYPSO_LASER_WINDUP, 40, 0, 15))
+        .addTask(new SummonTask(target, 30, config.attackRange, 5f, "Calypso"));
+
+    return calypso;
   }
 
   /**
@@ -196,29 +409,8 @@ public class EnemyFactory {
 
   private static Entity createEnemy(
       Entity target, EnemyConfig config, float viewDistance, float maxChaseDistance) {
-    AITaskComponent aiComponent =
-        new AITaskComponent()
-            .addTask(
-                // Adding the values for wander task from the enemy's config file
-                new WanderTask(
-                    new Vector2(config.wanderRangeX, config.wanderRangeY), config.wanderWaitTime))
-            .addTask(
-                // Adding the values for chase task from the enemy's config file
-                new ChaseTask(target, config.chasePriority, viewDistance, maxChaseDistance));
 
-    // If the enemy is a range type, add a range task.
-    if (config.attackType.equals("range")) {
-      aiComponent.addTask(
-          new RangedAttackTask(
-              target, 20, config.attackRange, 2f, config.baseAttack, 4.5f, 5f, false));
-      // If the enemy is a summon type, add summon + range task
-    } else if (config.attackType.equals("summon")) {
-      aiComponent
-          .addTask(
-              new RangedAttackTask(
-                  target, 20, config.attackRange, 2f, config.baseAttack, 4.5f, 5f, true))
-          .addTask(new SummonTask(target, 30, config.attackRange, 5f));
-    }
+    AITaskComponent aiComponent = new AITaskComponent();
 
     Entity enemy =
         new Entity()
@@ -226,21 +418,83 @@ public class EnemyFactory {
             .addComponent(
                 new PhysicsMovementComponent(
                     new Vector2(config.maxSpeed, config.maxSpeed), config.gravity))
-            .addComponent(new ColliderComponent())
+            .addComponent(new ColliderComponent().setLayer(PhysicsLayer.CHARACTER))
             .addComponent(new HitboxComponent().setLayer(PhysicsLayer.NPC))
             .addComponent(new CombatStatsComponent(config.health, config.baseAttack))
+            .addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER, 10f))
             .addComponent(new EnemyDeathComponent())
             .addComponent(new PoisonStatsComponent())
             .addComponent(new BurnStatsComponent())
             .addComponent(new SlowStatsComponent())
+            .addComponent(
+                new PointLightComponent(
+                    ServiceLocator.getLightingService().getEngine().getRayHandler(),
+                    LightingDefaults.RAYS,
+                    Color.CLEAR,
+                    LightingDefaults.DIST))
             .addComponent(new ParticleEffectsRenderingComponent())
             .addComponent(new EnemyItemDropComponent(config.itemDrops))
-            .addComponent(new EnemyHealthRenderComponent())
             .addComponent(aiComponent)
             .addComponent(new SlowStatsComponent())
-            .addComponent(new StatusEffectRenderComponent());
+            // .addComponent(new StatusEffectRenderComponent())
+            .addComponent(new EnemySummonComponent(false));
+
+    if (config != configs.calypso) {
+      enemy.addComponent(new EnemyHealthRenderComponent());
+    }
 
     PhysicsUtils.setScaledCollider(enemy, 0.9f, 0.4f);
+
+    // Enemy chasing AI
+    aiComponent.addTask(
+        new ChaseTask(
+            target, config.chasePriority, viewDistance, maxChaseDistance, config.behaviour));
+
+    if (!config.attackType.equals("calypso")) {
+      aiComponent
+          .addTask(
+              new RepositionTask(
+                  target, config.repositionPriority, config.repositionDistance, config.behaviour))
+          .addTask(
+              new WanderTask(
+                  new Vector2(config.wanderRangeX, config.wanderRangeY),
+                  config.wanderWaitTime,
+                  config.behaviour));
+    }
+
+    // If the enemy is a range type, add a range task.
+    if (config.attackType.equals("range")) {
+      // Archers fire at the speed of a player's standard arrow, which arcs the same way.
+      aiComponent.addTask(
+          new RangedAttackTask(
+              target,
+              20,
+              config.attackRange,
+              2f,
+              config.baseAttack,
+              ProjectileFactory.STANDARD_ARROW_SPEED,
+              5f,
+              config.attackType));
+      // If the enemy is a summon type, add summon + range task
+    } else if (config.attackType.equals("summon")) {
+      aiComponent
+          .addTask(
+              new RangedAttackTask(
+                  target,
+                  20,
+                  config.attackRange,
+                  10f,
+                  config.baseAttack,
+                  4.5f,
+                  5f,
+                  config.attackType))
+          .addTask(new SummonTask(target, 30, config.attackRange, 5f, "Necromancer"));
+    } else if (config.attackType.equals("calypso")) {
+      // Standard projectile attack. Other Calypso attacks are added separately.
+      aiComponent.addTask(
+          new RangedAttackTask(
+              target, 10, 50f, 7f, config.baseAttack, 4.5f, 5f, config.attackType));
+    }
 
     return enemy;
   }
@@ -248,7 +502,7 @@ public class EnemyFactory {
   private static Entity createPassiveEnemy(EnemyConfig config) {
     return new Entity()
         .addComponent(new PhysicsComponent().setBodyType(BodyType.StaticBody))
-        .addComponent(new ColliderComponent())
+        .addComponent(new ColliderComponent().setLayer(PhysicsLayer.CHARACTER))
         .addComponent(new HitboxComponent().setLayer(PhysicsLayer.NPC))
         .addComponent(new CombatStatsComponent(config.health, config.baseAttack))
         .addComponent(new EnemyDeathComponent())

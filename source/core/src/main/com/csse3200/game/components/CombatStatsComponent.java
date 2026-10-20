@@ -20,6 +20,7 @@ public class CombatStatsComponent extends Component {
   private int baseAttack;
   private final long invulnerabilityDuration;
   private long invulnerableUntil;
+  private boolean godMode = false;
 
   public CombatStatsComponent(int health, int baseAttack) {
     this(health, baseAttack, 0L);
@@ -119,6 +120,9 @@ public class CombatStatsComponent extends Component {
    * @param health health
    */
   public void setHealth(int health) {
+    if (godMode && health < this.health) {
+      return;
+    }
     boolean wasAlive = this.health > 0;
     this.health = Math.clamp(health, 0, maxHealth);
     if (entity != null) {
@@ -161,7 +165,40 @@ public class CombatStatsComponent extends Component {
     }
   }
 
+  /**
+   * Enables or disables god mode. While enabled, health can never decrease.
+   *
+   * @param godMode true to enable god mode
+   */
+  public void setGodMode(boolean godMode) {
+    this.godMode = godMode;
+  }
+
+  /**
+   * Returns whether god mode is active.
+   *
+   * @return true if god mode is on
+   */
+  public boolean isGodMode() {
+    return godMode;
+  }
+
   public void hit(CombatStatsComponent attacker) {
+    BossPhaseComponent phase;
+    if (entity == null) {
+      phase = null;
+    } else {
+      phase = entity.getComponent(BossPhaseComponent.class);
+    }
+
+    if (phase != null && phase.isTransitioning()) {
+      return;
+    }
+
+    if (godMode) {
+      return;
+    }
+
     GameTime timeSource = ServiceLocator.getTimeSource();
     long currentTime = timeSource == null ? 0 : timeSource.getTime();
     if (currentTime < invulnerableUntil) {

@@ -9,6 +9,7 @@ import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.csse3200.game.GdxGame;
 import com.csse3200.game.components.CameraComponent;
+import com.csse3200.game.lighting.LightingEngine;
 import com.csse3200.game.services.ServiceLocator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,8 +36,8 @@ public class Renderer implements Disposable {
    */
   public Renderer(CameraComponent camera) {
     SpriteBatch spriteBatch = new SpriteBatch();
-    DebugRenderer debugRenderer = new DebugRenderer();
-    debugRenderer.setActive(false);
+    DebugRenderer initialDebugRenderer = new DebugRenderer();
+    initialDebugRenderer.setActive(false);
 
     init(
         camera,
@@ -44,7 +45,7 @@ public class Renderer implements Disposable {
         spriteBatch,
         new Stage(new ScreenViewport(), spriteBatch),
         ServiceLocator.getRenderService(),
-        debugRenderer);
+        initialDebugRenderer);
   }
 
   /**
@@ -94,18 +95,45 @@ public class Renderer implements Disposable {
 
   /** Render everything to the render service. */
   public void render() {
+    GL20 gl = Gdx.gl;
+    if (gl == null) {
+      return;
+    }
     Matrix4 projMatrix = camera.getProjectionMatrix();
     batch.setProjectionMatrix(projMatrix);
     GdxGame.applyDefaultClearColor();
-    Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+    gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
     // The stage shares this batch and may leave its color/alpha tinted (e.g. a fading UI
     // actor) after its last draw call. Reset it before world rendering so that tint doesn't
     // bleed into the next frame.
     batch.setColor(1f, 1f, 1f, 1f);
     batch.begin();
-    renderService.render(batch);
+    renderService.render(batch, camera.getCamera());
     batch.end();
+    debugRenderer.render(projMatrix);
+
+    stage.act();
+    stage.draw();
+  }
+
+  public void render(LightingEngine lightingEngine) {
+    GL20 gl = Gdx.gl;
+    if (gl == null) {
+      return;
+    }
+    Matrix4 projMatrix = camera.getProjectionMatrix();
+
+    batch.setProjectionMatrix(projMatrix);
+    GdxGame.applyDefaultClearColor();
+    gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+    batch.begin();
+    renderService.render(batch, camera.getCamera());
+    batch.end();
+
+    lightingEngine.render();
+
     debugRenderer.render(projMatrix);
 
     stage.act();

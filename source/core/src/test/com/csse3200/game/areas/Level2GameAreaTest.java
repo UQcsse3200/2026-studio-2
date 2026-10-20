@@ -1,0 +1,200 @@
+package com.csse3200.game.areas;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
+
+import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.math.GridPoint2;
+import com.badlogic.gdx.math.Vector2;
+import com.csse3200.game.areas.terrain.TerrainComponent;
+import com.csse3200.game.areas.terrain.TerrainFactory;
+import com.csse3200.game.areas.terrain.configs.LevelConfig;
+import com.csse3200.game.components.CameraComponent;
+import com.csse3200.game.entities.Entity;
+import com.csse3200.game.entities.EntityService;
+import com.csse3200.game.rendering.CaveEntranceRenderComponent;
+import com.csse3200.game.services.ResourceService;
+import com.csse3200.game.services.ServiceLocator;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.Arrays;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+class Level2GameAreaTest extends AbstractAreaAssetsTest {
+
+  private TerrainFactory terrainFactory;
+  private CameraComponent camera;
+  private Entity player;
+  private ResourceService resourceService;
+  private Music music;
+  private TerrainComponent terrain;
+  private EntityService entityService;
+  private Level2GameArea area;
+
+  @BeforeEach
+  void setUp() {
+    terrainFactory = mock(TerrainFactory.class);
+    camera = mock(CameraComponent.class);
+    player = new Entity();
+
+    resourceService = mock(ResourceService.class);
+    music = mock(Music.class);
+
+    entityService = mock(EntityService.class);
+
+    ServiceLocator.registerEntityService(entityService);
+    ServiceLocator.registerResourceService(resourceService);
+
+    when(resourceService.loadForMillis(anyInt())).thenReturn(true);
+    when(resourceService.getAsset("sounds/BGM_03_mp3.mp3", Music.class)).thenReturn(music);
+
+    terrain = mock(TerrainComponent.class);
+
+    area = new Level2GameArea(terrainFactory, camera, player);
+  }
+
+  @AfterEach
+  void tearDown() {
+    ServiceLocator.clear();
+  }
+
+  @Test
+  void constructorCreatesLevel2Area() {
+    assertNotNull(area);
+  }
+
+  @Test
+  void constructorStoresPlayer() throws Exception {
+    Field playerField = GameArea.class.getDeclaredField("player");
+    playerField.setAccessible(true);
+
+    assertSame(player, playerField.get(area));
+  }
+
+  @Test
+  void constructorCreatesLevel2Config() throws Exception {
+    Field configField = GameArea.class.getDeclaredField("config");
+    configField.setAccessible(true);
+
+    Object config = configField.get(area);
+
+    assertNotNull(config);
+    assertEquals("Level2Config", config.getClass().getSimpleName());
+  }
+
+  @Test
+  void unloadAssetsUnloadsAllLevel2Resources() throws Exception {
+    invokePrivate("unloadAssets");
+
+    verify(resourceService, times(4)).unloadAssets(any(String[].class));
+  }
+
+  @Test
+  void skeletonSpawnLocationsAreCorrect() throws Exception {
+    Field field = Level2GameArea.class.getDeclaredField("skeletonWarriorSpawnLocations");
+    field.setAccessible(true);
+
+    GridPoint2[] locations = (GridPoint2[]) field.get(null);
+
+    assertEquals(3, locations.length);
+    assertEquals(new GridPoint2(6, 23), locations[0]);
+    assertEquals(new GridPoint2(11, 23), locations[1]);
+    assertEquals(new GridPoint2(17, 23), locations[2]);
+  }
+
+  @Test
+  void worldBoundsCanBeStoredForMapUse() throws Exception {
+    Field field = Level2GameArea.class.getDeclaredField("worldBounds");
+    field.setAccessible(true);
+
+    Vector2 bounds = new Vector2(50f, 45f);
+    field.set(area, bounds);
+
+    assertEquals(bounds, field.get(area));
+  }
+
+  @Override
+  ResourceService resourceService() {
+    return resourceService;
+  }
+
+  @Override
+  void invokePrivate(String methodName) throws Exception {
+    Method method = Level2GameArea.class.getDeclaredMethod(methodName);
+    method.setAccessible(true);
+    method.invoke(area);
+  }
+
+  @Test
+  void spawnTerrainCreatesBackgroundDesertTerrain() throws Exception {
+    when(terrainFactory.createTerrain(TerrainFactory.TerrainType.BACKGROUND_DESERT))
+        .thenReturn(terrain);
+
+    when(terrain.getTileSize()).thenReturn(1f);
+    when(terrain.getMapBounds(0)).thenReturn(new GridPoint2(90, 30));
+
+    invokePrivate("spawnTerrain");
+
+    verify(terrainFactory).createTerrain(TerrainFactory.TerrainType.BACKGROUND_DESERT);
+  }
+
+  @Test
+  void spawnTerrainSetsWorldBounds() throws Exception {
+    when(terrainFactory.createTerrain(TerrainFactory.TerrainType.BACKGROUND_DESERT))
+        .thenReturn(terrain);
+
+    when(terrain.getTileSize()).thenReturn(1f);
+    when(terrain.getMapBounds(0)).thenReturn(new GridPoint2(90, 30));
+
+    invokePrivate("spawnTerrain");
+
+    Field field = Level2GameArea.class.getDeclaredField("worldBounds");
+    field.setAccessible(true);
+
+    Vector2 bounds = (Vector2) field.get(area);
+
+    assertEquals(50f, bounds.x);
+    assertEquals(45f, bounds.y);
+  }
+
+  @Test
+  void level2TexturesIncludeExitDoorTexture() throws Exception {
+    Field field = Level2GameArea.class.getDeclaredField("level2Textures");
+    field.setAccessible(true);
+
+    String[] textures = (String[]) field.get(null);
+
+    assertTrue(Arrays.asList(textures).contains(CaveEntranceRenderComponent.TEXTURE));
+  }
+
+  @Test
+  void level2ConfigTargetsLevel3WithoutAStandaloneTrigger() throws Exception {
+    assertEquals("level3", area.config.getNextLevelName());
+    // The exit door is the only trigger; the config must not create a second one.
+    assertNull(getConfigField("nextLevelTriggerSpawn"));
+  }
+
+  private Object getConfigField(String name) throws Exception {
+    Field field = LevelConfig.class.getDeclaredField(name);
+    field.setAccessible(true);
+    return field.get(area.config);
+  }
+
+  @Test
+  void disposeStopsBackgroundMusic() {
+    area.dispose();
+
+    verify(resourceService).getAsset("sounds/BGM_03_mp3.mp3", Music.class);
+    verify(music).stop();
+  }
+
+  @Test
+  void disposeUnloadsLevel2Assets() {
+    area.dispose();
+
+    verify(resourceService, times(4)).unloadAssets(any(String[].class));
+  }
+}

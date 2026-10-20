@@ -13,7 +13,10 @@ import java.util.List;
 public class GrappleRenderComponent extends RenderComponent {
 
   /** Thickness of the rendered rope line in world units */
-  private static final float LINE_WIDTH = 0.05f;
+  private static final float LINE_WIDTH = 0.083f;
+
+  /** Colour of the rendered rope line */
+  private static final Color ROPE_COLOUR = new Color(67f / 255f, 32f / 255f, 21f / 255f, 1f);
 
   // Created on first draw so the component can be constructed without a graphics context
   private ShapeRenderer shapeRenderer;
@@ -26,13 +29,13 @@ public class GrappleRenderComponent extends RenderComponent {
   }
 
   /**
-   * Draws the grapple rope line if the grapple is currently attached to a target surface.
+   * Draws the grapple rope during arrow flight and after attachment to a target surface.
    *
    * @param batch Active SpriteBatch used by the main render pipeline
    */
   @Override
   protected void draw(SpriteBatch batch) {
-    if (grapple == null || !grapple.isAttached()) {
+    if (grapple == null) {
       return;
     }
     List<Vector2> ropePath = grapple.getRopePath();
@@ -49,7 +52,7 @@ public class GrappleRenderComponent extends RenderComponent {
 
     shapeRenderer.setProjectionMatrix(batch.getProjectionMatrix());
     shapeRenderer.begin(ShapeType.Filled);
-    shapeRenderer.setColor(Color.BROWN);
+    shapeRenderer.setColor(ROPE_COLOUR);
     for (int i = 1; i < ropePath.size(); i++) {
       Vector2 from = ropePath.get(i - 1);
       Vector2 to = ropePath.get(i);

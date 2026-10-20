@@ -7,8 +7,10 @@ import org.slf4j.LoggerFactory;
 public class ActivatableComponent extends Component {
   private static final Logger logger = LoggerFactory.getLogger(ActivatableComponent.class);
 
-  private final boolean activatable;
+  protected final boolean activatable;
   private boolean active;
+  private boolean singleActivation = false;
+  private boolean activated = false;
   private final String[] ids;
 
   /**
@@ -31,9 +33,13 @@ public class ActivatableComponent extends Component {
   public ActivatableComponent(boolean active, String[] ids) {
     boolean emptyId = checkId(ids);
 
-    this.active = active && emptyId;
+    this.active = active;
     activatable = !emptyId;
     this.ids = ids;
+  }
+
+  public void setSingleActivation(boolean singleActivation) {
+    this.singleActivation = singleActivation;
   }
 
   /**
@@ -69,6 +75,10 @@ public class ActivatableComponent extends Component {
    * @param active the new active state to set this component's flag to
    */
   public void setActive(boolean active) {
+    if (singleActivation && activated) {
+      return;
+    }
+
     // if the component was set up to not have an activation id, it is not activatable, and so
     // any attempts to activate the component should make a warning in the logger
     if (!activatable) {
@@ -77,6 +87,7 @@ public class ActivatableComponent extends Component {
     }
 
     this.active = active;
+    activated = true;
     entity.getEvents().trigger("activatedMapComponent", active);
   }
 

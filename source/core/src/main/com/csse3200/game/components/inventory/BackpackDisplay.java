@@ -28,7 +28,6 @@ public class BackpackDisplay extends UIComponent {
   private Table table;
   private Table inventoryTable;
   private Table detailsTable;
-  private Table contentTable;
   private Table highlightedSlot;
   private float originalAlpha;
 
@@ -44,7 +43,7 @@ public class BackpackDisplay extends UIComponent {
     // Backpack is hidden by default.
     table.setVisible(false);
 
-    contentTable = new Table();
+    Table contentTable = new Table();
     inventoryTable = new Table();
     detailsTable = new Table();
 
@@ -191,25 +190,7 @@ public class BackpackDisplay extends UIComponent {
                   event.getStageY() - dragIcon.getHeight() / 2f);
             }
 
-            Actor target = stage.hit(event.getStageX(), event.getStageY(), true);
-
-            while (target != null && !(target.getUserObject() instanceof Integer)) {
-              target = target.getParent();
-            }
-
-            Table newHighlightedSlot = target instanceof Table ? (Table) target : null;
-
-            if (highlightedSlot != newHighlightedSlot) {
-              if (highlightedSlot != null) {
-                highlightedSlot.setBackground(slotStyle.getNormalBox());
-              }
-
-              highlightedSlot = newHighlightedSlot;
-
-              if (highlightedSlot != null) {
-                highlightedSlot.setBackground(slotStyle.getSelectedBox());
-              }
-            }
+            updateHighlightedSlot(findSlotAt(event.getStageX(), event.getStageY()));
           }
 
           @Override
@@ -227,11 +208,7 @@ public class BackpackDisplay extends UIComponent {
               dragIcon = null;
             }
 
-            Actor target = stage.hit(event.getStageX(), event.getStageY(), true);
-
-            while (target != null && !(target.getUserObject() instanceof Integer)) {
-              target = target.getParent();
-            }
+            Actor target = findSlotAt(event.getStageX(), event.getStageY());
 
             if (target == null) {
               return;
@@ -250,6 +227,45 @@ public class BackpackDisplay extends UIComponent {
         });
 
     return slot;
+  }
+
+  /**
+   * Finds the backpack slot under a stage position by walking up from the hit actor to the first
+   * actor tagged with a slot index.
+   *
+   * @param stageX stage x position
+   * @param stageY stage y position
+   * @return the slot actor, or null if the position is not over a slot
+   */
+  private Actor findSlotAt(float stageX, float stageY) {
+    Actor target = stage.hit(stageX, stageY, true);
+
+    while (target != null && !(target.getUserObject() instanceof Integer)) {
+      target = target.getParent();
+    }
+    return target;
+  }
+
+  /**
+   * Moves the drag highlight to the slot under the cursor, restoring the previous slot's normal
+   * background.
+   *
+   * @param target slot actor under the cursor, or null if there is none
+   */
+  private void updateHighlightedSlot(Actor target) {
+    Table newHighlightedSlot = target instanceof Table targetTable ? targetTable : null;
+
+    if (highlightedSlot != newHighlightedSlot) {
+      if (highlightedSlot != null) {
+        highlightedSlot.setBackground(slotStyle.getNormalBox());
+      }
+
+      highlightedSlot = newHighlightedSlot;
+
+      if (highlightedSlot != null) {
+        highlightedSlot.setBackground(slotStyle.getSelectedBox());
+      }
+    }
   }
 
   /**

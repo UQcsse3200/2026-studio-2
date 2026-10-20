@@ -1,5 +1,6 @@
 package com.csse3200.game.rendering;
 
+import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -7,8 +8,8 @@ import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.services.ServiceLocator;
 
 /** Render a static texture. */
-public class TextureRenderComponent extends RenderComponent {
-  private final Texture texture;
+public class TextureRenderComponent extends RenderComponent implements CullingRenderable {
+  private Texture texture;
 
   private float rotation = 0f;
 
@@ -33,6 +34,11 @@ public class TextureRenderComponent extends RenderComponent {
     this.texture = texture;
   }
 
+  public void replaceTexture(String texturePath) {
+    Texture newTexture = ServiceLocator.getResourceService().getAsset(texturePath, Texture.class);
+    this.texture = newTexture;
+  }
+
   /**
    * Tints the texture when drawn. White (the default) leaves it unchanged.
    *
@@ -55,6 +61,7 @@ public class TextureRenderComponent extends RenderComponent {
     Vector2 scale = entity.getScale();
     Color previous = batch.getColor().cpy();
     batch.setColor(tint);
+
     batch.draw(
         texture,
         position.x,
@@ -73,5 +80,13 @@ public class TextureRenderComponent extends RenderComponent {
         false,
         false);
     batch.setColor(previous);
+  }
+
+  @Override
+  public boolean isVisible(Camera camera) {
+    Vector2 position = entity.getPosition();
+    Vector2 scale = entity.getScale();
+    return RenderCulling.isVisible(
+        camera.frustum, position.x, position.y, scale.x, scale.y, rotation);
   }
 }

@@ -6,7 +6,6 @@ import com.badlogic.gdx.utils.Array;
 import com.csse3200.game.components.player.PlayerInteractionComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
-import com.csse3200.game.input.InputComponent;
 import com.csse3200.game.services.ServiceLocator;
 
 /**
@@ -16,31 +15,22 @@ import com.csse3200.game.services.ServiceLocator;
  * <p>The debug terminal can be opened and closed by pressing 'F1' and a message can be entered via
  * the keyboard.
  */
-public class KeyboardTerminalInputComponent extends InputComponent {
+public class KeyboardTerminalInputComponent extends TerminalInputComponent {
   private static final int TOGGLE_OPEN_KEY = Input.Keys.F1;
-  private Terminal terminal;
 
   public KeyboardTerminalInputComponent() {
-    super(10);
+    super();
   }
 
   public KeyboardTerminalInputComponent(Terminal terminal) {
-    this();
-    this.terminal = terminal;
-  }
-
-  @Override
-  public void create() {
-    super.create();
-    terminal = entity.getComponent(Terminal.class);
+    super(terminal);
   }
 
   /**
-   * If the toggle key is pressed, the terminal will open / close.
-   *
-   * <p>Otherwise, handles input if the terminal is open. This is because keyDown events are
-   * triggered alongside keyTyped events. If the user is typing in the terminal, the input shouldn't
-   * trigger any other input handlers.
+   * If the toggle key is pressed, the terminal will open / close. Otherwise, handles input if the
+   * terminal is open. This is because keyDown events are triggered alongside keyTyped events. If
+   * the user is typing in the terminal, the input shouldn't trigger any other input handlers. While
+   * the terminal is open every key is swallowed, including ESC — F1 is the only way out.
    *
    * @return whether the input was processed
    * @see InputProcessor#keyDown(int)
@@ -52,13 +42,12 @@ public class KeyboardTerminalInputComponent extends InputComponent {
       terminal.toggleIsOpen();
       return true;
     }
-    // Shop close stays here because this handler runs before player input, which swallows keys
-    // while the shop is open. Pause itself is owned by the pause overlay on main.
-    if (keycode == Input.Keys.ESCAPE && closeOpenShop()) {
+    if (terminal.isOpen()) {
       return true;
     }
-
-    return terminal.isOpen();
+    // Shop close stays here because this handler runs before player input, which swallows keys
+    // while the shop is open. Pause itself is owned by the pause overlay on main.
+    return keycode == Input.Keys.ESCAPE && closeOpenShop();
   }
 
   /**
@@ -84,48 +73,5 @@ public class KeyboardTerminalInputComponent extends InputComponent {
       }
     }
     return false;
-  }
-
-  /**
-   * Handles input if the terminal is open. If 'enter' is typed, the entered message will be
-   * processed, otherwise the message will be updated with the new character.
-   *
-   * @return whether the input was processed
-   * @see InputProcessor#keyTyped(char)
-   */
-  @Override
-  public boolean keyTyped(char character) {
-    if (!terminal.isOpen()) {
-      return false;
-    }
-
-    if (character == '\b') {
-      terminal.handleBackspace();
-      return true;
-    } else if (character == '\r' || character == '\n') {
-      if (terminal.processMessage()) {
-        terminal.toggleIsOpen();
-      }
-      terminal.setEnteredMessage("");
-      return true;
-    } else if (Character.isLetterOrDigit(character) || character == ' ') {
-      // append character to message
-      terminal.appendToMessage(character);
-      return true;
-    }
-    return false;
-  }
-
-  /**
-   * Handles input if the terminal is open. This is because keyUp events are triggered alongside
-   * keyTyped events. If the user is typing in the terminal, the input shouldn't trigger any other
-   * input handlers.
-   *
-   * @return whether the input was processed
-   * @see InputProcessor#keyUp(int)
-   */
-  @Override
-  public boolean keyUp(int keycode) {
-    return terminal.isOpen();
   }
 }

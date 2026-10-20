@@ -1,24 +1,18 @@
 package com.csse3200.game.entities.configs;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.utils.Align;
-import com.csse3200.game.components.TextBoxComponent;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /** Defines the configs to be loaded by TextBoxFactory */
 public class TextConfig {
-  private static final Logger logger = LoggerFactory.getLogger(TextBoxComponent.class);
   // All values are default
 
-  // Positions
-  public int xPos = 100;
-  public int yPos = 100;
+  // Scene2D positions use floating-point coordinates, including subpixel placement.
+  public float xPos = 100f;
+  public float yPos = 100f;
 
   // The box display. Stored as colour names (e.g. "Color.WHITE" or "WHITE") because these are
   // read straight from JSON, and Json can't deserialise a plain string into a Colour object.
@@ -36,8 +30,8 @@ public class TextConfig {
   public int padding = 16;
   public int borderThickness = 3;
 
-  // Bitmap font (.fnt), relative to assets, e.g. "flat-earth/skin/fonts/PixeloidSans.fnt".
-  public String fontPath = "flat-earth/skin/fonts/PixeloidSans.fnt";
+  // Bitmap font (.fnt), relative to assets, e.g. "flat-earth/skin/fonts/alagard.fnt".
+  public String fontPath = "flat-earth/skin/fonts/alagard.fnt";
 
   // Horizontal alignment of the text within the box: "left", "center"/"centre", or "right".
   public String textAlignment = "center";
@@ -46,6 +40,9 @@ public class TextConfig {
   // fully-revealed page is dismissed (TAB), it moves on to the next entry, and only closes for
   // good after the last one.
   public List<String> pages = new ArrayList<>(List.of("Test text"));
+
+  // Optional per-page portrait image paths (asset-relative JPEG/PNG), parallel to pages.
+  public List<String> portraitPaths = new ArrayList<>();
 
   public Color getTextColour() {
     return parseColor(textColour, Color.BLACK);
@@ -95,24 +92,12 @@ public class TextConfig {
     try {
       Field field = Color.class.getField(name.toUpperCase());
       Object fieldValue = field.get(null);
-      if (fieldValue instanceof Color) {
-        return (Color) fieldValue;
+      if (fieldValue instanceof Color color) {
+        return color;
       }
     } catch (ReflectiveOperationException | IllegalArgumentException e) {
       // fall through to fallback
     }
     return fallback;
-  }
-
-  public BitmapFont loadFont() {
-    if (fontPath == null || fontPath.isBlank()) {
-      return new BitmapFont(Gdx.files.internal("flat-earth/skin/fonts/PixeloidSans.fnt"));
-    }
-    try {
-      return new BitmapFont(Gdx.files.internal(fontPath));
-    } catch (Exception e) {
-      logger.error("Failed to load font from {}: {}", fontPath, e.getMessage());
-      return null;
-    }
   }
 }

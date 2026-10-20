@@ -23,6 +23,8 @@ import java.util.function.BiConsumer;
 
 /** Clickable Sandbox NPC and modal menu for choosing and spawning an enemy. */
 public class MonsterSpawnerDisplay extends UIComponent {
+  private static final String SMALL_FONT_STYLE = "small";
+
   private static final int SLOT_COUNT = 8;
   private static final int GRID_COLUMNS = 4;
   private static final float CARD_WIDTH = 170f;
@@ -30,7 +32,6 @@ public class MonsterSpawnerDisplay extends UIComponent {
   private static final float MONSTER_IMAGE_SIZE = 82f;
   private static final float NPC_PROMPT_GAP = 8f;
   private static final String NPC_PROMPT_TEXT = "Click me to spawn enemy";
-  private static final String SMALL_LABEL_STYLE = "small";
 
   private final CameraComponent cameraComponent;
   private final BiConsumer<SandboxEnemyType, Boolean> spawnHandler;
@@ -83,7 +84,7 @@ public class MonsterSpawnerDisplay extends UIComponent {
   }
 
   private void createNpcPrompt() {
-    npcPromptLabel = new Label(NPC_PROMPT_TEXT, skin, SMALL_LABEL_STYLE);
+    npcPromptLabel = new Label(NPC_PROMPT_TEXT, skin, SMALL_FONT_STYLE);
     npcPromptLabel.setTouchable(Touchable.disabled);
     npcPromptLabel.setName("sandbox-monster-spawner-prompt");
     npcPromptLabel.pack();
@@ -188,7 +189,7 @@ public class MonsterSpawnerDisplay extends UIComponent {
     Texture texture =
         ServiceLocator.getResourceService().getAsset(enemyType.getTexturePath(), Texture.class);
     card.add(new Image(texture)).size(MONSTER_IMAGE_SIZE).padTop(8f).row();
-    card.add(new Label(enemyType.getDisplayName(), skin, SMALL_LABEL_STYLE)).pad(8f);
+    card.add(new Label(enemyType.getDisplayName(), skin, SMALL_FONT_STYLE)).pad(8f);
     card.addListener(
         new ClickListener() {
           @Override
@@ -203,7 +204,7 @@ public class MonsterSpawnerDisplay extends UIComponent {
   private Table createEmptyCard() {
     Table emptyCard = new Table();
     emptyCard.setBackground(skin.getDrawable("button-c"));
-    emptyCard.add(new Label("Empty", skin, SMALL_LABEL_STYLE));
+    emptyCard.add(new Label("Empty", skin, SMALL_FONT_STYLE));
     emptyCard.setTouchable(Touchable.disabled);
     return emptyCard;
   }

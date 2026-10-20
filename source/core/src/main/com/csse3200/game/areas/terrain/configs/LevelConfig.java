@@ -1,20 +1,27 @@
 package com.csse3200.game.areas.terrain.configs;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.GridPoint2;
 import com.csse3200.game.components.item.Item;
 import com.csse3200.game.components.level.CheckpointComponent;
+import com.csse3200.game.components.lighting.PointLightComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.EnemyConfig;
 import com.csse3200.game.entities.factories.ItemFactory;
 import com.csse3200.game.entities.factories.ObstacleFactory;
+import com.csse3200.game.lighting.LightingDefaults;
 import com.csse3200.game.rendering.AnimationRenderComponent;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 public class LevelConfig {
+  /** Draw depth of checkpoint statues: behind the player and the level's platforms. */
+  private static final float CHECKPOINT_Z_INDEX = -100f;
+
   protected String platformTFP;
   protected String mossyPlatformTFP;
   protected String movingPlatformTFP;
@@ -27,11 +34,16 @@ public class LevelConfig {
   /** Optional atlas with "unlit" and "lit" regions for this level's checkpoints. */
   protected String checkpointAtlas;
 
+  /** World height of this level's checkpoint statues; their width follows the art. */
+  protected float checkpointHeight = CheckpointComponent.ATLAS_HEIGHT;
+
   protected PlatformConfig[] platforms;
   protected MovingPlatformConfig[] movingPlatforms;
   protected CrumblingPlatformConfig[] crumblingPlatforms;
   protected TriggerablePlatformConfig[] triggerablePlatforms;
+  protected SlipperyPlatformConfig[] slipperyPlatforms;
   protected PlatformConfig[] ledges;
+
   protected SpikeClusterConfig[] spikes;
   protected SpikyBallTrapConfig[] ballTraps;
   protected TriggerButtonConfig[] triggerButtons;
@@ -40,13 +52,20 @@ public class LevelConfig {
   protected Map<GridPoint2, EnemyConfig> enemies;
   protected Map<GridPoint2, Item> items;
   protected CheckpointConfig[] checkpoints;
+  protected EnemySpawnerConfig[] enemySpawners;
+  protected TriggerConfig[] mapTriggers;
 
   protected GridPoint2 playerSpawn;
   protected GridPoint2 nextLevelTriggerSpawn;
   protected String nextLevelName;
-  protected GridPoint2 winConditionSpawn;
 
-  protected ArrayList<SpawnData> entities = new ArrayList<>();
+  /** Height of the portal at the end of the level, so it can be fitted to the platform below. */
+  protected float nextLevelPortalHeight = ObstacleFactory.DEFAULT_LEVEL_END_HEIGHT;
+
+  protected GridPoint2 winConditionSpawn;
+  protected GridPoint2[] wheelSpinSpawns;
+
+  protected List<SpawnData> entities = new ArrayList<>();
 
   /**
    * Creates all entities as specified by the config file and returns the created entities in a Map
@@ -55,7 +74,7 @@ public class LevelConfig {
    * @return A list of SpawnData objects that contain an entity and a coordinate position to spawn
    *     that entity in
    */
-  public ArrayList<SpawnData> createEntities() {
+  public List<SpawnData> createEntities() {
     entities = new ArrayList<>();
 
     createFloors();
@@ -63,6 +82,7 @@ public class LevelConfig {
     createMovingPlatforms();
     createCrumblingPlatforms();
     createTriggerablePlatforms();
+    createSlipperyPlatforms();
     createLedges();
     createSpikes();
     createTraps();
@@ -71,6 +91,8 @@ public class LevelConfig {
     createLevelTrigger();
     createItems();
     createCheckpoints();
+    createSpawners();
+    createTriggers();
 
     return entities;
   }
@@ -85,19 +107,34 @@ public class LevelConfig {
   }
 
   /**
+   * Public getter for the name of the level this level transitions to
+   *
+   * @return the next level's name, or null if this level has no next level
+   */
+  public String getNextLevelName() {
+    return nextLevelName;
+  }
+
+  /**
    * Public getter to access checkpoint components for levels
    *
-   * @return an ArrayList of the CheckpointComponents of a level
+   * @return a list of the CheckpointComponents of a level
    */
-  public ArrayList<CheckpointComponent> getCheckpoints() {
-    ArrayList<CheckpointComponent> checkpointComponents = new ArrayList<>();
+  public List<CheckpointComponent> getCheckpoints() {
+    List<CheckpointComponent> checkpointComponents = new ArrayList<>();
     if (checkpoints == null) {
       return checkpointComponents;
     }
-    for (CheckpointConfig c : checkpoints) {
-      checkpointComponents.add(c.getEntity().getComponent(CheckpointComponent.class));
-    }
+
+    java.util.Arrays.stream(checkpoints)
+        .map(c -> c.getEntity().getComponent(CheckpointComponent.class))
+        .forEach(checkpointComponents::add);
+
     return checkpointComponents;
+  }
+
+  public GridPoint2[] getWheelSpinSpawns() {
+    return wheelSpinSpawns;
   }
 
   /**
@@ -163,13 +200,31 @@ public class LevelConfig {
     }
   }
 
+  /**
+   * Creates all slippery platforms for this level and adds them to the entities Map for the level
+   * to spawn
+   */
+  private void createSlipperyPlatforms() {
+    if (slipperyPlatforms == null) {
+      return;
+    }
+
+    for (SlipperyPlatformConfig s : slipperyPlatforms) {
+      Entity slipperyPlatform = ObstacleFactory.createSlipperyPlatform(s);
+      slipperyPlatform.setScale(s.width, s.height);
+      entities.add(new SpawnData(s.position, slipperyPlatform));
+    }
+  }
+
   private void createLedges() {
     if (ledges == null) {
       return;
     }
 
     for (PlatformConfig p : ledges) {
-      Entity ledge = ObstacleFactory.createLedge(p);
+      // A ledge that uses the ground tile repeats it, as floors do, instead of stretching it.
+      boolean tiled = p.textureFilepath != null && p.textureFilepath.equals(groundTFP);
+      Entity ledge = ObstacleFactory.createLedge(p, tiled);
       ledge.setScale(p.width, p.height);
       entities.add(new SpawnData(p.position, ledge));
     }
@@ -203,12 +258,11 @@ public class LevelConfig {
       return;
     }
 
+    String texture = spikeTFP != null ? spikeTFP : "images/terrain/Level_1/Level_1_Spike.png";
     for (SpikeClusterConfig s : spikes) {
       for (int i = s.xMin; i <= s.xMax; i++) {
         for (int j = s.yMin; j <= s.yMax; j++) {
-          Entity spike =
-              ObstacleFactory.createSpike(
-                  s, spikeTFP != null ? spikeTFP : "images/terrain/Level_1/Level_1_Spike.png");
+          Entity spike = ObstacleFactory.createSpike(s, texture, i - s.xMin, s.xMax - s.xMin + 1);
           entities.add(new SpawnData(new GridPoint2(i, j), spike));
         }
       }
@@ -256,7 +310,8 @@ public class LevelConfig {
       return;
     }
 
-    Entity trigger = ObstacleFactory.createNextLevelTriggerEntity(nextLevelName);
+    Entity trigger =
+        ObstacleFactory.createNextLevelTriggerEntity(nextLevelName, nextLevelPortalHeight);
     entities.add(new SpawnData(nextLevelTriggerSpawn, trigger));
   }
 
@@ -284,31 +339,75 @@ public class LevelConfig {
 
     for (CheckpointConfig c : checkpoints) {
       Entity checkpoint = new Entity();
-      checkpoint.addComponent(new CheckpointComponent(false, c.getPosition(), checkpointAtlas));
+      checkpoint
+          .addComponent(new CheckpointComponent(false, c.getPosition(), checkpointAtlas))
+          .addComponent(
+              new PointLightComponent(
+                  ServiceLocator.getLightingService().getEngine().getRayHandler(),
+                  LightingDefaults.RAYS,
+                  new Color(0.75f, 0.2f, 0f, 1f),
+                  LightingDefaults.DIST));
+      checkpoint.setScale(1f, 1.5f);
+      checkpoint.getComponent(PointLightComponent.class).setActive(false);
+
+      checkpoint
+          .addComponent(new CheckpointComponent(false, c.getPosition(), checkpointAtlas))
+          .addComponent(
+              new PointLightComponent(
+                  ServiceLocator.getLightingService().getEngine().getRayHandler(),
+                  LightingDefaults.RAYS,
+                  Color.CLEAR,
+                  LightingDefaults.DIST));
+
+      checkpoint.setScale(CheckpointComponent.ATLAS_WIDTH, CheckpointComponent.ATLAS_HEIGHT);
+
+      // The statue art comes from the checkpoint atlas and is drawn by the checkpoint entity
+      // itself. Without an atlas the checkpoint still works but has nothing to draw.
+      if (checkpointAtlas != null) {
+        AnimationRenderComponent animator =
+            new AnimationRenderComponent(
+                ServiceLocator.getResourceService().getAsset(checkpointAtlas, TextureAtlas.class));
+        animator.addAnimation("unlit", 0.2f, Animation.PlayMode.LOOP);
+        animator.addAnimation("lit", 0.2f, Animation.PlayMode.LOOP);
+        // Behind the player, so they walk in front of the statue instead of disappearing behind it.
+        animator.setFixedZIndex(CHECKPOINT_Z_INDEX);
+        checkpoint.addComponent(animator);
+        animator.startAnimation("unlit");
+        // Keep the statue's proportions, whatever the atlas's frame shape is.
+        animator.scaleEntity();
+        checkpoint.scaleHeight(checkpointHeight);
+      }
+
+      GridPoint2 pos = c.getPosition();
+      checkpoint.setPosition(pos.x, pos.y - 1.3f);
 
       c.setEntity(checkpoint);
       entities.add(new SpawnData(c.getPosition(), checkpoint));
+    }
+  }
 
-      // The torch art comes from the checkpoint atlas. Without one the checkpoint still works but
-      // has nothing to draw.
-      if (checkpointAtlas == null) {
-        continue;
-      }
+  /** Creates all spawners in the level and adds them to the entities for the game area to spawn */
+  private void createSpawners() {
+    if (enemySpawners == null) {
+      return;
+    }
 
-      AnimationRenderComponent animator =
-          new AnimationRenderComponent(
-              ServiceLocator.getResourceService().getAsset(checkpointAtlas, TextureAtlas.class));
-      animator.addAnimation("unlit", 0.2f, Animation.PlayMode.LOOP);
-      animator.addAnimation("lit", 0.2f, Animation.PlayMode.LOOP);
-      Entity torch = new Entity().addComponent(animator);
-      animator.startAnimation("unlit");
-      torch.setScale(CheckpointComponent.ATLAS_WIDTH, CheckpointComponent.ATLAS_HEIGHT);
-      checkpoint.getComponent(CheckpointComponent.class).setTorch(torch);
+    for (EnemySpawnerConfig c : enemySpawners) {
+      Entity spawner = ObstacleFactory.createEnemySpawnerEntity(c);
+      entities.add(new SpawnData(c.position, spawner));
+    }
+  }
 
-      GridPoint2 pos = c.getPosition();
-      torch.setPosition(pos.x, pos.y - 1.3f);
+  /** Creates all map triggers and scales them to their correct size for the game area to spawn */
+  private void createTriggers() {
+    if (mapTriggers == null) {
+      return;
+    }
 
-      entities.add(new SpawnData(c.getPosition(), torch));
+    for (TriggerConfig c : mapTriggers) {
+      Entity trigger = ObstacleFactory.createTriggerEntity(c);
+      trigger.setScale(c.scale);
+      entities.add(new SpawnData(c.position, trigger));
     }
   }
 }

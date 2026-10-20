@@ -4,7 +4,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.ai.tasks.DefaultTask;
 import com.csse3200.game.ai.tasks.PriorityTask;
 import com.csse3200.game.entities.Entity;
-import com.csse3200.game.entities.factories.ProjectileFact;
+import com.csse3200.game.entities.factories.EnemyProjectileFactory;
 import com.csse3200.game.rendering.TextureRenderComponent;
 import com.csse3200.game.services.ServiceLocator;
 
@@ -19,7 +19,7 @@ public class RangedAttackTask extends DefaultTask implements PriorityTask {
   private final int damage;
   private final float projectileSpeed;
   private final float projectileLifetime;
-  private final boolean useNecromancerProjectile;
+  private final String attackType;
 
   private long lastAttackTime;
 
@@ -33,7 +33,6 @@ public class RangedAttackTask extends DefaultTask implements PriorityTask {
    * @param damage projectile damage
    * @param projectileSpeed projectile movement speed
    * @param projectileLifetime maximum projectile lifetime in seconds
-   * @param useNecromancerProjectile if the enemy is a necromancer, use specific projectile
    */
   public RangedAttackTask(
       Entity target,
@@ -43,7 +42,7 @@ public class RangedAttackTask extends DefaultTask implements PriorityTask {
       int damage,
       float projectileSpeed,
       float projectileLifetime,
-      boolean useNecromancerProjectile) {
+      String attackType) {
     this.target = target;
     this.priority = priority;
     this.attackRange = attackRange;
@@ -51,30 +50,30 @@ public class RangedAttackTask extends DefaultTask implements PriorityTask {
     this.damage = damage;
     this.projectileSpeed = projectileSpeed;
     this.projectileLifetime = projectileLifetime;
-    this.useNecromancerProjectile = useNecromancerProjectile;
+    this.attackType = attackType;
   }
 
   @Override
   public void start() {
     super.start();
-    lastAttackTime = 0;
+
+    if (lastAttackTime == 0) {
+      lastAttackTime = ServiceLocator.getTimeSource().getTime();
+    }
   }
 
   @Override
   public void update() {
-    long currentTime = ServiceLocator.getTimeSource().getTime();
-
-    if (currentTime - lastAttackTime >= cooldown * 1000) {
-      fireProjectile();
-      lastAttackTime = currentTime;
-    }
+    fireProjectile();
+    lastAttackTime = ServiceLocator.getTimeSource().getTime();
   }
 
   @Override
   public int getPriority() {
     float distance = owner.getEntity().getPosition().dst(target.getPosition());
+    long currentTime = ServiceLocator.getTimeSource().getTime();
 
-    if (distance <= attackRange) {
+    if (distance <= attackRange && currentTime - lastAttackTime >= cooldown * 1000) {
       return priority;
     }
 
@@ -92,13 +91,25 @@ public class RangedAttackTask extends DefaultTask implements PriorityTask {
 
     Vector2 spawnCenter = enemyCenter.cpy().add(0.8f * facingDirection, -0.15f);
 
-    Entity projectile =
-        useNecromancerProjectile
-            ? ProjectileFact.createNecromancerProjectile(
-                targetCenter, damage, projectileSpeed, projectileLifetime)
-            : ProjectileFact.createSkeletonArcherProjectile(
-                targetCenter, damage, projectileSpeed, projectileLifetime);
+    Entity projectile;
 
+    if (attackType.equals("calypso")) {
+      projectile =
+          EnemyProjectileFactory.createCalypsoProjectile(
+              targetCenter, damage, projectileSpeed, projectileLifetime);
+    } else if (attackType.equals("summon")) {
+      projectile =
+          EnemyProjectileFactory.createNecromancerProjectile(
+              targetCenter, damage, projectileSpeed, projectileLifetime);
+    } else {
+      // An archer's arrow flies like the player's, arcing under gravity, so the factory aims it to
+      // come down on the target and places it at the spawn point itself.
+      ServiceLocator.getEntityService()
+          .register(
+              EnemyProjectileFactory.createSkeletonArcherProjectile(
+                  enemy, spawnCenter, targetCenter, damage, projectileSpeed, projectileLifetime));
+      return;
+    }
     // setPosition() uses the bottom-left corner, so offset by half the
     // projectile size to place its centre at spawnCenter.
     Vector2 projectilePosition = spawnCenter.cpy().sub(projectile.getScale().cpy().scl(0.5f));

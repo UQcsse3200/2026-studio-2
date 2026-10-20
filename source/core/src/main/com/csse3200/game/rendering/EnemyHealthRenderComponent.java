@@ -37,6 +37,11 @@ public class EnemyHealthRenderComponent extends RenderComponent {
     entity.getEvents().addListener("updateHealth", this::onHealthUpdate);
 
     // Initial health bar
+    ensureBarTexture();
+  }
+
+  /** Creates the shared 1x1 white bar texture the first time any health bar is created. */
+  private static void ensureBarTexture() {
     if (barTexture == null) {
       Pixmap pmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
       pmap.setColor(Color.WHITE);
@@ -78,10 +83,5 @@ public class EnemyHealthRenderComponent extends RenderComponent {
 
     // just in case
     batch.setColor(Color.WHITE);
-  }
-
-  @Override
-  public void dispose() {
-    super.dispose();
   }
 }

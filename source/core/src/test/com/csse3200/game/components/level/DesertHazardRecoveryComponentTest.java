@@ -63,4 +63,23 @@ class DesertHazardRecoveryComponentTest {
     recovery.update();
     assertEquals(new Vector2(47, 22), player.getPosition());
   }
+
+  @Test
+  void godModeIgnoresUpperSpikeRecovery() {
+    stats.setGodMode(true);
+    player.setPosition(61, 20.1f);
+    recovery.update();
+    assertEquals(new Vector2(61, 20.1f), player.getPosition());
+    assertEquals(10, stats.getHealth());
+  }
+
+  @Test
+  void godModeStillRespawnsWhenFallingOutsideMap() {
+    stats.setGodMode(true);
+    player.getEvents().addListener("respawnAtCheckpoint", () -> player.setPosition(47, 22));
+    player.setPosition(5, -5);
+    recovery.update();
+    assertEquals(new Vector2(47, 22), player.getPosition());
+    assertEquals(10, stats.getHealth());
+  }
 }

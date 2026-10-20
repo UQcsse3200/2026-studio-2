@@ -5,13 +5,21 @@ import com.badlogic.gdx.Input.Buttons;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.math.GridPoint2;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.csse3200.game.components.CameraComponent;
+import com.csse3200.game.components.CombatStatsComponent;
+import com.csse3200.game.components.inventory.InventoryComponent;
+import com.csse3200.game.components.item.ItemType;
 import com.csse3200.game.input.InputComponent;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.services.ServiceLocator;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 /** Input handler for player keyboard and mouse controls. */
 public class KeyboardPlayerInputComponent extends InputComponent {
@@ -22,12 +30,23 @@ public class KeyboardPlayerInputComponent extends InputComponent {
   private static final int RIGHT = 1;
   private static final int UP = 2;
   private static final int DOWN = 3;
+  // How far in front of the player, in world units, a right-click aim starts while the pointer is
+  // hidden.
+  static final float AIM_START_DISTANCE = 3f;
+  // Height of the aim start as a fraction of the player's height from their feet: roughly head
+  // level.
+  static final float AIM_START_HEIGHT = 0.85f;
+  // The grapple usually needs to reach a ledge above, so its aim starts on this steep upward angle
+  // (degrees above horizontal, towards the way the player faces) instead of at head level.
+  static final float GRAPPLE_AIM_START_ANGLE = 60f;
   private final boolean[] keysHeld = new boolean[4];
+  private final Set<Integer> heldKeys = new HashSet<>();
   private boolean sprintHeld;
+  private boolean inputSyncPending;
   private CameraComponent cameraComponent;
-  private boolean attackHeld;
   private boolean dead;
   private boolean rightMouseHeld;
+  private GridPoint2 pendingPointerPosition;
   private boolean cheats = false;
 
   public KeyboardPlayerInputComponent() {
@@ -38,7 +57,8 @@ public class KeyboardPlayerInputComponent extends InputComponent {
   public void create() {
     super.create();
     entity.getEvents().addListener("togglePause", this::unpause);
-    entity.getEvents().addListener("death", () -> dead = true);
+    entity.getEvents().addListener("death", () -> setDead(true));
+    entity.getEvents().addListener("revive", () -> setDead(false));
     entity.getEvents().addListener("openShop", this::releaseHeldGameplayInput);
     entity.getEvents().addListener("backpackOpened", this::releaseHeldGameplayInput);
     entity.getEvents().addListener("dictionaryOpened", this::releaseHeldGameplayInput);
@@ -73,113 +93,101 @@ public class KeyboardPlayerInputComponent extends InputComponent {
     if (dead) {
       return false;
     }
-    if (isShopOpen() && keycode != Keys.F) {
-      return true;
-    }
-    // Block gameplay controls while paused.
-    // Preserve F for the existing shop interaction.
-    if (isGamePaused() && !isShopOpen()) {
-      return true;
-    }
-    switch (keycode) {
-      // Hotbar number keys
-      case Keys.NUM_1:
-        entity.getEvents().trigger(SELECT_QUICK_SLOT, 0);
-        return true;
-      case Keys.NUM_2:
-        entity.getEvents().trigger(SELECT_QUICK_SLOT, 1);
-        return true;
-      case Keys.NUM_3:
-        entity.getEvents().trigger(SELECT_QUICK_SLOT, 2);
-        return true;
-      case Keys.NUM_4:
-        entity.getEvents().trigger(SELECT_QUICK_SLOT, 3);
-        return true;
-      case Keys.NUM_5:
-        entity.getEvents().trigger(SELECT_QUICK_SLOT, 4);
-        return true;
-      case Keys.NUM_6:
-        entity.getEvents().trigger(SELECT_QUICK_SLOT, 5);
-        return true;
-      case Keys.NUM_7:
-        entity.getEvents().trigger(SELECT_QUICK_SLOT, 6);
-        return true;
-      case Keys.NUM_8:
-        entity.getEvents().trigger(SELECT_QUICK_SLOT, 7);
-        return true;
-      case Keys.NUM_9:
-        entity.getEvents().trigger(SELECT_QUICK_SLOT, 8);
-        return true;
-      case Keys.W:
-        entity.getEvents().trigger("grappleClimbStart");
-        keysHeld[UP] = true;
-        if (!ServiceLocator.getEntityService().getPaused()) {
-          triggerWalkEvent();
-        }
-        return true;
-      case Keys.A, Keys.LEFT:
-        keysHeld[LEFT] = true;
-        if (!ServiceLocator.getEntityService().getPaused()) {
-          triggerWalkEvent();
-        }
-        return true;
-      case Keys.D, Keys.RIGHT:
-        keysHeld[RIGHT] = true;
-        if (!ServiceLocator.getEntityService().getPaused()) {
-          triggerWalkEvent();
-        }
-        return true;
-      case Keys.SPACE:
-        if (!ServiceLocator.getEntityService().getPaused()) {
-          triggerJumpEvent();
-        }
-        return true;
-      case Keys.SHIFT_LEFT, Keys.SHIFT_RIGHT:
-        if (!ServiceLocator.getEntityService().getPaused()) {
-          sprintHeld = true;
-          triggerSprintEvent();
-        }
-        return true;
-      case Keys.E:
-        triggerAttackOrItemUse();
-        return true;
-      case Keys.F:
+    if (isShopOpen()) {
+      if (keycode == Keys.E) {
         entity.getEvents().trigger("interact");
-        return true;
-      case Keys.B:
-        entity.getEvents().trigger("toggleBackpack");
-        return true;
-      case Keys.R:
-        entity.getEvents().trigger("dropItem");
-        return true;
-      case Keys.FORWARD_DEL:
-        entity.getEvents().trigger("deleteItem");
-        return true;
-      case Keys.PERIOD:
-        entity.getEvents().trigger("switchItem", 1);
-        return true;
-      case Keys.COMMA:
-        entity.getEvents().trigger("switchItem", -1);
-        return true;
-      case Keys.S:
-        entity.getEvents().trigger("grappleDescendStart");
-        entity.getEvents().trigger("updateLedgeDrop", true);
-        keysHeld[DOWN] = true;
-        if (!ServiceLocator.getEntityService().getPaused()) {
-          triggerWalkEvent();
-        }
-        return true;
-      case Keys.TAB:
-        entity.getEvents().trigger("openArrowWheel");
-        return true;
-      case Keys.ESCAPE:
-        if (!ServiceLocator.getEntityService().getSettingsOpen()) {
-          entity.getEvents().trigger("togglePause");
-        }
-        unpause();
-      default:
-        return false;
+      }
+      return true;
     }
+    if (handleMovementKey(keycode, true)) {
+      return true;
+    }
+    if (keycode == Keys.ESCAPE) {
+      if (!ServiceLocator.getEntityService().getSettingsOpen()) {
+        entity.getEvents().trigger("togglePause");
+      }
+      unpause();
+      return true;
+    }
+    if (keycode == Keys.M) {
+      entity.getEvents().trigger("toggleMap");
+      return true;
+    }
+    if (isPaused()) {
+      return isActionKey(keycode);
+    }
+    if (keycode >= Keys.NUM_1 && keycode <= Keys.NUM_9) {
+      entity.getEvents().trigger(SELECT_QUICK_SLOT, keycode - Keys.NUM_1);
+      return true;
+    }
+    return handleActionKey(keycode);
+  }
+
+  private boolean isActionKey(int keycode) {
+    return switch (keycode) {
+      case Keys.NUM_1,
+          Keys.NUM_2,
+          Keys.NUM_3,
+          Keys.NUM_4,
+          Keys.NUM_5,
+          Keys.NUM_6,
+          Keys.NUM_7,
+          Keys.NUM_8,
+          Keys.NUM_9,
+          Keys.SPACE,
+          Keys.E,
+          Keys.B,
+          Keys.R,
+          Keys.FORWARD_DEL,
+          Keys.PERIOD,
+          Keys.COMMA,
+          Keys.TAB,
+          Keys.Q ->
+          true;
+      default -> false;
+    };
+  }
+
+  private boolean handleActionKey(int keycode) {
+    return switch (keycode) {
+      case Keys.SPACE -> {
+        triggerJumpEvent();
+        yield true;
+      }
+      case Keys.E -> {
+        entity.getEvents().trigger("interact");
+        yield true;
+      }
+      case Keys.B -> {
+        entity.getEvents().trigger("toggleBackpack");
+        yield true;
+      }
+      case Keys.R -> {
+        entity.getEvents().trigger("dropItem");
+        yield true;
+      }
+      case Keys.FORWARD_DEL -> {
+        entity.getEvents().trigger("deleteItem");
+        yield true;
+      }
+      case Keys.PERIOD -> {
+        entity.getEvents().trigger("switchItem", 1);
+        yield true;
+      }
+      case Keys.COMMA -> {
+        entity.getEvents().trigger("switchItem", -1);
+        yield true;
+      }
+      case Keys.TAB -> {
+        entity.getEvents().trigger("openArrowWheel");
+        yield true;
+      }
+      case Keys.Q -> {
+        entity.getEvents().trigger("instrumentStart");
+        yield true;
+      }
+      default -> false;
+    };
   }
 
   /**
@@ -193,81 +201,97 @@ public class KeyboardPlayerInputComponent extends InputComponent {
     if (dead) {
       return false;
     }
-    // Clear held keys without triggering gameplay actions while paused.
-    if (isGamePaused()) {
-      switch (keycode) {
-        case Keys.A, Keys.LEFT:
-          keysHeld[LEFT] = false;
-          break;
-        case Keys.D, Keys.RIGHT:
-          keysHeld[RIGHT] = false;
-          break;
-        case Keys.W, Keys.UP:
-          keysHeld[UP] = false;
-          break;
-        case Keys.S, Keys.DOWN:
-          keysHeld[DOWN] = false;
-          break;
-        case Keys.SHIFT_LEFT, Keys.SHIFT_RIGHT:
-          sprintHeld = false;
-          break;
-        case Keys.E:
-          attackHeld = false;
-          break;
-        default:
-          break;
-      }
+    if (handleMovementKey(keycode, false)) {
       return true;
     }
+    if (keycode == Keys.TAB) {
+      entity.getEvents().trigger("closeArrowWheel");
+      return true;
+    }
+    return false;
+  }
+
+  private boolean handleMovementKey(int keycode, boolean pressed) {
     switch (keycode) {
-      case Keys.A, Keys.LEFT:
-        keysHeld[LEFT] = false;
-        triggerWalkEvent();
-        return true;
-      case Keys.D, Keys.RIGHT:
-        keysHeld[RIGHT] = false;
-        triggerWalkEvent();
-        return true;
-      case Keys.W:
-        entity.getEvents().trigger("grappleClimbStop");
-        keysHeld[UP] = false;
-        triggerWalkEvent();
-        return true;
-      case Keys.UP:
-        keysHeld[UP] = false;
-        triggerWalkEvent();
-        return true;
-      case Keys.S:
-        entity.getEvents().trigger("grappleDescendStop");
-        keysHeld[DOWN] = false;
-        triggerWalkEvent();
-        return true;
-      case Keys.DOWN:
-        keysHeld[DOWN] = false;
-        triggerWalkEvent();
-        return true;
-      case Keys.SHIFT_LEFT, Keys.SHIFT_RIGHT:
-        sprintHeld = false;
-        triggerSprintEvent();
-        return true;
-      case Keys.E:
-        attackHeld = false;
-        return true;
-      case Keys.TAB:
-        entity.getEvents().trigger("closeArrowWheel");
-        return true;
+      case Keys.A, Keys.LEFT, Keys.D, Keys.RIGHT, Keys.W, Keys.S, Keys.SHIFT_LEFT, Keys.SHIFT_RIGHT:
+        break;
       default:
         return false;
     }
+    if (pressed) {
+      heldKeys.add(keycode);
+    } else {
+      heldKeys.remove(keycode);
+    }
+    keysHeld[LEFT] = heldKeys.contains(Keys.A) || heldKeys.contains(Keys.LEFT);
+    keysHeld[RIGHT] = heldKeys.contains(Keys.D) || heldKeys.contains(Keys.RIGHT);
+    keysHeld[UP] = heldKeys.contains(Keys.W);
+    keysHeld[DOWN] = heldKeys.contains(Keys.S);
+    sprintHeld = heldKeys.contains(Keys.SHIFT_LEFT) || heldKeys.contains(Keys.SHIFT_RIGHT);
+    if (!isPaused()) {
+      triggerMovementKey(keycode, pressed);
+    } else {
+      inputSyncPending = true;
+      if (!pressed) {
+        stopGrappleMovement(keycode);
+      }
+    }
+    return true;
+  }
+
+  private void triggerMovementKey(int keycode, boolean pressed) {
+    if (keycode == Keys.SHIFT_LEFT || keycode == Keys.SHIFT_RIGHT) {
+      triggerSprintEvent();
+      return;
+    }
+    if (keycode == Keys.W) {
+      entity.getEvents().trigger(pressed ? "grappleClimbStart" : "grappleClimbStop");
+    } else if (keycode == Keys.S) {
+      entity.getEvents().trigger(pressed ? "grappleDescendStart" : "grappleDescendStop");
+      if (pressed) {
+        entity.getEvents().trigger("updateLedgeDrop", true);
+      }
+    }
+    triggerWalkEvent();
+  }
+
+  private void stopGrappleMovement(int keycode) {
+    if (keycode == Keys.W) {
+      entity.getEvents().trigger("grappleClimbStop");
+    } else if (keycode == Keys.S) {
+      entity.getEvents().trigger("grappleDescendStop");
+    }
+  }
+
+  private boolean isPaused() {
+    return ServiceLocator.getEntityService().getPaused();
+  }
+
+  private void resetHeldInput() {
+    inputSyncPending = false;
+    heldKeys.clear();
+    Arrays.fill(keysHeld, false);
+    sprintHeld = false;
+    rightMouseHeld = false;
+  }
+
+  private void setDead(boolean dead) {
+    this.dead = dead;
+    resetHeldInput();
   }
 
   public void toggleCheats() {
     cheats = !cheats;
+    CombatStatsComponent stats = entity.getComponent(CombatStatsComponent.class);
+    if (stats != null) {
+      stats.setGodMode(cheats);
+    }
   }
 
   /**
-   * Left click swings the melee weapon, right click fires the selected arrow. Both aim toward the
-   * clicked world position.
+   * Left click swings the melee weapon in the direction the player is facing. Right click uses the
+   * selected item: an arrow is drawn and fired toward the clicked world position, and a potion is
+   * drunk or thrown.
    *
    * @return whether the input was processed
    * @see InputProcessor#touchDown(int, int, int, int)
@@ -277,19 +301,78 @@ public class KeyboardPlayerInputComponent extends InputComponent {
     if (isShopOpen()) {
       return true;
     }
-    // Do not allow attacks or shooting while paused.
-    if (isGamePaused()) {
-      return true;
-    }
-
-    if (dead || isArrowWheelOpen()) {
+    if (dead || isArrowWheelOpen() || isPaused()) {
       return false;
+    }
+    if (button == Buttons.LEFT) {
+      if (rightMouseHeld) {
+        return false;
+      }
+      entity.getEvents().trigger("meleeStart");
+      return true;
     }
     if (button == Buttons.RIGHT) {
       rightMouseHeld = true;
+      // While the pointer is hidden the player can't see where it is, so start every aim from the
+      // same spot in front of them. The pointer is shown there once it is released.
+      if (Gdx.input != null && Gdx.input.isCursorCatched()) {
+        GridPoint2 aimStart = getAimStartScreenPosition();
+        if (aimStart != null) {
+          pendingPointerPosition = aimStart;
+          return triggerAimedEvent("shoot", aimStart.x, aimStart.y);
+        }
+      }
       return triggerAimedEvent("shoot", screenX, screenY);
     }
     return false;
+  }
+
+  /**
+   * Where the pointer should reappear for the aim that just started, then forgets it.
+   *
+   * @return the aim start in input coordinates, or null if no aim started while it was hidden
+   */
+  public GridPoint2 takePendingPointerPosition() {
+    GridPoint2 position = pendingPointerPosition;
+    pendingPointerPosition = null;
+    return position;
+  }
+
+  /**
+   * Screen position a fixed distance in front of the player, at head height, in the direction they
+   * are facing. With the rope arrow selected it is instead on a steep upward angle, since the
+   * grapple is usually aimed at something above.
+   *
+   * @return the position in input coordinates (y down), or null if the camera is unavailable
+   */
+  GridPoint2 getAimStartScreenPosition() {
+    if (cameraComponent == null || Gdx.graphics == null) {
+      return null;
+    }
+    Vector2 start = getAimStartWorldPosition();
+    Vector3 screen = cameraComponent.getCamera().project(new Vector3(start.x, start.y, 0f));
+    // Camera.project measures y up from the bottom; input coordinates measure it down from the top.
+    return new GridPoint2(Math.round(screen.x), Math.round(Gdx.graphics.getHeight() - screen.y));
+  }
+
+  private Vector2 getAimStartWorldPosition() {
+    PlayerActions actions = entity.getComponent(PlayerActions.class);
+    int facing = actions == null ? 1 : actions.getFacingDirection();
+    Vector2 centre = entity.getCenterPosition();
+    if (isGrappleSelected()) {
+      // Aim directions are measured from the centre, so start the angle there.
+      float radians = GRAPPLE_AIM_START_ANGLE * MathUtils.degreesToRadians;
+      return new Vector2(
+          centre.x + facing * AIM_START_DISTANCE * MathUtils.cos(radians),
+          centre.y + AIM_START_DISTANCE * MathUtils.sin(radians));
+    }
+    float headHeight = entity.getPosition().y + entity.getScale().y * AIM_START_HEIGHT;
+    return new Vector2(centre.x + facing * AIM_START_DISTANCE, headHeight);
+  }
+
+  private boolean isGrappleSelected() {
+    InventoryComponent inventory = entity.getComponent(InventoryComponent.class);
+    return inventory != null && inventory.getSelectedItem() == ItemType.ROPE_ARROW;
   }
 
   /**
@@ -323,21 +406,30 @@ public class KeyboardPlayerInputComponent extends InputComponent {
     if (button == Buttons.RIGHT) {
       // Clear even if the shop is open. The overlay may still deliver this event, and swallowing
       // it without cancelling leaves the bow stuck charging after the shop closes.
-      clearHeldShootButton(isShopOpen());
+      clearHeldShootButton(isShopOpen() || isPaused());
       return true;
     }
 
     return isShopOpen();
   }
 
-  /** Reports the pointer's offset from the centre of the screen, where the wheel is drawn. */
+  /**
+   * Reports the pointer's offset from the centre of the arrow wheel, or from the centre of the
+   * screen if the wheel hasn't been placed.
+   */
   @Override
   public boolean mouseMoved(int screenX, int screenY) {
     if (Gdx.graphics != null) {
       float centreX = Gdx.graphics.getWidth() / 2f;
-      float centreY = Gdx.graphics.getHeight() / 2f;
+      float centreYFromTop = Gdx.graphics.getHeight() / 2f;
+      ArrowWheelComponent wheel = entity.getComponent(ArrowWheelComponent.class);
+      Vector2 wheelCentre = wheel == null ? null : wheel.getScreenCentre();
+      if (wheelCentre != null) {
+        centreX = wheelCentre.x;
+        centreYFromTop = wheelCentre.y;
+      }
       // Screen y grows downwards, so flip it to match the wheel's y-up directions.
-      Vector2 offsetFromCentre = new Vector2(screenX - centreX, centreY - screenY);
+      Vector2 offsetFromCentre = new Vector2(screenX - centreX, centreYFromTop - screenY);
       entity.getEvents().trigger("arrowWheelPointerMoved", offsetFromCentre);
     }
 
@@ -351,10 +443,9 @@ public class KeyboardPlayerInputComponent extends InputComponent {
   }
 
   private void releaseHeldGameplayInput() {
-    keysHeld[LEFT] = false;
-    keysHeld[RIGHT] = false;
-    sprintHeld = false;
-    attackHeld = false;
+    resetHeldInput();
+    stopGrappleMovement(Keys.W);
+    stopGrappleMovement(Keys.S);
     triggerWalkEvent();
     entity.getEvents().trigger("sprintStop");
     // Opening a UI can steal the mouse-up, so drop the charge immediately instead of firing.
@@ -391,18 +482,6 @@ public class KeyboardPlayerInputComponent extends InputComponent {
   private boolean isArrowWheelOpen() {
     ArrowWheelComponent wheel = entity.getComponent(ArrowWheelComponent.class);
     return wheel != null && wheel.isOpen();
-  }
-
-  private void triggerAttackOrItemUse() {
-    if (attackHeld || isArrowWheelOpen()) {
-      return;
-    }
-    attackHeld = true;
-
-    ItemUseComponent itemUse = entity.getComponent(ItemUseComponent.class);
-    if (itemUse != null) {
-      itemUse.useSelectedItem();
-    }
   }
 
   private void triggerSprintEvent() {
@@ -465,18 +544,31 @@ public class KeyboardPlayerInputComponent extends InputComponent {
     }
   }
 
-  public void unpause() {
-    triggerWalkEvent();
-    triggerSprintEvent();
+  @Override
+  public void earlyUpdate() {
+    if (inputSyncPending && !isPaused()) {
+      unpause();
+    }
   }
 
-  /**
-   * Checks whether gameplay is currently paused.
-   *
-   * @return true if the entity service exists and gameplay is paused
-   */
-  private boolean isGamePaused() {
-    return ServiceLocator.getEntityService() != null
-        && ServiceLocator.getEntityService().getPaused();
+  public void unpause() {
+    if (dead) {
+      return;
+    }
+    if (isPaused()) {
+      // Screens change the pause state after the input callback. Apply on the next game frame.
+      inputSyncPending = true;
+      return;
+    }
+    inputSyncPending = false;
+    triggerWalkEvent();
+    triggerSprintEvent();
+    if (keysHeld[UP]) {
+      entity.getEvents().trigger("grappleClimbStart");
+    }
+    if (keysHeld[DOWN]) {
+      entity.getEvents().trigger("grappleDescendStart");
+    }
   }
+
 }

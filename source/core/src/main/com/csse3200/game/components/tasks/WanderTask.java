@@ -17,19 +17,24 @@ public class WanderTask extends DefaultTask implements PriorityTask {
 
   private final Vector2 wanderRange;
   private final float waitTime;
+  private final String behaviour;
   private Vector2 startPos;
   private MovementTask movementTask;
   private WaitTask waitTask;
   private Task currentTask;
+  private EdgeDetectTask edgeDetector;
+  private Vector2 wanderTarget;
 
   /**
    * @param wanderRange Distance in X and Y the entity can move from its position when start() is
    *     called.
    * @param waitTime How long in seconds to wait between wandering.
+   * @param behaviour Entity movement behaviour (flying vs non-flying)
    */
-  public WanderTask(Vector2 wanderRange, float waitTime) {
+  public WanderTask(Vector2 wanderRange, float waitTime, String behaviour) {
     this.wanderRange = wanderRange;
     this.waitTime = waitTime;
+    this.behaviour = behaviour;
   }
 
   @Override
@@ -40,11 +45,17 @@ public class WanderTask extends DefaultTask implements PriorityTask {
   @Override
   public void start() {
     super.start();
+
     startPos = owner.getEntity().getPosition();
+
+    if (!behaviour.equals("flying")) {
+      edgeDetector = new EdgeDetectTask(0.3f);
+    }
 
     waitTask = new WaitTask(waitTime);
     waitTask.create(owner);
-    movementTask = new MovementTask(getRandomPosInRange());
+    wanderTarget = getRandomPosInRange();
+    movementTask = new MovementTask(wanderTarget);
     movementTask.create(owner);
 
     movementTask.start();
@@ -62,6 +73,22 @@ public class WanderTask extends DefaultTask implements PriorityTask {
         startMoving();
       }
     }
+
+    // Edge detection
+    if (!behaviour.equals("flying")) {
+      if (currentTask == movementTask) {
+        Vector2 currentPos = owner.getEntity().getPosition();
+
+        float direction = Math.signum(wanderTarget.x - currentPos.x);
+
+        if (direction != 0 && !edgeDetector.isGroundAhead(owner.getEntity(), direction)) {
+          movementTask.stop();
+          startWaiting();
+          return;
+        }
+      }
+    }
+
     currentTask.update();
   }
 
@@ -72,7 +99,8 @@ public class WanderTask extends DefaultTask implements PriorityTask {
 
   private void startMoving() {
     logger.debug("Starting moving");
-    movementTask.setTarget(getRandomPosInRange());
+    wanderTarget = getRandomPosInRange();
+    movementTask.setTarget(wanderTarget);
     swapTask(movementTask);
   }
 
@@ -88,6 +116,12 @@ public class WanderTask extends DefaultTask implements PriorityTask {
     Vector2 halfRange = wanderRange.cpy().scl(0.5f);
     Vector2 min = startPos.cpy().sub(halfRange);
     Vector2 max = startPos.cpy().add(halfRange);
-    return RandomUtils.random(min, max);
+    Vector2 target = RandomUtils.random(min, max);
+
+    if (!behaviour.equals("flying")) {
+      target.y = owner.getEntity().getPosition().y;
+    }
+
+    return target;
   }
 }

@@ -3,7 +3,6 @@ package com.csse3200.game.components.inventory;
 import com.csse3200.game.components.Component;
 import com.csse3200.game.components.item.ItemType;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,7 +18,7 @@ public class InventoryComponent extends Component {
   private static final int DEFAULT_COLUMNS = 8;
   private static final int MAX_COLUMNS = 9;
 
-  private final List<InventorySlot> slots;
+  private List<InventorySlot> slots;
   private int rows;
   private int columns;
 
@@ -121,7 +120,7 @@ public class InventoryComponent extends Component {
    */
   public void addGold(int gold) {
     long total = (long) this.gold + gold;
-    setGold((int) Math.max(0L, Math.min(Integer.MAX_VALUE, total)));
+    setGold((int) Math.clamp(total, 0L, Integer.MAX_VALUE));
   }
 
   // ---------
@@ -340,12 +339,13 @@ public class InventoryComponent extends Component {
   }
 
   /**
-   * Returns the number of slots in the first-row hotbar.
+   * Returns the number of slots in the first-row hotbar. The hotbar is one full row, so this is the
+   * same as the column count.
    *
    * @return hotbar slot count
    */
   public int getHotbarSlotCount() {
-    return columns;
+    return getColumns();
   }
 
   /**
@@ -364,7 +364,15 @@ public class InventoryComponent extends Component {
    * @return ordered slot snapshot
    */
   public List<InventorySlot> getSlots() {
-    return Collections.unmodifiableList(new ArrayList<>(slots));
+    return List.copyOf(slots);
+  }
+
+  public void setSlots(List<InventorySlot> slots) {
+    // Stored mutable so internal operations (e.g. removeItem) can update slots in place.
+    // External callers still receive an immutable snapshot via getSlots().
+    this.slots = new ArrayList<>(slots);
+    notifyInventoryChanged();
+    notifySelectionChanged();
   }
 
   /**

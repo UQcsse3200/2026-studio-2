@@ -181,4 +181,79 @@ class CombatStatsComponentTest {
     assertTrue(playerStats.isDead());
     assertEquals(1, deaths.get());
   }
+
+  @Test
+  void shouldBlockHitsInGodMode() {
+    CombatStatsComponent target = new CombatStatsComponent(100, 0);
+    CombatStatsComponent attacker = new CombatStatsComponent(100, 10);
+    target.setGodMode(true);
+
+    target.hit(attacker);
+
+    assertEquals(100, target.getHealth());
+  }
+
+  @Test
+  void shouldBlockDirectHealthLossInGodMode() {
+    CombatStatsComponent combat = new CombatStatsComponent(100, 0);
+    combat.setGodMode(true);
+
+    combat.setHealth(10);
+    combat.addHealth(-50);
+
+    assertEquals(100, combat.getHealth());
+    assertFalse(combat.isDead());
+  }
+
+  @Test
+  void shouldBlockTakeDamageEventsInGodMode() {
+    CombatStatsComponent stats = new CombatStatsComponent(100, 0);
+    Entity target = new Entity().addComponent(stats);
+    CombatStatsComponent attacker = new CombatStatsComponent(100, 50);
+    target.create();
+    stats.setGodMode(true);
+
+    target.getEvents().trigger("takeDamage", attacker);
+
+    assertEquals(100, stats.getHealth());
+  }
+
+  @Test
+  void shouldNotTriggerDeathOrHurtInGodMode() {
+    CombatStatsComponent stats = new CombatStatsComponent(10, 0);
+    Entity target = new Entity().addComponent(stats);
+    AtomicInteger events = new AtomicInteger();
+    target.getEvents().addListener("death", events::incrementAndGet);
+    target.getEvents().addListener("hurt", events::incrementAndGet);
+    target.create();
+    stats.setGodMode(true);
+
+    stats.hit(new CombatStatsComponent(100, 100));
+    stats.setHealth(0);
+
+    assertEquals(0, events.get());
+  }
+
+  @Test
+  void shouldStillAllowHealingInGodMode() {
+    CombatStatsComponent combat = new CombatStatsComponent(50, 100, 0);
+    combat.setGodMode(true);
+
+    combat.addHealth(30);
+
+    assertEquals(80, combat.getHealth());
+  }
+
+  @Test
+  void shouldRestoreNormalDamageWhenGodModeDisabled() {
+    CombatStatsComponent target = new CombatStatsComponent(100, 0);
+    CombatStatsComponent attacker = new CombatStatsComponent(100, 10);
+    target.setGodMode(true);
+    target.hit(attacker);
+    target.setGodMode(false);
+
+    target.hit(attacker);
+
+    assertEquals(90, target.getHealth());
+  }
 }

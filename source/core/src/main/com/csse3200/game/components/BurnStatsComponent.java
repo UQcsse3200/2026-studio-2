@@ -30,13 +30,18 @@ public class BurnStatsComponent extends Component {
 
     long currentTime = time.getTime();
 
+    BossPhaseComponent phase = entity.getComponent(BossPhaseComponent.class);
+    boolean isTransitioning = phase != null && phase.isTransitioning();
+
     // Deal every missed one-second tick, including the final tick at burnEndTimeMs.
     while (currentTime >= nextDamageTime && nextDamageTime <= burnEndTime) {
-      combatStats.addHealth(-Math.round(damagePerSecond));
+      if (!isTransitioning) {
+        combatStats.addHealth(-Math.round(damagePerSecond));
+      }
       nextDamageTime += DAMAGE_INTERVAL;
     }
 
-    if (currentTime >= burnEndTime && nextDamageTime > burnEndTime) {
+    if (currentTime >= burnEndTime) {
       damagePerSecond = 0f;
     }
   }

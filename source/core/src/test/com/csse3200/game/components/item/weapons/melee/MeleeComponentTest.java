@@ -1,0 +1,347 @@
+package com.csse3200.game.components.item.weapons.melee;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyShort;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.Fixture;
+import com.csse3200.game.components.CombatStatsComponent;
+import com.csse3200.game.components.player.PlayerActions;
+import com.csse3200.game.entities.Entity;
+import com.csse3200.game.entities.EntityService;
+import com.csse3200.game.extensions.GameExtension;
+import com.csse3200.game.physics.BodyUserData;
+import com.csse3200.game.physics.PhysicsEngine;
+import com.csse3200.game.physics.PhysicsLayer;
+import com.csse3200.game.physics.PhysicsService;
+import com.csse3200.game.physics.raycast.RaycastHit;
+import com.csse3200.game.services.GameTime;
+import com.csse3200.game.services.ServiceLocator;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+
+@ExtendWith(GameExtension.class)
+class MeleeComponentTest {
+  private static final float STEP = 0.2f;
+
+  private GameTime time;
+  private PhysicsEngine physics;
+  private EntityService entityService;
+  private Entity player;
+  private Entity enemy;
+  private MeleeComponent melee;
+
+  @BeforeEach
+  void setUp() {
+    time = mock(GameTime.class);
+    when(time.getDeltaTime()).thenReturn(STEP);
+    ServiceLocator.registerTimeSource(time);
+
+    physics = mock(PhysicsEngine.class);
+    when(physics.raycastAll(any(Vector2.class), any(Vector2.class), anyShort()))
+        .thenReturn(new RaycastHit[0]);
+    ServiceLocator.registerPhysicsService(new PhysicsService(physics));
+
+    entityService = mock(EntityService.class);
+    ServiceLocator.registerEntityService(entityService);
+
+    melee = new MeleeComponent();
+    player = new Entity().addComponent(melee).addComponent(new CombatStatsComponent(100, 20));
+    player.create();
+
+    enemy = new Entity().addComponent(new CombatStatsComponent(100, 5));
+    enemy.create();
+  }
+
+  private void enemyIsInArc() {
+    BodyUserData data = new BodyUserData();
+    data.entity = enemy;
+    Body body = mock(Body.class);
+    when(body.getUserData()).thenReturn(data);
+    Fixture fixture = mock(Fixture.class);
+    when(fixture.getBody()).thenReturn(body);
+    RaycastHit hit = new RaycastHit();
+    hit.fixture = fixture;
+    when(physics.raycastAll(any(Vector2.class), any(Vector2.class), anyShort()))
+        .thenReturn(new RaycastHit[] {hit});
+  }
+
+  private void run(int updates) {
+    for (int i = 0; i < updates; i++) {
+      melee.update();
+    }
+  }
+
+  @Test
+  void swingStartsAndAnnouncesFacing() {
+    AtomicInteger swings = new AtomicInteger();
+    player.getEvents().<Integer>addListener("meleeSwing", swings::set);
+
+    player.getEvents().trigger("meleeStart");
+
+    assertTrue(melee.isSwinging());
+    assertEquals(1, swings.get());
+  }
+
+  @Test
+  void damagesAnEnemyInTheArcOncePerSwing() {
+    enemyIsInArc();
+    AtomicInteger hits = new AtomicInteger();
+    player.getEvents().addListener("meleeHit", (Entity target) -> hits.incrementAndGet());
+
+    player.getEvents().trigger("meleeStart");
+    run(4);
+
+    assertEquals(80, enemy.getComponent(CombatStatsComponent.class).getHealth());
+    assertEquals(1, hits.get());
+    assertFalse(melee.isSwinging());
+  }
+
+  @Test
+  void doesNotDamageAnythingBeforeTheArcLands() {
+    enemyIsInArc();
+
+    // A step shorter than the delay before the arc lands.
+    when(time.getDeltaTime()).thenReturn(0.05f);
+    player.getEvents().trigger("meleeStart");
+    run(1);
+
+    assertEquals(100, enemy.getComponent(CombatStatsComponent.class).getHealth());
+  }
+
+  @Test
+  void missesWhenNothingIsInTheArc() {
+    player.getEvents().trigger("meleeStart");
+    run(3);
+
+    assertEquals(100, enemy.getComponent(CombatStatsComponent.class).getHealth());
+  }
+
+  @Test
+  void cannotSwingAgainUntilTheSwingAndCooldownEnd() {
+    AtomicInteger swings = new AtomicInteger();
+    player.getEvents().addListener("meleeSwing", (Integer facing) -> swings.incrementAndGet());
+
+    player.getEvents().trigger("meleeStart");
+    player.getEvents().trigger("meleeStart");
+    assertEquals(1, swings.get());
+
+    // Finish the swing and let the cooldown run out.
+    run(5);
+    player.getEvents().trigger("meleeStart");
+    assertEquals(2, swings.get());
+  }
+
+  @Test
+  void deadPlayerCannotSwing() {
+    player.getEvents().trigger("death");
+    player.getEvents().trigger("meleeStart");
+
+    assertFalse(melee.isSwinging());
+  }
+
+  @Test
+  void swingDoesNotAdvanceWhilePaused() {
+    when(entityService.getPaused()).thenReturn(true);
+    enemyIsInArc();
+
+    player.getEvents().trigger("meleeStart");
+    run(5);
+
+    assertTrue(melee.isSwinging());
+    assertEquals(100, enemy.getComponent(CombatStatsComponent.class).getHealth());
+  }
+
+  @Test
+  void neverHitsThePlayerItself() {
+    BodyUserData data = new BodyUserData();
+    data.entity = player;
+    Body body = mock(Body.class);
+    when(body.getUserData()).thenReturn(data);
+    Fixture fixture = mock(Fixture.class);
+    when(fixture.getBody()).thenReturn(body);
+    RaycastHit hit = new RaycastHit();
+    hit.fixture = fixture;
+    when(physics.raycastAll(any(Vector2.class), any(Vector2.class), anyShort()))
+        .thenReturn(new RaycastHit[] {hit});
+
+    player.getEvents().trigger("meleeStart");
+    run(3);
+
+    assertEquals(100, player.getComponent(CombatStatsComponent.class).getHealth());
+  }
+
+  @Test
+  void revivedPlayerCanDamageAnEnemyAgain() {
+    enemyIsInArc();
+    player.getEvents().trigger("death");
+    player.getEvents().trigger("revive");
+
+    player.getEvents().trigger("meleeStart");
+    run(4);
+
+    assertEquals(80, enemy.getComponent(CombatStatsComponent.class).getHealth());
+  }
+
+  @Test
+  void deathCancelsTheDelayedHitAndSwing() {
+    enemyIsInArc();
+    player.getEvents().trigger("meleeStart");
+    player.getEvents().trigger("death");
+
+    run(4);
+
+    assertFalse(melee.isSwinging());
+    assertEquals(100, enemy.getComponent(CombatStatsComponent.class).getHealth());
+  }
+
+  @Test
+  void reviveClearsThePreviousSwingCooldown() {
+    player.getEvents().trigger("meleeStart");
+    run(4);
+    player.getEvents().trigger("death");
+    player.getEvents().trigger("revive");
+
+    player.getEvents().trigger("meleeStart");
+
+    assertTrue(melee.isSwinging());
+    assertEquals(0f, melee.getSwingProgress());
+  }
+
+  @Test
+  void nextSwingCanStartAsSoonAsTheLastEnds() {
+    player.getEvents().trigger("meleeStart");
+    run(4);
+    assertFalse(melee.isSwinging());
+    assertEquals(0f, melee.getSwingProgress());
+    // There is no cooldown, so the next swing starts straight away.
+    player.getEvents().trigger("meleeStart");
+    assertTrue(melee.isSwinging());
+  }
+
+  @Test
+  void facingUsesTheMovementControllerForBothDirections() {
+    PlayerActions actions = mock(PlayerActions.class);
+    player = new Entity().addComponent(actions).addComponent(melee);
+    melee.create();
+    when(actions.getFacingDirection()).thenReturn(-1);
+    player.getEvents().trigger("meleeStart");
+    assertEquals(-1, melee.getFacing());
+    player.getEvents().trigger("revive");
+    when(actions.getFacingDirection()).thenReturn(1);
+    player.getEvents().trigger("meleeStart");
+    assertEquals(1, melee.getFacing());
+  }
+
+  @Test
+  void leftFacingSwingCastsTheDamageArcToTheLeftAtFullRange() {
+    PlayerActions actions = mock(PlayerActions.class);
+    when(actions.getFacingDirection()).thenReturn(-1);
+    player =
+        new Entity()
+            .addComponent(actions)
+            .addComponent(melee)
+            .addComponent(new CombatStatsComponent(100, 20));
+    melee.create();
+    player.setPosition(10f, 4f);
+    Vector2 origin = player.getCenterPosition();
+    enemyIsInArc();
+
+    player.getEvents().trigger("meleeStart");
+    run(4);
+
+    ArgumentCaptor<Vector2> endpoints = ArgumentCaptor.forClass(Vector2.class);
+    verify(physics, times(9)).raycastAll(eq(origin), endpoints.capture(), eq(PhysicsLayer.NPC));
+    for (Vector2 endpoint : endpoints.getAllValues()) {
+      assertTrue(endpoint.x < origin.x);
+      assertEquals(MeleeComponent.RANGE, endpoint.dst(origin), 0.0001f);
+    }
+    Vector2 centreRay = endpoints.getAllValues().get(4);
+    assertEquals(origin.x - MeleeComponent.RANGE, centreRay.x, 0.0001f);
+    assertEquals(origin.y, centreRay.y, 0.0001f);
+    assertEquals(80, enemy.getComponent(CombatStatsComponent.class).getHealth());
+  }
+
+  @Test
+  void componentWithoutAttackerStatsCompletesWithoutDamagingTargets() {
+    enemyIsInArc();
+    player = new Entity().addComponent(melee);
+    melee.create();
+    ServiceLocator.registerEntityService(null);
+    player.getEvents().trigger("meleeStart");
+    run(4);
+    assertEquals(100, enemy.getComponent(CombatStatsComponent.class).getHealth());
+    assertFalse(melee.isSwinging());
+  }
+
+  @Test
+  void doesNotAnnounceHitsOnDeadEnemiesOrNonCombatEntities() {
+    AtomicInteger hitEvents = new AtomicInteger();
+    player.getEvents().addListener("meleeHit", (Entity target) -> hitEvents.incrementAndGet());
+    enemy.getComponent(CombatStatsComponent.class).setHealth(0);
+    enemyIsInArc();
+    player.getEvents().trigger("meleeStart");
+    run(5);
+    assertEquals(0, enemy.getComponent(CombatStatsComponent.class).getHealth());
+    enemy = new Entity();
+    enemyIsInArc();
+    player.getEvents().trigger("meleeStart");
+    run(5);
+    assertEquals(0, hitEvents.get());
+  }
+
+  @Test
+  void wallHitShortensEveryDamageRayToTheWallSurface() {
+    Vector2 wallPoint = new Vector2(0.9f, 0.5f);
+    when(physics.raycast(
+            any(Vector2.class), any(Vector2.class), eq(PhysicsLayer.SOLID), any(RaycastHit.class)))
+        .thenAnswer(
+            call -> {
+              ((RaycastHit) call.getArgument(3)).point = wallPoint;
+              return true;
+            });
+    assertTrue(melee.findTargets().isEmpty());
+    verify(physics, times(9)).raycastAll(any(Vector2.class), eq(wallPoint), eq(PhysicsLayer.NPC));
+  }
+
+  @Test
+  void missingWallIntersectionKeepsTheOriginalRange() {
+    when(physics.raycast(
+            any(Vector2.class), any(Vector2.class), eq(PhysicsLayer.SOLID), any(RaycastHit.class)))
+        .thenAnswer(
+            call -> {
+              ((RaycastHit) call.getArgument(3)).point = null;
+              return true;
+            });
+    enemyIsInArc();
+    assertEquals(Set.of(enemy), melee.findTargets());
+  }
+
+  @Test
+  void incompletePhysicsHitsAreIgnoredWithoutLosingValidTargets() {
+    RaycastHit noFixture = new RaycastHit();
+    RaycastHit noBody = new RaycastHit();
+    noBody.fixture = mock(Fixture.class);
+    RaycastHit unknownBody = new RaycastHit();
+    unknownBody.fixture = mock(Fixture.class);
+    Body unknown = mock(Body.class);
+    when(unknown.getUserData()).thenReturn("not an entity");
+    when(unknownBody.fixture.getBody()).thenReturn(unknown);
+    when(physics.raycastAll(any(Vector2.class), any(Vector2.class), anyShort()))
+        .thenReturn(new RaycastHit[] {null, noFixture, noBody, unknownBody});
+    assertTrue(melee.findTargets().isEmpty());
+  }
+}

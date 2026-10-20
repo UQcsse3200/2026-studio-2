@@ -1,0 +1,154 @@
+package com.csse3200.game.areas;
+
+import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.math.GridPoint2;
+import com.badlogic.gdx.math.Vector2;
+import com.csse3200.game.areas.terrain.TerrainFactory;
+import com.csse3200.game.areas.terrain.configs.levelconfigs.BossArenaConfig;
+import com.csse3200.game.components.CameraComponent;
+import com.csse3200.game.entities.Entity;
+import com.csse3200.game.entities.factories.EnemyFactory;
+import com.csse3200.game.entities.factories.NPCFactory;
+import com.csse3200.game.rendering.BackgroundRenderComponent;
+import com.csse3200.game.services.ServiceLocator;
+import java.util.List;
+
+public class LevelBossGameArea extends GameArea {
+
+  private static final GridPoint2 CALYPSO_SPAWN = new GridPoint2(15, 1);
+
+  public static final GridPoint2 SHOPKEEPER_SPAWN = new GridPoint2(15, 3);
+
+  private static final List<Vector2> CALYPSO_TP_POSITIONS =
+      List.of(
+          new Vector2(16f, 1.2f),
+          new Vector2(4f, 1.2f),
+          new Vector2(-8f, 4.8f),
+          new Vector2(0f, 4.8f),
+          new Vector2(-8f, 9f),
+          new Vector2(12f, 9f),
+          new Vector2(-4f, 12.7f),
+          new Vector2(8f, 12.7f));
+
+  private Vector2 worldBounds;
+
+  private Entity water;
+
+  /** Textures used by the level boss game area. */
+  private static final String[] level3Textures = {
+    "images/backgrounds/coin_bg.png",
+    "images/backgrounds/shop_bg.png",
+    "images/backgrounds/Background-2.png",
+    "images/terrain/Level_3/tile-level3.png",
+    "images/ui/transparent.png",
+    "images/projectiles/necromancer_projectile.png"
+  };
+
+  private static final String[] level3TexturesAtlas = {
+    "images/in_level_button.atlas",
+    "images/enemies/calypso.atlas",
+    "images/enemies/skeleton_warrior.atlas"
+  };
+
+  private static final String[] level3Sounds = {"sounds/Impact4.ogg"};
+
+  private static final String BACKGROUND_MUSIC = "sounds/BGM_03_mp3.mp3";
+
+  private static final String[] level3Music = {BACKGROUND_MUSIC};
+
+  private final TerrainFactory terrainFactory;
+  private final CameraComponent camera;
+
+  public LevelBossGameArea(TerrainFactory terrainFactory, CameraComponent camera, Entity player) {
+    super(camera);
+
+    config = new BossArenaConfig();
+
+    this.terrainFactory = terrainFactory;
+    this.camera = camera;
+    this.player = player;
+  }
+
+  @Override
+  public void create() {
+    loadAssets();
+
+    spawnBackground();
+    spawnTerrain();
+    spawnConfigEntities();
+
+    player.setPosition(new Vector2(config.getPlayerSpawn().x, config.getPlayerSpawn().y));
+
+    spawnCalypso();
+    spawnShopkeeper();
+  }
+
+  private void spawnCalypso() {
+    Entity calypso = EnemyFactory.createCalypso(player, CALYPSO_TP_POSITIONS, camera);
+
+    spawnEntityAt(calypso, CALYPSO_SPAWN, true, true);
+  }
+
+  private void spawnShopkeeper() {
+    Entity shopkeeper = NPCFactory.createShopkeeper();
+    spawnEntityAt(shopkeeper, SHOPKEEPER_SPAWN, true, false);
+  }
+
+  /** Creates the Level 2 background. */
+  private void spawnBackground() {
+    final Vector2 backgroundPos = new Vector2(-15f, -10f);
+
+    BackgroundRenderComponent backgroundComponent =
+        new BackgroundRenderComponent(camera, backgroundPos, worldBounds);
+    backgroundComponent.addLayer(
+        "images/backgrounds/Background-2.png",
+        new Vector2(0.15f, 0f),
+        36f,
+        20.2f,
+        new Vector2(0f, 5f),
+        new Vector2(0f, 0f),
+        RepeatMode.NONE,
+        0.7f,
+        1f,
+        false,
+        0,
+        -1);
+
+    Entity background = new Entity().addComponent(backgroundComponent);
+    background.setPosition(backgroundPos);
+    spawnEntity(background);
+  }
+
+  /** Creates the Level 2 background terrain and walls. */
+  private void spawnTerrain() {
+    terrain = terrainFactory.createTerrain(TerrainFactory.TerrainType.BACKGROUND_DESERT);
+    spawnEntity(new Entity().addComponent(terrain));
+    float tileSize = terrain.getTileSize();
+    GridPoint2 tileBounds = terrain.getMapBounds(0);
+    worldBounds = new Vector2(tileBounds.x * tileSize, tileBounds.y * tileSize);
+  }
+
+  @Override
+  protected void onCheckpointActivated(GridPoint2 position) {
+    super.onCheckpointActivated(position);
+    water.getEvents().trigger("checkpointEncountered", position.y);
+  }
+
+  /** Loads all Level 2 assets. */
+  private void loadAssets() {
+    loadAreaAssets(level3Textures, level3TexturesAtlas, level3Sounds, level3Music);
+  }
+
+  /** Unloads all Level 2 assets. */
+  private void unloadAssets() {
+    unloadAreaAssets(level3Textures, level3TexturesAtlas, level3Sounds, level3Music);
+  }
+
+  /** Dispose of the game area. */
+  @Override
+  public void dispose() {
+    super.dispose();
+    ServiceLocator.getResourceService().getAsset(BACKGROUND_MUSIC, Music.class).stop();
+    this.unloadAssets();
+  }
+}

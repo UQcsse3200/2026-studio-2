@@ -1,11 +1,14 @@
 package com.csse3200.game.components.player;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.clearInvocations;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -20,10 +23,9 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.csse3200.game.components.CameraComponent;
+import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.inventory.InventoryComponent;
 import com.csse3200.game.components.item.ItemType;
-import com.csse3200.game.components.item.weapons.PrimaryWeapon;
-import com.csse3200.game.components.item.weapons.WeaponComponent;
 import com.csse3200.game.components.npc.ShopNpcComponent;
 import com.csse3200.game.components.projectile.ArrowType;
 import com.csse3200.game.entities.Entity;
@@ -112,56 +114,28 @@ class KeyboardPlayerInputComponentTest {
   }
 
   @Test
-  void shouldNotHandleQ() {
+  void shouldTriggerInstrumentOnQ() {
     Entity player = new Entity();
     KeyboardPlayerInputComponent component = aimedComponent(player);
 
-    AtomicInteger events = new AtomicInteger();
-    player.getEvents().addListener("cycleArrow", events::incrementAndGet);
+    AtomicInteger instruments = new AtomicInteger();
+    player.getEvents().addListener("instrumentStart", instruments::incrementAndGet);
 
-    assertFalse(component.keyDown(Keys.Q));
-    assertEquals(0, events.get());
+    assertTrue(component.keyDown(Keys.Q));
+    assertEquals(1, instruments.get());
   }
 
   @Test
-  void shouldUseSelectedItemOncePerEPress() {
-    PrimaryWeapon primary = mock(PrimaryWeapon.class);
-    when(primary.isReady()).thenReturn(true);
-    KeyboardPlayerInputComponent component = new KeyboardPlayerInputComponent();
-    InventoryComponent inventory = new InventoryComponent(0);
-    Entity player =
-        new Entity()
-            .addComponent(component)
-            .addComponent(inventory)
-            .addComponent(new WeaponComponent(primary))
-            .addComponent(new ItemUseComponent());
-    player.setPosition(0f, 0f);
-    Entity cameraEntity = new Entity().addComponent(new CameraComponent(camera));
-    component.setCameraComponent(cameraEntity.getComponent(CameraComponent.class));
-    inventory.addItem(ItemType.STANDARD_ARROW, 2);
-    player.getComponent(ItemUseComponent.class).create();
+  void shouldNotStartInstrumentWhilePaused() {
+    Entity player = new Entity();
+    KeyboardPlayerInputComponent component = aimedComponent(player);
 
-    AtomicInteger shots = new AtomicInteger();
-    AtomicReference<Vector2> direction = new AtomicReference<>();
-    player
-        .getEvents()
-        .addListener(
-            "primaryAttack",
-            (Vector2 aimDirection) -> {
-              shots.incrementAndGet();
-              direction.set(aimDirection);
-            });
+    AtomicInteger instruments = new AtomicInteger();
+    player.getEvents().addListener("instrumentStart", instruments::incrementAndGet);
 
-    assertTrue(component.keyDown(Keys.E));
-    assertTrue(component.keyDown(Keys.E));
-    assertEquals(1, shots.get());
-    assertEquals(1, inventory.getItemCount(ItemType.STANDARD_ARROW));
-    assertTrue(direction.get().epsilonEquals(new Vector2(9.5f, 4.5f)));
-
-    assertTrue(component.keyUp(Keys.E));
-    assertTrue(component.keyDown(Keys.E));
-    assertEquals(2, shots.get());
-    assertEquals(0, inventory.getItemCount(ItemType.STANDARD_ARROW));
+    when(entityService.getPaused()).thenReturn(true);
+    assertTrue(component.keyDown(Keys.Q));
+    assertEquals(0, instruments.get());
   }
 
   @Test
@@ -187,7 +161,7 @@ class KeyboardPlayerInputComponentTest {
     AtomicInteger sprints = new AtomicInteger();
     AtomicInteger sprintStops = new AtomicInteger();
 
-    player.getEvents().addListener("walk", (Vector2 direction) -> walkDirection.set(direction));
+    player.getEvents().addListener("walk", walkDirection::set);
     player.getEvents().addListener("walkStop", walkStops::incrementAndGet);
     player.getEvents().addListener("jump", jumps::incrementAndGet);
     player.getEvents().addListener("sprint", sprints::incrementAndGet);
@@ -316,6 +290,11 @@ class KeyboardPlayerInputComponentTest {
     component.keyDown(Keys.D);
     component.keyUp(Keys.D);
     verifyNoMoreInteractions(body);
+
+    component.toggleCheats();
+    component.keyDown(Keys.W);
+    component.keyDown(Keys.S);
+    verifyNoMoreInteractions(body);
   }
 
   @Test
@@ -347,7 +326,7 @@ class KeyboardPlayerInputComponentTest {
   void shouldOpenAndCloseTheArrowWheelWithTab() {
     KeyboardPlayerInputComponent component = new KeyboardPlayerInputComponent();
     ArrowWheelComponent wheel = new ArrowWheelComponent();
-    Entity player = new Entity().addComponent(component).addComponent(wheel);
+    new Entity().addComponent(component).addComponent(wheel);
     wheel.create();
 
     assertTrue(component.keyDown(Keys.TAB));
@@ -365,7 +344,7 @@ class KeyboardPlayerInputComponentTest {
     Gdx.graphics = graphics;
     KeyboardPlayerInputComponent component = new KeyboardPlayerInputComponent();
     ArrowWheelComponent wheel = new ArrowWheelComponent();
-    Entity player = new Entity().addComponent(component).addComponent(wheel);
+    new Entity().addComponent(component).addComponent(wheel);
     wheel.create();
     component.keyDown(Keys.TAB);
 
@@ -375,8 +354,32 @@ class KeyboardPlayerInputComponentTest {
   }
 
   @Test
+  void shouldMeasureThePointerFromTheWheelCentreWhenTheWheelHasBeenPlaced() {
+    Graphics graphics = mock(Graphics.class);
+    when(graphics.getWidth()).thenReturn(800);
+    when(graphics.getHeight()).thenReturn(600);
+    Gdx.graphics = graphics;
+    KeyboardPlayerInputComponent component = new KeyboardPlayerInputComponent();
+    ArrowWheelComponent wheel = new ArrowWheelComponent();
+    new Entity().addComponent(component).addComponent(wheel);
+    wheel.create();
+    component.keyDown(Keys.TAB);
+    // Wheel in the bottom-left corner: 150px from the left and 450px from the top.
+    wheel.setScreenCentre(150f, 450f);
+
+    // Directly above the wheel's centre, which is nowhere near the screen centre.
+    component.mouseMoved(150, 350);
+    assertEquals(ArrowType.STANDARD, wheel.getHighlighted());
+
+    // Lower right of the wheel's centre.
+    component.mouseMoved(150 + 80, 450 + 50);
+    assertEquals(ArrowType.FIRE, wheel.getHighlighted());
+  }
+
+  @Test
   void shouldIgnoreGameplayKeysWhileShopIsOpen() {
-    ServiceLocator.registerEntityService(new EntityService());
+    EntityService shopEntities = spy(new EntityService());
+    ServiceLocator.registerEntityService(shopEntities);
     KeyboardPlayerInputComponent component = new KeyboardPlayerInputComponent();
     InventoryComponent inventory = new InventoryComponent(0);
     PlayerInteractionComponent interaction = new PlayerInteractionComponent();
@@ -399,17 +402,26 @@ class KeyboardPlayerInputComponentTest {
     AtomicInteger jumps = new AtomicInteger();
     player.getEvents().addListener("jump", jumps::incrementAndGet);
 
+    // ShopDisplay pauses on open and resumes on close. Model those events without its UI.
+    player.getEvents().addListener("openShop", () -> doReturn(true).when(shopEntities).getPaused());
+    player
+        .getEvents()
+        .addListener("closeShop", () -> doReturn(false).when(shopEntities).getPaused());
     assertTrue(interaction.interact());
+    assertTrue(shopEntities.getPaused());
     assertTrue(interaction.isShopOpen());
 
-    assertTrue(component.keyDown(Keys.E));
+    // F is no longer bound to anything, so it neither closes the shop nor uses an item.
+    assertTrue(component.keyDown(Keys.F));
+    assertTrue(interaction.isShopOpen());
     assertEquals(2, inventory.getItemCount(ItemType.STANDARD_ARROW));
     assertTrue(component.keyDown(Keys.SPACE));
     assertEquals(0, jumps.get());
     assertTrue(component.touchDown(4, 2, 0, Buttons.LEFT));
 
-    assertTrue(component.keyDown(Keys.F));
+    assertTrue(component.keyDown(Keys.E));
     assertFalse(interaction.isShopOpen());
+    assertFalse(shopEntities.getPaused());
   }
 
   @Test
@@ -481,5 +493,120 @@ class KeyboardPlayerInputComponentTest {
     assertFalse(component.isRightMouseHeld());
     assertEquals(1, cancels.get());
     assertEquals(0, stops.get());
+  }
+
+  @Test
+  void shouldTriggerMeleeOnLeftClick() {
+    KeyboardPlayerInputComponent component = new KeyboardPlayerInputComponent();
+    Entity player = new Entity().addComponent(component);
+    AtomicInteger swings = new AtomicInteger();
+    player.getEvents().addListener("meleeStart", swings::incrementAndGet);
+
+    assertTrue(component.touchDown(4, 2, 0, Buttons.LEFT));
+
+    assertEquals(1, swings.get());
+  }
+
+  @Test
+  void shouldNotStartMeleeWhileTheRightMouseButtonIsHeld() {
+    Entity player = new Entity();
+    KeyboardPlayerInputComponent component = aimedComponent(player);
+    AtomicInteger swings = new AtomicInteger();
+    player.getEvents().addListener("meleeStart", swings::incrementAndGet);
+
+    component.touchDown(4, 2, 0, Buttons.RIGHT);
+    assertTrue(component.isRightMouseHeld());
+
+    // Right-held means the player is charging a shot or hanging off the rope. Letting a swing
+    // start there would play the melee clip over the bow or rope pose, and the rope pose stops the
+    // animator every frame, so the swing would never report finishing and would latch "attacking".
+    assertFalse(component.touchDown(4, 2, 0, Buttons.LEFT));
+    assertEquals(0, swings.get());
+  }
+
+  @Test
+  void shouldAllowMeleeAgainOnceTheRightMouseButtonIsReleased() {
+    Entity player = new Entity();
+    KeyboardPlayerInputComponent component = aimedComponent(player);
+    AtomicInteger swings = new AtomicInteger();
+    player.getEvents().addListener("meleeStart", swings::incrementAndGet);
+
+    component.touchDown(4, 2, 0, Buttons.RIGHT);
+    component.touchDown(4, 2, 0, Buttons.LEFT);
+    assertEquals(0, swings.get());
+
+    component.touchUp(4, 2, 0, Buttons.RIGHT);
+    assertFalse(component.isRightMouseHeld());
+
+    assertTrue(component.touchDown(4, 2, 0, Buttons.LEFT));
+    assertEquals(1, swings.get());
+  }
+
+  @Test
+  void shouldNotStartMeleeWhilePaused() {
+    when(entityService.getPaused()).thenReturn(true);
+    KeyboardPlayerInputComponent component = new KeyboardPlayerInputComponent();
+    Entity player = new Entity().addComponent(component);
+    AtomicInteger swings = new AtomicInteger();
+    player.getEvents().addListener("meleeStart", swings::incrementAndGet);
+
+    assertFalse(component.touchDown(4, 2, 0, Buttons.LEFT));
+
+    assertEquals(0, swings.get());
+  }
+
+  @Test
+  void shouldConsumeMouseReleaseAfterDeathWhileShopStillOwnsInput() {
+    ServiceLocator.registerInputService(mock(InputService.class));
+    ServiceLocator.registerEntityService(new EntityService());
+    KeyboardPlayerInputComponent component = new KeyboardPlayerInputComponent();
+    PlayerInteractionComponent interaction = new PlayerInteractionComponent();
+    Entity player =
+        new Entity()
+            .addComponent(component)
+            .addComponent(new InventoryComponent(0))
+            .addComponent(interaction);
+    player.create();
+    Entity shop = new Entity().addComponent(new ShopNpcComponent());
+    ServiceLocator.getEntityService().register(shop);
+    assertTrue(interaction.interact());
+    player.getEvents().trigger("death");
+    AtomicInteger shots = new AtomicInteger();
+    player.getEvents().addListener("stopShoot", shots::incrementAndGet);
+    assertTrue(component.touchUp(1, 1, 0, Buttons.RIGHT));
+    assertTrue(component.touchUp(1, 1, 0, Buttons.LEFT));
+    assertEquals(0, shots.get());
+    assertFalse(component.isRightMouseHeld());
+  }
+
+  @Test
+  void shouldEnableGodModeWhenCheatsToggledOn() {
+    KeyboardPlayerInputComponent component = new KeyboardPlayerInputComponent();
+    CombatStatsComponent stats = new CombatStatsComponent(100, 0);
+    new Entity().addComponent(component).addComponent(stats);
+
+    component.toggleCheats();
+
+    assertTrue(stats.isGodMode());
+  }
+
+  @Test
+  void shouldDisableGodModeWhenCheatsToggledOff() {
+    KeyboardPlayerInputComponent component = new KeyboardPlayerInputComponent();
+    CombatStatsComponent stats = new CombatStatsComponent(100, 0);
+    new Entity().addComponent(component).addComponent(stats);
+
+    component.toggleCheats();
+    component.toggleCheats();
+
+    assertFalse(stats.isGodMode());
+  }
+
+  @Test
+  void shouldToggleCheatsWithoutCombatStats() {
+    KeyboardPlayerInputComponent component = new KeyboardPlayerInputComponent();
+    new Entity().addComponent(component);
+
+    assertDoesNotThrow(component::toggleCheats);
   }
 }
