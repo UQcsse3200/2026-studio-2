@@ -33,6 +33,7 @@ import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.GameEndDisplay;
 import com.csse3200.game.ui.GameEndState;
+import com.csse3200.game.ui.GameplayCursor;
 import com.csse3200.game.ui.terminal.Terminal;
 import com.csse3200.game.ui.terminal.TerminalDisplay;
 import java.util.List;
@@ -85,6 +86,8 @@ public class CyclopsMinigameRoomScreen extends ScreenAdapter {
   private CyclopsIntro intro;
   private final PauseMenuOverlay pauseOverlay;
   private boolean soundsPaused = false;
+  private final GameplayCursor cursor = new GameplayCursor();
+  private GameEndDisplay gameEndDisplay;
 
   public CyclopsMinigameRoomScreen(GdxGame game) {
     this.game = game;
@@ -140,6 +143,25 @@ public class CyclopsMinigameRoomScreen extends ScreenAdapter {
     renderer.render();
     pauseOverlay.afterRender();
     syncSoundsWithPause();
+    updateCursor();
+  }
+
+  /**
+   * Hides the mouse pointer while playing, as in the levels. Left click still works. It shows for
+   * the pause menu, the terminal and the game over panel, which are clicked with the mouse.
+   */
+  private void updateCursor() {
+    boolean gameOverVisible = gameEndDisplay != null && gameEndDisplay.isVisible();
+    cursor.update(null, cursorNeeded(Terminal.isAnyOpen(), gameOverVisible));
+  }
+
+  static boolean cursorNeeded(boolean terminalOpen, boolean gameOverVisible) {
+    return terminalOpen || gameOverVisible;
+  }
+
+  @Override
+  public void hide() {
+    cursor.restore();
   }
 
   /**
@@ -176,6 +198,7 @@ public class CyclopsMinigameRoomScreen extends ScreenAdapter {
   public void dispose() {
     logger.debug("Disposing minigame screen");
 
+    cursor.dispose();
     intro.dispose();
     renderer.dispose();
     cyclopsMinigameArea.dispose();
@@ -247,13 +270,14 @@ public class CyclopsMinigameRoomScreen extends ScreenAdapter {
     ServiceLocator.getCyclopsMinigameEventHandler()
         .addListener("died", CyclopsMinigameRoomScreen::showGameOver);
 
+    gameEndDisplay = new GameEndDisplay(GameEndState.LOSE);
     Entity ui = new Entity();
     ui.addComponent(new InputDecorator(stage, 10))
         .addComponent(new PerformanceDisplay())
         .addComponent(new CyclopsMinigameActions(this.game))
         .addComponent(terminal)
         .addComponent(inputComponent)
-        .addComponent(new GameEndDisplay(GameEndState.LOSE))
+        .addComponent(gameEndDisplay)
         .addComponent(new TerminalDisplay());
     ui.getEvents().addListener("mainMenu", () -> game.setScreen(GdxGame.ScreenType.MAIN_MENU));
     ui.getEvents().addListener("exitGame", game::exit);

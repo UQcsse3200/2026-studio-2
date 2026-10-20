@@ -36,6 +36,17 @@ class CyclopsMinigameRoomScreenTest {
   }
 
   @Test
+  void cursorIsHiddenWhileTheGameIsBeingPlayed() {
+    assertFalse(CyclopsMinigameRoomScreen.cursorNeeded(false, false));
+  }
+
+  @Test
+  void cursorShowsForTheTerminalAndTheGameOverPanel() {
+    assertTrue(CyclopsMinigameRoomScreen.cursorNeeded(true, false));
+    assertTrue(CyclopsMinigameRoomScreen.cursorNeeded(false, true));
+  }
+
+  @Test
   void restartReloadsCyclopsMinigameAndFiresSleep() {
     Application app = mock(Application.class);
     Gdx.app = app;
