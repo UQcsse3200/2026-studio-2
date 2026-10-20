@@ -7,7 +7,10 @@ import com.csse3200.game.components.inventory.InventoryComponent;
 import com.csse3200.game.components.item.ItemType;
 import com.csse3200.game.components.item.weapons.PrimaryWeapon;
 import com.csse3200.game.components.item.weapons.WeaponComponent;
+import com.csse3200.game.components.projectile.ArrowProjectileComponent;
+import com.csse3200.game.components.projectile.ArrowTrajectory;
 import com.csse3200.game.entities.factories.ProjectileFactory;
+import com.csse3200.game.physics.PhysicsEngine;
 import com.csse3200.game.services.ServiceLocator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -113,7 +116,7 @@ public class ItemUseComponent extends Component {
     }
     if (aimingPotion) {
       aimingPotion = false;
-      usePoisonPotion(getAimDirection());
+      usePoisonPotion(getPotionAimDirection());
     }
     entity.getEvents().trigger("grappleRelease");
     entity.getEvents().trigger("grappleDrawRelease", getAimDirection());
@@ -223,6 +226,32 @@ public class ItemUseComponent extends Component {
    */
   public boolean isAimingPotion() {
     return aimingPotion;
+  }
+
+  /** Throw direction for an aimed potion: one whose arc lands on the crosshair. */
+  private Vector2 getPotionAimDirection() {
+    Vector2 centre = entity.getCenterPosition();
+    Vector2 target = centre.cpy().add(getAimDirection());
+    return potionLaunchDirection(centre, entity.getScale().x, target);
+  }
+
+  /**
+   * Direction to throw a poison potion so that, falling under gravity, its arc passes through
+   * {@code target}. If the target is out of reach it is the throw that gets closest.
+   *
+   * @param centre the thrower's centre
+   * @param throwerWidth the thrower's width, which sets how far ahead the potion appears
+   * @param target the world point to land on
+   * @return unit throw direction
+   */
+  public static Vector2 potionLaunchDirection(Vector2 centre, float throwerWidth, Vector2 target) {
+    float speed = ProjectileFactory.POISON_POTION_SPEED;
+    float gravityY = PhysicsEngine.GRAVITY_Y * ArrowProjectileComponent.ARC_GRAVITY_SCALE;
+    // Where the potion appears depends on the throw direction, so aim once from the centre and
+    // then again from where that throw would appear.
+    Vector2 direction = ArrowTrajectory.launchDirection(centre, target, speed, gravityY);
+    Vector2 spawn = centre.cpy().mulAdd(direction, throwerWidth * POTION_SPAWN_OFFSET);
+    return ArrowTrajectory.launchDirection(spawn, target, speed, gravityY);
   }
 
   private void cancelPotionAim() {

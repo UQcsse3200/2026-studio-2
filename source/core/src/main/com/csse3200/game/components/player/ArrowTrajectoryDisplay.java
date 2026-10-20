@@ -25,6 +25,8 @@ import com.csse3200.game.ui.UIComponent;
 public class ArrowTrajectoryDisplay extends UIComponent {
   private static final int DOT_COUNT = 18;
   private static final float DOT_STEP_SECONDS = 0.06f;
+  // How close, in world units, a potion's arc must pass the crosshair to count as landing on it.
+  static final float POTION_LANDING_TOLERANCE = 1f;
   private static final float DOT_SIZE = 4.5f;
   // Opacity of the nearest dot; the rest fade out further along the arc.
   private static final float MAX_ALPHA = 0.75f;
@@ -72,27 +74,35 @@ public class ArrowTrajectoryDisplay extends UIComponent {
       return;
     }
 
-    Vector2 direction = aim.cpy().nor();
+    Vector2 centre = entity.getCenterPosition();
     Vector2 velocity;
     Vector2 start;
-    if (isDrawingBow()) {
-      velocity = direction.cpy().scl(bow.getLaunchSpeed());
+    boolean bowShot = isDrawingBow();
+    if (bowShot) {
+      velocity = aim.cpy().nor().scl(bow.getLaunchSpeed());
       start = bow.getSpawnPosition(aim);
     } else {
-      // Same launch as ItemUseComponent gives a thrown potion.
+      // Same throw as ItemUseComponent makes: lobbed so it lands on the crosshair.
+      Vector2 direction =
+          ItemUseComponent.potionLaunchDirection(
+              centre, entity.getScale().x, centre.cpy().add(aim));
       start =
-          entity
-              .getCenterPosition()
+          centre
+              .cpy()
               .mulAdd(direction, entity.getScale().x * ItemUseComponent.POTION_SPAWN_OFFSET);
-      velocity = direction.cpy().scl(ProjectileFactory.POISON_POTION_SPEED);
+      velocity = direction.scl(ProjectileFactory.POISON_POTION_SPEED);
     }
     float gravityY = PhysicsEngine.GRAVITY_Y * ArrowProjectileComponent.ARC_GRAVITY_SCALE;
-    ArrowTrajectory.compute(start, velocity, gravityY, DOT_STEP_SECONDS, points);
+    Vector2 target = centre.cpy().add(aim);
+    // Space a potion's dots over its whole flight to the crosshair, so the line reaches it however
+    // far out it is.
+    float step = bowShot ? DOT_STEP_SECONDS : potionDotStep(start, velocity, target);
+    ArrowTrajectory.compute(start, velocity, gravityY, step, points);
 
     // The aim runs from the player's centre to the crosshair, so stop the line once it gets there.
-    int visible =
-        Math.min(
-            countUntilTerrain(start), countWithinReach(entity.getCenterPosition(), aim, points));
+    // A potion is lobbed onto the crosshair, so its line ends on the dot closest to it.
+    int reach = bowShot ? countWithinReach(centre, aim, points) : countUntilLanding(target, points);
+    int visible = Math.min(countUntilTerrain(start), reach);
     for (int i = 0; i < visible; i++) {
       screen.set(points[i].x, points[i].y, 0f);
       camera.getCamera().project(screen);
@@ -144,6 +154,51 @@ public class ArrowTrajectoryDisplay extends UIComponent {
       }
     }
     return points.length;
+  }
+
+  /**
+   * Seconds between a potion's dots, so they spread over its flight to the crosshair. Never closer
+   * together than the bow's.
+   */
+  static float potionDotStep(Vector2 start, Vector2 velocity, Vector2 target) {
+    // Time to cover the horizontal gap, or the vertical one for a shot straight up or down.
+    float flight =
+        Math.abs(velocity.x) > 0.01f
+            ? Math.abs((target.x - start.x) / velocity.x)
+            : Math.abs(target.y - start.y) / Math.max(Math.abs(velocity.y), 0.01f);
+    return Math.max(DOT_STEP_SECONDS, flight / (DOT_COUNT - 1));
+  }
+
+  /**
+   * Where a potion's line should end: on the crosshair if the throw reaches it, otherwise the whole
+   * arc so the player sees where it actually lands.
+   *
+   * @param target the crosshair
+   * @param points the predicted path
+   * @return how many points to show
+   */
+  static int countUntilLanding(Vector2 target, Vector2[] points) {
+    int closest = countUntilClosest(target, points) - 1;
+    boolean reachesCrosshair = points[closest].dst(target) <= POTION_LANDING_TOLERANCE;
+    return reachesCrosshair ? closest + 1 : points.length;
+  }
+
+  /**
+   * Counts the points up to and including the one closest to {@code target}, so a line aimed to
+   * land there ends on it.
+   *
+   * @param target the point the line should end on
+   * @param points the predicted path
+   * @return how many points to show
+   */
+  static int countUntilClosest(Vector2 target, Vector2[] points) {
+    int closest = 0;
+    for (int i = 1; i < points.length; i++) {
+      if (points[i].dst2(target) < points[closest].dst2(target)) {
+        closest = i;
+      }
+    }
+    return closest + 1;
   }
 
   /** Returns how many leading points are reached before the arrow would hit terrain. */
