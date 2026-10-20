@@ -74,7 +74,7 @@ public class GdxGame extends Game {
     ThemedCursor.install();
 
     // setScreen(ScreenType.LEVEL_BOSS_GAME);
-    // setScreen(ScreenType.MAIN_MENU);
+     setScreen(ScreenType.MAIN_MENU);
     // setScreen(ScreenType.LEVEL_3_GAME);
   }
 
