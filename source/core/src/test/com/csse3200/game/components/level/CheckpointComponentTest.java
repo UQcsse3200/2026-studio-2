@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -18,6 +19,7 @@ import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.rendering.AnimationRenderComponent;
 import com.csse3200.game.rendering.RenderService;
 import com.csse3200.game.rendering.TextureRenderComponent;
+import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -189,5 +191,35 @@ public class CheckpointComponentTest {
             argThat(color -> color.equals(new Color(228f / 255f, 112f / 255f, 37f / 255f, 1f))));
     verify(light).setActive(true);
     verify(light).setActive(false);
+  }
+
+  @Test
+  void shouldPlayActivateSoundOnlyTheFirstTime() {
+    ResourceService resources = mock(ResourceService.class);
+    Sound sound = mock(Sound.class);
+    when(resources.containsAsset(CheckpointComponent.ACTIVATE_SOUND, Sound.class)).thenReturn(true);
+    when(resources.getAsset(CheckpointComponent.ACTIVATE_SOUND, Sound.class)).thenReturn(sound);
+    ServiceLocator.registerResourceService(resources);
+
+    checkpointComponent.activate();
+    checkpointComponent.deactivate();
+    checkpointComponent.activate();
+
+    verify(sound, times(1)).play(0.5f);
+  }
+
+  @Test
+  void shouldNotPlayActivateSoundForAnAlreadyCollectedCheckpoint() {
+    ResourceService resources = mock(ResourceService.class);
+    Sound sound = mock(Sound.class);
+    when(resources.containsAsset(CheckpointComponent.ACTIVATE_SOUND, Sound.class)).thenReturn(true);
+    when(resources.getAsset(CheckpointComponent.ACTIVATE_SOUND, Sound.class)).thenReturn(sound);
+    ServiceLocator.registerResourceService(resources);
+    CheckpointComponent collected = new CheckpointComponent(true, new GridPoint2(5, 5));
+    new Entity().addComponent(collected);
+
+    collected.activate();
+
+    verify(sound, never()).play(anyFloat());
   }
 }

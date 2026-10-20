@@ -35,7 +35,10 @@ public class SoundEffects {
           "sounds/level_complete.wav",
           "sounds/shop_door_creak.ogg",
           "sounds/shop_bell.ogg",
-          "sounds/shop_kaching.ogg");
+          "sounds/shop_kaching.ogg",
+          "sounds/checkpoint.ogg",
+          "sounds/necromancer_whisper.ogg",
+          "sounds/necromancer_summon.ogg");
 
   private SoundEffects() {}
 

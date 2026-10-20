@@ -28,6 +28,7 @@ import com.csse3200.game.components.TouchAttackComponent;
 import com.csse3200.game.components.lighting.PointLightComponent;
 import com.csse3200.game.components.npc.ChaseSoundComponent;
 import com.csse3200.game.components.npc.EnemyAnimationController;
+import com.csse3200.game.components.npc.SummonSoundComponent;
 import com.csse3200.game.components.tasks.ChaseTask;
 import com.csse3200.game.components.tasks.DelayedAttackTask;
 import com.csse3200.game.components.tasks.FlyingChaseTask;
@@ -386,6 +387,14 @@ class EnemyFactoryTest {
         EnemyFactory.NECROMANCER_DEATH_SOUND,
         deathSoundOf(built(() -> EnemyFactory.createNecromancer(new Entity()))));
     assertEquals(EnemyFactory.CALYPSO_DEATH_SOUND, deathSoundOf(calypso(new Entity())));
+  }
+
+  @Test
+  void shouldGiveTheNecromancerItsChaseAndSummonSounds() {
+    Entity necromancer = built(() -> EnemyFactory.createNecromancer(new Entity()));
+
+    assertNotNull(necromancer.getComponent(ChaseSoundComponent.class));
+    assertNotNull(necromancer.getComponent(SummonSoundComponent.class));
   }
 
   private static String deathSoundOf(Entity enemy) {

@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.utils.Logger;
 import com.csse3200.game.components.Component;
+import com.csse3200.game.components.SoundEffects;
 import com.csse3200.game.components.lighting.PointLightComponent;
 import com.csse3200.game.components.player.PlayerActions;
 import com.csse3200.game.entities.Entity;
@@ -12,7 +13,10 @@ import com.csse3200.game.services.ServiceLocator;
 
 public class CheckpointComponent extends Component {
 
+  static final String ACTIVATE_SOUND = "sounds/checkpoint.ogg";
+
   private boolean collected;
+  private boolean activateSoundPlayed = false;
   private final GridPoint2 position;
   private Entity player;
   private AnimationRenderComponent torchAnimator;
@@ -64,6 +68,10 @@ public class CheckpointComponent extends Component {
     }
     this.collected = true;
     entity.getEvents().trigger("checkpointActivated", position);
+    if (!activateSoundPlayed) {
+      activateSoundPlayed = true;
+      SoundEffects.play(ACTIVATE_SOUND, 0.5f);
+    }
 
     if (torchAnimator != null) {
       // Swap the existing statue to its lit frame so the unlit frame isn't left behind it.

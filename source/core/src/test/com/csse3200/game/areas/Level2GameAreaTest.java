@@ -86,6 +86,31 @@ class Level2GameAreaTest extends AbstractAreaAssetsTest {
   }
 
   @Test
+  void loadAssetsLoadsLevel2Ambience() throws Exception {
+    when(resourceService.loadForMillis(anyInt())).thenReturn(true);
+
+    invokePrivate("loadAssets");
+
+    verify(resourceService)
+        .loadMusic(
+            argThat(
+                (String[] music) ->
+                    Arrays.asList(music).contains(Level2GameArea.AMBIENCE_MUSIC)
+                        && Arrays.asList(music).contains(Level2GameArea.WATERFALL_MUSIC)));
+  }
+
+  @Test
+  void unloadAssetsUnloadsLevel2Ambience() throws Exception {
+    invokePrivate("unloadAssets");
+
+    verify(resourceService)
+        .unloadAssets(
+            argThat(
+                (String[] assets) ->
+                    Arrays.asList(assets).contains(Level2GameArea.AMBIENCE_MUSIC)));
+  }
+
+  @Test
   void unloadAssetsUnloadsAllLevel2Resources() throws Exception {
     invokePrivate("unloadAssets");
 
