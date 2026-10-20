@@ -114,7 +114,7 @@ public class LightingEngine implements Disposable {
     float totalColorWeight = 1f;
 
     if (!first.isActive()) {
-      targetRayCount = first.getOldRayCount();
+      targetRayCount = (float) first.getOldRayCount();
     } else {
       float totalRayCount = currentRayCount;
       int overlappingLights = 1;
@@ -125,22 +125,18 @@ public class LightingEngine implements Disposable {
         }
 
         float overlapStrength = getOverlapStrength(first, other);
-        if (overlapStrength <= 0f) {
-          continue;
+        if (overlapStrength > 0f) {
+          totalRayCount += smoothedRayCounts.get(other);
+          overlappingLights++;
+          nearbyLightWeight += overlapStrength;
+          totalRed += other.getSmoothedRed() * overlapStrength;
+          totalGreen += other.getSmoothedGreen() * overlapStrength;
+          totalBlue += other.getSmoothedBlue() * overlapStrength;
+          totalColorWeight += overlapStrength;
         }
-
-        totalRayCount += smoothedRayCounts.get(other);
-        overlappingLights++;
-        nearbyLightWeight += overlapStrength;
-        totalRed += other.getSmoothedRed() * overlapStrength;
-        totalGreen += other.getSmoothedGreen() * overlapStrength;
-        totalBlue += other.getSmoothedBlue() * overlapStrength;
-        totalColorWeight += overlapStrength;
       }
       targetRayCount =
-          overlappingLights == 1
-              ? first.getOldRayCount()
-              : totalRayCount / (float) overlappingLights;
+          overlappingLights == 1 ? first.getOldRayCount() : totalRayCount / overlappingLights;
     }
 
     first.setIntensity(first.isActive() ? 1f / (1f + nearbyLightWeight) : 1f);
