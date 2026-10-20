@@ -97,14 +97,36 @@ class ShopDisplayTest extends UiTestSupport {
     assertNull(findBuyButton(details));
   }
 
+  @Test
+  void shouldNotHaveABlackjackButton() {
+    ShopDisplay display = new ShopDisplay();
+    register(
+        new Entity()
+            .addComponent(new InventoryComponent(50))
+            .addComponent(new ShopComponent())
+            .addComponent(display));
+    display.open();
+    Table table = field(display, "table", Table.class);
+
+    // Blackjack is now part of the story, so the shop only has its Close button.
+    assertNotNull(findButton(table, "Close"));
+    assertNull(findButton(table, "Blackjack"));
+    assertNull(findButton(table, "Play Blackjack"));
+  }
+
   /** Finds the buy button inside the details panel, or null if no item is selected. */
   private static TextButton findBuyButton(Group root) {
+    return findButton(root, "Buy");
+  }
+
+  /** Finds a text button with the given text anywhere under root, or null if there is none. */
+  private static TextButton findButton(Group root, String text) {
     for (Actor child : root.getChildren()) {
-      if (child instanceof TextButton button && "Buy".contentEquals(button.getText())) {
+      if (child instanceof TextButton button && text.contentEquals(button.getText())) {
         return button;
       }
       if (child instanceof Group group) {
-        TextButton found = findBuyButton(group);
+        TextButton found = findButton(group, text);
         if (found != null) {
           return found;
         }

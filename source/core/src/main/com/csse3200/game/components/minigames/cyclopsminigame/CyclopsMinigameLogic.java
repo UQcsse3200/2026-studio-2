@@ -93,7 +93,17 @@ public class CyclopsMinigameLogic extends Component {
   private static final String MISS_SOUND_PATH = "sounds/minigames/cyclops/marker-miss.ogg";
   private static final float MISS_SOUND_VOLUME = 0.4f;
 
-  /* Constructors */
+  /**
+   * CyclopsMinigameLogic Component Handles all game components of the minigame
+   *
+   * @param logic - TimingBarLogic component that handles moving the sweeping marker
+   * @param display - TimingBarDisplay component that handles showing the sweeping marker and
+   *     display
+   * @param terrainComponent - TerrainComponent used to position game objects and the player within
+   *     the game
+   * @param player - Entity for the player that is used in the game area (Must have an animation
+   *     component)
+   */
   public CyclopsMinigameLogic(
       TimingBarLogic logic,
       TimingBarDisplay display,
@@ -105,41 +115,92 @@ public class CyclopsMinigameLogic extends Component {
     this.playerEntity = player;
   }
 
-  /* Getters & Setters */
+  /**
+   * set the offset of the player (the current vector location of the player)
+   *
+   * @param playerOffset - Vector2 of the current location of the player
+   */
   public void setPlayerOffset(Vector2 playerOffset) {
     this.playerOffset = playerOffset.cpy();
   }
 
+  /**
+   * Set the win position of the game area that the player moves to on winning the minigame
+   *
+   * @param winLocation - GridPoint2 location for the final place to move the player
+   */
   public void setWinLocation(GridPoint2 winLocation) {
     this.winLocation = winLocation;
   }
 
+  /**
+   * Sets the loss locations of the minigame. The positions the player moves to on unsuccessful
+   * timing minigame outcomes
+   *
+   * @param lossLocations - List of GridPoint2 locations
+   */
   public void setLossLocations(List<GridPoint2> lossLocations) {
     this.lossLocations = lossLocations;
   }
 
+  /**
+   * Sets the safe locations of the minigame. The positions the player moves to on successful timing
+   * minigame outcomes
+   *
+   * @param safeLocations - List of GridPoint2 locations
+   */
   public void setSafeLocations(List<GridPoint2> safeLocations) {
     this.safeLocations = safeLocations;
   }
 
+  /**
+   * Checks if there are more safe locations that can be moved to.
+   *
+   * @return True if more safe locations are accessible, otherwise False
+   */
   public boolean areNextSafeLocations() {
     return this.currentSafeLocation < this.safeLocations.size();
   }
 
-  /* Package Private (Used for Testing) */
+  /**
+   * (USED FOR TESTING ONLY)
+   *
+   * <p>Get the set win location of the minigame
+   *
+   * @return GridPoint2
+   */
   GridPoint2 getWinLocation() {
     return this.winLocation;
   }
 
+  /**
+   * (USED FOR TESTING ONLY)
+   *
+   * <p>Get the set loss locations of the minigame
+   *
+   * @return List of Gridpoint2
+   */
   List<GridPoint2> getLossLocations() {
     return this.lossLocations;
   }
 
+  /**
+   * (USED FOR TESTING ONLY)
+   *
+   * <p>Get the set safe locations of the minigame
+   *
+   * @return List of Gridpoint2
+   */
   List<GridPoint2> getSafeLocations() {
     return this.safeLocations;
   }
 
-  /* Player Handling Functions */
+  /**
+   * Convert the given GridPoint2 location to a Vector2 position
+   *
+   * @param location - The GridPoint2 location to convert
+   * @return a Vector2 position
+   */
   private Vector2 worldPosition(GridPoint2 location) {
     Vector2 position = terrainComponent.tileToWorldPosition(location);
     if (position == null) {
@@ -149,6 +210,11 @@ public class CyclopsMinigameLogic extends Component {
     return position.add(playerOffset);
   }
 
+  /**
+   * Moves the player entity to the given GridPoint 2 location
+   *
+   * @param location - The location to move the player to
+   */
   private void movePlayer(GridPoint2 location) {
     Vector2 worldPos = worldPosition(location);
     logger.debug("Converting GridPoint2 Location ({}) to World Position ({})", location, worldPos);
@@ -160,6 +226,15 @@ public class CyclopsMinigameLogic extends Component {
     playerEntity.setPosition(worldPos);
   }
 
+  /**
+   * Get the next move location based on the given success boolean.
+   *
+   * <p>Locations based on outcome: - True: The next safe location - True and no more safe
+   * locations: The win location - False: The next loss location
+   *
+   * @param success - Whether the player is successful at the timing minigame
+   * @return the GridPoint2 location of the next move
+   */
   GridPoint2 advanceToNextLocation(boolean success) {
     if (!success) {
       return lossLocations.get(Math.min(this.currentSafeLocation, lossLocations.size() - 1));
@@ -174,6 +249,15 @@ public class CyclopsMinigameLogic extends Component {
     return safeLocations.get(this.currentSafeLocation);
   }
 
+  /**
+   * Calculates and returns the next (smaller) size for the scoring area of the TimingBar
+   *
+   * <p>(Rocks are an object placed at every safe location)
+   *
+   * @param rockIndex - the index of the current rock position in the minigame
+   * @param rockCount - the total number of rocks in the minigame
+   * @return
+   */
   static float scoringPercentForRock(int rockIndex, int rockCount) {
     int last = Math.max(rockCount - 1, 1);
     int clampedIndex = Math.min(rockIndex, last);
@@ -181,24 +265,30 @@ public class CyclopsMinigameLogic extends Component {
         - (START_SCORING_PERCENT - END_SCORING_PERCENT) * clampedIndex / last;
   }
 
+  /**
+   * Checks whether the user has pressed a specific predefined BUTTON
+   *
+   * @return - True whether the BUTTON was pressed, otherwise False
+   */
   private boolean stopPressed() {
     return Gdx.input.isButtonJustPressed(BUTTON);
   }
 
-  /* Audio */
-
+  /** Load the sound effects used */
   private void loadSounds() {
     walkingSound = ServiceLocator.getResourceService().getAsset(WALKING_SOUND_PATH, Sound.class);
     hitSound = ServiceLocator.getResourceService().getAsset(HIT_SOUND_PATH, Sound.class);
     missSound = ServiceLocator.getResourceService().getAsset(MISS_SOUND_PATH, Sound.class);
   }
 
+  /** Play a walking sound effect on loop */
   private void playWalkingSound() {
     this.walkingSoundID = walkingSound.play();
     walkingSound.setLooping(this.walkingSoundID, true);
     walkingSound.setVolume(this.walkingSoundID, GameVolume.scale(WALKING_SOUND_VOLUME));
   }
 
+  /** Stop the playing walking sound effect */
   private void stopWalkingSound() {
     if (walkingSound == null) {
       logger.warn("Attempting to stop walking sound when walkingSound variable is null");
@@ -208,12 +298,14 @@ public class CyclopsMinigameLogic extends Component {
     logger.debug("Stopped walking sound");
   }
 
+  /** Plays a (good) hit sound effect */
   private void playMarkerHitSound() {
     this.hitSoundID = hitSound.play();
     hitSound.setVolume(this.hitSoundID, GameVolume.scale(HIT_SOUND_VOLUME));
     logger.debug("Starting hit sound (ID: {}) with volume {}", this.hitSoundID, HIT_SOUND_VOLUME);
   }
 
+  /** Stops the playing hit sound effect */
   private void stopMarkerHitSound() {
     if (hitSound == null) {
       logger.warn("Attempting to stop hit sound when hitSound variable is null");
@@ -223,6 +315,7 @@ public class CyclopsMinigameLogic extends Component {
     logger.debug("Stopped hit sound");
   }
 
+  /** Plays a (bad) miss sound effect */
   private void playMarkerMissSound() {
     this.missSoundID = missSound.play();
     missSound.setVolume(this.missSoundID, GameVolume.scale(MISS_SOUND_VOLUME));
@@ -230,6 +323,7 @@ public class CyclopsMinigameLogic extends Component {
         "Starting miss sound (ID: {}) with volume {}", this.missSoundID, MISS_SOUND_VOLUME);
   }
 
+  /** Stops the playing miss sound effect */
   private void stopMarkerMissSound() {
     if (missSound == null) {
       logger.warn("Attempting to stop miss sound when missSound variable is null");
@@ -239,6 +333,10 @@ public class CyclopsMinigameLogic extends Component {
     logger.debug("Stopped miss sound");
   }
 
+  /**
+   * Plays the correct marker sound effect (hit or miss) based on whether the sweeping timing marker
+   * is in the scoring zone
+   */
   void playCorrectMarkerSound() {
     if (this.timingBarLogic.checkHit()) {
       playMarkerHitSound();
@@ -247,16 +345,33 @@ public class CyclopsMinigameLogic extends Component {
     }
   }
 
-  /* Game Logic */
+  /**
+   * Change the state of the minigame. Sets the new State and time counter
+   *
+   * @param next
+   */
   void changeState(State next) {
     state = next;
     timeInState = 0f;
   }
 
+  /**
+   * Checks whether the time spent in the current game state is greater than the given time (in
+   * seconds)
+   *
+   * @param seconds - the time passed since changing states (in seconds)
+   * @return True if the time spent in the current game state is greater than the given time.
+   */
   boolean elapsed(float seconds) {
     return timeInState >= seconds;
   }
 
+  /**
+   * Starts the running animation of the player between the current player position and the next
+   * position based on the success boolean
+   *
+   * @param success - Whether the player was successful at the timing minigame
+   */
   private void beginRun(boolean success) {
     runSuccess = success;
     runStart = playerEntity.getPosition().cpy();
@@ -266,6 +381,12 @@ public class CyclopsMinigameLogic extends Component {
     playerEntity.getEvents().trigger("sprint");
   }
 
+  /**
+   * Handles the output of the timing minigame
+   *
+   * <p>Outcomes: - Success : Starts the timing minigame again - Success and Has Won: Sets the game
+   * state to WIN - Failure: Triggers the cyclops wake up event and moves to the CAUGHT game state
+   */
   private void handleTimingOutcome() {
     if (runSuccess) {
       if (hasWon) changeState(State.WIN);
@@ -276,6 +397,11 @@ public class CyclopsMinigameLogic extends Component {
     }
   }
 
+  /**
+   * Update the player's health with the damage done by the cyclops enemy.
+   *
+   * <p>If this killed the player, changes the game state to DEATH state
+   */
   void takeCyclopsHit() {
     if (state != State.CAUGHT) {
       return;
@@ -290,17 +416,29 @@ public class CyclopsMinigameLogic extends Component {
     changeState(playerIsDead() ? State.DEATH : State.LOSS);
   }
 
+  /** Wait for the cyclops hit animation to finish playing */
   private void waitForCyclopsHit() {
     if (elapsed(CAUGHT_TIMEOUT)) {
       takeCyclopsHit();
     }
   }
 
+  /**
+   * Check if the player has died (run out of health)
+   *
+   * @return True if the player is dead, otherwise False
+   */
   private boolean playerIsDead() {
     CombatStatsComponent combatStats = playerEntity.getComponent(CombatStatsComponent.class);
     return combatStats != null && combatStats.isDead();
   }
 
+  /**
+   * Update the PLAYING state components. Moves the sweeping marker of the timing bar until the
+   * player hits a specific button
+   *
+   * @param delta - the time passed since the last frame
+   */
   private void handlePlaying(float delta) {
     timingBarLogic.update(delta);
     if (stopPressed()) {
@@ -318,6 +456,7 @@ public class CyclopsMinigameLogic extends Component {
     return false;
   }
 
+  /** Handle the actions that occur on a successful run of the timing minigame */
   void timingSuccess() {
     if (!canForceOutcome("success")) return;
     timingBarLogic.stopMarker();
@@ -326,6 +465,7 @@ public class CyclopsMinigameLogic extends Component {
     changeState(State.MOVING);
   }
 
+  /** Handle the actions that occur on an unsuccessful run of the timing minigame */
   void timingFailure() {
     if (!canForceOutcome("failure")) return;
     timingBarLogic.stopMarker();
@@ -334,10 +474,15 @@ public class CyclopsMinigameLogic extends Component {
     changeState(State.MOVING);
   }
 
+  /**
+   * Starts the timing minigame. Shows the timing bar display after a short delay and begins moving
+   * the timing bar
+   */
   public void startMinigame() {
     changeState(State.SHOW_DELAY);
   }
 
+  /** Stops the cyclops minigame stopping all sound effects and moving components */
   public void stopMinigame() {
     changeState(State.STOP);
     timingBarLogic.stopMarker();
@@ -347,6 +492,10 @@ public class CyclopsMinigameLogic extends Component {
     stopWalkingSound();
   }
 
+  /**
+   * Restarts the cyclops minigame to the initial setup. - Moves player to the starting location -
+   * Resets the timing bar scoring area width to the starting value
+   */
   public void restartMinigame() {
     hasWon = false;
     currentSafeLocation = 0;
@@ -356,6 +505,10 @@ public class CyclopsMinigameLogic extends Component {
     startMinigame();
   }
 
+  /**
+   * Starts the player animation and moves the player from a failing location to the last safe
+   * location and starts the walking sound effect
+   */
   private void beginRetreat() {
     runStart = playerEntity.getPosition().cpy();
     runTarget = worldPosition(safeLocations.get(currentSafeLocation));
@@ -365,6 +518,10 @@ public class CyclopsMinigameLogic extends Component {
     changeState(State.RETREAT);
   }
 
+  /**
+   * Stops the player walking animation and sound effect. Resetting the cyclops enemy and returns
+   * the player to idle animation
+   */
   private void finishRetreat() {
     playerEntity.setPosition(runTarget);
     playerEntity.getEvents().trigger("sprintStop");
@@ -376,7 +533,9 @@ public class CyclopsMinigameLogic extends Component {
     startMinigame();
   }
 
-  /* Component Overrides */
+  /**
+   * Creates the CyclopsMinigameLogic and sets up the necessary event listeners for the dev commands
+   */
   @Override
   public void create() {
     loadSounds();
@@ -395,6 +554,7 @@ public class CyclopsMinigameLogic extends Component {
     this.state = State.STOP;
   }
 
+  /** Handles updating the minigame states depending on the current game state */
   @Override
   public void update() {
     float delta = ServiceLocator.getTimeSource().getDeltaTime();
@@ -417,6 +577,9 @@ public class CyclopsMinigameLogic extends Component {
     }
   }
 
+  /**
+   * Handles finishing the minigame. Triggering the "win" event in the CyclopsMinigameEventHandler
+   */
   private void finishMinigame() {
     logger.info("Player has WON the cyclops minigame");
     changeState(State.STOP);
@@ -424,12 +587,17 @@ public class CyclopsMinigameLogic extends Component {
     Gdx.app.postRunnable(() -> ServiceLocator.getCyclopsMinigameEventHandler().trigger("win"));
   }
 
+  /** Starts a delay before changing to the retreat state */
   private void waitBeforeRetreat() {
     if (elapsed(HURT_PAUSE_DELAY)) {
       beginRetreat();
     }
   }
 
+  /**
+   * Updates the animation and position of the player during the retreat state (moving back to the
+   * last safe location)
+   */
   private void updateRetreat() {
     if (elapsed(TRANSITION_DELAY)) {
       finishRetreat();
@@ -439,6 +607,10 @@ public class CyclopsMinigameLogic extends Component {
     }
   }
 
+  /**
+   * Updates death state. Overlays the transition screen cover of the game and triggers the
+   * CyclopsMinigameEventHandler's "died" event
+   */
   private void updateDeath() {
     if (elapsed(DEATH_DISPLAY_DELAY)) {
       logger.info("Player has DIED in the cyclops minigame");
@@ -448,6 +620,7 @@ public class CyclopsMinigameLogic extends Component {
     }
   }
 
+  /** Shows the TimingBarDisplay and starts the timing minigame after a short delay */
   private void showTimingBarWhenReady() {
     if (elapsed(SHOW_HIDE_DELAY)) {
       timingBarDisplay.setVisible(true);
@@ -457,6 +630,7 @@ public class CyclopsMinigameLogic extends Component {
     }
   }
 
+  /** Hides the TimingBarDisplay after a short delay */
   private void hideTimingBarWhenReady() {
     if (elapsed(SHOW_HIDE_DELAY)) {
       timingBarDisplay.setVisible(false);
@@ -464,6 +638,10 @@ public class CyclopsMinigameLogic extends Component {
     }
   }
 
+  /**
+   * Begin moving the playing and showing the running animation and sound effects after a short
+   * delay
+   */
   private void beginRunWhenReady() {
     if (elapsed(TRANSITION_DELAY_GAP)) {
       beginRun(timingBarLogic.checkHit());
@@ -471,6 +649,7 @@ public class CyclopsMinigameLogic extends Component {
     }
   }
 
+  /** Updates the player position and the player's running animation */
   private void updateRun() {
     if (elapsed(TRANSITION_DELAY)) {
       playerEntity.setPosition(runTarget);
@@ -484,6 +663,7 @@ public class CyclopsMinigameLogic extends Component {
     }
   }
 
+  /** Dispose all disposable components and stops any playing sound effects */
   @Override
   public void dispose() {
     stopMarkerHitSound();
