@@ -14,7 +14,7 @@
     "Raise your bow, hero... and aim for that mechanism."
   ],
   "portraitPaths": [
-    "images/portraits/calypsoExplaining.jpeg"
+    "images/portraits/calypsoEncouraging.jpeg"
   ],
   "steps": [
     {"mouse": ["RIGHT"]}

@@ -524,6 +524,8 @@ public class LevelsGameScreen extends BaseGameScreen {
       return;
     }
     levelCompleteQueued = true;
+    // Mark the save as completed on ending via the boss defeat path.
+    game.markSaveCompleted();
     game.playCutscene("cutscene6", GdxGame.ScreenType.MAIN_MENU);
   }
 

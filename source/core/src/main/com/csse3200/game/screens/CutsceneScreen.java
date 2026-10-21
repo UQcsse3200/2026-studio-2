@@ -37,8 +37,8 @@ import org.slf4j.LoggerFactory;
 public class CutsceneScreen extends ScreenAdapter {
   private static final Logger logger = LoggerFactory.getLogger(CutsceneScreen.class);
 
-  static final String SKIP_UP_TEXTURE = "images/Buttons/continue_up_btn.png";
-  static final String SKIP_DOWN_TEXTURE = "images/Buttons/continue_down_btn.png";
+  static final String SKIP_UP_TEXTURE = "images/Buttons/skip_up_btn.png";
+  static final String SKIP_DOWN_TEXTURE = "images/Buttons/skip_down_btn.png";
 
   /**
    * Stage input priority. Must exceed {@link CutsceneInputComponent}'s 100 so button presses reach

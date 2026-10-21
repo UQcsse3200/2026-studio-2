@@ -115,7 +115,7 @@ public class LoadSaveDisplay extends UIComponent {
         new TextureRegionDrawable(
             ServiceLocator.getResourceService()
                 .getAsset("images/ui/scroll_bg.png", Texture.class)));
-    float panelWidth = screenWidth * 0.38f;
+    float panelWidth = screenWidth * 0.52f;
     panel.add(headerLabel).padTop(pad * 1.4f).padBottom(pad * 0.6f).row();
     panel.add(hintLabel).padBottom(pad * 0.6f).row();
     panel.add(slotsTable).center().pad(pad * 0.4f).width(panelWidth).padBottom(pad * 1.2f);
@@ -123,8 +123,7 @@ public class LoadSaveDisplay extends UIComponent {
     float buttonWidth = screenWidth * 0.12f;
     float buttonHeight = screenHeight * 0.06f;
 
-    // Move the logo slightly lower to match requested layout.
-    table.add().expandY();
+
     table.row();
     table
         .add(title)
