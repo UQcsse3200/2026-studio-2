@@ -24,10 +24,14 @@ import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.input.InputDecorator;
+import com.csse3200.game.input.InputService;
 import com.csse3200.game.rendering.RenderService;
 import com.csse3200.game.rendering.Renderer;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
+import com.csse3200.game.ui.terminal.KeyboardTerminalInputComponent;
+import com.csse3200.game.ui.terminal.Terminal;
+import com.csse3200.game.ui.terminal.TerminalDisplay;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.List;
@@ -83,6 +87,7 @@ class BlackjackScreenTest {
     RenderService renderService = mock(RenderService.class);
     when(renderService.getStage()).thenReturn(mock(Stage.class));
     ServiceLocator.registerRenderService(renderService);
+    ServiceLocator.registerInputService(new InputService());
 
     Entity ui = screen.createUI();
 
@@ -90,6 +95,9 @@ class BlackjackScreenTest {
     assertNotNull(ui.getComponent(BlackjackDisplay.class));
     assertNotNull(ui.getComponent(BlackjackActions.class));
     assertNotNull(ui.getComponent(InputDecorator.class));
+    assertNotNull(ui.getComponent(Terminal.class));
+    assertNotNull(ui.getComponent(KeyboardTerminalInputComponent.class));
+    assertNotNull(ui.getComponent(TerminalDisplay.class));
   }
 
   @Test
@@ -218,6 +226,7 @@ class BlackjackScreenTest {
     RenderService renderService = mock(RenderService.class);
     when(renderService.getStage()).thenReturn(mock(Stage.class));
     ServiceLocator.registerRenderService(renderService);
+    ServiceLocator.registerInputService(new InputService());
     return screen.createUI();
   }
 

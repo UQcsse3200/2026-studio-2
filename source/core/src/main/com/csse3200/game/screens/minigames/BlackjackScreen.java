@@ -17,6 +17,8 @@ import com.csse3200.game.components.minigames.blackjack.BlackjackRulesDisplay;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.input.InputDecorator;
 import com.csse3200.game.services.ServiceLocator;
+import com.csse3200.game.ui.terminal.Terminal;
+import com.csse3200.game.ui.terminal.TerminalDisplay;
 import java.util.stream.Stream;
 
 /** Screen for the Blackjack minigame. */
@@ -53,6 +55,7 @@ public class BlackjackScreen extends MinigameScreen {
   private boolean leaving = false;
 
   private PauseMenuOverlay pauseOverlay;
+  private Terminal terminal;
   private BlackjackDisplay display;
   private boolean soundEnabled = true;
   private boolean musicPausedForMenu;
@@ -103,7 +106,9 @@ public class BlackjackScreen extends MinigameScreen {
    */
   @Override
   public void render(float delta) {
-    if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
+    // Esc is polled directly, so ignore it while the terminal is open; F1 closes the terminal.
+    boolean terminalOpen = terminal != null && terminal.isOpen();
+    if (!terminalOpen && Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
       togglePause();
     }
 
@@ -199,13 +204,18 @@ public class BlackjackScreen extends MinigameScreen {
             null,
             () -> BlackjackDialogue.startWinCutscene(game));
 
+    terminal = new Terminal(game, GdxGame.ScreenType.LEVEL_3_GAME);
     Entity ui =
         new Entity()
             .addComponent(inventoryComponent)
             .addComponent(display)
             .addComponent(new BlackjackRulesDisplay())
             .addComponent(new BlackjackActions(game))
-            .addComponent(new InputDecorator(stage, 10));
+            .addComponent(new InputDecorator(stage, 10))
+            // Debug terminal (F1), as in the levels. Blackjack leads into Level 3.
+            .addComponent(terminal)
+            .addComponent(ServiceLocator.getInputService().getInputFactory().createForTerminal())
+            .addComponent(new TerminalDisplay());
     // The pause button sits under the sound button in the display, like Esc it toggles the menu.
     ui.getEvents().addListener(BlackjackDisplay.PAUSE_REQUESTED, this::togglePause);
     return ui;
