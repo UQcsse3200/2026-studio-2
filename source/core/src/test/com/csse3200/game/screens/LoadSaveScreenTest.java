@@ -71,6 +71,13 @@ class LoadSaveScreenTest {
       // UI actors have been added to the stage.
       assertTrue(stage.getActors().size > 0);
 
+      // The display delegates rendering to Scene2D and adds no extra batch operations.
+      SpriteBatch componentBatch = mock(SpriteBatch.class);
+      int actorCount = stage.getActors().size;
+      loadSaveUi.getComponent(LoadSaveDisplay.class).draw(componentBatch);
+      verifyNoInteractions(componentBatch);
+      assertEquals(actorCount, stage.getActors().size);
+
       // Textures are loaded.
       assertTrue(resourceService.containsAsset("images/ui/title_odysseus_logo.png", Texture.class));
       assertTrue(

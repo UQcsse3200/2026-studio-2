@@ -87,6 +87,47 @@ class PhysicsContactResolutionTest {
     assertTrue(requests.isEmpty());
   }
 
+  @Test
+  void ignoresContactsMissingEitherCollider() {
+    Entity player = player();
+    Entity withoutCollider = new Entity();
+    Fixture playerFixture = fixture(player, -1f, 0.5f, -1f);
+    Fixture otherFixture = fixture(withoutCollider, 0f, 0f, 0f);
+    List<Vector2> requests = new ArrayList<>();
+    player.getEvents().<Vector2>addListener("physicsPositionRequest", requests::add);
+    Contact firstMissing = contact(otherFixture, playerFixture);
+    Contact secondMissing = contact(playerFixture, otherFixture);
+    PhysicsContactListener listener = new PhysicsContactListener();
+
+    listener.preSolve(firstMissing, null);
+    listener.preSolve(secondMissing, null);
+
+    assertTrue(requests.isEmpty());
+    verify(firstMissing, never()).setEnabled(false);
+    verify(secondMissing, never()).setEnabled(false);
+  }
+
+  @Test
+  void correctsPlayerWhenSolidGroundIsFirstFixture() {
+    Entity player = player();
+    player.getComponent(ColliderComponent.class).setLayer(PhysicsLayer.PLAYER);
+    Entity ground =
+        new Entity().addComponent(new ColliderComponent().setLayer(PhysicsLayer.GROUND));
+    List<Vector2> requests = new ArrayList<>();
+    player.getEvents().<Vector2>addListener("physicsPositionRequest", requests::add);
+    Contact contact = contact(fixture(ground, 0f, 0f, 0f), fixture(player, -1f, 0.5f, -1f));
+
+    new PhysicsContactListener().preSolve(contact, null);
+
+    assertEquals(1, requests.size());
+    assertEquals(-0.9f, requests.getFirst().x, 0.001f);
+  }
+
+  @Test
+  void doesNotLiftPlayerWhenTooFarBelowPlatformTop() {
+    assertNoCorrection(-2f, -1f);
+  }
+
   private Entity player() {
     return new Entity().addComponent(new ColliderComponent()).addComponent(new PlayerActions());
   }

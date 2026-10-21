@@ -84,4 +84,11 @@ class EdgeDetectTaskTest {
 
     assertFalse(detector.isGroundAhead(enemy, 1f));
   }
+
+  @Test
+  void shouldCountLedgesAsGroundWhenNoGroundOrObstacleIsPresent() {
+    world.addBlock(PhysicsLayer.LEDGE, 1.5f, -1f, 1f, 1f);
+
+    assertTrue(detector.isGroundAhead(enemy, 1f));
+  }
 }

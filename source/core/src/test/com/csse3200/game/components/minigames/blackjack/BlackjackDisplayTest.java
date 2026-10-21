@@ -8,18 +8,24 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener.ChangeEvent;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
+import com.csse3200.game.components.ButtonSound;
 import com.csse3200.game.components.inventory.InventoryComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.extensions.GameExtension;
@@ -32,7 +38,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.mockito.MockedStatic;
 
 @ExtendWith(GameExtension.class)
 class BlackjackDisplayTest {
@@ -259,6 +267,131 @@ class BlackjackDisplayTest {
 
     assertEquals(java.util.List.of(won), results);
     assertFalse(overlay.isVisible());
+  }
+
+  @ParameterizedTest
+  @ValueSource(booleans = {true, false})
+  void soundButtonUpdatesItsLabelAndOnlyPlaysWhenEnabled(boolean hasCallback) {
+    java.util.List<Boolean> soundStates = new java.util.ArrayList<>();
+    BlackjackDisplay display =
+        new BlackjackDisplay(
+            new Blackjack(100), new InventoryComponent(100), hasCallback ? soundStates::add : null);
+    show(display);
+    TextButton soundButton = findSoundButton(field(display, "table", Table.class));
+    assertNotNull(soundButton);
+
+    try (MockedStatic<ButtonSound> sounds = mockStatic(ButtonSound.class)) {
+      soundButton.fire(new ChangeEvent());
+      assertEquals("SOUND: OFF", soundButton.getText().toString());
+      sounds.verifyNoInteractions();
+
+      soundButton.fire(new ChangeEvent());
+      assertEquals("SOUND: ON", soundButton.getText().toString());
+      sounds.verify(ButtonSound::playClick);
+    }
+    assertEquals(hasCallback ? java.util.List.of(false, true) : java.util.List.of(), soundStates);
+  }
+
+  @ParameterizedTest
+  @CsvSource({
+    "false, false, false, true, false, false",
+    "true, false, false, false, true, false",
+    "true, false, true, true, true, false",
+    "true, true, false, true, true, true",
+    "false, true, true, true, true, false",
+    "false, true, false, true, false, true"
+  })
+  void roundStateControlsActionsAndResultVisibility(
+      boolean inProgress,
+      boolean roundOver,
+      boolean dealing,
+      boolean turnDisabled,
+      boolean newRoundDisabled,
+      boolean resultVisible) {
+    Blackjack blackjack = mock(Blackjack.class);
+    when(blackjack.getPlayerHand()).thenReturn(java.util.List.of());
+    when(blackjack.getDealerHand()).thenReturn(java.util.List.of());
+    BlackjackDisplay display = new BlackjackDisplay(blackjack, new InventoryComponent(100));
+    show(display);
+    when(blackjack.isRoundInProgress()).thenReturn(inProgress);
+    when(blackjack.isRoundOver()).thenReturn(roundOver);
+    when(blackjack.getResultMessage()).thenReturn("Push: same total.");
+    setField(display, "dealInProgress", dealing);
+
+    invokeUpdateResultOverlay(display);
+
+    assertButtonState(display, "hitButton", turnDisabled);
+    assertButtonState(display, "standButton", turnDisabled);
+    assertButtonState(display, "newRoundButton", newRoundDisabled);
+    assertButtonState(display, "backButton", false);
+    Table overlay = field(display, "resultOverlay", Table.class);
+    assertEquals(resultVisible, overlay.isVisible());
+    assertEquals(resultVisible ? Touchable.enabled : Touchable.disabled, overlay.getTouchable());
+    if (resultVisible) {
+      Label title = overlay.findActor("resultTitle");
+      Label message = overlay.findActor("resultMessage");
+      assertEquals("PUSH!", title.getText().toString());
+      assertEquals("Push: same total.", message.getText().toString());
+      int actionCount = overlay.getActions().size;
+      invokeUpdateResultOverlay(display);
+      assertEquals(actionCount, overlay.getActions().size, "Refresh must not restart the fade");
+    }
+  }
+
+  @Test
+  void resultRefreshToleratesUninitialisedUiAndMissingButtons() {
+    BlackjackDisplay display = new BlackjackDisplay(new Blackjack(100));
+    assertDoesNotThrow(() -> invokeUpdateResultOverlay(display));
+    show(display);
+    setField(display, "hitButton", null);
+    setField(display, "standButton", null);
+    setField(display, "newRoundButton", null);
+    setField(display, "backButton", null);
+
+    assertDoesNotThrow(() -> invokeUpdateResultOverlay(display));
+    assertFalse(field(display, "resultOverlay", Table.class).isVisible());
+  }
+
+  private static void assertButtonState(BlackjackDisplay display, String name, boolean disabled) {
+    ImageButton button = field(display, name, ImageButton.class);
+    assertEquals(disabled, button.isDisabled(), name);
+    assertEquals(disabled ? Touchable.disabled : Touchable.enabled, button.getTouchable(), name);
+  }
+
+  private static TextButton findSoundButton(Group group) {
+    for (Actor actor : group.getChildren()) {
+      if (actor instanceof TextButton button && button.getText().toString().startsWith("SOUND:")) {
+        return button;
+      }
+      if (actor instanceof Group child) {
+        TextButton button = findSoundButton(child);
+        if (button != null) {
+          return button;
+        }
+      }
+    }
+    return null;
+  }
+
+  private static void setField(Object object, String name, Object value) {
+    try {
+      Field field = object.getClass().getDeclaredField(name);
+      field.setAccessible(true);
+      field.set(object, value);
+    } catch (ReflectiveOperationException exception) {
+      throw new AssertionError(exception);
+    }
+  }
+
+  private static void invokeUpdateResultOverlay(BlackjackDisplay display) {
+    try {
+      java.lang.reflect.Method method =
+          BlackjackDisplay.class.getDeclaredMethod("updateResultOverlay");
+      method.setAccessible(true);
+      method.invoke(display);
+    } catch (ReflectiveOperationException exception) {
+      throw new AssertionError(exception);
+    }
   }
 
   private static void invokeTryStartRound(BlackjackDisplay display) {

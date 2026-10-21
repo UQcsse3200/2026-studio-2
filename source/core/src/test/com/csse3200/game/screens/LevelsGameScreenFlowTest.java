@@ -1,5 +1,6 @@
 package com.csse3200.game.screens;
 
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import box2dLight.RayHandler;
@@ -13,12 +14,16 @@ import com.csse3200.game.areas.Level1GameArea;
 import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.inventory.InventoryComponent;
+import com.csse3200.game.components.maingame.PauseButtonDisplay;
+import com.csse3200.game.components.maingame.PauseMenuOverlay;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.RenderFactory;
 import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.rendering.DebugRenderer;
 import com.csse3200.game.rendering.Renderer;
 import com.csse3200.game.services.ServiceLocator;
+import java.util.concurrent.atomic.AtomicReference;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -79,6 +84,62 @@ class LevelsGameScreenFlowTest {
       }
       stage.dispose();
       Gdx.app = previousApp;
+    }
+  }
+
+  @Test
+  void pauseCallbackCreatedBeforeOverlayRequestsItOnlyWhenInvoked() {
+    Stage stage = new Stage(new ScreenViewport(), mock(SpriteBatch.class));
+    Renderer renderer = mock(Renderer.class);
+    when(renderer.getCamera()).thenReturn(new CameraComponent());
+    DebugRenderer debug = mock(DebugRenderer.class);
+    when(renderer.getDebug()).thenReturn(debug);
+    Entity player =
+        new Entity()
+            .addComponent(new CombatStatsComponent(75, 100, 10))
+            .addComponent(new InventoryComponent(50));
+    AtomicReference<Runnable> pause = new AtomicReference<>();
+    LevelsGameScreen screen = null;
+    try (var renders = mockStatic(RenderFactory.class);
+        var lights = mockConstruction(RayHandler.class);
+        var overlays = mockConstruction(PauseMenuOverlay.class);
+        var buttons =
+            mockConstruction(
+                PauseButtonDisplay.class,
+                (button, context) -> {
+                  assertTrue(
+                      overlays.constructed().isEmpty(),
+                      "UI callback is created before its overlay");
+                  pause.set((Runnable) context.arguments().getFirst());
+                });
+        var areas =
+            mockConstruction(
+                Level1GameArea.class,
+                (area, context) -> {
+                  when(area.getPlayer()).thenReturn(player);
+                  when(area.getLevelChanger()).thenReturn(new Entity());
+                })) {
+      renders
+          .when(RenderFactory::createRenderer)
+          .thenAnswer(
+              call -> {
+                ServiceLocator.getRenderService().setStage(stage);
+                return renderer;
+              });
+      screen = new LevelsGameScreen(mock(GdxGame.class), false);
+      assertEquals(1, buttons.constructed().size());
+      assertEquals(1, overlays.constructed().size());
+      PauseMenuOverlay overlay = overlays.constructed().getFirst();
+      verify(overlay, never()).request();
+      assertNotNull(pause.get());
+      pause.get().run();
+      verify(overlay).request();
+    } finally {
+      if (screen != null) {
+        screen.physicsEngine.dispose();
+        screen.dispose();
+      }
+      stage.dispose();
     }
   }
 }

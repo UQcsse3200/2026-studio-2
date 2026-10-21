@@ -153,4 +153,29 @@ class SummonTaskTest {
         summoned.get(0).getPosition().epsilonEquals(summoned.get(1).getPosition(), 0.001f),
         "Skeleton Warriors should not spawn at the same position");
   }
+
+  @Test
+  void shouldIgnoreTheSummonerAndNonEnemiesWhenChoosingASpawnPosition() {
+    Entity player = new Entity();
+    Entity necromancer = new Entity();
+    necromancer.setPosition(2f, 2f);
+    ServiceLocator.getEntityService().register(necromancer);
+    Entity scenery = new Entity();
+    scenery.setPosition(3f, 2f);
+    ServiceLocator.getEntityService().register(scenery);
+    SummonTask task = new SummonTask(player, 30, 10f, 5f, "Necromancer");
+    task.create(() -> necromancer);
+    java.util.List<Entity> summoned = new java.util.ArrayList<>();
+    necromancer.getEvents().addListener("spawnEntity", (Entity spawned) -> summoned.add(spawned));
+    when(gameTime.getTime()).thenReturn(6000L);
+
+    try (var lights = mockConstruction(PointLightComponent.class);
+        var particles = mockConstruction(ParticleEffectsRenderingComponent.class)) {
+      task.update();
+    }
+
+    assertEquals(1, summoned.size());
+    assertEquals(3f, summoned.getFirst().getPosition().x, 0.001f);
+    assertEquals(2f, summoned.getFirst().getPosition().y, 0.001f);
+  }
 }
