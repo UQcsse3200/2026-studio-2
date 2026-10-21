@@ -442,6 +442,10 @@ public abstract class GameArea implements Disposable {
         cameraComponent.resize(worldBoundX, worldBoundY, (float) worldBoundX + 5);
         camera.setPosition(worldBounds.x / 2 - 5, worldBounds.y / 2 + cameraPosY / 1.3f);
         cameraComponent.setTarget(camera);
+
+        float scaleX = worldBoundX / viewportWidth;
+        float scaleY = worldBoundY / viewportHeight;
+        resizeScale = new Vector2(scaleX, scaleY);
       } else {
         float downwardShift = 4.5f;
         cameraComponent.targetGameWidth = (float) worldBoundX + 10;
@@ -449,11 +453,11 @@ public abstract class GameArea implements Disposable {
         cameraComponent.targetPosition =
             new Vector2(worldBounds.x / 2, (worldBounds.y / 2) - downwardShift);
         cameraComponent.setTarget(null);
-      }
 
-      float scaleX = cameraComponent.targetGameWidth / viewportWidth;
-      float scaleY = cameraComponent.targetGameHeight / viewportHeight;
-      resizeScale = new Vector2(scaleX, scaleY);
+        float scaleX = cameraComponent.targetGameWidth / viewportWidth;
+        float scaleY = cameraComponent.targetGameHeight / viewportHeight;
+        resizeScale = new Vector2(scaleX, scaleY);
+      }
 
       backgroundComponent.scaleEntity(resizeScale, worldBounds, true, level);
       getPlayer().getComponent(InventoryBarDisplay.class).hideBar();
