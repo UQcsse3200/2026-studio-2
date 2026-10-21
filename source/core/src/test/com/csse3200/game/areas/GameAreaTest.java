@@ -306,4 +306,36 @@ class GameAreaTest {
     last.deactivate();
     assertTrue(area.getActiveCheckpointPositions().isEmpty());
   }
+
+  @Test
+  void isCheckpointActiveMatchesBothPositionAndCollectedState() {
+    GameArea area =
+        new GameArea(new CameraComponent()) {
+          @Override
+          public void create() {
+            // Checkpoint queries do not require rendering or spawning a level.
+          }
+        };
+    area.config = mock(LevelConfig.class);
+    CheckpointComponent active = new CheckpointComponent(true, new GridPoint2(16, 37));
+    CheckpointComponent inactive = new CheckpointComponent(false, new GridPoint2(10, 6));
+    when(area.config.getCheckpoints()).thenReturn(List.of(active, inactive));
+
+    assertTrue(area.isCheckpointActive(new GridPoint2(16, 37)));
+    assertFalse(area.isCheckpointActive(new GridPoint2(10, 6)));
+    assertFalse(area.isCheckpointActive(new GridPoint2(13, 85)));
+  }
+
+  @Test
+  void deathRestartDoesNotRebuildWorldByDefault() {
+    GameArea area =
+        new GameArea(new CameraComponent()) {
+          @Override
+          public void create() {
+            // The rebuild check needs no level content.
+          }
+        };
+
+    assertFalse(area.requiresWorldResetOnDeath());
+  }
 }

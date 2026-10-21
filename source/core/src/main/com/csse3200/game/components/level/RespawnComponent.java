@@ -3,6 +3,7 @@ package com.csse3200.game.components.level;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.Component;
+import com.csse3200.game.components.player.PlayerActions;
 import com.csse3200.game.entities.Entity;
 
 public class RespawnComponent extends Component {
@@ -21,6 +22,12 @@ public class RespawnComponent extends Component {
 
     if (respawnQueued && respawnCoordinates != null) {
       entity.getEvents().trigger("grappleRelease");
+      // Any physics-helper reposition armed against the pre-teleport body must not survive the
+      // teleport: consumed afterwards it would drop the player back to where they died.
+      PlayerActions actions = entity.getComponent(PlayerActions.class);
+      if (actions != null) {
+        actions.discardPhysicsHelperRequest();
+      }
       entity.setPosition(respawnCoordinates.x, respawnCoordinates.y);
       respawnQueued = false;
       respawnCoordinates = null;

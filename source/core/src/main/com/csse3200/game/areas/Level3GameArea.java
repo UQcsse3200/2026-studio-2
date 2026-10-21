@@ -6,18 +6,24 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.csse3200.game.areas.terrain.TerrainFactory;
 import com.csse3200.game.areas.terrain.configs.levelconfigs.Level3Config;
+import com.csse3200.game.components.BossPhaseComponent;
 import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.level.RainSoundComponent;
 import com.csse3200.game.components.level.RisingWaterComponent;
+import com.csse3200.game.components.level.SpawnerComponent;
 import com.csse3200.game.components.level.ThunderSoundComponent;
 import com.csse3200.game.components.player.PlayerActions;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.ItemFactory;
 import com.csse3200.game.entities.factories.ObstacleFactory;
+import com.csse3200.game.events.listeners.EventListener0;
+import com.csse3200.game.events.listeners.EventListener1;
 import com.csse3200.game.physics.BodyUserData;
 import com.csse3200.game.rendering.*;
 import com.csse3200.game.services.ServiceLocator;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Level3GameArea extends GameArea {
   private static final String CLOUDS_TEXTURE = "images/parallax/level_1_clouds.png";
@@ -96,6 +102,30 @@ public class Level3GameArea extends GameArea {
 
   private static final String[] level3Music = {BACKGROUND_MUSIC, RainSoundComponent.RAIN_MUSIC};
 
+  /**
+   * Checkpoint 2, at the top of the arena-1 climb: a death before it would leave the player below a
+   * one-shot arena trigger whose floor (TP1) has already turned solid, so the world is rebuilt.
+   */
+  private static final GridPoint2 ARENA_2_CHECKPOINT = new GridPoint2(16, 37);
+
+  /** Calypso spawns from the level 3 boss arena's spawner, which is the last spawner config. */
+  private static final int BOSS_SPAWNER_INDEX = 5;
+
+  /** The game screen hears this on the area's event dispatcher once Calypso is on the field. */
+  public static final String BOSS_SPAWNED = "bossSpawned";
+
+  /** Forwarded from Calypso when her health drops to half: she starts changing phase. */
+  public static final String BOSS_PHASE_CHANGING = "beginBossPhaseChange";
+
+  /** Forwarded from Calypso when the phase transition ends and phase 2 is live. */
+  public static final String BOSS_PHASE_CHANGED = "bossPhaseChanged";
+
+  /** Fired on this area's dispatcher once every enemy Calypso's arena spawner produces is dead. */
+  public static final String BOSS_DEFEATED = "calypsoDefeated";
+
+  /** The level config's id for the boss arena's spawner completion. */
+  public static final String BOSS_DEFEATED_TRIGGER_ID = "bossArena";
+
   private final TerrainFactory terrainFactory;
   private final CameraComponent camera;
 
@@ -118,6 +148,7 @@ public class Level3GameArea extends GameArea {
     spawnBackground();
 
     spawnConfigEntities();
+    listenForBossSpawn();
     spawnTorches();
     spawnRisingWater();
     spawnForeground();
@@ -132,6 +163,63 @@ public class Level3GameArea extends GameArea {
     for (Entity entity : ServiceLocator.getEntityService().getEntities()) {
       toggleEntityWeather(entity);
     }
+  }
+
+  /**
+   * Reports the boss lifecycle on this area's event dispatcher, where the game screen can hear it:
+   * {@link #BOSS_SPAWNED} once Calypso's arena spawner produces her, then {@link
+   * #BOSS_PHASE_CHANGING} and {@link #BOSS_PHASE_CHANGED} forwarded off her own events.
+   *
+   * <p>The spawner entity is the last spawner the level config declares. Spawners broadcast on
+   * {@code spawnEntity} once per child and {@code activateByKey} when every child is defeated, so
+   * the spawn event can be observed without any extra component hook.
+   */
+  private void listenForBossSpawn() {
+    List<Entity> spawners = new ArrayList<>();
+    for (Entity entity : ServiceLocator.getEntityService().getEntities()) {
+      if (entity.getComponent(SpawnerComponent.class) != null) {
+        spawners.add(entity);
+      }
+    }
+    if (spawners.size() <= BOSS_SPAWNER_INDEX) {
+      return;
+    }
+
+    Entity bossSpawner = spawners.get(BOSS_SPAWNER_INDEX);
+    bossSpawner.getEvents().addListener("spawnEntity", this::onBossSpawned);
+    // The level config leaves the boss spawner without completion ids; report its completion on
+    // the area's dispatcher anyway, so the end of the fight is observable where the screen hears.
+    bossSpawner
+        .getEvents()
+        .addListener(
+            "activateByKey",
+            (String id) -> {
+              if (BOSS_DEFEATED_TRIGGER_ID.equals(id)) {
+                getEvents().trigger(BOSS_DEFEATED);
+              }
+            });
+  }
+
+  /**
+   * Forwards Calypso's phase-change events to this area's dispatcher. Wired as she spawns, so a
+   * later respawn that rebuilds the level picks up her fresh events.
+   *
+   * @param calypso the spawned entity, only adopted when it is the boss
+   */
+  private void onBossSpawned(Entity calypso) {
+    if (calypso == null || calypso.getComponent(BossPhaseComponent.class) == null) {
+      return;
+    }
+    calypso
+        .getEvents()
+        .addListener(
+            BOSS_PHASE_CHANGING, (EventListener0) () -> getEvents().trigger(BOSS_PHASE_CHANGING));
+    calypso
+        .getEvents()
+        .addListener(
+            BOSS_PHASE_CHANGED,
+            (EventListener1<Integer>) phase -> getEvents().trigger(BOSS_PHASE_CHANGED, phase));
+    getEvents().trigger(BOSS_SPAWNED);
   }
 
   /** Toggles weather on every weather-aware render component attached to the entity. */
@@ -381,10 +469,34 @@ public class Level3GameArea extends GameArea {
       return;
     }
 
+    lowerWaterToCheckpoint();
+    player.getEvents().trigger("respawnAtCheckpoint");
+  }
+
+  /**
+   * Drops the rising water back to the height stored when the last checkpoint was encountered, so a
+   * respawn point is never left below the surface.
+   */
+  private void lowerWaterToCheckpoint() {
+    if (water == null) {
+      return;
+    }
     water
         .getEvents()
         .trigger("setHeight", water.getComponent(RisingWaterComponent.class).getStoredHeight());
-    player.getEvents().trigger("respawnAtCheckpoint");
+  }
+
+  @Override
+  protected void resetHazardState() {
+    lowerWaterToCheckpoint();
+  }
+
+  @Override
+  public boolean requiresWorldResetOnDeath() {
+    // Before CP2 a plain respawn drops the player below the arena: its entry trigger has already
+    // fired once (so it can never re-arm) and the arena floor TP1 is solid, blocking re-entry.
+    // Rebuilding the level gives back the exact state the level was proven traversable in.
+    return !isCheckpointActive(ARENA_2_CHECKPOINT);
   }
 
   @Override

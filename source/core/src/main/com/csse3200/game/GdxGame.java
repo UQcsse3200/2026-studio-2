@@ -45,6 +45,12 @@ public class GdxGame extends Game {
   // in one game session.
   private boolean introStarted = false;
 
+  // Whether the movement tutorial has been completed in this session; persisted in the save so
+  // it only auto-plays once per save slot.
+  private boolean tutorialCompleted = false;
+  // Whether tutorial prompts are wanted for this save; false once tut0's offer is declined.
+  private boolean tutorialsAccepted = true;
+
   private PlayerSnapshot playerSnapshot;
 
   /**
@@ -118,12 +124,33 @@ public class GdxGame extends Game {
    * @param screenType screen type to transition to
    */
   public void transitionTo(ScreenType screenType) {
+    transitionTo(screenType, TransitionScreen.DEFAULT_FADE_DURATION);
+  }
+
+  /** Fades to a pre-created screen (used for ad-hoc end screens). */
+  public void transitionTo(Screen toScreen, float fadeDuration) {
+    if (transitioning) {
+      return;
+    }
+    logger.info("Transitioning to custom screen");
+    transitioning = true;
+    setScreen(new TransitionScreen(this, getScreen(), toScreen, fadeDuration));
+  }
+
+  /**
+   * Fades the current screen to black, swaps to the target screen, then fades back in, using the
+   * given length for each fade phase. Ignored if a transition is already in progress.
+   *
+   * @param screenType screen type to transition to
+   * @param fadeDuration length in seconds of each fade phase
+   */
+  public void transitionTo(ScreenType screenType, float fadeDuration) {
     if (transitioning) {
       return;
     }
     logger.info("Transitioning game screen to {}", screenType);
     transitioning = true;
-    setScreen(new TransitionScreen(this, getScreen(), screenType));
+    setScreen(new TransitionScreen(this, getScreen(), screenType, fadeDuration));
   }
 
   /** Starts a validated cutscene and creates the destination level after it completes. */
@@ -157,7 +184,7 @@ public class GdxGame extends Game {
     // logging for if the cutscene is not available, and fallback to level 1
     CutsceneLoader.Result result = new CutsceneLoader().load("cutscene1");
     if (!result.isSuccess()) {
-      logger.debug("Initial cutscene unavailable: {}", result.getError());
+      logger.warn("Initial cutscene unavailable, skipping to level 1: {}", result.getError());
       transitionTo(ScreenType.LEVEL_1_GAME);
       return;
     }
@@ -185,6 +212,8 @@ public class GdxGame extends Game {
     pendingSave = null;
     activeSaveSlot = slot;
     introStarted = false;
+    tutorialCompleted = false;
+    tutorialsAccepted = true;
     SaveManager.write(slot, SaveManager.newGameSave(slot));
     startInitialCutscene();
   }
@@ -210,6 +239,8 @@ public class GdxGame extends Game {
     pendingSave = save;
     activeSaveSlot = slot;
     introStarted = true;
+    tutorialCompleted = save.tutorialCompleted;
+    tutorialsAccepted = save.tutorialsAccepted;
     transitionTo(levelScreenType(save.currentLevel));
   }
 
@@ -228,6 +259,8 @@ public class GdxGame extends Game {
       SaveFile save =
           SaveManager.capture(
               activeSaveSlot, level, area.getPlayer(), area.getActiveCheckpointPositions());
+      save.tutorialCompleted = tutorialCompleted;
+      save.tutorialsAccepted = tutorialsAccepted;
       SaveManager.write(activeSaveSlot, save);
     } catch (RuntimeException e) {
       logger.warn("Autosave of slot {} failed: {}", activeSaveSlot, e.getMessage());
@@ -247,19 +280,54 @@ public class GdxGame extends Game {
     SaveManager.write(activeSaveSlot, save);
   }
 
-  /**
-   * @return whether the active save has already completed the movement tutorial.
-   */
+  /** Whether the movement tutorial has been completed in this session's save. */
   public boolean isTutorialCompleted() {
-    if (activeSaveSlot < 0) {
-      return false;
-    }
-    SaveFile save = pendingSave != null ? pendingSave : SaveManager.read(activeSaveSlot);
-    return save != null && save.tutorialCompleted;
+    return tutorialCompleted;
   }
 
-  /** Persists tutorial completion immediately, without waiting for a checkpoint autosave. */
+  /**
+   * Whether tutorial prompts are wanted for this save. False once the player declines tut0's offer,
+   * in which case no tutorial auto-plays again for this slot.
+   */
+  public boolean areTutorialsAccepted() {
+    return tutorialsAccepted;
+  }
+
+  /**
+   * Records the player accepting tut0's offer, persisting the choice when a save slot is active.
+   * The default is acceptance, so this mainly writes the explicit choice to the save.
+   */
+  public void acceptTutorials() {
+    setTutorialsAccepted(true);
+  }
+
+  /**
+   * Records the player declining tut0's offer so no tutorial prompt auto-plays for this save slot
+   * again, persisting the choice when a save slot is active.
+   */
+  public void declineTutorials() {
+    setTutorialsAccepted(false);
+  }
+
+  private void setTutorialsAccepted(boolean accepted) {
+    tutorialsAccepted = accepted;
+    if (activeSaveSlot < 0) {
+      return;
+    }
+    SaveFile save = SaveManager.read(activeSaveSlot);
+    if (save == null) {
+      return;
+    }
+    save.tutorialsAccepted = accepted;
+    SaveManager.write(activeSaveSlot, save);
+  }
+
+  /**
+   * Marks the movement tutorial done so it never auto-plays again for this save slot, persisting
+   * the flag when a save slot is active. Without one (e.g. Sandbox) the flag lasts the session.
+   */
   public void markTutorialCompleted() {
+    tutorialCompleted = true;
     if (activeSaveSlot < 0) {
       return;
     }
@@ -271,6 +339,9 @@ public class GdxGame extends Game {
     SaveManager.write(activeSaveSlot, save);
   }
 
+  /**
+   * @return whether the active save has already completed the movement tutorial.
+   */
   /**
    * Applies the loaded save's player stats (health, max health, gold, inventory) to the player
    * entity as soon as it exists. No-op when no save is being loaded or the save has no recorded
@@ -405,15 +476,15 @@ public class GdxGame extends Game {
       case SANDBOX:
         return new SandboxGameScreen(this);
       case LEVEL_2_GAME:
-        LevelsGameScreen screen2 = new LevelsGameScreen(this, false);
+        LevelsGameScreen screen2 = new LevelsGameScreen(this);
         screen2.queueAreaSwap(LEVEL_2);
         return screen2;
       case LEVEL_3_GAME:
-        LevelsGameScreen screen3 = new LevelsGameScreen(this, false);
+        LevelsGameScreen screen3 = new LevelsGameScreen(this);
         screen3.queueAreaSwap(LEVEL_3);
         return screen3;
       case LEVEL_BOSS_GAME:
-        LevelsGameScreen bossScreen = new LevelsGameScreen(this, false);
+        LevelsGameScreen bossScreen = new LevelsGameScreen(this);
         bossScreen.queueAreaSwap("boss");
         return bossScreen;
       case SETTINGS:

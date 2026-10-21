@@ -19,6 +19,7 @@ public class CheckpointComponent extends Component {
   private boolean activateSoundPlayed = false;
   private final GridPoint2 position;
   private Entity player;
+  private PlayerActions playerActions;
   private AnimationRenderComponent torchAnimator;
   private PointLightComponent pointLightComponent;
 
@@ -111,15 +112,23 @@ public class CheckpointComponent extends Component {
     }
     if (player == null) {
       for (Entity candidate : ServiceLocator.getEntityService().getEntities()) {
-        if (candidate.getComponent(PlayerActions.class) != null) {
+        PlayerActions actions = candidate.getComponent(PlayerActions.class);
+        if (actions != null) {
           player = candidate;
+          playerActions = actions;
           break;
         }
       }
     }
 
     // The player may not have been registered yet.
-    if (player == null) {
+    if (player == null || playerActions == null) {
+      return;
+    }
+
+    // A dead player's body can be shoved into a checkpoint by enemies; respawning must not
+    // silently retarget to wherever the corpse ended up.
+    if (playerActions.isDead()) {
       return;
     }
 

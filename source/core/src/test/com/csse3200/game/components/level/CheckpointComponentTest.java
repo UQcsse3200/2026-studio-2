@@ -130,6 +130,26 @@ public class CheckpointComponentTest {
   }
 
   @Test
+  void shouldNotActivateWhileThePlayerIsDead() {
+    PlayerActions deadActions = mock(PlayerActions.class);
+    when(deadActions.isDead()).thenReturn(true);
+    Entity deadPlayer = new Entity().addComponent(deadActions);
+    deadPlayer.setPosition(10, 10);
+    Array<Entity> nearby = new Array<>();
+    nearby.add(deadPlayer);
+    when(entityService.getEntities()).thenReturn(nearby);
+
+    // Enemies shove the corpse onto the checkpoint; respawning must not retarget there.
+    checkpointComponent.update();
+    assertFalse(checkpointComponent.isActive());
+
+    // Once revived, the same spot activates normally.
+    when(deadActions.isDead()).thenReturn(false);
+    checkpointComponent.update();
+    assertTrue(checkpointComponent.isActive());
+  }
+
+  @Test
   void shouldContinueSearchingUntilItFindsThePlayer() {
     Array<Entity> candidates = new Array<>();
     candidates.add(new Entity());

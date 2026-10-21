@@ -1,0 +1,29 @@
+{
+  "xPos": 20,
+  "yPos": 150,
+  "textColour": "Color.BLACK",
+  "backgroundColour": "Color.TAN",
+  "borderColour": "Color.BROWN",
+  "charsPerSecond": 30,
+  "maxWidth": 320,
+  "padding": 16,
+  "borderThickness": 3,
+  "fontPath": "flat-earth/skin/fonts/PixeloidSans.fnt",
+  "textAlignment": "left",
+  "autoDismissSeconds": 5,
+  "pages": [
+    "Why dont you listen to me?",
+    "I thought... you had come to love me as much as I loved you",
+    "No... I refuse to lose you..."
+  ],
+  "portraitPaths": [
+    "images/portraits/calypsoArgumentative.jpeg",
+    "images/portraits/calypsoRegret.jpeg",
+    "images/portraits/calypsoArgumentative.jpeg"
+  ],
+  "steps": [
+    {"keys": ["TAB"]},
+    {"keys": ["TAB"]},
+    {"keys": ["TAB"]}
+  ]
+}
