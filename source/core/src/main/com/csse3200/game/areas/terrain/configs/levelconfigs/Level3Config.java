@@ -457,7 +457,7 @@ public class Level3Config extends LevelConfig {
               new GridPoint2(18, 100),
               spawnerConfig[4],
               new String[] {BOSS_ARENA},
-              new String[] {}),
+              new String[] {BOSS_ARENA}),
         };
 
     mapTriggers =
