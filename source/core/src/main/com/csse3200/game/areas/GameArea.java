@@ -437,39 +437,34 @@ public abstract class GameArea implements Disposable {
       viewportHeight = cameraComponent.getCamera().viewportHeight;
 
       Entity camera = new Entity();
+      float downwardShift = 4.5f;
       if (level.equals("level3")) {
         float cameraPosY = cameraComponent.getCamera().position.y;
-        cameraComponent.resize(worldBoundX, worldBoundY, (float) worldBoundX + 5);
-        camera.setPosition(worldBounds.x / 2 - 5, worldBounds.y / 2 + cameraPosY / 1.3f);
+        cameraComponent.targetGameWidth = (float) worldBoundX + 5;
+        cameraComponent.targetGameHeight = (float) worldBoundY;
+        cameraComponent.targetPosition =
+            new Vector2(
+                worldBounds.x / 2 - 5, (worldBounds.y / 2 + cameraPosY / 1.3f) - downwardShift);
         cameraComponent.setTarget(camera);
-
-        float scaleX = worldBoundX / viewportWidth;
-        float scaleY = worldBoundY / viewportHeight;
-        resizeScale = new Vector2(scaleX, scaleY);
       } else {
-        float downwardShift = 4.5f;
         cameraComponent.targetGameWidth = (float) worldBoundX + 10;
         cameraComponent.targetGameHeight = cameraComponent.targetGameWidth * currentRatio;
         cameraComponent.targetPosition =
             new Vector2(worldBounds.x / 2, (worldBounds.y / 2) - downwardShift);
         cameraComponent.setTarget(null);
-
-        float scaleX = cameraComponent.targetGameWidth / viewportWidth;
-        float scaleY = cameraComponent.targetGameHeight / viewportHeight;
-        resizeScale = new Vector2(scaleX, scaleY);
       }
+
+      float scaleX = cameraComponent.targetGameWidth / viewportWidth;
+      float scaleY = cameraComponent.targetGameHeight / viewportHeight;
+      resizeScale = new Vector2(scaleX, scaleY);
 
       backgroundComponent.scaleEntity(resizeScale, worldBounds, true, level);
       getPlayer().getComponent(InventoryBarDisplay.class).hideBar();
       getPlayer().getComponent(PlayerStatsDisplay.class).hide();
     } else {
-      if (level.equals("level3")) {
-        cameraComponent.resize((int) viewportWidth, (int) viewportHeight, viewportWidth);
-      } else {
-        cameraComponent.targetGameWidth = viewportWidth;
-        cameraComponent.targetGameHeight = viewportHeight;
-        cameraComponent.targetPosition.set(getPlayer().getPosition());
-      }
+      cameraComponent.targetGameWidth = viewportWidth;
+      cameraComponent.targetGameHeight = viewportHeight;
+      cameraComponent.targetPosition.set(getPlayer().getPosition());
 
       cameraComponent.setTarget(getPlayer());
       backgroundComponent.scaleEntity(resizeScale, worldBounds, false, level);
@@ -477,10 +472,7 @@ public abstract class GameArea implements Disposable {
       getPlayer().getComponent(PlayerStatsDisplay.class).show();
     }
     mapToggled = !mapToggled;
-
-    if (!level.equals("level3")) {
-      cameraComponent.requestZoom();
-    }
+    cameraComponent.requestZoom();
   }
 
   public boolean isMapToggled() {

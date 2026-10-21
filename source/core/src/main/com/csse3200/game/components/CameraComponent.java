@@ -41,10 +41,6 @@ public class CameraComponent extends Component {
 
   @Override
   public void update() {
-    //    if (this.target == null) {
-    //      return;
-    //    }
-
     if (requestedZoom) {
       startZoom();
     }
