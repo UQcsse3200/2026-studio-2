@@ -337,7 +337,7 @@ public class ArrowProjectileComponent extends Component {
         && ServiceLocator.getResourceService().containsAsset(POTION_SMASH_SOUND, Sound.class)) {
       ServiceLocator.getResourceService()
           .getAsset(POTION_SMASH_SOUND, Sound.class)
-          .play(GameVolume.scale(0.3f));
+          .play(GameVolume.scale(0.45f));
     }
     ServiceLocator.getEntityService().scheduleRemoval(entity);
   }

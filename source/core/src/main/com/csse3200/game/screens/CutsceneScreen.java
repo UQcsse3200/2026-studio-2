@@ -18,6 +18,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Scaling;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.csse3200.game.GdxGame;
+import com.csse3200.game.components.ButtonSound;
 import com.csse3200.game.components.GameVolume;
 import com.csse3200.game.components.TextBoxComponent;
 import com.csse3200.game.cutscene.CutsceneLoader;
@@ -127,6 +128,7 @@ public class CutsceneScreen extends ScreenAdapter {
     if (musicPath != null && !musicPath.isBlank()) {
       resourceService.loadMusic(new String[] {musicPath});
     }
+    ButtonSound.load(resourceService);
     resourceService.loadAll();
 
     sceneImage = new Image();
@@ -174,6 +176,7 @@ public class CutsceneScreen extends ScreenAdapter {
         new ChangeListener() {
           @Override
           public void changed(ChangeEvent event, Actor actor) {
+            ButtonSound.playClick();
             skipCutscene();
           }
         });

@@ -47,7 +47,7 @@ public enum ItemType {
       0.3f,
       0,
       true,
-      10f,
+      3f,
       5f,
       0f,
       0f,

@@ -2,10 +2,14 @@ package com.csse3200.game.components.maingame;
 
 import com.badlogic.gdx.audio.Music;
 import com.csse3200.game.GdxGame;
+import com.csse3200.game.areas.Level1GameArea;
+import com.csse3200.game.areas.Level2GameArea;
+import com.csse3200.game.components.level.RainSoundComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.BlurredBackdropDisplay;
 import com.csse3200.game.ui.ScreenBlur;
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,9 +24,22 @@ public class PauseMenuOverlay {
   private boolean openRequested = false;
   private Entity overlay;
   private GdxGame game;
+  private final boolean showControls;
+  private final String settingsBackground;
 
   public PauseMenuOverlay(GdxGame game) {
+    this(game, true, null);
+  }
+
+  /**
+   * @param game the game
+   * @param showControls whether the pause menu shows a Controls button
+   * @param settingsBackground the background for the settings screen, or null for the usual one
+   */
+  public PauseMenuOverlay(GdxGame game, boolean showControls, String settingsBackground) {
     this.game = game;
+    this.showControls = showControls;
+    this.settingsBackground = settingsBackground;
   }
 
   /** Asks for the wheel to open. It appears at the end of the current frame. */
@@ -53,7 +70,7 @@ public class PauseMenuOverlay {
   private void open() {
     open = true;
     BlurredBackdropDisplay backdrop = new BlurredBackdropDisplay(ScreenBlur.capture());
-    PauseMenuDisplay display = new PauseMenuDisplay(game);
+    PauseMenuDisplay display = new PauseMenuDisplay(game, showControls, settingsBackground);
 
     overlay =
         new Entity()
@@ -79,6 +96,16 @@ public class PauseMenuOverlay {
       Music gameplay =
           ServiceLocator.getResourceService().getAsset("sounds/gameplay_bg.ogg", Music.class);
       gameplay.play();
+      for (String ambience :
+          List.of(
+              Level1GameArea.AMBIENCE_MUSIC,
+              Level2GameArea.AMBIENCE_MUSIC,
+              Level2GameArea.WATERFALL_MUSIC,
+              RainSoundComponent.RAIN_MUSIC)) {
+        if (ServiceLocator.getResourceService().containsAsset(ambience, Music.class)) {
+          ServiceLocator.getResourceService().getAsset(ambience, Music.class).play();
+        }
+      }
     } catch (Exception ignored) {
       logger.warn("Could not switch pause menu music", ignored);
     }

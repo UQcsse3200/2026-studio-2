@@ -59,6 +59,7 @@ public class Level2GameArea extends GameArea {
     "images/terrain/Level_2/level_2_tile.png",
     "images/terrain/Level_2/level_2_platform.png",
     "images/terrain/Level_2/level_2_spikes.png",
+    "images/terrain/Level_2/Level_2_torch.png",
 
     // Transparent texture used for the physics-only floor
     "images/ui/transparent.png",
@@ -98,7 +99,10 @@ public class Level2GameArea extends GameArea {
 
   private static final String BACKGROUND_MUSIC = "sounds/BGM_03_mp3.mp3";
 
-  private static final String[] level2Music = {BACKGROUND_MUSIC};
+  public static final String AMBIENCE_MUSIC = "sounds/level2_ambience.ogg";
+  public static final String WATERFALL_MUSIC = "sounds/level2_waterfall.ogg";
+
+  private static final String[] level2Music = {BACKGROUND_MUSIC, AMBIENCE_MUSIC, WATERFALL_MUSIC};
 
   private final TerrainFactory terrainFactory;
   private final CameraComponent camera;
@@ -107,6 +111,7 @@ public class Level2GameArea extends GameArea {
     super(camera);
 
     config = new Level2Config(player);
+    torchTexture = "images/terrain/Level_2/Level_2_torch.png";
 
     this.terrainFactory = terrainFactory;
     this.camera = camera;
@@ -116,6 +121,8 @@ public class Level2GameArea extends GameArea {
   @Override
   public void create() {
     loadAssets();
+    playLoopingMusic(AMBIENCE_MUSIC, 0.15f);
+    playLoopingMusic(WATERFALL_MUSIC, 0.5f);
     displayUI();
 
     spawnTerrain();
@@ -190,16 +197,16 @@ public class Level2GameArea extends GameArea {
 
   private void spawnTorches() {
     GridPoint2[] torchSpawns = {
-      new GridPoint2(10, 41),
+      new GridPoint2(10, 40),
       new GridPoint2(2, 8),
-      new GridPoint2(10, 8),
+      new GridPoint2(12, 8),
       new GridPoint2(37, 28),
       new GridPoint2(43, 8),
       new GridPoint2(38, 8),
     };
 
     for (GridPoint2 pos : torchSpawns) {
-      spawnEntityAt(ObstacleFactory.createTorch(), pos, true, false);
+      spawnEntityAt(ObstacleFactory.createTorch(torchTexture), pos, true, false);
     }
   }
 
@@ -223,6 +230,14 @@ public class Level2GameArea extends GameArea {
   public void dispose() {
     super.dispose();
     ServiceLocator.getResourceService().getAsset(BACKGROUND_MUSIC, Music.class).stop();
+    Music ambience = ServiceLocator.getResourceService().getAsset(AMBIENCE_MUSIC, Music.class);
+    if (ambience != null) {
+      ambience.stop();
+    }
+    Music waterfall = ServiceLocator.getResourceService().getAsset(WATERFALL_MUSIC, Music.class);
+    if (waterfall != null) {
+      waterfall.stop();
+    }
     this.unloadAssets();
   }
 }

@@ -9,8 +9,10 @@ import com.csse3200.game.areas.terrain.configs.levelconfigs.Level3Config;
 import com.csse3200.game.components.BossPhaseComponent;
 import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.components.CombatStatsComponent;
+import com.csse3200.game.components.level.RainSoundComponent;
 import com.csse3200.game.components.level.RisingWaterComponent;
 import com.csse3200.game.components.level.SpawnerComponent;
+import com.csse3200.game.components.level.ThunderSoundComponent;
 import com.csse3200.game.components.player.PlayerActions;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.ItemFactory;
@@ -59,9 +61,7 @@ public class Level3GameArea extends GameArea {
     // Level 3 ground tile
     "images/terrain/Level_3/tile-level3.png",
     "images/terrain/Level_3/water tile.png",
-
-    // Torches
-    "images/terrain/Level_3/water tile.png",
+    "images/terrain/Level_3/Level_3_torch.png",
 
     // Transparent texture used for the physics-only floor
     "images/ui/transparent.png",
@@ -94,11 +94,13 @@ public class Level3GameArea extends GameArea {
     "images/enemies/calypso.atlas"
   };
 
-  private static final String[] level3Sounds = {"sounds/Impact4.ogg"};
+  private static final String[] level3Sounds = {
+    "sounds/Impact4.ogg", ThunderSoundComponent.CLOSE_THUNDER, ThunderSoundComponent.FAR_THUNDER
+  };
 
   private static final String BACKGROUND_MUSIC = "sounds/BGM_03_mp3.mp3";
 
-  private static final String[] level3Music = {BACKGROUND_MUSIC};
+  private static final String[] level3Music = {BACKGROUND_MUSIC, RainSoundComponent.RAIN_MUSIC};
 
   /**
    * Checkpoint 2, at the top of the arena-1 climb: a death before it would leave the player below a
@@ -131,6 +133,7 @@ public class Level3GameArea extends GameArea {
     super(camera);
 
     config = new Level3Config(player, camera);
+    torchTexture = "images/terrain/Level_3/Level_3_torch.png";
 
     this.terrainFactory = terrainFactory;
     this.camera = camera;
@@ -150,6 +153,9 @@ public class Level3GameArea extends GameArea {
     spawnRisingWater();
     spawnForeground();
     activateWeather();
+    playLoopingMusic(RainSoundComponent.RAIN_MUSIC, 0.25f);
+    spawnEntity(new Entity().addComponent(new RainSoundComponent(player)));
+    spawnEntity(new Entity().addComponent(new ThunderSoundComponent()));
     player.setPosition(new Vector2(config.getPlayerSpawn().x, config.getPlayerSpawn().y));
   }
 
@@ -428,7 +434,7 @@ public class Level3GameArea extends GameArea {
   private void spawnTorches() {
     GridPoint2[] guideTorches = {
       new GridPoint2(19, 11),
-      new GridPoint2(18, 16),
+      new GridPoint2(18, 15),
       new GridPoint2(5, 22),
       new GridPoint2(7, 28),
       new GridPoint2(11, 37),
@@ -437,7 +443,7 @@ public class Level3GameArea extends GameArea {
       new GridPoint2(17, 68),
       new GridPoint2(14, 81),
       new GridPoint2(26, 85),
-      new GridPoint2(11, 95),
+      new GridPoint2(11, 94),
       new GridPoint2(3, 107),
       new GridPoint2(23, 107),
       new GridPoint2(3, 101),
@@ -445,7 +451,7 @@ public class Level3GameArea extends GameArea {
     };
 
     for (GridPoint2 pos : guideTorches) {
-      spawnEntityAt(ObstacleFactory.createTorch(), pos, true, false);
+      spawnEntityAt(ObstacleFactory.createTorch(torchTexture), pos, true, false);
     }
   }
 
@@ -547,6 +553,11 @@ public class Level3GameArea extends GameArea {
   public void dispose() {
     super.dispose();
     ServiceLocator.getResourceService().getAsset(BACKGROUND_MUSIC, Music.class).stop();
+    Music rain =
+        ServiceLocator.getResourceService().getAsset(RainSoundComponent.RAIN_MUSIC, Music.class);
+    if (rain != null) {
+      rain.stop();
+    }
     this.unloadAssets();
   }
 }

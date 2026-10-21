@@ -70,7 +70,7 @@ class PlayerJumpSoundTest {
     player.update();
 
     assertTrue(player.getComponent(PhysicsComponent.class).getBody().getLinearVelocity().y > 0f);
-    verify(sound).play(0.5f);
+    verify(sound).play(0.75f);
   }
 
   @Test
@@ -79,7 +79,7 @@ class PlayerJumpSoundTest {
 
     player.getEvents().trigger("jump");
 
-    verify(sound, never()).play(0.5f);
+    verify(sound, never()).play(0.75f);
   }
 
   @Test
@@ -92,7 +92,7 @@ class PlayerJumpSoundTest {
     player.getEvents().trigger("jump");
     player.getEvents().trigger("jump");
 
-    verify(sound).play(0.5f);
+    verify(sound).play(0.75f);
   }
 
   @Test
@@ -102,7 +102,7 @@ class PlayerJumpSoundTest {
 
     player.getEvents().trigger("jump");
 
-    verify(sound, never()).play(0.5f);
+    verify(sound, never()).play(0.75f);
   }
 
   @Test
@@ -122,7 +122,7 @@ class PlayerJumpSoundTest {
 
     assertFalse(grapple.isAttached());
     assertTrue(player.getComponent(PhysicsComponent.class).getBody().getLinearVelocity().y > 0f);
-    verify(sound).play(0.5f);
+    verify(sound).play(0.75f);
     assertFalse(groundTakeoff.get());
   }
 

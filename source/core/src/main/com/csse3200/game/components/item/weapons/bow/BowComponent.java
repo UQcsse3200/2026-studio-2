@@ -209,7 +209,7 @@ public class BowComponent extends Component implements PrimaryWeapon {
         && ServiceLocator.getResourceService().containsAsset(ATTACK_SOUND, Sound.class)) {
       Sound attackSound = ServiceLocator.getResourceService().getAsset(ATTACK_SOUND, Sound.class);
       if (attackSound != null) {
-        attackSound.play(GameVolume.scale(1f));
+        attackSound.play(GameVolume.scale(0.5f));
       }
     }
 

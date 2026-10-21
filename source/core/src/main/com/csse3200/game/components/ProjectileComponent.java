@@ -2,6 +2,7 @@ package com.csse3200.game.components;
 
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.csse3200.game.physics.PhysicsLayer;
+import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.physics.components.PhysicsMovementComponent;
 import com.csse3200.game.services.ServiceLocator;
 
@@ -12,6 +13,11 @@ public class ProjectileComponent extends Component {
   private float previousDistanceToTarget = Float.MAX_VALUE;
   private float timeAlive = 0f;
   private static final float ARM_TIME = 0.15f;
+
+  // Remove projectiles that arent moving: Constants
+  private float stationaryTime = 0f;
+  private static final float STATIONARY_SPEED_THRESHOLD = 0.05f;
+  private static final float STATIONARY_TIMEOUT = 0.05f;
 
   /**
    * Creates a projectile component.
@@ -37,6 +43,21 @@ public class ProjectileComponent extends Component {
     if (remainingLifetime <= 0f) {
       ServiceLocator.getEntityService().scheduleForDisposal(entity);
       return;
+    }
+
+    // Remove projectiles that arent moving
+    PhysicsComponent physics = entity.getComponent(PhysicsComponent.class);
+    if (physics != null) {
+      float speed = physics.getBody().getLinearVelocity().len();
+      if (timeAlive >= ARM_TIME && speed < STATIONARY_SPEED_THRESHOLD) {
+        stationaryTime += deltaTime;
+      } else {
+        stationaryTime = 0f;
+      }
+      if (stationaryTime >= STATIONARY_TIMEOUT) {
+        ServiceLocator.getEntityService().scheduleForDisposal(entity);
+        return;
+      }
     }
 
     if (movementComponent != null && movementComponent.getTarget() != null) {

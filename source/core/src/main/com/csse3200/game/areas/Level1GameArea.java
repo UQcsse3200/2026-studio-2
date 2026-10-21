@@ -10,6 +10,7 @@ import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.components.Component;
 import com.csse3200.game.components.gamearea.GameAreaDisplay;
 import com.csse3200.game.components.level.DesertHazardRecoveryComponent;
+import com.csse3200.game.components.level.SeagullSoundComponent;
 import com.csse3200.game.components.player.KeyboardPlayerInputComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.EnemyFactory;
@@ -20,6 +21,7 @@ import com.csse3200.game.entities.factories.PlayerFactory;
 import com.csse3200.game.rendering.BackgroundRenderComponent;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.List;
+import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -82,7 +84,7 @@ public class Level1GameArea extends GameArea {
     "images/terrain/Level_1/Level_1_tile.png",
     "images/terrain/Level_1/Level_1_platform.png",
     "images/terrain/Level_1/Level_1_Spike.png",
-    "images/terrain/Level_3/water tile.png",
+    "images/terrain/Level_1/Level_1_torch.png",
 
     // Parallax background layers
     "images/parallax/original_background.png",
@@ -134,11 +136,15 @@ public class Level1GameArea extends GameArea {
     "images/enemies/calypso.atlas",
   };
 
-  private static final String[] forestSounds = {"sounds/Impact4.ogg"};
+  private static final String[] forestSounds =
+      Stream.concat(Stream.of("sounds/Impact4.ogg"), SeagullSoundComponent.CLIPS.stream())
+          .toArray(String[]::new);
 
   private static final String BACKGROUND_MUSIC = "sounds/BGM_03_mp3.mp3";
 
-  private static final String[] forestMusic = {BACKGROUND_MUSIC};
+  public static final String AMBIENCE_MUSIC = "sounds/level1_ambience.ogg";
+
+  private static final String[] forestMusic = {BACKGROUND_MUSIC, AMBIENCE_MUSIC};
 
   private final TerrainFactory terrainFactory;
   private final CameraComponent camera;
@@ -161,6 +167,8 @@ public class Level1GameArea extends GameArea {
   @Override
   public void create() {
     loadAssets();
+    playLoopingMusic(AMBIENCE_MUSIC, 0.15f);
+    spawnEntity(new Entity().addComponent(new SeagullSoundComponent()));
     displayUI();
 
     spawnTerrain();
@@ -270,14 +278,14 @@ public class Level1GameArea extends GameArea {
       new GridPoint2(7, 16),
       new GridPoint2(19, 17),
       new GridPoint2(43, 17),
-      new GridPoint2(57, 11),
+      new GridPoint2(57, 10),
       new GridPoint2(58, 1),
-      new GridPoint2(69, 1),
+      new GridPoint2(65, 1),
       new GridPoint2(83, 17),
     };
 
     for (GridPoint2 pos : torchSpawns) {
-      spawnEntityAt(ObstacleFactory.createTorch(), pos, true, false);
+      spawnEntityAt(ObstacleFactory.createTorch(torchTexture), pos, true, false);
     }
   }
 
@@ -341,6 +349,7 @@ public class Level1GameArea extends GameArea {
     player.getEvents().trigger("grappleRelease");
     super.dispose();
     ServiceLocator.getResourceService().getAsset(BACKGROUND_MUSIC, Music.class).stop();
+    ServiceLocator.getResourceService().getAsset(AMBIENCE_MUSIC, Music.class).stop();
     this.unloadAssets();
   }
 }
