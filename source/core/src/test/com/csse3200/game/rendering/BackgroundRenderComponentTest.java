@@ -126,10 +126,8 @@ public class BackgroundRenderComponentTest {
     when(gameArea.getPlayer()).thenReturn(player);
     when(player.getComponent(InventoryBarDisplay.class)).thenReturn(inventoryBarDisplay);
     when(player.getComponent(PlayerStatsDisplay.class)).thenReturn(playerStatsDisplay);
+    when(player.getPosition()).thenReturn(new Vector2(10f, 10f));
 
-    if (!level.equals("level3")) {
-      when(player.getPosition()).thenReturn(new Vector2(10f, 10f));
-    }
 
     when(background.getScalingBackground()).thenReturn(false);
 
