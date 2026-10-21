@@ -401,7 +401,7 @@ public class EnemyFactory {
     // phase2
     calypso
         .getComponent(AITaskComponent.class)
-        .addTask(new TimerAttackTask(target, 25, 100, CALYPSO_LASER_WINDUP, 40, 0, 15))
+        .addTask(new TimerAttackTask(target, 25, 100, CALYPSO_LASER_WINDUP, 4, 0, 15))
         .addTask(new SummonTask(target, 30, config.attackRange, 5f, "Calypso"));
 
     return calypso;

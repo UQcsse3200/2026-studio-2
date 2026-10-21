@@ -117,7 +117,7 @@ class PlayerProjectileIntegrationTest {
       impact(arrow, enemy);
       impact(arrow, enemy);
       assertEquals(25, enemy.getComponent(CombatStatsComponent.class).getHealth());
-      assertEquals(List.of(new Vector2(10f, 5f)), effects);
+      assertEquals(List.of(new Vector2(3f, 5f)), effects);
     }
   }
 

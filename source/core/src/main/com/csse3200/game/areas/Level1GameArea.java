@@ -282,7 +282,7 @@ public class Level1GameArea extends GameArea {
     };
 
     for (GridPoint2 pos : torchSpawns) {
-      spawnEntityAt(ObstacleFactory.createTorch(TORCH_TEXTURE), pos, true, false);
+      spawnEntityAt(ObstacleFactory.createTorch(torchTexture), pos, true, false);
     }
   }
 

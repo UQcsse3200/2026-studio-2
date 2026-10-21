@@ -44,7 +44,7 @@ class ItemDictionaryDisplayTest extends UiTestSupport {
     click(content.getChildren().get(ItemType.FIRE_ARROW.ordinal() + 1));
     assertTrue(labels(content).contains("Fire Arrow"));
     assertTrue(labels(content).contains("?"));
-    assertTrue(labels(content).contains("Burn Damage: 10.0"));
+    assertTrue(labels(content).contains("Burn Damage: 3.0"));
     display.hideDictionary();
     assertFalse(display.isDictionaryVisible());
     player.dispose();

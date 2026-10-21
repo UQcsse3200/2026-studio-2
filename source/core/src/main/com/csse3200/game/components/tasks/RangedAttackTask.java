@@ -91,16 +91,19 @@ public class RangedAttackTask extends DefaultTask implements PriorityTask {
 
     Vector2 spawnCenter = enemyCenter.cpy().add(0.8f * facingDirection, -0.15f);
 
+    Vector2 magicTarget =
+        spawnCenter.cpy().add(targetCenter.cpy().sub(spawnCenter).nor().scl(1000f));
+
     Entity projectile;
 
     if (attackType.equals("calypso")) {
       projectile =
           EnemyProjectileFactory.createCalypsoProjectile(
-              targetCenter, damage, projectileSpeed, projectileLifetime);
+              magicTarget, damage, projectileSpeed, projectileLifetime);
     } else if (attackType.equals("summon")) {
       projectile =
           EnemyProjectileFactory.createNecromancerProjectile(
-              targetCenter, damage, projectileSpeed, projectileLifetime);
+              magicTarget, damage, projectileSpeed, projectileLifetime);
     } else {
       // An archer's arrow flies like the player's, arcing under gravity, so the factory aims it to
       // come down on the target and places it at the spawn point itself.

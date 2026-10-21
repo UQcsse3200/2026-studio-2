@@ -98,12 +98,12 @@ public class Level3GameArea extends GameArea {
 
   private final TerrainFactory terrainFactory;
   private final CameraComponent camera;
-  protected String TORCH_TEXTURE = "images/terrain/Level_3/Level_3_torch.png";
 
   public Level3GameArea(TerrainFactory terrainFactory, CameraComponent camera, Entity player) {
     super(camera);
 
     config = new Level3Config(player, camera);
+    torchTexture = "images/terrain/Level_3/Level_3_torch.png";
 
     this.terrainFactory = terrainFactory;
     this.camera = camera;
@@ -363,7 +363,7 @@ public class Level3GameArea extends GameArea {
     };
 
     for (GridPoint2 pos : guideTorches) {
-      spawnEntityAt(ObstacleFactory.createTorch(TORCH_TEXTURE), pos, true, false);
+      spawnEntityAt(ObstacleFactory.createTorch(torchTexture), pos, true, false);
     }
   }
 
