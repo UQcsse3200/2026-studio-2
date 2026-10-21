@@ -144,10 +144,20 @@ loadScripts(document, 'script');</script>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Called when the entity is created and registered.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getFacingDirection()" class="member-name-link">getFacingDirection</a>()</code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#discardPhysicsHelperRequest()" class="member-name-link">discardPhysicsHelperRequest</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Discards a pending physics-helper reposition, if any.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getFacingDirection()" class="member-name-link">getFacingDirection</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">The direction the player is currently facing.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isDead()" class="member-name-link">isDead</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Whether the player is dead and awaiting a checkpoint restart.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isSpeedPotionActive()" class="member-name-link">isSpeedPotionActive</a>()</code></div>
@@ -258,6 +268,24 @@ loadScripts(document, 'script');</script>
 <dt>Returns:</dt>
 <dd>true while a rope is attached and the player is off the ground</dd>
 </dl>
+</section>
+</li>
+<li>
+<section class="detail" id="isDead()">
+<h3>isDead</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">isDead</span>()</div>
+<div class="block">Whether the player is dead and awaiting a checkpoint restart. Corpses keep a physics body that
+ enemies can shove around, so systems that react to player position (e.g. checkpoints) check
+ this first.</div>
+</section>
+</li>
+<li>
+<section class="detail" id="discardPhysicsHelperRequest()">
+<h3>discardPhysicsHelperRequest</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">discardPhysicsHelperRequest</span>()</div>
+<div class="block">Discards a pending physics-helper reposition, if any. Called on death and when the respawn
+ teleport applies, so a request armed against the pre-teleport body cannot overwrite the
+ teleport and leave the player where they died.</div>
 </section>
 </li>
 <li>

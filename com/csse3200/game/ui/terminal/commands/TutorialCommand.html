@@ -96,10 +96,12 @@ loadScripts(document, 'script');</script>
 <div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">TutorialCommand</span>
 <span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>
 implements <a href="Command.html" title="interface in com.csse3200.game.ui.terminal.commands">Command</a></span></div>
-<div class="block">Starts the movement tutorial from the debug terminal.
+<div class="block">Starts a named tutorial sequence from the debug terminal.
 
- <p>Format: <code>tutorial</code>. The tutorial textbox is anchored bottom-left beside the inventory
- hotbar and advances on A+D, SPACE, then SHIFT key presses. Re-running the command restarts it.</div>
+ <p>Format: <code>tutorial [name]</code>. A bare name loads <code>configs/&lt;name&gt;.json</code>, e.g. <code>
+ tutorial tut2</code>; no argument defaults to the movement tutorial <code>tut1</code>. An argument
+ containing a path separator or a <code>.json</code> suffix is loaded as an explicit path instead. Each
+ config pairs its pages with input steps; re-running the command restarts the sequence.</div>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -114,7 +116,9 @@ implements <a href="Command.html" title="interface in com.csse3200.game.ui.termi
 <div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E()" class="member-name-link">TutorialCommand</a>()</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-constructor-name odd-row-color"><code><a href="#%3Cinit%3E(java.lang.String)" class="member-name-link">TutorialCommand</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;configPath)</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">Starts the tutorial loaded from an explicit config path.</div>
+</div>
 </div>
 </section>
 </li>
@@ -161,6 +165,7 @@ implements <a href="Command.html" title="interface in com.csse3200.game.ui.termi
 <section class="detail" id="&lt;init&gt;(java.lang.String)">
 <h3>TutorialCommand</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">TutorialCommand</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;configPath)</span></div>
+<div class="block">Starts the tutorial loaded from an explicit config path.</div>
 </section>
 </li>
 </ul>

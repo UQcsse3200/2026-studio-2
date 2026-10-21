@@ -99,11 +99,14 @@ loadScripts(document, 'script');</script>
 <hr>
 <div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">TutorialComponent</span>
 <span class="extends-implements">extends <a href="../input/InputComponent.html" title="class in com.csse3200.game.input">InputComponent</a></span></div>
-<div class="block">Observes raw key presses to advance a tutorial textbox through a fixed sequence.
+<div class="block">Observes raw keyboard and mouse input to advance a tutorial textbox through a configured sequence
+ of steps. Each step lists the inputs that complete it: key names, mouse buttons pressed, and/or
+ mouse buttons released. Any listed input completes the step unless requireAll is set, in which
+ case every listed input must be seen. See <code>configs/tut&lt;n&gt;.json</code> for the sequences.
 
- <p>Steps: press A and D for movement, then SPACE to jump, then SHIFT to dash/sprint. Movement is
- never blocked, this component always returns false so the player input handler still receives
- every key. Priority exceeds the player handler so keyDown is seen before the player consumes it.</div>
+ <p>Input is never blocked, this component always returns false so the player input handler still
+ receives every key and click. Priority exceeds the player handler so presses are seen before the
+ player consumes them.</div>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -127,11 +130,24 @@ loadScripts(document, 'script');</script>
 <div class="summary-table two-column-summary">
 <div class="table-header col-first">Constructor</div>
 <div class="table-header col-last">Description</div>
-<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(com.csse3200.game.components.TextBoxComponent)" class="member-name-link">TutorialComponent</a><wbr>(<a href="TextBoxComponent.html" title="class in com.csse3200.game.components">TextBoxComponent</a>&nbsp;textBox)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
-<div class="col-constructor-name odd-row-color"><code><a href="#%3Cinit%3E(com.csse3200.game.components.TextBoxComponent,java.lang.Runnable)" class="member-name-link">TutorialComponent</a><wbr>(<a href="TextBoxComponent.html" title="class in com.csse3200.game.components">TextBoxComponent</a>&nbsp;textBox,
+<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(com.csse3200.game.components.TextBoxComponent,java.util.List)" class="member-name-link">TutorialComponent</a><wbr>(<a href="TextBoxComponent.html" title="class in com.csse3200.game.components">TextBoxComponent</a>&nbsp;textBox,
+ <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../entities/configs/TutorialStepConfig.html" title="class in com.csse3200.game.entities.configs">TutorialStepConfig</a>&gt;&nbsp;stepConfigs)</code></div>
+<div class="col-last even-row-color">
+<div class="block">Creates a tutorial over the given textbox.</div>
+</div>
+<div class="col-constructor-name odd-row-color"><code><a href="#%3Cinit%3E(com.csse3200.game.components.TextBoxComponent,java.util.List,java.lang.Runnable)" class="member-name-link">TutorialComponent</a><wbr>(<a href="TextBoxComponent.html" title="class in com.csse3200.game.components">TextBoxComponent</a>&nbsp;textBox,
+ <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../entities/configs/TutorialStepConfig.html" title="class in com.csse3200.game.entities.configs">TutorialStepConfig</a>&gt;&nbsp;stepConfigs,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Runnable.html" title="class or interface in java.lang" class="external-link">Runnable</a>&nbsp;onFinished)</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">Creates a tutorial that reports completion, e.g.</div>
+</div>
+<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(com.csse3200.game.components.TextBoxComponent,java.util.List,java.lang.Runnable,float)" class="member-name-link">TutorialComponent</a><wbr>(<a href="TextBoxComponent.html" title="class in com.csse3200.game.components">TextBoxComponent</a>&nbsp;textBox,
+ <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../entities/configs/TutorialStepConfig.html" title="class in com.csse3200.game.entities.configs">TutorialStepConfig</a>&gt;&nbsp;stepConfigs,
+ <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Runnable.html" title="class or interface in java.lang" class="external-link">Runnable</a>&nbsp;onFinished,
+ float&nbsp;autoDismissSeconds)</code></div>
+<div class="col-last even-row-color">
+<div class="block">Creates a tutorial with an optional deadline and completion callback.</div>
+</div>
 </div>
 </section>
 </li>
@@ -140,7 +156,7 @@ loadScripts(document, 'script');</script>
 <section class="method-summary" id="method-summary">
 <h2>Method Summary</h2>
 <div id="method-summary-table">
-<div class="table-tabs" role="tablist" aria-orientation="horizontal"><button id="method-summary-table-tab0" role="tab" aria-selected="true" aria-controls="method-summary-table.tabpanel" tabindex="0" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table', 3)" class="active-table-tab">All Methods</button><button id="method-summary-table-tab1" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab1', 3)" class="table-tab">Static Methods</button><button id="method-summary-table-tab2" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab2', 3)" class="table-tab">Instance Methods</button><button id="method-summary-table-tab4" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab4', 3)" class="table-tab">Concrete Methods</button></div>
+<div class="table-tabs" role="tablist" aria-orientation="horizontal"><button id="method-summary-table-tab0" role="tab" aria-selected="true" aria-controls="method-summary-table.tabpanel" tabindex="0" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table', 3)" class="active-table-tab">All Methods</button><button id="method-summary-table-tab2" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab2', 3)" class="table-tab">Instance Methods</button><button id="method-summary-table-tab4" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab4', 3)" class="table-tab">Concrete Methods</button></div>
 <div id="method-summary-table.tabpanel" role="tabpanel" aria-labelledby="method-summary-table-tab0">
 <div class="summary-table three-column-summary">
 <div class="table-header col-first">Modifier and Type</div>
@@ -151,20 +167,37 @@ loadScripts(document, 'script');</script>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Called when the component is disposed.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#keyDown(int)" class="member-name-link">keyDown</a><wbr>(int&nbsp;keycode)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="TutorialComponent.html" title="class in com.csse3200.game.components">TutorialComponent</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#start(java.lang.Runnable)" class="member-name-link">start</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Runnable.html" title="class or interface in java.lang" class="external-link">Runnable</a>&nbsp;onFinished)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
-<div class="block">Creates and starts the tutorial using the portrait textbox factory.</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getCompletionKeycode()" class="member-name-link">getCompletionKeycode</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">The keycode that completed the most recent step, or 0 when no key has completed one (e.g.</div>
 </div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#keyDown(int)" class="member-name-link">keyDown</a><wbr>(int&nbsp;keycode)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#tickAutoDismiss(float)" class="member-name-link">tickAutoDismiss</a><wbr>(float&nbsp;delta)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Advances the auto-dismiss deadline, if this tutorial has one.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#touchDown(int,int,int,int)" class="member-name-link">touchDown</a><wbr>(int&nbsp;screenX,
+ int&nbsp;screenY,
+ int&nbsp;pointer,
+ int&nbsp;button)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#touchUp(int,int,int,int)" class="member-name-link">touchUp</a><wbr>(int&nbsp;screenX,
+ int&nbsp;screenY,
+ int&nbsp;pointer,
+ int&nbsp;button)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 </div>
 </div>
 </div>
 <div class="inherited-list">
 <h3 id="methods-inherited-from-class-com.csse3200.game.input.InputComponent">Methods inherited from class&nbsp;com.csse3200.game.input.<a href="../input/InputComponent.html" title="class in com.csse3200.game.input">InputComponent</a></h3>
-<code><a href="../input/InputComponent.html#create()">create</a>, <a href="../input/InputComponent.html#fling(float,float,int)">fling</a>, <a href="../input/InputComponent.html#getPriority()">getPriority</a>, <a href="../input/InputComponent.html#keyTyped(char)">keyTyped</a>, <a href="../input/InputComponent.html#keyUp(int)">keyUp</a>, <a href="../input/InputComponent.html#longPress(float,float)">longPress</a>, <a href="../input/InputComponent.html#mouseMoved(int,int)">mouseMoved</a>, <a href="../input/InputComponent.html#pan(float,float,float,float)">pan</a>, <a href="../input/InputComponent.html#panStop(float,float,int,int)">panStop</a>, <a href="../input/InputComponent.html#pinch(com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2)">pinch</a>, <a href="../input/InputComponent.html#pinchStop()">pinchStop</a>, <a href="../input/InputComponent.html#pinchStopHandled()">pinchStopHandled</a>, <a href="../input/InputComponent.html#scrolled(float,float)">scrolled</a>, <a href="../input/InputComponent.html#setPriority(int)">setPriority</a>, <a href="../input/InputComponent.html#tap(float,float,int,int)">tap</a>, <a href="../input/InputComponent.html#touchDown(float,float,int,int)">touchDown</a>, <a href="../input/InputComponent.html#touchDown(int,int,int,int)">touchDown</a>, <a href="../input/InputComponent.html#touchDragged(int,int,int)">touchDragged</a>, <a href="../input/InputComponent.html#touchUp(int,int,int,int)">touchUp</a>, <a href="../input/InputComponent.html#zoom(float,float)">zoom</a></code></div>
+<code><a href="../input/InputComponent.html#create()">create</a>, <a href="../input/InputComponent.html#fling(float,float,int)">fling</a>, <a href="../input/InputComponent.html#getPriority()">getPriority</a>, <a href="../input/InputComponent.html#keyTyped(char)">keyTyped</a>, <a href="../input/InputComponent.html#keyUp(int)">keyUp</a>, <a href="../input/InputComponent.html#longPress(float,float)">longPress</a>, <a href="../input/InputComponent.html#mouseMoved(int,int)">mouseMoved</a>, <a href="../input/InputComponent.html#pan(float,float,float,float)">pan</a>, <a href="../input/InputComponent.html#panStop(float,float,int,int)">panStop</a>, <a href="../input/InputComponent.html#pinch(com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2)">pinch</a>, <a href="../input/InputComponent.html#pinchStop()">pinchStop</a>, <a href="../input/InputComponent.html#pinchStopHandled()">pinchStopHandled</a>, <a href="../input/InputComponent.html#scrolled(float,float)">scrolled</a>, <a href="../input/InputComponent.html#setPriority(int)">setPriority</a>, <a href="../input/InputComponent.html#tap(float,float,int,int)">tap</a>, <a href="../input/InputComponent.html#touchDown(float,float,int,int)">touchDown</a>, <a href="../input/InputComponent.html#touchDragged(int,int,int)">touchDragged</a>, <a href="../input/InputComponent.html#zoom(float,float)">zoom</a></code></div>
 <div class="inherited-list">
 <h3 id="methods-inherited-from-class-com.csse3200.game.components.Component">Methods inherited from class&nbsp;com.csse3200.game.components.<a href="Component.html" title="class in com.csse3200.game.components">Component</a></h3>
 <code><a href="Component.html#earlyUpdate()">earlyUpdate</a>, <a href="Component.html#getEntity()">getEntity</a>, <a href="Component.html#setEnabled(boolean)">setEnabled</a>, <a href="Component.html#setEntity(com.csse3200.game.entities.Entity)">setEntity</a>, <a href="Component.html#toString()">toString</a>, <a href="Component.html#triggerEarlyUpdate()">triggerEarlyUpdate</a>, <a href="Component.html#triggerUpdate()">triggerUpdate</a>, <a href="Component.html#update()">update</a></code></div>
@@ -183,16 +216,52 @@ loadScripts(document, 'script');</script>
 <h2>Constructor Details</h2>
 <ul class="member-list">
 <li>
-<section class="detail" id="&lt;init&gt;(com.csse3200.game.components.TextBoxComponent)">
+<section class="detail" id="&lt;init&gt;(com.csse3200.game.components.TextBoxComponent,java.util.List)">
 <h3>TutorialComponent</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">TutorialComponent</span><wbr><span class="parameters">(<a href="TextBoxComponent.html" title="class in com.csse3200.game.components">TextBoxComponent</a>&nbsp;textBox)</span></div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">TutorialComponent</span><wbr><span class="parameters">(<a href="TextBoxComponent.html" title="class in com.csse3200.game.components">TextBoxComponent</a>&nbsp;textBox,
+ <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../entities/configs/TutorialStepConfig.html" title="class in com.csse3200.game.entities.configs">TutorialStepConfig</a>&gt;&nbsp;stepConfigs)</span></div>
+<div class="block">Creates a tutorial over the given textbox.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>textBox</code> - tutorial textbox to advance, or null to ignore input</dd>
+<dd><code>stepConfigs</code> - per-step trigger configs, one per textbox page; resolved to keycodes and
+     mouse buttons eagerly</dd>
+<dt>Throws:</dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/IllegalArgumentException.html" title="class or interface in java.lang" class="external-link">IllegalArgumentException</a></code> - if a step names an unknown key or mouse button</dd>
+</dl>
 </section>
 </li>
 <li>
-<section class="detail" id="&lt;init&gt;(com.csse3200.game.components.TextBoxComponent,java.lang.Runnable)">
+<section class="detail" id="&lt;init&gt;(com.csse3200.game.components.TextBoxComponent,java.util.List,java.lang.Runnable)">
 <h3>TutorialComponent</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">TutorialComponent</span><wbr><span class="parameters">(<a href="TextBoxComponent.html" title="class in com.csse3200.game.components">TextBoxComponent</a>&nbsp;textBox,
+ <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../entities/configs/TutorialStepConfig.html" title="class in com.csse3200.game.entities.configs">TutorialStepConfig</a>&gt;&nbsp;stepConfigs,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Runnable.html" title="class or interface in java.lang" class="external-link">Runnable</a>&nbsp;onFinished)</span></div>
+<div class="block">Creates a tutorial that reports completion, e.g. to persist a "seen" flag in the save.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>onFinished</code> - run once the player completes the final step (not when the tutorial is
+     dismissed early), or null for no callback</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="&lt;init&gt;(com.csse3200.game.components.TextBoxComponent,java.util.List,java.lang.Runnable,float)">
+<h3>TutorialComponent</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">TutorialComponent</span><wbr><span class="parameters">(<a href="TextBoxComponent.html" title="class in com.csse3200.game.components">TextBoxComponent</a>&nbsp;textBox,
+ <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../entities/configs/TutorialStepConfig.html" title="class in com.csse3200.game.entities.configs">TutorialStepConfig</a>&gt;&nbsp;stepConfigs,
+ <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Runnable.html" title="class or interface in java.lang" class="external-link">Runnable</a>&nbsp;onFinished,
+ float&nbsp;autoDismissSeconds)</span></div>
+<div class="block">Creates a tutorial with an optional deadline and completion callback.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>onFinished</code> - run once the player completes the final step (not when the tutorial is
+     dismissed early), or null for no callback</dd>
+<dd><code>autoDismissSeconds</code> - seconds before the textbox dismisses itself without input; 0 or less
+     waits forever for the player's steps</dd>
+<dt>Throws:</dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/IllegalArgumentException.html" title="class or interface in java.lang" class="external-link">IllegalArgumentException</a></code> - if a step names an unknown key or mouse button</dd>
+</dl>
 </section>
 </li>
 </ul>
@@ -203,13 +272,6 @@ loadScripts(document, 'script');</script>
 <section class="method-details" id="method-detail">
 <h2>Method Details</h2>
 <ul class="member-list">
-<li>
-<section class="detail" id="start(java.lang.Runnable)">
-<h3>start</h3>
-<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="TutorialComponent.html" title="class in com.csse3200.game.components">TutorialComponent</a></span>&nbsp;<span class="element-name">start</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Runnable.html" title="class or interface in java.lang" class="external-link">Runnable</a>&nbsp;onFinished)</span></div>
-<div class="block">Creates and starts the tutorial using the portrait textbox factory.</div>
-</section>
-</li>
 <li>
 <section class="detail" id="keyDown(int)">
 <h3>keyDown</h3>
@@ -225,6 +287,75 @@ loadScripts(document, 'script');</script>
 <li><code>InputProcessor.keyDown(int)</code></li>
 </ul>
 </dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="touchDown(int,int,int,int)">
+<h3>touchDown</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">touchDown</span><wbr><span class="parameters">(int&nbsp;screenX,
+ int&nbsp;screenY,
+ int&nbsp;pointer,
+ int&nbsp;button)</span></div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code>touchDown</code>&nbsp;in interface&nbsp;<code>com.badlogic.gdx.InputProcessor</code></dd>
+<dt>Overrides:</dt>
+<dd><code><a href="../input/InputComponent.html#touchDown(int,int,int,int)">touchDown</a></code>&nbsp;in class&nbsp;<code><a href="../input/InputComponent.html" title="class in com.csse3200.game.input">InputComponent</a></code></dd>
+<dt>See Also:</dt>
+<dd>
+<ul class="tag-list-long">
+<li><code>InputProcessor.touchDown(int, int, int, int)</code></li>
+</ul>
+</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="touchUp(int,int,int,int)">
+<h3>touchUp</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">touchUp</span><wbr><span class="parameters">(int&nbsp;screenX,
+ int&nbsp;screenY,
+ int&nbsp;pointer,
+ int&nbsp;button)</span></div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code>touchUp</code>&nbsp;in interface&nbsp;<code>com.badlogic.gdx.InputProcessor</code></dd>
+<dt>Overrides:</dt>
+<dd><code><a href="../input/InputComponent.html#touchUp(int,int,int,int)">touchUp</a></code>&nbsp;in class&nbsp;<code><a href="../input/InputComponent.html" title="class in com.csse3200.game.input">InputComponent</a></code></dd>
+<dt>See Also:</dt>
+<dd>
+<ul class="tag-list-long">
+<li><code>InputProcessor.touchUp(int, int, int, int)</code></li>
+</ul>
+</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="tickAutoDismiss(float)">
+<h3>tickAutoDismiss</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">tickAutoDismiss</span><wbr><span class="parameters">(float&nbsp;delta)</span></div>
+<div class="block">Advances the auto-dismiss deadline, if this tutorial has one. When it elapses the textbox
+ closes like an early dismissal: the player's steps are no longer needed and <code>onFinished</code>
+ does not run. This component is registered for input rather than entity updates, so the owning
+ screen ticks it once per frame; calls are ignored once the tutorial is finished or dismissed.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>delta</code> - seconds since the previous frame</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="getCompletionKeycode()">
+<h3>getCompletionKeycode</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">getCompletionKeycode</span>()</div>
+<div class="block">The keycode that completed the most recent step, or 0 when no key has completed one (e.g. a
+ mouse button did, or nothing has completed yet). Lets a choice tutorial such as tut0 report
+ which option the player picked to its completion callback.</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>the completing keycode</dd>
 </dl>
 </section>
 </li>

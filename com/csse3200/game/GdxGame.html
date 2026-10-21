@@ -151,23 +151,33 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-first">Modifier and Type</div>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#applyDefaultClearColor()" class="member-name-link">applyDefaultClearColor</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#acceptTutorials()" class="member-name-link">acceptTutorials</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Records the player accepting tut0's offer, persisting the choice when a save slot is active.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#applyDefaultClearColor()" class="member-name-link">applyDefaultClearColor</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Restores the default light-yellow clear colour used behind transparent terrain (e.g.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#applyPendingSavePlayer(com.csse3200.game.entities.Entity)" class="member-name-link">applyPendingSavePlayer</a><wbr>(<a href="entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;player)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#applyPendingSavePlayer(com.csse3200.game.entities.Entity)" class="member-name-link">applyPendingSavePlayer</a><wbr>(<a href="entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;player)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Applies the loaded save's player stats (health, max health, gold, inventory) to the player
  entity as soon as it exists.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#applyPendingSaveWorld(com.csse3200.game.areas.GameArea,java.lang.String)" class="member-name-link">applyPendingSaveWorld</a><wbr>(<a href="areas/GameArea.html" title="class in com.csse3200.game.areas">GameArea</a>&nbsp;area,
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#applyPendingSaveWorld(com.csse3200.game.areas.GameArea,java.lang.String)" class="member-name-link">applyPendingSaveWorld</a><wbr>(<a href="areas/GameArea.html" title="class in com.csse3200.game.areas">GameArea</a>&nbsp;area,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;level)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Applies the loaded save's world state (activated checkpoints, and with them the respawn point)
  to the given level.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#areTutorialsAccepted()" class="member-name-link">areTutorialsAccepted</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Whether tutorial prompts are wanted for this save.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#autosave(java.lang.String,com.csse3200.game.areas.GameArea)" class="member-name-link">autosave</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;level,
@@ -184,86 +194,101 @@ loadScripts(document, 'script');</script>
 <div class="block">Create a new screen of the provided type.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#dispose()" class="member-name-link">dispose</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#declineTutorials()" class="member-name-link">declineTutorials</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Records the player declining tut0's offer so no tutorial prompt auto-plays for this save slot
+ again, persisting the choice when a save slot is active.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#exit()" class="member-name-link">exit</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#dispose()" class="member-name-link">dispose</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#exit()" class="member-name-link">exit</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Exit the game.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#finishTransition(com.badlogic.gdx.Screen)" class="member-name-link">finishTransition</a><wbr>(com.badlogic.gdx.Screen&nbsp;toScreen)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#finishTransition(com.badlogic.gdx.Screen)" class="member-name-link">finishTransition</a><wbr>(com.badlogic.gdx.Screen&nbsp;toScreen)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Called by <a href="screens/TransitionScreen.html" title="class in com.csse3200.game.screens"><code>TransitionScreen</code></a> once its fade-in has finished, handing control to the screen
  it faded into.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getActiveSaveSlot()" class="member-name-link">getActiveSaveSlot</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getActiveSaveSlot()" class="member-name-link">getActiveSaveSlot</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">The slot currently being written to, or -1 when no save is active.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Integer.html" title="class or interface in java.lang" class="external-link">Integer</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getSavedPlayerGold()" class="member-name-link">getSavedPlayerGold</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Integer.html" title="class or interface in java.lang" class="external-link">Integer</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getSavedPlayerGold()" class="member-name-link">getSavedPlayerGold</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Returns the saved player's gold, or null when no player state has been captured.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isTutorialCompleted()" class="member-name-link">isTutorialCompleted</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#loadSave(int)" class="member-name-link">loadSave</a><wbr>(int&nbsp;slot)</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isTutorialCompleted()" class="member-name-link">isTutorialCompleted</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Whether the movement tutorial has been completed in this session's save.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#loadSave(int)" class="member-name-link">loadSave</a><wbr>(int&nbsp;slot)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Loads a save slot: records it as the active slot, queues its state for the gameplay screen and
  transitions to the saved level, skipping the intro cutscene.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#markSaveCompleted()" class="member-name-link">markSaveCompleted</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#markSaveCompleted()" class="member-name-link">markSaveCompleted</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Flags the active save as completed (won the game) so the save-select screen can show it.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#markTutorialCompleted()" class="member-name-link">markTutorialCompleted</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Persists tutorial completion immediately, without waiting for a checkpoint autosave.</div>
-</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#playCutscene(java.lang.String,com.csse3200.game.GdxGame.ScreenType)" class="member-name-link">playCutscene</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
- <a href="GdxGame.ScreenType.html" title="enum class in com.csse3200.game">GdxGame.ScreenType</a>&nbsp;destination)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#markTutorialCompleted()" class="member-name-link">markTutorialCompleted</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Marks the movement tutorial done so it never auto-plays again for this save slot, persisting
+ the flag when a save slot is active.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#playCutscene(java.lang.String,com.csse3200.game.GdxGame.ScreenType)" class="member-name-link">playCutscene</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
+ <a href="GdxGame.ScreenType.html" title="enum class in com.csse3200.game">GdxGame.ScreenType</a>&nbsp;destination)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Plays a story cutscene, continuing to its destination if the cutscene is unavailable.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#restorePlayerState(com.csse3200.game.entities.Entity)" class="member-name-link">restorePlayerState</a><wbr>(<a href="entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;player)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#restorePlayerState(com.csse3200.game.entities.Entity)" class="member-name-link">restorePlayerState</a><wbr>(<a href="entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;player)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">If a player snapshot is available then update the given player entity to match the stored
  snapshot data (gold, health, inventory)</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#savePlayerState(com.csse3200.game.entities.Entity)" class="member-name-link">savePlayerState</a><wbr>(<a href="entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;player)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#savePlayerState(com.csse3200.game.entities.Entity)" class="member-name-link">savePlayerState</a><wbr>(<a href="entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;player)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Collects a snapshot of the player's state components (gold, health, inventory)</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setScreen(com.csse3200.game.GdxGame.ScreenType)" class="member-name-link">setScreen</a><wbr>(<a href="GdxGame.ScreenType.html" title="enum class in com.csse3200.game">GdxGame.ScreenType</a>&nbsp;screenType)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setScreen(com.csse3200.game.GdxGame.ScreenType)" class="member-name-link">setScreen</a><wbr>(<a href="GdxGame.ScreenType.html" title="enum class in com.csse3200.game">GdxGame.ScreenType</a>&nbsp;screenType)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Sets the game's screen to a new screen of the provided type.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#startCutscene(com.csse3200.game.cutscene.CutsceneLoader.LoadedCutscene,com.csse3200.game.GdxGame.ScreenType)" class="member-name-link">startCutscene</a><wbr>(<a href="cutscene/CutsceneLoader.LoadedCutscene.html" title="class in com.csse3200.game.cutscene">CutsceneLoader.LoadedCutscene</a>&nbsp;cutscene,
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#startCutscene(com.csse3200.game.cutscene.CutsceneLoader.LoadedCutscene,com.csse3200.game.GdxGame.ScreenType)" class="member-name-link">startCutscene</a><wbr>(<a href="cutscene/CutsceneLoader.LoadedCutscene.html" title="class in com.csse3200.game.cutscene">CutsceneLoader.LoadedCutscene</a>&nbsp;cutscene,
  <a href="GdxGame.ScreenType.html" title="enum class in com.csse3200.game">GdxGame.ScreenType</a>&nbsp;destination)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Starts a validated cutscene and creates the destination level after it completes.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#startInitialCutscene()" class="member-name-link">startInitialCutscene</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#startInitialCutscene()" class="member-name-link">startInitialCutscene</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Starts the initial cutscene once per game session, then falls back to level 1.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#startNewGame()" class="member-name-link">startNewGame</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#startNewGame()" class="member-name-link">startNewGame</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Starts a brand-new game in the first empty save slot, then runs the normal new-game flow (intro
  cutscene, then level 1).</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#transitionTo(com.badlogic.gdx.Screen,float)" class="member-name-link">transitionTo</a><wbr>(com.badlogic.gdx.Screen&nbsp;toScreen,
+ float&nbsp;fadeDuration)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Fades to a pre-created screen (used for ad-hoc end screens).</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#transitionTo(com.csse3200.game.GdxGame.ScreenType)" class="member-name-link">transitionTo</a><wbr>(<a href="GdxGame.ScreenType.html" title="enum class in com.csse3200.game">GdxGame.ScreenType</a>&nbsp;screenType)</code></div>
@@ -271,8 +296,15 @@ loadScripts(document, 'script');</script>
 <div class="block">Fades the current screen to black, swaps to the target screen, then fades back in.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#updateSavedPlayerGold(int)" class="member-name-link">updateSavedPlayerGold</a><wbr>(int&nbsp;gold)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#transitionTo(com.csse3200.game.GdxGame.ScreenType,float)" class="member-name-link">transitionTo</a><wbr>(<a href="GdxGame.ScreenType.html" title="enum class in com.csse3200.game">GdxGame.ScreenType</a>&nbsp;screenType,
+ float&nbsp;fadeDuration)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Fades the current screen to black, swaps to the target screen, then fades back in, using the
+ given length for each fade phase.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#updateSavedPlayerGold(int)" class="member-name-link">updateSavedPlayerGold</a><wbr>(int&nbsp;gold)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Updates only the player's saved gold without changing health or inventory items.</div>
 </div>
 </div>
@@ -348,6 +380,28 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li>
+<section class="detail" id="transitionTo(com.badlogic.gdx.Screen,float)">
+<h3>transitionTo</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">transitionTo</span><wbr><span class="parameters">(com.badlogic.gdx.Screen&nbsp;toScreen,
+ float&nbsp;fadeDuration)</span></div>
+<div class="block">Fades to a pre-created screen (used for ad-hoc end screens).</div>
+</section>
+</li>
+<li>
+<section class="detail" id="transitionTo(com.csse3200.game.GdxGame.ScreenType,float)">
+<h3>transitionTo</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">transitionTo</span><wbr><span class="parameters">(<a href="GdxGame.ScreenType.html" title="enum class in com.csse3200.game">GdxGame.ScreenType</a>&nbsp;screenType,
+ float&nbsp;fadeDuration)</span></div>
+<div class="block">Fades the current screen to black, swaps to the target screen, then fades back in, using the
+ given length for each fade phase. Ignored if a transition is already in progress.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>screenType</code> - screen type to transition to</dd>
+<dd><code>fadeDuration</code> - length in seconds of each fade phase</dd>
+</dl>
+</section>
+</li>
+<li>
 <section class="detail" id="startCutscene(com.csse3200.game.cutscene.CutsceneLoader.LoadedCutscene,com.csse3200.game.GdxGame.ScreenType)">
 <h3>startCutscene</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">startCutscene</span><wbr><span class="parameters">(<a href="cutscene/CutsceneLoader.LoadedCutscene.html" title="class in com.csse3200.game.cutscene">CutsceneLoader.LoadedCutscene</a>&nbsp;cutscene,
@@ -416,17 +470,39 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="isTutorialCompleted()">
 <h3>isTutorialCompleted</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">isTutorialCompleted</span>()</div>
-<dl class="notes">
-<dt>Returns:</dt>
-<dd>whether the active save has already completed the movement tutorial.</dd>
-</dl>
+<div class="block">Whether the movement tutorial has been completed in this session's save.</div>
+</section>
+</li>
+<li>
+<section class="detail" id="areTutorialsAccepted()">
+<h3>areTutorialsAccepted</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">areTutorialsAccepted</span>()</div>
+<div class="block">Whether tutorial prompts are wanted for this save. False once the player declines tut0's offer,
+ in which case no tutorial auto-plays again for this slot.</div>
+</section>
+</li>
+<li>
+<section class="detail" id="acceptTutorials()">
+<h3>acceptTutorials</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">acceptTutorials</span>()</div>
+<div class="block">Records the player accepting tut0's offer, persisting the choice when a save slot is active.
+ The default is acceptance, so this mainly writes the explicit choice to the save.</div>
+</section>
+</li>
+<li>
+<section class="detail" id="declineTutorials()">
+<h3>declineTutorials</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">declineTutorials</span>()</div>
+<div class="block">Records the player declining tut0's offer so no tutorial prompt auto-plays for this save slot
+ again, persisting the choice when a save slot is active.</div>
 </section>
 </li>
 <li>
 <section class="detail" id="markTutorialCompleted()">
 <h3>markTutorialCompleted</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">markTutorialCompleted</span>()</div>
-<div class="block">Persists tutorial completion immediately, without waiting for a checkpoint autosave.</div>
+<div class="block">Marks the movement tutorial done so it never auto-plays again for this save slot, persisting
+ the flag when a save slot is active. Without one (e.g. Sandbox) the flag lasts the session.</div>
 </section>
 </li>
 <li>
