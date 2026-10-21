@@ -343,7 +343,7 @@ public class BackgroundRenderComponent extends RenderComponent {
     boolean weather = getWeather();
     if (weather && layer.repeat == CHAOTIC && rainIntensity < 1f) {
       float intensity = 1f - rainIntensity;
-      float finalWidth = 0.1f;
+      float finalWidth = 0.15f;
       float finalHeight = 0.45f;
       int finalRotation = 40;
       layer.velocity.x = originalVelocity.x + (finalVelocity.x - originalVelocity.x) * intensity;
@@ -377,6 +377,7 @@ public class BackgroundRenderComponent extends RenderComponent {
 
   @Override
   public void update() {
+    super.update();
     if (scalingBackground) {
       currentScaleTime += ServiceLocator.getTimeSource().getDeltaTime();
       float progress = Math.min(1f, currentScaleTime / SCALE_TIME);
