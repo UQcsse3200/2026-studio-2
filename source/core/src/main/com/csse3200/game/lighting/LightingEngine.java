@@ -131,7 +131,7 @@ public class LightingEngine implements Disposable {
     float totalColorWeight = 1f;
 
     if (!first.isActive()) {
-      targetRayCount = (float) first.getOldRayCount();
+      targetRayCount = first.getOldRayCount();
     } else {
       float totalRayCount = currentRayCount;
       int overlappingLights = 1;

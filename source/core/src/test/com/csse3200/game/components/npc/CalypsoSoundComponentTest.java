@@ -29,7 +29,8 @@ class CalypsoSoundComponentTest {
   void setUp() {
     resources = mock(ResourceService.class);
     when(resources.containsAsset(anyString(), eq(Sound.class))).thenReturn(true);
-    when(resources.getAsset(anyString(), eq(Sound.class))).thenReturn(mock(Sound.class));
+    Sound sound = mock(Sound.class);
+    when(resources.getAsset(anyString(), eq(Sound.class))).thenReturn(sound);
     ServiceLocator.registerResourceService(resources);
     calypso = new Entity().addComponent(new CalypsoSoundComponent());
     calypso.create();

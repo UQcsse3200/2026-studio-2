@@ -70,17 +70,9 @@ public class BackgroundRenderComponentTest {
       int flashFrequency) {
     background.addLayer(
         texturePath,
-        new Vector2(0f, 0f),
-        30f,
-        10f,
-        new Vector2(0f, 0f),
-        new Vector2(speed),
-        repeat,
-        1f,
-        1f,
-        flashes,
-        0,
-        flashFrequency);
+        new BackgroundRenderComponent.LayerLayout(
+            new Vector2(0f, 0f), 30f, 10f, new Vector2(0f, 0f), new Vector2(speed), repeat, 1f),
+        new BackgroundRenderComponent.LayerAppearance(1f, flashes, 0, flashFrequency));
   }
 
   private static void addPlainLayer(

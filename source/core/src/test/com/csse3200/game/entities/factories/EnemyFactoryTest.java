@@ -316,7 +316,6 @@ class EnemyFactoryTest {
         tasksOf(built(() -> EnemyFactory.createSkeletonArcher(new Entity())));
     List<PriorityTask> necromancer =
         tasksOf(built(() -> EnemyFactory.createNecromancer(new Entity())));
-    List<PriorityTask> vulture = tasksOf(built(() -> EnemyFactory.createVulture(new Entity())));
 
     assertEquals(1, countOf(warrior, SweepAttackTask.class), "warriors swing after a wind-up");
     assertEquals(0, countOf(warrior, RangedAttackTask.class));

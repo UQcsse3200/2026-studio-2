@@ -12,105 +12,53 @@ public enum ItemType {
       "Standard Arrow",
       "A basic arrow used as ammunition.",
       "images/projectiles/arrow.png",
-      10,
-      15f,
-      0.3f,
-      0,
-      true),
+      new UsageStats(10, 15f, 0.3f, 0, true)),
   ROPE_ARROW(
       2,
       "Rope Arrow",
       "An arrow used for grappling.",
       "images/projectiles/rope_arrow.png",
-      0,
-      15f,
-      5f,
-      0,
-      false),
+      new UsageStats(0, 15f, 5f, 0, false)),
   HEALTH_POTION(
       3,
       "Health Potion",
       "Restores a small amount of health.",
       "images/health/heart_potion.png",
-      0,
-      0f,
-      0f,
-      25,
-      false),
+      new UsageStats(0, 0f, 0f, 25, false)),
   FIRE_ARROW(
       4,
       "Fire Arrow",
       "Deals 5 direct damage and burns enemies for 10 damage per second for 5 seconds.",
       "images/projectiles/fire_arrow.png",
-      5,
-      16f,
-      0.3f,
-      0,
-      true,
-      10f,
-      5f,
-      0f,
-      0f,
-      0f,
-      0f,
-      0f,
-      0f),
+      new UsageStats(5, 16f, 0.3f, 0, true),
+      new ItemEffects(
+          new TimedEffect(10f, 5f), TimedEffect.NONE, TimedEffect.NONE, TimedEffect.NONE)),
   ICE_ARROW(
       5,
       "Ice Arrow",
       "Slows enemies for 5 seconds.",
       "images/projectiles/ice_arrow.png",
-      8,
-      16f,
-      0.3f,
-      0,
-      true,
-      0f,
-      0f,
-      0.5f,
-      5f,
-      0f,
-      0f,
-      0f,
-      0f),
+      new UsageStats(8, 16f, 0.3f, 0, true),
+      new ItemEffects(
+          TimedEffect.NONE, new TimedEffect(0.5f, 5f), TimedEffect.NONE, TimedEffect.NONE)),
 
   SPEED_POTION(
       8,
       "Speed Potion",
       "Increases movement speed by 70% for 3 seconds.",
       "images/items/speed_potion.png",
-      0,
-      0f,
-      0f,
-      0,
-      true,
-      0f,
-      0f,
-      0f,
-      0f,
-      0.7f,
-      3f,
-      0f,
-      0f),
+      new UsageStats(0, 0f, 0f, 0, true),
+      new ItemEffects(
+          TimedEffect.NONE, TimedEffect.NONE, new TimedEffect(0.7f, 3f), TimedEffect.NONE)),
 
   POISON_POTION(
       9,
       "Poison Potion",
       "Throws a poison flask that applies poison damage over time.",
       "images/items/poison_potion.png",
-      0,
-      0f,
-      0f,
-      0,
-      true,
-      0f,
-      0f,
-      0f,
-      0f,
-      0f,
-      0f,
-      3f,
-      3f);
+      new UsageStats(0, 0f, 0f, 0, true),
+      new ItemEffects(
+          TimedEffect.NONE, TimedEffect.NONE, TimedEffect.NONE, new TimedEffect(3f, 3f)));
 
   private final int id;
   private final String displayName;
@@ -130,34 +78,21 @@ public enum ItemType {
   private final float poisonDamagePerSecond;
   private final float poisonDuration;
 
-  ItemType(
-      int id,
-      String displayName,
-      String description,
-      String texturePath,
-      int damage,
-      float range,
-      float cooldown,
-      int healAmount,
-      boolean consumeAmmo) {
-    this(
-        id,
-        displayName,
-        description,
-        texturePath,
-        damage,
-        range,
-        cooldown,
-        healAmount,
-        consumeAmmo,
-        0f,
-        0f,
-        0f,
-        0f,
-        0f,
-        0f,
-        0f,
-        0f);
+  private record UsageStats(
+      int damage, float range, float cooldown, int healAmount, boolean consumeAmmo) {}
+
+  private record TimedEffect(float strength, float duration) {
+    private static final TimedEffect NONE = new TimedEffect(0f, 0f);
+  }
+
+  private record ItemEffects(
+      TimedEffect burn, TimedEffect slow, TimedEffect speed, TimedEffect poison) {
+    private static final ItemEffects NONE =
+        new ItemEffects(TimedEffect.NONE, TimedEffect.NONE, TimedEffect.NONE, TimedEffect.NONE);
+  }
+
+  ItemType(int id, String displayName, String description, String texturePath, UsageStats usage) {
+    this(id, displayName, description, texturePath, usage, ItemEffects.NONE);
   }
 
   ItemType(
@@ -165,36 +100,25 @@ public enum ItemType {
       String displayName,
       String description,
       String texturePath,
-      int damage,
-      float range,
-      float cooldown,
-      int healAmount,
-      boolean consumeAmmo,
-      float burnDamagePerSecond,
-      float burnTime,
-      float slowSpeed,
-      float slowTime,
-      float speedBoost,
-      float speedDuration,
-      float poisonDamagePerSecond,
-      float poisonDuration) {
+      UsageStats usage,
+      ItemEffects effects) {
     this.id = id;
     this.displayName = displayName;
     this.description = description;
     this.texturePath = texturePath;
-    this.damage = damage;
-    this.range = range;
-    this.cooldown = cooldown;
-    this.healAmount = healAmount;
-    this.consumeAmmo = consumeAmmo;
-    this.burnDamagePerSecond = burnDamagePerSecond;
-    this.burnTime = burnTime;
-    this.slowSpeed = slowSpeed;
-    this.slowTime = slowTime;
-    this.speedBoost = speedBoost;
-    this.speedDuration = speedDuration;
-    this.poisonDamagePerSecond = poisonDamagePerSecond;
-    this.poisonDuration = poisonDuration;
+    this.damage = usage.damage();
+    this.range = usage.range();
+    this.cooldown = usage.cooldown();
+    this.healAmount = usage.healAmount();
+    this.consumeAmmo = usage.consumeAmmo();
+    this.burnDamagePerSecond = effects.burn().strength();
+    this.burnTime = effects.burn().duration();
+    this.slowSpeed = effects.slow().strength();
+    this.slowTime = effects.slow().duration();
+    this.speedBoost = effects.speed().strength();
+    this.speedDuration = effects.speed().duration();
+    this.poisonDamagePerSecond = effects.poison().strength();
+    this.poisonDuration = effects.poison().duration();
   }
 
   public int getId() {

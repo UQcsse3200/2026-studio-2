@@ -71,7 +71,6 @@ public class LevelsGameScreen extends BaseGameScreen {
   private String level = LEVEL1;
 
   private final GdxGame game;
-  private final boolean startTutorial;
   private final SpinTheWheelOverlay wheelOverlay;
   private final PauseMenuOverlay pauseOverlay;
   private final BlackjackOverlay blackjackOverlay;
@@ -101,7 +100,6 @@ public class LevelsGameScreen extends BaseGameScreen {
   public LevelsGameScreen(GdxGame game, boolean startTutorial) {
     super();
     this.game = game;
-    this.startTutorial = startTutorial;
 
     // Only this screen uses the save handler, so it is registered here; BaseGameScreen sets up
     // everything the game screens share
@@ -523,10 +521,8 @@ public class LevelsGameScreen extends BaseGameScreen {
         .addComponent(new PerformanceDisplay())
         .addComponent(new CoordinateDisplay(renderer.getCamera()))
         .addComponent(new MainGameActions(this.game))
-        // Keep this a lambda: pauseOverlay is assigned after createUI() runs in the constructor,
-        // and a
-        // method reference would read it (still null) immediately.
-        .addComponent(new PauseButtonDisplay(() -> pauseOverlay.request()))
+        // Resolve pauseOverlay inside the callback: it is assigned after createUI() runs.
+        .addComponent(new PauseButtonDisplay(this::requestPause))
         .addComponent(gameEndDisplay) // Add GameEndDisplay component to the UI entity
         .addComponent(new GameEndActions(this.game, this::restartAtCheckpoint))
         .addComponent(terminal)
@@ -534,5 +530,10 @@ public class LevelsGameScreen extends BaseGameScreen {
         .addComponent(new TerminalDisplay());
 
     ServiceLocator.getEntityService().register(ui);
+  }
+
+  /** Resolves the overlay when clicked, after UI construction has finished. */
+  private void requestPause() {
+    pauseOverlay.request();
   }
 }

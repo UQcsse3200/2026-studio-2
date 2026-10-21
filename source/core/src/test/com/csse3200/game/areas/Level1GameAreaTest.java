@@ -63,17 +63,24 @@ class Level1GameAreaTest extends AbstractAreaAssetsTest {
 
   @Test
   void shouldHaveCorrectShopkeeperSpawn() {
-    assertEquals(new GridPoint2(5, 3), Level1GameArea.SHOPKEEPER_SPAWN);
+    GridPoint2 expectedShopkeeperSpawn = new GridPoint2(5, 3);
+    assertEquals(expectedShopkeeperSpawn, Level1GameArea.SHOPKEEPER_SPAWN);
   }
 
   @Test
   void shouldHaveCorrectItemSpawns() {
-    assertEquals(new GridPoint2(2, 3), Level1GameArea.ROPE_ARROW_SPAWN);
-    assertEquals(new GridPoint2(4, 3), Level1GameArea.STANDARD_ARROW_SPAWN);
-    assertEquals(new GridPoint2(6, 3), Level1GameArea.FIRE_ARROW_SPAWN);
-    assertEquals(new GridPoint2(8, 5), Level1GameArea.ICE_ARROW_SPAWN);
-    assertEquals(new GridPoint2(10, 5), Level1GameArea.POISON_ARROW_SPAWN);
-    assertEquals(new GridPoint2(12, 5), Level1GameArea.HEALTH_POTION_SPAWN);
+    GridPoint2 expectedRopeArrowSpawn = new GridPoint2(2, 3);
+    assertEquals(expectedRopeArrowSpawn, Level1GameArea.ROPE_ARROW_SPAWN);
+    GridPoint2 expectedStandardArrowSpawn = new GridPoint2(4, 3);
+    assertEquals(expectedStandardArrowSpawn, Level1GameArea.STANDARD_ARROW_SPAWN);
+    GridPoint2 expectedFireArrowSpawn = new GridPoint2(6, 3);
+    assertEquals(expectedFireArrowSpawn, Level1GameArea.FIRE_ARROW_SPAWN);
+    GridPoint2 expectedIceArrowSpawn = new GridPoint2(8, 5);
+    assertEquals(expectedIceArrowSpawn, Level1GameArea.ICE_ARROW_SPAWN);
+    GridPoint2 expectedPoisonArrowSpawn = new GridPoint2(10, 5);
+    assertEquals(expectedPoisonArrowSpawn, Level1GameArea.POISON_ARROW_SPAWN);
+    GridPoint2 expectedHealthPotionSpawn = new GridPoint2(12, 5);
+    assertEquals(expectedHealthPotionSpawn, Level1GameArea.HEALTH_POTION_SPAWN);
   }
 
   @Test
@@ -87,14 +94,15 @@ class Level1GameAreaTest extends AbstractAreaAssetsTest {
 
   @Test
   void shouldHaveCorrectGoldSpawns() {
-    assertEquals(
-        List.of(new GridPoint2(9, 5), new GridPoint2(15, 7), new GridPoint2(20, 8)),
-        Level1GameArea.GOLD_SPAWNS);
+    List<GridPoint2> expectedGoldSpawns =
+        List.of(new GridPoint2(9, 5), new GridPoint2(15, 7), new GridPoint2(20, 8));
+    assertEquals(expectedGoldSpawns, Level1GameArea.GOLD_SPAWNS);
   }
 
   @Test
   void shouldHaveCorrectWheelTokenSpawn() {
-    assertEquals(new GridPoint2(32, 3), Level1GameArea.WHEEL_TOKEN_SPAWN);
+    GridPoint2 expectedWheelTokenSpawn = new GridPoint2(32, 3);
+    assertEquals(expectedWheelTokenSpawn, Level1GameArea.WHEEL_TOKEN_SPAWN);
   }
 
   @Test

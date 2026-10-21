@@ -178,16 +178,7 @@ public class BlackjackDisplay extends UIComponent {
         new ChangeListener() {
           @Override
           public void changed(ChangeEvent event, Actor actor) {
-            soundEnabled = !soundEnabled;
-            soundButton.setText(soundEnabled ? "SOUND: ON" : "SOUND: OFF");
-
-            if (soundToggleCallback != null) {
-              soundToggleCallback.accept(soundEnabled);
-            }
-
-            if (soundEnabled) {
-              ButtonSound.playClick();
-            }
+            toggleSound(soundButton);
           }
         });
 
@@ -430,6 +421,19 @@ public class BlackjackDisplay extends UIComponent {
     return new NinePatchDrawable(patch);
   }
 
+  private void toggleSound(TextButton soundButton) {
+    soundEnabled = !soundEnabled;
+    soundButton.setText(soundEnabled ? "SOUND: ON" : "SOUND: OFF");
+
+    if (soundToggleCallback != null) {
+      soundToggleCallback.accept(soundEnabled);
+    }
+
+    if (soundEnabled) {
+      ButtonSound.playClick();
+    }
+  }
+
   private void updateResultOverlay() {
     if (resultOverlay == null) {
       return;
@@ -448,37 +452,11 @@ public class BlackjackDisplay extends UIComponent {
       resultOverlay.getColor().a = 1f;
     }
 
-    if (hitButton != null) {
-      boolean disabled = !blackjack.isRoundInProgress() || showResult || dealInProgress;
-      hitButton.setDisabled(disabled);
-      hitButton.setTouchable(
-          disabled
-              ? com.badlogic.gdx.scenes.scene2d.Touchable.disabled
-              : com.badlogic.gdx.scenes.scene2d.Touchable.enabled);
-    }
-
-    if (newRoundButton != null) {
-      boolean disabled = blackjack.isRoundInProgress() || dealInProgress;
-      newRoundButton.setDisabled(disabled);
-      newRoundButton.setTouchable(
-          disabled
-              ? com.badlogic.gdx.scenes.scene2d.Touchable.disabled
-              : com.badlogic.gdx.scenes.scene2d.Touchable.enabled);
-    }
-
-    if (standButton != null) {
-      boolean disabled = !blackjack.isRoundInProgress() || showResult || dealInProgress;
-      standButton.setDisabled(disabled);
-      standButton.setTouchable(
-          disabled
-              ? com.badlogic.gdx.scenes.scene2d.Touchable.disabled
-              : com.badlogic.gdx.scenes.scene2d.Touchable.enabled);
-    }
-
-    if (backButton != null) {
-      backButton.setDisabled(false);
-      backButton.setTouchable(com.badlogic.gdx.scenes.scene2d.Touchable.enabled);
-    }
+    boolean turnDisabled = !blackjack.isRoundInProgress() || showResult || dealInProgress;
+    setButtonDisabled(hitButton, turnDisabled);
+    setButtonDisabled(standButton, turnDisabled);
+    setButtonDisabled(newRoundButton, blackjack.isRoundInProgress() || dealInProgress);
+    setButtonDisabled(backButton, false);
 
     if (!showResult || dealInProgress) {
       return;
@@ -498,6 +476,17 @@ public class BlackjackDisplay extends UIComponent {
 
     message.setText(blackjack.getResultMessage());
     resultOverlay.toFront();
+  }
+
+  private void setButtonDisabled(ImageButton button, boolean disabled) {
+    if (button == null) {
+      return;
+    }
+    button.setDisabled(disabled);
+    button.setTouchable(
+        disabled
+            ? com.badlogic.gdx.scenes.scene2d.Touchable.disabled
+            : com.badlogic.gdx.scenes.scene2d.Touchable.enabled);
   }
 
   private ImageButton createImageButton(String upPath, String downPath) {

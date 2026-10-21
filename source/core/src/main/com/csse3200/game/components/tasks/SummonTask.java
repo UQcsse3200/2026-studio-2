@@ -19,7 +19,7 @@ public class SummonTask extends DefaultTask implements PriorityTask {
 
   private long lastSummonTime;
   private int currentSummonCount = 0;
-  private int MAX_SUMMON_COUNT = 2;
+  private static final int MAX_SUMMON_COUNT = 2;
 
   /**
    * Creates a summon attack task
@@ -102,16 +102,14 @@ public class SummonTask extends DefaultTask implements PriorityTask {
       float spawnX = x + offset[0];
       float spawnY = y + offset[1];
 
-      if (!isSpawnPositionOccupied(spawnX, spawnY)) {
-        if (currentSummonCount < MAX_SUMMON_COUNT) {
-          Entity skeletonWarrior = EnemyFactory.createSkeletonWarrior(target);
-          skeletonWarrior.getComponent(EnemySummonComponent.class).setSummonedStatus(true);
-          skeletonWarrior.getComponent(EnemySummonComponent.class).setSummoner(necromancer);
-          skeletonWarrior.setPosition(spawnX, spawnY);
-          currentSummonCount++;
-          necromancer.getEvents().trigger("spawnEntity", skeletonWarrior);
-          return;
-        }
+      if (!isSpawnPositionOccupied(spawnX, spawnY) && currentSummonCount < MAX_SUMMON_COUNT) {
+        Entity skeletonWarrior = EnemyFactory.createSkeletonWarrior(target);
+        skeletonWarrior.getComponent(EnemySummonComponent.class).setSummonedStatus(true);
+        skeletonWarrior.getComponent(EnemySummonComponent.class).setSummoner(necromancer);
+        skeletonWarrior.setPosition(spawnX, spawnY);
+        currentSummonCount++;
+        necromancer.getEvents().trigger("spawnEntity", skeletonWarrior);
+        return;
       }
     }
 
@@ -120,12 +118,9 @@ public class SummonTask extends DefaultTask implements PriorityTask {
 
   private boolean isSpawnPositionOccupied(float x, float y) {
     for (Entity other : ServiceLocator.getEntityService().getEntities()) {
-      if (other == owner.getEntity()) {
-        continue;
-      }
-
-      if (other.getComponent(com.csse3200.game.components.npc.EnemyAnimationController.class)
-          == null) {
+      if (other == owner.getEntity()
+          || other.getComponent(com.csse3200.game.components.npc.EnemyAnimationController.class)
+              == null) {
         continue;
       }
 

@@ -16,10 +16,10 @@ public class RangedAttackTask extends DefaultTask implements PriorityTask {
   private final int priority;
   private final float attackRange;
   private final float cooldown;
-  private final int damage;
-  private final float projectileSpeed;
-  private final float projectileLifetime;
-  private final String attackType;
+  private final ProjectileConfig projectileConfig;
+
+  /** Projectile properties shared by every shot from a ranged attack. */
+  public record ProjectileConfig(int damage, float speed, float lifetime, String attackType) {}
 
   private long lastAttackTime;
 
@@ -30,27 +30,19 @@ public class RangedAttackTask extends DefaultTask implements PriorityTask {
    * @param priority task priority while target is in range
    * @param attackRange maximum distance at which the enemy can fire
    * @param cooldown seconds between attacks
-   * @param damage projectile damage
-   * @param projectileSpeed projectile movement speed
-   * @param projectileLifetime maximum projectile lifetime in seconds
+   * @param projectileConfig projectile damage, movement, lifetime, and attack type
    */
   public RangedAttackTask(
       Entity target,
       int priority,
       float attackRange,
       float cooldown,
-      int damage,
-      float projectileSpeed,
-      float projectileLifetime,
-      String attackType) {
+      ProjectileConfig projectileConfig) {
     this.target = target;
     this.priority = priority;
     this.attackRange = attackRange;
     this.cooldown = cooldown;
-    this.damage = damage;
-    this.projectileSpeed = projectileSpeed;
-    this.projectileLifetime = projectileLifetime;
-    this.attackType = attackType;
+    this.projectileConfig = projectileConfig;
   }
 
   @Override
@@ -93,21 +85,32 @@ public class RangedAttackTask extends DefaultTask implements PriorityTask {
 
     Entity projectile;
 
-    if (attackType.equals("calypso")) {
+    if (projectileConfig.attackType().equals("calypso")) {
       projectile =
           EnemyProjectileFactory.createCalypsoProjectile(
-              targetCenter, damage, projectileSpeed, projectileLifetime);
-    } else if (attackType.equals("summon")) {
+              targetCenter,
+              projectileConfig.damage(),
+              projectileConfig.speed(),
+              projectileConfig.lifetime());
+    } else if (projectileConfig.attackType().equals("summon")) {
       projectile =
           EnemyProjectileFactory.createNecromancerProjectile(
-              targetCenter, damage, projectileSpeed, projectileLifetime);
+              targetCenter,
+              projectileConfig.damage(),
+              projectileConfig.speed(),
+              projectileConfig.lifetime());
     } else {
       // An archer's arrow flies like the player's, arcing under gravity, so the factory aims it to
       // come down on the target and places it at the spawn point itself.
       ServiceLocator.getEntityService()
           .register(
               EnemyProjectileFactory.createSkeletonArcherProjectile(
-                  enemy, spawnCenter, targetCenter, damage, projectileSpeed, projectileLifetime));
+                  enemy,
+                  spawnCenter,
+                  targetCenter,
+                  projectileConfig.damage(),
+                  projectileConfig.speed(),
+                  projectileConfig.lifetime()));
       return;
     }
     // setPosition() uses the bottom-left corner, so offset by half the

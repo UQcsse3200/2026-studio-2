@@ -3,6 +3,7 @@ package com.csse3200.game.areas.terrain.configs.levelconfigs;
 import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.areas.terrain.configs.*;
+import com.csse3200.game.areas.terrain.configs.PlatformConfig;
 
 public class Level1Config extends LevelConfig {
 
@@ -129,11 +130,7 @@ public class Level1Config extends LevelConfig {
       float speedY,
       int grapple) {
     return new MovingPlatformConfig(
-        position,
-        3,
-        1,
-        grapple,
-        platformTFP,
+        new PlatformConfig(position, 3, 1, grapple, platformTFP),
         new Vector2(from.x, from.y),
         new Vector2(to.x, to.y),
         new Vector2(speedX, speedY),

@@ -78,17 +78,9 @@ class TextBoxComponentTest {
   private TextBoxComponent makeComponent(
       List<String> pages, float charsPerSecond, List<String> portraitPaths) {
     return new TextBoxComponent(
-        10f,
-        10f,
-        Color.BLACK,
-        Color.TAN,
-        Color.BROWN,
+        new TextBoxComponent.Layout(10f, 10f, 200, 16, com.badlogic.gdx.utils.Align.center),
+        new TextBoxComponent.Style(Color.BLACK, Color.TAN, Color.BROWN, 3, null),
         charsPerSecond,
-        200,
-        16,
-        3,
-        null, // no custom font -> falls back to the skin's default font
-        com.badlogic.gdx.utils.Align.center,
         pages,
         portraitPaths);
   }

@@ -121,7 +121,11 @@ class LevelConfigTest {
     levelConfig.movingPlatforms =
         new MovingPlatformConfig[] {
           new MovingPlatformConfig(
-              pos, (int) size.x, (int) size.y, 0, "", target, target, speed, ids)
+              new PlatformConfig(pos, (int) size.x, (int) size.y, 0, ""),
+              target,
+              target,
+              speed,
+              ids)
         };
     levelConfig.createEntities();
 
@@ -138,7 +142,8 @@ class LevelConfigTest {
     LevelConfig levelConfig = new LevelConfig();
     levelConfig.crumblingPlatforms =
         new CrumblingPlatformConfig[] {
-          new CrumblingPlatformConfig(pos, (int) size.x, (int) size.y, 0, "", 0f, 0f, 0f)
+          new CrumblingPlatformConfig(
+              new PlatformConfig(pos, (int) size.x, (int) size.y, 0, ""), 0f, 0f, 0f)
         };
     levelConfig.createEntities();
 
@@ -156,7 +161,10 @@ class LevelConfigTest {
     levelConfig.triggerablePlatforms =
         new TriggerablePlatformConfig[] {
           new TriggerablePlatformConfig(
-              pos, (int) size.x, (int) size.y, 0, "", new String[] {"test"}, false, false)
+              new PlatformConfig(pos, (int) size.x, (int) size.y, 0, ""),
+              new String[] {"test"},
+              false,
+              false)
         };
     levelConfig.createEntities();
 

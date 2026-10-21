@@ -32,11 +32,8 @@ public class EdgeDetectTask {
     Vector2 end = start.cpy().add(0f, -2f);
 
     // check if ground ahead is safe
-    if (physics.raycast(start, end, PhysicsLayer.GROUND, hit)) {
-      return true;
-    } else if (physics.raycast(start, end, PhysicsLayer.OBSTACLE, hit)) {
-      return true;
-    }
-    return physics.raycast(start, end, PhysicsLayer.LEDGE, hit);
+    return physics.raycast(start, end, PhysicsLayer.GROUND, hit)
+        || physics.raycast(start, end, PhysicsLayer.OBSTACLE, hit)
+        || physics.raycast(start, end, PhysicsLayer.LEDGE, hit);
   }
 }

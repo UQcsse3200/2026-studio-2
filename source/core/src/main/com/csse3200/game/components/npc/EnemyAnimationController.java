@@ -10,6 +10,8 @@ import com.csse3200.game.rendering.AnimationRenderComponent;
  * one of the events is triggered.
  */
 public class EnemyAnimationController extends Component {
+  private static final String LASER_ANIMATION = "laser";
+
   private static final float MOVING_SPEED_THRESHOLD = 0.1f;
   private static final float FACING_DEADZONE = 0.05f;
   private final Entity target;
@@ -103,7 +105,7 @@ public class EnemyAnimationController extends Component {
       return;
     }
 
-    if ("laser".equals(animator.getCurrentAnimation()) && !animator.isFinished()) {
+    if (LASER_ANIMATION.equals(animator.getCurrentAnimation()) && !animator.isFinished()) {
       return;
     }
 
@@ -115,10 +117,10 @@ public class EnemyAnimationController extends Component {
   }
 
   void animateLaser() {
-    if (!animator.hasAnimation("laser")) {
+    if (!animator.hasAnimation(LASER_ANIMATION)) {
       return;
     }
     isAttacking = true;
-    animator.startAnimation("laser");
+    animator.startAnimation(LASER_ANIMATION);
   }
 }

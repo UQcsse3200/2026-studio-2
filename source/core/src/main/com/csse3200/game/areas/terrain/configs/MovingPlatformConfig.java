@@ -1,6 +1,5 @@
 package com.csse3200.game.areas.terrain.configs;
 
-import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
 
 public class MovingPlatformConfig extends PlatformConfig {
@@ -10,16 +9,17 @@ public class MovingPlatformConfig extends PlatformConfig {
   public String[] activateIds;
 
   public MovingPlatformConfig(
-      GridPoint2 position,
-      int width,
-      int height,
-      int grappleSides,
-      String textureFilepath,
+      PlatformConfig platform,
       Vector2 firstTarget,
       Vector2 secondTarget,
       Vector2 speed,
       String[] activateIds) {
-    super(position, width, height, grappleSides, textureFilepath);
+    super(
+        platform.position,
+        platform.width,
+        platform.height,
+        platform.grappleSides,
+        platform.textureFilepath);
     this.firstTarget = firstTarget;
     this.secondTarget = secondTarget;
     this.speed = speed;

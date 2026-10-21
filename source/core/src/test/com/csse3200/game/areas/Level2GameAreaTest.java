@@ -94,9 +94,9 @@ class Level2GameAreaTest extends AbstractAreaAssetsTest {
     verify(resourceService)
         .loadMusic(
             argThat(
-                (String[] music) ->
-                    Arrays.asList(music).contains(Level2GameArea.AMBIENCE_MUSIC)
-                        && Arrays.asList(music).contains(Level2GameArea.WATERFALL_MUSIC)));
+                (String[] musicPaths) ->
+                    Arrays.asList(musicPaths).contains(Level2GameArea.AMBIENCE_MUSIC)
+                        && Arrays.asList(musicPaths).contains(Level2GameArea.WATERFALL_MUSIC)));
   }
 
   @Test

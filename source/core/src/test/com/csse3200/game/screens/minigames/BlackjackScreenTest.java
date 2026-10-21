@@ -77,7 +77,8 @@ class BlackjackScreenTest {
   @Test
   void createUiBuildsDisplayActionsAndInputComponents() {
     RenderService renderService = mock(RenderService.class);
-    when(renderService.getStage()).thenReturn(mock(Stage.class));
+    Stage stage = mock(Stage.class);
+    when(renderService.getStage()).thenReturn(stage);
     ServiceLocator.registerRenderService(renderService);
 
     Entity ui = screen.createUI();

@@ -93,7 +93,8 @@ class BlackjackOverlayTest {
 
   @Test
   void defaultAndPlayerConstructorsDoNotThrow() {
-    assertDoesNotThrow(() -> new BlackjackOverlay());
+    org.junit.jupiter.api.function.Executable createOverlay = BlackjackOverlay::new;
+    assertDoesNotThrow(createOverlay);
     assertDoesNotThrow(() -> new BlackjackOverlay(null));
   }
 

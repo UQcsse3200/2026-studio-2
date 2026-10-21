@@ -67,45 +67,41 @@ public class TextBoxComponent extends UIComponent {
   // page immediately (if it's still typing). A second press moves on to the next page, if any -
   // only once the last page has been fully shown does TAB dismiss the box entirely.
 
-  /**
-   * @param fontPath path to a bitmap font (.fnt) file, relative to assets, e.g. "fonts/scroll.fnt".
-   *     Pass {@code null} to use the skin's default font.
-   * @param textAlignment horizontal alignment of the text within the box, e.g. {@link Align#left},
-   *     {@link Align#center}, {@link Align#right}.
-   * @param portraitPaths optional per-page portrait image paths (asset-relative JPEG/PNG), parallel
-   *     to {@code pages}: entry {@code i} is shown overlapping the top edge of the box while page
-   *     {@code i} is displayed. Blank or missing entries mean no portrait for that page. Pass
-   *     {@code null} or an empty list for no portraits.
-   */
-  public TextBoxComponent(
-      float xPos,
-      float yPos,
+  /** Position, dimensions and text alignment for a textbox. */
+  public record Layout(float x, float y, int maxWidth, int padding, int textAlignment) {}
+
+  /** Colours, border and optional asset-relative bitmap font for a textbox. */
+  public record Style(
       Color textColour,
       Color backgroundColour,
       Color borderColour,
-      float charsPerSecond,
-      int maxWidth,
-      int padding,
       int borderThickness,
-      String fontPath,
-      int textAlignment,
+      String fontPath) {}
+
+  /**
+   * Creates a textbox with optional per-page portrait paths. Missing or blank portrait paths hide
+   * the portrait; a null font path uses the skin's default font.
+   */
+  public TextBoxComponent(
+      Layout layout,
+      Style style,
+      float charsPerSecond,
       List<String> pages,
       List<String> portraitPaths) {
-
-    this.posX = xPos;
-    this.posY = yPos;
-    this.textColor = textColour;
-    this.backgroundColour = backgroundColour;
+    this.posX = layout.x();
+    this.posY = layout.y();
+    this.textColor = style.textColour();
+    this.backgroundColour = style.backgroundColour();
     this.charsPerSecond = charsPerSecond;
-    this.maxWidth = maxWidth;
-    this.padding = padding;
-    this.borderColour = borderColour;
-    this.borderThickness = borderThickness;
-    this.textAlignment = textAlignment;
+    this.maxWidth = layout.maxWidth();
+    this.padding = layout.padding();
+    this.borderColour = style.borderColour();
+    this.borderThickness = style.borderThickness();
+    this.textAlignment = layout.textAlignment();
     this.pages = (pages == null || pages.isEmpty()) ? Collections.singletonList("") : pages;
     this.portraitPaths =
         (portraitPaths == null) ? Collections.emptyList() : new ArrayList<>(portraitPaths);
-    this.customFont = loadFont(fontPath);
+    this.customFont = loadFont(style.fontPath());
   }
 
   /** Enables cutscene-style input control instead of polling TAB while rendering. */

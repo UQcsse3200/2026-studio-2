@@ -210,17 +210,15 @@ public class Level1GameArea extends GameArea {
     // Base layer: the whole scene.
     backgroundComponent.addLayer(
         "images/backgrounds/level_1_idea.png",
-        new Vector2(0.15f, 0f),
-        36f,
-        23.2f,
-        new Vector2(0f, 1f),
-        new Vector2(0f, 0f),
-        RepeatMode.NONE,
-        0.7f,
-        1f,
-        false,
-        0,
-        -1);
+        new BackgroundRenderComponent.LayerLayout(
+            new Vector2(0.15f, 0f),
+            36f,
+            23.2f,
+            new Vector2(0f, 1f),
+            new Vector2(0f, 0f),
+            RepeatMode.NONE,
+            0.7f),
+        new BackgroundRenderComponent.LayerAppearance(1f, false, 0, -1));
 
     // Create the background entity.
     Entity background = new Entity().addComponent(backgroundComponent);

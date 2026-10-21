@@ -38,11 +38,13 @@ class SummonTaskTest {
     ServiceLocator.registerEntityService(new EntityService());
 
     RenderService renderService = mock(RenderService.class);
-    when(renderService.getDebug()).thenReturn(mock(DebugRenderer.class));
+    DebugRenderer debugRenderer = mock(DebugRenderer.class);
+    when(renderService.getDebug()).thenReturn(debugRenderer);
     ServiceLocator.registerRenderService(renderService);
 
     LightingEngine engine = mock(LightingEngine.class);
-    when(engine.getRayHandler()).thenReturn(mock(box2dLight.RayHandler.class));
+    box2dLight.RayHandler rayHandler = mock(box2dLight.RayHandler.class);
+    when(engine.getRayHandler()).thenReturn(rayHandler);
     LightingService lighting = mock(LightingService.class);
     when(lighting.getEngine()).thenReturn(engine);
     ServiceLocator.registerLightingService(lighting);

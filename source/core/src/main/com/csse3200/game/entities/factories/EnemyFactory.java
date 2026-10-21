@@ -219,8 +219,6 @@ public class EnemyFactory {
             PhysicsComponent.AlignX.CENTER,
             PhysicsComponent.AlignY.BOTTOM);
 
-    // skeletonArcher.getComponent(AnimationRenderComponent.class).scaleEntity();
-
     return skeletonArcher;
   }
 
@@ -270,7 +268,6 @@ public class EnemyFactory {
     animator.addAnimation("idle", 0.15f, Animation.PlayMode.LOOP);
 
     vulture
-        // .addComponent(new CombatStatsComponent(config.health, config.baseAttack))
         .addComponent(animator)
         .addComponent(new EnemyAnimationController(target))
         .addComponent(new ChaseSoundComponent("sounds/osprey.ogg", 0.25f));
@@ -318,8 +315,6 @@ public class EnemyFactory {
     necromancer
         .addComponent(new ChaseSoundComponent("sounds/necromancer_whisper.ogg", 0.5f))
         .addComponent(new SummonSoundComponent("sounds/necromancer_summon.ogg", 0.5f));
-
-    // necromancer.getComponent(AnimationRenderComponent.class).scaleEntity();
 
     return necromancer;
   }
@@ -455,7 +450,6 @@ public class EnemyFactory {
             .addComponent(new EnemyItemDropComponent(config.itemDrops))
             .addComponent(aiComponent)
             .addComponent(new SlowStatsComponent())
-            // .addComponent(new StatusEffectRenderComponent())
             .addComponent(new EnemySummonComponent(false));
 
     if (config != configs.calypso) {
@@ -490,10 +484,11 @@ public class EnemyFactory {
               20,
               config.attackRange,
               2f,
-              config.baseAttack,
-              ProjectileFactory.STANDARD_ARROW_SPEED,
-              5f,
-              config.attackType));
+              new RangedAttackTask.ProjectileConfig(
+                  config.baseAttack,
+                  ProjectileFactory.STANDARD_ARROW_SPEED,
+                  5f,
+                  config.attackType)));
       // If the enemy is a summon type, add summon + range task
     } else if (config.attackType.equals("summon")) {
       aiComponent
@@ -503,16 +498,19 @@ public class EnemyFactory {
                   20,
                   config.attackRange,
                   10f,
-                  config.baseAttack,
-                  4.5f,
-                  5f,
-                  config.attackType))
+                  new RangedAttackTask.ProjectileConfig(
+                      config.baseAttack, 4.5f, 5f, config.attackType)))
           .addTask(new SummonTask(target, 30, config.attackRange, 5f, "Necromancer"));
     } else if (config.attackType.equals("calypso")) {
       // Standard projectile attack. Other Calypso attacks are added separately.
       aiComponent.addTask(
           new RangedAttackTask(
-              target, 10, 50f, 7f, config.baseAttack, 4.5f, 5f, config.attackType));
+              target,
+              10,
+              50f,
+              7f,
+              new RangedAttackTask.ProjectileConfig(
+                  config.baseAttack, 4.5f, 5f, config.attackType)));
     }
 
     return enemy;

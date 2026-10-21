@@ -172,14 +172,6 @@ class GrappleHoldRenderComponentTest {
     return hold;
   }
 
-  /**
-   * Moves the player so the rope to the anchor leaves them {@code run} across and {@code rise} up.
-   */
-  private void placePlayerBelowAnchor(Vector2 anchor, float run, float rise) {
-    // The entity is one unit square, so its centre is half a unit from where it is positioned.
-    player.setPosition(anchor.x - run - 0.5f, anchor.y - rise - 0.5f);
-  }
-
   @Test
   void shouldHangFromARopeThatGoesUp() {
     GrappleHoldRenderComponent hold = holdWithPose();
