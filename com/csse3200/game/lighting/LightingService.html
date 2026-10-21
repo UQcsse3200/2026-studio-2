@@ -106,7 +106,9 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-last">Description</div>
 <div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(com.csse3200.game.components.CameraComponent,com.badlogic.gdx.physics.box2d.World)" class="member-name-link">LightingService</a><wbr>(<a href="../components/CameraComponent.html" title="class in com.csse3200.game.components">CameraComponent</a>&nbsp;camera,
  com.badlogic.gdx.physics.box2d.World&nbsp;world)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Creates and owns the lighting engine for a camera and physics world.</div>
+</div>
 </div>
 </section>
 </li>
@@ -146,6 +148,12 @@ loadScripts(document, 'script');</script>
 <h3>LightingService</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">LightingService</span><wbr><span class="parameters">(<a href="../components/CameraComponent.html" title="class in com.csse3200.game.components">CameraComponent</a>&nbsp;camera,
  com.badlogic.gdx.physics.box2d.World&nbsp;world)</span></div>
+<div class="block">Creates and owns the lighting engine for a camera and physics world.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>camera</code> - camera used to render lights</dd>
+<dd><code>world</code> - Box2D world used for light raycasts</dd>
+</dl>
 </section>
 </li>
 </ul>
@@ -160,6 +168,10 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="getEngine()">
 <h3>getEngine</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="LightingEngine.html" title="class in com.csse3200.game.lighting">LightingEngine</a></span>&nbsp;<span class="element-name">getEngine</span>()</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>the lighting engine managed by this service</dd>
+</dl>
 </section>
 </li>
 </ul>

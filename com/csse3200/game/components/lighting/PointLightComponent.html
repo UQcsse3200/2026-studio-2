@@ -98,8 +98,8 @@ loadScripts(document, 'script');</script>
 <div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">PointLightComponent</span>
 <span class="extends-implements">extends <a href="../Component.html" title="class in com.csse3200.game.components">Component</a>
 implements com.badlogic.gdx.utils.Disposable</span></div>
-<div class="block">Circle light component used to store the circleLight object and all of its parameters. This can
- be added to an entity to make it product light.</div>
+<div class="block">Attaches a Box2DLight point light to an entity and keeps its position, color, and activity in
+ sync with that entity.</div>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -125,7 +125,7 @@ implements com.badlogic.gdx.utils.Disposable</span></div>
  com.badlogic.gdx.graphics.Color&nbsp;color,
  float&nbsp;distance)</code></div>
 <div class="col-last even-row-color">
-<div class="block">The CircleLightComponent must be registered to the same rayHandler that is being rendered.</div>
+<div class="block">Creates a point light attached to the supplied ray handler.</div>
 </div>
 </div>
 </section>
@@ -144,12 +144,12 @@ implements com.badlogic.gdx.utils.Disposable</span></div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#create()" class="member-name-link">create</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Called when the entity is created and registered.</div>
+<div class="block">Creates the Box2DLight point light and registers it with the lighting engine.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#dispose()" class="member-name-link">dispose</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Called when the component is disposed.</div>
+<div class="block">Unregisters and removes this light from its ray handler.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>float</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getBaseBlue()" class="member-name-link">getBaseBlue</a>()</code></div>
@@ -192,28 +192,40 @@ implements com.badlogic.gdx.utils.Disposable</span></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setActive(boolean)" class="member-name-link">setActive</a><wbr>(boolean&nbsp;active)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Enables or disables this light.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="PointLightComponent.html" title="class in com.csse3200.game.components.lighting">PointLightComponent</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setColor(com.badlogic.gdx.graphics.Color)" class="member-name-link">setColor</a><wbr>(com.badlogic.gdx.graphics.Color&nbsp;c)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Sets the base color of the light.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="PointLightComponent.html" title="class in com.csse3200.game.components.lighting">PointLightComponent</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setDistance(float)" class="member-name-link">setDistance</a><wbr>(float&nbsp;d)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Sets the light's radius.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setIntensity(float)" class="member-name-link">setIntensity</a><wbr>(float&nbsp;intensity)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Sets the light intensity, clamped to the range from zero to one.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setRayCount(int)" class="member-name-link">setRayCount</a><wbr>(int&nbsp;rayCount)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Sets the number of rays used to render this light.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setSmoothedColor(float,float,float)" class="member-name-link">setSmoothedColor</a><wbr>(float&nbsp;red,
  float&nbsp;green,
  float&nbsp;blue)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Sets the color channels produced by lighting overlap smoothing.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#update()" class="member-name-link">update</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Called once per frame of the game, and should be used for most component logic.</div>
+<div class="block">Reconciles the light's state and position with its owning entity.</div>
 </div>
 </div>
 </div>
@@ -242,8 +254,14 @@ implements com.badlogic.gdx.utils.Disposable</span></div>
  int&nbsp;rays,
  com.badlogic.gdx.graphics.Color&nbsp;color,
  float&nbsp;distance)</span></div>
-<div class="block">The CircleLightComponent must be registered to the same rayHandler that is being rendered. All
- light objects must be attached to the rayHandler.</div>
+<div class="block">Creates a point light attached to the supplied ray handler.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>rayHandler</code> - handler that will render and own this light</dd>
+<dd><code>rays</code> - number of rays used for the light's shadows</dd>
+<dd><code>color</code> - base light color</dd>
+<dd><code>distance</code> - light radius in world units</dd>
+</dl>
 </section>
 </li>
 </ul>
@@ -258,9 +276,7 @@ implements com.badlogic.gdx.utils.Disposable</span></div>
 <section class="detail" id="create()">
 <h3>create</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">create</span>()</div>
-<div class="block"><span class="description-from-type-label">Description copied from class:&nbsp;<code><a href="../Component.html#create()">Component</a></code></span></div>
-<div class="block">Called when the entity is created and registered. Initial logic such as calls to GetComponent
- should be made here, not in the constructor which is called before an entity is finished.</div>
+<div class="block">Creates the Box2DLight point light and registers it with the lighting engine.</div>
 <dl class="notes">
 <dt>Overrides:</dt>
 <dd><code><a href="../Component.html#create()">create</a></code>&nbsp;in class&nbsp;<code><a href="../Component.html" title="class in com.csse3200.game.components">Component</a></code></dd>
@@ -271,39 +287,58 @@ implements com.badlogic.gdx.utils.Disposable</span></div>
 <section class="detail" id="getRayCount()">
 <h3>getRayCount</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">getRayCount</span>()</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>current number of rays used to render this light</dd>
+</dl>
 </section>
 </li>
 <li>
 <section class="detail" id="getLightX()">
 <h3>getLightX</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">float</span>&nbsp;<span class="element-name">getLightX</span>()</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>current world-space horizontal position of the light</dd>
+</dl>
 </section>
 </li>
 <li>
 <section class="detail" id="getLightY()">
 <h3>getLightY</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">float</span>&nbsp;<span class="element-name">getLightY</span>()</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>current world-space vertical position of the light</dd>
+</dl>
 </section>
 </li>
 <li>
 <section class="detail" id="getLightDistance()">
 <h3>getLightDistance</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">float</span>&nbsp;<span class="element-name">getLightDistance</span>()</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>current radius of the light in world units</dd>
+</dl>
 </section>
 </li>
 <li>
 <section class="detail" id="setRayCount(int)">
 <h3>setRayCount</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setRayCount</span><wbr><span class="parameters">(int&nbsp;rayCount)</span></div>
+<div class="block">Sets the number of rays used to render this light.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>rayCount</code> - new ray count; applied to the Box2DLight object during the next update</dd>
+</dl>
 </section>
 </li>
 <li>
 <section class="detail" id="update()">
 <h3>update</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">update</span>()</div>
-<div class="block"><span class="description-from-type-label">Description copied from class:&nbsp;<code><a href="../Component.html#update()">Component</a></code></span></div>
-<div class="block">Called once per frame of the game, and should be used for most component logic. Not called if
- component is disabled.</div>
+<div class="block">Reconciles the light's state and position with its owning entity.</div>
 <dl class="notes">
 <dt>Overrides:</dt>
 <dd><code><a href="../Component.html#update()">update</a></code>&nbsp;in class&nbsp;<code><a href="../Component.html" title="class in com.csse3200.game.components">Component</a></code></dd>
@@ -314,8 +349,7 @@ implements com.badlogic.gdx.utils.Disposable</span></div>
 <section class="detail" id="dispose()">
 <h3>dispose</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">dispose</span>()</div>
-<div class="block"><span class="description-from-type-label">Description copied from class:&nbsp;<code><a href="../Component.html#dispose()">Component</a></code></span></div>
-<div class="block">Called when the component is disposed. Dispose of any internal resources here.</div>
+<div class="block">Unregisters and removes this light from its ray handler.</div>
 <dl class="notes">
 <dt>Specified by:</dt>
 <dd><code>dispose</code>&nbsp;in interface&nbsp;<code>com.badlogic.gdx.utils.Disposable</code></dd>
@@ -328,42 +362,73 @@ implements com.badlogic.gdx.utils.Disposable</span></div>
 <section class="detail" id="setColor(com.badlogic.gdx.graphics.Color)">
 <h3>setColor</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="PointLightComponent.html" title="class in com.csse3200.game.components.lighting">PointLightComponent</a></span>&nbsp;<span class="element-name">setColor</span><wbr><span class="parameters">(com.badlogic.gdx.graphics.Color&nbsp;c)</span></div>
+<div class="block">Sets the base color of the light.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>c</code> - new base color</dd>
+<dt>Returns:</dt>
+<dd>this component for method chaining</dd>
+</dl>
 </section>
 </li>
 <li>
 <section class="detail" id="getBaseRed()">
 <h3>getBaseRed</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">float</span>&nbsp;<span class="element-name">getBaseRed</span>()</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>red channel of the configured base color</dd>
+</dl>
 </section>
 </li>
 <li>
 <section class="detail" id="getBaseGreen()">
 <h3>getBaseGreen</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">float</span>&nbsp;<span class="element-name">getBaseGreen</span>()</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>green channel of the configured base color</dd>
+</dl>
 </section>
 </li>
 <li>
 <section class="detail" id="getBaseBlue()">
 <h3>getBaseBlue</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">float</span>&nbsp;<span class="element-name">getBaseBlue</span>()</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>blue channel of the configured base color</dd>
+</dl>
 </section>
 </li>
 <li>
 <section class="detail" id="getSmoothedRed()">
 <h3>getSmoothedRed</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">float</span>&nbsp;<span class="element-name">getSmoothedRed</span>()</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>current smoothed red channel used to render the light</dd>
+</dl>
 </section>
 </li>
 <li>
 <section class="detail" id="getSmoothedGreen()">
 <h3>getSmoothedGreen</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">float</span>&nbsp;<span class="element-name">getSmoothedGreen</span>()</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>current smoothed green channel used to render the light</dd>
+</dl>
 </section>
 </li>
 <li>
 <section class="detail" id="getSmoothedBlue()">
 <h3>getSmoothedBlue</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">float</span>&nbsp;<span class="element-name">getSmoothedBlue</span>()</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>current smoothed blue channel used to render the light</dd>
+</dl>
 </section>
 </li>
 <li>
@@ -372,42 +437,78 @@ implements com.badlogic.gdx.utils.Disposable</span></div>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setSmoothedColor</span><wbr><span class="parameters">(float&nbsp;red,
  float&nbsp;green,
  float&nbsp;blue)</span></div>
+<div class="block">Sets the color channels produced by lighting overlap smoothing.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>red</code> - smoothed red channel</dd>
+<dd><code>green</code> - smoothed green channel</dd>
+<dd><code>blue</code> - smoothed blue channel</dd>
+</dl>
 </section>
 </li>
 <li>
 <section class="detail" id="setIntensity(float)">
 <h3>setIntensity</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setIntensity</span><wbr><span class="parameters">(float&nbsp;intensity)</span></div>
+<div class="block">Sets the light intensity, clamped to the range from zero to one.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>intensity</code> - requested intensity</dd>
+</dl>
 </section>
 </li>
 <li>
 <section class="detail" id="setDistance(float)">
 <h3>setDistance</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="PointLightComponent.html" title="class in com.csse3200.game.components.lighting">PointLightComponent</a></span>&nbsp;<span class="element-name">setDistance</span><wbr><span class="parameters">(float&nbsp;d)</span></div>
+<div class="block">Sets the light's radius.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>d</code> - radius in world units</dd>
+<dt>Returns:</dt>
+<dd>this component for method chaining</dd>
+</dl>
 </section>
 </li>
 <li>
 <section class="detail" id="setActive(boolean)">
 <h3>setActive</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setActive</span><wbr><span class="parameters">(boolean&nbsp;active)</span></div>
+<div class="block">Enables or disables this light.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>active</code> - true to enable the light, false to disable it</dd>
+</dl>
 </section>
 </li>
 <li>
 <section class="detail" id="isActive()">
 <h3>isActive</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">isActive</span>()</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>true if this light is enabled</dd>
+</dl>
 </section>
 </li>
 <li>
 <section class="detail" id="getDistance()">
 <h3>getDistance</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">float</span>&nbsp;<span class="element-name">getDistance</span>()</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>configured light radius in world units</dd>
+</dl>
 </section>
 </li>
 <li>
 <section class="detail" id="getOldRayCount()">
 <h3>getOldRayCount</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">getOldRayCount</span>()</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>ray count supplied when this component was constructed</dd>
+</dl>
 </section>
 </li>
 </ul>

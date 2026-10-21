@@ -112,7 +112,7 @@ implements com.badlogic.gdx.utils.Disposable</span></div>
 <div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(com.csse3200.game.components.CameraComponent,com.badlogic.gdx.physics.box2d.World)" class="member-name-link">LightingEngine</a><wbr>(<a href="../components/CameraComponent.html" title="class in com.csse3200.game.components">CameraComponent</a>&nbsp;camera,
  com.badlogic.gdx.physics.box2d.World&nbsp;world)</code></div>
 <div class="col-last even-row-color">
-<div class="block">Constructor method for the lighting engine.</div>
+<div class="block">Creates the lighting engine for a world and camera.</div>
 </div>
 </div>
 </section>
@@ -130,7 +130,9 @@ implements com.badlogic.gdx.utils.Disposable</span></div>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#addPointLight(com.csse3200.game.components.lighting.PointLightComponent)" class="member-name-link">addPointLight</a><wbr>(<a href="../components/lighting/PointLightComponent.html" title="class in com.csse3200.game.components.lighting">PointLightComponent</a>&nbsp;light)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Registers a point light for overlap-based ray-count and color balancing.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#dispose()" class="member-name-link">dispose</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
@@ -139,7 +141,9 @@ implements com.badlogic.gdx.utils.Disposable</span></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#removePointLight(com.csse3200.game.components.lighting.PointLightComponent)" class="member-name-link">removePointLight</a><wbr>(<a href="../components/lighting/PointLightComponent.html" title="class in com.csse3200.game.components.lighting">PointLightComponent</a>&nbsp;light)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Removes a point light from overlap balancing.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#render()" class="member-name-link">render</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
@@ -147,7 +151,9 @@ implements com.badlogic.gdx.utils.Disposable</span></div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setAmbientLight(float)" class="member-name-link">setAmbientLight</a><wbr>(float&nbsp;ambientLight)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Sets the ambient light level used to shade the scene.</div>
+</div>
 </div>
 </div>
 </div>
@@ -170,12 +176,11 @@ implements com.badlogic.gdx.utils.Disposable</span></div>
 <h3>LightingEngine</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">LightingEngine</span><wbr><span class="parameters">(<a href="../components/CameraComponent.html" title="class in com.csse3200.game.components">CameraComponent</a>&nbsp;camera,
  com.badlogic.gdx.physics.box2d.World&nbsp;world)</span></div>
-<div class="block">Constructor method for the lighting engine. This is where some of the rayHandler's global
- variables are set and can be changed.</div>
+<div class="block">Creates the lighting engine for a world and camera.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
-<dd><code>camera</code> - The camera associated with the current renderer for the screen.</dd>
-<dd><code>world</code> - The same world registered with the physics engine.</dd>
+<dd><code>camera</code> - camera used to render the current screen</dd>
+<dd><code>world</code> - Box2D world used by the physics engine and light raycasts</dd>
 </dl>
 </section>
 </li>
@@ -191,24 +196,43 @@ implements com.badlogic.gdx.utils.Disposable</span></div>
 <section class="detail" id="addPointLight(com.csse3200.game.components.lighting.PointLightComponent)">
 <h3>addPointLight</h3>
 <div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">addPointLight</span><wbr><span class="parameters">(<a href="../components/lighting/PointLightComponent.html" title="class in com.csse3200.game.components.lighting">PointLightComponent</a>&nbsp;light)</span></div>
+<div class="block">Registers a point light for overlap-based ray-count and color balancing.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>light</code> - light to register</dd>
+</dl>
 </section>
 </li>
 <li>
 <section class="detail" id="removePointLight(com.csse3200.game.components.lighting.PointLightComponent)">
 <h3>removePointLight</h3>
 <div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">removePointLight</span><wbr><span class="parameters">(<a href="../components/lighting/PointLightComponent.html" title="class in com.csse3200.game.components.lighting">PointLightComponent</a>&nbsp;light)</span></div>
+<div class="block">Removes a point light from overlap balancing.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>light</code> - light to unregister</dd>
+</dl>
 </section>
 </li>
 <li>
 <section class="detail" id="getRayHandler()">
 <h3>getRayHandler</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">box2dLight.RayHandler</span>&nbsp;<span class="element-name">getRayHandler</span>()</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>the Box2DLight handler that owns and renders this engine's lights</dd>
+</dl>
 </section>
 </li>
 <li>
 <section class="detail" id="setAmbientLight(float)">
 <h3>setAmbientLight</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setAmbientLight</span><wbr><span class="parameters">(float&nbsp;ambientLight)</span></div>
+<div class="block">Sets the ambient light level used to shade the scene.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>ambientLight</code> - ambient light color intensity</dd>
+</dl>
 </section>
 </li>
 <li>
@@ -216,7 +240,7 @@ implements com.badlogic.gdx.utils.Disposable</span></div>
 <h3>render</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">render</span>()</div>
 <div class="block">Render all lights registered with the ray handler to the screen. This also renders a "shadow"
- over the entire screen which can be adjusted using the setAmbientLight function.</div>
+ over the entire screen which can be adjusted using <a href="#setAmbientLight(float)"><code>setAmbientLight(float)</code></a>.</div>
 </section>
 </li>
 <li>
