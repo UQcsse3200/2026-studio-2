@@ -1,0 +1,31 @@
+{
+  "xPos": 20,
+  "yPos": 150,
+  "textColour": "Color.BLACK",
+  "backgroundColour": "Color.TAN",
+  "borderColour": "Color.BROWN",
+  "charsPerSecond": 30,
+  "maxWidth": 320,
+  "padding": 16,
+  "borderThickness": 3,
+  "fontPath": "flat-earth/skin/fonts/PixeloidSans.fnt",
+  "textAlignment": "left",
+  "pages": [
+    "Odysseus, you might be a hero but even you can't make that jump. Hold TAB to spin the arrow wheel.",
+    "Hover the rope arrow and release to equip it. Now hold the right mouse button to draw the rope taut.",
+    "Aim at a ledge with a little architectural confidence. Release, and the rope bites.",
+    "The rope holds; I tied it myself. Press W to climb, S to descend. Do try to come back in one piece."
+  ],
+  "portraitPaths": [
+    "images/portraits/calyspoWorried.jpeg",
+    "images/portraits/calypsoEncouraging.jpeg",
+    "images/portraits/calypsoEncouraging.jpeg",
+    "images/portraits/calyspoWorried.jpeg"
+  ],
+  "steps": [
+    {"keys": ["TAB"]},
+    {"mouse": ["RIGHT"]},
+    {"mouseUp": ["RIGHT"]},
+    {"keys": ["W", "S"]}
+  ]
+}

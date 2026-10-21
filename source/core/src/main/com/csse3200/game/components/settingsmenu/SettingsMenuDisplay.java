@@ -38,7 +38,6 @@ public class SettingsMenuDisplay extends UIComponent {
   private TextField fpsText;
   private CheckBox fullScreenCheck;
   private CheckBox vsyncCheck;
-  private Slider uiScaleSlider;
   private Slider volumeSlider;
   private SelectBox<StringDecorator<DisplayMode>> displayModeSelect;
 
@@ -124,11 +123,6 @@ public class SettingsMenuDisplay extends UIComponent {
     vsyncCheck = new CheckBox("", skin);
     vsyncCheck.setChecked(settings.vsync);
 
-    Label uiScaleLabel = new Label("ui Scale (Unused):", skin);
-    uiScaleSlider = new Slider(0.2f, 2f, 0.1f, false, skin);
-    uiScaleSlider.setValue(settings.uiScale);
-    Label uiScaleValue = new Label(String.format("%.2fx", settings.uiScale), skin);
-
     Label volumeLabel = new Label("Volume:", skin);
     volumeSlider = new Slider(0f, 1f, 0.05f, false, skin);
     volumeSlider.setValue(settings.volume);
@@ -155,14 +149,6 @@ public class SettingsMenuDisplay extends UIComponent {
     table.add(vsyncCheck).left();
 
     table.row().padTop(10f);
-    Table uiScaleTable = new Table();
-    uiScaleTable.add(uiScaleSlider).width(100).left();
-    uiScaleTable.add(uiScaleValue).left().padLeft(5f).expandX();
-
-    table.add(uiScaleLabel).right().padRight(15f);
-    table.add(uiScaleTable).left();
-
-    table.row().padTop(10f);
     Table volumeTable = new Table();
     volumeTable.add(volumeSlider).width(100).left();
     volumeTable.add(volumeValue).left().padLeft(5f).expandX();
@@ -174,13 +160,6 @@ public class SettingsMenuDisplay extends UIComponent {
     table.add(displayModeLabel).right().padRight(15f);
     table.add(displayModeSelect).left();
 
-    // Events on inputs
-    uiScaleSlider.addListener(
-        (Event event) -> {
-          float value = uiScaleSlider.getValue();
-          uiScaleValue.setText(String.format("%.2fx", value));
-          return true;
-        });
     volumeSlider.addListener(
         (Event event) -> {
           float value = volumeSlider.getValue();
@@ -281,7 +260,6 @@ public class SettingsMenuDisplay extends UIComponent {
       settings.fps = fpsVal;
     }
     settings.fullscreen = fullScreenCheck.isChecked();
-    settings.uiScale = uiScaleSlider.getValue();
     settings.volume = volumeSlider.getValue();
     settings.displayMode = new DisplaySettings(displayModeSelect.getSelected().object);
     settings.vsync = vsyncCheck.isChecked();

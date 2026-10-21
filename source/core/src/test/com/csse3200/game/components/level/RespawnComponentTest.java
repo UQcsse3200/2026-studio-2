@@ -6,7 +6,9 @@ import static org.mockito.Mockito.*;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.areas.GameArea;
 import com.csse3200.game.components.CombatStatsComponent;
+import com.csse3200.game.components.player.PlayerActions;
 import com.csse3200.game.entities.Entity;
+import java.lang.reflect.Field;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -130,6 +132,32 @@ public class RespawnComponentTest {
 
     assertEquals(12f, player.getPosition().x, 0.001f);
     assertEquals(8f, player.getPosition().y, 0.001f);
+  }
+
+  @Test
+  void shouldDiscardPendingPhysicsRepositionWhenTeleporting() throws Exception {
+    PlayerActions actions = new PlayerActions();
+    player.addComponent(actions);
+    actions.create(); // registers listeners; this test player has no physics component
+    player.addComponent(respawnComponent);
+    player.setPosition(0, 0);
+
+    player.getEvents().trigger("physicsPositionRequest", new Vector2(5f, 5f));
+    assertTrue(pendingPhysicsReposition(actions), "request should be armed before the teleport");
+
+    respawnComponent.queueRespawn(new Vector2(12f, 8f));
+    respawnComponent.update();
+
+    assertEquals(12f, player.getPosition().x, 0.001f);
+    // The stale reposition must be gone: consumed next frame it would drag the player back
+    // to where they died.
+    assertFalse(pendingPhysicsReposition(actions));
+  }
+
+  private static boolean pendingPhysicsReposition(PlayerActions actions) throws Exception {
+    Field field = PlayerActions.class.getDeclaredField("physicsHelperRequestedPositionChange");
+    field.setAccessible(true);
+    return (boolean) field.get(actions);
   }
 
   @Test

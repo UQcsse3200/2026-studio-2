@@ -122,7 +122,8 @@ class CutsceneScreenTest {
     screen.render(10f); // FADE_TEXT → FADE_TO_BLACK
     screen.render(10f); // FADE_TO_BLACK → COMPLETE → game.transitionTo(...)
 
-    verify(game).transitionTo(GdxGame.ScreenType.MAIN_GAME);
+    // The natural end exits slowly: gameplay fades in over the exit fade length.
+    verify(game).transitionTo(GdxGame.ScreenType.MAIN_GAME, CutsceneScreen.EXIT_FADE_DURATION);
   }
 
   @Test
@@ -140,7 +141,7 @@ class CutsceneScreenTest {
     screen.render(10f); // FADE_TEXT → FADE_TO_BLACK
     screen.render(10f); // FADE_TO_BLACK → COMPLETE → game.transitionTo(...)
 
-    verify(game).transitionTo(GdxGame.ScreenType.LEVEL_1_GAME);
+    verify(game).transitionTo(GdxGame.ScreenType.LEVEL_1_GAME, CutsceneScreen.EXIT_FADE_DURATION);
   }
 
   @Test
@@ -176,7 +177,7 @@ class CutsceneScreenTest {
     screen.render(10f); // FADE_TEXT → FADE_TO_BLACK
     screen.render(10f); // COMPLETE
 
-    verify(game).transitionTo(GdxGame.ScreenType.MAIN_GAME);
+    verify(game).transitionTo(GdxGame.ScreenType.MAIN_GAME, CutsceneScreen.EXIT_FADE_DURATION);
   }
 
   @Test
@@ -210,9 +211,9 @@ class CutsceneScreenTest {
     int align = screen.getSkipTable().getAlign();
     assertNotEquals(0, (align & com.badlogic.gdx.utils.Align.bottom));
     assertNotEquals(0, (align & com.badlogic.gdx.utils.Align.right));
-    // Skip uses the continue button textures.
-    assertEquals("images/Buttons/continue_up_btn.png", CutsceneScreen.SKIP_UP_TEXTURE);
-    assertEquals("images/Buttons/continue_down_btn.png", CutsceneScreen.SKIP_DOWN_TEXTURE);
+    // Skip uses the skip button textures.
+    assertEquals("images/Buttons/skip_up_btn.png", CutsceneScreen.SKIP_UP_TEXTURE);
+    assertEquals("images/Buttons/skip_down_btn.png", CutsceneScreen.SKIP_DOWN_TEXTURE);
   }
 
   @Test
@@ -295,6 +296,6 @@ class CutsceneScreenTest {
     screen.render(10f); // FADE_TEXT → FADE_TO_BLACK
     screen.render(10f); // FADE_TO_BLACK → COMPLETE → game.transitionTo(...)
 
-    verify(game).transitionTo(GdxGame.ScreenType.MAIN_GAME);
+    verify(game).transitionTo(GdxGame.ScreenType.MAIN_GAME, CutsceneScreen.EXIT_FADE_DURATION);
   }
 }

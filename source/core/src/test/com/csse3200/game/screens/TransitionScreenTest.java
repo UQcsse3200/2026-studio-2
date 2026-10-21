@@ -143,6 +143,39 @@ class TransitionScreenTest {
   }
 
   @Test
+  void shouldUseTheConfiguredFadeDuration() {
+    GdxGame game = mock(GdxGame.class);
+    Screen fromScreen = mock(Screen.class);
+    Screen toScreen = mock(Screen.class);
+    SpriteBatch batch = mock(SpriteBatch.class);
+    Texture blackPixel = mock(Texture.class);
+
+    when(game.createScreen(ScreenType.MAIN_MENU)).thenReturn(toScreen);
+    when(batch.getProjectionMatrix()).thenReturn(new Matrix4());
+
+    // Twice the default fade length: half a second in, the fade-out is not yet complete.
+    TransitionScreen transition =
+        new TransitionScreen(game, fromScreen, ScreenType.MAIN_MENU, batch, blackPixel, 1f);
+
+    try {
+      transition.render(0.5f);
+      verify(fromScreen).render(0.5f);
+      verify(game, never()).createScreen(ScreenType.MAIN_MENU);
+
+      transition.render(0.5f);
+      verify(game).createScreen(ScreenType.MAIN_MENU);
+
+      transition.render(0.5f);
+      verify(game, never()).finishTransition(any());
+
+      transition.render(0.5f);
+      verify(game).finishTransition(toScreen);
+    } finally {
+      transition.dispose();
+    }
+  }
+
+  @Test
   void fadingIntoBlackjackInitialisesItBeforeRenderingAndKeepsItsServicesOnHandoff() {
     GdxGame game = spy(new GdxGame());
     BlackjackScreen blackjack = new BlackjackScreen(game);

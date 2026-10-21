@@ -4,27 +4,39 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import box2dLight.RayHandler;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.csse3200.game.GdxGame;
 import com.csse3200.game.areas.ForestGameArea;
+import com.csse3200.game.areas.GameArea;
 import com.csse3200.game.areas.Level1GameArea;
+import com.csse3200.game.areas.Level3GameArea;
 import com.csse3200.game.areas.terrain.TerrainFactory;
+import com.csse3200.game.areas.terrain.configs.levelconfigs.Level1Config;
+import com.csse3200.game.areas.terrain.configs.levelconfigs.Level2Config;
 import com.csse3200.game.components.CameraComponent;
+import com.csse3200.game.components.TutorialComponent;
 import com.csse3200.game.components.maingame.MainGameActions;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.RenderFactory;
+import com.csse3200.game.entities.factories.TutorialFactory;
 import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.rendering.DebugRenderer;
 import com.csse3200.game.rendering.Renderer;
 import com.csse3200.game.services.ServiceLocator;
+import com.csse3200.game.ui.GameEndActions;
+import java.lang.reflect.Field;
+import java.util.function.Consumer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.mockito.ArgumentCaptor;
 import org.mockito.MockedConstruction;
 import org.mockito.MockedStatic;
 
@@ -89,6 +101,197 @@ class GameplayScreenLifecycleTest {
     }
   }
 
+  @Test
+  void deathRestartQueuesWorldRebuildWhenAreaRequestsIt() throws Exception {
+    try (ScreenFixture fixture = new ScreenFixture(true);
+        MockedConstruction<Level3GameArea> rebuilds = mockConstruction(Level3GameArea.class)) {
+      Level1GameArea area = fixture.levelAreas.constructed().getFirst();
+      when(area.requiresWorldResetOnDeath()).thenReturn(true);
+
+      triggerRestart();
+
+      verify(area).restart();
+      // The world rebuild is queued as a normal level swap: a fresh area with un-triggered
+      // triggers, spawners and platforms, created on the next render frame.
+      assertTrue(swapQueued(fixture));
+      assertEquals(rebuilds.constructed().getFirst(), nextArea(fixture));
+    }
+  }
+
+  @Test
+  void deathRestartOnlyRespawnsWhenWorldRebuildNotNeeded() throws Exception {
+    try (ScreenFixture fixture = new ScreenFixture(true);
+        MockedConstruction<Level3GameArea> rebuilds = mockConstruction(Level3GameArea.class)) {
+      Level1GameArea area = fixture.levelAreas.constructed().getFirst();
+      when(area.requiresWorldResetOnDeath()).thenReturn(false);
+
+      triggerRestart();
+
+      verify(area).restart();
+      assertFalse(swapQueued(fixture));
+      assertNull(nextArea(fixture));
+      assertTrue(rebuilds.constructed().isEmpty());
+    }
+  }
+
+  @Test
+  void tutorialOfferStartsAfterDelayAndAcceptingRunsTheMovementTutorial() {
+    try (ScreenFixture fixture = new ScreenFixture(true);
+        MockedStatic<TutorialFactory> tutorials = mockStatic(TutorialFactory.class)) {
+      when(fixture.game.areTutorialsAccepted()).thenReturn(true);
+      TutorialComponent choice = mock(TutorialComponent.class);
+      TutorialComponent movement = mock(TutorialComponent.class);
+      when(choice.getCompletionKeycode()).thenReturn(Input.Keys.Y);
+      tutorials.when(() -> TutorialFactory.start(eq("tut0"), any())).thenReturn(choice);
+      tutorials.when(() -> TutorialFactory.start(eq("tut1"), any())).thenReturn(movement);
+
+      // The tut0 offer waits a few seconds after spawning so the player can look around.
+      fixture.screen.render(1f);
+      fixture.screen.render(1f);
+      tutorials.verify(() -> TutorialFactory.start(anyString(), any()), never());
+
+      fixture.screen.render(1f);
+      fixture.screen.render(1f);
+      tutorials.verify(() -> TutorialFactory.start(eq("tut0"), any()), times(1));
+
+      // It never restarts on later frames.
+      fixture.screen.render(1f);
+      tutorials.verify(() -> TutorialFactory.start(eq("tut0"), any()), times(1));
+
+      // Answering Y records the acceptance and starts the movement tutorial immediately.
+      ArgumentCaptor<Runnable> choiceFinished = ArgumentCaptor.forClass(Runnable.class);
+      tutorials.verify(() -> TutorialFactory.start(eq("tut0"), choiceFinished.capture()), times(1));
+      choiceFinished.getValue().run();
+      verify(fixture.game).acceptTutorials();
+      tutorials.verify(() -> TutorialFactory.start(eq("tut1"), any()), times(1));
+
+      // Completing the movement tutorial (reaching the final step) persists the seen flag.
+      ArgumentCaptor<Runnable> movementFinished = ArgumentCaptor.forClass(Runnable.class);
+      tutorials.verify(
+          () -> TutorialFactory.start(eq("tut1"), movementFinished.capture()), times(1));
+      movementFinished.getValue().run();
+      verify(fixture.game).markTutorialCompleted();
+    }
+  }
+
+  @Test
+  void decliningTheTutorialOfferRunsNoTutorialsAndPersistsTheChoice() {
+    try (ScreenFixture fixture = new ScreenFixture(true);
+        MockedStatic<TutorialFactory> tutorials = mockStatic(TutorialFactory.class)) {
+      when(fixture.game.areTutorialsAccepted()).thenReturn(true);
+      TutorialComponent choice = mock(TutorialComponent.class);
+      when(choice.getCompletionKeycode()).thenReturn(Input.Keys.N);
+      tutorials.when(() -> TutorialFactory.start(eq("tut0"), any())).thenReturn(choice);
+
+      fixture.screen.render(1f);
+      fixture.screen.render(1f);
+      fixture.screen.render(1f);
+      fixture.screen.render(1f);
+      tutorials.verify(() -> TutorialFactory.start(eq("tut0"), any()), times(1));
+
+      ArgumentCaptor<Runnable> choiceFinished = ArgumentCaptor.forClass(Runnable.class);
+      tutorials.verify(() -> TutorialFactory.start(eq("tut0"), choiceFinished.capture()), times(1));
+      choiceFinished.getValue().run();
+
+      // N declines only for this save slot: nothing else starts, and nothing runs again.
+      verify(fixture.game).declineTutorials();
+      verify(fixture.game, never()).acceptTutorials();
+      tutorials.verify(() -> TutorialFactory.start(eq("tut1"), any()), never());
+      fixture.screen.render(1f);
+      tutorials.verify(() -> TutorialFactory.start(anyString(), any()), times(1));
+    }
+  }
+
+  @Test
+  void declinedSaveNeverOffersTutorials() {
+    try (ScreenFixture fixture = new ScreenFixture(true);
+        MockedStatic<TutorialFactory> tutorials = mockStatic(TutorialFactory.class)) {
+      when(fixture.game.areTutorialsAccepted()).thenReturn(false);
+
+      fixture.screen.render(1f);
+      fixture.screen.render(1f);
+      fixture.screen.render(1f);
+      fixture.screen.render(1f);
+      fixture.screen.render(1f);
+
+      tutorials.verify(() -> TutorialFactory.start(anyString(), any()), never());
+      verify(fixture.game, never()).acceptTutorials();
+      verify(fixture.game, never()).declineTutorials();
+    }
+  }
+
+  @Test
+  void regionTutorialsStartWhenThePlayerStandsInsideThemOnce() {
+    try (ScreenFixture fixture = new ScreenFixture(true);
+        MockedStatic<TutorialFactory> tutorials = mockStatic(TutorialFactory.class)) {
+      when(fixture.game.areTutorialsAccepted()).thenReturn(true);
+      Level1GameArea area = fixture.levelAreas.constructed().getFirst();
+      when(area.getConfig()).thenReturn(new Level2Config(new Entity()));
+
+      // Standing on level 2's arena ledge starts the grapple lesson once.
+      fixture.player.setPosition(30f, 23f);
+      fixture.screen.render(1f / 60f);
+      tutorials.verify(() -> TutorialFactory.start(eq("tut2"), any()), times(1));
+
+      // Staying on it, or leaving and returning, never replays it in the same session.
+      fixture.screen.render(1f / 60f);
+      fixture.player.setPosition(5f, 5f);
+      fixture.screen.render(1f / 60f);
+      fixture.player.setPosition(31f, 23f);
+      fixture.screen.render(1f / 60f);
+      tutorials.verify(() -> TutorialFactory.start(eq("tut2"), any()), times(1));
+      tutorials.verify(() -> TutorialFactory.start(anyString(), any()), times(1));
+    }
+  }
+
+  @Test
+  void checkpointActivationsStartTheirTutorialsOnce() {
+    try (ScreenFixture fixture = new ScreenFixture(true);
+        MockedStatic<TutorialFactory> tutorials = mockStatic(TutorialFactory.class)) {
+      when(fixture.game.areTutorialsAccepted()).thenReturn(true);
+      Level1GameArea area = fixture.levelAreas.constructed().getFirst();
+      when(area.getConfig()).thenReturn(new Level1Config());
+      @SuppressWarnings("unchecked")
+      ArgumentCaptor<Consumer<GridPoint2>> listener = ArgumentCaptor.forClass(Consumer.class);
+      verify(area).setCheckpointListener(listener.capture());
+
+      // Level 1's first checkpoint teaches melee; reaching it again must not replay the lesson.
+      listener.getValue().accept(new GridPoint2(16, 5));
+      listener.getValue().accept(new GridPoint2(16, 5));
+      tutorials.verify(() -> TutorialFactory.start(eq("tut5"), any()), times(1));
+
+      listener.getValue().accept(new GridPoint2(19, 17));
+      tutorials.verify(() -> TutorialFactory.start(eq("tut6"), any()), times(1));
+
+      // A checkpoint with no wired tutorial starts nothing.
+      listener.getValue().accept(new GridPoint2(44, 17));
+      tutorials.verify(() -> TutorialFactory.start(anyString(), any()), times(2));
+    }
+  }
+
+  /** Fires the game-over panel's restart button event, which runs the screen's restart handler. */
+  private static void triggerRestart() {
+    for (Entity entity : ServiceLocator.getEntityService().getEntities()) {
+      if (entity.getComponent(GameEndActions.class) != null) {
+        entity.getEvents().trigger("restart");
+        return;
+      }
+    }
+    fail("No entity with a GameEndActions component found");
+  }
+
+  private static boolean swapQueued(ScreenFixture fixture) throws Exception {
+    Field field = LevelsGameScreen.class.getDeclaredField("levelSwapQueued");
+    field.setAccessible(true);
+    return (boolean) field.get(fixture.screen);
+  }
+
+  private static GameArea nextArea(ScreenFixture fixture) throws Exception {
+    Field field = LevelsGameScreen.class.getDeclaredField("nextGameArea");
+    field.setAccessible(true);
+    return (GameArea) field.get(fixture.screen);
+  }
+
   /** Real screens, services, UI and assets, with rendering and map generation isolated. */
   private static class ScreenFixture implements AutoCloseable {
     private final Stage stage;
@@ -120,7 +323,12 @@ class GameplayScreenLifecycleTest {
               ForestGameArea.class, (area, context) -> when(area.getPlayer()).thenReturn(player));
       levelAreas =
           mockConstruction(
-              Level1GameArea.class, (area, context) -> when(area.getPlayer()).thenReturn(player));
+              Level1GameArea.class,
+              (area, context) -> {
+                when(area.getPlayer()).thenReturn(player);
+                // Real configs drive the per-frame region-tutorial scan; tests override this.
+                when(area.getConfig()).thenReturn(new Level1Config());
+              });
       factories
           .when(RenderFactory::createRenderer)
           .thenAnswer(

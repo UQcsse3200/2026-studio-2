@@ -37,8 +37,8 @@ import org.slf4j.LoggerFactory;
 public class CutsceneScreen extends ScreenAdapter {
   private static final Logger logger = LoggerFactory.getLogger(CutsceneScreen.class);
 
-  static final String SKIP_UP_TEXTURE = "images/Buttons/continue_up_btn.png";
-  static final String SKIP_DOWN_TEXTURE = "images/Buttons/continue_down_btn.png";
+  static final String SKIP_UP_TEXTURE = "images/Buttons/skip_up_btn.png";
+  static final String SKIP_DOWN_TEXTURE = "images/Buttons/skip_down_btn.png";
 
   /**
    * Stage input priority. Must exceed {@link CutsceneInputComponent}'s 100 so button presses reach
@@ -49,6 +49,12 @@ public class CutsceneScreen extends ScreenAdapter {
   private static final float SKIP_BUTTON_WIDTH = 200f;
   private static final float SKIP_BUTTON_HEIGHT = 70f;
   private static final float SKIP_BUTTON_PAD = 20f;
+
+  /**
+   * Length of the final fade from the cutscene to gameplay. Longer than the mid-cutscene fades so
+   * the exit into gameplay feels gradual; skipping keeps the quicker default.
+   */
+  static final float EXIT_FADE_DURATION = 0.8f;
 
   private enum State {
     FADE_IN,
@@ -231,6 +237,10 @@ public class CutsceneScreen extends ScreenAdapter {
             config.portraitPaths);
     textBox.setExternallyControlled(true);
     textBox.create();
+    // Cutscene configs carry absolute pixel positions tuned for one resolution; a ScreenViewport
+    // (world units = pixels, no scaling) makes those drift off-centre at any other window size, so
+    // pin the box bottom-centre of the live window instead.
+    textBox.setBottomCentered(0.06f);
     fadeOverlay.toFront();
     skipTable.toFront();
     fadeTimer = 0f;
@@ -248,7 +258,11 @@ public class CutsceneScreen extends ScreenAdapter {
     if (music != null) {
       music.stop();
     }
-    game.transitionTo(destination);
+    if (destination == GdxGame.ScreenType.MAIN_MENU) {
+      game.transitionTo(new ThankYouScreen(game), CutsceneScreen.EXIT_FADE_DURATION);
+    } else {
+      game.transitionTo(destination);
+    }
   }
 
   ImageButton getSkipButton() {
@@ -306,13 +320,19 @@ public class CutsceneScreen extends ScreenAdapter {
         break;
       case FADE_TO_BLACK:
         fadeTimer += delta;
-        setFadeAlpha(Math.min(fadeTimer / duration, 1f));
-        if (fadeTimer >= duration) {
+        setFadeAlpha(Math.min(fadeTimer / EXIT_FADE_DURATION, 1f));
+        if (fadeTimer >= EXIT_FADE_DURATION) {
           state = State.COMPLETE;
           input.dispose();
           stageInput.dispose();
-          // Fade the destination screen in from black instead of swapping instantly.
-          game.transitionTo(destination);
+          // Fade the destination screen in slowly so the cutscene ends gradually.
+          if (destination == GdxGame.ScreenType.MAIN_MENU) {
+            // After the closing cutscene, show a thank-you message over black then exit to main
+            // menu.
+            game.transitionTo(new ThankYouScreen(game), EXIT_FADE_DURATION);
+          } else {
+            game.transitionTo(destination, EXIT_FADE_DURATION);
+          }
         }
         break;
       case TEXT_ACTIVE, COMPLETE:

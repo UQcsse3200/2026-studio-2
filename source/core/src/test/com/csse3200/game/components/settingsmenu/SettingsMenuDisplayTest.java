@@ -96,20 +96,17 @@ class SettingsMenuDisplayTest extends UiTestSupport {
     assertEquals("75", fps.getText());
     assertFalse(checks.get(0).isChecked());
     assertTrue(checks.get(1).isChecked());
-    assertEquals(1.2f, sliders.get(0).getValue(), 0.001f);
-    assertEquals(0.4f, sliders.get(1).getValue(), 0.001f);
+    assertEquals(0.4f, sliders.get(0).getValue(), 0.001f);
     assertEquals(1, resolutions.getSelectedIndex());
     assertEquals("1920x1080, 144hz", resolutions.getSelected().toString());
 
     fps.setText("120");
     checks.get(0).setChecked(true);
     checks.get(1).setChecked(false);
-    sliders.get(0).setValue(1.5f);
-    sliders.get(1).setValue(0.75f);
+    sliders.get(0).setValue(0.75f);
     resolutions.setSelectedIndex(0);
     assertEquals(0.75f, GameVolume.get(), 0.001f);
     assertTrue(labels(stage.getRoot()).contains("75%"));
-    assertTrue(labels(stage.getRoot()).contains("1.50x"));
     controls(ImageButton.class).get(1).fire(new ChangeListener.ChangeEvent());
 
     ArgumentCaptor<UserSettings.Settings> applied =
@@ -118,7 +115,6 @@ class SettingsMenuDisplayTest extends UiTestSupport {
     assertEquals(120, applied.getValue().fps);
     assertTrue(applied.getValue().fullscreen);
     assertFalse(applied.getValue().vsync);
-    assertEquals(1.5f, applied.getValue().uiScale, 0.001f);
     assertEquals(0.75f, applied.getValue().volume, 0.001f);
     assertEquals(1280, applied.getValue().displayMode.width);
     assertEquals(720, applied.getValue().displayMode.height);
@@ -131,7 +127,7 @@ class SettingsMenuDisplayTest extends UiTestSupport {
   void invalidFpsLeavesTheSavedCapWhileApplyingOtherChanges() {
     SettingsMenuDisplay display = createMenu(false, () -> {});
     controls(TextField.class).getFirst().setText("not a number");
-    controls(Slider.class).get(1).setValue(0.6f);
+    controls(Slider.class).get(0).setValue(0.6f);
     controls(ImageButton.class).get(1).fire(new ChangeListener.ChangeEvent());
     ArgumentCaptor<UserSettings.Settings> applied =
         ArgumentCaptor.forClass(UserSettings.Settings.class);
@@ -152,7 +148,7 @@ class SettingsMenuDisplayTest extends UiTestSupport {
               return null;
             });
     SettingsMenuDisplay display = createMenu(false, () -> {});
-    controls(Slider.class).get(1).setValue(0.9f);
+    controls(Slider.class).get(0).setValue(0.9f);
     controls(ImageButton.class).getFirst().fire(new ChangeListener.ChangeEvent());
     verifyNoInteractions(game);
     assertEquals(0.9f, GameVolume.get(), 0.001f);
@@ -177,7 +173,7 @@ class SettingsMenuDisplayTest extends UiTestSupport {
             });
     Actor gameActor = new Actor();
     stage.addActor(gameActor);
-    controls(Slider.class).get(1).setValue(0.8f);
+    controls(Slider.class).get(0).setValue(0.8f);
     controls(ImageButton.class).getFirst().fire(new ChangeListener.ChangeEvent());
     assertEquals(1, closes.get());
     sounds.verify(ButtonSound::playClick);
