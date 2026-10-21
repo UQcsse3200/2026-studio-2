@@ -64,8 +64,10 @@ public class BlackjackDisplay extends UIComponent {
 
   private final Blackjack blackjack;
   private final InventoryComponent inventory;
+
   /** Circe's welcome gift has not been accepted yet. */
   private boolean giftPending;
+
   private boolean resultSoundPlayed;
   private boolean soundEnabled = true;
   private final java.util.function.Consumer<Boolean> soundToggleCallback;
