@@ -236,10 +236,7 @@ public class Level1GameArea extends GameArea {
     // Background terrain
     terrain = terrainFactory.createTerrain(TerrainType.BACKGROUND_DESERT);
     spawnEntity(new Entity().addComponent(terrain));
-
-    float tileSize = terrain.getTileSize();
-    GridPoint2 tileBounds = terrain.getMapBounds(0);
-    worldBounds = new Vector2(tileBounds.x * tileSize, tileBounds.y * tileSize);
+    worldBounds = new Vector2(90f, 25f);
   }
 
   private Entity spawnPlayer() {

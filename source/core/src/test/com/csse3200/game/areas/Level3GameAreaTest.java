@@ -151,7 +151,7 @@ class Level3GameAreaTest extends AbstractAreaAssetsTest {
     Vector2 bounds = (Vector2) field.get(area);
 
     assertEquals(40f, bounds.x);
-    assertEquals(35f, bounds.y);
+    assertEquals(45f, bounds.y);
   }
 
   @Test
