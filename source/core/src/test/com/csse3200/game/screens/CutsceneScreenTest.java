@@ -211,9 +211,9 @@ class CutsceneScreenTest {
     int align = screen.getSkipTable().getAlign();
     assertNotEquals(0, (align & com.badlogic.gdx.utils.Align.bottom));
     assertNotEquals(0, (align & com.badlogic.gdx.utils.Align.right));
-    // Skip uses the continue button textures.
-    assertEquals("images/Buttons/continue_up_btn.png", CutsceneScreen.SKIP_UP_TEXTURE);
-    assertEquals("images/Buttons/continue_down_btn.png", CutsceneScreen.SKIP_DOWN_TEXTURE);
+    // Skip uses the skip button textures.
+    assertEquals("images/Buttons/skip_up_btn.png", CutsceneScreen.SKIP_UP_TEXTURE);
+    assertEquals("images/Buttons/skip_down_btn.png", CutsceneScreen.SKIP_DOWN_TEXTURE);
   }
 
   @Test
