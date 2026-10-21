@@ -6,6 +6,11 @@ import com.csse3200.game.components.Component;
 public class BlackjackOverlayActions extends Component {
   private final Runnable onClose;
 
+  /**
+   * Creates the overlay's actions.
+   *
+   * @param onClose run when the "back" event closes the overlay
+   */
   public BlackjackOverlayActions(Runnable onClose) {
     this.onClose = onClose;
   }

@@ -48,6 +48,31 @@ public class PlayerSnapshot {
     return new PlayerSnapshot(stats.getHealth(), stats.getMaxHealth(), inventory, discovered);
   }
 
+  /** Returns the saved player's gold without consuming the snapshot. */
+  public int getGold() {
+    return gold;
+  }
+
+  /** Copies a player snapshot with a different gold balance. */
+  private PlayerSnapshot(PlayerSnapshot original, int updatedGold) {
+    this.health = original.health;
+    this.maxHealth = original.maxHealth;
+    this.gold = updatedGold;
+    this.inventory = original.inventory;
+    this.rows = original.rows;
+    this.columns = original.columns;
+    this.selectedSlot = original.selectedSlot;
+    this.discoveredItems = original.discoveredItems;
+  }
+
+  /** Returns a snapshot with updated gold, preserving all other saved player state. */
+  public PlayerSnapshot withGold(int updatedGold) {
+    if (updatedGold < 0) {
+      throw new IllegalArgumentException("Gold cannot be negative");
+    }
+    return new PlayerSnapshot(this, updatedGold);
+  }
+
   /**
    * Apply the stored PlayerSnapshot to the given player entity. Updating the gold, health,
    * inventory and item dictionary components

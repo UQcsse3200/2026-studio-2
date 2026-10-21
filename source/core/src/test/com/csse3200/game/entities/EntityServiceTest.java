@@ -1,6 +1,9 @@
 package com.csse3200.game.entities;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -66,5 +69,20 @@ class EntityServiceTest {
     verify(removedEntity).dispose();
     verify(remainingEntity).earlyUpdate();
     verify(remainingEntity).update();
+  }
+
+  @Test
+  void shouldPauseWithoutPhysicsOrTimeServices() {
+    // Minigame screens register neither a physics service nor a game clock.
+    ServiceLocator.clear();
+    EntityService entityService = new EntityService();
+    Entity entity = spy(Entity.class);
+    entityService.register(entity);
+
+    assertDoesNotThrow(() -> entityService.setPaused(true));
+    entityService.update();
+
+    assertTrue(entityService.getPaused());
+    verify(entity, never()).update();
   }
 }
