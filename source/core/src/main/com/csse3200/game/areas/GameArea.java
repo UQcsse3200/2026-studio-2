@@ -54,7 +54,7 @@ public abstract class GameArea implements Disposable {
   protected float viewportHeight;
   protected Vector2 resizeScale;
   protected BackgroundRenderComponent backgroundComponent;
-  protected String TORCH_TEXTURE = "images/terrain/Level_1/Level_1_torch.png";
+  protected String torchTexture = "images/terrain/Level_1/Level_1_torch.png";
 
   /**
    * Creates a game area using the provided camera component.
