@@ -296,5 +296,4 @@ class LevelConfigTest {
     assertEquals(position, config.entities.getFirst().pos);
     assertEquals(scale, config.entities.getFirst().entity.getScale());
   }
-
 }
