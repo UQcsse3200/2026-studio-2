@@ -100,6 +100,36 @@ class CutsceneScreenTest {
     com.csse3200.game.services.ServiceLocator.getInputService().keyDown(Keys.TAB);
   }
 
+  @org.junit.jupiter.params.ParameterizedTest
+  @org.junit.jupiter.params.provider.ValueSource(booleans = {true, false})
+  void endingDoesNotConstructTheNextScreenBeforeDisposingTheCutscene(boolean skip) {
+    GdxGame game = mock(GdxGame.class);
+    try (var endings = mockConstruction(ThankYouScreen.class)) {
+      CutsceneScreen screen =
+          new CutsceneScreen(
+              game,
+              makeSingleSceneCutscene(),
+              GdxGame.ScreenType.MAIN_MENU,
+              mock(SpriteBatch.class),
+              mock(Stage.class));
+      try {
+        if (skip) {
+          screen.skipCutscene();
+        } else {
+          driveToTextActive(screen);
+          advanceViaTab();
+          screen.render(10f);
+          screen.render(10f);
+        }
+        assertTrue(endings.constructed().isEmpty());
+        verify(game).transitionTo(GdxGame.ScreenType.THANK_YOU, CutsceneScreen.EXIT_FADE_DURATION);
+        verify(game, never()).transitionTo(any(com.badlogic.gdx.Screen.class), anyFloat());
+      } finally {
+        screen.dispose();
+      }
+    }
+  }
+
   @Test
   void shouldCompleteTwoSceneCutsceneAndSetDestination() {
     GdxGame game = mock(GdxGame.class);
@@ -122,7 +152,8 @@ class CutsceneScreenTest {
     screen.render(10f); // FADE_TEXT → FADE_TO_BLACK
     screen.render(10f); // FADE_TO_BLACK → COMPLETE → game.transitionTo(...)
 
-    verify(game).transitionTo(GdxGame.ScreenType.MAIN_GAME);
+    // The natural end exits slowly: gameplay fades in over the exit fade length.
+    verify(game).transitionTo(GdxGame.ScreenType.MAIN_GAME, CutsceneScreen.EXIT_FADE_DURATION);
   }
 
   @Test
@@ -140,7 +171,7 @@ class CutsceneScreenTest {
     screen.render(10f); // FADE_TEXT → FADE_TO_BLACK
     screen.render(10f); // FADE_TO_BLACK → COMPLETE → game.transitionTo(...)
 
-    verify(game).transitionTo(GdxGame.ScreenType.LEVEL_1_GAME);
+    verify(game).transitionTo(GdxGame.ScreenType.LEVEL_1_GAME, CutsceneScreen.EXIT_FADE_DURATION);
   }
 
   @Test
@@ -176,7 +207,7 @@ class CutsceneScreenTest {
     screen.render(10f); // FADE_TEXT → FADE_TO_BLACK
     screen.render(10f); // COMPLETE
 
-    verify(game).transitionTo(GdxGame.ScreenType.MAIN_GAME);
+    verify(game).transitionTo(GdxGame.ScreenType.MAIN_GAME, CutsceneScreen.EXIT_FADE_DURATION);
   }
 
   @Test
@@ -210,9 +241,9 @@ class CutsceneScreenTest {
     int align = screen.getSkipTable().getAlign();
     assertNotEquals(0, (align & com.badlogic.gdx.utils.Align.bottom));
     assertNotEquals(0, (align & com.badlogic.gdx.utils.Align.right));
-    // Skip uses the continue button textures.
-    assertEquals("images/Buttons/continue_up_btn.png", CutsceneScreen.SKIP_UP_TEXTURE);
-    assertEquals("images/Buttons/continue_down_btn.png", CutsceneScreen.SKIP_DOWN_TEXTURE);
+    // Skip uses the skip button textures.
+    assertEquals("images/Buttons/skip_up_btn.png", CutsceneScreen.SKIP_UP_TEXTURE);
+    assertEquals("images/Buttons/skip_down_btn.png", CutsceneScreen.SKIP_DOWN_TEXTURE);
   }
 
   @Test
@@ -295,6 +326,6 @@ class CutsceneScreenTest {
     screen.render(10f); // FADE_TEXT → FADE_TO_BLACK
     screen.render(10f); // FADE_TO_BLACK → COMPLETE → game.transitionTo(...)
 
-    verify(game).transitionTo(GdxGame.ScreenType.MAIN_GAME);
+    verify(game).transitionTo(GdxGame.ScreenType.MAIN_GAME, CutsceneScreen.EXIT_FADE_DURATION);
   }
 }

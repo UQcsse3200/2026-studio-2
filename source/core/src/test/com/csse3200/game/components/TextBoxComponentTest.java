@@ -368,6 +368,10 @@ class TextBoxComponentTest {
     assertTrue(portrait.isVisible());
     Table table = getField(component, "table");
     assertTrue(table.getHeight() > 0f);
+    // Resolution-relative: 18% of the window height, 10% larger again (mock height 600 -> 118.8).
+    float expectedSize = 600f * 0.18f * 1.1f;
+    assertEquals(expectedSize, portrait.getWidth(), 0.01f);
+    assertEquals(expectedSize, portrait.getHeight(), 0.01f);
     // Centered above the box: bottom edge on the top edge, never covering the text.
     assertEquals(
         table.getX() + (table.getWidth() - portrait.getWidth()) / 2f, portrait.getX(), 0.01f);
@@ -423,5 +427,42 @@ class TextBoxComponentTest {
 
     assertNull(getField(component, "portraitImage"));
     assertNull(getField(component, "portraitTexture"));
+  }
+
+  // ---- Cutscene-style bottom-centre positioning ----
+
+  @Test
+  void bottomCenteredBoxShouldCenterHorizontallyAndSitAboveTheBottomEdge() {
+    TextBoxComponent component = makeComponent(List.of("A line of text."), 100f);
+    when(mockGraphics.getDeltaTime()).thenReturn(1f);
+    when(mockInput.isKeyJustPressed(Keys.TAB)).thenReturn(false);
+
+    component.create();
+    component.setBottomCentered(0.06f);
+    invokeDraw(component);
+
+    Table table = getField(component, "table");
+    assertEquals(800f / 2f, table.getX() + table.getWidth() / 2f, 0.5f);
+    assertEquals(600f * 0.06f, table.getY(), 0.5f);
+  }
+
+  @Test
+  void bottomCenteredBoxShouldStayCenteredWhenTheWindowIsResized() {
+    TextBoxComponent component = makeComponent(List.of("A line of text."), 100f);
+    when(mockGraphics.getDeltaTime()).thenReturn(1f);
+    when(mockInput.isKeyJustPressed(Keys.TAB)).thenReturn(false);
+
+    component.create();
+    component.setBottomCentered(0.06f);
+    invokeDraw(component);
+
+    // Shrink the window to half-size; the box must re-centre for the new width next frame.
+    when(mockGraphics.getWidth()).thenReturn(400);
+    when(mockGraphics.getHeight()).thenReturn(300);
+    invokeDraw(component);
+
+    Table table = getField(component, "table");
+    assertEquals(400f / 2f, table.getX() + table.getWidth() / 2f, 0.5f);
+    assertEquals(300f * 0.06f, table.getY(), 0.5f);
   }
 }

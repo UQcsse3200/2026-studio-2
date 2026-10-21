@@ -8,11 +8,15 @@
   "maxWidth": 320,
   "padding": 16,
   "borderThickness": 3,
-  "fontPath": "flat-earth/skin/fonts/alagard.fnt",
+  "fontPath": "flat-earth/skin/fonts/PixeloidSans.fnt",
   "textAlignment": "left",
   "pages": [
-    "Move around using A and D.",
-    "Jump using SPACE.",
-    "Dash using SHIFT."
+    "Do you need my assistance, love? Press Y for yes, N for no."
+  ],
+  "portraitPaths": [
+    "images/portraits/calypsoEncouraging.jpeg"
+  ],
+  "steps": [
+    {"keys": ["Y", "N"]}
   ]
 }

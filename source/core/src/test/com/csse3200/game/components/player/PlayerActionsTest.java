@@ -361,6 +361,51 @@ class PlayerActionsTest {
   }
 
   @Test
+  void shouldDiscardAPendingPhysicsRepositionOnDeath() {
+    Entity player = createPlayer();
+
+    // A platform side-contact arms a reposition while the corpse is still at the death spot.
+    player.getEvents().trigger("physicsPositionRequest", new Vector2(5f, 7f));
+    player.getEvents().trigger("death");
+    player.setPosition(1f, 1f);
+
+    // Reviving as a checkpoint restart does must not consume the stale request: the player
+    // stays where the restart put them, not where they died.
+    player.getEvents().trigger("revive");
+    player.update();
+
+    assertEquals(1f, player.getPosition().x);
+    assertEquals(1f, player.getPosition().y);
+  }
+
+  @Test
+  void shouldIgnorePhysicsRepositionRequestsWhileDead() {
+    Entity player = createPlayer();
+    player.getEvents().trigger("death");
+
+    // Enemies keep shoving the corpse against geometry while the game-over panel is up.
+    player.getEvents().trigger("physicsPositionRequest", new Vector2(5f, 7f));
+    player.setPosition(1f, 1f);
+    player.getEvents().trigger("revive");
+    player.update();
+
+    assertEquals(1f, player.getPosition().x);
+    assertEquals(1f, player.getPosition().y);
+  }
+
+  @Test
+  void shouldExposeDeathStateForPositionReactiveSystems() {
+    Entity player = createPlayer();
+    PlayerActions actions = player.getComponent(PlayerActions.class);
+
+    assertFalse(actions.isDead());
+    player.getEvents().trigger("death");
+    assertTrue(actions.isDead());
+    player.getEvents().trigger("revive");
+    assertFalse(actions.isDead());
+  }
+
+  @Test
   void shouldDetectSlipperyPlatformWhenGrounded() {
     Entity player = createPlayer();
 

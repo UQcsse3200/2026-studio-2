@@ -1,0 +1,34 @@
+{
+  "xPos": 20,
+  "yPos": 150,
+  "textColour": "Color.BLACK",
+  "backgroundColour": "Color.TAN",
+  "borderColour": "Color.BROWN",
+  "charsPerSecond": 30,
+  "maxWidth": 320,
+  "padding": 16,
+  "borderThickness": 3,
+  "fontPath": "flat-earth/skin/fonts/PixeloidSans.fnt",
+  "textAlignment": "left",
+  "autoDismissSeconds": 5,
+  "pages": [
+    "Years... Odeysseus, for years we were together, and soon as you remember your past the present becomes inconsequestial?",
+    "All these years, I waited for the day you would remember and still chose me..."
+  ],
+  "portraitPaths": [
+    "images/portraits/calypsoRegret.jpeg",
+    "images/portraits/calypsoRegret.jpeg"
+  ],
+  "steps": [
+    {
+      "keys": [
+        "TAB"
+      ]
+    },
+    {
+      "keys": [
+        "TAB"
+      ]
+    }
+  ]
+}

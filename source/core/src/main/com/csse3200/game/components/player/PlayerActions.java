@@ -305,11 +305,23 @@ public class PlayerActions extends Component {
   /** Stops the player permanently reacting to input once they've died. */
   void die() {
     dead = true;
+    // A reposition armed against the corpse must never outlive the death: consumed after the
+    // checkpoint teleport it would drop the player back to the spot where they died.
+    discardPhysicsHelperRequest();
     resetMovementState();
     Body body = physicsComponent.getBody();
     Vector2 velocity = body.getLinearVelocity();
     body.setLinearVelocity(0f, velocity.y);
     stopWalking();
+  }
+
+  /**
+   * Whether the player is dead and awaiting a checkpoint restart. Corpses keep a physics body that
+   * enemies can shove around, so systems that react to player position (e.g. checkpoints) check
+   * this first.
+   */
+  public boolean isDead() {
+    return dead;
   }
 
   /** Revives the player after a checkpoint restart so input and movement work again. */
@@ -555,8 +567,22 @@ public class PlayerActions extends Component {
   }
 
   private void setPhysicsHelperNewPosition(Vector2 position) {
+    if (dead) {
+      // Never reposition a corpse: the death spot must not become a respawn target.
+      return;
+    }
     physicsHelperNewPosition = position;
     physicsHelperRequestedPositionChange = true;
+  }
+
+  /**
+   * Discards a pending physics-helper reposition, if any. Called on death and when the respawn
+   * teleport applies, so a request armed against the pre-teleport body cannot overwrite the
+   * teleport and leave the player where they died.
+   */
+  public void discardPhysicsHelperRequest() {
+    physicsHelperNewPosition = null;
+    physicsHelperRequestedPositionChange = false;
   }
 
   public boolean isSpeedPotionActive() {

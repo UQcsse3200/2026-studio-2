@@ -1,0 +1,34 @@
+{
+  "xPos": 20,
+  "yPos": 150,
+  "textColour": "Color.BLACK",
+  "backgroundColour": "Color.TAN",
+  "borderColour": "Color.BROWN",
+  "charsPerSecond": 30,
+  "maxWidth": 320,
+  "padding": 16,
+  "borderThickness": 3,
+  "fontPath": "flat-earth/skin/fonts/PixeloidSans.fnt",
+  "textAlignment": "left",
+  "autoDismissSeconds": 5,
+  "pages": [
+    "Maybe a few more years consuming the lotus with make you more agreeable...",
+    "But in no way, shape or form am I letting you go, O' great general"
+  ],
+  "portraitPaths": [
+    "images/portraits/calypsoOminous.jpeg",
+    "images/portraits/calypsoArgumentative.jpeg"
+  ],
+  "steps": [
+    {
+      "keys": [
+        "TAB"
+      ]
+    },
+    {
+      "keys": [
+        "TAB"
+      ]
+    }
+  ]
+}

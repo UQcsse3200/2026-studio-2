@@ -1,0 +1,6 @@
+{
+  "pages": ["one", "two"],
+  "steps": [
+    {"keys": ["SPACE"]}
+  ]
+}

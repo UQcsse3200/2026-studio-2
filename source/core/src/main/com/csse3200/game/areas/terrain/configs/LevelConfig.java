@@ -15,6 +15,7 @@ import com.csse3200.game.lighting.LightingDefaults;
 import com.csse3200.game.rendering.AnimationRenderComponent;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -52,6 +53,12 @@ public class LevelConfig {
   protected Map<GridPoint2, EnemyConfig> enemies;
   protected Map<GridPoint2, Item> items;
   protected CheckpointConfig[] checkpoints;
+  // Tutorials keyed by the checkpoint position that triggers them, e.g. "tut5" at level 1's
+  // first checkpoint. Empty when a level wires no checkpoint tutorials.
+  protected Map<GridPoint2, String> checkpointTutorials = new HashMap<>();
+  // Regions that auto-start a tutorial when the player stands inside them, e.g. "tut2" on the
+  // ledge above level 2's mob-spawn arena. Empty when a level wires none.
+  protected List<RegionTutorialConfig> regionTutorials = new ArrayList<>();
   protected EnemySpawnerConfig[] enemySpawners;
   protected TriggerConfig[] mapTriggers;
 
@@ -131,6 +138,27 @@ public class LevelConfig {
         .forEach(checkpointComponents::add);
 
     return checkpointComponents;
+  }
+
+  /**
+   * The tutorial wired to the checkpoint at the given position, if any. When a checkpoint
+   * activates, the level screen starts this tutorial for the player.
+   *
+   * @param position grid position of the checkpoint
+   * @return tutorial name (e.g. "tut5"), or null when no tutorial is wired there
+   */
+  public String getTutorialForCheckpoint(GridPoint2 position) {
+    return checkpointTutorials.get(position);
+  }
+
+  /**
+   * The regions that auto-start a tutorial when the player stands inside one, checked every frame
+   * by the level screen. Empty when the level wires none.
+   *
+   * @return the level's region-linked tutorials
+   */
+  public List<RegionTutorialConfig> getRegionTutorials() {
+    return regionTutorials;
   }
 
   public GridPoint2[] getWheelSpinSpawns() {

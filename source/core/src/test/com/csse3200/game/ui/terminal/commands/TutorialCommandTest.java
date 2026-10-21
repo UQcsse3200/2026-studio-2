@@ -7,7 +7,8 @@ import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.utils.Align;
 import com.csse3200.game.components.TextBoxComponent;
-import com.csse3200.game.entities.configs.TextConfig;
+import com.csse3200.game.components.TutorialComponent;
+import com.csse3200.game.entities.configs.TutorialConfig;
 import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.files.FileLoader;
 import com.csse3200.game.input.InputService;
@@ -16,14 +17,104 @@ import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.MockedConstruction;
 
 @ExtendWith(GameExtension.class)
 class TutorialCommandTest {
+
+  @Test
+  void noArgumentStartsTheDefaultTutorial() {
+    try (MockedConstruction<TextBoxComponent> boxes = mockConstruction(TextBoxComponent.class);
+        MockedConstruction<TutorialComponent> tutorials =
+            mockConstruction(TutorialComponent.class)) {
+      assertTrue(new TutorialCommand().action(args()));
+      assertEquals(1, boxes.constructed().size());
+      assertEquals(1, tutorials.constructed().size());
+    }
+  }
+
+  @Test
+  void bareNameLoadsTheNamedSequence() {
+    try (MockedConstruction<TextBoxComponent> boxes = mockConstruction(TextBoxComponent.class);
+        MockedConstruction<TutorialComponent> tutorials =
+            mockConstruction(TutorialComponent.class)) {
+      assertTrue(new TutorialCommand().action(args("tut2")));
+      assertEquals(1, boxes.constructed().size());
+      assertEquals(1, tutorials.constructed().size());
+    }
+  }
+
+  @Test
+  void explicitPathArgumentIsUsedVerbatim() {
+    try (MockedConstruction<TextBoxComponent> boxes = mockConstruction(TextBoxComponent.class);
+        MockedConstruction<TutorialComponent> tutorials =
+            mockConstruction(TutorialComponent.class)) {
+      assertTrue(new TutorialCommand().action(args("configs/tut5.json")));
+      assertEquals(1, boxes.constructed().size());
+      assertEquals(1, tutorials.constructed().size());
+    }
+  }
+
+  @Test
+  void explicitPathConstructorIgnoresArguments() {
+    try (MockedConstruction<TextBoxComponent> boxes = mockConstruction(TextBoxComponent.class);
+        MockedConstruction<TutorialComponent> tutorials =
+            mockConstruction(TutorialComponent.class)) {
+      assertTrue(new TutorialCommand("configs/tut3.json").action(args("tut1")));
+      assertEquals(1, boxes.constructed().size());
+      assertEquals(1, tutorials.constructed().size());
+    }
+  }
+
+  @Test
+  void missingConfigReturnsFalse() {
+    try (MockedConstruction<TextBoxComponent> boxes = mockConstruction(TextBoxComponent.class);
+        MockedConstruction<TutorialComponent> tutorials =
+            mockConstruction(TutorialComponent.class)) {
+      assertFalse(new TutorialCommand().action(args("tut99")));
+      assertTrue(boxes.constructed().isEmpty());
+      assertTrue(tutorials.constructed().isEmpty());
+    }
+  }
+
+  @Test
+  void invalidConfigReturnsFalse() {
+    try (MockedConstruction<TextBoxComponent> boxes = mockConstruction(TextBoxComponent.class);
+        MockedConstruction<TutorialComponent> tutorials =
+            mockConstruction(TutorialComponent.class)) {
+      assertFalse(new TutorialCommand().action(args("test/configs/invalid_steps_tutorial.json")));
+      assertTrue(boxes.constructed().isEmpty());
+      assertTrue(tutorials.constructed().isEmpty());
+    }
+  }
+
+  @Test
+  void rerunningDisposesThePreviousTutorial() {
+    try (MockedConstruction<TextBoxComponent> boxes = mockConstruction(TextBoxComponent.class);
+        MockedConstruction<TutorialComponent> tutorials =
+            mockConstruction(TutorialComponent.class)) {
+      TutorialCommand command = new TutorialCommand();
+      assertTrue(command.action(args("tut1")));
+      assertTrue(command.action(args("tut1")));
+      assertEquals(2, tutorials.constructed().size());
+      verify(tutorials.constructed().get(0)).dispose();
+      verify(tutorials.constructed().get(1), never()).dispose();
+    }
+  }
+
+  private static ArrayList<String> args(String... values) {
+    ArrayList<String> args = new ArrayList<>();
+    for (String value : values) {
+      args.add(value);
+    }
+    return args;
+  }
+
   @Test
   void commandUsesConfiguredTextboxAndRestartsItsKeyboardProgress() {
     InputService input = new InputService();
     ServiceLocator.registerInputService(input);
-    TextConfig config = new TextConfig();
+    TutorialConfig config = FileLoader.readClass(TutorialConfig.class, "configs/tut1.json");
     config.xPos = 25f;
     config.yPos = 40f;
     config.maxWidth = 320;
@@ -35,7 +126,7 @@ class TutorialCommandTest {
     config.borderThickness = 4;
     config.fontPath = "fonts/tutorial.fnt";
     config.charsPerSecond = 18f;
-    config.pages = List.of("Move", "Jump", "Dash");
+    config.pages = List.of("Move", "Jump");
     config.portraitPaths = List.of("portraits/tutorial.png");
     try (var files = mockStatic(FileLoader.class);
         var textboxes =
@@ -54,7 +145,7 @@ class TutorialCommandTest {
                   assertEquals(config.portraitPaths, context.arguments().get(4));
                 })) {
       files
-          .when(() -> FileLoader.readClass(TextConfig.class, "configs/test-tutorial.json"))
+          .when(() -> FileLoader.readClass(TutorialConfig.class, "configs/test-tutorial.json"))
           .thenReturn(config);
       TutorialCommand command = new TutorialCommand("configs/test-tutorial.json");
       assertTrue(command.action(new ArrayList<>()));

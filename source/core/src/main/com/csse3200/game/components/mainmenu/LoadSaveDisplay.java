@@ -12,7 +12,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
@@ -55,9 +54,6 @@ public class LoadSaveDisplay extends UIComponent {
   private Drawable slotRowBackground;
   private Texture slotRowTexture;
 
-  /** Slot whose delete button has been pressed once ("Sure?" state), or -1. */
-  private int armedDeleteSlot = -1;
-
   @Override
   public void create() {
     super.create();
@@ -82,7 +78,7 @@ public class LoadSaveDisplay extends UIComponent {
             ServiceLocator.getResourceService()
                 .getAsset("images/ui/title_odysseus_logo.png", Texture.class));
 
-    Label headerLabel = textLabel("SELECT A SAVE", Color.WHITE);
+    Label headerLabel = textLabel("SELECT A SAVE", Color.BLACK);
     headerLabel.setFontScale(1.4f);
 
     hintLabel = textLabel("", HINT_COLOR);
@@ -112,33 +108,44 @@ public class LoadSaveDisplay extends UIComponent {
 
     refreshSlots();
 
+    // The scroll art (the same background the game-end screen uses) sits behind the header, hint
+    // and slot rows. Make it less wide and a bit longer as requested.
+    Table panel = new Table();
+    panel.setBackground(
+        new TextureRegionDrawable(
+            ServiceLocator.getResourceService()
+                .getAsset("images/ui/scroll_bg.png", Texture.class)));
+    float panelWidth = screenWidth * 0.52f;
+    panel.add(headerLabel).padTop(pad * 1.4f).padBottom(pad * 0.6f).row();
+    panel.add(hintLabel).padBottom(pad * 0.6f).row();
+    panel.add(slotsTable).center().pad(pad * 0.4f).width(panelWidth).padBottom(pad * 1.2f);
+
     float buttonWidth = screenWidth * 0.12f;
     float buttonHeight = screenHeight * 0.06f;
 
-    table.add().expandY();
     table.row();
-    table.add(title).width(screenWidth * 0.3f).height(screenHeight * 0.18f).padBottom(pad);
+    table
+        .add(title)
+        .width(screenWidth * 0.3f)
+        .height(screenHeight * 0.18f)
+        .padBottom(pad)
+        .padTop(pad * 0.5f);
     table.row();
-    table.add(headerLabel).padBottom(pad);
-    table.row();
-    table.add(hintLabel).padBottom(pad);
-    table.row();
-    table.add(slotsTable).center();
+    table.add(panel).padBottom(pad).width(panelWidth);
     table.row();
     table
         .add(backButton)
         .center()
         .width(buttonWidth)
         .height(buttonHeight)
-        .padTop(pad * 2f)
+        .padTop(pad)
         .padBottom(screenHeight * 0.05f);
 
     stage.addActor(table);
   }
 
-  /** Resets the delete confirmation and rebuilds the slot rows from disk. */
+  /** Rebuilds the slot rows from disk. */
   private void refreshSlots() {
-    armedDeleteSlot = -1;
     rebuildSlotRows();
   }
 
@@ -223,26 +230,37 @@ public class LoadSaveDisplay extends UIComponent {
           }
         });
 
-    TextButton.TextButtonStyle deleteStyle =
-        new TextButton.TextButtonStyle(skin.get(TextButton.TextButtonStyle.class));
-    deleteStyle.fontColor = TEXT_DARK;
-    deleteStyle.overFontColor = TEXT_COMPLETED;
-    deleteStyle.downFontColor = TEXT_DARK;
-    TextButton deleteButton = new TextButton(armedDeleteSlot == slot ? "SURE?" : "X", deleteStyle);
-    deleteButton.addListener(
-        new ChangeListener() {
-          @Override
-          public void changed(ChangeEvent changeEvent, Actor actor) {
-            onDeleteClicked(slot);
-          }
-        });
+    ImageButton deleteButton = buildDeleteButton(slot);
 
     row.add(info).grow().pad(pad);
     row.add(deleteButton)
         .right()
         .pad(pad)
-        .size(Gdx.graphics.getWidth() * 0.06f, Gdx.graphics.getHeight() * 0.05f);
+        .size(Gdx.graphics.getWidth() * 0.05f, Gdx.graphics.getHeight() * 0.045f);
     return row;
+  }
+
+  /** An X button that deletes the slot's save in one click (no confirmation step). */
+  private ImageButton buildDeleteButton(int slot) {
+    Texture upTexture =
+        ServiceLocator.getResourceService().getAsset("images/Buttons/x_up_btn.png", Texture.class);
+    Texture downTexture =
+        ServiceLocator.getResourceService()
+            .getAsset("images/Buttons/x_down_btn.png", Texture.class);
+    ImageButton.ImageButtonStyle style = new ImageButton.ImageButtonStyle();
+    style.up = new TextureRegionDrawable(upTexture);
+    style.down = new TextureRegionDrawable(downTexture);
+    ImageButton deleteButton = new ImageButton(style);
+    deleteButton.addListener(
+        new ChangeListener() {
+          @Override
+          public void changed(ChangeEvent changeEvent, Actor actor) {
+            logger.debug("Deleting save slot {}", slot);
+            ButtonSound.playClick();
+            entity.getEvents().trigger("Delete", slot);
+          }
+        });
+    return deleteButton;
   }
 
   /**
@@ -252,23 +270,6 @@ public class LoadSaveDisplay extends UIComponent {
    */
   private static Label textLabel(String text, Color color) {
     return new Label(text, new Label.LabelStyle(skin.getFont("font"), color));
-  }
-
-  /**
-   * Two-step delete: the first press arms the button ("SURE?"), the second press deletes the slot
-   * and lets {@link LoadSaveActions} refresh the list. Pressing a different slot's button disarms
-   * the previous one instead.
-   */
-  private void onDeleteClicked(int slot) {
-    if (armedDeleteSlot == slot) {
-      armedDeleteSlot = -1;
-      ButtonSound.playClick();
-      entity.getEvents().trigger("Delete", slot);
-    } else {
-      armedDeleteSlot = slot;
-      ButtonSound.playClick();
-      rebuildSlotRows();
-    }
   }
 
   /** level name for the save-select screen. */

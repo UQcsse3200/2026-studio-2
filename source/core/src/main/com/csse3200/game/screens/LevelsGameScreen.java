@@ -3,6 +3,8 @@ package com.csse3200.game.screens;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.math.GridPoint2;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.csse3200.game.GdxGame;
 import com.csse3200.game.areas.GameArea;
@@ -11,6 +13,7 @@ import com.csse3200.game.areas.Level2GameArea;
 import com.csse3200.game.areas.Level3GameArea;
 import com.csse3200.game.areas.LevelBossGameArea;
 import com.csse3200.game.areas.terrain.TerrainFactory;
+import com.csse3200.game.areas.terrain.configs.RegionTutorialConfig;
 import com.csse3200.game.components.ButtonSound;
 import com.csse3200.game.components.GameVolume;
 import com.csse3200.game.components.SoundEffects;
@@ -29,7 +32,9 @@ import com.csse3200.game.components.player.KeyboardPlayerInputComponent;
 import com.csse3200.game.components.player.PlayerInteractionComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.ItemFactory;
+import com.csse3200.game.entities.factories.TutorialFactory;
 import com.csse3200.game.events.EventHandler;
+import com.csse3200.game.events.listeners.EventListener0;
 import com.csse3200.game.input.InputComponent;
 import com.csse3200.game.input.InputDecorator;
 import com.csse3200.game.physics.components.PhysicsComponent;
@@ -42,7 +47,9 @@ import com.csse3200.game.ui.GameplayCursor;
 import com.csse3200.game.ui.terminal.Terminal;
 import com.csse3200.game.ui.terminal.TerminalDisplay;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -75,7 +82,6 @@ public class LevelsGameScreen extends BaseGameScreen {
   private final BlackjackOverlay blackjackOverlay;
   private final MinigameOverlayManager minigameOverlayManager;
   private Entity player;
-  private TutorialComponent tutorial;
   private GameEndDisplay gameEndDisplay;
   private Terminal terminal;
   private final GameplayCursor cursor = new GameplayCursor();
@@ -92,11 +98,28 @@ public class LevelsGameScreen extends BaseGameScreen {
   // Gravity scale to restore when cheat mode is switched off.
   private float gravity = 1f;
 
-  public LevelsGameScreen(GdxGame game) {
-    this(game, true);
-  }
+  // The movement tutorial (tut1) auto-starts this many seconds after spawning in level 1, so
+  // the player has a moment to look around first.
+  private static final float MOVEMENT_TUTORIAL_DELAY = 3f;
+  private static final String MOVEMENT_TUTORIAL = "tut1";
+  // The level 1 offer (tut0) where Calypso asks whether the player wants tutorial prompts at all.
+  private static final String TUTORIAL_CHOICE = "tut0";
+  // Calypso's mid-fight tip, shown once as she changes phase at the end of the level 3 climb.
+  private static final String BOSS_PHASE_TUTORIAL = "tut15";
 
-  public LevelsGameScreen(GdxGame game, boolean startTutorial) {
+  private float movementTutorialDelay = MOVEMENT_TUTORIAL_DELAY;
+  // Whether the movement tutorial has run, or is not wanted for this save.
+  private boolean movementTutorialStarted = false;
+  // Tutorial currently on screen, so a new one can dismiss it and dispose can clean it up.
+  private TutorialComponent activeTutorial;
+  // Checkpoint-linked tutorials already shown this session, so each plays at most once.
+  private final Set<String> shownCheckpointTutorials = new HashSet<>();
+  // Whether Calypso's phase-change prompt has been shown this session.
+  private boolean bossPhasePromptShown = false;
+  // Region-linked tutorials already shown this session (e.g. tut2 on level 2's arena ledge).
+  private final Set<String> shownRegionTutorials = new HashSet<>();
+
+  public LevelsGameScreen(GdxGame game) {
     super();
     this.game = game;
 
@@ -120,6 +143,7 @@ public class LevelsGameScreen extends BaseGameScreen {
 
     currentGameArea = level1GameArea;
     registerLevelSwap();
+    wireCheckpointTutorials(level1GameArea);
 
     // Checkpoints are the game's save points: GameArea forwards every activation here.
     ServiceLocator.getGameSaveEventHandler()
@@ -140,9 +164,6 @@ public class LevelsGameScreen extends BaseGameScreen {
     // save is in level 1; saves in other levels are restored after their area swap instead.
     game.applyPendingSavePlayer(player);
     game.applyPendingSaveWorld(currentGameArea, level);
-    if (startTutorial && !game.isTutorialCompleted()) {
-      tutorial = TutorialComponent.start(game::markTutorialCompleted);
-    }
     player.getEvents().addListener("respawnAtCheckpoint", () -> currentGameArea.respawn());
     player.getEvents().addListener("toggleMap", () -> currentGameArea.toggleLevelMap());
     player.getEvents().addListener("toggleBossView", () -> currentGameArea.toggleBossCamera());
@@ -175,6 +196,11 @@ public class LevelsGameScreen extends BaseGameScreen {
   private void restartAtCheckpoint() {
     if (currentGameArea != null) {
       currentGameArea.restart();
+      if (currentGameArea.requiresWorldResetOnDeath()) {
+        // Rebuild the level world so one-shot triggers, spawners and platforms start
+        // un-triggered; the player keeps its state and lands at the fresh area's spawn.
+        queueAreaSwap(LEVEL3);
+      }
     }
     if (gameEndDisplay != null) {
       gameEndDisplay.hide();
@@ -275,6 +301,7 @@ public class LevelsGameScreen extends BaseGameScreen {
     currentGameArea = nextGameArea;
     nextGameArea = null;
     registerLevelSwap();
+    wireCheckpointTutorials(currentGameArea);
 
     renderer.getCamera().setTarget(currentGameArea.getPlayer());
     if (wasMapToggled) {
@@ -339,6 +366,12 @@ public class LevelsGameScreen extends BaseGameScreen {
       levelSwapQueued = false;
     }
 
+    updateMovementTutorial(delta);
+    if (activeTutorial != null) {
+      // Prompts with a configured deadline (tut7/tut8) dismiss themselves without input.
+      activeTutorial.tickAutoDismiss(delta);
+    }
+
     // Overlay shortcuts bypass the input handler chain, so ignore them while the terminal is
     // open. F1 still toggles the terminal itself.
     boolean terminalOpen = terminal != null && terminal.isOpen();
@@ -363,6 +396,8 @@ public class LevelsGameScreen extends BaseGameScreen {
       player.getEvents().trigger("toggleBossView");
     }
 
+    updateRegionTutorials();
+
     physicsEngine.update();
     ServiceLocator.getEntityService().update();
     renderer.render();
@@ -371,6 +406,155 @@ public class LevelsGameScreen extends BaseGameScreen {
     pauseOverlay.afterRender();
     blackjackOverlay.afterRender();
     updateCursor();
+  }
+
+  /**
+   * Auto-starts the level 1 tutorial offer (tut0) a few seconds after spawning, so the player has a
+   * moment to look around first. Runs once per screen and only when the save has neither completed
+   * the tutorial nor declined prompts. Y starts the movement tutorial (tut1), whose completion is
+   * persisted via {@link GdxGame#markTutorialCompleted()}; N declines prompts for this save slot
+   * via {@link GdxGame#declineTutorials()}.
+   */
+  private void updateMovementTutorial(float delta) {
+    if (movementTutorialStarted || !LEVEL1.equals(level)) {
+      return;
+    }
+    if (game.isTutorialCompleted() || !game.areTutorialsAccepted()) {
+      // Already seen, or this save declined the offer: no prompts at all.
+      movementTutorialStarted = true;
+      return;
+    }
+    if (movementTutorialDelay > 0f) {
+      movementTutorialDelay -= delta;
+      return;
+    }
+    movementTutorialStarted = true;
+    startNamedTutorial(TUTORIAL_CHOICE, this::onTutorialChoice);
+  }
+
+  /**
+   * Handles the tut0 offer's outcome: Y records the acceptance and starts the movement tutorial
+   * immediately; N records the decline so no tutorial auto-plays for this save slot again. Any
+   * other outcome (the offer dismissed without an answer) leaves the choice as it was.
+   */
+  private void onTutorialChoice() {
+    TutorialComponent choice = activeTutorial;
+    activeTutorial = null; // tut0 has finished; don't dispose it a second time
+    if (choice == null) {
+      return;
+    }
+    if (choice.getCompletionKeycode() == Input.Keys.Y) {
+      game.acceptTutorials();
+      startNamedTutorial(MOVEMENT_TUTORIAL, game::markTutorialCompleted);
+    } else if (choice.getCompletionKeycode() == Input.Keys.N) {
+      game.declineTutorials();
+    }
+  }
+
+  /**
+   * Starts a named tutorial via {@link TutorialFactory}, dismissing any tutorial currently on
+   * screen. Returns null when the tutorial's config is missing or invalid, or when this save has
+   * declined tutorial prompts. The terminal {@code tutorial} command bypasses this gate by calling
+   * the factory directly.
+   */
+  private TutorialComponent startNamedTutorial(String name, Runnable onFinished) {
+    if (!game.areTutorialsAccepted()) {
+      return null;
+    }
+    if (activeTutorial != null) {
+      activeTutorial.dispose();
+      activeTutorial = null;
+    }
+    activeTutorial = TutorialFactory.start(name, onFinished);
+    if (activeTutorial == null) {
+      logger.warn("Could not start tutorial {}", name);
+    }
+    return activeTutorial;
+  }
+
+  /**
+   * Wires checkpoint-linked tutorials for a game area: when one of its checkpoints activates, the
+   * level config may name a tutorial (e.g. tut5 at level 1's first checkpoint) to auto-start.
+   */
+  private void wireCheckpointTutorials(GameArea area) {
+    area.setCheckpointListener(this::onCheckpointReached);
+    // A level 3 arena spawns Calypso: listening to the area's dispatcher, rather than only to her
+    // own events, survives the level rebuild a death before CP2 performs. Areas that own no
+    // dispatcher (only test doubles) simply report no boss.
+    if (area.getEvents() != null) {
+      area.getEvents()
+          .addListener(Level3GameArea.BOSS_SPAWNED, (EventListener0) this::onBossSpawned);
+    }
+  }
+
+  /**
+   * Starts listening as Calypso enters the fight. Only her "begins changing" event is used, so the
+   * phase prompt lands at the very start of the transition rather than after she emerges in phase 2
+   * a few seconds later.
+   */
+  private void onBossSpawned() {
+    GameArea area = currentGameArea;
+    if (area == null || area.getEvents() == null) {
+      return;
+    }
+    area.getEvents()
+        .addListener(Level3GameArea.BOSS_PHASE_CHANGING, (EventListener0) this::onBossPhaseChange);
+    area.getEvents()
+        .addListener(Level3GameArea.BOSS_DEFEATED, (EventListener0) this::onBossDefeated);
+  }
+
+  /**
+   * Prompts at the start of Calypso's phase change. The once-per-fight guard also covers a rebuild
+   * that re-wires her fresh events, so the prompt still plays at most once per fight.
+   */
+  private void onBossPhaseChange() {
+    if (bossPhasePromptShown) {
+      return;
+    }
+    bossPhasePromptShown = true;
+    startNamedTutorial(BOSS_PHASE_TUTORIAL, null);
+  }
+
+  /**
+   * When Calypso is defeated, play the closing cutscene, which fades to black and ends the game.
+   */
+  private void onBossDefeated() {
+    // Avoid queuing again if the game is already in a transition/end state.
+    if (levelCompleteQueued) {
+      return;
+    }
+    levelCompleteQueued = true;
+    // Mark the save as completed on ending via the boss defeat path.
+    game.markSaveCompleted();
+    Gdx.app.postRunnable(() -> game.playCutscene("cutscene6", GdxGame.ScreenType.MAIN_MENU));
+  }
+
+  /** Starts the tutorial wired to the checkpoint at the given position, once per session. */
+  private void onCheckpointReached(GridPoint2 position) {
+    if (currentGameArea == null) {
+      return;
+    }
+    String tutorial = currentGameArea.getConfig().getTutorialForCheckpoint(position);
+    if (tutorial != null && shownCheckpointTutorials.add(tutorial)) {
+      startNamedTutorial(tutorial, null);
+    }
+  }
+
+  /**
+   * Starts region-linked tutorials once per session: when the player stands inside a region the
+   * level wires (e.g. tut2 on the ledge above level 2's mob-spawn arena), its tutorial plays. Reads
+   * the previous frame's position, like the boss-view check above it.
+   */
+  private void updateRegionTutorials() {
+    if (currentGameArea == null || player == null) {
+      return;
+    }
+    Vector2 position = player.getPosition();
+    for (RegionTutorialConfig region : currentGameArea.getConfig().getRegionTutorials()) {
+      if (region.contains(position) && shownRegionTutorials.add(region.tutorial)) {
+        startNamedTutorial(region.tutorial, null);
+      }
+    }
   }
 
   /** Hides the pointer during normal play and shows it for menus and while aiming. */
@@ -389,8 +573,9 @@ public class LevelsGameScreen extends BaseGameScreen {
 
   @Override
   public void dispose() {
-    if (tutorial != null) {
-      tutorial.dispose();
+    if (activeTutorial != null) {
+      activeTutorial.dispose();
+      activeTutorial = null;
     }
     cursor.dispose();
     super.dispose();

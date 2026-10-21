@@ -17,6 +17,7 @@ import com.csse3200.game.components.player.KeyboardPlayerInputComponent;
 import com.csse3200.game.components.player.PlayerStatsDisplay;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.ItemFactory;
+import com.csse3200.game.events.EventHandler;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.rendering.BackgroundRenderComponent;
 import com.csse3200.game.services.ResourceService;
@@ -24,6 +25,7 @@ import com.csse3200.game.services.ServiceLocator;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.function.Consumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,6 +51,12 @@ public abstract class GameArea implements Disposable {
   protected KeyboardPlayerInputComponent input;
   protected Entity levelChanger;
   protected LevelConfig config;
+  // Notified (with the checkpoint's position) whenever one of this area's checkpoints activates;
+  // used by the game screen to start checkpoint-linked tutorials. Null when nothing listens.
+  private Consumer<GridPoint2> checkpointListener;
+  // The area's own event dispatcher, for lifecycle events the game screen reacts to (e.g. the boss
+  // spawning and changing phase). Separate from every entity's dispatcher.
+  protected final EventHandler events = new EventHandler();
   protected boolean mapToggled = false;
   protected float viewportWidth;
   protected float viewportHeight;
@@ -307,10 +315,36 @@ public abstract class GameArea implements Disposable {
     }
   }
 
+  /** The level config this area was created from, e.g. for its checkpoint-linked tutorials. */
+  public LevelConfig getConfig() {
+    return config;
+  }
+
+  /**
+   * This area's event dispatcher, for the lifecycle events the game screen reacts to, such as the
+   * boss spawning and changing phase. Entity-level events are unaffected; this is the area's own.
+   */
+  public EventHandler getEvents() {
+    return events;
+  }
+
+  /**
+   * Sets a callback fired with a checkpoint's position whenever it activates, after the autosave it
+   * triggers. Used by the game screen to start checkpoint-linked tutorials.
+   *
+   * @param checkpointListener callback to run, or null to stop listening
+   */
+  public void setCheckpointListener(Consumer<GridPoint2> checkpointListener) {
+    this.checkpointListener = checkpointListener;
+  }
+
   /** Represents functionality that all game areas should use when a checkpoint is encountered */
   protected void onCheckpointActivated(GridPoint2 position) {
     if (ServiceLocator.getGameSaveEventHandler() != null) {
       ServiceLocator.getGameSaveEventHandler().trigger("autosave");
+    }
+    if (checkpointListener != null) {
+      checkpointListener.accept(position);
     }
   }
 
@@ -347,6 +381,17 @@ public abstract class GameArea implements Disposable {
     }
   }
 
+  /**
+   * Whether the checkpoint at the given position has been activated in this area.
+   *
+   * @param position checkpoint position to look for
+   * @return true when a checkpoint exists at that position and has been collected
+   */
+  public boolean isCheckpointActive(GridPoint2 position) {
+    return config.getCheckpoints().stream()
+        .anyMatch(checkpoint -> checkpoint.isActive() && checkpoint.getPosition().equals(position));
+  }
+
   /** Layer repeat behaviour for background layers */
   public enum RepeatMode {
     NONE,
@@ -363,10 +408,28 @@ public abstract class GameArea implements Disposable {
   }
 
   /**
+   * Level-specific hazard reset run before the player is moved back to a checkpoint on a death
+   * restart (e.g. level 3's rising water). Default: nothing to reset.
+   */
+  protected void resetHazardState() {}
+
+  /**
+   * Whether a death restart in this area should rebuild the level's world (fresh triggers, spawners
+   * and platforms) in addition to respawning the player. Default: only respawn, keeping all world
+   * state as it was.
+   */
+  public boolean requiresWorldResetOnDeath() {
+    return false;
+  }
+
+  /**
    * Restart after death/game-over: teleport to the last checkpoint and revive with a health
    * penalty. Unlike a full level reload, checkpoint progress is kept.
    */
   public void restart() {
+    // Hazards are lowered first so the player is never dropped back in under one (level 3's
+    // water has risen well above the checkpoint by the time a mid-level death happens).
+    resetHazardState();
     GridPoint2 respawnPoint = getRespawnPoint();
     resetPlayerVelocity();
     player.setEnabled(true);

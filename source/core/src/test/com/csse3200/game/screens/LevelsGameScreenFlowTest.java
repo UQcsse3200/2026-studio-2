@@ -31,9 +31,13 @@ import org.mockito.ArgumentCaptor;
 @ExtendWith(GameExtension.class)
 class LevelsGameScreenFlowTest {
   @ParameterizedTest
-  @CsvSource({"level2, cutscene2, CYCLOPS_MINIGAME", "level3, cutscene4, STORY_BLACKJACK"})
+  @CsvSource({
+    "level2, cutscene2, CYCLOPS_MINIGAME",
+    "level3, cutscene4, STORY_BLACKJACK",
+    "boss, cutscene6, MAIN_MENU"
+  })
   void exitPreservesPlayerAndDefersTheStoryUntilAfterTheWorldUpdate(
-      String nextLevel, String cutscene, GdxGame.ScreenType destination) {
+      String nextLevel, String cutscene, GdxGame.ScreenType destination) throws Exception {
     Application previousApp = Gdx.app;
     Application app = mock(Application.class);
     Gdx.app = app;
@@ -67,10 +71,17 @@ class LevelsGameScreenFlowTest {
               });
       screen = new LevelsGameScreen(game);
 
-      exit.getEvents().trigger("triggerNextLevel", nextLevel);
-      exit.getEvents().trigger("triggerNextLevel", nextLevel);
-
-      verify(game).savePlayerState(player);
+      if (nextLevel.equals("boss")) {
+        var defeated = LevelsGameScreen.class.getDeclaredMethod("onBossDefeated");
+        defeated.setAccessible(true);
+        defeated.invoke(screen);
+        defeated.invoke(screen);
+        verify(game).markSaveCompleted();
+      } else {
+        exit.getEvents().trigger("triggerNextLevel", nextLevel);
+        exit.getEvents().trigger("triggerNextLevel", nextLevel);
+        verify(game).savePlayerState(player);
+      }
       verify(game, never()).playCutscene(anyString(), any());
       ArgumentCaptor<Runnable> transition = ArgumentCaptor.forClass(Runnable.class);
       verify(app).postRunnable(transition.capture());
@@ -116,7 +127,7 @@ class LevelsGameScreenFlowTest {
                 ServiceLocator.getRenderService().setStage(stage);
                 return renderer;
               });
-      screen = new LevelsGameScreen(mock(GdxGame.class), false);
+      screen = new LevelsGameScreen(mock(GdxGame.class));
       assertTrue(buttons.constructed().isEmpty());
       assertEquals(1, overlays.constructed().size());
       PauseMenuOverlay overlay = overlays.constructed().getFirst();
