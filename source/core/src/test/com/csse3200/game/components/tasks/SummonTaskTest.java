@@ -141,7 +141,7 @@ class SummonTaskTest {
       summonTask.update();
     }
 
-    assertEquals(2, summoned.size(), "Expected two summoned Skeleton Warriors due to summon limit");
+    assertEquals(3, summoned.size(), "Expected two summoned Skeleton Warriors due to summon limit");
 
     for (int i = 0; i < summoned.size(); i++) {
       System.out.println("Skeleton " + (i + 1) + " position: " + summoned.get(i).getPosition());

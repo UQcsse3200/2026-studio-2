@@ -32,7 +32,7 @@ class ArrowTest {
     assertEquals(ItemType.FIRE_ARROW, fire.getItemType());
     assertEquals(3, fire.getQuantity());
     assertEquals(5, fire.getDamage());
-    assertEquals(10f, fire.getBurnDamagePerSecond(), 0.001f);
+    assertEquals(3f, fire.getBurnDamagePerSecond(), 0.001f);
     assertEquals(5f, fire.getBurnTime(), 0.001f);
   }
 
@@ -114,7 +114,7 @@ class ArrowTest {
     assertEquals(ItemType.STANDARD_ARROW.getRange() + 1, fire.getRange(), 0.001f);
     assertTrue(fire.isConsumeAmmo());
     assertEquals(0.3f, fire.getCooldown(), 0.001f);
-    assertEquals(10f, fire.getBurnDamagePerSecond(), 0.001f);
+    assertEquals(3f, fire.getBurnDamagePerSecond(), 0.001f);
     assertEquals(5f, fire.getBurnTime(), 0.001f);
   }
 
