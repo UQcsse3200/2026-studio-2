@@ -95,7 +95,7 @@ public class Blackjack {
   private final Random random;
 
   private int balance;
-  private int bet;
+  private int stake;
   private boolean roundInProgress;
   private boolean roundOver;
   private RoundOutcome lastOutcome;
@@ -125,7 +125,7 @@ public class Blackjack {
     }
     this.random = random;
     this.balance = startingBalance;
-    this.bet = BET;
+    this.stake = BET;
     this.resultMessage = "";
     resetDeck();
   }
@@ -145,7 +145,7 @@ public class Blackjack {
 
   /** Returns the current bet for the active round. */
   public int getBet() {
-    return bet;
+    return stake;
   }
 
   /** Returns a copy of the player's hand. */
@@ -227,7 +227,7 @@ public class Blackjack {
   private void clearMatch() {
     playerWins = 0;
     dealerWins = 0;
-    bet = BET;
+    stake = BET;
     playerHand.clear();
     dealerHand.clear();
     roundInProgress = false;
@@ -238,7 +238,7 @@ public class Blackjack {
 
   /** Starts a fresh round using the current bet. */
   public void startNewRound() {
-    if (bet <= 0) {
+    if (stake <= 0) {
       throw new IllegalStateException("A valid bet must be placed before starting a round");
     }
     if (roundInProgress) {
@@ -247,7 +247,7 @@ public class Blackjack {
     if (isMatchOver()) {
       throw new IllegalStateException("The match is over");
     }
-    if (bet > balance) {
+    if (stake > balance) {
       throw new IllegalStateException("Not enough balance for the bet");
     }
 
@@ -383,11 +383,11 @@ public class Blackjack {
   private void finishRound(RoundOutcome outcome, String message) {
     switch (outcome) {
       case PLAYER_WIN -> {
-        balance += bet;
+        balance += stake;
         playerWins++;
       }
       case DEALER_WIN -> {
-        balance -= bet;
+        balance -= stake;
         dealerWins++;
       }
       case PUSH -> {

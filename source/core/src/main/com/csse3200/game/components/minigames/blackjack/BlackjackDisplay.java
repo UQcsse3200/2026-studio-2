@@ -5,7 +5,6 @@ import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.NinePatch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
@@ -18,11 +17,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.ui.Value;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
-import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
 import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.csse3200.game.components.ButtonSound;
@@ -36,6 +33,7 @@ public class BlackjackDisplay extends UIComponent {
   /** Fired on the entity when the pause button is pressed. The screen opens its pause menu. */
   public static final String PAUSE_REQUESTED = "blackjackPauseRequested";
 
+  private static final String GOLD_TEXT = "F5D78B";
   private static final String EMPTY_BALANCE_MESSAGE = "Your balance is 0!";
   private static final String MATCH_OVER_MESSAGE = "The match is over.";
 
@@ -99,7 +97,6 @@ public class BlackjackDisplay extends UIComponent {
   private ImageButton standButton;
   private ImageButton backButton;
   private ImageButton soundButton;
-  private ImageButton pauseButton;
 
   private Label dealerLabel;
   private Label playerLabel;
@@ -224,11 +221,11 @@ public class BlackjackDisplay extends UIComponent {
 
     // Give the player and dealer titles their own gold-themed styles.
     Label.LabelStyle dealerStyle = new Label.LabelStyle(dealerLabel.getStyle());
-    dealerStyle.fontColor = Color.valueOf("F5D78B");
+    dealerStyle.fontColor = Color.valueOf(GOLD_TEXT);
     dealerLabel.setStyle(dealerStyle);
 
     Label.LabelStyle playerStyle = new Label.LabelStyle(playerLabel.getStyle());
-    playerStyle.fontColor = Color.valueOf("F5D78B");
+    playerStyle.fontColor = Color.valueOf(GOLD_TEXT);
     playerLabel.setStyle(playerStyle);
 
     dealerLabel.setAlignment(com.badlogic.gdx.utils.Align.center);
@@ -273,14 +270,7 @@ public class BlackjackDisplay extends UIComponent {
           @Override
           public void changed(ChangeEvent event, Actor actor) {
             ButtonSound.playClick();
-
-            if (blackjack.isRoundInProgress() && !blackjack.isRoundOver()) {
-              int playerCardsBefore = blackjack.getPlayerHand().size();
-              blackjack.hit();
-              settleGoldIfRoundOver();
-              playResultSoundIfNeeded();
-              animateNewCards(playerCards, playerCardsBefore);
-            }
+            onHit();
           }
         });
 
@@ -291,17 +281,7 @@ public class BlackjackDisplay extends UIComponent {
           @Override
           public void changed(ChangeEvent event, Actor actor) {
             ButtonSound.playClick();
-
-            if (blackjack.isRoundInProgress() && !blackjack.isRoundOver()) {
-              int dealerCardsBefore = blackjack.getDealerHand().size();
-
-              blackjack.stand();
-              revealDealerCard = true;
-
-              settleGoldIfRoundOver();
-              playResultSoundIfNeeded();
-              animateNewCards(dealerCards, dealerCardsBefore);
-            }
+            onStand();
           }
         });
 
@@ -334,12 +314,7 @@ public class BlackjackDisplay extends UIComponent {
             event.cancel();
 
             ButtonSound.playClick();
-
-            if (backCallback != null) {
-              backCallback.run();
-            } else {
-              entity.getEvents().trigger("back");
-            }
+            onBack();
           }
         });
 
@@ -353,21 +328,14 @@ public class BlackjackDisplay extends UIComponent {
         new ChangeListener() {
           @Override
           public void changed(ChangeEvent event, Actor actor) {
-            soundEnabled = !soundEnabled;
-
-            if (soundToggleCallback != null) {
-              soundToggleCallback.accept(soundEnabled);
-            }
-
-            if (soundEnabled) {
-              ButtonSound.playClick();
-            }
+            onSoundToggled();
           }
         });
 
-    pauseButton =
+    ImageButton pauseButton =
         createImageButton(
             "images/Buttons/bj_pause_up_btn.png", "images/Buttons/bj_pause_down_btn.png");
+    pauseButton.setName("pauseButton");
     pauseButton.addListener(
         new ChangeListener() {
           @Override
@@ -484,35 +452,50 @@ public class BlackjackDisplay extends UIComponent {
 
   private void applyGoldInfoLabelStyle(Label label, float scale) {
     Label.LabelStyle style = new Label.LabelStyle(label.getStyle());
-    style.fontColor = Color.valueOf("F5D78B");
+    style.fontColor = Color.valueOf(GOLD_TEXT);
     style.background = null;
     label.setStyle(style);
     label.setFontScale(scale);
     label.setAlignment(com.badlogic.gdx.utils.Align.center);
   }
 
-  private TextField.TextFieldStyle createCasinoBetFieldStyle() {
-    TextField.TextFieldStyle style =
-        new TextField.TextFieldStyle(skin.get(TextField.TextFieldStyle.class));
-    style.fontColor = Color.valueOf("FFE5A0");
-    style.messageFontColor = Color.valueOf("D4BA78");
-    style.background = createBetFieldBackground("103D30", "C69B43");
-    style.focusedBackground = createBetFieldBackground("174B39", "F8D978");
-    style.disabledBackground = createBetFieldBackground("26372E", "887344");
-    return style;
+  private void onHit() {
+    if (blackjack.isRoundInProgress() && !blackjack.isRoundOver()) {
+      int playerCardsBefore = blackjack.getPlayerHand().size();
+      blackjack.hit();
+      settleGoldIfRoundOver();
+      playResultSoundIfNeeded();
+      animateNewCards(playerCards, playerCardsBefore);
+    }
   }
 
-  private NinePatchDrawable createBetFieldBackground(String fillHex, String borderHex) {
-    Pixmap pixels = new Pixmap(24, 24, Pixmap.Format.RGBA8888);
-    pixels.setColor(Color.valueOf(borderHex));
-    pixels.fill();
-    pixels.setColor(Color.valueOf(fillHex));
-    pixels.fillRectangle(2, 2, 20, 20);
-    Texture texture = new Texture(pixels);
-    pixels.dispose();
-    texture.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
-    casinoUiTextures.add(texture);
-    return new NinePatchDrawable(new NinePatch(texture, 4, 4, 4, 4));
+  private void onStand() {
+    if (blackjack.isRoundInProgress() && !blackjack.isRoundOver()) {
+      int dealerCardsBefore = blackjack.getDealerHand().size();
+      blackjack.stand();
+      revealDealerCard = true;
+      settleGoldIfRoundOver();
+      playResultSoundIfNeeded();
+      animateNewCards(dealerCards, dealerCardsBefore);
+    }
+  }
+
+  private void onBack() {
+    if (backCallback != null) {
+      backCallback.run();
+    } else {
+      entity.getEvents().trigger("back");
+    }
+  }
+
+  private void onSoundToggled() {
+    soundEnabled = !soundEnabled;
+    if (soundToggleCallback != null) {
+      soundToggleCallback.accept(soundEnabled);
+    }
+    if (soundEnabled) {
+      ButtonSound.playClick();
+    }
   }
 
   private void buildResultOverlay() {
@@ -557,41 +540,7 @@ public class BlackjackDisplay extends UIComponent {
           @Override
           public void changed(ChangeEvent event, Actor actor) {
             ButtonSound.playClick();
-
-            if (!blackjack.isRoundInProgress()) {
-              BlackjackDialogue dialogue = currentDialogue();
-              boolean gift = dialogue != null && dialogue.getKind() == BlackjackDialogue.Kind.GIFT;
-              if (dialogue != null) {
-                dialogue.pressButton(blackjack, storyWinCallback);
-                if (gift) {
-                  giftPending = false;
-                }
-                if (dialogue.getKind() == BlackjackDialogue.Kind.MATCH_WON) {
-                  if (storyWinCallback != null) {
-                    return;
-                  }
-                  // Standalone Blackjack has no story transition; allow another match.
-                  blackjack.restartMatchKeepingGold();
-                }
-                if (inventory != null) {
-                  inventory.setGold(blackjack.getBalance());
-                }
-                resetMatchPresentation();
-              }
-              resultOverlay.setVisible(false);
-              resultOverlay.setTouchable(Touchable.disabled);
-              resultLabel.setText("");
-              statusLabel.setText(
-                  inventory != null && inventory.getGold() <= 0
-                      ? EMPTY_BALANCE_MESSAGE
-                      : PLACE_BET);
-              refreshLabels();
-              // Deal the next round now, so the player does not have to press New Round again.
-              // After the welcome gift the player starts the first deal with New Round.
-              if (!gift) {
-                tryStartRound();
-              }
-            }
+            onResultContinue();
           }
         });
 
@@ -608,6 +557,57 @@ public class BlackjackDisplay extends UIComponent {
 
     resultPopupCell = resultOverlay.add(popup).width(480f);
     stage.addActor(resultOverlay);
+  }
+
+  /** Handles the result pop-up's button: accepts any dialogue, then deals the next round. */
+  private void onResultContinue() {
+    if (blackjack.isRoundInProgress()) {
+      return;
+    }
+    BlackjackDialogue dialogue = currentDialogue();
+    boolean gift = dialogue != null && dialogue.getKind() == BlackjackDialogue.Kind.GIFT;
+    if (dialogue != null && !acceptDialogue(dialogue)) {
+      return;
+    }
+    hideResultOverlay();
+    // Deal the next round now, so the player does not have to press New Round again.
+    // After the welcome gift the player starts the first deal with New Round.
+    if (!gift) {
+      tryStartRound();
+    }
+  }
+
+  /**
+   * Applies Circe's dialogue button.
+   *
+   * @return false when a story win takes over and moves on to Cutscene 5
+   */
+  private boolean acceptDialogue(BlackjackDialogue dialogue) {
+    dialogue.pressButton(blackjack, storyWinCallback);
+    if (dialogue.getKind() == BlackjackDialogue.Kind.GIFT) {
+      giftPending = false;
+    }
+    if (dialogue.getKind() == BlackjackDialogue.Kind.MATCH_WON) {
+      if (storyWinCallback != null) {
+        return false;
+      }
+      // Standalone Blackjack has no story transition; allow another match.
+      blackjack.restartMatchKeepingGold();
+    }
+    if (inventory != null) {
+      inventory.setGold(blackjack.getBalance());
+    }
+    resetMatchPresentation();
+    return true;
+  }
+
+  private void hideResultOverlay() {
+    resultOverlay.setVisible(false);
+    resultOverlay.setTouchable(Touchable.disabled);
+    resultLabel.setText("");
+    boolean noGold = inventory != null && inventory.getGold() <= 0;
+    statusLabel.setText(noGold ? EMPTY_BALANCE_MESSAGE : PLACE_BET);
+    refreshLabels();
   }
 
   /** Shows Cerci's final dialogue briefly, then fades to black before Cutscene 5. */
@@ -661,61 +661,50 @@ public class BlackjackDisplay extends UIComponent {
     boolean showResult = blackjack.isRoundOver() || giftPending;
     // While the rules are open the result waits, so it never covers the rules panel.
     boolean showOverlay = showResult && !dealInProgress && !rulesOpen;
-    if (showOverlay && !resultOverlay.isVisible()) {
+    setResultOverlayShown(showOverlay);
+    updateButtonStates(showResult);
+    if (showOverlay) {
+      showResultContent();
+    }
+  }
+
+  private void setResultOverlayShown(boolean show) {
+    if (show && !resultOverlay.isVisible()) {
       resultOverlay.getColor().a = 0f;
       resultOverlay.setVisible(true);
-      resultOverlay.setTouchable(com.badlogic.gdx.scenes.scene2d.Touchable.enabled);
+      resultOverlay.setTouchable(Touchable.enabled);
       resultOverlay.addAction(Actions.fadeIn(0.25f));
-    } else if (!showOverlay) {
+    } else if (!show) {
       resultOverlay.setVisible(false);
-      resultOverlay.setTouchable(com.badlogic.gdx.scenes.scene2d.Touchable.disabled);
+      resultOverlay.setTouchable(Touchable.disabled);
       resultOverlay.getColor().a = 1f;
     }
+  }
 
-    if (hitButton != null) {
-      boolean disabled =
-          !blackjack.isRoundInProgress() || showResult || dealInProgress || rulesOpen;
-      hitButton.setDisabled(disabled);
-      hitButton.setTouchable(
-          disabled
-              ? com.badlogic.gdx.scenes.scene2d.Touchable.disabled
-              : com.badlogic.gdx.scenes.scene2d.Touchable.enabled);
-    }
+  private void updateButtonStates(boolean showResult) {
+    boolean playLocked =
+        !blackjack.isRoundInProgress() || showResult || dealInProgress || rulesOpen;
+    setEnabled(hitButton, !playLocked);
+    setEnabled(standButton, !playLocked);
+    setEnabled(
+        newRoundButton,
+        !blackjack.isRoundInProgress()
+            && !dealInProgress
+            && !blackjack.isMatchOver()
+            && !rulesOpen);
+    setEnabled(backButton, true);
+    setEnabled(soundButton, true);
+  }
 
-    if (newRoundButton != null) {
-      boolean disabled =
-          blackjack.isRoundInProgress() || dealInProgress || blackjack.isMatchOver() || rulesOpen;
-      newRoundButton.setDisabled(disabled);
-      newRoundButton.setTouchable(
-          disabled
-              ? com.badlogic.gdx.scenes.scene2d.Touchable.disabled
-              : com.badlogic.gdx.scenes.scene2d.Touchable.enabled);
-    }
-
-    if (standButton != null) {
-      boolean disabled =
-          !blackjack.isRoundInProgress() || showResult || dealInProgress || rulesOpen;
-      standButton.setDisabled(disabled);
-      standButton.setTouchable(
-          disabled
-              ? com.badlogic.gdx.scenes.scene2d.Touchable.disabled
-              : com.badlogic.gdx.scenes.scene2d.Touchable.enabled);
-    }
-
-    if (backButton != null) {
-      backButton.setDisabled(false);
-      backButton.setTouchable(com.badlogic.gdx.scenes.scene2d.Touchable.enabled);
-    }
-
-    if (soundButton != null) {
-      soundButton.setDisabled(false);
-      soundButton.setTouchable(Touchable.enabled);
-    }
-
-    if (!showOverlay) {
+  private static void setEnabled(ImageButton button, boolean enabled) {
+    if (button == null) {
       return;
     }
+    button.setDisabled(!enabled);
+    button.setTouchable(enabled ? Touchable.enabled : Touchable.disabled);
+  }
 
+  private void showResultContent() {
     Label title = resultOverlay.findActor("resultTitle");
     Label message = resultOverlay.findActor("resultMessage");
 
@@ -735,14 +724,22 @@ public class BlackjackDisplay extends UIComponent {
       dialogueActionLabel.setText("Next round");
     }
     resultButtonCell.getActor().setVisible(!automaticVictory);
-    boolean gift = dialogue != null && dialogue.getKind() == BlackjackDialogue.Kind.GIFT;
-    resultButtonCell
-        .getActor()
-        .setStyle(gift ? acceptStyle : startsNewMatch(dialogue) ? newMatchStyle : newRoundStyle);
+    resultButtonCell.getActor().setStyle(resultButtonStyle(dialogue));
     resultOverlay.toFront();
     if (automaticVictory) {
       scheduleVictoryCutscene();
     }
+  }
+
+  /** ACCEPT for Circe's gift, NEW MATCH when the match restarts, otherwise NEW ROUND. */
+  private ImageButton.ImageButtonStyle resultButtonStyle(BlackjackDialogue dialogue) {
+    if (dialogue != null && dialogue.getKind() == BlackjackDialogue.Kind.GIFT) {
+      return acceptStyle;
+    }
+    if (startsNewMatch(dialogue)) {
+      return newMatchStyle;
+    }
+    return newRoundStyle;
   }
 
   /**

@@ -23,7 +23,6 @@ import java.util.stream.Stream;
 
 /** Screen for the Blackjack minigame. */
 public class BlackjackScreen extends MinigameScreen {
-  private final boolean storyMode;
   private static final String BLACKJACK_MUSIC = "sounds/minigames/blackjack/blackjack-bgm.mp3";
   private static final int STARTING_BALANCE = 100;
 
@@ -52,8 +51,6 @@ public class BlackjackScreen extends MinigameScreen {
     "images/ui/settings_box.png"
   };
 
-  private boolean leaving = false;
-
   private PauseMenuOverlay pauseOverlay;
   private Terminal terminal;
   private BlackjackDisplay display;
@@ -62,23 +59,13 @@ public class BlackjackScreen extends MinigameScreen {
   private boolean disposed;
 
   /**
-   * Creates the standalone Blackjack screen.
+   * Creates the Blackjack screen. The story and the debug terminal open the same screen: winning
+   * the match plays Cutscene 5 and continues to Level 3 either way.
    *
    * @param game game used for screen changes
    */
   public BlackjackScreen(GdxGame game) {
-    this(game, false);
-  }
-
-  /**
-   * Creates Blackjack in standalone mode or as the story encounter. Winning the match plays
-   * Cutscene 5 and continues to Level 3 in both modes.
-   *
-   * @param storyMode whether Blackjack is launched as part of the Level 2 story
-   */
-  public BlackjackScreen(GdxGame game, boolean storyMode) {
     super(game);
-    this.storyMode = storyMode;
   }
 
   @Override
@@ -181,7 +168,7 @@ public class BlackjackScreen extends MinigameScreen {
     // The player's gold is transferred via a snapshot across screen disposal.
     // A standalone launch without a player keeps its 100-gold practice balance.
     Integer savedGold = game.getSavedPlayerGold();
-    int startingGold = savedGold != null ? savedGold : 100;
+    int startingGold = savedGold != null ? savedGold : STARTING_BALANCE;
     Blackjack blackjack = new Blackjack(startingGold);
 
     InventoryComponent inventoryComponent =

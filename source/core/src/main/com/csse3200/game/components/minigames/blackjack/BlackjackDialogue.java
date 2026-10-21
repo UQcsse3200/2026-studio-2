@@ -126,13 +126,15 @@ public final class BlackjackDialogue {
   public void pressButton(Blackjack blackjack, Runnable startWinCutscene) {
     switch (kind) {
       case GIFT -> blackjack.setBalance(blackjack.getBalance() + GIFT_GOLD);
-      case MATCH_WON -> {
-        if (startWinCutscene != null) {
-          startWinCutscene.run();
-        }
-      }
+      case MATCH_WON -> runIfSet(startWinCutscene);
       case MATCH_LOST -> blackjack.restartMatchKeepingGold();
       case OUT_OF_GOLD -> blackjack.resetMatch();
+    }
+  }
+
+  private static void runIfSet(Runnable action) {
+    if (action != null) {
+      action.run();
     }
   }
 

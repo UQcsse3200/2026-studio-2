@@ -43,6 +43,11 @@ public class BlackjackRulesDisplay extends UIComponent {
 
   static final String INFO_UP_PATH = "images/Buttons/info_up_btn.png";
   static final String INFO_DOWN_PATH = "images/Buttons/info_down_btn.png";
+
+  /** Actor names of the info and close buttons, for finding them on the stage. */
+  static final String INFO_BUTTON_NAME = "rulesInfoButton";
+
+  static final String CLOSE_BUTTON_NAME = "rulesCloseButton";
   private static final String CLOSE_UP_PATH = "images/Buttons/back_up_btn.png";
   private static final String CLOSE_DOWN_PATH = "images/Buttons/back_down_btn.png";
 
@@ -104,8 +109,6 @@ public class BlackjackRulesDisplay extends UIComponent {
   private Table corner;
   private Table rulesOverlay;
   private int builtScale;
-  private ImageButton infoButton;
-  private ImageButton closeButton;
   private boolean open;
 
   @Override
@@ -118,7 +121,8 @@ public class BlackjackRulesDisplay extends UIComponent {
   }
 
   private void buildInfoButton() {
-    infoButton = BlackjackUiStyles.imageButton(INFO_UP_PATH, INFO_DOWN_PATH);
+    ImageButton infoButton = BlackjackUiStyles.imageButton(INFO_UP_PATH, INFO_DOWN_PATH);
+    infoButton.setName(INFO_BUTTON_NAME);
     infoButton.addListener(
         new ChangeListener() {
           @Override
@@ -170,7 +174,8 @@ public class BlackjackRulesDisplay extends UIComponent {
     title.setFontScale(fontScale * TITLE_RATIO);
     title.setAlignment(Align.center);
 
-    closeButton = BlackjackUiStyles.imageButton(CLOSE_UP_PATH, CLOSE_DOWN_PATH);
+    ImageButton closeButton = BlackjackUiStyles.imageButton(CLOSE_UP_PATH, CLOSE_DOWN_PATH);
+    closeButton.setName(CLOSE_BUTTON_NAME);
     closeButton.addListener(
         new ChangeListener() {
           @Override
@@ -194,10 +199,10 @@ public class BlackjackRulesDisplay extends UIComponent {
     // The popup is exactly the scroll's size; the margins keep the text on the parchment.
     Table popup = new Table();
     popup.setBackground(scrollBackground());
-    popup.padTop(MARGIN_TOP * scale);
-    popup.padLeft(MARGIN_LEFT * scale);
-    popup.padRight(MARGIN_RIGHT * scale);
-    popup.padBottom(MARGIN_BOTTOM * scale);
+    popup.padTop((float) MARGIN_TOP * scale);
+    popup.padLeft((float) MARGIN_LEFT * scale);
+    popup.padRight((float) MARGIN_RIGHT * scale);
+    popup.padBottom((float) MARGIN_BOTTOM * scale);
     popup.top();
     popup.add(title).padBottom(1.5f * scale);
     popup.row();

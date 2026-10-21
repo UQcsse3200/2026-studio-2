@@ -85,7 +85,8 @@ class BlackjackScreenTest {
   @Test
   void createUiBuildsDisplayActionsAndInputComponents() {
     RenderService renderService = mock(RenderService.class);
-    when(renderService.getStage()).thenReturn(mock(Stage.class));
+    Stage stage = mock(Stage.class);
+    when(renderService.getStage()).thenReturn(stage);
     ServiceLocator.registerRenderService(renderService);
     ServiceLocator.registerInputService(new InputService());
 
@@ -102,7 +103,7 @@ class BlackjackScreenTest {
 
   @Test
   void pauseButtonEventPausesTheGame() {
-    Entity ui = createUiFor(mock(GdxGame.class), false);
+    Entity ui = createUiFor(mock(GdxGame.class));
     EntityService entities = new EntityService();
     ServiceLocator.registerEntityService(entities);
 
@@ -113,7 +114,7 @@ class BlackjackScreenTest {
 
   @Test
   void togglePausePausesTheGame() {
-    createUiFor(mock(GdxGame.class), false);
+    createUiFor(mock(GdxGame.class));
     EntityService entities = new EntityService();
     ServiceLocator.registerEntityService(entities);
 
@@ -124,7 +125,7 @@ class BlackjackScreenTest {
 
   @Test
   void togglePauseIsIgnoredWhileSettingsAreOpen() {
-    createUiFor(mock(GdxGame.class), false);
+    createUiFor(mock(GdxGame.class));
     EntityService entities = new EntityService();
     entities.setSettingsOpen(true);
     ServiceLocator.registerEntityService(entities);
@@ -221,10 +222,11 @@ class BlackjackScreenTest {
     verify(resources).unloadAssets(BlackjackConfig.SOUNDS.toArray(String[]::new));
   }
 
-  private Entity createUiFor(GdxGame game, boolean storyMode) {
-    screen = new BlackjackScreen(game, storyMode);
+  private Entity createUiFor(GdxGame game) {
+    screen = new BlackjackScreen(game);
     RenderService renderService = mock(RenderService.class);
-    when(renderService.getStage()).thenReturn(mock(Stage.class));
+    Stage stage = mock(Stage.class);
+    when(renderService.getStage()).thenReturn(stage);
     ServiceLocator.registerRenderService(renderService);
     ServiceLocator.registerInputService(new InputService());
     return screen.createUI();
@@ -242,7 +244,7 @@ class BlackjackScreenTest {
     GdxGame game = mock(GdxGame.class);
     when(game.getSavedPlayerGold()).thenReturn(25);
 
-    Entity ui = createUiFor(game, true);
+    Entity ui = createUiFor(game);
     BlackjackDisplay display = ui.getComponent(BlackjackDisplay.class);
     InventoryComponent inventory = displayInventory(display);
 
@@ -255,7 +257,7 @@ class BlackjackScreenTest {
   @Test
   void storyBlackjackProvidesVictoryCallbackWithoutAdvancingOnSingleRoundEvent() throws Exception {
     GdxGame game = mock(GdxGame.class);
-    Entity ui = createUiFor(game, true);
+    Entity ui = createUiFor(game);
     BlackjackDisplay display = ui.getComponent(BlackjackDisplay.class);
     Field field = BlackjackDisplay.class.getDeclaredField("storyWinCallback");
     field.setAccessible(true);
@@ -282,7 +284,7 @@ class BlackjackScreenTest {
   void blackjackWithoutSavedPlayerKeepsPracticeBalance() throws Exception {
     GdxGame game = mock(GdxGame.class);
     when(game.getSavedPlayerGold()).thenReturn((Integer) null);
-    Entity ui = createUiFor(game, false);
+    Entity ui = createUiFor(game);
     InventoryComponent inventory = displayInventory(ui.getComponent(BlackjackDisplay.class));
 
     assertEquals(100, inventory.getGold());

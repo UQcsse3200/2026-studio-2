@@ -462,7 +462,7 @@ public class GdxGame extends Game {
       case MINIGAME_BLACKJACK:
         return new BlackjackScreen(this);
       case STORY_BLACKJACK:
-        return new BlackjackScreen(this, true);
+        return new BlackjackScreen(this);
       default:
         return null;
     }

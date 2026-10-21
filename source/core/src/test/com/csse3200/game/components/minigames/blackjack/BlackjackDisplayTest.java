@@ -212,7 +212,7 @@ class BlackjackDisplayTest {
     int[] requests = {0};
     ui.getEvents().addListener(BlackjackDisplay.PAUSE_REQUESTED, () -> requests[0]++);
 
-    field(display, "pauseButton", ImageButton.class)
+    ((ImageButton) field(display, "table", Table.class).findActor("pauseButton"))
         .fire(new com.badlogic.gdx.scenes.scene2d.utils.ChangeListener.ChangeEvent());
 
     assertEquals(1, requests[0]);

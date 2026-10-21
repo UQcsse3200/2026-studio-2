@@ -51,7 +51,8 @@ class BlackjackRulesDisplayTest {
     ResourceService resources = mock(ResourceService.class);
     Texture texture = mock(Texture.class);
     when(resources.getAsset(anyString(), eq(Texture.class))).thenReturn(texture);
-    when(resources.getAsset(anyString(), eq(Sound.class))).thenReturn(mock(Sound.class));
+    Sound sound = mock(Sound.class);
+    when(resources.getAsset(anyString(), eq(Sound.class))).thenReturn(sound);
     ServiceLocator.registerResourceService(resources);
   }
 
@@ -67,7 +68,7 @@ class BlackjackRulesDisplayTest {
 
     assertFalse(rules.isOpen());
     assertFalse(field(rules, "rulesOverlay", Table.class).isVisible());
-    assertNotNull(field(rules, "infoButton", ImageButton.class));
+    assertNotNull(infoButton(rules));
   }
 
   @Test
@@ -77,7 +78,7 @@ class BlackjackRulesDisplayTest {
     List<String> events = recordEvents(entity);
     entity.create();
 
-    click(field(rules, "infoButton", ImageButton.class));
+    click(infoButton(rules));
 
     assertTrue(rules.isOpen());
     assertTrue(field(rules, "rulesOverlay", Table.class).isVisible());
@@ -92,7 +93,7 @@ class BlackjackRulesDisplayTest {
     entity.create();
 
     rules.openRules();
-    click(field(rules, "closeButton", ImageButton.class));
+    click(closeButton(rules));
 
     assertFalse(rules.isOpen());
     assertFalse(field(rules, "rulesOverlay", Table.class).isVisible());
@@ -154,7 +155,7 @@ class BlackjackRulesDisplayTest {
     Table popup = (Table) list.getParent();
     popup.validate();
     list.validate();
-    ImageButton closeButton = field(rules, "closeButton", ImageButton.class);
+    ImageButton closeButton = closeButton(rules);
 
     // The scroll is 159 x 79 art pixels, enlarged by a whole number. Text must stay inside its
     // margins (17px sides, 13px top, 11px bottom) and above the close button.
@@ -245,6 +246,15 @@ class BlackjackRulesDisplayTest {
       }
     }
     return labels;
+  }
+
+  private static ImageButton infoButton(BlackjackRulesDisplay rules) {
+    return field(rules, "corner", Table.class).findActor(BlackjackRulesDisplay.INFO_BUTTON_NAME);
+  }
+
+  private static ImageButton closeButton(BlackjackRulesDisplay rules) {
+    return field(rules, "rulesOverlay", Table.class)
+        .findActor(BlackjackRulesDisplay.CLOSE_BUTTON_NAME);
   }
 
   private static void click(ImageButton button) {
