@@ -123,7 +123,6 @@ public class LoadSaveDisplay extends UIComponent {
     float buttonWidth = screenWidth * 0.12f;
     float buttonHeight = screenHeight * 0.06f;
 
-
     table.row();
     table
         .add(title)
