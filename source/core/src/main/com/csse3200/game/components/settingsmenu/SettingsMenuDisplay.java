@@ -61,14 +61,21 @@ public class SettingsMenuDisplay extends UIComponent {
     addActors();
   }
 
+  /**
+   * Returns the picture drawn behind the settings box. Screens can override it to use their own.
+   *
+   * @return the asset path of the background texture
+   */
+  protected String backgroundPath() {
+    return "images/backgrounds/main_menu_bg_2.png";
+  }
+
   private void addActors() {
     int screenWidth = Gdx.graphics.getWidth();
     int screenHeight = Gdx.graphics.getHeight();
 
     background =
-        new Image(
-            ServiceLocator.getResourceService()
-                .getAsset("images/backgrounds/main_menu_bg_2.png", Texture.class));
+        new Image(ServiceLocator.getResourceService().getAsset(backgroundPath(), Texture.class));
     Image menuBox =
         new Image(
             ServiceLocator.getResourceService()

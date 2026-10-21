@@ -122,8 +122,13 @@ public class EntityService {
   }
 
   void updatePhysicsPauseState() {
-    ServiceLocator.getPhysicsService().getPhysics().setPaused(paused);
-    ServiceLocator.getTimeSource().setTimeScale(paused ? 0f : 1f);
+    // Screens without a physics world or game clock (e.g. minigame screens) can still pause.
+    if (ServiceLocator.getPhysicsService() != null) {
+      ServiceLocator.getPhysicsService().getPhysics().setPaused(paused);
+    }
+    if (ServiceLocator.getTimeSource() != null) {
+      ServiceLocator.getTimeSource().setTimeScale(paused ? 0f : 1f);
+    }
   }
 
   public boolean getSettingsOpen() {

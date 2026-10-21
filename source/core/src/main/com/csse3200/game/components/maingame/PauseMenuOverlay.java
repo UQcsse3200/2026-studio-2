@@ -24,9 +24,22 @@ public class PauseMenuOverlay {
   private boolean openRequested = false;
   private Entity overlay;
   private GdxGame game;
+  private final boolean showControls;
+  private final String settingsBackground;
 
   public PauseMenuOverlay(GdxGame game) {
+    this(game, true, null);
+  }
+
+  /**
+   * @param game the game
+   * @param showControls whether the pause menu shows a Controls button
+   * @param settingsBackground the background for the settings screen, or null for the usual one
+   */
+  public PauseMenuOverlay(GdxGame game, boolean showControls, String settingsBackground) {
     this.game = game;
+    this.showControls = showControls;
+    this.settingsBackground = settingsBackground;
   }
 
   /** Asks for the wheel to open. It appears at the end of the current frame. */
@@ -57,7 +70,7 @@ public class PauseMenuOverlay {
   private void open() {
     open = true;
     BlurredBackdropDisplay backdrop = new BlurredBackdropDisplay(ScreenBlur.capture());
-    PauseMenuDisplay display = new PauseMenuDisplay(game);
+    PauseMenuDisplay display = new PauseMenuDisplay(game, showControls, settingsBackground);
 
     overlay =
         new Entity()

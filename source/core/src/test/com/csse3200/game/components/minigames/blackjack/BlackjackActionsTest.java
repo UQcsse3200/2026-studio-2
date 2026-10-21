@@ -12,13 +12,13 @@ import org.junit.jupiter.api.extension.ExtendWith;
 @ExtendWith(GameExtension.class)
 class BlackjackActionsTest {
   @Test
-  void shouldReturnToMinigameSelectOnBack() {
+  void shouldReturnToMainMenuOnBack() {
     GdxGame game = mock(GdxGame.class);
     Entity ui = new Entity().addComponent(new BlackjackActions(game));
     ui.create();
 
     ui.getEvents().trigger("back");
 
-    verify(game).setScreen(GdxGame.ScreenType.MINIGAME_SELECT);
+    verify(game).setScreen(GdxGame.ScreenType.MAIN_MENU);
   }
 }
