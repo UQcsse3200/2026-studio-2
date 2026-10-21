@@ -221,6 +221,17 @@ public class BackgroundRenderComponent extends RenderComponent {
 
   /** Scale is controlled individually for each layer. */
   public void scaleEntity(Vector2 factor, Vector2 worldBounds, boolean up, String level) {
+    if (level.equals("level3")) {
+      for (ParallaxLayer layer : layers) {
+        if (up) {
+          scaleUp(layer, factor, worldBounds, level);
+        } else {
+          scaleDown(layer, factor, worldBounds, level);
+        }
+      }
+      return;
+    }
+
     currentScaleTime = 0f;
     scalingBackground = true;
 
@@ -258,7 +269,7 @@ public class BackgroundRenderComponent extends RenderComponent {
       layer.height = layer.startHeight;
       layer.offset.set(layer.startOffset);
       layer.velocity.set(layer.startVelocity);
-      layer.position.set(layer.targetPosition);
+      layer.position.set(layer.startPosition);
     }
   }
 
