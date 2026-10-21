@@ -9,6 +9,7 @@ import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Files;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
@@ -20,6 +21,8 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.csse3200.game.GdxGame;
 import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.components.minigames.cyclopsminigame.CyclopsMinigameActions;
+import com.csse3200.game.components.minigames.cyclopsminigame.CyclopsMinigameLogic;
+import com.csse3200.game.components.minigames.cyclopsminigame.CyclopsSoundComponent;
 import com.csse3200.game.components.minigames.cyclopsminigame.TimingBarDisplay;
 import com.csse3200.game.cutscene.CutsceneLoader;
 import com.csse3200.game.entities.Entity;
@@ -162,6 +165,54 @@ class CyclopsMinigameRoomLifecycleTest {
   /**
    * Real screen, area, assets, physics, components and event buses; only GL rendering is replaced.
    */
+  @Test
+  void pausingTheGamePausesTheLoopingSoundsAndResumingCarriesThemOn() {
+    try (Room room = new Room(true)) {
+      ResourceService realResources = ServiceLocator.getResourceService();
+      ResourceService resources = mock(ResourceService.class);
+      Sound snore = mock(Sound.class);
+      Sound walking = mock(Sound.class);
+      when(resources.containsAsset(anyString(), eq(Sound.class))).thenReturn(true);
+      when(resources.getAsset(CyclopsSoundComponent.SNORE_PATH, Sound.class)).thenReturn(snore);
+      when(resources.getAsset(CyclopsMinigameLogic.WALKING_SOUND_PATH, Sound.class))
+          .thenReturn(walking);
+      ServiceLocator.registerResourceService(resources);
+      try {
+        ServiceLocator.getEntityService().setPaused(true);
+        room.screen.syncSoundsWithPause();
+        // Asking again while still paused must not pause the sounds a second time
+        room.screen.syncSoundsWithPause();
+        verify(snore, times(1)).pause();
+        verify(walking, times(1)).pause();
+        verify(snore, never()).resume();
+
+        ServiceLocator.getEntityService().setPaused(false);
+        room.screen.syncSoundsWithPause();
+        verify(snore, times(1)).resume();
+        verify(walking, times(1)).resume();
+      } finally {
+        ServiceLocator.registerResourceService(realResources);
+      }
+    }
+  }
+
+  @Test
+  void aLoopingSoundThatIsNotLoadedIsSkippedWhenPausing() {
+    try (Room room = new Room(true)) {
+      ResourceService realResources = ServiceLocator.getResourceService();
+      ResourceService resources = mock(ResourceService.class);
+      when(resources.containsAsset(anyString(), eq(Sound.class))).thenReturn(false);
+      ServiceLocator.registerResourceService(resources);
+      try {
+        ServiceLocator.getEntityService().setPaused(true);
+        room.screen.syncSoundsWithPause();
+        verify(resources, never()).getAsset(anyString(), eq(Sound.class));
+      } finally {
+        ServiceLocator.registerResourceService(realResources);
+      }
+    }
+  }
+
   private static class Room implements AutoCloseable {
     final Application previousApp = Gdx.app;
     final Input previousInput = Gdx.input;

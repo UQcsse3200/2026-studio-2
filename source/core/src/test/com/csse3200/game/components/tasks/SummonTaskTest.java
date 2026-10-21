@@ -69,6 +69,46 @@ class SummonTaskTest {
     ServiceLocator.registerResourceService(resources);
   }
 
+  @org.junit.jupiter.params.ParameterizedTest
+  @org.junit.jupiter.params.provider.CsvSource({"Necromancer,2", "Calypso,5", "Other,6"})
+  void priorityHonoursTheSummonerSpecificLimit(String type, int count) {
+    Entity player = new Entity();
+    Entity summoner = new Entity();
+    com.csse3200.game.components.BossPhaseComponent phase =
+        mock(com.csse3200.game.components.BossPhaseComponent.class);
+    when(phase.getCurrentPhase()).thenReturn(2);
+    summoner.addComponent(phase);
+    SummonTask task = new SummonTask(player, 30, 10f, 5f, type);
+    task.create(() -> summoner);
+    try (var lights = mockConstruction(PointLightComponent.class);
+        var particles = mockConstruction(ParticleEffectsRenderingComponent.class)) {
+      for (int i = 1; i <= count; i++) {
+        when(gameTime.getTime()).thenReturn(i * 6000L);
+        assertEquals(30, task.getPriority());
+        task.update();
+      }
+      when(gameTime.getTime()).thenReturn((count + 1) * 6000L);
+      assertEquals(type.equals("Other") ? 30 : -1, task.getPriority());
+      summoner.getEvents().trigger("summonedEnemyDied");
+      assertEquals(30, task.getPriority());
+      player.setPosition(20f, 0f);
+      assertEquals(-1, task.getPriority());
+    }
+  }
+
+  @Test
+  void calypsoCannotSummonWithoutPhaseTwo() {
+    Entity summoner = new Entity();
+    SummonTask task = new SummonTask(new Entity(), 30, 10f, 5f, "Calypso");
+    task.create(() -> summoner);
+    when(gameTime.getTime()).thenReturn(6000L);
+    assertEquals(-1, task.getPriority());
+    var phase = mock(com.csse3200.game.components.BossPhaseComponent.class);
+    when(phase.getCurrentPhase()).thenReturn(1);
+    summoner.addComponent(phase);
+    assertEquals(-1, task.getPriority());
+  }
+
   @Test
   void shouldSummonSkeletonAtExpectedPosition() {
     Entity player = new Entity();
@@ -143,7 +183,7 @@ class SummonTaskTest {
       summonTask.update();
     }
 
-    assertEquals(2, summoned.size(), "Expected two summoned Skeleton Warriors due to summon limit");
+    assertEquals(3, summoned.size(), "Each direct update summons at an unoccupied position");
 
     for (int i = 0; i < summoned.size(); i++) {
       System.out.println("Skeleton " + (i + 1) + " position: " + summoned.get(i).getPosition());
@@ -166,7 +206,8 @@ class SummonTaskTest {
     SummonTask task = new SummonTask(player, 30, 10f, 5f, "Necromancer");
     task.create(() -> necromancer);
     java.util.List<Entity> summoned = new java.util.ArrayList<>();
-    necromancer.getEvents().addListener("spawnEntity", (Entity spawned) -> summoned.add(spawned));
+    com.csse3200.game.events.listeners.EventListener1<Entity> onSpawn = summoned::add;
+    necromancer.getEvents().addListener("spawnEntity", onSpawn);
     when(gameTime.getTime()).thenReturn(6000L);
 
     try (var lights = mockConstruction(PointLightComponent.class);

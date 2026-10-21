@@ -22,7 +22,6 @@ import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.rendering.DebugRenderer;
 import com.csse3200.game.rendering.Renderer;
 import com.csse3200.game.services.ServiceLocator;
-import java.util.concurrent.atomic.AtomicReference;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -88,7 +87,7 @@ class LevelsGameScreenFlowTest {
   }
 
   @Test
-  void pauseCallbackCreatedBeforeOverlayRequestsItOnlyWhenInvoked() {
+  void removedPauseButtonIsNotCreated() {
     Stage stage = new Stage(new ScreenViewport(), mock(SpriteBatch.class));
     Renderer renderer = mock(Renderer.class);
     when(renderer.getCamera()).thenReturn(new CameraComponent());
@@ -98,20 +97,11 @@ class LevelsGameScreenFlowTest {
         new Entity()
             .addComponent(new CombatStatsComponent(75, 100, 10))
             .addComponent(new InventoryComponent(50));
-    AtomicReference<Runnable> pause = new AtomicReference<>();
     LevelsGameScreen screen = null;
     try (var renders = mockStatic(RenderFactory.class);
         var lights = mockConstruction(RayHandler.class);
         var overlays = mockConstruction(PauseMenuOverlay.class);
-        var buttons =
-            mockConstruction(
-                PauseButtonDisplay.class,
-                (button, context) -> {
-                  assertTrue(
-                      overlays.constructed().isEmpty(),
-                      "UI callback is created before its overlay");
-                  pause.set((Runnable) context.arguments().getFirst());
-                });
+        var buttons = mockConstruction(PauseButtonDisplay.class);
         var areas =
             mockConstruction(
                 Level1GameArea.class,
@@ -127,13 +117,10 @@ class LevelsGameScreenFlowTest {
                 return renderer;
               });
       screen = new LevelsGameScreen(mock(GdxGame.class), false);
-      assertEquals(1, buttons.constructed().size());
+      assertTrue(buttons.constructed().isEmpty());
       assertEquals(1, overlays.constructed().size());
       PauseMenuOverlay overlay = overlays.constructed().getFirst();
       verify(overlay, never()).request();
-      assertNotNull(pause.get());
-      pause.get().run();
-      verify(overlay).request();
     } finally {
       if (screen != null) {
         screen.physicsEngine.dispose();

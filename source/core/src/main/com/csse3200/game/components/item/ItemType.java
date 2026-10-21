@@ -32,7 +32,7 @@ public enum ItemType {
       "images/projectiles/fire_arrow.png",
       new UsageStats(5, 16f, 0.3f, 0, true),
       new ItemEffects(
-          new TimedEffect(10f, 5f), TimedEffect.NONE, TimedEffect.NONE, TimedEffect.NONE)),
+          new TimedEffect(3f, 5f), TimedEffect.NONE, TimedEffect.NONE, TimedEffect.NONE)),
   ICE_ARROW(
       5,
       "Ice Arrow",

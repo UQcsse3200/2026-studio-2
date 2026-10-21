@@ -83,19 +83,22 @@ public class RangedAttackTask extends DefaultTask implements PriorityTask {
 
     Vector2 spawnCenter = enemyCenter.cpy().add(0.8f * facingDirection, -0.15f);
 
+    Vector2 magicTarget =
+        spawnCenter.cpy().add(targetCenter.cpy().sub(spawnCenter).nor().scl(1000f));
+
     Entity projectile;
 
     if (projectileConfig.attackType().equals("calypso")) {
       projectile =
           EnemyProjectileFactory.createCalypsoProjectile(
-              targetCenter,
+              magicTarget,
               projectileConfig.damage(),
               projectileConfig.speed(),
               projectileConfig.lifetime());
     } else if (projectileConfig.attackType().equals("summon")) {
       projectile =
           EnemyProjectileFactory.createNecromancerProjectile(
-              targetCenter,
+              magicTarget,
               projectileConfig.damage(),
               projectileConfig.speed(),
               projectileConfig.lifetime());

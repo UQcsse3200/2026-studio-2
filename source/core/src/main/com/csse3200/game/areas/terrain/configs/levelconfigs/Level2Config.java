@@ -149,7 +149,7 @@ public class Level2Config extends LevelConfig {
           new PlatformConfig(new GridPoint2(36, 25), 3, 3, 0, groundTFP), // G11
           new PlatformConfig(new GridPoint2(39, 15), 3, 13, 0, groundTFP), // G12
           new PlatformConfig(new GridPoint2(33, 14), 9, 2, 0, groundTFP), // G13
-          new PlatformConfig(new GridPoint2(32, 7), 1, 9, 8, groundTFP), // G14
+          new PlatformConfig(new GridPoint2(32, 4), 1, 13, 8, groundTFP), // G14
         };
 
     triggerButtons =
@@ -189,7 +189,7 @@ public class Level2Config extends LevelConfig {
         new SpikeClusterConfig[] {
           new SpikeClusterConfig(0, 11, 37, 37, 0f, false), // SC1
           new SpikeClusterConfig(19, 21, 29, 29, 0f, false), // SC2
-          new SpikeClusterConfig(4, 5, 25, 25, 0f, false), // SC3
+          new SpikeClusterConfig(4, 5, 26, 26, 0f, false), // SC3
           new SpikeClusterConfig(0, 1, 21, 21, 0f, false), // SC3
           new SpikeClusterConfig(3, 4, 15, 15, 0f, false), // SC3
 

@@ -3,6 +3,7 @@ package com.csse3200.game.screens.minigames;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.ScreenAdapter;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -13,9 +14,10 @@ import com.csse3200.game.areas.terrain.TerrainFactory;
 import com.csse3200.game.components.ButtonSound;
 import com.csse3200.game.components.TextBoxComponent;
 import com.csse3200.game.components.gamearea.PerformanceDisplay;
+import com.csse3200.game.components.maingame.PauseMenuOverlay;
 import com.csse3200.game.components.minigames.cyclopsminigame.CyclopsMinigameActions;
-import com.csse3200.game.components.minigames.cyclopsminigame.CyclopsMinigameDisplay;
 import com.csse3200.game.components.minigames.cyclopsminigame.CyclopsMinigameLogic;
+import com.csse3200.game.components.minigames.cyclopsminigame.CyclopsSoundComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.entities.factories.RenderFactory;
@@ -31,6 +33,7 @@ import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.GameEndDisplay;
 import com.csse3200.game.ui.GameEndState;
+import com.csse3200.game.ui.GameplayCursor;
 import com.csse3200.game.ui.terminal.Terminal;
 import com.csse3200.game.ui.terminal.TerminalDisplay;
 import java.util.List;
@@ -45,6 +48,23 @@ public class CyclopsMinigameRoomScreen extends ScreenAdapter {
     "images/health/red_heart.png",
     "images/Buttons/exit_up_btn.png",
     "images/Buttons/exit_down_btn.png",
+    // The pause menu's buttons and the settings screen
+    "images/Buttons/continue_up_btn.png",
+    "images/Buttons/continue_down_btn.png",
+    "images/Buttons/settings_up_btn.png",
+    "images/Buttons/settings_down_btn.png",
+    "images/Buttons/quit_up_btn.png",
+    "images/Buttons/quit_down_btn.png",
+    // PauseMenuDisplay loads the Controls button's images even though the button is hidden here
+    "images/Buttons/control_up_btn.png",
+    "images/Buttons/control_down_btn.png",
+    "images/ui/controls_graphic.png",
+    "images/Buttons/apply_up_btn.png",
+    "images/Buttons/apply_down_btn.png",
+    "images/Buttons/back_up_btn.png",
+    "images/Buttons/back_down_btn.png",
+    "images/ui/settings_box.png",
+    "images/backgrounds/main_menu_bg_2.png",
     "images/Buttons/restart_up_btn.png",
     "images/Buttons/restart_down_btn.png",
     "images/Buttons/main_menu_up_btn.png",
@@ -53,6 +73,8 @@ public class CyclopsMinigameRoomScreen extends ScreenAdapter {
     "images/Buttons/exit_game_down_btn.png",
     "images/ui/scroll_bg.png"
   };
+  // The settings screen shows the cave instead of the sea. The cave area loads this texture.
+  private static final String SETTINGS_BACKGROUND = "images/minigames/Cyclops/cave_background.png";
   private static final Vector2 CAMERA_POSITION = new Vector2(7.5f, 7.5f);
 
   private final GdxGame game;
@@ -62,9 +84,14 @@ public class CyclopsMinigameRoomScreen extends ScreenAdapter {
   private CyclopsMinigameArea cyclopsMinigameArea;
   static boolean skipIntroOnNextLoad = false;
   private CyclopsIntro intro;
+  private final PauseMenuOverlay pauseOverlay;
+  private boolean soundsPaused = false;
+  private final GameplayCursor cursor = new GameplayCursor();
+  private GameEndDisplay gameEndDisplay;
 
   public CyclopsMinigameRoomScreen(GdxGame game) {
     this.game = game;
+    this.pauseOverlay = new PauseMenuOverlay(game, false, SETTINGS_BACKGROUND);
 
     logger.debug("Initialising cyclops minigame screen services");
     ServiceLocator.registerTimeSource(new GameTime());
@@ -94,7 +121,9 @@ public class CyclopsMinigameRoomScreen extends ScreenAdapter {
 
   @Override
   public void render(float delta) {
-    if (intro.isShowing() && Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) {
+    if (intro.isShowing()
+        && Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)
+        && !CyclopsMinigameLogic.clickIsOnUiButton()) {
       intro.advance();
     }
 
@@ -102,9 +131,61 @@ public class CyclopsMinigameRoomScreen extends ScreenAdapter {
       ServiceLocator.getCyclopsMinigameEventHandler().trigger("start");
     }
 
+    // Esc opens the pause menu, unless the terminal or the settings screen has the keyboard.
+    if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)
+        && !Terminal.isAnyOpen()
+        && !ServiceLocator.getEntityService().getSettingsOpen()) {
+      pauseOverlay.request();
+    }
+
     physicsEngine.update();
     ServiceLocator.getEntityService().update();
     renderer.render();
+    pauseOverlay.afterRender();
+    syncSoundsWithPause();
+    updateCursor();
+  }
+
+  /**
+   * Hides the mouse pointer while playing, as in the levels. Left click still works. It shows for
+   * the pause menu, the terminal and the game over panel, which are clicked with the mouse.
+   */
+  private void updateCursor() {
+    boolean gameOverVisible = gameEndDisplay != null && gameEndDisplay.isVisible();
+    cursor.update(null, cursorNeeded(Terminal.isAnyOpen(), gameOverVisible));
+  }
+
+  static boolean cursorNeeded(boolean terminalOpen, boolean gameOverVisible) {
+    return terminalOpen || gameOverVisible;
+  }
+
+  @Override
+  public void hide() {
+    cursor.restore();
+  }
+
+  /**
+   * Pauses the looping snoring and footsteps while the pause menu is open, and carries on when it
+   * closes. The sounds are not part of the paused entities, so they would otherwise keep playing.
+   */
+  void syncSoundsWithPause() {
+    boolean paused = ServiceLocator.getEntityService().getPaused();
+    if (paused == soundsPaused) {
+      return;
+    }
+    soundsPaused = paused;
+    for (String path :
+        List.of(CyclopsSoundComponent.SNORE_PATH, CyclopsMinigameLogic.WALKING_SOUND_PATH)) {
+      if (!ServiceLocator.getResourceService().containsAsset(path, Sound.class)) {
+        continue;
+      }
+      Sound sound = ServiceLocator.getResourceService().getAsset(path, Sound.class);
+      if (paused) {
+        sound.pause();
+      } else {
+        sound.resume();
+      }
+    }
   }
 
   @Override
@@ -117,6 +198,7 @@ public class CyclopsMinigameRoomScreen extends ScreenAdapter {
   public void dispose() {
     logger.debug("Disposing minigame screen");
 
+    cursor.dispose();
     intro.dispose();
     renderer.dispose();
     cyclopsMinigameArea.dispose();
@@ -133,6 +215,7 @@ public class CyclopsMinigameRoomScreen extends ScreenAdapter {
     logger.debug("Loading assets");
     ResourceService resourceService = ServiceLocator.getResourceService();
     resourceService.loadTextures(cyclopsMinigameTextures);
+    // The click sound for the pause menu's buttons
     ButtonSound.load(resourceService);
     ServiceLocator.getResourceService().loadAll();
   }
@@ -180,14 +263,14 @@ public class CyclopsMinigameRoomScreen extends ScreenAdapter {
     ServiceLocator.getCyclopsMinigameEventHandler()
         .addListener("died", CyclopsMinigameRoomScreen::showGameOver);
 
+    gameEndDisplay = new GameEndDisplay(GameEndState.LOSE);
     Entity ui = new Entity();
     ui.addComponent(new InputDecorator(stage, 10))
         .addComponent(new PerformanceDisplay())
         .addComponent(new CyclopsMinigameActions(this.game))
-        .addComponent(new CyclopsMinigameDisplay())
         .addComponent(terminal)
         .addComponent(inputComponent)
-        .addComponent(new GameEndDisplay(GameEndState.LOSE))
+        .addComponent(gameEndDisplay)
         .addComponent(new TerminalDisplay());
     ui.getEvents().addListener("mainMenu", () -> game.setScreen(GdxGame.ScreenType.MAIN_MENU));
     ui.getEvents().addListener("exitGame", game::exit);

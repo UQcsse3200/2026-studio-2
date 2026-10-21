@@ -38,9 +38,22 @@ public class PauseMenuDisplay extends UIComponent {
   Table controlsGraphicTable;
 
   private GdxGame game;
+  private final boolean showControls;
+  private final String settingsBackground;
 
   public PauseMenuDisplay(GdxGame game) {
+    this(game, true, null);
+  }
+
+  /**
+   * @param game the game
+   * @param showControls whether to show the Controls button
+   * @param settingsBackground the background for the settings screen, or null for the usual one
+   */
+  public PauseMenuDisplay(GdxGame game, boolean showControls, String settingsBackground) {
     this.game = game;
+    this.showControls = showControls;
+    this.settingsBackground = settingsBackground;
   }
 
   @Override
@@ -165,7 +178,7 @@ public class PauseMenuDisplay extends UIComponent {
                     ServiceLocator.getEntityService().setSettingsOpen(true);
                     Entity ui = new Entity();
                     SettingsMenuDisplayInGame settings =
-                        new SettingsMenuDisplayInGame(game, ui::dispose);
+                        new SettingsMenuDisplayInGame(game, ui::dispose, settingsBackground);
                     ui.addComponent(settings);
                     ServiceLocator.getEntityService().register(ui);
                   });
@@ -217,8 +230,10 @@ public class PauseMenuDisplay extends UIComponent {
     table.row();
     table.add(settingsBtn).width(200f).height(70f).padTop(15f);
     table.row();
-    table.add(controlsBtn).width(200f).height(70f).padTop(15f);
-    table.row();
+    if (showControls) {
+      table.add(controlsBtn).width(200f).height(70f).padTop(15f);
+      table.row();
+    }
     table.add(quitBtn).width(200f).height(70f).padTop(15f);
     table.row();
 

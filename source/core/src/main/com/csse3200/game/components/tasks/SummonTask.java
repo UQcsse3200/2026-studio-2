@@ -19,7 +19,8 @@ public class SummonTask extends DefaultTask implements PriorityTask {
 
   private long lastSummonTime;
   private int currentSummonCount = 0;
-  private static final int MAX_SUMMON_COUNT = 2;
+  private static final int NECROMANCER_MAX_SUMMONS = 2;
+  private static final int CALYPSO_MAX_SUMMONS = 5;
 
   /**
    * Creates a summon attack task
@@ -73,11 +74,17 @@ public class SummonTask extends DefaultTask implements PriorityTask {
 
     boolean canSummon = currentTime - lastSummonTime >= cooldown * 1000;
 
-    if (canSummon && currentSummonCount < MAX_SUMMON_COUNT && distance <= attackRange) {
-      return priority;
-    }
+    return canSummon && currentSummonCount < summonLimit() && distance <= attackRange
+        ? priority
+        : -1;
+  }
 
-    return -1;
+  private int summonLimit() {
+    return switch (summonerType) {
+      case "Necromancer" -> NECROMANCER_MAX_SUMMONS;
+      case "Calypso" -> CALYPSO_MAX_SUMMONS;
+      default -> Integer.MAX_VALUE;
+    };
   }
 
   private void summonSkeleton() {
@@ -102,7 +109,8 @@ public class SummonTask extends DefaultTask implements PriorityTask {
       float spawnX = x + offset[0];
       float spawnY = y + offset[1];
 
-      if (!isSpawnPositionOccupied(spawnX, spawnY) && currentSummonCount < MAX_SUMMON_COUNT) {
+      if (!isSpawnPositionOccupied(spawnX, spawnY)) {
+
         Entity skeletonWarrior = EnemyFactory.createSkeletonWarrior(target);
         skeletonWarrior.getComponent(EnemySummonComponent.class).setSummonedStatus(true);
         skeletonWarrior.getComponent(EnemySummonComponent.class).setSummoner(necromancer);
