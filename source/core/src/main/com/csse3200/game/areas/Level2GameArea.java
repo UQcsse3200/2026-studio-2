@@ -183,7 +183,7 @@ public class Level2GameArea extends GameArea {
   private void spawnTerrain() {
     terrain = terrainFactory.createTerrain(TerrainFactory.TerrainType.BACKGROUND_DESERT);
     spawnEntity(new Entity().addComponent(terrain));
-    worldBounds = new Vector2(50f, 45f);
+    worldBounds = new Vector2(60f, 60f);
   }
 
   private void spawnSkeletonWarrior() {

@@ -34,6 +34,37 @@ import org.junit.jupiter.api.extension.ExtendWith;
 @ExtendWith(GameExtension.class)
 class GameAreaTest {
   @Test
+  void levelThreeMapDoesNotJumpWhenZoomFinishes() {
+    CameraComponent camera = new CameraComponent();
+    GameArea area =
+        new GameArea(camera) {
+          @Override
+          public void create() {
+            /* No assets required for camera positioning. */
+          }
+        };
+    area.player =
+        new Entity()
+            .addComponent(mock(InventoryBarDisplay.class))
+            .addComponent(mock(PlayerStatsDisplay.class));
+    area.player.setPosition(20f, 13f);
+    camera.setTarget(area.player);
+    camera.update();
+    com.csse3200.game.services.GameTime time = mock(com.csse3200.game.services.GameTime.class);
+    when(time.getDeltaTime()).thenReturn(0.75f);
+    ServiceLocator.registerTimeSource(time);
+    Vector2 bounds = new Vector2(100f, 60f);
+    area.toggleMap(bounds, camera, mock(BackgroundRenderComponent.class), "level3");
+    area.updateMap(bounds, camera);
+    camera.update();
+    float zoomEndY = camera.getCamera().position.y;
+    area.updateMap(bounds, camera);
+    camera.update();
+    assertEquals(zoomEndY, camera.getCamera().position.y, 0.0001f);
+    assertEquals(40f, camera.getCamera().position.y, 0.0001f);
+  }
+
+  @Test
   void mapWidthDoesNotOverflowWhenAddingCameraPadding() {
     CameraComponent camera = new CameraComponent();
     GameArea area =
@@ -51,7 +82,7 @@ class GameAreaTest {
     area.toggleMap(
         new Vector2(2147483648f, 100f), camera, mock(BackgroundRenderComponent.class), "level1");
 
-    assertEquals(2147483648f, camera.getCamera().viewportWidth);
+    assertEquals(2147483648f, camera.targetGameWidth);
   }
 
   @Test
