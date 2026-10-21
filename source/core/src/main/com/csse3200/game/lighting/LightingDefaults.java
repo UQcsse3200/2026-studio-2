@@ -1,5 +1,6 @@
 package com.csse3200.game.lighting;
 
+/** Default lighting parameters shared by game areas. */
 public final class LightingDefaults {
   private LightingDefaults() {} // do not initialise
 
