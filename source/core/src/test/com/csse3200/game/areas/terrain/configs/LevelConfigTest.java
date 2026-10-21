@@ -3,6 +3,8 @@ package com.csse3200.game.areas.terrain.configs;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -241,4 +243,58 @@ class LevelConfigTest {
     assertEquals(1, levelConfig.entities.size());
     assertEquals(pos, levelConfig.entities.getFirst().pos);
   }
+
+  @Test
+  void getPlayerSpawnReturnsConfiguredPosition() {
+    LevelConfig config = new LevelConfig();
+    GridPoint2 spawn = new GridPoint2(4, 7);
+
+    config.playerSpawn = spawn;
+
+    assertSame(spawn, config.getPlayerSpawn());
+  }
+
+  @Test
+  void getWheelSpinSpawnsReturnsConfiguredPositions() {
+    LevelConfig config = new LevelConfig();
+    GridPoint2[] spawns = {new GridPoint2(2, 3), new GridPoint2(8, 5)};
+
+    config.wheelSpinSpawns = spawns;
+
+    assertSame(spawns, config.getWheelSpinSpawns());
+  }
+
+  @Test
+  void getCheckpointsReturnsEmptyListWhenUnconfigured() {
+    LevelConfig config = new LevelConfig();
+
+    assertTrue(config.getCheckpoints().isEmpty());
+  }
+
+  @Test
+  void getCheckpointsReturnsEmptyListForEmptyArray() {
+    LevelConfig config = new LevelConfig();
+    config.checkpoints = new CheckpointConfig[0];
+
+    assertTrue(config.getCheckpoints().isEmpty());
+  }
+
+  @Test
+  void shouldCreateMapTriggerWithConfiguredPositionAndScale() {
+    GridPoint2 position = new GridPoint2(5, 8);
+    Vector2 scale = new Vector2(3, 2);
+
+    LevelConfig config = new LevelConfig();
+    config.mapTriggers =
+        new TriggerConfig[] {
+          new TriggerConfig(position, scale, new String[] {"test-trigger"}, false)
+        };
+
+    config.createEntities();
+
+    assertEquals(1, config.entities.size());
+    assertEquals(position, config.entities.getFirst().pos);
+    assertEquals(scale, config.entities.getFirst().entity.getScale());
+  }
+
 }
