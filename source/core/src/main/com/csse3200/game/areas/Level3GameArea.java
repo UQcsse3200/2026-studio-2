@@ -312,7 +312,7 @@ public class Level3GameArea extends GameArea {
   private void spawnTerrain() {
     terrain = terrainFactory.createTerrain(TerrainFactory.TerrainType.BACKGROUND_DESERT);
     spawnEntity(new Entity().addComponent(terrain));
-    worldBounds = new Vector2(40f, 35f);
+    worldBounds = new Vector2(40f, 45f);
 
     // Left
     spawnEntityAt(

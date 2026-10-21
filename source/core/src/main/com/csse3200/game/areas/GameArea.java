@@ -309,11 +309,6 @@ public abstract class GameArea implements Disposable {
 
   /** Represents functionality that all game areas should use when a checkpoint is encountered */
   protected void onCheckpointActivated(GridPoint2 position) {
-    // currently no functionality is required by all game areas, however, this method is required
-    // here as it allows the checkpoint system to bind to the current game area's respective
-    // onCheckpointActivated method. For any level specific behaviour for checkpoint activation,
-    // such as level 3's rising water saving, that game area should override this method
-    // (calling super) so checkpoint saves happen for every level.
     if (ServiceLocator.getGameSaveEventHandler() != null) {
       ServiceLocator.getGameSaveEventHandler().trigger("autosave");
     }
@@ -428,6 +423,9 @@ public abstract class GameArea implements Disposable {
       CameraComponent cameraComponent,
       BackgroundRenderComponent backgroundComponent,
       String level) {
+    float currentRatio =
+        cameraComponent.getCamera().viewportHeight / cameraComponent.getCamera().viewportWidth;
+
     if (!mapToggled) {
       int worldBoundX = (int) worldBounds.x;
       int worldBoundY = (int) worldBounds.y;
@@ -436,30 +434,47 @@ public abstract class GameArea implements Disposable {
 
       Entity camera = new Entity();
       if (level.equals("level3")) {
+        float downwardShift = 4.5f;
         float cameraPosY = cameraComponent.getCamera().position.y;
-        cameraComponent.resize(worldBoundX, worldBoundY, (float) worldBoundX + 5);
-        camera.setPosition(worldBounds.x / 2 - 5, worldBounds.y / 2 + cameraPosY / 1.3f);
+        // cameraComponent.resize(worldBoundX, worldBoundY, (float) worldBoundX + 5);
+        // camera.setPosition(worldBounds.x / 2 - 5, worldBounds.y / 2 + cameraPosY / 1.3f);
+        cameraComponent.targetGameWidth = (float) worldBoundX + 5;
+        cameraComponent.targetGameHeight = (float) worldBoundY;
+        cameraComponent.targetPosition =
+            new Vector2(
+                worldBounds.x / 2 - 5, (worldBounds.y / 2 + cameraPosY / 1.3f) - downwardShift);
+        cameraComponent.setTarget(camera);
       } else {
-        cameraComponent.resize(worldBoundX, worldBoundY, (float) worldBoundX + 10);
-        camera.setPosition(worldBounds.x / 2, worldBounds.y / 2);
+        // cameraComponent.resize(worldBoundX, worldBoundY, (float) worldBoundX + 10);
+        // camera.setPosition(worldBounds.x / 2, worldBounds.y / 2);
+        float downwardShift = 4.5f;
+        cameraComponent.targetGameWidth = (float) worldBoundX + 10;
+        cameraComponent.targetGameHeight = cameraComponent.targetGameWidth * currentRatio;
+        cameraComponent.targetPosition =
+            new Vector2(worldBounds.x / 2, (worldBounds.y / 2) - downwardShift);
+        cameraComponent.setTarget(null);
       }
-      cameraComponent.setTarget(camera);
 
-      float scaleX = worldBoundX / viewportWidth;
-      float scaleY = worldBoundY / viewportHeight;
+      float scaleX = cameraComponent.targetGameWidth / viewportWidth;
+      float scaleY = cameraComponent.targetGameHeight / viewportHeight;
       resizeScale = new Vector2(scaleX, scaleY);
 
       backgroundComponent.scaleEntity(resizeScale, worldBounds, true, level);
       getPlayer().getComponent(InventoryBarDisplay.class).hideBar();
       getPlayer().getComponent(PlayerStatsDisplay.class).hide();
     } else {
-      cameraComponent.resize((int) viewportWidth, (int) viewportHeight, viewportWidth);
+      // cameraComponent.resize((int) viewportWidth, (int) viewportHeight, viewportWidth);
+      cameraComponent.targetGameWidth = viewportWidth;
+      cameraComponent.targetGameHeight = viewportHeight;
+      cameraComponent.targetPosition.set(getPlayer().getPosition());
+
       cameraComponent.setTarget(getPlayer());
       backgroundComponent.scaleEntity(resizeScale, worldBounds, false, level);
       getPlayer().getComponent(InventoryBarDisplay.class).showBar();
       getPlayer().getComponent(PlayerStatsDisplay.class).show();
     }
     mapToggled = !mapToggled;
+    cameraComponent.requestZoom();
   }
 
   public boolean isMapToggled() {
