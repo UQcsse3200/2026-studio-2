@@ -98,7 +98,10 @@ public class Level2GameArea extends GameArea {
 
   private static final String BACKGROUND_MUSIC = "sounds/BGM_03_mp3.mp3";
 
-  private static final String[] level2Music = {BACKGROUND_MUSIC};
+  public static final String AMBIENCE_MUSIC = "sounds/level2_ambience.ogg";
+  public static final String WATERFALL_MUSIC = "sounds/level2_waterfall.ogg";
+
+  private static final String[] level2Music = {BACKGROUND_MUSIC, AMBIENCE_MUSIC, WATERFALL_MUSIC};
 
   private final TerrainFactory terrainFactory;
   private final CameraComponent camera;
@@ -116,6 +119,8 @@ public class Level2GameArea extends GameArea {
   @Override
   public void create() {
     loadAssets();
+    playLoopingMusic(AMBIENCE_MUSIC, 0.15f);
+    playLoopingMusic(WATERFALL_MUSIC, 0.5f);
     displayUI();
 
     spawnTerrain();
@@ -223,6 +228,14 @@ public class Level2GameArea extends GameArea {
   public void dispose() {
     super.dispose();
     ServiceLocator.getResourceService().getAsset(BACKGROUND_MUSIC, Music.class).stop();
+    Music ambience = ServiceLocator.getResourceService().getAsset(AMBIENCE_MUSIC, Music.class);
+    if (ambience != null) {
+      ambience.stop();
+    }
+    Music waterfall = ServiceLocator.getResourceService().getAsset(WATERFALL_MUSIC, Music.class);
+    if (waterfall != null) {
+      waterfall.stop();
+    }
     this.unloadAssets();
   }
 }

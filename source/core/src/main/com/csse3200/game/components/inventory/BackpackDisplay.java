@@ -10,6 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.DragListener;
+import com.csse3200.game.components.ButtonSound;
 import com.csse3200.game.components.item.ItemType;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.UIComponent;
@@ -140,7 +141,7 @@ public class BackpackDisplay extends UIComponent {
         new ClickListener() {
           @Override
           public void clicked(InputEvent event, float x, float y) {
-
+            ButtonSound.playClick();
             InventoryComponent inventory = entity.getComponent(InventoryComponent.class);
 
             inventory.selectSlot(slotIndex);
@@ -291,6 +292,7 @@ public class BackpackDisplay extends UIComponent {
         new ClickListener() {
           @Override
           public void clicked(InputEvent event, float x, float y) {
+            ButtonSound.playClick();
             InventoryComponent inventory = entity.getComponent(InventoryComponent.class);
 
             inventory.selectSlot(slotIndex);

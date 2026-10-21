@@ -323,7 +323,7 @@ class ArrowProjectileLifecycleTest {
       collide(potion, enemy);
       collide(potion, enemy);
       potion.getComponent(ArrowProjectileComponent.class).update();
-      verify(sound).play(0.15f);
+      verify(sound).play(0.225f);
       entities.update();
       assertFalse(entities.getEntities().contains(potion, true));
     } finally {
@@ -364,7 +364,7 @@ class ArrowProjectileLifecycleTest {
             });
     collide(potion, enemy);
     assertEquals(17, enemy.getComponent(CombatStatsComponent.class).getHealth());
-    verify(sound).play(GameVolume.scale(0.3f));
+    verify(sound).play(GameVolume.scale(0.45f));
     entities.update();
     assertFalse(entities.getEntities().contains(potion, true));
   }

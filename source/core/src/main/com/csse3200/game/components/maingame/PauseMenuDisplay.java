@@ -10,12 +10,18 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.csse3200.game.GdxGame;
+import com.csse3200.game.areas.Level1GameArea;
+import com.csse3200.game.areas.Level2GameArea;
 import com.csse3200.game.components.ButtonSound;
 import com.csse3200.game.components.GameVolume;
+import com.csse3200.game.components.level.RainSoundComponent;
+import com.csse3200.game.components.level.SeagullSoundComponent;
+import com.csse3200.game.components.level.ThunderSoundComponent;
 import com.csse3200.game.components.settingsmenu.SettingsMenuDisplayInGame;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.UIComponent;
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,6 +67,18 @@ public class PauseMenuDisplay extends UIComponent {
       Music gameplay =
           ServiceLocator.getResourceService().getAsset("sounds/gameplay_bg.ogg", Music.class);
       gameplay.pause();
+      for (String ambience :
+          List.of(
+              Level1GameArea.AMBIENCE_MUSIC,
+              Level2GameArea.AMBIENCE_MUSIC,
+              Level2GameArea.WATERFALL_MUSIC,
+              RainSoundComponent.RAIN_MUSIC)) {
+        if (ServiceLocator.getResourceService().containsAsset(ambience, Music.class)) {
+          ServiceLocator.getResourceService().getAsset(ambience, Music.class).pause();
+        }
+      }
+      SeagullSoundComponent.stopAll();
+      ThunderSoundComponent.stopAll();
       Music mainMenu =
           ServiceLocator.getResourceService().getAsset("sounds/Main_menu_sound.mp3", Music.class);
       mainMenu.setLooping(true);

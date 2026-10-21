@@ -3,6 +3,7 @@ package com.csse3200.game.components.player;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyFloat;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
@@ -12,6 +13,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Timer;
 import com.csse3200.game.components.GameVolume;
 import com.csse3200.game.components.item.ItemType;
@@ -50,7 +52,7 @@ class PlayerSoundComponentTest {
     player.getEvents().trigger("jumpAccepted");
 
     verify(resources).getAsset("sounds/jump.ogg", Sound.class);
-    verify(sound).play(0.5f);
+    verify(sound).play(0.75f);
   }
 
   @Test
@@ -107,7 +109,7 @@ class PlayerSoundComponentTest {
       GameVolume.set(0.5f);
       player.getEvents().trigger("itemPickedUp", ItemType.HEALTH_POTION);
 
-      verify(sound).play(0.1f);
+      verify(sound).play(0.3f);
       verify(sound, times(1)).play(anyFloat());
     } finally {
       GameVolume.set(previousVolume);
@@ -137,7 +139,48 @@ class PlayerSoundComponentTest {
     player.getEvents().trigger("grappleSwing", 1f);
     player.getEvents().trigger("grappleSwing", 1f);
 
-    verify(resources, times(2)).getAsset("sounds/rope_swing.wav", Sound.class);
+    verify(resources, times(2))
+        .getAsset(
+            argThat((String path) -> path.startsWith("sounds/grapple_creak_")), eq(Sound.class));
+  }
+
+  @Test
+  void shouldPlayDoorCreakWhenEnteringTheShop() {
+    player.getEvents().trigger("openShop");
+
+    verify(resources).getAsset("sounds/shop_door_creak.ogg", Sound.class);
+    verify(sound).play(0.4f);
+  }
+
+  @Test
+  void shouldPlayKachingWhenSomethingIsBought() {
+    player.getEvents().trigger("itemPurchased", ItemType.HEALTH_POTION);
+
+    verify(resources).getAsset("sounds/shop_kaching.ogg", Sound.class);
+    verify(sound).play(0.35f);
+  }
+
+  @Test
+  void shouldPlayAttachSoundWhenGrappleHooks() {
+    player.getEvents().trigger("grappleAttached");
+
+    verify(resources).getAsset("sounds/grapple_attach.ogg", Sound.class);
+    verify(sound).play(0.5f);
+  }
+
+  @Test
+  void shouldPlayFailSoundWhenGrappleMisses() {
+    player.getEvents().trigger("grappleFailed", new Vector2(1f, 1f));
+
+    verify(resources).getAsset("sounds/grapple_fail.ogg", Sound.class);
+    verify(sound).play(0.3f);
+  }
+
+  @Test
+  void shouldNotAddASecondFireSoundOnGrappleChargeFire() {
+    player.getEvents().trigger("grappleChargeFire", new Vector2(1f, 0f));
+
+    verify(sound, never()).play(anyFloat());
   }
 
   @Test
@@ -166,9 +209,13 @@ class PlayerSoundComponentTest {
   void missingClockDoesNotPlayRopeAudioOrSpendItsCooldown() {
     ServiceLocator.registerTimeSource(null);
     player.getEvents().trigger("grappleSwing", 1f);
-    verify(resources, never()).getAsset("sounds/rope_swing.wav", Sound.class);
+    verify(resources, never())
+        .getAsset(
+            argThat((String path) -> path.startsWith("sounds/grapple_creak_")), eq(Sound.class));
     ServiceLocator.registerTimeSource(time);
     player.getEvents().trigger("grappleSwing", 1f);
-    verify(resources).getAsset("sounds/rope_swing.wav", Sound.class);
+    verify(resources)
+        .getAsset(
+            argThat((String path) -> path.startsWith("sounds/grapple_creak_")), eq(Sound.class));
   }
 }

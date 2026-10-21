@@ -26,8 +26,10 @@ import com.csse3200.game.components.PoisonStatsComponent;
 import com.csse3200.game.components.SlowStatsComponent;
 import com.csse3200.game.components.TouchAttackComponent;
 import com.csse3200.game.components.lighting.PointLightComponent;
+import com.csse3200.game.components.npc.CalypsoSoundComponent;
 import com.csse3200.game.components.npc.ChaseSoundComponent;
 import com.csse3200.game.components.npc.EnemyAnimationController;
+import com.csse3200.game.components.npc.SummonSoundComponent;
 import com.csse3200.game.components.tasks.ChaseTask;
 import com.csse3200.game.components.tasks.DelayedAttackTask;
 import com.csse3200.game.components.tasks.RangedAttackTask;
@@ -342,6 +344,43 @@ class EnemyFactoryTest {
     assertNull(archer.getComponent(AITaskComponent.class));
     assertNull(warrior.getComponent(TouchAttackComponent.class));
     assertTrue(warrior.getComponent(CombatStatsComponent.class).getHealth() > 0);
+  }
+
+  @Test
+  void shouldGiveEachEnemyItsOwnDeathSound() {
+    assertEquals(
+        EnemyFactory.SKELETON_DEATH_SOUND,
+        deathSoundOf(built(() -> EnemyFactory.createSkeletonWarrior(new Entity()))));
+    assertEquals(
+        EnemyFactory.SKELETON_DEATH_SOUND,
+        deathSoundOf(built(() -> EnemyFactory.createSkeletonArcher(new Entity()))));
+    assertEquals(
+        EnemyFactory.SKELETON_DEATH_SOUND,
+        deathSoundOf(built(EnemyFactory::createPassiveSkeletonWarrior)));
+    assertEquals(
+        EnemyFactory.VULTURE_DEATH_SOUND,
+        deathSoundOf(built(() -> EnemyFactory.createVulture(new Entity()))));
+    assertEquals(
+        EnemyFactory.NECROMANCER_DEATH_SOUND,
+        deathSoundOf(built(() -> EnemyFactory.createNecromancer(new Entity()))));
+    assertEquals(EnemyFactory.CALYPSO_DEATH_SOUND, deathSoundOf(calypso(new Entity())));
+  }
+
+  @Test
+  void shouldGiveTheNecromancerItsChaseAndSummonSounds() {
+    Entity necromancer = built(() -> EnemyFactory.createNecromancer(new Entity()));
+
+    assertNotNull(necromancer.getComponent(ChaseSoundComponent.class));
+    assertNotNull(necromancer.getComponent(SummonSoundComponent.class));
+  }
+
+  @Test
+  void shouldGiveCalypsoHerOwnSounds() {
+    assertNotNull(calypso(new Entity()).getComponent(CalypsoSoundComponent.class));
+  }
+
+  private static String deathSoundOf(Entity enemy) {
+    return enemy.getComponent(EnemyDeathComponent.class).getDeathSound();
   }
 
   // --- Calypso, the boss ---

@@ -202,7 +202,7 @@ public class LevelsGameScreen extends BaseGameScreen {
           .getEvents()
           .addListener(
               "triggerNextLevel",
-              (String nextLevel) -> SoundEffects.play("sounds/level_complete.wav", 0.5f));
+              (String nextLevel) -> SoundEffects.play("sounds/level_complete.wav", 1.0f));
     }
   }
 
