@@ -78,6 +78,9 @@ public class CameraComponent extends Component {
   }
 
   public void resize(int screenWidth, int screenHeight, float gameWidth) {
+    zoomingCamera = false;
+    requestedZoom = false;
+
     float ratio = (float) screenHeight / screenWidth;
     camera.viewportWidth = gameWidth;
     camera.viewportHeight = gameWidth * ratio;

@@ -221,16 +221,17 @@ public class BackgroundRenderComponent extends RenderComponent {
 
   /** Scale is controlled individually for each layer. */
   public void scaleEntity(Vector2 factor, Vector2 worldBounds, boolean up, String level) {
-    //    if (level.equals("level3")) {
-    //      for (ParallaxLayer layer : layers) {
-    //        if (up) {
-    //          scaleUp(layer, factor, worldBounds, level);
-    //        } else {
-    //          scaleDown(layer, factor, worldBounds, level);
-    //        }
-    //      }
-    //      return;
-    //    }
+    if (level.equals("bossArena")) {
+      for (ParallaxLayer layer : layers) {
+        layer.position.x -= 1.7f;
+        layer.position.y -= 1.22f;
+        layer.height += 1;
+        if (layer.flash) {
+          layer.height += 3;
+        }
+      }
+      return;
+    }
 
     currentScaleTime = 0f;
     scalingBackground = true;
@@ -242,19 +243,10 @@ public class BackgroundRenderComponent extends RenderComponent {
       layer.startVelocity.set(layer.velocity);
       layer.startPosition.set(layer.position);
 
-      if (level.equals("bossArena")) {
-        layer.position.x -= 1.7f;
-        layer.position.y -= 1.22f;
-        layer.height += 1;
-        if (layer.flash) {
-          layer.height += 3;
-        }
+      if (up) {
+        scaleUp(layer, factor, worldBounds, level);
       } else {
-        if (up) {
-          scaleUp(layer, factor, worldBounds, level);
-        } else {
-          scaleDown(layer, factor, worldBounds, level);
-        }
+        scaleDown(layer, factor, worldBounds, level);
       }
 
       // now that the targets have been calculated, store them and reset so we can properly animate
