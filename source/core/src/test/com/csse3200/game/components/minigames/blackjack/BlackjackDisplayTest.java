@@ -14,6 +14,7 @@ import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
@@ -168,6 +169,32 @@ class BlackjackDisplayTest {
     assertEquals(Blackjack.BET, blackjack.getBet());
     assertTrue(blackjack.isRoundInProgress());
     assertEquals(100 - Blackjack.BET, inventory.getGold());
+  }
+
+  @Test
+  void shouldHideNewRoundButtonAfterFirstDeal() {
+    BlackjackDisplay display =
+        new BlackjackDisplay(new Blackjack(100, new Random(1)), new InventoryComponent(100));
+    show(display);
+    ImageButton newRound = field(display, "newRoundButton", ImageButton.class);
+
+    assertTrue(newRound.isVisible());
+
+    invoke(display, "tryStartRound");
+
+    assertFalse(newRound.isVisible());
+  }
+
+  @Test
+  void shouldKeepNewRoundButtonWhenFirstDealFails() {
+    BlackjackDisplay display =
+        new BlackjackDisplay(new Blackjack(100, new Random(1)), new InventoryComponent(0));
+    show(display);
+    ImageButton newRound = field(display, "newRoundButton", ImageButton.class);
+
+    invoke(display, "tryStartRound");
+
+    assertTrue(newRound.isVisible());
   }
 
   @Test

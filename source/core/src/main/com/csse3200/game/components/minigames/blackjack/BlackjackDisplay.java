@@ -1000,6 +1000,11 @@ public class BlackjackDisplay extends UIComponent {
 
     blackjack.startNewRound();
 
+    // New Round only starts the first deal; after that the result pop-up deals each round.
+    if (newRoundButton != null) {
+      newRoundButton.setVisible(false);
+    }
+
     // A natural blackjack can end the round immediately after dealing.
     settleGoldIfRoundOver();
     playResultSoundIfNeeded();
