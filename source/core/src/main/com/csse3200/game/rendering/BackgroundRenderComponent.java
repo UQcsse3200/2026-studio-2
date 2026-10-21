@@ -566,6 +566,10 @@ public class BackgroundRenderComponent extends RenderComponent {
     }
   }
 
+  public boolean getScalingBackground() {
+    return scalingBackground;
+  }
+
   /** Drops the fractional part of a value, rounding towards zero like an int cast. */
   private static float truncate(float value) {
     return (float) (value < 0 ? Math.ceil(value) : Math.floor(value));

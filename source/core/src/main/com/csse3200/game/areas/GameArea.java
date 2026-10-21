@@ -423,6 +423,10 @@ public abstract class GameArea implements Disposable {
       CameraComponent cameraComponent,
       BackgroundRenderComponent backgroundComponent,
       String level) {
+    if (cameraComponent.getZoomingCamera() || backgroundComponent.getScalingBackground()) {
+      return;
+    }
+
     float currentRatio =
         cameraComponent.getCamera().viewportHeight / cameraComponent.getCamera().viewportWidth;
 

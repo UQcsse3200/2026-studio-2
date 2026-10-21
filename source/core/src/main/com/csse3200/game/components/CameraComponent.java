@@ -88,6 +88,10 @@ public class CameraComponent extends Component {
     camera.update();
   }
 
+  public boolean getZoomingCamera() {
+    return zoomingCamera;
+  }
+
   public void requestZoom() {
     if (!zoomingCamera) {
       requestedZoom = true;
