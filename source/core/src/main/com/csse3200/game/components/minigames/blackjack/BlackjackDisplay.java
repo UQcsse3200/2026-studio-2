@@ -64,8 +64,10 @@ public class BlackjackDisplay extends UIComponent {
 
   private final Blackjack blackjack;
   private final InventoryComponent inventory;
+
   /** Circe's welcome gift has not been accepted yet. */
   private boolean giftPending;
+
   private boolean resultSoundPlayed;
   private boolean soundEnabled = true;
   private final java.util.function.Consumer<Boolean> soundToggleCallback;
@@ -87,6 +89,8 @@ public class BlackjackDisplay extends UIComponent {
   private Cell<Label> resultTitleCell;
   private Cell<Label> resultMessageCell;
   private Cell<ImageButton> resultButtonCell;
+  private ImageButton.ImageButtonStyle newRoundStyle;
+  private ImageButton.ImageButtonStyle newMatchStyle;
   private Drawable regularResultBackground;
   private Drawable dialogueScrollBackground;
   private ImageButton newRoundButton;
@@ -537,6 +541,12 @@ public class BlackjackDisplay extends UIComponent {
         createImageButton(
             "images/Buttons/new_round_up_btn.png", "images/Buttons/new_round_down_btn.png");
     nextRoundButton.setName("resultContinue");
+    newRoundStyle = nextRoundButton.getStyle();
+    newMatchStyle =
+        createImageButton(
+                "images/Buttons/bj_new_match_up_btn.png",
+                "images/Buttons/bj_new_match_down_btn.png")
+            .getStyle();
 
     nextRoundButton.addListener(
         new ChangeListener() {
@@ -721,10 +731,26 @@ public class BlackjackDisplay extends UIComponent {
       dialogueActionLabel.setText("Next round");
     }
     resultButtonCell.getActor().setVisible(!automaticVictory);
+    resultButtonCell.getActor().setStyle(startsNewMatch(dialogue) ? newMatchStyle : newRoundStyle);
     resultOverlay.toFront();
     if (automaticVictory) {
       scheduleVictoryCutscene();
     }
+  }
+
+  /**
+   * Whether pressing the result button starts a fresh match: after a loss, after running out of
+   * gold, and after a standalone win. A story win moves on to Cutscene 5 instead.
+   */
+  private boolean startsNewMatch(BlackjackDialogue dialogue) {
+    if (dialogue == null) {
+      return false;
+    }
+    return switch (dialogue.getKind()) {
+      case MATCH_LOST, OUT_OF_GOLD -> true;
+      case MATCH_WON -> storyWinCallback == null;
+      case GIFT -> false;
+    };
   }
 
   /** Uses a tall scroll for Cerci's match dialogue, retaining the original round-result panel. */

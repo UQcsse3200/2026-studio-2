@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -296,6 +297,64 @@ class BlackjackDisplayTest {
     assertEquals(7, inventory.getGold());
     assertEquals(7, blackjack.getBalance());
     assertEquals(Blackjack.MatchResult.IN_PROGRESS, blackjack.getMatchResult());
+  }
+
+  @Test
+  void shouldShowNewMatchButtonAfterLosingTheMatch() {
+    // No inventory, so Circe's welcome gift doesn't take over the pop-up.
+    BlackjackDisplay display = new BlackjackDisplay(lostMatch());
+    show(display);
+
+    assertSame(
+        field(display, "newMatchStyle", ImageButton.ImageButtonStyle.class),
+        resultButton(display).getStyle());
+  }
+
+  @Test
+  void shouldShowNewRoundButtonAfterAnOrdinaryRound() {
+    Blackjack blackjack = new Blackjack(10, new Random(1));
+    blackjack.startNewRound();
+    if (!blackjack.isRoundOver()) {
+      blackjack.stand();
+    }
+    assertFalse(blackjack.isMatchOver());
+    BlackjackDisplay display = new BlackjackDisplay(blackjack);
+    show(display);
+
+    assertSame(
+        field(display, "newRoundStyle", ImageButton.ImageButtonStyle.class),
+        resultButton(display).getStyle());
+  }
+
+  @Test
+  void shouldShowNewMatchButtonAfterAStandaloneWin() {
+    BlackjackDisplay display = new BlackjackDisplay(wonMatch());
+    show(display);
+
+    assertSame(
+        field(display, "newMatchStyle", ImageButton.ImageButtonStyle.class),
+        resultButton(display).getStyle());
+  }
+
+  private static ImageButton resultButton(BlackjackDisplay display) {
+    return field(display, "resultOverlay", Table.class).findActor("resultContinue");
+  }
+
+  /** Returns a game the player has won by reaching the required round wins. */
+  private static Blackjack wonMatch() {
+    for (int seed = 0; seed < 500; seed++) {
+      Blackjack blackjack = new Blackjack(100, new Random(seed));
+      while (!blackjack.isMatchOver()) {
+        blackjack.startNewRound();
+        if (!blackjack.isRoundOver()) {
+          blackjack.stand();
+        }
+      }
+      if (blackjack.getMatchResult() == Blackjack.MatchResult.PLAYER_WON) {
+        return blackjack;
+      }
+    }
+    throw new AssertionError("Could not find a won match");
   }
 
   /** Returns a game the player has lost by running out of gold after one round. */
