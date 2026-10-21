@@ -164,6 +164,10 @@ public class BlackjackDisplay extends UIComponent {
     this.soundToggleCallback = soundToggleCallback;
     this.backCallback = backCallback;
     this.storyWinCallback = storyWinCallback;
+
+    if (inventory != null && !inventory.hasGold(5)) {
+      inventory.setGold(5);
+    }
   }
 
   @Override
