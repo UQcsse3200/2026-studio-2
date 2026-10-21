@@ -1,7 +1,5 @@
 package com.csse3200.game.areas.terrain.configs;
 
-import com.badlogic.gdx.math.GridPoint2;
-
 public class CrumblingPlatformConfig extends PlatformConfig {
 
   float timeBeforeCrumble;
@@ -9,16 +7,14 @@ public class CrumblingPlatformConfig extends PlatformConfig {
   float respawnTime;
 
   public CrumblingPlatformConfig(
-      GridPoint2 position,
-      int width,
-      int height,
-      int grappleSides,
-      String textureFilepath,
-      float timeBeforeCrumble,
-      float crumbleTime,
-      float respawnTime) {
+      PlatformConfig platform, float timeBeforeCrumble, float crumbleTime, float respawnTime) {
 
-    super(position, width, height, grappleSides, textureFilepath);
+    super(
+        platform.position,
+        platform.width,
+        platform.height,
+        platform.grappleSides,
+        platform.textureFilepath);
 
     this.timeBeforeCrumble = timeBeforeCrumble;
     this.crumbleTime = crumbleTime;

@@ -211,17 +211,15 @@ public class CyclopsMinigameArea extends GameArea {
             cameraComponent, backgroundPos, terrain.tileToWorldPosition(MAP_SIZE));
     backgroundComponent.addLayer(
         CAVE_BACKGROUND_TEXTURE,
-        new Vector2(BACKGROUND_PARALLAX, 0f),
-        width,
-        height,
-        new Vector2(0f, 0f),
-        new Vector2(0f, 0f),
-        RepeatMode.NONE,
-        0f,
-        1f,
-        false,
-        0,
-        -1);
+        new BackgroundRenderComponent.LayerLayout(
+            new Vector2(BACKGROUND_PARALLAX, 0f),
+            width,
+            height,
+            new Vector2(0f, 0f),
+            new Vector2(0f, 0f),
+            RepeatMode.NONE,
+            0f),
+        new BackgroundRenderComponent.LayerAppearance(1f, false, 0, -1));
 
     Entity background = new Entity().addComponent(backgroundComponent);
     background.setPosition(backgroundPos);

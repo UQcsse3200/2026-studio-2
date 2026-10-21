@@ -70,22 +70,37 @@ public class BackgroundRenderComponentTest {
       int flashFrequency) {
     background.addLayer(
         texturePath,
-        new Vector2(0f, 0f),
-        30f,
-        10f,
-        new Vector2(0f, 0f),
-        new Vector2(speed),
-        repeat,
-        1f,
-        1f,
-        flashes,
-        0,
-        flashFrequency);
+        new BackgroundRenderComponent.LayerLayout(
+            new Vector2(0f, 0f), 30f, 10f, new Vector2(0f, 0f), new Vector2(speed), repeat, 1f),
+        new BackgroundRenderComponent.LayerAppearance(1f, flashes, 0, flashFrequency));
   }
 
   private static void addPlainLayer(
       BackgroundRenderComponent background, String texturePath, Vector2 speed, RepeatMode repeat) {
     addLayer(background, texturePath, speed, repeat, false, -1);
+  }
+
+  @Test
+  void driftingLayerMovesOncePerFrame() {
+    CameraComponent camera = new CameraComponent();
+    new Entity().addComponent(camera);
+    BackgroundRenderComponent background = newBackground(camera);
+    background.setEntity(new Entity());
+    registerTextures(TEXTURE);
+    addPlainLayer(background, TEXTURE, DRIFTING, RepeatMode.NONE);
+    GameTime time = mock(GameTime.class);
+    when(time.getDeltaTime()).thenReturn(0.5f);
+    ServiceLocator.registerTimeSource(time);
+    SpriteBatch batch = mock(SpriteBatch.class);
+    when(batch.getColor()).thenReturn(Color.WHITE);
+    background.draw(batch);
+    background.draw(batch);
+    org.mockito.ArgumentCaptor<Float> xs = org.mockito.ArgumentCaptor.forClass(Float.class);
+    org.mockito.ArgumentCaptor<Float> ys = org.mockito.ArgumentCaptor.forClass(Float.class);
+    verify(batch, times(2))
+        .draw(any(Texture.class), xs.capture(), ys.capture(), anyFloat(), anyFloat());
+    assertEquals(0.5f, xs.getAllValues().get(1) - xs.getAllValues().get(0), 0.0001f);
+    assertEquals(-0.5f, ys.getAllValues().get(1) - ys.getAllValues().get(0), 0.0001f);
   }
 
   @Test
@@ -185,6 +200,9 @@ public class BackgroundRenderComponentTest {
       background.toggleWeather();
     }
     background.draw(batch);
+    if (repeat == RepeatMode.CHAOTIC) {
+      background.draw(batch);
+    }
     verify(batch, drawn).draw(any(Texture.class), anyFloat(), anyFloat(), anyFloat(), anyFloat());
   }
 

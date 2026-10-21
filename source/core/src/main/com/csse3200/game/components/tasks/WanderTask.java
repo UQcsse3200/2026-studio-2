@@ -15,6 +15,8 @@ import org.slf4j.LoggerFactory;
 public class WanderTask extends DefaultTask implements PriorityTask {
   private static final Logger logger = LoggerFactory.getLogger(WanderTask.class);
 
+  private static final String FLYING_BEHAVIOUR = "flying";
+
   private final Vector2 wanderRange;
   private final float waitTime;
   private final String behaviour;
@@ -48,7 +50,7 @@ public class WanderTask extends DefaultTask implements PriorityTask {
 
     startPos = owner.getEntity().getPosition();
 
-    if (!behaviour.equals("flying")) {
+    if (!behaviour.equals(FLYING_BEHAVIOUR)) {
       edgeDetector = new EdgeDetectTask(0.3f);
     }
 
@@ -75,17 +77,13 @@ public class WanderTask extends DefaultTask implements PriorityTask {
     }
 
     // Edge detection
-    if (!behaviour.equals("flying")) {
-      if (currentTask == movementTask) {
-        Vector2 currentPos = owner.getEntity().getPosition();
-
-        float direction = Math.signum(wanderTarget.x - currentPos.x);
-
-        if (direction != 0 && !edgeDetector.isGroundAhead(owner.getEntity(), direction)) {
-          movementTask.stop();
-          startWaiting();
-          return;
-        }
+    if (!behaviour.equals(FLYING_BEHAVIOUR) && currentTask == movementTask) {
+      Vector2 currentPos = owner.getEntity().getPosition();
+      float direction = Math.signum(wanderTarget.x - currentPos.x);
+      if (direction != 0 && !edgeDetector.isGroundAhead(owner.getEntity(), direction)) {
+        movementTask.stop();
+        startWaiting();
+        return;
       }
     }
 
@@ -118,7 +116,7 @@ public class WanderTask extends DefaultTask implements PriorityTask {
     Vector2 max = startPos.cpy().add(halfRange);
     Vector2 target = RandomUtils.random(min, max);
 
-    if (!behaviour.equals("flying")) {
+    if (!behaviour.equals(FLYING_BEHAVIOUR)) {
       target.y = owner.getEntity().getPosition().y;
     }
 

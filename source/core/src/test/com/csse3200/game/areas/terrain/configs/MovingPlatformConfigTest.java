@@ -14,11 +14,7 @@ class MovingPlatformConfigTest {
 
     MovingPlatformConfig config =
         new MovingPlatformConfig(
-            new GridPoint2(2, 3),
-            4,
-            2,
-            15,
-            "platform.png",
+            new PlatformConfig(new GridPoint2(2, 3), 4, 2, 15, "platform.png"),
             new Vector2(2, 3),
             new Vector2(8, 3),
             new Vector2(1, 0),

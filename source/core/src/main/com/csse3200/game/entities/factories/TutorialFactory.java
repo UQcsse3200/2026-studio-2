@@ -56,17 +56,19 @@ public final class TutorialFactory {
 
     TextBoxComponent textBox =
         new TextBoxComponent(
-            config.xPos,
-            config.yPos,
-            config.getTextColour(),
-            config.getBackgroundColour(),
-            config.getBorderColour(),
+            new TextBoxComponent.Layout(
+                config.xPos,
+                config.yPos,
+                config.maxWidth,
+                config.padding,
+                config.getTextAlignment()),
+            new TextBoxComponent.Style(
+                config.getTextColour(),
+                config.getBackgroundColour(),
+                config.getBorderColour(),
+                config.borderThickness,
+                config.fontPath),
             config.charsPerSecond,
-            config.maxWidth,
-            config.padding,
-            config.borderThickness,
-            config.fontPath,
-            config.getTextAlignment(),
             config.pages,
             config.portraitPaths);
     textBox.setExternallyControlled(true);

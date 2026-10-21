@@ -16,6 +16,9 @@ import com.csse3200.game.rendering.AnimationRenderComponent;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 /** A skeleton idles, walks, turns to face the player, and plays its sweep when it attacks. */
 @ExtendWith(GameExtension.class)
@@ -244,5 +247,41 @@ class EnemyAnimationControllerTest {
     enemy.update();
 
     verify(animator).startAnimation("walk");
+  }
+
+  @ParameterizedTest
+  @ValueSource(booleans = {false, true})
+  void shouldPlayLaserOnlyWhenTheAnimationExists(boolean available) {
+    when(animator.hasAnimation("laser")).thenReturn(available);
+
+    enemy.getEvents().trigger("laserStart");
+
+    verify(animator, times(available ? 1 : 0)).startAnimation("laser");
+  }
+
+  @ParameterizedTest
+  @CsvSource({
+    "laser, false, false",
+    "laser, true, true",
+    "idle, false, true",
+    "hurt, false, false",
+    "hurt, true, true"
+  })
+  void shouldRespectUnfinishedLaserAndHurtAnimations(
+      String currentAnimation, boolean finished, boolean shouldPlayHurt) {
+    when(animator.hasAnimation("hurt")).thenReturn(true);
+    when(animator.getCurrentAnimation()).thenReturn(currentAnimation);
+    when(animator.isFinished()).thenReturn(finished);
+
+    enemy.getEvents().trigger("hurt");
+
+    verify(animator, times(shouldPlayHurt ? 1 : 0)).startAnimation("hurt");
+  }
+
+  @Test
+  void shouldIgnoreHurtWhenTheAnimationIsMissing() {
+    enemy.getEvents().trigger("hurt");
+
+    verify(animator, never()).startAnimation("hurt");
   }
 }

@@ -141,11 +141,7 @@ class ObstacleFactoryTest {
   void shouldCreateMovingPlatformWithMovementComponents() {
     MovingPlatformConfig config =
         new MovingPlatformConfig(
-            new GridPoint2(1, 2),
-            3,
-            1,
-            0,
-            "images/platform.png",
+            new PlatformConfig(new GridPoint2(1, 2), 3, 1, 0, "images/platform.png"),
             new Vector2(1f, 1f),
             new Vector2(5f, 1f),
             new Vector2(2f, 0f),
@@ -163,7 +159,7 @@ class ObstacleFactoryTest {
   void shouldCreateCrumblingPlatformWithCrumbleComponent() {
     CrumblingPlatformConfig config =
         new CrumblingPlatformConfig(
-            new GridPoint2(1, 2), 3, 1, 0, "images/platform.png", 1f, 2f, 3f);
+            new PlatformConfig(new GridPoint2(1, 2), 3, 1, 0, "images/platform.png"), 1f, 2f, 3f);
 
     Entity platform = ObstacleFactory.createCrumblingPlatform(config);
 
@@ -176,11 +172,7 @@ class ObstacleFactoryTest {
   void shouldCreateTriggerablePlatformWithActivationComponents() {
     TriggerablePlatformConfig config =
         new TriggerablePlatformConfig(
-            new GridPoint2(1, 2),
-            3,
-            1,
-            0,
-            "images/platform.png",
+            new PlatformConfig(new GridPoint2(1, 2), 3, 1, 0, "images/platform.png"),
             new String[] {"switch"},
             true,
             false);

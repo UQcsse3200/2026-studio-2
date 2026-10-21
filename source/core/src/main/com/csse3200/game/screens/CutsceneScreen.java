@@ -222,17 +222,19 @@ public class CutsceneScreen extends ScreenAdapter {
     TextConfig config = scene.text == null ? new TextConfig() : scene.text;
     textBox =
         new TextBoxComponent(
-            config.xPos,
-            config.yPos,
-            config.getTextColour(),
-            config.getBackgroundColour(),
-            config.getBorderColour(),
+            new TextBoxComponent.Layout(
+                config.xPos,
+                config.yPos,
+                config.maxWidth,
+                config.padding,
+                config.getTextAlignment()),
+            new TextBoxComponent.Style(
+                config.getTextColour(),
+                config.getBackgroundColour(),
+                config.getBorderColour(),
+                config.borderThickness,
+                config.fontPath),
             config.charsPerSecond,
-            config.maxWidth,
-            config.padding,
-            config.borderThickness,
-            config.fontPath,
-            config.getTextAlignment(),
             config.pages,
             config.portraitPaths);
     textBox.setExternallyControlled(true);
@@ -259,7 +261,7 @@ public class CutsceneScreen extends ScreenAdapter {
       music.stop();
     }
     if (destination == GdxGame.ScreenType.MAIN_MENU) {
-      game.transitionTo(new ThankYouScreen(game), CutsceneScreen.EXIT_FADE_DURATION);
+      game.transitionTo(GdxGame.ScreenType.THANK_YOU, CutsceneScreen.EXIT_FADE_DURATION);
     } else {
       game.transitionTo(destination);
     }
@@ -329,7 +331,7 @@ public class CutsceneScreen extends ScreenAdapter {
           if (destination == GdxGame.ScreenType.MAIN_MENU) {
             // After the closing cutscene, show a thank-you message over black then exit to main
             // menu.
-            game.transitionTo(new ThankYouScreen(game), EXIT_FADE_DURATION);
+            game.transitionTo(GdxGame.ScreenType.THANK_YOU, EXIT_FADE_DURATION);
           } else {
             game.transitionTo(destination, EXIT_FADE_DURATION);
           }

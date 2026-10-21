@@ -8,6 +8,8 @@ import com.csse3200.game.entities.Entity;
 
 /** Repositions an enemy a distance away from target */
 public class RepositionTask extends DefaultTask implements PriorityTask {
+  private static final String FLYING_BEHAVIOUR = "flying";
+
   private final Entity target;
   private final int priority;
   private final float repositionDistance;
@@ -39,7 +41,7 @@ public class RepositionTask extends DefaultTask implements PriorityTask {
   public void start() {
     super.start();
 
-    if (!behaviour.equals("flying")) {
+    if (!behaviour.equals(FLYING_BEHAVIOUR)) {
       edgeDetector = new EdgeDetectTask(0.3f);
     }
 
@@ -62,13 +64,12 @@ public class RepositionTask extends DefaultTask implements PriorityTask {
     Vector2 targetPos = target.getPosition();
     float direction = Math.signum(enemyPos.x - targetPos.x);
 
-    if (!behaviour.equals("flying")) {
-      if (!edgeDetector.isGroundAhead(owner.getEntity(), direction)) {
-        movementTask.stop();
-        status = Status.FINISHED;
-        repositionRequired = false;
-        return;
-      }
+    if (!behaviour.equals(FLYING_BEHAVIOUR)
+        && !edgeDetector.isGroundAhead(owner.getEntity(), direction)) {
+      movementTask.stop();
+      status = Status.FINISHED;
+      repositionRequired = false;
+      return;
     }
     movementTask.update();
 
@@ -83,7 +84,7 @@ public class RepositionTask extends DefaultTask implements PriorityTask {
    */
   protected Vector2 directionAwayFrom(Vector2 enemyPos, Vector2 targetPos) {
     Vector2 away = enemyPos.cpy().sub(targetPos);
-    if (!behaviour.equals("flying")) {
+    if (!behaviour.equals(FLYING_BEHAVIOUR)) {
       away.y = 0;
     }
     return away.nor();

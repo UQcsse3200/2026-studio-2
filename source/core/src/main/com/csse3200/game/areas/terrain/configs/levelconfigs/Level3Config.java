@@ -3,6 +3,7 @@ package com.csse3200.game.areas.terrain.configs.levelconfigs;
 import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.areas.terrain.configs.*;
+import com.csse3200.game.areas.terrain.configs.PlatformConfig;
 import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.components.item.*;
 import com.csse3200.game.components.item.consumables.HealthPotion;
@@ -95,62 +96,44 @@ public class Level3Config extends LevelConfig {
 
     movingPlatforms =
         new MovingPlatformConfig[] {
-          new MovingPlatformConfig( // MP1
-              new GridPoint2(3, 12),
-              3,
-              1,
-              2,
-              movingPlatformTFP,
+          new MovingPlatformConfig(
+              new PlatformConfig( // MP1
+                  new GridPoint2(3, 12), 3, 1, 2, movingPlatformTFP),
               new Vector2(3, 12),
               new Vector2(3, 19),
               new Vector2(0, 3),
               new String[] {}),
-          new MovingPlatformConfig( // MP4
-              new GridPoint2(20, 42),
-              3,
-              1,
-              0,
-              movingPlatformTFP,
+          new MovingPlatformConfig(
+              new PlatformConfig( // MP4
+                  new GridPoint2(20, 42), 3, 1, 0, movingPlatformTFP),
               new Vector2(20, 38),
               new Vector2(20, 45),
               new Vector2(0, 4),
               new String[] {}),
-          new MovingPlatformConfig( // MP 5
-              new GridPoint2(2, 75),
-              3,
-              1,
-              0,
-              movingPlatformTFP,
+          new MovingPlatformConfig(
+              new PlatformConfig( // MP 5
+                  new GridPoint2(2, 75), 3, 1, 0, movingPlatformTFP),
               new Vector2(2, 74),
               new Vector2(8, 74),
               new Vector2(2.5f, 0),
               new String[] {}),
-          new MovingPlatformConfig( // MP 6
-              new GridPoint2(7, 78),
-              3,
-              1,
-              0,
-              movingPlatformTFP,
+          new MovingPlatformConfig(
+              new PlatformConfig( // MP 6
+                  new GridPoint2(7, 78), 3, 1, 0, movingPlatformTFP),
               new Vector2(2, 77),
               new Vector2(8, 77),
               new Vector2(2.5f, 0),
               new String[] {}),
-          new MovingPlatformConfig( // MP 7
-              new GridPoint2(4, 81),
-              3,
-              1,
-              0,
-              movingPlatformTFP,
+          new MovingPlatformConfig(
+              new PlatformConfig( // MP 7
+                  new GridPoint2(4, 81), 3, 1, 0, movingPlatformTFP),
               new Vector2(2, 80),
               new Vector2(8, 80),
               new Vector2(2.5f, 0),
               new String[] {}),
-          new MovingPlatformConfig( // MP 8
-              new GridPoint2(16, 89),
-              3,
-              1,
-              0,
-              movingPlatformTFP,
+          new MovingPlatformConfig(
+              new PlatformConfig( // MP 8
+                  new GridPoint2(16, 89), 3, 1, 0, movingPlatformTFP),
               new Vector2(16, 89),
               new Vector2(24, 89),
               new Vector2(3f, 0),
@@ -160,110 +143,62 @@ public class Level3Config extends LevelConfig {
     triggerablePlatforms =
         new TriggerablePlatformConfig[] {
           new TriggerablePlatformConfig(
-              new GridPoint2(12, 27),
-              3,
-              1,
-              0,
-              triggerablePlatformTFP,
+              new PlatformConfig(new GridPoint2(12, 27), 3, 1, 0, triggerablePlatformTFP),
               new String[] {ENEMY_ARENA1},
               false,
               true), // TP1
           new TriggerablePlatformConfig(
-              new GridPoint2(3, 33),
-              6,
-              1,
-              0,
-              triggerablePlatformTFP,
+              new PlatformConfig(new GridPoint2(3, 33), 6, 1, 0, triggerablePlatformTFP),
               new String[] {ENEMY_ARENA1_COMPLETE},
               false,
               true), // TP2
           new TriggerablePlatformConfig(
-              new GridPoint2(12, 33),
-              3,
-              1,
-              0,
-              triggerablePlatformTFP,
+              new PlatformConfig(new GridPoint2(12, 33), 3, 1, 0, triggerablePlatformTFP),
               new String[] {ENEMY_ARENA1_COMPLETE},
               false,
               true), // TP3
           new TriggerablePlatformConfig(
-              new GridPoint2(18, 33),
-              6,
-              1,
-              0,
-              triggerablePlatformTFP,
+              new PlatformConfig(new GridPoint2(18, 33), 6, 1, 0, triggerablePlatformTFP),
               new String[] {ENEMY_ARENA1_COMPLETE},
               false,
               true), // TP4
           new TriggerablePlatformConfig(
-              new GridPoint2(12, 58),
-              3,
-              1,
-              0,
-              triggerablePlatformTFP,
+              new PlatformConfig(new GridPoint2(12, 58), 3, 1, 0, triggerablePlatformTFP),
               new String[] {"tp5", ENEMY_ARENA2},
               true,
               false), // TP5
           new TriggerablePlatformConfig(
-              new GridPoint2(5, 64),
-              5,
-              1,
-              0,
-              triggerablePlatformTFP,
+              new PlatformConfig(new GridPoint2(5, 64), 5, 1, 0, triggerablePlatformTFP),
               new String[] {ENEMY_ARENA2_COMPLETE},
               false,
               true), // TP6
           new TriggerablePlatformConfig(
-              new GridPoint2(12, 64),
-              3,
-              1,
-              0,
-              triggerablePlatformTFP,
+              new PlatformConfig(new GridPoint2(12, 64), 3, 1, 0, triggerablePlatformTFP),
               new String[] {ENEMY_ARENA2_COMPLETE},
               false,
               true), // TP7
           new TriggerablePlatformConfig(
-              new GridPoint2(17, 64),
-              5,
-              1,
-              0,
-              triggerablePlatformTFP,
+              new PlatformConfig(new GridPoint2(17, 64), 5, 1, 0, triggerablePlatformTFP),
               new String[] {ENEMY_ARENA2_COMPLETE},
               false,
               true), // TP8
           new TriggerablePlatformConfig(
-              new GridPoint2(9, 87),
-              3,
-              1,
-              0,
-              triggerablePlatformTFP,
+              new PlatformConfig(new GridPoint2(9, 87), 3, 1, 0, triggerablePlatformTFP),
               new String[] {SEC3_TPS},
               false,
               false), // TP9
           new TriggerablePlatformConfig(
-              new GridPoint2(3, 90),
-              3,
-              1,
-              0,
-              triggerablePlatformTFP,
+              new PlatformConfig(new GridPoint2(3, 90), 3, 1, 0, triggerablePlatformTFP),
               new String[] {SEC3_TPS},
               true,
               false), // TP10
           new TriggerablePlatformConfig(
-              new GridPoint2(2, 93),
-              3,
-              1,
-              1,
-              triggerablePlatformTFP,
+              new PlatformConfig(new GridPoint2(2, 93), 3, 1, 1, triggerablePlatformTFP),
               new String[] {SEC3_TPS},
               false,
               false), // TP11
           new TriggerablePlatformConfig(
-              new GridPoint2(12, 97),
-              3,
-              1,
-              0,
-              triggerablePlatformTFP,
+              new PlatformConfig(new GridPoint2(12, 97), 3, 1, 0, triggerablePlatformTFP),
               new String[] {BOSS_ARENA},
               false,
               true), // TP12
@@ -272,19 +207,40 @@ public class Level3Config extends LevelConfig {
     crumblingPlatforms =
         new CrumblingPlatformConfig[] {
           new CrumblingPlatformConfig(
-              new GridPoint2(18, 53), 3, 1, 1, crumblingPlatformTFP, 4f, 1.5f, 6.5f), // CP1
+              new PlatformConfig(new GridPoint2(18, 53), 3, 1, 1, crumblingPlatformTFP),
+              4f,
+              1.5f,
+              6.5f), // CP1
           new CrumblingPlatformConfig(
-              new GridPoint2(17, 71), 3, 1, 0, crumblingPlatformTFP, 2.5f, 1f, 5.5f), // CP2
+              new PlatformConfig(new GridPoint2(17, 71), 3, 1, 0, crumblingPlatformTFP),
+              2.5f,
+              1f,
+              5.5f), // CP2
           new CrumblingPlatformConfig(
-              new GridPoint2(21, 74), 3, 1, 0, crumblingPlatformTFP, 2.25f, 1f, 5.25f), // CP3
+              new PlatformConfig(new GridPoint2(21, 74), 3, 1, 0, crumblingPlatformTFP),
+              2.25f,
+              1f,
+              5.25f), // CP3
           new CrumblingPlatformConfig(
-              new GridPoint2(19, 77), 3, 1, 0, crumblingPlatformTFP, 2f, 1f, 5f), // CP4
+              new PlatformConfig(new GridPoint2(19, 77), 3, 1, 0, crumblingPlatformTFP),
+              2f,
+              1f,
+              5f), // CP4
           new CrumblingPlatformConfig(
-              new GridPoint2(17, 80), 3, 1, 0, crumblingPlatformTFP, 2f, 0.75f, 4.75f), // CP7
+              new PlatformConfig(new GridPoint2(17, 80), 3, 1, 0, crumblingPlatformTFP),
+              2f,
+              0.75f,
+              4.75f), // CP7
           new CrumblingPlatformConfig(
-              new GridPoint2(14, 93), 4, 1, 0, crumblingPlatformTFP, 4f, 1f, 6f), // CP5
+              new PlatformConfig(new GridPoint2(14, 93), 4, 1, 0, crumblingPlatformTFP),
+              4f,
+              1f,
+              6f), // CP5
           new CrumblingPlatformConfig(
-              new GridPoint2(20, 93), 4, 1, 0, crumblingPlatformTFP, 4f, 1f, 6f), // CP6
+              new PlatformConfig(new GridPoint2(20, 93), 4, 1, 0, crumblingPlatformTFP),
+              4f,
+              1f,
+              6f), // CP6
         };
 
     slipperyPlatforms =

@@ -60,7 +60,12 @@ class RangedAttackTaskBehaviourTest {
 
   private RangedAttackTask task(String attackType) {
     RangedAttackTask task =
-        new RangedAttackTask(player, PRIORITY, RANGE, COOLDOWN, 3, 4.5f, 5f, attackType);
+        new RangedAttackTask(
+            player,
+            PRIORITY,
+            RANGE,
+            COOLDOWN,
+            new RangedAttackTask.ProjectileConfig(3, 4.5f, 5f, attackType));
     task.create(() -> enemy);
     return task;
   }

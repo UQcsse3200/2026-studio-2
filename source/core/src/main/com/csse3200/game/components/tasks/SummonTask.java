@@ -19,8 +19,8 @@ public class SummonTask extends DefaultTask implements PriorityTask {
 
   private long lastSummonTime;
   private int currentSummonCount = 0;
-  private int NECROMANCER_MAX_SUMMS = 2;
-  private int CALYPSO_MAX_SUMMS = 5;
+  private static final int NECROMANCER_MAX_SUMMONS = 2;
+  private static final int CALYPSO_MAX_SUMMONS = 5;
 
   /**
    * Creates a summon attack task
@@ -74,21 +74,17 @@ public class SummonTask extends DefaultTask implements PriorityTask {
 
     boolean canSummon = currentTime - lastSummonTime >= cooldown * 1000;
 
-    if (summonerType.equals("Necromancer")) {
-      if (canSummon && currentSummonCount < NECROMANCER_MAX_SUMMS && distance <= attackRange) {
-        return priority;
-      }
-    } else if (summonerType.equals("Calypso")) {
-      if (canSummon && currentSummonCount < CALYPSO_MAX_SUMMS && distance <= attackRange) {
-        return priority;
-      }
-    } else {
-      if (canSummon && distance <= attackRange) {
-        return priority;
-      }
-    }
+    return canSummon && currentSummonCount < summonLimit() && distance <= attackRange
+        ? priority
+        : -1;
+  }
 
-    return -1;
+  private int summonLimit() {
+    return switch (summonerType) {
+      case "Necromancer" -> NECROMANCER_MAX_SUMMONS;
+      case "Calypso" -> CALYPSO_MAX_SUMMONS;
+      default -> Integer.MAX_VALUE;
+    };
   }
 
   private void summonSkeleton() {
@@ -130,12 +126,9 @@ public class SummonTask extends DefaultTask implements PriorityTask {
 
   private boolean isSpawnPositionOccupied(float x, float y) {
     for (Entity other : ServiceLocator.getEntityService().getEntities()) {
-      if (other == owner.getEntity()) {
-        continue;
-      }
-
-      if (other.getComponent(com.csse3200.game.components.npc.EnemyAnimationController.class)
-          == null) {
+      if (other == owner.getEntity()
+          || other.getComponent(com.csse3200.game.components.npc.EnemyAnimationController.class)
+              == null) {
         continue;
       }
 

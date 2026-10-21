@@ -15,12 +15,9 @@ import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.ArrayList;
 import java.util.List;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /** Shows a thank you message over a black screen before exiting to the main menu. */
 public class ThankYouScreen extends ScreenAdapter {
-  private static final Logger logger = LoggerFactory.getLogger(ThankYouScreen.class);
   private final GdxGame game;
   private final ResourceService resourceService;
   private final RenderService renderService;
@@ -45,20 +42,13 @@ public class ThankYouScreen extends ScreenAdapter {
 
     textBox =
         new TextBoxComponent(
-            0,
-            0,
-            Color.WHITE,
-            Color.BLACK,
-            Color.WHITE,
+            new TextBoxComponent.Layout(0, 0, 600, 16, com.badlogic.gdx.utils.Align.center),
+            new TextBoxComponent.Style(Color.WHITE, Color.BLACK, Color.WHITE, 3, null),
             20,
-            600,
-            16,
-            3,
-            null,
-            com.badlogic.gdx.utils.Align.center,
             new ArrayList<>(List.of("Thank you for playing our game")),
             null);
     textBox.setExternallyControlled(true);
+    textBox.create();
     textBox.setBottomCentered(0.1f);
 
     input = new CutsceneInputComponent(this::onDismissed);

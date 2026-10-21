@@ -994,7 +994,7 @@ class PlayerAnimationControllerTest {
   @Test
   void shouldNotFreezeMovementAnimationsWhenTheInstrumentIsCutShort() {
     Entity entity = new Entity();
-    PlayerAnimationController controller = createJumpController(entity);
+    createJumpController(entity);
     AnimationRenderComponent animator = entity.getComponent(AnimationRenderComponent.class);
     entity.getEvents().trigger("fallStart");
     entity.getEvents().trigger("landed");

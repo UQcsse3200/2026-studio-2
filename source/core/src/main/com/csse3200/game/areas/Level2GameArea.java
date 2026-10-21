@@ -164,17 +164,15 @@ public class Level2GameArea extends GameArea {
     // Main background
     backgroundComponent.addLayer(
         "images/backgrounds/Background-2.png",
-        new Vector2(0.1f, 0f),
-        31.5f,
-        17.3f,
-        new Vector2(0f, 3.25f),
-        new Vector2(0f, 0f),
-        RepeatMode.NONE,
-        0.9f,
-        1f,
-        false,
-        0,
-        -1);
+        new BackgroundRenderComponent.LayerLayout(
+            new Vector2(0.1f, 0f),
+            31.5f,
+            17.3f,
+            new Vector2(0f, 3.25f),
+            new Vector2(0f, 0f),
+            RepeatMode.NONE,
+            0.9f),
+        new BackgroundRenderComponent.LayerAppearance(1f, false, 0, -1));
 
     Entity background = new Entity().addComponent(backgroundComponent);
     background.setPosition(backgroundPos);

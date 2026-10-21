@@ -113,7 +113,12 @@ class EnemyArrowFlightIntegrationTest {
   private Flight fire(Entity archer, Entity target) {
     RangedAttackTask task =
         new RangedAttackTask(
-            target, 1, 100f, 0f, DAMAGE, ProjectileFactory.STANDARD_ARROW_SPEED, 5f, "range");
+            target,
+            1,
+            100f,
+            0f,
+            new RangedAttackTask.ProjectileConfig(
+                DAMAGE, ProjectileFactory.STANDARD_ARROW_SPEED, 5f, "range"));
     TaskRunner runner = () -> archer;
     task.create(runner);
     task.start();

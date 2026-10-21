@@ -98,13 +98,19 @@ class GrappleWaterTest {
           }
 
           @Override
-          public void endContact(Contact contact) {}
+          public void endContact(Contact contact) {
+            // This regression only observes the joint release during beginContact.
+          }
 
           @Override
-          public void preSolve(Contact contact, Manifold oldManifold) {}
+          public void preSolve(Contact contact, Manifold oldManifold) {
+            // This regression only observes the joint release during beginContact.
+          }
 
           @Override
-          public void postSolve(Contact contact, ContactImpulse impulse) {}
+          public void postSolve(Contact contact, ContactImpulse impulse) {
+            // This regression only observes the joint release during beginContact.
+          }
         });
 
     // Destroying the joint here used to abort Box2D's native code and take the game down with it.

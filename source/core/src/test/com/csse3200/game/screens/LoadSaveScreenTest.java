@@ -71,14 +71,14 @@ class LoadSaveScreenTest {
       // UI actors have been added to the stage.
       assertTrue(stage.getActors().size > 0);
 
-      // Textures are loaded.
-      assertTrue(resourceService.containsAsset("images/ui/title_odysseus_logo.png", Texture.class));
-      assertTrue(
-          resourceService.containsAsset("images/backgrounds/main_menu_bg.png", Texture.class));
-      assertTrue(resourceService.containsAsset("images/Buttons/back_up_btn.png", Texture.class));
-      assertTrue(resourceService.containsAsset("images/Buttons/back_down_btn.png", Texture.class));
-      assertTrue(resourceService.containsAsset("images/Buttons/x_up_btn.png", Texture.class));
-      assertTrue(resourceService.containsAsset("images/Buttons/x_down_btn.png", Texture.class));
+      // The display delegates rendering to Scene2D and adds no extra batch operations.
+      SpriteBatch componentBatch = mock(SpriteBatch.class);
+      int actorCount = stage.getActors().size;
+      loadSaveUi.getComponent(LoadSaveDisplay.class).draw(componentBatch);
+      verifyNoInteractions(componentBatch);
+      assertEquals(actorCount, stage.getActors().size);
+
+      assertMenuTexturesLoaded(resourceService);
 
       // Render and resize.
       screen.render(1f / 60f);
@@ -115,5 +115,14 @@ class LoadSaveScreenTest {
       }
       stage.dispose();
     }
+  }
+
+  private static void assertMenuTexturesLoaded(ResourceService resourceService) {
+    assertTrue(resourceService.containsAsset("images/ui/title_odysseus_logo.png", Texture.class));
+    assertTrue(resourceService.containsAsset("images/backgrounds/main_menu_bg.png", Texture.class));
+    assertTrue(resourceService.containsAsset("images/Buttons/back_up_btn.png", Texture.class));
+    assertTrue(resourceService.containsAsset("images/Buttons/back_down_btn.png", Texture.class));
+    assertTrue(resourceService.containsAsset("images/Buttons/x_up_btn.png", Texture.class));
+    assertTrue(resourceService.containsAsset("images/Buttons/x_down_btn.png", Texture.class));
   }
 }

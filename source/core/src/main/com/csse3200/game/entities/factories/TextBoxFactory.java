@@ -44,17 +44,19 @@ public class TextBoxFactory {
 
     try {
       new TextBoxComponent(
-              textConfig.xPos,
-              textConfig.yPos,
-              textConfig.getTextColour(),
-              textConfig.getBackgroundColour(),
-              textConfig.getBorderColour(),
+              new TextBoxComponent.Layout(
+                  textConfig.xPos,
+                  textConfig.yPos,
+                  textConfig.maxWidth,
+                  textConfig.padding,
+                  textConfig.getTextAlignment()),
+              new TextBoxComponent.Style(
+                  textConfig.getTextColour(),
+                  textConfig.getBackgroundColour(),
+                  textConfig.getBorderColour(),
+                  textConfig.borderThickness,
+                  textConfig.fontPath),
               textConfig.charsPerSecond,
-              textConfig.maxWidth,
-              textConfig.padding,
-              textConfig.borderThickness,
-              textConfig.fontPath,
-              textConfig.getTextAlignment(),
               textConfig.pages,
               textConfig.portraitPaths)
           .create();
@@ -106,17 +108,19 @@ public class TextBoxFactory {
     try {
       TextBoxComponent textBox =
           new TextBoxComponent(
-              config.xPos,
-              config.yPos,
-              config.getTextColour(),
-              config.getBackgroundColour(),
-              config.getBorderColour(),
+              new TextBoxComponent.Layout(
+                  config.xPos,
+                  config.yPos,
+                  config.maxWidth,
+                  config.padding,
+                  config.getTextAlignment()),
+              new TextBoxComponent.Style(
+                  config.getTextColour(),
+                  config.getBackgroundColour(),
+                  config.getBorderColour(),
+                  config.borderThickness,
+                  config.fontPath),
               config.charsPerSecond,
-              config.maxWidth,
-              config.padding,
-              config.borderThickness,
-              config.fontPath,
-              config.getTextAlignment(),
               config.pages,
               config.portraitPaths);
       textBox.setExternallyControlled(true);

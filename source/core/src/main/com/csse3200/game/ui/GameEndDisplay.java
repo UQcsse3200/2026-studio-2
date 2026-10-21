@@ -182,17 +182,15 @@ public class GameEndDisplay extends UIComponent {
     }
     messageBox =
         new TextBoxComponent(
-            stage.getWidth() / 2f,
-            stage.getHeight() * MESSAGE_Y_FRACTION,
-            Color.BLACK,
-            TRANSPARENT,
-            TRANSPARENT,
+            new TextBoxComponent.Layout(
+                stage.getWidth() / 2f,
+                stage.getHeight() * MESSAGE_Y_FRACTION,
+                (int) (stage.getWidth() * MESSAGE_WIDTH_FRACTION),
+                10,
+                Align.center),
+            new TextBoxComponent.Style(
+                Color.BLACK, TRANSPARENT, TRANSPARENT, 3, "flat-earth/skin/fonts/alagard.fnt"),
             MESSAGE_CHARS_PER_SECOND,
-            (int) (stage.getWidth() * MESSAGE_WIDTH_FRACTION),
-            10,
-            3,
-            "flat-earth/skin/fonts/alagard.fnt",
-            Align.center,
             List.of(resultText),
             List.of());
     messageBox.setExternallyControlled(true);

@@ -24,7 +24,6 @@ import com.csse3200.game.events.listeners.EventListener1;
 import com.csse3200.game.physics.BodyUserData;
 import com.csse3200.game.rendering.*;
 import com.csse3200.game.services.ServiceLocator;
-import java.util.ArrayList;
 import java.util.List;
 
 public class Level3GameArea extends GameArea {
@@ -177,12 +176,10 @@ public class Level3GameArea extends GameArea {
    * the spawn event can be observed without any extra component hook.
    */
   private void listenForBossSpawn() {
-    List<Entity> spawners = new ArrayList<>();
-    for (Entity entity : ServiceLocator.getEntityService().getEntities()) {
-      if (entity.getComponent(SpawnerComponent.class) != null) {
-        spawners.add(entity);
-      }
-    }
+    List<Entity> spawners =
+        areaEntities.stream()
+            .filter(entity -> entity.getComponent(SpawnerComponent.class) != null)
+            .toList();
     if (spawners.size() <= BOSS_SPAWNER_INDEX) {
       return;
     }
@@ -257,18 +254,16 @@ public class Level3GameArea extends GameArea {
     ForegroundRenderComponent foregroundComponent =
         new ForegroundRenderComponent(camera, foregroundPos, worldBounds);
     foregroundComponent.addLayer(
-        "images/parallax/rain_small_white.png", // 0.2,0.4 for xxl
-        new Vector2(0f, 0f),
-        0.1f,
-        0.2f,
-        new Vector2(0f, 0f),
-        new Vector2(1.5f, -2f),
-        RepeatMode.CHAOTIC,
-        1f,
-        0.4f,
-        false,
-        15,
-        -1);
+        "images/parallax/rain_small_white.png",
+        new BackgroundRenderComponent.LayerLayout( // 0.2,0.4 for xxl
+            new Vector2(0f, 0f),
+            0.1f,
+            0.2f,
+            new Vector2(0f, 0f),
+            new Vector2(1.5f, -2f),
+            RepeatMode.CHAOTIC,
+            1f),
+        new BackgroundRenderComponent.LayerAppearance(0.4f, false, 15, -1));
 
     // Create the background entity.
     Entity foreground = new Entity().addComponent(foregroundComponent);
@@ -287,107 +282,93 @@ public class Level3GameArea extends GameArea {
     // Complete original background image
     backgroundComponent.addLayer(
         "images/parallax/level_1_background.png",
-        new Vector2(0.1f, 0f), // Parallax factor
-        30f,
-        13f,
-        new Vector2(-1.5f, 4.25f), // Positional offset
-        new Vector2(0f, 0f), // Independent velocity
-        RepeatMode.NONE,
-        1f,
-        1f,
-        false,
-        0,
-        -1);
+        new BackgroundRenderComponent.LayerLayout(
+            new Vector2(0.1f, 0f), // Parallax factor
+            30f,
+            13f,
+            new Vector2(-1.5f, 4.25f), // Positional offset
+            new Vector2(0f, 0f), // Independent velocity
+            RepeatMode.NONE,
+            1f),
+        new BackgroundRenderComponent.LayerAppearance(1f, false, 0, -1));
 
     // Furthest clouds image
     backgroundComponent.addLayer(
         CLOUDS_TEXTURE,
-        new Vector2(0.1f, 0f), // Parallax factor
-        30f,
-        4f,
-        new Vector2(-3f, 9f), // Positional offset
-        new Vector2(-0.06f, 0f), // Independent velocity
-        RepeatMode.HORIZONTAL,
-        1f,
-        1f,
-        false,
-        0,
-        -1);
+        new BackgroundRenderComponent.LayerLayout(
+            new Vector2(0.1f, 0f), // Parallax factor
+            30f,
+            4f,
+            new Vector2(-3f, 9f), // Positional offset
+            new Vector2(-0.06f, 0f), // Independent velocity
+            RepeatMode.HORIZONTAL,
+            1f),
+        new BackgroundRenderComponent.LayerAppearance(1f, false, 0, -1));
 
     // Second-furthest clouds image
     backgroundComponent.addLayer(
         CLOUDS_TEXTURE,
-        new Vector2(0.1f, 0f), // Parallax factor
-        30f,
-        15f,
-        new Vector2(25f, 7.5f), // Positional offset
-        new Vector2(0.12f, 0f), // Independent velocity
-        RepeatMode.HORIZONTAL,
-        1f,
-        1f,
-        false,
-        0,
-        -1);
+        new BackgroundRenderComponent.LayerLayout(
+            new Vector2(0.1f, 0f), // Parallax factor
+            30f,
+            15f,
+            new Vector2(25f, 7.5f), // Positional offset
+            new Vector2(0.12f, 0f), // Independent velocity
+            RepeatMode.HORIZONTAL,
+            1f),
+        new BackgroundRenderComponent.LayerAppearance(1f, false, 0, -1));
 
     // Lightning image 1
     backgroundComponent.addLayer(
         LIGHTNING_1,
-        new Vector2(0f, 0f),
-        2f,
-        7f,
-        new Vector2(15f, 9.5f),
-        new Vector2(0f, 0f),
-        RepeatMode.NONE,
-        1f,
-        0f,
-        true,
-        0,
-        0);
+        new BackgroundRenderComponent.LayerLayout(
+            new Vector2(0f, 0f),
+            2f,
+            7f,
+            new Vector2(15f, 9.5f),
+            new Vector2(0f, 0f),
+            RepeatMode.NONE,
+            1f),
+        new BackgroundRenderComponent.LayerAppearance(0f, true, 0, 0));
 
     // Lightning image 2
     backgroundComponent.addLayer(
         LIGHTNING_1,
-        new Vector2(0f, 0f),
-        2f,
-        7f,
-        new Vector2(6f, 9.5f),
-        new Vector2(0f, 0f),
-        RepeatMode.NONE,
-        1f,
-        0f,
-        true,
-        0,
-        1);
+        new BackgroundRenderComponent.LayerLayout(
+            new Vector2(0f, 0f),
+            2f,
+            7f,
+            new Vector2(6f, 9.5f),
+            new Vector2(0f, 0f),
+            RepeatMode.NONE,
+            1f),
+        new BackgroundRenderComponent.LayerAppearance(0f, true, 0, 1));
 
     // Furthest mountains image
     backgroundComponent.addLayer(
         FURTHEST_BACKGROUND_TEXTURE,
-        new Vector2(0.06f, 0f), // Parallax factor 0.12
-        30f,
-        7f,
-        new Vector2(5f, 6.5f), // Positional offset
-        new Vector2(0f, 0f), // Independent velocity
-        RepeatMode.HORIZONTAL,
-        1f,
-        0.6f,
-        false,
-        0,
-        -1);
+        new BackgroundRenderComponent.LayerLayout(
+            new Vector2(0.06f, 0f), // Parallax factor 0.12
+            30f,
+            7f,
+            new Vector2(5f, 6.5f), // Positional offset
+            new Vector2(0f, 0f), // Independent velocity
+            RepeatMode.HORIZONTAL,
+            1f),
+        new BackgroundRenderComponent.LayerAppearance(0.6f, false, 0, -1));
 
     // Second-furthest mountains image
     backgroundComponent.addLayer(
         FURTHEST_BACKGROUND_TEXTURE,
-        new Vector2(0.11f, 0f), // Parallax factor 0.12
-        30f,
-        10f,
-        new Vector2(-5f, 5f), // Positional offset
-        new Vector2(0f, 0f), // Independent velocity
-        RepeatMode.HORIZONTAL,
-        1f,
-        1f,
-        false,
-        0,
-        -1);
+        new BackgroundRenderComponent.LayerLayout(
+            new Vector2(0.11f, 0f), // Parallax factor 0.12
+            30f,
+            10f,
+            new Vector2(-5f, 5f), // Positional offset
+            new Vector2(0f, 0f), // Independent velocity
+            RepeatMode.HORIZONTAL,
+            1f),
+        new BackgroundRenderComponent.LayerAppearance(1f, false, 0, -1));
 
     // Create the background entity.
     Entity background = new Entity().addComponent(backgroundComponent);
@@ -530,7 +511,7 @@ public class Level3GameArea extends GameArea {
       bossCamera.setPosition(bossBounds.x / 2 + 1, bossBounds.y / 2 + 97);
       cameraComponent.setTarget(bossCamera);
 
-      backgroundComponent.scaleEntity(bossResizeScale, bossBounds, true, "bossArena");
+      backgroundComponent.scaleEntity(bossResizeScale, bossBounds, true, BOSS_DEFEATED_TRIGGER_ID);
 
       if (mapToggled) {
         getPlayer().getComponent(InventoryBarDisplay.class).showBar();

@@ -102,17 +102,15 @@ public class LevelBossGameArea extends GameArea {
         new BackgroundRenderComponent(camera, backgroundPos, worldBounds);
     backgroundComponent.addLayer(
         "images/backgrounds/Background-2.png",
-        new Vector2(0.15f, 0f),
-        36f,
-        20.2f,
-        new Vector2(0f, 5f),
-        new Vector2(0f, 0f),
-        RepeatMode.NONE,
-        0.7f,
-        1f,
-        false,
-        0,
-        -1);
+        new BackgroundRenderComponent.LayerLayout(
+            new Vector2(0.15f, 0f),
+            36f,
+            20.2f,
+            new Vector2(0f, 5f),
+            new Vector2(0f, 0f),
+            RepeatMode.NONE,
+            0.7f),
+        new BackgroundRenderComponent.LayerAppearance(1f, false, 0, -1));
 
     Entity background = new Entity().addComponent(backgroundComponent);
     background.setPosition(backgroundPos);

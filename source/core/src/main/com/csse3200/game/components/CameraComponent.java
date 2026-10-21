@@ -13,7 +13,7 @@ public class CameraComponent extends Component {
   private Vector2 lastPosition;
   private Entity target;
 
-  private float ZOOM_TIME = 0.75f;
+  private static final float ZOOM_TIME = 0.75f;
   private float currentZoomTime = 0f;
   private boolean requestedZoom = false;
   private boolean zoomingCamera = false;

@@ -239,17 +239,10 @@ public class CyclopsMinigameRoomScreen extends ScreenAdapter {
         skipIntro
             ? null
             : new TextBoxComponent(
-                600,
-                150,
-                Color.BLACK,
-                Color.TAN,
-                Color.BROWN,
+                new TextBoxComponent.Layout(600, 150, 300, 16, Align.center),
+                new TextBoxComponent.Style(
+                    Color.BLACK, Color.TAN, Color.BROWN, 3, "flat-earth/skin/fonts/alagard.fnt"),
                 20f,
-                300,
-                16,
-                3,
-                "flat-earth/skin/fonts/alagard.fnt",
-                Align.center,
                 List.of(
                     "Hmm... there's a cyclops in the way, I'll need to get past...",
                     "...I'll need to \"LEFT_CLICK\" to each of those rocks at the right time"

@@ -94,7 +94,6 @@ class GrappleArrowFloorIntegrationTest {
   /** What happened to one arrow. */
   private record Flight(boolean gone, float lowestPoint, float highestPoint, float furthestRight) {}
 
-  /** Fires from beside the shooter and steps the world until the arrow is gone or gives up. */
   /**
    * Launches at 33 whatever the grapple's tuning: fast enough to climb past the grapple's range
    * when shot straight up, which the range tests below rely on. A full draw at the current, slower
@@ -103,6 +102,7 @@ class GrappleArrowFloorIntegrationTest {
   private static final float PAST_RANGE_SPEED_MULTIPLIER =
       33f / ProjectileFactory.GRAPPLE_ARROW_SPEED;
 
+  /** Fires from beside the shooter and steps the world until the arrow is gone or gives up. */
   private Flight fire(Vector2 aim) {
     return fire(aim, 1f);
   }

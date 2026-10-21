@@ -100,6 +100,36 @@ class CutsceneScreenTest {
     com.csse3200.game.services.ServiceLocator.getInputService().keyDown(Keys.TAB);
   }
 
+  @org.junit.jupiter.params.ParameterizedTest
+  @org.junit.jupiter.params.provider.ValueSource(booleans = {true, false})
+  void endingDoesNotConstructTheNextScreenBeforeDisposingTheCutscene(boolean skip) {
+    GdxGame game = mock(GdxGame.class);
+    try (var endings = mockConstruction(ThankYouScreen.class)) {
+      CutsceneScreen screen =
+          new CutsceneScreen(
+              game,
+              makeSingleSceneCutscene(),
+              GdxGame.ScreenType.MAIN_MENU,
+              mock(SpriteBatch.class),
+              mock(Stage.class));
+      try {
+        if (skip) {
+          screen.skipCutscene();
+        } else {
+          driveToTextActive(screen);
+          advanceViaTab();
+          screen.render(10f);
+          screen.render(10f);
+        }
+        assertTrue(endings.constructed().isEmpty());
+        verify(game).transitionTo(GdxGame.ScreenType.THANK_YOU, CutsceneScreen.EXIT_FADE_DURATION);
+        verify(game, never()).transitionTo(any(com.badlogic.gdx.Screen.class), anyFloat());
+      } finally {
+        screen.dispose();
+      }
+    }
+  }
+
   @Test
   void shouldCompleteTwoSceneCutsceneAndSetDestination() {
     GdxGame game = mock(GdxGame.class);

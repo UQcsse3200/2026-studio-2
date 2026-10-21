@@ -21,6 +21,7 @@ import com.csse3200.game.screens.MainGameScreen;
 import com.csse3200.game.screens.MainMenuScreen;
 import com.csse3200.game.screens.SandboxGameScreen;
 import com.csse3200.game.screens.SettingsScreen;
+import com.csse3200.game.screens.ThankYouScreen;
 import com.csse3200.game.screens.TransitionScreen;
 import com.csse3200.game.screens.minigames.BlackjackScreen;
 import com.csse3200.game.screens.minigames.CyclopsMinigameRoomScreen;
@@ -346,9 +347,6 @@ public class GdxGame extends Game {
   }
 
   /**
-   * @return whether the active save has already completed the movement tutorial.
-   */
-  /**
    * Applies the loaded save's player stats (health, max health, gold, inventory) to the player
    * entity as soon as it exists. No-op when no save is being loaded or the save has no recorded
    * player state (a brand-new game keeps the level defaults).
@@ -497,6 +495,8 @@ public class GdxGame extends Game {
    */
   public Screen createScreen(ScreenType screenType) {
     switch (screenType) {
+      case THANK_YOU:
+        return new ThankYouScreen(this);
       case MAIN_MENU:
         return new MainMenuScreen(this);
       case LOAD_SAVE:
@@ -535,6 +535,7 @@ public class GdxGame extends Game {
   }
 
   public enum ScreenType {
+    THANK_YOU,
     MAIN_MENU,
     LOAD_SAVE,
     MAIN_GAME,

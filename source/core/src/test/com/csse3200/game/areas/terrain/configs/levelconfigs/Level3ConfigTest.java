@@ -1,6 +1,7 @@
 package com.csse3200.game.areas.terrain.configs.levelconfigs;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -30,8 +31,8 @@ class Level3ConfigTest {
     Level3Config config = new Level3Config(new Entity(), null);
 
     for (GridPoint2 position : checkpointPositions()) {
-      assertTrue(
-          config.getTutorialForCheckpoint(position) != null,
+      assertNotNull(
+          config.getTutorialForCheckpoint(position),
           "checkpoint at " + position + " wires no tutorial");
     }
   }

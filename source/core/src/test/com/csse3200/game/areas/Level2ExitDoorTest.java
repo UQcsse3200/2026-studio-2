@@ -103,7 +103,7 @@ class Level2ExitDoorTest {
     }
 
     door = area.getLevelChanger();
-    door.getEvents().addListener("triggerNextLevel", (String level) -> requestedLevels.add(level));
+    door.getEvents().<String>addListener("triggerNextLevel", requestedLevels::add);
 
     // Solid terrain around the exit, as laid out in Level2Config.
     solidBox(33, 7, 2, 1); // P11, the ledge the door stands on

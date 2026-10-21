@@ -28,7 +28,7 @@ public class BackgroundRenderComponent extends RenderComponent {
   private int originalRotation;
   private final Vector2 finalVelocity = new Vector2(5.5f, -4.5f);
 
-  private float SCALE_TIME = 0.75f;
+  private static final float SCALE_TIME = 0.75f;
   private float currentScaleTime = 0f;
   private boolean scalingBackground = false;
 
@@ -64,35 +64,36 @@ public class BackgroundRenderComponent extends RenderComponent {
     private final Vector2 baseVelocity = new Vector2();
     private final Vector2 basePosition = new Vector2();
 
-    ParallaxLayer(
-        Texture texture,
-        Vector2 parallaxFactor,
-        float width,
-        float height,
-        Vector2 offset,
-        Vector2 velocity,
-        RepeatMode repeat,
-        float distance,
-        float transparency,
-        boolean flash,
-        int rotation,
-        int lightningOrder) {
-
+    ParallaxLayer(Texture texture, LayerLayout layout, LayerAppearance appearance) {
       this.texture = texture;
-      this.parallaxFactor = parallaxFactor;
-      this.width = width;
-      this.height = height;
-      this.offset = offset;
-      this.velocity = velocity;
-      this.position = new Vector2(velocity);
-      this.repeat = repeat;
-      this.distance = distance;
-      this.transparency = transparency;
-      this.flash = flash;
-      this.rotation = rotation;
-      this.lightningOrder = lightningOrder;
+      this.parallaxFactor = layout.parallaxFactor();
+      this.width = layout.width();
+      this.height = layout.height();
+      this.offset = layout.offset();
+      this.velocity = layout.velocity();
+      this.position = new Vector2(layout.velocity());
+      this.repeat = layout.repeat();
+      this.distance = layout.distance();
+      this.transparency = appearance.transparency();
+      this.flash = appearance.flash();
+      this.rotation = appearance.rotation();
+      this.lightningOrder = appearance.lightningOrder();
     }
   }
+
+  /** Geometry and movement of a parallax layer. */
+  public record LayerLayout(
+      Vector2 parallaxFactor,
+      float width,
+      float height,
+      Vector2 offset,
+      Vector2 velocity,
+      RepeatMode repeat,
+      float distance) {}
+
+  /** Visual and lightning settings for a parallax layer. */
+  public record LayerAppearance(
+      float transparency, boolean flash, int rotation, int lightningOrder) {}
 
   private ArrayList<ArrayList<Float>> rainOffsets = null;
   // Created once and reused for the rain drop offsets.
@@ -114,60 +115,15 @@ public class BackgroundRenderComponent extends RenderComponent {
     this.worldBounds = worldBounds;
   }
 
-  /**
-   * Adds a parallax layer with a custom size and vertical position. Distance is a float between 0
-   * and 1. 1 causes the background to have no vertical movement, while 0 causes it to follow player
-   * directly.
-   *
-   * @param texturePath path to the texture
-   * @param parallaxFactor controls how much the layer moves relative to player movement
-   * @param width width of the layer
-   * @param height height of the layer
-   * @param offset positional offset relative to backgroundPos
-   * @param velocity the independent velocity of the layer
-   * @param repeat whether or not this layer should repeat
-   * @param distance the distance from POV affecting vertical parallax movement
-   * @param transparency the transparency of the layer
-   * @param flash whether or not this layer should only be visible during lightning
-   * @param rotation how much to rotate the texture of this layer from 0 to 360
-   * @param lightningOrder the order this layer will become visible during lightning
-   */
-  public void addLayer(
-      String texturePath,
-      Vector2 parallaxFactor,
-      float width,
-      float height,
-      Vector2 offset,
-      Vector2 velocity,
-      RepeatMode repeat,
-      float distance,
-      float transparency,
-      boolean flash,
-      int rotation,
-      int lightningOrder) {
-
+  /** Adds a layer with its geometry, movement, and visual settings. */
+  public void addLayer(String texturePath, LayerLayout layout, LayerAppearance appearance) {
     Texture texture = ServiceLocator.getResourceService().getAsset(texturePath, Texture.class);
-
-    layers.add(
-        new ParallaxLayer(
-            texture,
-            parallaxFactor,
-            width,
-            height,
-            offset,
-            velocity,
-            repeat,
-            distance,
-            transparency,
-            flash,
-            rotation,
-            lightningOrder));
-
-    if (repeat == RepeatMode.CHAOTIC) {
-      originalVelocity = new Vector2(velocity.x, velocity.y);
-      originalWidth = width;
-      originalHeight = height;
-      originalRotation = rotation;
+    layers.add(new ParallaxLayer(texture, layout, appearance));
+    if (layout.repeat() == RepeatMode.CHAOTIC) {
+      originalVelocity = new Vector2(layout.velocity());
+      originalWidth = layout.width();
+      originalHeight = layout.height();
+      originalRotation = appearance.rotation();
     }
   }
 
@@ -259,13 +215,11 @@ public class BackgroundRenderComponent extends RenderComponent {
       layer.startPosition.set(layer.position);
 
       if (up) {
-        if (up) {
-          layer.baseWidth = layer.width;
-          layer.baseHeight = layer.height;
-          layer.baseOffset.set(layer.offset);
-          layer.baseVelocity.set(layer.velocity);
-          layer.basePosition.set(layer.position);
-        }
+        layer.baseWidth = layer.width;
+        layer.baseHeight = layer.height;
+        layer.baseOffset.set(layer.offset);
+        layer.baseVelocity.set(layer.velocity);
+        layer.basePosition.set(layer.position);
 
         scaleUp(layer, factor, worldBounds, level);
       } else {
@@ -324,8 +278,6 @@ public class BackgroundRenderComponent extends RenderComponent {
       layer.position.y += layer.velocity.y * ServiceLocator.getTimeSource().getDeltaTime();
     }
 
-    layer.position.x += layer.velocity.x * ServiceLocator.getTimeSource().getDeltaTime();
-    layer.position.y += layer.velocity.y * ServiceLocator.getTimeSource().getDeltaTime();
     boolean weather = getWeather();
     if (weather && layer.flash) {
       // Flash layers that flash during lightning
@@ -431,15 +383,11 @@ public class BackgroundRenderComponent extends RenderComponent {
     Vector2 cameraPos = lastCameraPos;
 
     for (ParallaxLayer layer : layers) {
-      Vector2 layerPos = null;
-      float layerX;
-      float layerY;
-
-      layerPos = getPosition(layer, cameraPos, position);
+      Vector2 layerPos = getPosition(layer, cameraPos, position);
       updateWeather(layer);
 
-      layerX = layerPos.x;
-      layerY = layerPos.y;
+      float layerX = layerPos.x;
+      float layerY = layerPos.y;
       Color prevColor = batch.getColor().cpy();
       if (layer.flash) {
         batch.setColor(
@@ -458,138 +406,138 @@ public class BackgroundRenderComponent extends RenderComponent {
         batch.setColor(backgroundLight, backgroundLight, backgroundLight, layer.transparency);
       }
       if (layer.repeat == RepeatMode.HORIZONTAL) {
-        float newLeftDrawPosX = layerX - layer.width;
-        float newRightDrawPosX = layerX + layer.width;
-
-        // if left most x coord of layer >= left most x coord of background pos
-        // backgroundPos is used over worldBound.x since backgroundPos extends beyond worldBound
-        while (newLeftDrawPosX >= backgroundPos.x - layer.width) {
-          batch.draw(layer.texture, newLeftDrawPosX, layerY, layer.width, layer.height);
-          newLeftDrawPosX -= layer.width;
-        }
-
-        // if right most x coord of layer <= right of worldBound + extra you can see
-        // NOTE: this relies on backgroudPos starting at a negative value, which will always be
-        // true if player starts at x = 0
-        while (newRightDrawPosX <= worldBounds.x - backgroundPos.x) {
-          batch.draw(layer.texture, newRightDrawPosX, layerY, layer.width, layer.height);
-          newRightDrawPosX += layer.width;
-        }
+        drawHorizontalCopies(batch, layer, layerX, layerY);
       } else if (layer.repeat == RepeatMode.CHAOTIC) {
-        // gap between raindrops, works best if gap * int = 1, where int is any positive integer
-        float gap = 0.5f;
-        // random vertical offset applied to each rain drop in range -verticalOffset to
-        // verticalOffset
-        float verticalOffset = 0.05f;
-        float cameraWidth = truncate(camera.getCamera().viewportWidth) + 4;
-        float cameraHeight = truncate(camera.getCamera().viewportHeight) + 6;
-        int centerX = (int) camera.getCamera().position.x;
-        int centerY = (int) camera.getCamera().position.y;
-        float startX = centerX - (cameraWidth / 2);
-        float endX = centerX + (cameraWidth / 2);
-        float startY = centerY + (cameraHeight / 2);
-        float endY = centerY - (cameraHeight / 2);
-        float currentX;
-        float currentY = startY;
-        float drawPosX;
-        float drawPosY;
-
-        // Compute array of offsets, so each raindrop has a set offset
-        if (rainOffsets == null) {
-          rainOffsets = new ArrayList<>();
-          int y = 0;
-          while (currentY > endY) {
-            currentX = startX;
-            rainOffsets.add(new ArrayList<>());
-            while (currentX < endX) {
-              float microOffset = random.nextFloat();
-              float micro = -verticalOffset + microOffset * 2 * verticalOffset;
-              rainOffsets.get(y).add(micro);
-              currentX += gap;
-            }
-            currentY -= gap;
-            y++;
-          }
-        }
-
-        int lengthY = rainOffsets.size();
-        int lengthX = rainOffsets.getFirst().size();
-
-        batch.setColor(0.575f, 0.575f, 1f, 0.5f);
-
-        int randomOffsetX;
-        int randomOffsetY = 0;
-        currentY = startY;
-        while (currentY > endY) {
-          // draw particle at currentY, ensuring it loops indefinitely
-          drawPosY = currentY + (layer.position.y % cameraHeight);
-          // if drawPos is off-screen, loop it back to top
-          if (drawPosY <= endY) {
-            drawPosY += (cameraHeight);
-          }
-          currentX = startX;
-          randomOffsetX = 0;
-          while (currentX < endX) {
-            // draw particle at currentX, ensuring it loops indefinitely
-            drawPosX = currentX + (layer.position.x % cameraWidth);
-            // if drawPos is off-screen, loop it back to left
-            if (drawPosX >= endX) {
-              drawPosX -= (cameraWidth);
-            }
-
-            // add a horizontal offset to every 2nd layer
-            // add random vertical offset to every raindrop
-            if ((int) ((currentY * (1 / gap)) % 2) == 0) {
-              batch.draw(
-                  layer.texture,
-                  drawPosX + rainOffsets.get(randomOffsetY).get(randomOffsetX),
-                  drawPosY + rainOffsets.get(randomOffsetY).get(randomOffsetX),
-                  layer.width / 2,
-                  layer.height / 2,
-                  layer.width,
-                  layer.height,
-                  1f,
-                  1f,
-                  layer.rotation,
-                  0,
-                  0,
-                  layer.texture.getWidth(),
-                  layer.texture.getHeight(),
-                  false,
-                  false);
-            } else {
-              batch.draw(
-                  layer.texture,
-                  drawPosX + (gap / 2) + rainOffsets.get(randomOffsetY).get(randomOffsetX),
-                  drawPosY + rainOffsets.get(randomOffsetY).get(randomOffsetX),
-                  layer.width / 2,
-                  layer.height / 2,
-                  layer.width,
-                  layer.height,
-                  1f,
-                  1f,
-                  layer.rotation,
-                  0,
-                  0,
-                  layer.texture.getWidth(),
-                  layer.texture.getHeight(),
-                  false,
-                  false);
-            }
-            currentX += gap;
-            // Safety check for when map is activated
-            if (randomOffsetX < lengthX - 1) {
-              randomOffsetX++;
-            }
-          }
-          currentY -= gap;
-          // Safety check for when map is activated
-          if (randomOffsetY < lengthY - 1) {
-            randomOffsetY++;
-          }
-        }
+        drawRain(batch, layer);
       }
       batch.setColor(prevColor);
+    }
+  }
+
+  private void drawHorizontalCopies(
+      SpriteBatch batch, ParallaxLayer layer, float layerX, float layerY) {
+    float newLeftDrawPosX = layerX - layer.width;
+    float newRightDrawPosX = layerX + layer.width;
+
+    // if left most x coord of layer >= left most x coord of background pos
+    // backgroundPos is used over worldBound.x since backgroundPos extends beyond worldBound
+    while (newLeftDrawPosX >= backgroundPos.x - layer.width) {
+      batch.draw(layer.texture, newLeftDrawPosX, layerY, layer.width, layer.height);
+      newLeftDrawPosX -= layer.width;
+    }
+
+    // if right most x coord of layer <= right of worldBound + extra you can see
+    // NOTE: this relies on backgroudPos starting at a negative value, which will always be
+    // true if player starts at x = 0
+    while (newRightDrawPosX <= worldBounds.x - backgroundPos.x) {
+      batch.draw(layer.texture, newRightDrawPosX, layerY, layer.width, layer.height);
+      newRightDrawPosX += layer.width;
+    }
+  }
+
+  private void initialiseRainOffsets(
+      float startX, float endX, float startY, float endY, float gap, float verticalOffset) {
+
+    rainOffsets = new ArrayList<>();
+    int y = 0;
+    float currentY = startY;
+    float currentX;
+    while (currentY > endY) {
+      currentX = startX;
+      rainOffsets.add(new ArrayList<>());
+      while (currentX < endX) {
+        float microOffset = random.nextFloat();
+        float micro = -verticalOffset + microOffset * 2 * verticalOffset;
+        rainOffsets.get(y).add(micro);
+        currentX += gap;
+      }
+      currentY -= gap;
+      y++;
+    }
+  }
+
+  private static float rainRowOffset(float currentY, float gap) {
+    return (int) ((currentY * (1 / gap)) % 2) == 0 ? 0 : gap / 2;
+  }
+
+  private void drawRainDrop(SpriteBatch batch, ParallaxLayer layer, float x, float y) {
+    batch.draw(
+        layer.texture,
+        x,
+        y,
+        layer.width / 2,
+        layer.height / 2,
+        layer.width,
+        layer.height,
+        1f,
+        1f,
+        layer.rotation,
+        0,
+        0,
+        layer.texture.getWidth(),
+        layer.texture.getHeight(),
+        false,
+        false);
+  }
+
+  private void drawRain(SpriteBatch batch, ParallaxLayer layer) {
+    // gap between raindrops, works best if gap * int = 1, where int is any positive integer
+    float gap = 0.5f;
+    // random vertical offset applied to each rain drop in range -verticalOffset to
+    // verticalOffset
+    float verticalOffset = 0.05f;
+    float cameraWidth = truncate(camera.getCamera().viewportWidth) + 4;
+    float cameraHeight = truncate(camera.getCamera().viewportHeight) + 6;
+    int centerX = (int) camera.getCamera().position.x;
+    int centerY = (int) camera.getCamera().position.y;
+    float startX = centerX - (cameraWidth / 2);
+    float endX = centerX + (cameraWidth / 2);
+    float startY = centerY + (cameraHeight / 2);
+    float endY = centerY - (cameraHeight / 2);
+    float currentX;
+    float currentY;
+    float drawPosX;
+    float drawPosY;
+
+    if (rainOffsets == null) {
+      initialiseRainOffsets(startX, endX, startY, endY, gap, verticalOffset);
+    }
+
+    int lengthY = rainOffsets.size();
+    int lengthX = rainOffsets.getFirst().size();
+
+    batch.setColor(0.575f, 0.575f, 1f, 0.5f);
+
+    int randomOffsetX;
+    int randomOffsetY = 0;
+    currentY = startY;
+    while (currentY > endY) {
+      // draw particle at currentY, ensuring it loops indefinitely
+      drawPosY = currentY + (layer.position.y % cameraHeight);
+      // if drawPos is off-screen, loop it back to top
+      if (drawPosY <= endY) {
+        drawPosY += (cameraHeight);
+      }
+      currentX = startX;
+      randomOffsetX = 0;
+      while (currentX < endX) {
+        // draw particle at currentX, ensuring it loops indefinitely
+        drawPosX = currentX + (layer.position.x % cameraWidth);
+        // if drawPos is off-screen, loop it back to left
+        if (drawPosX >= endX) {
+          drawPosX -= (cameraWidth);
+        }
+
+        float offset = rainOffsets.get(randomOffsetY).get(randomOffsetX);
+        float rowOffset = rainRowOffset(currentY, gap);
+        drawRainDrop(batch, layer, drawPosX + rowOffset + offset, drawPosY + offset);
+        currentX += gap;
+        // Safety check for when map is activated
+        randomOffsetX = Math.min(randomOffsetX + 1, lengthX - 1);
+      }
+      currentY -= gap;
+      // Safety check for when map is activated
+      randomOffsetY = Math.min(randomOffsetY + 1, lengthY - 1);
     }
   }
 

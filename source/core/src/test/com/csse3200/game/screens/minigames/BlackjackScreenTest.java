@@ -66,11 +66,11 @@ class BlackjackScreenTest {
   }
 
   @Test
-  void requestsTheBlackjackAndPauseMenuTextures() {
+  void requestsOnlyBlackjackTextures() {
     List<String> textures = List.of(screen.getTextures());
 
     assertTrue(textures.containsAll(BlackjackConfig.TEXTURES));
-    assertTrue(textures.containsAll(List.of(BlackjackScreen.PAUSE_TEXTURES)));
+    assertEquals(BlackjackConfig.TEXTURES.size(), textures.size());
     assertEquals(textures.size(), textures.stream().distinct().count());
   }
 
@@ -102,73 +102,30 @@ class BlackjackScreenTest {
   }
 
   @Test
-  void pauseButtonEventPausesTheGame() {
+  void legacyPauseEventDoesNotPauseBlackjack() {
     Entity ui = createUiFor(mock(GdxGame.class));
     EntityService entities = new EntityService();
     ServiceLocator.registerEntityService(entities);
-
-    ui.getEvents().trigger(BlackjackDisplay.PAUSE_REQUESTED);
-
-    assertTrue(entities.getPaused());
-  }
-
-  @Test
-  void togglePausePausesTheGame() {
-    createUiFor(mock(GdxGame.class));
-    EntityService entities = new EntityService();
-    ServiceLocator.registerEntityService(entities);
-
-    screen.togglePause();
-
-    assertTrue(entities.getPaused());
-  }
-
-  @Test
-  void togglePauseIsIgnoredWhileSettingsAreOpen() {
-    createUiFor(mock(GdxGame.class));
-    EntityService entities = new EntityService();
-    entities.setSettingsOpen(true);
-    ServiceLocator.registerEntityService(entities);
-
-    screen.togglePause();
-
+    ui.getEvents().trigger("blackjackPauseRequested");
     assertFalse(entities.getPaused());
   }
 
   @Test
-  void musicPausesWithTheGameAndResumesAfter() throws Exception {
+  void escapeDoesNotPauseBlackjackOrStopRendering() {
     EntityService entities = new EntityService();
     ServiceLocator.registerEntityService(entities);
-    ServiceLocator.registerResourceService(resources);
-
-    entities.setPaused(true);
-    callSyncMusicWithPause();
-    verify(music).pause();
-
-    entities.setPaused(false);
-    callSyncMusicWithPause();
-    verify(music).play();
-  }
-
-  @Test
-  void mutedMusicStaysMutedAfterUnpausing() throws Exception {
-    EntityService entities = new EntityService();
-    ServiceLocator.registerEntityService(entities);
-    ServiceLocator.registerResourceService(resources);
-    callSetSoundEnabled(false);
-
-    entities.setPaused(true);
-    callSyncMusicWithPause();
-    entities.setPaused(false);
-    callSyncMusicWithPause();
-
-    verify(music, never()).play();
-  }
-
-  private void callSyncMusicWithPause() throws Exception {
-    Method method = BlackjackScreen.class.getDeclaredMethod("syncMusicWithPause");
-    method.setAccessible(true);
-    method.invoke(screen);
+    screen.renderer = mock(Renderer.class);
+    com.badlogic.gdx.Input previousInput = com.badlogic.gdx.Gdx.input;
+    com.badlogic.gdx.Input input = mock(com.badlogic.gdx.Input.class);
+    when(input.isKeyJustPressed(com.badlogic.gdx.Input.Keys.ESCAPE)).thenReturn(true);
+    com.badlogic.gdx.Gdx.input = input;
+    try {
+      screen.render(1f / 60f);
+      assertFalse(entities.getPaused());
+      verify(screen.renderer).render();
+    } finally {
+      com.badlogic.gdx.Gdx.input = previousInput;
+    }
   }
 
   @Test

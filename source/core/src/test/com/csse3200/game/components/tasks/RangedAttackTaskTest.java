@@ -64,7 +64,9 @@ class RangedAttackTaskTest {
     enemy.setPosition(2f, 3f);
     Entity target = new Entity();
     target.setPosition(targetX, 3f);
-    RangedAttackTask task = new RangedAttackTask(target, 10, 10f, 1f, 7, 5f, 3f, attackType);
+    RangedAttackTask task =
+        new RangedAttackTask(
+            target, 10, 10f, 1f, new RangedAttackTask.ProjectileConfig(7, 5f, 3f, attackType));
     task.create(() -> enemy);
     task.start();
     assertEquals(-1, task.getPriority());
@@ -112,7 +114,9 @@ class RangedAttackTaskTest {
     Entity player = character(PhysicsLayer.PLAYER);
     Entity bystander = character(PhysicsLayer.NPC);
     Entity enemy = new Entity();
-    RangedAttackTask task = new RangedAttackTask(player, 10, 10f, 1f, 7, 5f, 3f, attackType);
+    RangedAttackTask task =
+        new RangedAttackTask(
+            player, 10, 10f, 1f, new RangedAttackTask.ProjectileConfig(7, 5f, 3f, attackType));
     task.create(() -> enemy);
     task.start();
     try (var pointLights = mockConstruction(PointLightComponent.class)) {

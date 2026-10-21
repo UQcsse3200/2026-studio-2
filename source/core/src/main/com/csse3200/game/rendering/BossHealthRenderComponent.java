@@ -17,8 +17,8 @@ public class BossHealthRenderComponent extends RenderComponent {
   private final CameraComponent camera;
 
   private static final float BORDER_WIDTH = 0.03f;
-  private static final float healthBarWidth = 12f;
-  private static final float healthBarHeight = 0.25f;
+  private static final float HEALTH_BAR_WIDTH = 12f;
+  private static final float HEALTH_BAR_HEIGHT = 0.25f;
 
   public BossHealthRenderComponent(CameraComponent camera) {
     this.camera = camera;
@@ -51,7 +51,7 @@ public class BossHealthRenderComponent extends RenderComponent {
   protected void draw(SpriteBatch batch) {
     OrthographicCamera worldCamera = (OrthographicCamera) camera.getCamera();
 
-    float barX = worldCamera.position.x - healthBarWidth / 2f;
+    float barX = worldCamera.position.x - HEALTH_BAR_WIDTH / 2f;
     float barY = worldCamera.position.y + 5.5f;
 
     Color previousColor = batch.getColor().cpy();
@@ -61,15 +61,15 @@ public class BossHealthRenderComponent extends RenderComponent {
         barTexture,
         barX - BORDER_WIDTH,
         barY - BORDER_WIDTH,
-        healthBarWidth + 2 * BORDER_WIDTH,
-        healthBarHeight + 2 * BORDER_WIDTH);
+        HEALTH_BAR_WIDTH + 2 * BORDER_WIDTH,
+        HEALTH_BAR_HEIGHT + 2 * BORDER_WIDTH);
 
     batch.setColor(Color.DARK_GRAY);
-    batch.draw(barTexture, barX, barY, healthBarWidth, healthBarHeight);
+    batch.draw(barTexture, barX, barY, HEALTH_BAR_WIDTH, HEALTH_BAR_HEIGHT);
 
     float healthPercent = (float) hp / spawnHp;
     batch.setColor(Color.RED);
-    batch.draw(barTexture, barX, barY, healthBarWidth * healthPercent, healthBarHeight);
+    batch.draw(barTexture, barX, barY, HEALTH_BAR_WIDTH * healthPercent, HEALTH_BAR_HEIGHT);
 
     batch.setColor(previousColor);
   }

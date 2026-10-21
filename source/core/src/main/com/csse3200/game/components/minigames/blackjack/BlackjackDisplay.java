@@ -30,8 +30,6 @@ import com.csse3200.game.ui.UIComponent;
 
 /** Displays the Blackjack game and its cards. */
 public class BlackjackDisplay extends UIComponent {
-  /** Fired on the entity when the pause button is pressed. The screen opens its pause menu. */
-  public static final String PAUSE_REQUESTED = "blackjackPauseRequested";
 
   private static final String GOLD_TEXT = "F5D78B";
   private static final String EMPTY_BALANCE_MESSAGE = "Your balance is 0!";
@@ -172,7 +170,8 @@ public class BlackjackDisplay extends UIComponent {
     this.soundToggleCallback = soundToggleCallback;
     this.backCallback = backCallback;
     this.storyWinCallback = storyWinCallback;
-    this.giftPending = inventory != null;
+    // Shop overlays can be reopened freely; only the story encounter grants a welcome gift.
+    this.giftPending = inventory != null && storyWinCallback != null;
   }
 
   @Override
@@ -332,19 +331,6 @@ public class BlackjackDisplay extends UIComponent {
           }
         });
 
-    ImageButton pauseButton =
-        createImageButton(
-            "images/Buttons/bj_pause_up_btn.png", "images/Buttons/bj_pause_down_btn.png");
-    pauseButton.setName("pauseButton");
-    pauseButton.addListener(
-        new ChangeListener() {
-          @Override
-          public void changed(ChangeEvent event, Actor actor) {
-            ButtonSound.playClick();
-            entity.getEvents().trigger(PAUSE_REQUESTED);
-          }
-        });
-
     /* User Interface */
 
     Table dealerRegion = new Table();
@@ -432,8 +418,9 @@ public class BlackjackDisplay extends UIComponent {
     Table rightSide = new Table();
 
     rightSide.row();
-    rightSide.add(pauseButton).width(192f).height(67f).pad(5f);
-    // Sound sits directly below Pause, in the same column and at the same size.
+    if (backCallback != null) {
+      rightSide.add(backButton).width(192f).height(67f).pad(5f);
+    }
     rightSide.row();
     rightSide.add(soundButton).width(192f).height(67f).pad(5f).padTop(15f);
     rightSide.top().right();
@@ -1195,17 +1182,6 @@ public class BlackjackDisplay extends UIComponent {
     if (winFadeOverlay != null) {
       winFadeOverlay.toFront();
     }
-  }
-
-  /**
-   * Returns whether the game can be paused right now. Deal animations are scene2d actions, so they
-   * keep running while the game is paused, and finishing one raises the result pop-up above
-   * everything, including the pause menu. The win fade also changes screen on its own.
-   *
-   * @return false while cards are being dealt or the win transition is running
-   */
-  public boolean canPause() {
-    return !dealInProgress && !winTransitionScheduled;
   }
 
   @Override

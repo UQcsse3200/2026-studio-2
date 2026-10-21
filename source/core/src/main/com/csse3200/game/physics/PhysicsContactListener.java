@@ -79,75 +79,80 @@ public class PhysicsContactListener implements ContactListener {
       return;
     }
 
-    // we only have presolve work to do if a contact involves a ground component (for ledges or the
-    // new movement helper system)
-    ColliderComponent entityACollider = entityA.getComponent(ColliderComponent.class);
-    ColliderComponent entityBCollider = entityB.getComponent(ColliderComponent.class);
-    if (entityACollider != null && entityBCollider != null) {
-      // do a bitwise AND to check if any contacts are a part of the SOLID layer and should be
-      // validated against our physics checks
-      if ((entityACollider.getLayer() & PhysicsLayer.SOLID) != 0
-          && (entityBCollider.getLayer() & PhysicsLayer.SOLID) != 0) {
-        return;
-      }
+    ColliderComponent colliderA = entityA.getComponent(ColliderComponent.class);
+    ColliderComponent colliderB = entityB.getComponent(ColliderComponent.class);
+    if (colliderA == null || colliderB == null || bothSolid(colliderA, colliderB)) {
+      return;
+    }
 
-      // determine if either fixture is a player, early return if not
-      boolean playerFixtureA = entityA.getComponent(PlayerActions.class) != null;
-      boolean playerFixtureB = entityB.getComponent(PlayerActions.class) != null;
-      if (!playerFixtureA && !playerFixtureB) {
-        return;
-      }
-      Fixture playerFixture = playerFixtureA ? fixtureA : fixtureB;
+    boolean playerFixtureA = entityA.getComponent(PlayerActions.class) != null;
+    boolean playerFixtureB = entityB.getComponent(PlayerActions.class) != null;
+    if (!playerFixtureA && !playerFixtureB) {
+      return;
+    }
 
-      Entity player = playerFixtureA ? entityA : entityB;
-      PlayerActions actions = player.getComponent(PlayerActions.class);
-      Entity ground = playerFixtureA ? entityB : entityA;
-      Body playerBody = playerFixture.getBody();
-      Body groundBody = playerFixtureA ? fixtureB.getBody() : fixtureA.getBody();
+    Entity player = playerFixtureA ? entityA : entityB;
+    Entity ground = playerFixtureA ? entityB : entityA;
+    Body playerBody = (playerFixtureA ? fixtureA : fixtureB).getBody();
+    Body groundBody = (playerFixtureA ? fixtureB : fixtureA).getBody();
+    correctPlatformSideContact(player, ground, playerBody, groundBody);
 
-      // check if the player bottom has come into contact with the side of a platform's top
-      // LENIENCE number of pixels to correct the player movement
-      float leftSideCoord = groundBody.getPosition().x;
-      float rightSideCoord = groundBody.getPosition().x + ground.getScale().x;
-      float topCoord = groundBody.getPosition().y + ground.getScale().y;
+    Fixture contactedLedge = findLedgeFixture(entityA, fixtureA, entityB, fixtureB);
+    if (contactedLedge != null) {
+      resolveLedgeContact(
+          contact, player.getComponent(PlayerActions.class), playerBody, contactedLedge);
+    }
+  }
 
-      // calculates the
-      float playerXLeft = playerBody.getPosition().x;
-      float playerXRight = playerBody.getPosition().x + player.getScale().x;
+  private boolean bothSolid(ColliderComponent first, ColliderComponent second) {
+    return (first.getLayer() & PhysicsLayer.SOLID) != 0
+        && (second.getLayer() & PhysicsLayer.SOLID) != 0;
+  }
 
-      // determine if a valid side contact was made and let the player know it's new position
-      float diff = topCoord - playerBody.getPosition().y;
-      if (diff > 0
-          && diff <= PLATFORM_COLLISION_LENIENCE_HEIGHT + COLLISION_TOLERANCE
-          && playerBody.getLinearVelocity().y < 0) {
-        if (Math.abs(playerXRight - leftSideCoord) <= COLLISION_TOLERANCE) {
-          player
-              .getEvents()
-              .trigger("physicsPositionRequest", new Vector2(playerXLeft + 0.1f, topCoord + 0.1f));
-        } else if (Math.abs(playerXLeft - rightSideCoord) <= COLLISION_TOLERANCE) {
-          player
-              .getEvents()
-              .trigger("physicsPositionRequest", new Vector2(playerXLeft - 0.1f, topCoord + 0.1f));
-        }
-      }
+  private Fixture findLedgeFixture(
+      Entity first, Fixture firstFixture, Entity second, Fixture secondFixture) {
+    if (first.getComponent(LedgeComponent.class) != null) {
+      return firstFixture;
+    }
+    return second.getComponent(LedgeComponent.class) != null ? secondFixture : null;
+  }
 
-      // determine if one of the fixtures involved in the collision is a ledge
-      boolean entityALedge = entityA.getComponent(LedgeComponent.class) != null;
-      boolean entityBLedge = entityB.getComponent(LedgeComponent.class) != null;
-      if (entityALedge || entityBLedge) {
-        // determine velocity to ensure the player is moving up at time of collision
-        if (playerBody.getLinearVelocity().y > 0) {
-          contact.setEnabled(false);
-          return;
-        }
+  private void correctPlatformSideContact(
+      Entity player, Entity ground, Body playerBody, Body groundBody) {
+    float leftSideCoord = groundBody.getPosition().x;
+    float rightSideCoord = leftSideCoord + ground.getScale().x;
+    float topCoord = groundBody.getPosition().y + ground.getScale().y;
+    float playerXLeft = playerBody.getPosition().x;
+    float playerXRight = playerXLeft + player.getScale().x;
+    float diff = topCoord - playerBody.getPosition().y;
+    boolean fallingNearTop =
+        diff > 0
+            && diff <= PLATFORM_COLLISION_LENIENCE_HEIGHT + COLLISION_TOLERANCE
+            && playerBody.getLinearVelocity().y < 0;
+    if (!fallingNearTop) {
+      return;
+    }
+    if (Math.abs(playerXRight - leftSideCoord) <= COLLISION_TOLERANCE) {
+      player
+          .getEvents()
+          .trigger("physicsPositionRequest", new Vector2(playerXLeft + 0.1f, topCoord + 0.1f));
+    } else if (Math.abs(playerXLeft - rightSideCoord) <= COLLISION_TOLERANCE) {
+      player
+          .getEvents()
+          .trigger("physicsPositionRequest", new Vector2(playerXLeft - 0.1f, topCoord + 0.1f));
+    }
+  }
 
-        // resolve any ledge dropping requests active on the player actions component
-        if (actions != null && actions.droppingFromLedge) {
-          playerActions = actions;
-          ledgeFixture = entityALedge ? fixtureA : fixtureB;
-          contact.setEnabled(false);
-        }
-      }
+  private void resolveLedgeContact(
+      Contact contact, PlayerActions actions, Body playerBody, Fixture contactedLedge) {
+    if (playerBody.getLinearVelocity().y > 0) {
+      contact.setEnabled(false);
+      return;
+    }
+    if (actions != null && actions.droppingFromLedge) {
+      playerActions = actions;
+      ledgeFixture = contactedLedge;
+      contact.setEnabled(false);
     }
   }
 

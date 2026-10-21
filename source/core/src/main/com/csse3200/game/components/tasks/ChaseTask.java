@@ -69,17 +69,9 @@ public class ChaseTask extends DefaultTask implements PriorityTask {
 
     float direction = target.getPosition().x >= enemy.getPosition().x ? 1f : -1f;
 
-    if (target.getPosition().x >= enemy.getPosition().x) {
-      direction = 1f;
-    } else {
-      direction = -1f;
-    }
-
-    if (!chaseBehaviour.equals("flying")) {
-      if (!canAdvance(enemy, direction)) {
-        movementComponent.setMoving(false);
-        return;
-      }
+    if (!chaseBehaviour.equals("flying") && !canAdvance(enemy, direction)) {
+      movementComponent.setMoving(false);
+      return;
     }
 
     movementTask.setTarget(target.getPosition());

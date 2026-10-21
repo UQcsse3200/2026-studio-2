@@ -4,11 +4,13 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.badlogic.gdx.audio.Sound;
@@ -94,8 +96,58 @@ class BlackjackDisplayTest {
   }
 
   @Test
+  void reopeningShopBlackjackDoesNotOfferAnotherGift() {
+    InventoryComponent inventory = new InventoryComponent(40);
+    for (int visit = 0; visit < 2; visit++) {
+      BlackjackDisplay display =
+          new BlackjackDisplay(
+              new Blackjack(inventory.getGold()), inventory, null, mock(Runnable.class));
+      show(display);
+      assertFalse(field(display, "resultOverlay", Table.class).isVisible());
+      assertEquals(40, inventory.getGold());
+      display.dispose();
+    }
+  }
+
+  @Test
+  void shopBackButtonIsVisibleAndClosesTheOverlay() {
+    Runnable close = mock(Runnable.class);
+    BlackjackDisplay display =
+        new BlackjackDisplay(new Blackjack(40), new InventoryComponent(40), null, close);
+    show(display);
+    ImageButton back = field(display, "backButton", ImageButton.class);
+    assertSame(stage, back.getStage());
+    assertTrue(back.isVisible());
+    assertFalse(back.isDisabled());
+    var release = new com.badlogic.gdx.scenes.scene2d.InputEvent();
+    release.setType(com.badlogic.gdx.scenes.scene2d.InputEvent.Type.touchUp);
+    back.fire(release);
+    verify(close).run();
+    assertNull(stage.getRoot().findActor("pauseButton"));
+  }
+
+  @Test
+  void storyGiftIsGrantedOnceWithoutPauseButton() {
+    InventoryComponent inventory = new InventoryComponent(0);
+    Runnable win = mock(Runnable.class);
+    BlackjackDisplay display = new BlackjackDisplay(new Blackjack(0), inventory, null, null, win);
+    show(display);
+    assertTrue(field(display, "resultOverlay", Table.class).isVisible());
+    resultButton(display)
+        .fire(new com.badlogic.gdx.scenes.scene2d.utils.ChangeListener.ChangeEvent());
+    assertEquals(5, inventory.getGold());
+    invoke(display, "updateResultOverlay");
+    assertFalse(field(display, "resultOverlay", Table.class).isVisible());
+    assertEquals(5, inventory.getGold());
+    assertNull(stage.getRoot().findActor("pauseButton"));
+    org.mockito.Mockito.verifyNoInteractions(win);
+  }
+
+  @Test
   void shouldOfferCirceGiftWhenTheMatchStarts() {
-    BlackjackDisplay display = new BlackjackDisplay(new Blackjack(40), new InventoryComponent(40));
+    BlackjackDisplay display =
+        new BlackjackDisplay(
+            new Blackjack(40), new InventoryComponent(40), null, null, mock(Runnable.class));
     show(display);
 
     invoke(display, "updateResultOverlay");
@@ -205,17 +257,11 @@ class BlackjackDisplayTest {
   }
 
   @Test
-  void shouldRequestPauseFromPauseButton() {
+  void blackjackDoesNotShowPauseButton() {
     BlackjackDisplay display =
-        new BlackjackDisplay(new Blackjack(100, new Random(1)), new InventoryComponent(100));
-    Entity ui = show(display);
-    int[] requests = {0};
-    ui.getEvents().addListener(BlackjackDisplay.PAUSE_REQUESTED, () -> requests[0]++);
-
-    ((ImageButton) field(display, "table", Table.class).findActor("pauseButton"))
-        .fire(new com.badlogic.gdx.scenes.scene2d.utils.ChangeListener.ChangeEvent());
-
-    assertEquals(1, requests[0]);
+        new BlackjackDisplay(new Blackjack(100), new InventoryComponent(100));
+    show(display);
+    assertNull(stage.getRoot().findActor("pauseButton"));
   }
 
   @Test

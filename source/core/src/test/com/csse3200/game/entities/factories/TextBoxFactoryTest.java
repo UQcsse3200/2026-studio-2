@@ -1,5 +1,6 @@
 package com.csse3200.game.entities.factories;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -27,6 +28,14 @@ class TextBoxFactoryTest {
     Stage stageMock = mock(Stage.class);
     when(renderService.getStage()).thenReturn(stageMock);
     ServiceLocator.registerRenderService(renderService);
+  }
+
+  @Test
+  void tutorialPortraitCreatesARegisteredTextbox() {
+    TextBoxComponent text = new TextBoxFactory().createPortraitTextBox(Portrait.CALYPSO_HAPPY);
+    assertNotNull(text);
+    verify(renderService).register(text);
+    text.dismiss();
   }
 
   @Test

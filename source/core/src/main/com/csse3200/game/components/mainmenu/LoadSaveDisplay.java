@@ -313,22 +313,7 @@ public class LoadSaveDisplay extends UIComponent {
     Pixmap pixmap = new Pixmap(size, size, Pixmap.Format.RGBA8888);
     for (int y = 0; y < size; y++) {
       for (int x = 0; x < size; x++) {
-        boolean inCornerBox = (x < r || x >= size - r) && (y < r || y >= size - r);
-        if (inCornerBox) {
-          int cx = x < r ? r : size - r - 1;
-          int cy = y < r ? r : size - r - 1;
-          double dist = Math.hypot((double) x - cx, (double) y - cy);
-          if (dist > r) {
-            pixmap.drawPixel(x, y, Color.rgba8888(0f, 0f, 0f, 0f));
-          } else if (dist > r - border) {
-            pixmap.drawPixel(x, y, Color.rgba8888(ROW_BORDER));
-          } else {
-            pixmap.drawPixel(x, y, Color.rgba8888(ROW_FILL));
-          }
-        } else {
-          boolean onBorder = x < border || x >= size - border || y < border || y >= size - border;
-          pixmap.drawPixel(x, y, Color.rgba8888(onBorder ? ROW_BORDER : ROW_FILL));
-        }
+        pixmap.drawPixel(x, y, slotPixelColour(x, y, size, r, border));
       }
     }
     Texture texture = new Texture(pixmap);
@@ -336,8 +321,25 @@ public class LoadSaveDisplay extends UIComponent {
     return texture;
   }
 
+  private static int slotPixelColour(int x, int y, int size, int radius, int border) {
+    boolean inCornerBox = (x < radius || x >= size - radius) && (y < radius || y >= size - radius);
+    if (!inCornerBox) {
+      boolean onBorder = x < border || x >= size - border || y < border || y >= size - border;
+      return Color.rgba8888(onBorder ? ROW_BORDER : ROW_FILL);
+    }
+    int cx = x < radius ? radius : size - radius - 1;
+    int cy = y < radius ? radius : size - radius - 1;
+    double distance = Math.hypot((double) x - cx, (double) y - cy);
+    if (distance > radius) {
+      return Color.rgba8888(0f, 0f, 0f, 0f);
+    }
+    return Color.rgba8888(distance > radius - border ? ROW_BORDER : ROW_FILL);
+  }
+
   @Override
-  public void draw(SpriteBatch batch) {}
+  public void draw(SpriteBatch batch) {
+    // Scene2D draws the actors added to the stage by this component.
+  }
 
   @Override
   public float getZIndex() {

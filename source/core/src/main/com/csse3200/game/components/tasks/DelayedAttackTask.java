@@ -17,7 +17,6 @@ public class DelayedAttackTask extends DefaultTask implements PriorityTask {
   // Can add attack Duration if necessary
 
   protected long attackStartTime;
-  // protected Entity attack;
   protected boolean isAttacking = false;
   protected float attackDuration = 1;
 
