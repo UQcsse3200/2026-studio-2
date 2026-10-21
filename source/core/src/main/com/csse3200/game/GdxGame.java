@@ -75,7 +75,7 @@ public class GdxGame extends Game {
     applyDefaultClearColor();
     ThemedCursor.install();
 
-    setScreen(ScreenType.LEVEL_2_GAME);
+    setScreen(ScreenType.MAIN_MENU);
   }
 
   /**
