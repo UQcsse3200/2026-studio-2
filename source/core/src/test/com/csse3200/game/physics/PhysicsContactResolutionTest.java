@@ -17,6 +17,24 @@ import org.junit.jupiter.api.Test;
 
 class PhysicsContactResolutionTest {
   @Test
+  void absentPlayerActionsLeaveDescendingLedgeContactEnabled() throws Exception {
+    var resolve =
+        PhysicsContactListener.class.getDeclaredMethod(
+            "resolveLedgeContact",
+            com.badlogic.gdx.physics.box2d.Contact.class,
+            com.csse3200.game.components.player.PlayerActions.class,
+            com.badlogic.gdx.physics.box2d.Body.class,
+            com.badlogic.gdx.physics.box2d.Fixture.class);
+    resolve.setAccessible(true);
+    var body = mock(com.badlogic.gdx.physics.box2d.Body.class);
+    when(body.getLinearVelocity()).thenReturn(new Vector2(0f, -1f));
+    var contact = mock(com.badlogic.gdx.physics.box2d.Contact.class);
+    var ledge = mock(com.badlogic.gdx.physics.box2d.Fixture.class);
+    resolve.invoke(new PhysicsContactListener(), contact, null, body, ledge);
+    verify(contact, never()).setEnabled(false);
+  }
+
+  @Test
   void correctsFallingPlayerAtEitherPlatformEdge() {
     assertCorrection(-1f, -0.9f);
     assertCorrection(1f, 0.9f);

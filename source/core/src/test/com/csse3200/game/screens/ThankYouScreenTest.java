@@ -15,7 +15,8 @@ class ThankYouScreenTest {
   @Test
   void thankYouMessageIsAddedToTheStageOnEntry() {
     try (var batches = mockConstruction(SpriteBatch.class)) {
-      ThankYouScreen screen = new ThankYouScreen(mock(GdxGame.class));
+      ThankYouScreen screen =
+          (ThankYouScreen) new GdxGame().createScreen(GdxGame.ScreenType.THANK_YOU);
       try {
         assertFalse(ServiceLocator.getRenderService().getStage().getActors().isEmpty());
       } finally {

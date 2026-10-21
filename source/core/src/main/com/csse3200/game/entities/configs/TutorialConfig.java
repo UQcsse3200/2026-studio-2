@@ -45,19 +45,21 @@ public class TutorialConfig extends TextConfig {
     return null;
   }
 
+  private static final String STEP_PREFIX = "step ";
+
   private static String validateStep(TutorialStepConfig step, int index) {
     if (step == null) {
-      return "step " + index + " is empty";
+      return STEP_PREFIX + index + " is empty";
     }
     try {
       int keys = step.resolveKeyCodes().length;
       int pressed = step.resolvePressedButtons().length;
       int released = step.resolveReleasedButtons().length;
       if (keys + pressed + released == 0) {
-        return "step " + index + " lists no keys or mouse buttons";
+        return STEP_PREFIX + index + " lists no keys or mouse buttons";
       }
     } catch (IllegalArgumentException e) {
-      return "step " + index + ": " + e.getMessage();
+      return STEP_PREFIX + index + ": " + e.getMessage();
     }
     return null;
   }

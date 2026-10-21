@@ -78,14 +78,7 @@ class LoadSaveScreenTest {
       verifyNoInteractions(componentBatch);
       assertEquals(actorCount, stage.getActors().size);
 
-      // Textures are loaded.
-      assertTrue(resourceService.containsAsset("images/ui/title_odysseus_logo.png", Texture.class));
-      assertTrue(
-          resourceService.containsAsset("images/backgrounds/main_menu_bg.png", Texture.class));
-      assertTrue(resourceService.containsAsset("images/Buttons/back_up_btn.png", Texture.class));
-      assertTrue(resourceService.containsAsset("images/Buttons/back_down_btn.png", Texture.class));
-      assertTrue(resourceService.containsAsset("images/Buttons/x_up_btn.png", Texture.class));
-      assertTrue(resourceService.containsAsset("images/Buttons/x_down_btn.png", Texture.class));
+      assertMenuTexturesLoaded(resourceService);
 
       // Render and resize.
       screen.render(1f / 60f);
@@ -122,5 +115,14 @@ class LoadSaveScreenTest {
       }
       stage.dispose();
     }
+  }
+
+  private static void assertMenuTexturesLoaded(ResourceService resourceService) {
+    assertTrue(resourceService.containsAsset("images/ui/title_odysseus_logo.png", Texture.class));
+    assertTrue(resourceService.containsAsset("images/backgrounds/main_menu_bg.png", Texture.class));
+    assertTrue(resourceService.containsAsset("images/Buttons/back_up_btn.png", Texture.class));
+    assertTrue(resourceService.containsAsset("images/Buttons/back_down_btn.png", Texture.class));
+    assertTrue(resourceService.containsAsset("images/Buttons/x_up_btn.png", Texture.class));
+    assertTrue(resourceService.containsAsset("images/Buttons/x_down_btn.png", Texture.class));
   }
 }

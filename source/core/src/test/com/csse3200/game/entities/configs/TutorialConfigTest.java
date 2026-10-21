@@ -92,6 +92,14 @@ class TutorialConfigTest {
     assertTrue(config.validateSteps().contains("autoDismissSeconds"));
   }
 
+  @Test
+  void missingStepIsRejected() {
+    TutorialConfig config = new TutorialConfig();
+    config.pages = List.of("one");
+    config.steps = java.util.Collections.singletonList(null);
+    assertEquals("step 0 is empty", config.validateSteps());
+  }
+
   private static TutorialStepConfig stepWithKeys(String... keys) {
     TutorialStepConfig step = new TutorialStepConfig();
     step.keys = keys;

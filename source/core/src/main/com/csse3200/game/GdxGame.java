@@ -347,9 +347,6 @@ public class GdxGame extends Game {
   }
 
   /**
-   * @return whether the active save has already completed the movement tutorial.
-   */
-  /**
    * Applies the loaded save's player stats (health, max health, gold, inventory) to the player
    * entity as soon as it exists. No-op when no save is being loaded or the save has no recorded
    * player state (a brand-new game keeps the level defaults).

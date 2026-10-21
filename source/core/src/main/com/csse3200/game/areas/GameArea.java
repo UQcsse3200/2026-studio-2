@@ -51,9 +51,10 @@ public abstract class GameArea implements Disposable {
   protected KeyboardPlayerInputComponent input;
   protected Entity levelChanger;
   protected LevelConfig config;
-  // Notified (with the checkpoint's position) whenever one of this area's checkpoints activates;
-  // used by the game screen to start checkpoint-linked tutorials. Null when nothing listens.
+
+  /** Receives activated checkpoint positions to start the corresponding tutorial. */
   private Consumer<GridPoint2> checkpointListener;
+
   // The area's own event dispatcher, for lifecycle events the game screen reacts to (e.g. the boss
   // spawning and changing phase). Separate from every entity's dispatcher.
   protected final EventHandler events = new EventHandler();
@@ -504,7 +505,7 @@ public abstract class GameArea implements Disposable {
       if (level.equals("level3")) {
         float playerPosY = getPlayer().getPosition().y;
         cameraComponent.targetGameWidth = (float) worldBoundX + 5;
-        cameraComponent.targetGameHeight = (float) worldBoundY;
+        cameraComponent.targetGameHeight = worldBoundY;
         cameraComponent.targetPosition =
             new Vector2(worldBounds.x / 2 - 5, worldBounds.y / 2 + playerPosY / 1.3f);
         cameraComponent.setTarget(camera);

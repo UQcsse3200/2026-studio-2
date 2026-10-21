@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
  */
 public class TutorialCommand implements Command {
   private static final Logger logger = LoggerFactory.getLogger(TutorialCommand.class);
+  private static final String JSON_EXTENSION = ".json";
   private static final String DEFAULT_TUTORIAL = "tut1";
   private static final String TUTORIAL_DIRECTORY = "configs/";
 
@@ -53,13 +54,13 @@ public class TutorialCommand implements Command {
    */
   private String resolvePath(ArrayList<String> args) {
     if (args == null || args.isEmpty() || args.get(0) == null || args.get(0).isBlank()) {
-      return TUTORIAL_DIRECTORY + DEFAULT_TUTORIAL + ".json";
+      return TUTORIAL_DIRECTORY + DEFAULT_TUTORIAL + JSON_EXTENSION;
     }
     String name = args.get(0).trim();
-    if (name.contains("/") || name.endsWith(".json")) {
+    if (name.contains("/") || name.endsWith(JSON_EXTENSION)) {
       return name;
     }
-    return TUTORIAL_DIRECTORY + name + ".json";
+    return TUTORIAL_DIRECTORY + name + JSON_EXTENSION;
   }
 
   private void restartTutorial(String path, TutorialConfig config) {

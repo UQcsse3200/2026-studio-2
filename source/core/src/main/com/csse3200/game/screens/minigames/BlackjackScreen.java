@@ -106,17 +106,15 @@ public class BlackjackScreen extends MinigameScreen {
             () -> BlackjackDialogue.startWinCutscene(game));
 
     Terminal terminal = new Terminal(game, GdxGame.ScreenType.LEVEL_3_GAME);
-    Entity ui =
-        new Entity()
-            .addComponent(inventoryComponent)
-            .addComponent(display)
-            .addComponent(new BlackjackRulesDisplay())
-            .addComponent(new BlackjackActions(game))
-            .addComponent(new InputDecorator(stage, 10))
-            // Debug terminal (F1), as in the levels. Blackjack leads into Level 3.
-            .addComponent(terminal)
-            .addComponent(ServiceLocator.getInputService().getInputFactory().createForTerminal())
-            .addComponent(new TerminalDisplay());
-    return ui;
+    return new Entity()
+        .addComponent(inventoryComponent)
+        .addComponent(display)
+        .addComponent(new BlackjackRulesDisplay())
+        .addComponent(new BlackjackActions(game))
+        .addComponent(new InputDecorator(stage, 10))
+        // Debug terminal (F1), as in the levels. Blackjack leads into Level 3.
+        .addComponent(terminal)
+        .addComponent(ServiceLocator.getInputService().getInputFactory().createForTerminal())
+        .addComponent(new TerminalDisplay());
   }
 }

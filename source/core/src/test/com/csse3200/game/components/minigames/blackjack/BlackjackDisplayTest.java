@@ -4,11 +4,13 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.badlogic.gdx.audio.Sound;
@@ -120,8 +122,8 @@ class BlackjackDisplayTest {
     var release = new com.badlogic.gdx.scenes.scene2d.InputEvent();
     release.setType(com.badlogic.gdx.scenes.scene2d.InputEvent.Type.touchUp);
     back.fire(release);
-    org.mockito.Mockito.verify(close).run();
-    org.junit.jupiter.api.Assertions.assertNull(stage.getRoot().findActor("pauseButton"));
+    verify(close).run();
+    assertNull(stage.getRoot().findActor("pauseButton"));
   }
 
   @Test
@@ -137,7 +139,7 @@ class BlackjackDisplayTest {
     invoke(display, "updateResultOverlay");
     assertFalse(field(display, "resultOverlay", Table.class).isVisible());
     assertEquals(5, inventory.getGold());
-    org.junit.jupiter.api.Assertions.assertNull(stage.getRoot().findActor("pauseButton"));
+    assertNull(stage.getRoot().findActor("pauseButton"));
     org.mockito.Mockito.verifyNoInteractions(win);
   }
 
@@ -259,7 +261,7 @@ class BlackjackDisplayTest {
     BlackjackDisplay display =
         new BlackjackDisplay(new Blackjack(100), new InventoryComponent(100));
     show(display);
-    org.junit.jupiter.api.Assertions.assertNull(stage.getRoot().findActor("pauseButton"));
+    assertNull(stage.getRoot().findActor("pauseButton"));
   }
 
   @Test

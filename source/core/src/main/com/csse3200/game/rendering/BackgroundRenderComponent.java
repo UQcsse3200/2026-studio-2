@@ -28,7 +28,7 @@ public class BackgroundRenderComponent extends RenderComponent {
   private int originalRotation;
   private final Vector2 finalVelocity = new Vector2(5.5f, -4.5f);
 
-  private float SCALE_TIME = 0.75f;
+  private static final float SCALE_TIME = 0.75f;
   private float currentScaleTime = 0f;
   private boolean scalingBackground = false;
 
@@ -215,13 +215,11 @@ public class BackgroundRenderComponent extends RenderComponent {
       layer.startPosition.set(layer.position);
 
       if (up) {
-        if (up) {
-          layer.baseWidth = layer.width;
-          layer.baseHeight = layer.height;
-          layer.baseOffset.set(layer.offset);
-          layer.baseVelocity.set(layer.velocity);
-          layer.basePosition.set(layer.position);
-        }
+        layer.baseWidth = layer.width;
+        layer.baseHeight = layer.height;
+        layer.baseOffset.set(layer.offset);
+        layer.baseVelocity.set(layer.velocity);
+        layer.basePosition.set(layer.position);
 
         scaleUp(layer, factor, worldBounds, level);
       } else {

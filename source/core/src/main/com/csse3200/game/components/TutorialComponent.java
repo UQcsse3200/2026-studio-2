@@ -218,11 +218,7 @@ public class TutorialComponent extends InputComponent {
     }
 
     private static Set<Integer> toSet(int[] codes) {
-      Set<Integer> set = new HashSet<>();
-      for (int code : codes) {
-        set.add(code);
-      }
-      return set;
+      return java.util.Arrays.stream(codes).boxed().collect(java.util.stream.Collectors.toSet());
     }
   }
 }

@@ -34,6 +34,20 @@ class TutorialCommandTest {
   }
 
   @Test
+  void extensionOnlyNameIsAcceptedWithoutAPrefix() {
+    TutorialConfig config = FileLoader.readClass(TutorialConfig.class, "configs/tut1.json");
+    try (var boxes = mockConstruction(TextBoxComponent.class);
+        var tutorials = mockConstruction(TutorialComponent.class);
+        var files = mockStatic(FileLoader.class)) {
+      files
+          .when(() -> FileLoader.readClass(TutorialConfig.class, "custom.json"))
+          .thenReturn(config);
+      assertTrue(new TutorialCommand().action(args("custom.json")));
+      assertEquals(1, tutorials.constructed().size());
+    }
+  }
+
+  @Test
   void bareNameLoadsTheNamedSequence() {
     try (MockedConstruction<TextBoxComponent> boxes = mockConstruction(TextBoxComponent.class);
         MockedConstruction<TutorialComponent> tutorials =

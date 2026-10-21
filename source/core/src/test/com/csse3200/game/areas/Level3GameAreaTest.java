@@ -470,6 +470,7 @@ class Level3GameAreaTest extends AbstractAreaAssetsTest {
     Entity newBoss = bareSpawner();
     Array<Entity> all = spawnersAround(oldBoss);
     Array<Entity> current = spawnersAround(newBoss);
+    area.areaEntities.add(new Entity());
     all.addAll(current);
     when(entityService.getEntities()).thenReturn(all);
     for (Entity entity : current) {
@@ -483,6 +484,20 @@ class Level3GameAreaTest extends AbstractAreaAssetsTest {
     assertEquals(0, defeats.get());
     newBoss.getEvents().trigger("activateByKey", Level3GameArea.BOSS_DEFEATED_TRIGGER_ID);
     assertEquals(1, defeats.get());
+  }
+
+  @Test
+  void bossCameraSwitchesTheBackgroundOnlyOnce() {
+    area.backgroundComponent = mock(BackgroundRenderComponent.class);
+    area.toggleBossCamera();
+    area.toggleBossCamera();
+    verify(area.backgroundComponent)
+        .scaleEntity(
+            new Vector2(0f, 0f),
+            new Vector2(25f, 12f),
+            true,
+            Level3GameArea.BOSS_DEFEATED_TRIGGER_ID);
+    verify(camera).resize(25, 12, 29f);
   }
 
   /** A bare spawner entity in the sixth slot, where the level config puts the boss's spawner. */

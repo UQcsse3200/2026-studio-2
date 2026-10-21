@@ -24,7 +24,6 @@ import com.csse3200.game.events.listeners.EventListener1;
 import com.csse3200.game.physics.BodyUserData;
 import com.csse3200.game.rendering.*;
 import com.csse3200.game.services.ServiceLocator;
-import java.util.ArrayList;
 import java.util.List;
 
 public class Level3GameArea extends GameArea {
@@ -177,12 +176,10 @@ public class Level3GameArea extends GameArea {
    * the spawn event can be observed without any extra component hook.
    */
   private void listenForBossSpawn() {
-    List<Entity> spawners = new ArrayList<>();
-    for (Entity entity : areaEntities) {
-      if (entity.getComponent(SpawnerComponent.class) != null) {
-        spawners.add(entity);
-      }
-    }
+    List<Entity> spawners =
+        areaEntities.stream()
+            .filter(entity -> entity.getComponent(SpawnerComponent.class) != null)
+            .toList();
     if (spawners.size() <= BOSS_SPAWNER_INDEX) {
       return;
     }
@@ -514,7 +511,7 @@ public class Level3GameArea extends GameArea {
       bossCamera.setPosition(bossBounds.x / 2 + 1, bossBounds.y / 2 + 97);
       cameraComponent.setTarget(bossCamera);
 
-      backgroundComponent.scaleEntity(bossResizeScale, bossBounds, true, "bossArena");
+      backgroundComponent.scaleEntity(bossResizeScale, bossBounds, true, BOSS_DEFEATED_TRIGGER_ID);
 
       if (mapToggled) {
         getPlayer().getComponent(InventoryBarDisplay.class).showBar();

@@ -162,12 +162,10 @@ class TutorialComponentTest {
   @Test
   void rejectsUnknownInputNames() {
     TextBoxComponent text = mock(TextBoxComponent.class);
-    assertThrows(
-        IllegalArgumentException.class,
-        () -> new TutorialComponent(text, List.of(step(new String[] {"NOT_A_KEY"}, null, null))));
-    assertThrows(
-        IllegalArgumentException.class,
-        () -> new TutorialComponent(text, List.of(step(null, new String[] {"LEFTY"}, null))));
+    var invalidKeys = List.of(step(new String[] {"NOT_A_KEY"}, null, null));
+    var invalidButtons = List.of(step(null, new String[] {"LEFTY"}, null));
+    assertThrows(IllegalArgumentException.class, () -> new TutorialComponent(text, invalidKeys));
+    assertThrows(IllegalArgumentException.class, () -> new TutorialComponent(text, invalidButtons));
   }
 
   @Test

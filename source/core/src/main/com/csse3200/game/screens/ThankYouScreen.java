@@ -15,12 +15,9 @@ import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.ArrayList;
 import java.util.List;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /** Shows a thank you message over a black screen before exiting to the main menu. */
 public class ThankYouScreen extends ScreenAdapter {
-  private static final Logger logger = LoggerFactory.getLogger(ThankYouScreen.class);
   private final GdxGame game;
   private final ResourceService resourceService;
   private final RenderService renderService;

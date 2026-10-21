@@ -200,6 +200,9 @@ public class BackgroundRenderComponentTest {
       background.toggleWeather();
     }
     background.draw(batch);
+    if (repeat == RepeatMode.CHAOTIC) {
+      background.draw(batch);
+    }
     verify(batch, drawn).draw(any(Texture.class), anyFloat(), anyFloat(), anyFloat(), anyFloat());
   }
 
