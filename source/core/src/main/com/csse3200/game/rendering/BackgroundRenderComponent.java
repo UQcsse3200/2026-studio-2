@@ -377,6 +377,7 @@ public class BackgroundRenderComponent extends RenderComponent {
 
   @Override
   public void update() {
+    super.update();
     if (scalingBackground) {
       currentScaleTime += ServiceLocator.getTimeSource().getDeltaTime();
       float progress = Math.min(1f, currentScaleTime / SCALE_TIME);
