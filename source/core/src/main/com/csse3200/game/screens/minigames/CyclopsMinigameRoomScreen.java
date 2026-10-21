@@ -168,7 +168,7 @@ public class CyclopsMinigameRoomScreen extends ScreenAdapter {
    * Pauses the looping snoring and footsteps while the pause menu is open, and carries on when it
    * closes. The sounds are not part of the paused entities, so they would otherwise keep playing.
    */
-  private void syncSoundsWithPause() {
+  void syncSoundsWithPause() {
     boolean paused = ServiceLocator.getEntityService().getPaused();
     if (paused == soundsPaused) {
       return;
