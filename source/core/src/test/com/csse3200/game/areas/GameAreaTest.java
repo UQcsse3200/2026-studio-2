@@ -51,7 +51,7 @@ class GameAreaTest {
     area.toggleMap(
         new Vector2(2147483648f, 100f), camera, mock(BackgroundRenderComponent.class), "level1");
 
-    assertEquals(2147483648f, camera.getCamera().viewportWidth);
+    assertEquals(2147483648f, camera.targetGameWidth);
   }
 
   @Test
