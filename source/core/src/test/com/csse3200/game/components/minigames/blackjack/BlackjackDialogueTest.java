@@ -22,6 +22,16 @@ import org.junit.jupiter.api.Test;
 class BlackjackDialogueTest {
 
   @Test
+  void theGiftAddsFiveGoldWhenAccepted() {
+    Blackjack game = new Blackjack(3, new Random(1));
+
+    BlackjackDialogue.of(Kind.GIFT).pressButton(game, null);
+
+    assertEquals(3 + BlackjackDialogue.GIFT_GOLD, game.getBalance());
+    assertEquals("Accept 5 gold", BlackjackDialogue.of(Kind.GIFT).getButtonText());
+  }
+
+  @Test
   void noDialogueWhileTheMatchIsStillGoing() {
     Blackjack game = new Blackjack(100, new Random(1));
 

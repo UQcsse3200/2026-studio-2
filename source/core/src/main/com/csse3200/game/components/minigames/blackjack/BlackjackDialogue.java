@@ -24,8 +24,12 @@ public final class BlackjackDialogue {
   /** Screen the game goes to once the win cutscene ends. */
   static final GdxGame.ScreenType AFTER_WIN_SCREEN = GdxGame.ScreenType.LEVEL_3_GAME;
 
-  /** The three situations a finished match can end in. */
+  /** Gold Circe gives the player as a gift when the match starts. */
+  public static final int GIFT_GOLD = 5;
+
+  /** What Circe can be saying: a welcome gift at the start, or how a finished match ended. */
   public enum Kind {
+    GIFT,
     MATCH_WON,
     MATCH_LOST,
     OUT_OF_GOLD
@@ -67,6 +71,13 @@ public final class BlackjackDialogue {
    */
   public static BlackjackDialogue of(Kind kind) {
     return switch (kind) {
+      case GIFT ->
+          new BlackjackDialogue(
+              kind,
+              "Welcome, Odysseus. Every guest of mine plays with a full purse. Take these "
+                  + GIFT_GOLD
+                  + " coins as a gift, and let us see how clever you are.",
+              "Accept " + GIFT_GOLD + " gold");
       case MATCH_WON ->
           new BlackjackDialogue(
               kind,
@@ -114,6 +125,7 @@ public final class BlackjackDialogue {
    */
   public void pressButton(Blackjack blackjack, Runnable startWinCutscene) {
     switch (kind) {
+      case GIFT -> blackjack.setBalance(blackjack.getBalance() + GIFT_GOLD);
       case MATCH_WON -> {
         if (startWinCutscene != null) {
           startWinCutscene.run();

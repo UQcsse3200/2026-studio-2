@@ -123,9 +123,6 @@ public class Blackjack {
     if (startingBalance < 0) {
       throw new IllegalArgumentException("Starting balance cannot be negative");
     }
-    if (startingBalance == 0) {
-      startingBalance = 5;
-    }
     this.random = random;
     this.balance = startingBalance;
     this.bet = BET;

@@ -82,9 +82,34 @@ class BlackjackDisplayTest {
   }
 
   @Test
+  void shouldShowZeroGoldState() {
+    Blackjack blackjack = new Blackjack(100);
+    InventoryComponent inventory = new InventoryComponent(0);
+
+    BlackjackDisplay display = new BlackjackDisplay(blackjack, inventory);
+    show(display);
+
+    assertEquals(0, inventory.getGold());
+  }
+
+  @Test
+  void shouldOfferCirceGiftWhenTheMatchStarts() {
+    BlackjackDisplay display = new BlackjackDisplay(new Blackjack(40), new InventoryComponent(40));
+    show(display);
+
+    invoke(display, "updateResultOverlay");
+
+    Table resultOverlay = field(display, "resultOverlay", Table.class);
+    assertTrue(resultOverlay.isVisible());
+    Label message = resultOverlay.findActor("resultMessage");
+    assertEquals(
+        BlackjackDialogue.of(BlackjackDialogue.Kind.GIFT).getText(), message.getText().toString());
+  }
+
+  @Test
   void shouldCreateHiddenResultOverlay() {
-    BlackjackDisplay display =
-        new BlackjackDisplay(new Blackjack(100), new InventoryComponent(100));
+    // With no inventory there is no gold to give, so Circe's welcome gift is not shown.
+    BlackjackDisplay display = new BlackjackDisplay(new Blackjack(100));
 
     show(display);
 
@@ -132,7 +157,7 @@ class BlackjackDisplayTest {
   }
 
   @Test
-  void shouldStartRoundWhenPlayerHasNoGold() {
+  void shouldNotStartRoundWhenPlayerHasNoGold() {
     InventoryComponent inventory = new InventoryComponent(0);
     Blackjack blackjack = new Blackjack(100);
     BlackjackDisplay display = new BlackjackDisplay(blackjack, inventory);
@@ -140,8 +165,10 @@ class BlackjackDisplayTest {
 
     invoke(display, "tryStartRound");
 
-    assertEquals(4, inventory.getGold());
-    assertTrue(blackjack.isRoundInProgress());
+    assertEquals("Your balance is 0!", label(display, "resultLabel").getText().toString());
+    assertEquals("READY", label(display, "statusLabel").getText().toString());
+    assertEquals(0, inventory.getGold());
+    assertFalse(blackjack.isRoundInProgress());
   }
 
   @Test
@@ -188,8 +215,8 @@ class BlackjackDisplayTest {
 
   @Test
   void shouldKeepNewRoundButtonWhenFirstDealFails() {
-    // With no inventory the deal stops at "Player gold unavailable." (0 gold is topped up to 5).
-    BlackjackDisplay display = new BlackjackDisplay(new Blackjack(100, new Random(1)));
+    BlackjackDisplay display =
+        new BlackjackDisplay(new Blackjack(100, new Random(1)), new InventoryComponent(0));
     show(display);
     ImageButton newRound = field(display, "newRoundButton", ImageButton.class);
 

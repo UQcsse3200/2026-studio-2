@@ -64,6 +64,8 @@ public class BlackjackDisplay extends UIComponent {
 
   private final Blackjack blackjack;
   private final InventoryComponent inventory;
+  /** Circe's welcome gift has not been accepted yet. */
+  private boolean giftPending;
   private boolean resultSoundPlayed;
   private boolean soundEnabled = true;
   private final java.util.function.Consumer<Boolean> soundToggleCallback;
@@ -168,10 +170,7 @@ public class BlackjackDisplay extends UIComponent {
     this.soundToggleCallback = soundToggleCallback;
     this.backCallback = backCallback;
     this.storyWinCallback = storyWinCallback;
-
-    if (inventory != null && !inventory.hasGold(5)) {
-      inventory.setGold(5);
-    }
+    this.giftPending = inventory != null;
   }
 
   @Override
@@ -546,9 +545,13 @@ public class BlackjackDisplay extends UIComponent {
             ButtonSound.playClick();
 
             if (!blackjack.isRoundInProgress()) {
-              BlackjackDialogue dialogue = BlackjackDialogue.forMatch(blackjack);
+              BlackjackDialogue dialogue = currentDialogue();
+              boolean gift = dialogue != null && dialogue.getKind() == BlackjackDialogue.Kind.GIFT;
               if (dialogue != null) {
                 dialogue.pressButton(blackjack, storyWinCallback);
+                if (gift) {
+                  giftPending = false;
+                }
                 if (dialogue.getKind() == BlackjackDialogue.Kind.MATCH_WON) {
                   if (storyWinCallback != null) {
                     return;
@@ -570,7 +573,10 @@ public class BlackjackDisplay extends UIComponent {
                       : PLACE_BET);
               refreshLabels();
               // Deal the next round now, so the player does not have to press New Round again.
-              tryStartRound();
+              // After the welcome gift the player starts the first deal with New Round.
+              if (!gift) {
+                tryStartRound();
+              }
             }
           }
         });
@@ -625,12 +631,20 @@ public class BlackjackDisplay extends UIComponent {
     return style;
   }
 
+  /** Circe's welcome gift until it is accepted, then the dialogue for how the match ended. */
+  private BlackjackDialogue currentDialogue() {
+    if (giftPending) {
+      return BlackjackDialogue.of(BlackjackDialogue.Kind.GIFT);
+    }
+    return BlackjackDialogue.forMatch(blackjack);
+  }
+
   private void updateResultOverlay() {
     if (resultOverlay == null) {
       return;
     }
 
-    boolean showResult = blackjack.isRoundOver();
+    boolean showResult = blackjack.isRoundOver() || giftPending;
     // While the rules are open the result waits, so it never covers the rules panel.
     boolean showOverlay = showResult && !dealInProgress && !rulesOpen;
     if (showOverlay && !resultOverlay.isVisible()) {
@@ -691,7 +705,7 @@ public class BlackjackDisplay extends UIComponent {
     Label title = resultOverlay.findActor("resultTitle");
     Label message = resultOverlay.findActor("resultMessage");
 
-    BlackjackDialogue dialogue = BlackjackDialogue.forMatch(blackjack);
+    BlackjackDialogue dialogue = currentDialogue();
     setDialogueScrollStyle(true);
     boolean automaticVictory =
         dialogue != null
