@@ -55,9 +55,7 @@ public class Level3GameArea extends GameArea {
     // Level 3 ground tile
     "images/terrain/Level_3/tile-level3.png",
     "images/terrain/Level_3/water tile.png",
-
-    // Torches
-    "images/terrain/Level_3/water tile.png",
+    "images/terrain/Level_3/Level_3_torch.png",
 
     // Transparent texture used for the physics-only floor
     "images/ui/transparent.png",
@@ -105,6 +103,7 @@ public class Level3GameArea extends GameArea {
     super(camera);
 
     config = new Level3Config(player, camera);
+    torchTexture = "images/terrain/Level_3/Level_3_torch.png";
 
     this.terrainFactory = terrainFactory;
     this.camera = camera;
@@ -347,7 +346,7 @@ public class Level3GameArea extends GameArea {
   private void spawnTorches() {
     GridPoint2[] guideTorches = {
       new GridPoint2(19, 11),
-      new GridPoint2(18, 16),
+      new GridPoint2(18, 15),
       new GridPoint2(5, 22),
       new GridPoint2(7, 28),
       new GridPoint2(11, 37),
@@ -356,7 +355,7 @@ public class Level3GameArea extends GameArea {
       new GridPoint2(17, 68),
       new GridPoint2(14, 81),
       new GridPoint2(26, 85),
-      new GridPoint2(11, 95),
+      new GridPoint2(11, 94),
       new GridPoint2(3, 107),
       new GridPoint2(23, 107),
       new GridPoint2(3, 101),
@@ -364,7 +363,7 @@ public class Level3GameArea extends GameArea {
     };
 
     for (GridPoint2 pos : guideTorches) {
-      spawnEntityAt(ObstacleFactory.createTorch(), pos, true, false);
+      spawnEntityAt(ObstacleFactory.createTorch(torchTexture), pos, true, false);
     }
   }
 

@@ -84,7 +84,7 @@ public class Level1GameArea extends GameArea {
     "images/terrain/Level_1/Level_1_tile.png",
     "images/terrain/Level_1/Level_1_platform.png",
     "images/terrain/Level_1/Level_1_Spike.png",
-    "images/terrain/Level_3/water tile.png",
+    "images/terrain/Level_1/Level_1_torch.png",
 
     // Parallax background layers
     "images/parallax/original_background.png",
@@ -278,14 +278,14 @@ public class Level1GameArea extends GameArea {
       new GridPoint2(7, 16),
       new GridPoint2(19, 17),
       new GridPoint2(43, 17),
-      new GridPoint2(57, 11),
+      new GridPoint2(57, 10),
       new GridPoint2(58, 1),
-      new GridPoint2(69, 1),
+      new GridPoint2(65, 1),
       new GridPoint2(83, 17),
     };
 
     for (GridPoint2 pos : torchSpawns) {
-      spawnEntityAt(ObstacleFactory.createTorch(), pos, true, false);
+      spawnEntityAt(ObstacleFactory.createTorch(torchTexture), pos, true, false);
     }
   }
 
