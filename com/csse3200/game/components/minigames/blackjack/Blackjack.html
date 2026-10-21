@@ -38,7 +38,7 @@ loadScripts(document, 'script');</script>
 <p>Summary:</p>
 <ul>
 <li><a href="#nested-class-summary">Nested</a></li>
-<li>Field</li>
+<li><a href="#field-summary">Field</a></li>
 <li><a href="#constructor-summary">Constr</a></li>
 <li><a href="#method-summary">Method</a></li>
 </ul>
@@ -46,7 +46,7 @@ loadScripts(document, 'script');</script>
 <li>
 <p>Detail:</p>
 <ul>
-<li>Field</li>
+<li><a href="#field-detail">Field</a></li>
 <li><a href="#constructor-detail">Constr</a></li>
 <li><a href="#method-detail">Method</a></li>
 </ul>
@@ -58,13 +58,13 @@ loadScripts(document, 'script');</script>
 <ul class="sub-nav-list">
 <li>Summary:&nbsp;</li>
 <li><a href="#nested-class-summary">Nested</a>&nbsp;|&nbsp;</li>
-<li>Field&nbsp;|&nbsp;</li>
+<li><a href="#field-summary">Field</a>&nbsp;|&nbsp;</li>
 <li><a href="#constructor-summary">Constr</a>&nbsp;|&nbsp;</li>
 <li><a href="#method-summary">Method</a></li>
 </ul>
 <ul class="sub-nav-list">
 <li>Detail:&nbsp;</li>
-<li>Field&nbsp;|&nbsp;</li>
+<li><a href="#field-detail">Field</a>&nbsp;|&nbsp;</li>
 <li><a href="#constructor-detail">Constr</a>&nbsp;|&nbsp;</li>
 <li><a href="#method-detail">Method</a></li>
 </ul>
@@ -109,11 +109,48 @@ loadScripts(document, 'script');</script>
 <div class="col-second even-row-color"><code><a href="Blackjack.Card.html" class="type-name-link" title="class in com.csse3200.game.components.minigames.blackjack">Blackjack.Card</a></code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code>static enum&nbsp;</code></div>
-<div class="col-second odd-row-color"><code><a href="Blackjack.Rank.html" class="type-name-link" title="enum class in com.csse3200.game.components.minigames.blackjack">Blackjack.Rank</a></code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-second odd-row-color"><code><a href="Blackjack.MatchResult.html" class="type-name-link" title="enum class in com.csse3200.game.components.minigames.blackjack">Blackjack.MatchResult</a></code></div>
+<div class="col-last odd-row-color">
+<div class="block">State of the best-of-five match.</div>
+</div>
+<div class="col-first even-row-color"><code>static enum&nbsp;</code></div>
+<div class="col-second even-row-color"><code><a href="Blackjack.Rank.html" class="type-name-link" title="enum class in com.csse3200.game.components.minigames.blackjack">Blackjack.Rank</a></code></div>
+<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><code>static enum&nbsp;</code></div>
+<div class="col-second odd-row-color"><code><a href="Blackjack.RoundOutcome.html" class="type-name-link" title="enum class in com.csse3200.game.components.minigames.blackjack">Blackjack.RoundOutcome</a></code></div>
+<div class="col-last odd-row-color">
+<div class="block">Result of a single resolved round.</div>
+</div>
 <div class="col-first even-row-color"><code>static enum&nbsp;</code></div>
 <div class="col-second even-row-color"><code><a href="Blackjack.Suit.html" class="type-name-link" title="enum class in com.csse3200.game.components.minigames.blackjack">Blackjack.Suit</a></code></div>
 <div class="col-last even-row-color">&nbsp;</div>
+</div>
+</section>
+</li>
+<!-- =========== FIELD SUMMARY =========== -->
+<li>
+<section class="field-summary" id="field-summary">
+<h2>Field Summary</h2>
+<div class="caption"><span>Fields</span></div>
+<div class="summary-table three-column-summary">
+<div class="table-header col-first">Modifier and Type</div>
+<div class="table-header col-second">Field</div>
+<div class="table-header col-last">Description</div>
+<div class="col-first even-row-color"><code>static final int</code></div>
+<div class="col-second even-row-color"><code><a href="#BET" class="member-name-link">BET</a></code></div>
+<div class="col-last even-row-color">
+<div class="block">Fixed gold staked on every round.</div>
+</div>
+<div class="col-first odd-row-color"><code>static final int</code></div>
+<div class="col-second odd-row-color"><code><a href="#REFILL_GOLD" class="member-name-link">REFILL_GOLD</a></code></div>
+<div class="col-last odd-row-color">
+<div class="block">Gold the player is given when a lost match is restarted.</div>
+</div>
+<div class="col-first even-row-color"><code>static final int</code></div>
+<div class="col-second even-row-color"><code><a href="#WINS_NEEDED" class="member-name-link">WINS_NEEDED</a></code></div>
+<div class="col-last even-row-color">
+<div class="block">Round wins needed to take the best-of-five match.</div>
+</div>
 </div>
 </section>
 </li>
@@ -126,10 +163,14 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-first">Constructor</div>
 <div class="table-header col-last">Description</div>
 <div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(int)" class="member-name-link">Blackjack</a><wbr>(int&nbsp;startingBalance)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Creates a game with a randomly shuffled deck.</div>
+</div>
 <div class="col-constructor-name odd-row-color"><code><a href="#%3Cinit%3E(int,java.util.Random)" class="member-name-link">Blackjack</a><wbr>(int&nbsp;startingBalance,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Random.html" title="class or interface in java.util" class="external-link">Random</a>&nbsp;random)</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">Creates a game that shuffles with the given random source, so tests can deal known hands.</div>
+</div>
 </div>
 </section>
 </li>
@@ -169,15 +210,35 @@ loadScripts(document, 'script');</script>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Returns the dealer's total value.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="Blackjack.Card.html" title="class in com.csse3200.game.components.minigames.blackjack">Blackjack.Card</a>&gt;</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getPlayerHand()" class="member-name-link">getPlayerHand</a>()</code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getDealerWins()" class="member-name-link">getDealerWins</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns the number of rounds the dealer has won in the current match.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="Blackjack.RoundOutcome.html" title="enum class in com.csse3200.game.components.minigames.blackjack">Blackjack.RoundOutcome</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getLastOutcome()" class="member-name-link">getLastOutcome</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns the outcome of the most recently resolved round, or null if none has ended.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="Blackjack.MatchResult.html" title="enum class in com.csse3200.game.components.minigames.blackjack">Blackjack.MatchResult</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getMatchResult()" class="member-name-link">getMatchResult</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns the state of the current match.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="Blackjack.Card.html" title="class in com.csse3200.game.components.minigames.blackjack">Blackjack.Card</a>&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getPlayerHand()" class="member-name-link">getPlayerHand</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Returns a copy of the player's hand.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getPlayerTotal()" class="member-name-link">getPlayerTotal</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getPlayerTotal()" class="member-name-link">getPlayerTotal</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Returns the player's total value.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getPlayerWins()" class="member-name-link">getPlayerWins</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns the number of rounds the player has won in the current match.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getResultMessage()" class="member-name-link">getResultMessage</a>()</code></div>
@@ -190,24 +251,34 @@ loadScripts(document, 'script');</script>
 <div class="block">Draws one extra card for the player.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isPlayerWinner()" class="member-name-link">isPlayerWinner</a>()</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isMatchOver()" class="member-name-link">isMatchOver</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Returns true when the most recently resolved round was won by the player.</div>
+<div class="block">Returns true once the current match has a winner.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isRoundInProgress()" class="member-name-link">isRoundInProgress</a>()</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isPlayerWinner()" class="member-name-link">isPlayerWinner</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Returns true once the round has started and is active.</div>
+<div class="block">Returns true when the most recently resolved round was won by the player.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isRoundOver()" class="member-name-link">isRoundOver</a>()</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isRoundInProgress()" class="member-name-link">isRoundInProgress</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns true once the round has started and is active.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isRoundOver()" class="member-name-link">isRoundOver</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Returns true once a round has ended and a result is available.</div>
 </div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#resetMatch()" class="member-name-link">resetMatch</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Starts a fresh match: clears the score and hands, and refills the balance.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#placeBet(int)" class="member-name-link">placeBet</a><wbr>(int&nbsp;amount)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#restartMatchKeepingGold()" class="member-name-link">restartMatchKeepingGold</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Places a bet before the round begins.</div>
+<div class="block">Starts a fresh match like <a href="#resetMatch()"><code>resetMatch()</code></a>, but keeps the gold the player has left.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setBalance(int)" class="member-name-link">setBalance</a><wbr>(int&nbsp;balance)</code></div>
@@ -236,6 +307,59 @@ loadScripts(document, 'script');</script>
 </section>
 <section class="details">
 <ul class="details-list">
+<!-- ============ FIELD DETAIL =========== -->
+<li>
+<section class="field-details" id="field-detail">
+<h2>Field Details</h2>
+<ul class="member-list">
+<li>
+<section class="detail" id="WINS_NEEDED">
+<h3>WINS_NEEDED</h3>
+<div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">WINS_NEEDED</span></div>
+<div class="block">Round wins needed to take the best-of-five match.</div>
+<dl class="notes">
+<dt>See Also:</dt>
+<dd>
+<ul class="tag-list">
+<li><a href="../../../../../../constant-values.html#com.csse3200.game.components.minigames.blackjack.Blackjack.WINS_NEEDED">Constant Field Values</a></li>
+</ul>
+</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="BET">
+<h3>BET</h3>
+<div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">BET</span></div>
+<div class="block">Fixed gold staked on every round.</div>
+<dl class="notes">
+<dt>See Also:</dt>
+<dd>
+<ul class="tag-list">
+<li><a href="../../../../../../constant-values.html#com.csse3200.game.components.minigames.blackjack.Blackjack.BET">Constant Field Values</a></li>
+</ul>
+</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="REFILL_GOLD">
+<h3>REFILL_GOLD</h3>
+<div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">REFILL_GOLD</span></div>
+<div class="block">Gold the player is given when a lost match is restarted.</div>
+<dl class="notes">
+<dt>See Also:</dt>
+<dd>
+<ul class="tag-list">
+<li><a href="../../../../../../constant-values.html#com.csse3200.game.components.minigames.blackjack.Blackjack.REFILL_GOLD">Constant Field Values</a></li>
+</ul>
+</dd>
+</dl>
+</section>
+</li>
+</ul>
+</section>
+</li>
 <!-- ========= CONSTRUCTOR DETAIL ======== -->
 <li>
 <section class="constructor-details" id="constructor-detail">
@@ -245,6 +369,11 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="&lt;init&gt;(int)">
 <h3>Blackjack</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">Blackjack</span><wbr><span class="parameters">(int&nbsp;startingBalance)</span></div>
+<div class="block">Creates a game with a randomly shuffled deck.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>startingBalance</code> - the player's gold at the start of the match</dd>
+</dl>
 </section>
 </li>
 <li>
@@ -252,6 +381,14 @@ loadScripts(document, 'script');</script>
 <h3>Blackjack</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">Blackjack</span><wbr><span class="parameters">(int&nbsp;startingBalance,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Random.html" title="class or interface in java.util" class="external-link">Random</a>&nbsp;random)</span></div>
+<div class="block">Creates a game that shuffles with the given random source, so tests can deal known hands.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>startingBalance</code> - the player's gold at the start of the match</dd>
+<dd><code>random</code> - random source used to shuffle the deck</dd>
+<dt>Throws:</dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/IllegalArgumentException.html" title="class or interface in java.lang" class="external-link">IllegalArgumentException</a></code> - if the starting balance is negative</dd>
+</dl>
 </section>
 </li>
 </ul>
@@ -326,10 +463,54 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li>
-<section class="detail" id="placeBet(int)">
-<h3>placeBet</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">placeBet</span><wbr><span class="parameters">(int&nbsp;amount)</span></div>
-<div class="block">Places a bet before the round begins.</div>
+<section class="detail" id="getLastOutcome()">
+<h3>getLastOutcome</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="Blackjack.RoundOutcome.html" title="enum class in com.csse3200.game.components.minigames.blackjack">Blackjack.RoundOutcome</a></span>&nbsp;<span class="element-name">getLastOutcome</span>()</div>
+<div class="block">Returns the outcome of the most recently resolved round, or null if none has ended.</div>
+</section>
+</li>
+<li>
+<section class="detail" id="getPlayerWins()">
+<h3>getPlayerWins</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">getPlayerWins</span>()</div>
+<div class="block">Returns the number of rounds the player has won in the current match.</div>
+</section>
+</li>
+<li>
+<section class="detail" id="getDealerWins()">
+<h3>getDealerWins</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">getDealerWins</span>()</div>
+<div class="block">Returns the number of rounds the dealer has won in the current match.</div>
+</section>
+</li>
+<li>
+<section class="detail" id="getMatchResult()">
+<h3>getMatchResult</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="Blackjack.MatchResult.html" title="enum class in com.csse3200.game.components.minigames.blackjack">Blackjack.MatchResult</a></span>&nbsp;<span class="element-name">getMatchResult</span>()</div>
+<div class="block">Returns the state of the current match. The player wins on reaching <a href="#WINS_NEEDED"><code>WINS_NEEDED</code></a>. The
+ player loses when the dealer reaches it, or when a round ends and the player can no longer
+ afford the next <a href="#BET"><code>BET</code></a>.</div>
+</section>
+</li>
+<li>
+<section class="detail" id="isMatchOver()">
+<h3>isMatchOver</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">isMatchOver</span>()</div>
+<div class="block">Returns true once the current match has a winner.</div>
+</section>
+</li>
+<li>
+<section class="detail" id="resetMatch()">
+<h3>resetMatch</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">resetMatch</span>()</div>
+<div class="block">Starts a fresh match: clears the score and hands, and refills the balance.</div>
+</section>
+</li>
+<li>
+<section class="detail" id="restartMatchKeepingGold()">
+<h3>restartMatchKeepingGold</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">restartMatchKeepingGold</span>()</div>
+<div class="block">Starts a fresh match like <a href="#resetMatch()"><code>resetMatch()</code></a>, but keeps the gold the player has left.</div>
 </section>
 </li>
 <li>

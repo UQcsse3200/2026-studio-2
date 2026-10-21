@@ -104,12 +104,18 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-first">Constructor</div>
 <div class="table-header col-last">Description</div>
 <div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E()" class="member-name-link">BlackjackOverlay</a>()</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Creates an overlay with no player, so no gold is available.</div>
+</div>
 <div class="col-constructor-name odd-row-color"><code><a href="#%3Cinit%3E(com.csse3200.game.entities.Entity)" class="member-name-link">BlackjackOverlay</a><wbr>(<a href="../../../entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;player)</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">Creates an overlay that plays with the given player's gold.</div>
+</div>
 <div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(com.csse3200.game.entities.Entity,com.csse3200.game.components.minigames.MinigameOverlayManager)" class="member-name-link">BlackjackOverlay</a><wbr>(<a href="../../../entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;player,
  <a href="../MinigameOverlayManager.html" title="class in com.csse3200.game.components.minigames">MinigameOverlayManager</a>&nbsp;overlayManager)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Creates an overlay that shares an overlay manager with other minigame overlays.</div>
+</div>
 </div>
 </section>
 </li>
@@ -126,10 +132,14 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#afterRender()" class="member-name-link">afterRender</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Opens a requested overlay.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#request()" class="member-name-link">request</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Asks for the overlay to open and pauses the game.</div>
+</div>
 </div>
 </div>
 </div>
@@ -151,12 +161,18 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="&lt;init&gt;()">
 <h3>BlackjackOverlay</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">BlackjackOverlay</span>()</div>
+<div class="block">Creates an overlay with no player, so no gold is available.</div>
 </section>
 </li>
 <li>
 <section class="detail" id="&lt;init&gt;(com.csse3200.game.entities.Entity)">
 <h3>BlackjackOverlay</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">BlackjackOverlay</span><wbr><span class="parameters">(<a href="../../../entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;player)</span></div>
+<div class="block">Creates an overlay that plays with the given player's gold.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>player</code> - player entity whose inventory holds the gold</dd>
+</dl>
 </section>
 </li>
 <li>
@@ -164,6 +180,12 @@ loadScripts(document, 'script');</script>
 <h3>BlackjackOverlay</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">BlackjackOverlay</span><wbr><span class="parameters">(<a href="../../../entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;player,
  <a href="../MinigameOverlayManager.html" title="class in com.csse3200.game.components.minigames">MinigameOverlayManager</a>&nbsp;overlayManager)</span></div>
+<div class="block">Creates an overlay that shares an overlay manager with other minigame overlays.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>player</code> - player entity whose inventory holds the gold</dd>
+<dd><code>overlayManager</code> - manager ensuring only one minigame overlay is open at a time</dd>
+</dl>
 </section>
 </li>
 </ul>
@@ -178,12 +200,15 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="request()">
 <h3>request</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">request</span>()</div>
+<div class="block">Asks for the overlay to open and pauses the game. The overlay is built on the next <a href="#afterRender()"><code>afterRender()</code></a>, so the blurred backdrop captures a fully drawn frame. Ignored if this or
+ another minigame overlay is already open.</div>
 </section>
 </li>
 <li>
 <section class="detail" id="afterRender()">
 <h3>afterRender</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">afterRender</span>()</div>
+<div class="block">Opens a requested overlay. Call once per frame, after the game has been rendered.</div>
 </section>
 </li>
 </ul>

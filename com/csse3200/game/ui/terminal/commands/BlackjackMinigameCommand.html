@@ -96,7 +96,7 @@ loadScripts(document, 'script');</script>
 <div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">BlackjackMinigameCommand</span>
 <span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>
 implements <a href="Command.html" title="interface in com.csse3200.game.ui.terminal.commands">Command</a></span></div>
-<div class="block">Loads the Blackjack minigame from the debug terminal.</div>
+<div class="block">Loads the Blackjack minigame from the debug terminal, after the cutscene that leads into it.</div>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -109,7 +109,14 @@ implements <a href="Command.html" title="interface in com.csse3200.game.ui.termi
 <div class="table-header col-first">Constructor</div>
 <div class="table-header col-last">Description</div>
 <div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(com.csse3200.game.GdxGame)" class="member-name-link">BlackjackMinigameCommand</a><wbr>(<a href="../../../GdxGame.html" title="class in com.csse3200.game">GdxGame</a>&nbsp;game)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Creates the command.</div>
+</div>
+<div class="col-constructor-name odd-row-color"><code><a href="#%3Cinit%3E(com.csse3200.game.GdxGame,com.csse3200.game.cutscene.CutsceneLoader)" class="member-name-link">BlackjackMinigameCommand</a><wbr>(<a href="../../../GdxGame.html" title="class in com.csse3200.game">GdxGame</a>&nbsp;game,
+ <a href="../../../cutscene/CutsceneLoader.html" title="class in com.csse3200.game.cutscene">CutsceneLoader</a>&nbsp;loader)</code></div>
+<div class="col-last odd-row-color">
+<div class="block">Creates the command.</div>
+</div>
 </div>
 </section>
 </li>
@@ -127,7 +134,7 @@ implements <a href="Command.html" title="interface in com.csse3200.game.ui.termi
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#action(java.util.ArrayList)" class="member-name-link">action</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/ArrayList.html" title="class or interface in java.util" class="external-link">ArrayList</a>&lt;<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&gt;&nbsp;args)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Action a command.</div>
+<div class="block">Plays the cutscene that leads into Blackjack, then switches to the Blackjack screen.</div>
 </div>
 </div>
 </div>
@@ -147,9 +154,27 @@ implements <a href="Command.html" title="interface in com.csse3200.game.ui.termi
 <h2>Constructor Details</h2>
 <ul class="member-list">
 <li>
+<section class="detail" id="&lt;init&gt;(com.csse3200.game.GdxGame,com.csse3200.game.cutscene.CutsceneLoader)">
+<h3>BlackjackMinigameCommand</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">BlackjackMinigameCommand</span><wbr><span class="parameters">(<a href="../../../GdxGame.html" title="class in com.csse3200.game">GdxGame</a>&nbsp;game,
+ <a href="../../../cutscene/CutsceneLoader.html" title="class in com.csse3200.game.cutscene">CutsceneLoader</a>&nbsp;loader)</span></div>
+<div class="block">Creates the command.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>game</code> - game used to play the cutscene and switch to the Blackjack screen</dd>
+<dd><code>loader</code> - loads the cutscene played before Blackjack</dd>
+</dl>
+</section>
+</li>
+<li>
 <section class="detail" id="&lt;init&gt;(com.csse3200.game.GdxGame)">
 <h3>BlackjackMinigameCommand</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">BlackjackMinigameCommand</span><wbr><span class="parameters">(<a href="../../../GdxGame.html" title="class in com.csse3200.game">GdxGame</a>&nbsp;game)</span></div>
+<div class="block">Creates the command.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>game</code> - game used to play the cutscene and switch to the Blackjack screen</dd>
+</dl>
 </section>
 </li>
 </ul>
@@ -164,15 +189,15 @@ implements <a href="Command.html" title="interface in com.csse3200.game.ui.termi
 <section class="detail" id="action(java.util.ArrayList)">
 <h3>action</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">action</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/ArrayList.html" title="class or interface in java.util" class="external-link">ArrayList</a>&lt;<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&gt;&nbsp;args)</span></div>
-<div class="block"><span class="description-from-type-label">Description copied from interface:&nbsp;<code><a href="Command.html#action(java.util.ArrayList)">Command</a></code></span></div>
-<div class="block">Action a command.</div>
+<div class="block">Plays the cutscene that leads into Blackjack, then switches to the Blackjack screen. If the
+ cutscene cannot be loaded, the Blackjack screen is shown straight away.</div>
 <dl class="notes">
 <dt>Specified by:</dt>
 <dd><code><a href="Command.html#action(java.util.ArrayList)">action</a></code>&nbsp;in interface&nbsp;<code><a href="Command.html" title="interface in com.csse3200.game.ui.terminal.commands">Command</a></code></dd>
 <dt>Parameters:</dt>
-<dd><code>args</code> - command args</dd>
+<dd><code>args</code> - must be exactly <code>["load"]</code></dd>
 <dt>Returns:</dt>
-<dd>command was successful</dd>
+<dd>whether the arguments were valid and the minigame was started</dd>
 </dl>
 </section>
 </li>

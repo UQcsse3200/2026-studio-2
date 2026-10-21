@@ -91,6 +91,8 @@ loadScripts(document, 'script');</script>
 <hr>
 <div class="type-signature"><span class="modifiers">public final class </span><span class="element-name type-name-label">BlackjackConfig</span>
 <span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></span></div>
+<div class="block">Asset lists for the Blackjack minigame. Screens load <a href="#TEXTURES"><code>TEXTURES</code></a> and <a href="#SOUNDS"><code>SOUNDS</code></a> before
+ building the Blackjack UI. Background music is loaded separately by each screen.</div>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -105,16 +107,24 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color"><code>static final <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&gt;</code></div>
 <div class="col-second even-row-color"><code><a href="#SOUNDS" class="member-name-link">SOUNDS</a></code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Card deal, win and lose sound effects.</div>
+</div>
 <div class="col-first odd-row-color"><code>static final <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&gt;</code></div>
 <div class="col-second odd-row-color"><code><a href="#TEXTURES" class="member-name-link">TEXTURES</a></code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">Every texture the Blackjack UI uses: all 52 card faces, the card back, buttons and table.</div>
+</div>
 <div class="col-first even-row-color"><code>static final <a href="../../item/ItemType.html" title="enum class in com.csse3200.game.components.item">ItemType</a></code></div>
 <div class="col-second even-row-color"><code><a href="#WIN_REWARD" class="member-name-link">WIN_REWARD</a></code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Item reward for winning a round.</div>
+</div>
 <div class="col-first odd-row-color"><code>static final int</code></div>
 <div class="col-second odd-row-color"><code><a href="#WIN_REWARD_QUANTITY" class="member-name-link">WIN_REWARD_QUANTITY</a></code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">Quantity of <a href="#WIN_REWARD"><code>WIN_REWARD</code></a> for winning a round.</div>
+</div>
 </div>
 </section>
 </li>
@@ -140,24 +150,28 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="TEXTURES">
 <h3>TEXTURES</h3>
 <div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&gt;</span>&nbsp;<span class="element-name">TEXTURES</span></div>
+<div class="block">Every texture the Blackjack UI uses: all 52 card faces, the card back, buttons and table.</div>
 </section>
 </li>
 <li>
 <section class="detail" id="SOUNDS">
 <h3>SOUNDS</h3>
 <div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&gt;</span>&nbsp;<span class="element-name">SOUNDS</span></div>
+<div class="block">Card deal, win and lose sound effects.</div>
 </section>
 </li>
 <li>
 <section class="detail" id="WIN_REWARD">
 <h3>WIN_REWARD</h3>
 <div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type"><a href="../../item/ItemType.html" title="enum class in com.csse3200.game.components.item">ItemType</a></span>&nbsp;<span class="element-name">WIN_REWARD</span></div>
+<div class="block">Item reward for winning a round. Not currently granted by the story-mode display.</div>
 </section>
 </li>
 <li>
 <section class="detail" id="WIN_REWARD_QUANTITY">
 <h3>WIN_REWARD_QUANTITY</h3>
 <div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">WIN_REWARD_QUANTITY</span></div>
+<div class="block">Quantity of <a href="#WIN_REWARD"><code>WIN_REWARD</code></a> for winning a round.</div>
 <dl class="notes">
 <dt>See Also:</dt>
 <dd>

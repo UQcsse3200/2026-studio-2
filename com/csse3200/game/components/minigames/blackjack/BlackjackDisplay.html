@@ -46,7 +46,7 @@ loadScripts(document, 'script');</script>
 <li>
 <p>Detail:</p>
 <ul>
-<li>Field</li>
+<li><a href="#field-detail">Field</a></li>
 <li><a href="#constructor-detail">Constr</a></li>
 <li><a href="#method-detail">Method</a></li>
 </ul>
@@ -64,7 +64,7 @@ loadScripts(document, 'script');</script>
 </ul>
 <ul class="sub-nav-list">
 <li>Detail:&nbsp;</li>
-<li>Field&nbsp;|&nbsp;</li>
+<li><a href="#field-detail">Field</a>&nbsp;|&nbsp;</li>
 <li><a href="#constructor-detail">Constr</a>&nbsp;|&nbsp;</li>
 <li><a href="#method-detail">Method</a></li>
 </ul>
@@ -109,6 +109,20 @@ loadScripts(document, 'script');</script>
 <li>
 <section class="field-summary" id="field-summary">
 <h2>Field Summary</h2>
+<div class="caption"><span>Fields</span></div>
+<div class="summary-table three-column-summary">
+<div class="table-header col-first">Modifier and Type</div>
+<div class="table-header col-second">Field</div>
+<div class="table-header col-last">Description</div>
+<div class="col-first even-row-color"><code>static final <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second even-row-color"><code><a href="#DIALOGUE_SCROLL_PATH" class="member-name-link">DIALOGUE_SCROLL_PATH</a></code></div>
+<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><code>static final <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second odd-row-color"><code><a href="#PAUSE_REQUESTED" class="member-name-link">PAUSE_REQUESTED</a></code></div>
+<div class="col-last odd-row-color">
+<div class="block">Fired on the entity when the pause button is pressed.</div>
+</div>
+</div>
 <div class="inherited-list">
 <h3 id="fields-inherited-from-class-com.csse3200.game.ui.UIComponent">Fields inherited from class&nbsp;com.csse3200.game.ui.<a href="../../../ui/UIComponent.html" title="class in com.csse3200.game.ui">UIComponent</a></h3>
 <code><a href="../../../ui/UIComponent.html#skin">skin</a>, <a href="../../../ui/UIComponent.html#stage">stage</a></code></div>
@@ -129,19 +143,35 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-first">Constructor</div>
 <div class="table-header col-last">Description</div>
 <div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(com.csse3200.game.components.minigames.blackjack.Blackjack)" class="member-name-link">BlackjackDisplay</a><wbr>(<a href="Blackjack.html" title="class in com.csse3200.game.components.minigames.blackjack">Blackjack</a>&nbsp;blackjack)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Creates a display with no inventory, so rounds cannot be started.</div>
+</div>
 <div class="col-constructor-name odd-row-color"><code><a href="#%3Cinit%3E(com.csse3200.game.components.minigames.blackjack.Blackjack,com.csse3200.game.components.inventory.InventoryComponent)" class="member-name-link">BlackjackDisplay</a><wbr>(<a href="Blackjack.html" title="class in com.csse3200.game.components.minigames.blackjack">Blackjack</a>&nbsp;blackjack,
  <a href="../../inventory/InventoryComponent.html" title="class in com.csse3200.game.components.inventory">InventoryComponent</a>&nbsp;inventory)</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">Creates a display that stakes and pays out gold from the given inventory.</div>
+</div>
 <div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(com.csse3200.game.components.minigames.blackjack.Blackjack,com.csse3200.game.components.inventory.InventoryComponent,java.util.function.Consumer)" class="member-name-link">BlackjackDisplay</a><wbr>(<a href="Blackjack.html" title="class in com.csse3200.game.components.minigames.blackjack">Blackjack</a>&nbsp;blackjack,
  <a href="../../inventory/InventoryComponent.html" title="class in com.csse3200.game.components.inventory">InventoryComponent</a>&nbsp;inventory,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/function/Consumer.html" title="class or interface in java.util.function" class="external-link">Consumer</a>&lt;<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a>&gt;&nbsp;soundToggleCallback)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Creates a display whose sound button also controls the screen's music.</div>
+</div>
 <div class="col-constructor-name odd-row-color"><code><a href="#%3Cinit%3E(com.csse3200.game.components.minigames.blackjack.Blackjack,com.csse3200.game.components.inventory.InventoryComponent,java.util.function.Consumer,java.lang.Runnable)" class="member-name-link">BlackjackDisplay</a><wbr>(<a href="Blackjack.html" title="class in com.csse3200.game.components.minigames.blackjack">Blackjack</a>&nbsp;blackjack,
  <a href="../../inventory/InventoryComponent.html" title="class in com.csse3200.game.components.inventory">InventoryComponent</a>&nbsp;inventory,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/function/Consumer.html" title="class or interface in java.util.function" class="external-link">Consumer</a>&lt;<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a>&gt;&nbsp;soundToggleCallback,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Runnable.html" title="class or interface in java.lang" class="external-link">Runnable</a>&nbsp;backCallback)</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">Creates a display with every option.</div>
+</div>
+<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(com.csse3200.game.components.minigames.blackjack.Blackjack,com.csse3200.game.components.inventory.InventoryComponent,java.util.function.Consumer,java.lang.Runnable,java.lang.Runnable)" class="member-name-link">BlackjackDisplay</a><wbr>(<a href="Blackjack.html" title="class in com.csse3200.game.components.minigames.blackjack">Blackjack</a>&nbsp;blackjack,
+ <a href="../../inventory/InventoryComponent.html" title="class in com.csse3200.game.components.inventory">InventoryComponent</a>&nbsp;inventory,
+ <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/function/Consumer.html" title="class or interface in java.util.function" class="external-link">Consumer</a>&lt;<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a>&gt;&nbsp;soundToggleCallback,
+ <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Runnable.html" title="class or interface in java.lang" class="external-link">Runnable</a>&nbsp;backCallback,
+ <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Runnable.html" title="class or interface in java.lang" class="external-link">Runnable</a>&nbsp;storyWinCallback)</code></div>
+<div class="col-last even-row-color">
+<div class="block">Creates a display with an optional story continuation after Circe's victory dialogue.</div>
+</div>
 </div>
 </section>
 </li>
@@ -156,29 +186,34 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-first">Modifier and Type</div>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#create()" class="member-name-link">create</a>()</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#canPause()" class="member-name-link">canPause</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Called when the entity is created and registered.</div>
+<div class="block">Returns whether the game can be paused right now.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#dispose()" class="member-name-link">dispose</a>()</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#create()" class="member-name-link">create</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Called when the entity is created and registered.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#dispose()" class="member-name-link">dispose</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Called when the component is disposed.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#draw(com.badlogic.gdx.graphics.g2d.SpriteBatch)" class="member-name-link">draw</a><wbr>(com.badlogic.gdx.graphics.g2d.SpriteBatch&nbsp;batch)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#draw(com.badlogic.gdx.graphics.g2d.SpriteBatch)" class="member-name-link">draw</a><wbr>(com.badlogic.gdx.graphics.g2d.SpriteBatch&nbsp;batch)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Draw the renderable.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>float</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getZIndex()" class="member-name-link">getZIndex</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>float</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getZIndex()" class="member-name-link">getZIndex</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Z index controls rendering order within a layer.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#toFront()" class="member-name-link">toFront</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#toFront()" class="member-name-link">toFront</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Brings the Blackjack UI above the blurred backdrop.</div>
 </div>
 </div>
@@ -208,6 +243,43 @@ loadScripts(document, 'script');</script>
 </section>
 <section class="details">
 <ul class="details-list">
+<!-- ============ FIELD DETAIL =========== -->
+<li>
+<section class="field-details" id="field-detail">
+<h2>Field Details</h2>
+<ul class="member-list">
+<li>
+<section class="detail" id="PAUSE_REQUESTED">
+<h3>PAUSE_REQUESTED</h3>
+<div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">PAUSE_REQUESTED</span></div>
+<div class="block">Fired on the entity when the pause button is pressed. The screen opens its pause menu.</div>
+<dl class="notes">
+<dt>See Also:</dt>
+<dd>
+<ul class="tag-list">
+<li><a href="../../../../../../constant-values.html#com.csse3200.game.components.minigames.blackjack.BlackjackDisplay.PAUSE_REQUESTED">Constant Field Values</a></li>
+</ul>
+</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="DIALOGUE_SCROLL_PATH">
+<h3>DIALOGUE_SCROLL_PATH</h3>
+<div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">DIALOGUE_SCROLL_PATH</span></div>
+<dl class="notes">
+<dt>See Also:</dt>
+<dd>
+<ul class="tag-list">
+<li><a href="../../../../../../constant-values.html#com.csse3200.game.components.minigames.blackjack.BlackjackDisplay.DIALOGUE_SCROLL_PATH">Constant Field Values</a></li>
+</ul>
+</dd>
+</dl>
+</section>
+</li>
+</ul>
+</section>
+</li>
 <!-- ========= CONSTRUCTOR DETAIL ======== -->
 <li>
 <section class="constructor-details" id="constructor-detail">
@@ -217,6 +289,11 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="&lt;init&gt;(com.csse3200.game.components.minigames.blackjack.Blackjack)">
 <h3>BlackjackDisplay</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">BlackjackDisplay</span><wbr><span class="parameters">(<a href="Blackjack.html" title="class in com.csse3200.game.components.minigames.blackjack">Blackjack</a>&nbsp;blackjack)</span></div>
+<div class="block">Creates a display with no inventory, so rounds cannot be started.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>blackjack</code> - game being shown</dd>
+</dl>
 </section>
 </li>
 <li>
@@ -224,6 +301,12 @@ loadScripts(document, 'script');</script>
 <h3>BlackjackDisplay</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">BlackjackDisplay</span><wbr><span class="parameters">(<a href="Blackjack.html" title="class in com.csse3200.game.components.minigames.blackjack">Blackjack</a>&nbsp;blackjack,
  <a href="../../inventory/InventoryComponent.html" title="class in com.csse3200.game.components.inventory">InventoryComponent</a>&nbsp;inventory)</span></div>
+<div class="block">Creates a display that stakes and pays out gold from the given inventory.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>blackjack</code> - game being shown</dd>
+<dd><code>inventory</code> - inventory holding the player's gold</dd>
+</dl>
 </section>
 </li>
 <li>
@@ -232,6 +315,13 @@ loadScripts(document, 'script');</script>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">BlackjackDisplay</span><wbr><span class="parameters">(<a href="Blackjack.html" title="class in com.csse3200.game.components.minigames.blackjack">Blackjack</a>&nbsp;blackjack,
  <a href="../../inventory/InventoryComponent.html" title="class in com.csse3200.game.components.inventory">InventoryComponent</a>&nbsp;inventory,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/function/Consumer.html" title="class or interface in java.util.function" class="external-link">Consumer</a>&lt;<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a>&gt;&nbsp;soundToggleCallback)</span></div>
+<div class="block">Creates a display whose sound button also controls the screen's music.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>blackjack</code> - game being shown</dd>
+<dd><code>inventory</code> - inventory holding the player's gold</dd>
+<dd><code>soundToggleCallback</code> - called with the new state when the sound button is pressed</dd>
+</dl>
 </section>
 </li>
 <li>
@@ -241,6 +331,25 @@ loadScripts(document, 'script');</script>
  <a href="../../inventory/InventoryComponent.html" title="class in com.csse3200.game.components.inventory">InventoryComponent</a>&nbsp;inventory,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/function/Consumer.html" title="class or interface in java.util.function" class="external-link">Consumer</a>&lt;<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a>&gt;&nbsp;soundToggleCallback,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Runnable.html" title="class or interface in java.lang" class="external-link">Runnable</a>&nbsp;backCallback)</span></div>
+<div class="block">Creates a display with every option.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>blackjack</code> - game being shown</dd>
+<dd><code>inventory</code> - inventory holding the player's gold, or null if unavailable</dd>
+<dd><code>soundToggleCallback</code> - called with the new state when the sound button is pressed, or null</dd>
+<dd><code>backCallback</code> - run when Back is pressed; when null, a "back" event is triggered instead</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="&lt;init&gt;(com.csse3200.game.components.minigames.blackjack.Blackjack,com.csse3200.game.components.inventory.InventoryComponent,java.util.function.Consumer,java.lang.Runnable,java.lang.Runnable)">
+<h3>BlackjackDisplay</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">BlackjackDisplay</span><wbr><span class="parameters">(<a href="Blackjack.html" title="class in com.csse3200.game.components.minigames.blackjack">Blackjack</a>&nbsp;blackjack,
+ <a href="../../inventory/InventoryComponent.html" title="class in com.csse3200.game.components.inventory">InventoryComponent</a>&nbsp;inventory,
+ <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/function/Consumer.html" title="class or interface in java.util.function" class="external-link">Consumer</a>&lt;<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a>&gt;&nbsp;soundToggleCallback,
+ <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Runnable.html" title="class or interface in java.lang" class="external-link">Runnable</a>&nbsp;backCallback,
+ <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Runnable.html" title="class or interface in java.lang" class="external-link">Runnable</a>&nbsp;storyWinCallback)</span></div>
+<div class="block">Creates a display with an optional story continuation after Circe's victory dialogue.</div>
 </section>
 </li>
 </ul>
@@ -283,6 +392,19 @@ loadScripts(document, 'script');</script>
 <h3>toFront</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">toFront</span>()</div>
 <div class="block">Brings the Blackjack UI above the blurred backdrop.</div>
+</section>
+</li>
+<li>
+<section class="detail" id="canPause()">
+<h3>canPause</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">canPause</span>()</div>
+<div class="block">Returns whether the game can be paused right now. Deal animations are scene2d actions, so they
+ keep running while the game is paused, and finishing one raises the result pop-up above
+ everything, including the pause menu. The win fade also changes screen on its own.</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>false while cards are being dealt or the win transition is running</dd>
+</dl>
 </section>
 </li>
 <li>
