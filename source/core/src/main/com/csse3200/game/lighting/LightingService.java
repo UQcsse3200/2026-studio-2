@@ -10,10 +10,19 @@ import com.csse3200.game.components.CameraComponent;
 public class LightingService {
   private final LightingEngine engine;
 
+  /**
+   * Creates and owns the lighting engine for a camera and physics world.
+   *
+   * @param camera camera used to render lights
+   * @param world Box2D world used for light raycasts
+   */
   public LightingService(CameraComponent camera, World world) {
     this.engine = new LightingEngine(camera, world);
   }
 
+  /**
+   * @return the lighting engine managed by this service
+   */
   public LightingEngine getEngine() {
     return this.engine;
   }
