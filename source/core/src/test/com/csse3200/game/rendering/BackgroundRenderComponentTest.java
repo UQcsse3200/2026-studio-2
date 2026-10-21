@@ -128,7 +128,6 @@ public class BackgroundRenderComponentTest {
     when(player.getComponent(PlayerStatsDisplay.class)).thenReturn(playerStatsDisplay);
     when(player.getPosition()).thenReturn(new Vector2(10f, 10f));
 
-
     when(background.getScalingBackground()).thenReturn(false);
 
     gameArea.toggleMap(WORLD_BOUNDS, camera, background, level);

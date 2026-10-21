@@ -222,6 +222,8 @@ public class BackgroundRenderComponent extends RenderComponent {
   /** Scale is controlled individually for each layer. */
   public void scaleEntity(Vector2 factor, Vector2 worldBounds, boolean up, String level) {
     if (level.equals("bossArena")) {
+      scalingBackground = false;
+
       for (ParallaxLayer layer : layers) {
         layer.position.x -= 1.7f;
         layer.position.y -= 1.22f;
