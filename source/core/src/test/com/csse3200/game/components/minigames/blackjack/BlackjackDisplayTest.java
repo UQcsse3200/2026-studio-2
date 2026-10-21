@@ -125,7 +125,7 @@ class BlackjackDisplayTest {
   }
 
   @Test
-  void storyGiftIsGrantedOnceAndPauseRemainsAvailable() {
+  void storyGiftIsGrantedOnceWithoutPauseButton() {
     InventoryComponent inventory = new InventoryComponent(0);
     Runnable win = mock(Runnable.class);
     BlackjackDisplay display = new BlackjackDisplay(new Blackjack(0), inventory, null, null, win);
@@ -137,7 +137,7 @@ class BlackjackDisplayTest {
     invoke(display, "updateResultOverlay");
     assertFalse(field(display, "resultOverlay", Table.class).isVisible());
     assertEquals(5, inventory.getGold());
-    assertNotNull(stage.getRoot().findActor("pauseButton"));
+    org.junit.jupiter.api.Assertions.assertNull(stage.getRoot().findActor("pauseButton"));
     org.mockito.Mockito.verifyNoInteractions(win);
   }
 
@@ -255,17 +255,11 @@ class BlackjackDisplayTest {
   }
 
   @Test
-  void shouldRequestPauseFromPauseButton() {
+  void blackjackDoesNotShowPauseButton() {
     BlackjackDisplay display =
-        new BlackjackDisplay(new Blackjack(100, new Random(1)), new InventoryComponent(100));
-    Entity ui = show(display);
-    int[] requests = {0};
-    ui.getEvents().addListener(BlackjackDisplay.PAUSE_REQUESTED, () -> requests[0]++);
-
-    ((ImageButton) field(display, "table", Table.class).findActor("pauseButton"))
-        .fire(new com.badlogic.gdx.scenes.scene2d.utils.ChangeListener.ChangeEvent());
-
-    assertEquals(1, requests[0]);
+        new BlackjackDisplay(new Blackjack(100), new InventoryComponent(100));
+    show(display);
+    org.junit.jupiter.api.Assertions.assertNull(stage.getRoot().findActor("pauseButton"));
   }
 
   @Test

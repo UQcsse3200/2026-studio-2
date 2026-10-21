@@ -1,6 +1,7 @@
 package com.csse3200.game.components.minigames.blackjack;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -16,7 +17,7 @@ class BlackjackConfigTest {
 
   @Test
   void shouldContainEveryBlackjackTexture() {
-    assertEquals(77, BlackjackConfig.TEXTURES.size());
+    assertEquals(75, BlackjackConfig.TEXTURES.size());
     assertTrue(BlackjackConfig.TEXTURES.stream().allMatch(path -> path != null && !path.isBlank()));
 
     for (String path : BlackjackConfig.TEXTURES) {
@@ -50,8 +51,8 @@ class BlackjackConfigTest {
 
     assertTrue(paths.contains("images/Buttons/info_up_btn.png"));
     assertTrue(paths.contains("images/Buttons/info_down_btn.png"));
-    assertTrue(paths.contains("images/Buttons/bj_pause_up_btn.png"));
-    assertTrue(paths.contains("images/Buttons/bj_pause_down_btn.png"));
+    assertFalse(paths.contains("images/Buttons/bj_pause_up_btn.png"));
+    assertFalse(paths.contains("images/Buttons/bj_pause_down_btn.png"));
     assertTrue(paths.contains("images/Buttons/bj_new_match_up_btn.png"));
     assertTrue(paths.contains("images/Buttons/bj_new_match_down_btn.png"));
   }

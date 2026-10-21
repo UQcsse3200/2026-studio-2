@@ -1,13 +1,10 @@
 package com.csse3200.game.screens.minigames;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.csse3200.game.GdxGame;
 import com.csse3200.game.components.GameVolume;
 import com.csse3200.game.components.inventory.InventoryComponent;
-import com.csse3200.game.components.maingame.PauseMenuOverlay;
 import com.csse3200.game.components.minigames.blackjack.Blackjack;
 import com.csse3200.game.components.minigames.blackjack.BlackjackActions;
 import com.csse3200.game.components.minigames.blackjack.BlackjackConfig;
@@ -19,44 +16,11 @@ import com.csse3200.game.input.InputDecorator;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.terminal.Terminal;
 import com.csse3200.game.ui.terminal.TerminalDisplay;
-import java.util.stream.Stream;
 
 /** Screen for the Blackjack minigame. */
 public class BlackjackScreen extends MinigameScreen {
   private static final String BLACKJACK_MUSIC = "sounds/minigames/blackjack/blackjack-bgm.mp3";
   private static final int STARTING_BALANCE = 100;
-
-  /**
-   * Textures the game's pause menu and its in-game settings panel use, matching what the level
-   * screens load for them.
-   */
-  static final String[] PAUSE_TEXTURES = {
-    "images/ui/title_odysseus_logo.png",
-    "images/Buttons/continue_up_btn.png",
-    "images/Buttons/continue_down_btn.png",
-    "images/Buttons/settings_up_btn.png",
-    "images/Buttons/settings_down_btn.png",
-    "images/Buttons/quit_up_btn.png",
-    "images/Buttons/quit_down_btn.png",
-    "images/Buttons/control_up_btn.png",
-    "images/Buttons/control_down_btn.png",
-    "images/ui/controls_graphic.png",
-    "images/Buttons/back_up_btn.png",
-    "images/Buttons/back_down_btn.png",
-    "images/Buttons/exit_up_btn.png",
-    "images/Buttons/exit_down_btn.png",
-    "images/Buttons/apply_up_btn.png",
-    "images/Buttons/apply_down_btn.png",
-    "images/backgrounds/main_menu_bg_2.png",
-    "images/ui/settings_box.png"
-  };
-
-  private PauseMenuOverlay pauseOverlay;
-  private Terminal terminal;
-  private BlackjackDisplay display;
-  private boolean soundEnabled = true;
-  private boolean musicPausedForMenu;
-  private boolean disposed;
 
   /**
    * Creates the Blackjack screen. The story and the debug terminal open the same screen: winning
@@ -82,54 +46,7 @@ public class BlackjackScreen extends MinigameScreen {
 
   @Override
   protected String[] getTextures() {
-    return Stream.concat(BlackjackConfig.TEXTURES.stream(), Stream.of(PAUSE_TEXTURES))
-        .distinct()
-        .toArray(String[]::new);
-  }
-
-  /**
-   * Runs a frame. As in the levels, Esc opens or closes the game's pause menu, and the menu is
-   * built after the frame is drawn so its blurred backdrop captures the table.
-   */
-  @Override
-  public void render(float delta) {
-    // Esc is polled directly, so ignore it while the terminal is open; F1 closes the terminal.
-    boolean terminalOpen = terminal != null && terminal.isOpen();
-    if (!terminalOpen && Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
-      togglePause();
-    }
-
-    super.render(delta);
-
-    // Back can change screen during the frame, which disposes this screen and its services.
-    if (disposed) {
-      return;
-    }
-    pauseOverlay.afterRender();
-    syncMusicWithPause();
-  }
-
-  /**
-   * Opens the pause menu, or closes it if it is already open. Ignored while the settings panel is
-   * open, as in the levels, and while the table is mid-deal or fading out after a win.
-   */
-  void togglePause() {
-    if (ServiceLocator.getEntityService().getSettingsOpen() || !display.canPause()) {
-      return;
-    }
-    pauseOverlay.request();
-  }
-
-  /** Pauses the Blackjack music while the pause menu is open, unless the player muted it. */
-  private void syncMusicWithPause() {
-    boolean paused = ServiceLocator.getEntityService().getPaused();
-    if (paused == musicPausedForMenu) {
-      return;
-    }
-    musicPausedForMenu = paused;
-    if (soundEnabled) {
-      setMusicPlaying(!paused);
-    }
+    return BlackjackConfig.TEXTURES.toArray(String[]::new);
   }
 
   @Override
@@ -138,7 +55,6 @@ public class BlackjackScreen extends MinigameScreen {
   }
 
   private void setSoundEnabled(boolean enabled) {
-    soundEnabled = enabled;
     setMusicPlaying(enabled);
   }
 
@@ -154,7 +70,6 @@ public class BlackjackScreen extends MinigameScreen {
 
   @Override
   public void dispose() {
-    disposed = true;
     Music music = ServiceLocator.getResourceService().getAsset(BLACKJACK_MUSIC, Music.class);
     music.stop();
     ServiceLocator.getResourceService().unloadAssets(new String[] {BLACKJACK_MUSIC});
@@ -182,8 +97,7 @@ public class BlackjackScreen extends MinigameScreen {
             }
             : new InventoryComponent(startingGold);
 
-    pauseOverlay = new PauseMenuOverlay(game);
-    display =
+    BlackjackDisplay display =
         new BlackjackDisplay(
             blackjack,
             inventoryComponent,
@@ -191,7 +105,7 @@ public class BlackjackScreen extends MinigameScreen {
             null,
             () -> BlackjackDialogue.startWinCutscene(game));
 
-    terminal = new Terminal(game, GdxGame.ScreenType.LEVEL_3_GAME);
+    Terminal terminal = new Terminal(game, GdxGame.ScreenType.LEVEL_3_GAME);
     Entity ui =
         new Entity()
             .addComponent(inventoryComponent)
@@ -203,8 +117,6 @@ public class BlackjackScreen extends MinigameScreen {
             .addComponent(terminal)
             .addComponent(ServiceLocator.getInputService().getInputFactory().createForTerminal())
             .addComponent(new TerminalDisplay());
-    // The pause button sits under the sound button in the display, like Esc it toggles the menu.
-    ui.getEvents().addListener(BlackjackDisplay.PAUSE_REQUESTED, this::togglePause);
     return ui;
   }
 }
