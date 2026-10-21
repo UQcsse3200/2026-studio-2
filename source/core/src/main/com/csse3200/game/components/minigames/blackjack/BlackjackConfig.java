@@ -3,19 +3,29 @@ package com.csse3200.game.components.minigames.blackjack;
 import com.csse3200.game.components.item.ItemType;
 import java.util.List;
 
+/**
+ * Asset lists for the Blackjack minigame. Screens load {@link #TEXTURES} and {@link #SOUNDS} before
+ * building the Blackjack UI. Background music is loaded separately by each screen.
+ */
 public final class BlackjackConfig {
+  /** Every texture the Blackjack UI uses: all 52 card faces, the card back, buttons and table. */
   public static final List<String> TEXTURES = List.of(createTextures());
 
+  /** Card deal, win and lose sound effects. */
   public static final List<String> SOUNDS =
       List.of(
           "sounds/minigames/blackjack/card-deal.mp3",
           "sounds/minigames/blackjack/win.mp3",
           "sounds/minigames/blackjack/lose.mp3");
+
+  /** Item reward for winning a round. Not currently granted by the story-mode display. */
   public static final ItemType WIN_REWARD = ItemType.STANDARD_ARROW;
+
+  /** Quantity of {@link #WIN_REWARD} for winning a round. */
   public static final int WIN_REWARD_QUANTITY = 1;
 
   private static String[] createTextures() {
-    String[] textures = new String[64];
+    String[] textures = new String[77];
     int index = 0;
 
     for (Blackjack.Suit suit : Blackjack.Suit.values()) {
@@ -32,15 +42,32 @@ public final class BlackjackConfig {
     textures[index++] = "images/minigames/blackjack/card_back.png";
     textures[index++] = "images/Buttons/back_up_btn.png";
     textures[index++] = "images/Buttons/back_down_btn.png";
+    textures[index++] = "images/Buttons/bj_back_up_btn.png";
+    textures[index++] = "images/Buttons/bj_back_down_btn.png";
     textures[index++] = "images/Buttons/hit_up_btn.png";
     textures[index++] = "images/Buttons/hit_down_btn.png";
     textures[index++] = "images/Buttons/stand_up_btn.png";
     textures[index++] = "images/Buttons/stand_down_btn.png";
-    textures[index++] = "images/Buttons/newRound_up_btn.png";
-    textures[index++] = "images/Buttons/newRound_down_btn.png";
-    textures[index++] = "images/Buttons/continue_up_btn.png";
-    textures[index++] = "images/Buttons/continue_down_btn.png";
-    textures[index] = "images/minigames/blackjack/god_of_wind_background.png";
+
+    textures[index++] = "images/Buttons/new_round_up_btn.png";
+    textures[index++] = "images/Buttons/new_round_down_btn.png";
+
+    textures[index++] = "images/Buttons/sound_off_up_btn.png";
+    textures[index++] = "images/Buttons/sound_on_up_btn.png";
+    textures[index++] = "images/Buttons/sound_off_down_btn.png";
+    textures[index++] = "images/Buttons/sound_on_down_btn.png";
+    textures[index++] = "images/Buttons/bj_pause_up_btn.png";
+    textures[index++] = "images/Buttons/bj_pause_down_btn.png";
+    textures[index++] = "images/Buttons/bj_new_match_up_btn.png";
+    textures[index++] = "images/Buttons/bj_new_match_down_btn.png";
+    textures[index++] = "images/Buttons/accept_up_btn.png";
+    textures[index++] = "images/Buttons/accept_down_btn.png";
+
+    textures[index++] = BlackjackRulesDisplay.INFO_UP_PATH;
+    textures[index++] = BlackjackRulesDisplay.INFO_DOWN_PATH;
+
+    textures[index++] = "images/minigames/blackjack/blackjack_table_background.png";
+    textures[index] = "images/minigames/blackjack/blackjack_vertical_scroll.png";
 
     return textures;
   }

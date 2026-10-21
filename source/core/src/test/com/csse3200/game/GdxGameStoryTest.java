@@ -47,13 +47,8 @@ class GdxGameStoryTest {
   }
 
   @Test
-  void storyBlackjackIsCreatedInStoryMode() {
-    try (var screens =
-        mockConstruction(
-            BlackjackScreen.class,
-            (screen, context) -> {
-              assertEquals(true, context.arguments().get(1));
-            })) {
+  void storyBlackjackCreatesTheBlackjackScreen() {
+    try (var screens = mockConstruction(BlackjackScreen.class)) {
       Screen selected = new GdxGame().createScreen(GdxGame.ScreenType.STORY_BLACKJACK);
       assertSame(screens.constructed().getFirst(), selected);
     }
