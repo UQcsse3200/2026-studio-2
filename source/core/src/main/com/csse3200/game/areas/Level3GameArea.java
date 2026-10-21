@@ -8,10 +8,12 @@ import com.csse3200.game.areas.terrain.TerrainFactory;
 import com.csse3200.game.areas.terrain.configs.levelconfigs.Level3Config;
 import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.components.CombatStatsComponent;
+import com.csse3200.game.components.inventory.InventoryBarDisplay;
 import com.csse3200.game.components.level.RainSoundComponent;
 import com.csse3200.game.components.level.RisingWaterComponent;
 import com.csse3200.game.components.level.ThunderSoundComponent;
 import com.csse3200.game.components.player.PlayerActions;
+import com.csse3200.game.components.player.PlayerStatsDisplay;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.ItemFactory;
 import com.csse3200.game.entities.factories.ObstacleFactory;
@@ -406,9 +408,6 @@ public class Level3GameArea extends GameArea {
   @Override
   public void toggleBossCamera() {
     if (!bossCamToggled) {
-      if (mapToggled) {
-        toggleLevelMap();
-      }
       Vector2 bossBounds = new Vector2(25f, 12f);
       Vector2 bossResizeScale = new Vector2(0f, 0f);
       int bossBoundX = (int) bossBounds.x;
@@ -420,6 +419,12 @@ public class Level3GameArea extends GameArea {
       cameraComponent.setTarget(bossCamera);
 
       backgroundComponent.scaleEntity(bossResizeScale, bossBounds, true, "bossArena");
+
+      if (mapToggled) {
+        getPlayer().getComponent(InventoryBarDisplay.class).showBar();
+        getPlayer().getComponent(PlayerStatsDisplay.class).show();
+        mapToggled = false;
+      }
       bossCamToggled = true;
     }
   }

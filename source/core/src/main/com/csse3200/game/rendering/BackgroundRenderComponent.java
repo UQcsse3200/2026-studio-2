@@ -58,6 +58,11 @@ public class BackgroundRenderComponent extends RenderComponent {
     private final Vector2 targetVelocity = new Vector2();
     private final Vector2 startPosition = new Vector2();
     private final Vector2 targetPosition = new Vector2();
+    private float baseWidth;
+    private float baseHeight;
+    private final Vector2 baseOffset = new Vector2();
+    private final Vector2 baseVelocity = new Vector2();
+    private final Vector2 basePosition = new Vector2();
 
     ParallaxLayer(
         Texture texture,
@@ -222,9 +227,15 @@ public class BackgroundRenderComponent extends RenderComponent {
   /** Scale is controlled individually for each layer. */
   public void scaleEntity(Vector2 factor, Vector2 worldBounds, boolean up, String level) {
     if (level.equals("bossArena")) {
-      scalingBackground = false;
-
       for (ParallaxLayer layer : layers) {
+        if (layer.baseWidth > 0f) {
+          layer.width = layer.baseWidth;
+          layer.height = layer.baseHeight;
+          layer.offset.set(layer.baseOffset);
+          layer.velocity.set(layer.baseVelocity);
+          layer.position.set(layer.basePosition);
+        }
+
         layer.position.x -= 1.7f;
         layer.position.y -= 1.22f;
         layer.height += 1;
@@ -232,6 +243,8 @@ public class BackgroundRenderComponent extends RenderComponent {
           layer.height += 3;
         }
       }
+      scalingBackground = false;
+      currentScaleTime = 0f;
       return;
     }
 
@@ -246,6 +259,14 @@ public class BackgroundRenderComponent extends RenderComponent {
       layer.startPosition.set(layer.position);
 
       if (up) {
+        if (up) {
+          layer.baseWidth = layer.width;
+          layer.baseHeight = layer.height;
+          layer.baseOffset.set(layer.offset);
+          layer.baseVelocity.set(layer.velocity);
+          layer.basePosition.set(layer.position);
+        }
+
         scaleUp(layer, factor, worldBounds, level);
       } else {
         scaleDown(layer, factor, worldBounds, level);
