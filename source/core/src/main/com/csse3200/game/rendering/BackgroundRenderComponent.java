@@ -5,6 +5,7 @@ import static com.csse3200.game.areas.GameArea.RepeatMode.*;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.areas.GameArea.RepeatMode;
 import com.csse3200.game.components.CameraComponent;
@@ -27,6 +28,10 @@ public class BackgroundRenderComponent extends RenderComponent {
   private int originalRotation;
   private final Vector2 finalVelocity = new Vector2(5.5f, -4.5f);
 
+  private float SCALE_TIME = 0.75f;
+  private float currentScaleTime = 0f;
+  private boolean scalingBackground = false;
+
   /** A single parallax background layer. */
   private static class ParallaxLayer {
     private Texture texture;
@@ -42,6 +47,22 @@ public class BackgroundRenderComponent extends RenderComponent {
     private final boolean flash;
     private int rotation;
     private final int lightningOrder;
+
+    private float startWidth;
+    private float startHeight;
+    private float targetWidth;
+    private float targetHeight;
+    private final Vector2 startOffset = new Vector2();
+    private final Vector2 targetOffset = new Vector2();
+    private final Vector2 startVelocity = new Vector2();
+    private final Vector2 targetVelocity = new Vector2();
+    private final Vector2 startPosition = new Vector2();
+    private final Vector2 targetPosition = new Vector2();
+    private float baseWidth;
+    private float baseHeight;
+    private final Vector2 baseOffset = new Vector2();
+    private final Vector2 baseVelocity = new Vector2();
+    private final Vector2 basePosition = new Vector2();
 
     ParallaxLayer(
         Texture texture,
@@ -205,21 +226,65 @@ public class BackgroundRenderComponent extends RenderComponent {
 
   /** Scale is controlled individually for each layer. */
   public void scaleEntity(Vector2 factor, Vector2 worldBounds, boolean up, String level) {
-    for (ParallaxLayer layer : layers) {
-      if (level.equals("bossArena")) {
+    if (level.equals("bossArena")) {
+      for (ParallaxLayer layer : layers) {
+        if (layer.baseWidth > 0f) {
+          layer.width = layer.baseWidth;
+          layer.height = layer.baseHeight;
+          layer.offset.set(layer.baseOffset);
+          layer.velocity.set(layer.baseVelocity);
+          layer.position.set(layer.basePosition);
+        }
+
         layer.position.x -= 1.7f;
         layer.position.y -= 1.22f;
         layer.height += 1;
         if (layer.flash) {
           layer.height += 3;
         }
-      } else {
-        if (up) {
-          scaleUp(layer, factor, worldBounds, level);
-        } else {
-          scaleDown(layer, factor, worldBounds, level);
-        }
       }
+      scalingBackground = false;
+      currentScaleTime = 0f;
+      return;
+    }
+
+    currentScaleTime = 0f;
+    scalingBackground = true;
+
+    for (ParallaxLayer layer : layers) {
+      layer.startWidth = layer.width;
+      layer.startHeight = layer.height;
+      layer.startOffset.set(layer.offset);
+      layer.startVelocity.set(layer.velocity);
+      layer.startPosition.set(layer.position);
+
+      if (up) {
+        if (up) {
+          layer.baseWidth = layer.width;
+          layer.baseHeight = layer.height;
+          layer.baseOffset.set(layer.offset);
+          layer.baseVelocity.set(layer.velocity);
+          layer.basePosition.set(layer.position);
+        }
+
+        scaleUp(layer, factor, worldBounds, level);
+      } else {
+        scaleDown(layer, factor, worldBounds, level);
+      }
+
+      // now that the targets have been calculated, store them and reset so we can properly animate
+      layer.targetWidth = layer.width;
+      layer.targetHeight = layer.height;
+      layer.targetOffset.set(layer.offset);
+      layer.targetVelocity.set(layer.velocity);
+      layer.targetPosition.set(layer.position);
+
+      // reset all state changes to animate them in update
+      layer.width = layer.startWidth;
+      layer.height = layer.startHeight;
+      layer.offset.set(layer.startOffset);
+      layer.velocity.set(layer.startVelocity);
+      layer.position.set(layer.startPosition);
     }
   }
 
@@ -254,6 +319,11 @@ public class BackgroundRenderComponent extends RenderComponent {
    * @param layer the layer to get new position for
    */
   private void getPosUpdate(ParallaxLayer layer) {
+    if (!scalingBackground) {
+      layer.position.x += layer.velocity.x * ServiceLocator.getTimeSource().getDeltaTime();
+      layer.position.y += layer.velocity.y * ServiceLocator.getTimeSource().getDeltaTime();
+    }
+
     layer.position.x += layer.velocity.x * ServiceLocator.getTimeSource().getDeltaTime();
     layer.position.y += layer.velocity.y * ServiceLocator.getTimeSource().getDeltaTime();
     boolean weather = getWeather();
@@ -288,7 +358,7 @@ public class BackgroundRenderComponent extends RenderComponent {
     boolean weather = getWeather();
     if (weather && layer.repeat == CHAOTIC && rainIntensity < 1f) {
       float intensity = 1f - rainIntensity;
-      float finalWidth = 0.1f;
+      float finalWidth = 0.15f;
       float finalHeight = 0.45f;
       int finalRotation = 40;
       layer.velocity.x = originalVelocity.x + (finalVelocity.x - originalVelocity.x) * intensity;
@@ -318,6 +388,31 @@ public class BackgroundRenderComponent extends RenderComponent {
     float backgroundY = position.y + layer.offset.y + cameraY * layer.distance + layer.position.y;
 
     return new Vector2(backgroundX, backgroundY);
+  }
+
+  @Override
+  public void update() {
+    super.update();
+    if (scalingBackground) {
+      currentScaleTime += ServiceLocator.getTimeSource().getDeltaTime();
+      float progress = Math.min(1f, currentScaleTime / SCALE_TIME);
+
+      for (ParallaxLayer layer : layers) {
+        // lerp all values
+        layer.width = MathUtils.lerp(layer.startWidth, layer.targetWidth, progress);
+        layer.height = MathUtils.lerp(layer.startHeight, layer.targetHeight, progress);
+        layer.offset.x = MathUtils.lerp(layer.startOffset.x, layer.targetOffset.x, progress);
+        layer.offset.y = MathUtils.lerp(layer.startOffset.y, layer.targetOffset.y, progress);
+        layer.velocity.x = MathUtils.lerp(layer.startVelocity.x, layer.targetVelocity.x, progress);
+        layer.velocity.y = MathUtils.lerp(layer.startVelocity.y, layer.targetVelocity.y, progress);
+        layer.position.x = MathUtils.lerp(layer.startPosition.x, layer.targetPosition.x, progress);
+        layer.position.y = MathUtils.lerp(layer.startPosition.y, layer.targetPosition.y, progress);
+      }
+
+      if (progress >= 1f) {
+        scalingBackground = false;
+      }
+    }
   }
 
   @Override
@@ -496,6 +591,10 @@ public class BackgroundRenderComponent extends RenderComponent {
       }
       batch.setColor(prevColor);
     }
+  }
+
+  public boolean getScalingBackground() {
+    return scalingBackground;
   }
 
   /** Drops the fractional part of a value, rounding towards zero like an int cast. */

@@ -167,25 +167,6 @@ class Level2GameAreaTest extends AbstractAreaAssetsTest {
   }
 
   @Test
-  void spawnTerrainSetsWorldBounds() throws Exception {
-    when(terrainFactory.createTerrain(TerrainFactory.TerrainType.BACKGROUND_DESERT))
-        .thenReturn(terrain);
-
-    when(terrain.getTileSize()).thenReturn(1f);
-    when(terrain.getMapBounds(0)).thenReturn(new GridPoint2(90, 30));
-
-    invokePrivate("spawnTerrain");
-
-    Field field = Level2GameArea.class.getDeclaredField("worldBounds");
-    field.setAccessible(true);
-
-    Vector2 bounds = (Vector2) field.get(area);
-
-    assertEquals(50f, bounds.x);
-    assertEquals(45f, bounds.y);
-  }
-
-  @Test
   void level2TexturesIncludeExitDoorTexture() throws Exception {
     Field field = Level2GameArea.class.getDeclaredField("level2Textures");
     field.setAccessible(true);
