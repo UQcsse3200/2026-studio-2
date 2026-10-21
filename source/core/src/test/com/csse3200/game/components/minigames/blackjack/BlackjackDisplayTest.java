@@ -159,7 +159,8 @@ class BlackjackDisplayTest {
   @Test
   void shouldNotStartRoundWhenPlayerHasNoGold() {
     InventoryComponent inventory = new InventoryComponent(0);
-    Blackjack blackjack = new Blackjack(100);
+    // Seeded so the deal is not a natural blackjack, which would end the round straight away.
+    Blackjack blackjack = new Blackjack(100, new Random(1));
     BlackjackDisplay display = new BlackjackDisplay(blackjack, inventory);
     show(display);
 

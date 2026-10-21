@@ -459,10 +459,10 @@ public class BlackjackDisplay extends UIComponent {
     Table rightSide = new Table();
 
     rightSide.row();
-    rightSide.add(soundButton).width(192f).height(67f).pad(5f);
-    // Pause sits directly below Sound, in the same column and at the same size.
+    rightSide.add(pauseButton).width(192f).height(67f).pad(5f);
+    // Sound sits directly below Pause, in the same column and at the same size.
     rightSide.row();
-    rightSide.add(pauseButton).width(192f).height(67f).pad(5f).padTop(15f);
+    rightSide.add(soundButton).width(192f).height(67f).pad(5f).padTop(15f);
     rightSide.top().right();
 
     table.add(leftSide).prefHeight(PREF_INFO_BOX_HEIGHT).prefWidth(PREF_OUTER_TABLE_WIDTH).center();
