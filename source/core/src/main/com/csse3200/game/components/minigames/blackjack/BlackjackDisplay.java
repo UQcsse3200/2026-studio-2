@@ -91,6 +91,7 @@ public class BlackjackDisplay extends UIComponent {
   private Cell<ImageButton> resultButtonCell;
   private ImageButton.ImageButtonStyle newRoundStyle;
   private ImageButton.ImageButtonStyle newMatchStyle;
+  private ImageButton.ImageButtonStyle acceptStyle;
   private Drawable regularResultBackground;
   private Drawable dialogueScrollBackground;
   private ImageButton newRoundButton;
@@ -547,6 +548,9 @@ public class BlackjackDisplay extends UIComponent {
                 "images/Buttons/bj_new_match_up_btn.png",
                 "images/Buttons/bj_new_match_down_btn.png")
             .getStyle();
+    acceptStyle =
+        createImageButton("images/Buttons/accept_up_btn.png", "images/Buttons/accept_down_btn.png")
+            .getStyle();
 
     nextRoundButton.addListener(
         new ChangeListener() {
@@ -731,7 +735,10 @@ public class BlackjackDisplay extends UIComponent {
       dialogueActionLabel.setText("Next round");
     }
     resultButtonCell.getActor().setVisible(!automaticVictory);
-    resultButtonCell.getActor().setStyle(startsNewMatch(dialogue) ? newMatchStyle : newRoundStyle);
+    boolean gift = dialogue != null && dialogue.getKind() == BlackjackDialogue.Kind.GIFT;
+    resultButtonCell
+        .getActor()
+        .setStyle(gift ? acceptStyle : startsNewMatch(dialogue) ? newMatchStyle : newRoundStyle);
     resultOverlay.toFront();
     if (automaticVictory) {
       scheduleVictoryCutscene();

@@ -105,6 +105,9 @@ class BlackjackDisplayTest {
     Label message = resultOverlay.findActor("resultMessage");
     assertEquals(
         BlackjackDialogue.of(BlackjackDialogue.Kind.GIFT).getText(), message.getText().toString());
+    ImageButton button = resultOverlay.findActor("resultContinue");
+    assertSame(
+        field(display, "acceptStyle", ImageButton.ImageButtonStyle.class), button.getStyle());
   }
 
   @Test
