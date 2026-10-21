@@ -37,7 +37,7 @@ loadScripts(document, 'script');</script>
 <li>
 <p>Summary:</p>
 <ul>
-<li>Nested</li>
+<li><a href="#nested-class-summary">Nested</a></li>
 <li><a href="#field-summary">Field</a></li>
 <li><a href="#constructor-summary">Constr</a></li>
 <li><a href="#method-summary">Method</a></li>
@@ -57,7 +57,7 @@ loadScripts(document, 'script');</script>
 <div id="navbar-sub-list">
 <ul class="sub-nav-list">
 <li>Summary:&nbsp;</li>
-<li>Nested&nbsp;|&nbsp;</li>
+<li><a href="#nested-class-summary">Nested</a>&nbsp;|&nbsp;</li>
 <li><a href="#field-summary">Field</a>&nbsp;|&nbsp;</li>
 <li><a href="#constructor-summary">Constr</a>&nbsp;|&nbsp;</li>
 <li><a href="#method-summary">Method</a></li>
@@ -107,6 +107,28 @@ loadScripts(document, 'script');</script>
 </section>
 <section class="summary">
 <ul class="summary-list">
+<!-- ======== NESTED CLASS SUMMARY ======== -->
+<li>
+<section class="nested-class-summary" id="nested-class-summary">
+<h2>Nested Class Summary</h2>
+<div class="caption"><span>Nested Classes</span></div>
+<div class="summary-table three-column-summary">
+<div class="table-header col-first">Modifier and Type</div>
+<div class="table-header col-second">Class</div>
+<div class="table-header col-last">Description</div>
+<div class="col-first even-row-color"><code>static final record&nbsp;</code></div>
+<div class="col-second even-row-color"><code><a href="BackgroundRenderComponent.LayerAppearance.html" class="type-name-link" title="class in com.csse3200.game.rendering">BackgroundRenderComponent.LayerAppearance</a></code></div>
+<div class="col-last even-row-color">
+<div class="block">Visual and lightning settings for a parallax layer.</div>
+</div>
+<div class="col-first odd-row-color"><code>static final record&nbsp;</code></div>
+<div class="col-second odd-row-color"><code><a href="BackgroundRenderComponent.LayerLayout.html" class="type-name-link" title="class in com.csse3200.game.rendering">BackgroundRenderComponent.LayerLayout</a></code></div>
+<div class="col-last odd-row-color">
+<div class="block">Geometry and movement of a parallax layer.</div>
+</div>
+</div>
+</section>
+</li>
 <!-- =========== FIELD SUMMARY =========== -->
 <li>
 <section class="field-summary" id="field-summary">
@@ -148,20 +170,11 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#addLayer(java.lang.String,com.badlogic.gdx.math.Vector2,float,float,com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2,com.csse3200.game.areas.GameArea.RepeatMode,float,float,boolean,int,int)" class="member-name-link">addLayer</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;texturePath,
- com.badlogic.gdx.math.Vector2&nbsp;parallaxFactor,
- float&nbsp;width,
- float&nbsp;height,
- com.badlogic.gdx.math.Vector2&nbsp;offset,
- com.badlogic.gdx.math.Vector2&nbsp;velocity,
- <a href="../areas/GameArea.RepeatMode.html" title="enum class in com.csse3200.game.areas">GameArea.RepeatMode</a>&nbsp;repeat,
- float&nbsp;distance,
- float&nbsp;transparency,
- boolean&nbsp;flash,
- int&nbsp;rotation,
- int&nbsp;lightningOrder)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#addLayer(java.lang.String,com.csse3200.game.rendering.BackgroundRenderComponent.LayerLayout,com.csse3200.game.rendering.BackgroundRenderComponent.LayerAppearance)" class="member-name-link">addLayer</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;texturePath,
+ <a href="BackgroundRenderComponent.LayerLayout.html" title="class in com.csse3200.game.rendering">BackgroundRenderComponent.LayerLayout</a>&nbsp;layout,
+ <a href="BackgroundRenderComponent.LayerAppearance.html" title="class in com.csse3200.game.rendering">BackgroundRenderComponent.LayerAppearance</a>&nbsp;appearance)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Adds a parallax layer with a custom size and vertical position.</div>
+<div class="block">Adds a layer with its geometry, movement, and visual settings.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#draw(com.badlogic.gdx.graphics.g2d.SpriteBatch)" class="member-name-link">draw</a><wbr>(com.badlogic.gdx.graphics.g2d.SpriteBatch&nbsp;batch)</code></div>
@@ -244,38 +257,12 @@ loadScripts(document, 'script');</script>
 <h2>Method Details</h2>
 <ul class="member-list">
 <li>
-<section class="detail" id="addLayer(java.lang.String,com.badlogic.gdx.math.Vector2,float,float,com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2,com.csse3200.game.areas.GameArea.RepeatMode,float,float,boolean,int,int)">
+<section class="detail" id="addLayer(java.lang.String,com.csse3200.game.rendering.BackgroundRenderComponent.LayerLayout,com.csse3200.game.rendering.BackgroundRenderComponent.LayerAppearance)">
 <h3>addLayer</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">addLayer</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;texturePath,
- com.badlogic.gdx.math.Vector2&nbsp;parallaxFactor,
- float&nbsp;width,
- float&nbsp;height,
- com.badlogic.gdx.math.Vector2&nbsp;offset,
- com.badlogic.gdx.math.Vector2&nbsp;velocity,
- <a href="../areas/GameArea.RepeatMode.html" title="enum class in com.csse3200.game.areas">GameArea.RepeatMode</a>&nbsp;repeat,
- float&nbsp;distance,
- float&nbsp;transparency,
- boolean&nbsp;flash,
- int&nbsp;rotation,
- int&nbsp;lightningOrder)</span></div>
-<div class="block">Adds a parallax layer with a custom size and vertical position. Distance is a float between 0
- and 1. 1 causes the background to have no vertical movement, while 0 causes it to follow player
- directly.</div>
-<dl class="notes">
-<dt>Parameters:</dt>
-<dd><code>texturePath</code> - path to the texture</dd>
-<dd><code>parallaxFactor</code> - controls how much the layer moves relative to player movement</dd>
-<dd><code>width</code> - width of the layer</dd>
-<dd><code>height</code> - height of the layer</dd>
-<dd><code>offset</code> - positional offset relative to backgroundPos</dd>
-<dd><code>velocity</code> - the independent velocity of the layer</dd>
-<dd><code>repeat</code> - whether or not this layer should repeat</dd>
-<dd><code>distance</code> - the distance from POV affecting vertical parallax movement</dd>
-<dd><code>transparency</code> - the transparency of the layer</dd>
-<dd><code>flash</code> - whether or not this layer should only be visible during lightning</dd>
-<dd><code>rotation</code> - how much to rotate the texture of this layer from 0 to 360</dd>
-<dd><code>lightningOrder</code> - the order this layer will become visible during lightning</dd>
-</dl>
+ <a href="BackgroundRenderComponent.LayerLayout.html" title="class in com.csse3200.game.rendering">BackgroundRenderComponent.LayerLayout</a>&nbsp;layout,
+ <a href="BackgroundRenderComponent.LayerAppearance.html" title="class in com.csse3200.game.rendering">BackgroundRenderComponent.LayerAppearance</a>&nbsp;appearance)</span></div>
+<div class="block">Adds a layer with its geometry, movement, and visual settings.</div>
 </section>
 </li>
 <li>
