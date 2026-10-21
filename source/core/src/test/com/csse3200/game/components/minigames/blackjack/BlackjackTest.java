@@ -220,15 +220,6 @@ class BlackjackTest {
   }
 
   @Test
-  void testCannotStartRoundWithoutEnoughBalance() {
-    Blackjack game = new Blackjack(0, new Random(1));
-
-    assertThrows(IllegalStateException.class, game::startNewRound);
-    // The gold check only applies once a round has ended.
-    assertEquals(MatchResult.IN_PROGRESS, game.getMatchResult());
-  }
-
-  @Test
   void testLastOutcomeIsNullWhileRoundInProgress() {
     for (int seed = 0; seed < 100; seed++) {
       Blackjack game = new Blackjack(10, new Random(seed));
