@@ -97,6 +97,19 @@ class SummonTaskTest {
   }
 
   @Test
+  void summonPriorityWaitsUntilCooldownExpires() {
+    Entity summoner = new Entity();
+    SummonTask task = new SummonTask(new Entity(), 30, 10f, 5f, "Necromancer");
+    task.create(() -> summoner);
+
+    when(gameTime.getTime()).thenReturn(4999L);
+    assertEquals(-1, task.getPriority());
+
+    when(gameTime.getTime()).thenReturn(5000L);
+    assertEquals(30, task.getPriority());
+  }
+
+  @Test
   void calypsoCannotSummonWithoutPhaseTwo() {
     Entity summoner = new Entity();
     SummonTask task = new SummonTask(new Entity(), 30, 10f, 5f, "Calypso");

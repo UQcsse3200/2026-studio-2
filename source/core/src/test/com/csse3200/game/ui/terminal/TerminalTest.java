@@ -107,7 +107,7 @@ class TerminalTest {
     terminal.setEnteredMessage("blackjackMinigame load");
 
     assertTrue(terminal.processMessage());
-    verify(game).setScreen(GdxGame.ScreenType.MINIGAME_BLACKJACK);
+    verify(game).startCutscene(any(), eq(GdxGame.ScreenType.MINIGAME_BLACKJACK));
   }
 
   @Test

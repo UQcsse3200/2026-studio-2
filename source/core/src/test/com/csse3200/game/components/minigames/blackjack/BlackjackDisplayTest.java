@@ -4,28 +4,21 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.ui.TextField;
-import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener.ChangeEvent;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
-import com.csse3200.game.components.ButtonSound;
 import com.csse3200.game.components.inventory.InventoryComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.extensions.GameExtension;
@@ -33,14 +26,11 @@ import com.csse3200.game.rendering.RenderService;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import java.lang.reflect.Field;
+import java.util.Random;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
-import org.junit.jupiter.params.provider.ValueSource;
-import org.mockito.MockedStatic;
 
 @ExtendWith(GameExtension.class)
 class BlackjackDisplayTest {
@@ -76,13 +66,9 @@ class BlackjackDisplayTest {
     show(display);
 
     Table table = field(display, "table", Table.class);
-    TextField betField = field(display, "betField", TextField.class);
 
     assertNotNull(table);
-    assertNotNull(betField);
     assertTrue(table.isVisible());
-    assertEquals("", betField.getText());
-    assertEquals("Enter bet", betField.getMessageText());
   }
 
   @Test
@@ -108,9 +94,76 @@ class BlackjackDisplayTest {
   }
 
   @Test
-  void shouldCreateHiddenResultOverlay() {
+  void reopeningShopBlackjackDoesNotOfferAnotherGift() {
+    InventoryComponent inventory = new InventoryComponent(40);
+    for (int visit = 0; visit < 2; visit++) {
+      BlackjackDisplay display =
+          new BlackjackDisplay(
+              new Blackjack(inventory.getGold()), inventory, null, mock(Runnable.class));
+      show(display);
+      assertFalse(field(display, "resultOverlay", Table.class).isVisible());
+      assertEquals(40, inventory.getGold());
+      display.dispose();
+    }
+  }
+
+  @Test
+  void shopBackButtonIsVisibleAndClosesTheOverlay() {
+    Runnable close = mock(Runnable.class);
     BlackjackDisplay display =
-        new BlackjackDisplay(new Blackjack(100), new InventoryComponent(100));
+        new BlackjackDisplay(new Blackjack(40), new InventoryComponent(40), null, close);
+    show(display);
+    ImageButton back = field(display, "backButton", ImageButton.class);
+    assertSame(stage, back.getStage());
+    assertTrue(back.isVisible());
+    assertFalse(back.isDisabled());
+    var release = new com.badlogic.gdx.scenes.scene2d.InputEvent();
+    release.setType(com.badlogic.gdx.scenes.scene2d.InputEvent.Type.touchUp);
+    back.fire(release);
+    org.mockito.Mockito.verify(close).run();
+    org.junit.jupiter.api.Assertions.assertNull(stage.getRoot().findActor("pauseButton"));
+  }
+
+  @Test
+  void storyGiftIsGrantedOnceAndPauseRemainsAvailable() {
+    InventoryComponent inventory = new InventoryComponent(0);
+    Runnable win = mock(Runnable.class);
+    BlackjackDisplay display = new BlackjackDisplay(new Blackjack(0), inventory, null, null, win);
+    show(display);
+    assertTrue(field(display, "resultOverlay", Table.class).isVisible());
+    resultButton(display)
+        .fire(new com.badlogic.gdx.scenes.scene2d.utils.ChangeListener.ChangeEvent());
+    assertEquals(5, inventory.getGold());
+    invoke(display, "updateResultOverlay");
+    assertFalse(field(display, "resultOverlay", Table.class).isVisible());
+    assertEquals(5, inventory.getGold());
+    assertNotNull(stage.getRoot().findActor("pauseButton"));
+    org.mockito.Mockito.verifyNoInteractions(win);
+  }
+
+  @Test
+  void shouldOfferCirceGiftWhenTheMatchStarts() {
+    BlackjackDisplay display =
+        new BlackjackDisplay(
+            new Blackjack(40), new InventoryComponent(40), null, null, mock(Runnable.class));
+    show(display);
+
+    invoke(display, "updateResultOverlay");
+
+    Table resultOverlay = field(display, "resultOverlay", Table.class);
+    assertTrue(resultOverlay.isVisible());
+    Label message = resultOverlay.findActor("resultMessage");
+    assertEquals(
+        BlackjackDialogue.of(BlackjackDialogue.Kind.GIFT).getText(), message.getText().toString());
+    ImageButton button = resultOverlay.findActor("resultContinue");
+    assertSame(
+        field(display, "acceptStyle", ImageButton.ImageButtonStyle.class), button.getStyle());
+  }
+
+  @Test
+  void shouldCreateHiddenResultOverlay() {
+    // With no inventory there is no gold to give, so Circe's welcome gift is not shown.
+    BlackjackDisplay display = new BlackjackDisplay(new Blackjack(100));
 
     show(display);
 
@@ -146,257 +199,235 @@ class BlackjackDisplayTest {
   }
 
   @Test
-  void shouldRejectBetWhenInventoryUnavailable() {
-    BlackjackDisplay display = new BlackjackDisplay(new Blackjack(100));
-    show(display);
-
-    TextField betField = field(display, "betField", TextField.class);
-    Label resultLabel = label(display, "resultLabel");
-
-    betField.setText("10");
-    invokeTryStartRound(display);
-
-    assertEquals("Player gold unavailable.", resultLabel.getText().toString());
-  }
-
-  @Test
-  void shouldRejectBetWhenPlayerHasZeroGold() {
-    InventoryComponent inventory = new InventoryComponent(0);
-    BlackjackDisplay display = new BlackjackDisplay(new Blackjack(100), inventory);
-    show(display);
-
-    TextField betField = field(display, "betField", TextField.class);
-    Label resultLabel = label(display, "resultLabel");
-    Label statusLabel = label(display, "statusLabel");
-
-    betField.setText("10");
-    invokeTryStartRound(display);
-
-    assertEquals("Your balance is 0 - grind hard!", resultLabel.getText().toString());
-    assertEquals("PLACE BET", statusLabel.getText().toString());
-    assertEquals("", betField.getText());
-    assertEquals(0, inventory.getGold());
-  }
-
-  @Test
-  void shouldRejectEmptyBet() {
-    InventoryComponent inventory = new InventoryComponent(100);
-    BlackjackDisplay display = new BlackjackDisplay(new Blackjack(100), inventory);
-    show(display);
-
-    Label resultLabel = label(display, "resultLabel");
-    Label statusLabel = label(display, "statusLabel");
-
-    invokeTryStartRound(display);
-
-    assertEquals("Enter a bet amount.", resultLabel.getText().toString());
-    assertEquals("PLACE BET", statusLabel.getText().toString());
-    assertEquals(100, inventory.getGold());
-  }
-
-  @Test
-  void shouldRejectZeroBet() {
-    InventoryComponent inventory = new InventoryComponent(100);
-    BlackjackDisplay display = new BlackjackDisplay(new Blackjack(100), inventory);
-    show(display);
-
-    TextField betField = field(display, "betField", TextField.class);
-    Label resultLabel = label(display, "resultLabel");
-
-    betField.setText("0");
-    invokeTryStartRound(display);
-
-    assertEquals("Bet must be greater than 0.", resultLabel.getText().toString());
-    assertEquals(100, inventory.getGold());
-  }
-
-  @Test
-  void shouldRejectBetGreaterThanPlayerGold() {
-    InventoryComponent inventory = new InventoryComponent(50);
+  void shouldNotStartRoundWhenInventoryUnavailable() {
     Blackjack blackjack = new Blackjack(100);
-    BlackjackDisplay display = new BlackjackDisplay(blackjack, inventory);
+    BlackjackDisplay display = new BlackjackDisplay(blackjack);
     show(display);
 
-    TextField betField = field(display, "betField", TextField.class);
-    Label resultLabel = label(display, "resultLabel");
-    Label statusLabel = label(display, "statusLabel");
+    invoke(display, "tryStartRound");
 
-    betField.setText("51");
-    invokeTryStartRound(display);
-
-    assertEquals("Insufficient balance.", resultLabel.getText().toString());
-    assertEquals("PLACE BET", statusLabel.getText().toString());
-    assertEquals(50, inventory.getGold());
+    assertEquals("Player gold unavailable.", label(display, "resultLabel").getText().toString());
     assertFalse(blackjack.isRoundInProgress());
   }
 
   @Test
-  void shouldDeductGoldForValidBet() {
-    InventoryComponent inventory = new InventoryComponent(100);
-    Blackjack blackjack = new Blackjack(100);
+  void shouldNotStartRoundWhenPlayerHasNoGold() {
+    InventoryComponent inventory = new InventoryComponent(0);
+    // Seeded so the deal is not a natural blackjack, which would end the round straight away.
+    Blackjack blackjack = new Blackjack(100, new Random(1));
     BlackjackDisplay display = new BlackjackDisplay(blackjack, inventory);
     show(display);
 
-    TextField betField = field(display, "betField", TextField.class);
-    betField.setText("10");
+    invoke(display, "tryStartRound");
 
-    invokeTryStartRound(display);
-
-    assertEquals(10, blackjack.getBet());
-    assertTrue(blackjack.isRoundInProgress() || blackjack.isRoundOver());
+    assertEquals("Your balance is 0!", label(display, "resultLabel").getText().toString());
+    assertEquals("READY", label(display, "statusLabel").getText().toString());
+    assertEquals(0, inventory.getGold());
+    assertFalse(blackjack.isRoundInProgress());
   }
 
-  @ParameterizedTest
-  @ValueSource(booleans = {true, false})
-  void acknowledgesTheRoundResultBeforeNotifyingTheScreen(boolean won) {
-    Blackjack blackjack = mock(Blackjack.class);
-    when(blackjack.getPlayerHand()).thenReturn(java.util.List.of());
-    when(blackjack.getDealerHand()).thenReturn(java.util.List.of());
-    when(blackjack.isRoundOver()).thenReturn(true);
-    when(blackjack.isPlayerWinner()).thenReturn(won);
-    when(blackjack.getResultMessage()).thenReturn(won ? "You win." : "Dealer wins.");
-    BlackjackDisplay display = new BlackjackDisplay(blackjack, new InventoryComponent(100));
-    Entity ui = show(display);
-    java.util.List<Boolean> results = new java.util.ArrayList<>();
-    ui.getEvents().<Boolean>addListener("roundCompleted", results::add);
-    assertTrue(results.isEmpty());
+  @Test
+  void shouldStakeFixedBetWhenStartingRound() {
+    InventoryComponent inventory = new InventoryComponent(100);
+    Blackjack blackjack = new Blackjack(100, new Random(1));
+    BlackjackDisplay display = new BlackjackDisplay(blackjack, inventory);
+    show(display);
 
-    Table overlay = field(display, "resultOverlay", Table.class);
-    ImageButton next = overlay.findActor("resultContinue");
-    next.fire(new ChangeEvent());
+    invoke(display, "tryStartRound");
 
-    assertEquals(java.util.List.of(won), results);
-    assertFalse(overlay.isVisible());
+    assertEquals(Blackjack.BET, blackjack.getBet());
+    assertTrue(blackjack.isRoundInProgress());
+    assertEquals(100 - Blackjack.BET, inventory.getGold());
   }
 
-  @ParameterizedTest
-  @ValueSource(booleans = {true, false})
-  void soundButtonUpdatesItsLabelAndOnlyPlaysWhenEnabled(boolean hasCallback) {
-    java.util.List<Boolean> soundStates = new java.util.ArrayList<>();
+  @Test
+  void shouldHideNewRoundButtonAfterFirstDeal() {
     BlackjackDisplay display =
-        new BlackjackDisplay(
-            new Blackjack(100), new InventoryComponent(100), hasCallback ? soundStates::add : null);
+        new BlackjackDisplay(new Blackjack(100, new Random(1)), new InventoryComponent(100));
     show(display);
-    TextButton soundButton = findSoundButton(field(display, "table", Table.class));
-    assertNotNull(soundButton);
+    ImageButton newRound = field(display, "newRoundButton", ImageButton.class);
 
-    try (MockedStatic<ButtonSound> sounds = mockStatic(ButtonSound.class)) {
-      soundButton.fire(new ChangeEvent());
-      assertEquals("SOUND: OFF", soundButton.getText().toString());
-      sounds.verifyNoInteractions();
+    assertTrue(newRound.isVisible());
 
-      soundButton.fire(new ChangeEvent());
-      assertEquals("SOUND: ON", soundButton.getText().toString());
-      sounds.verify(ButtonSound::playClick);
-    }
-    assertEquals(hasCallback ? java.util.List.of(false, true) : java.util.List.of(), soundStates);
+    invoke(display, "tryStartRound");
+
+    assertFalse(newRound.isVisible());
   }
 
-  @ParameterizedTest
-  @CsvSource({
-    "false, false, false, true, false, false",
-    "true, false, false, false, true, false",
-    "true, false, true, true, true, false",
-    "true, true, false, true, true, true",
-    "false, true, true, true, true, false",
-    "false, true, false, true, false, true"
-  })
-  void roundStateControlsActionsAndResultVisibility(
-      boolean inProgress,
-      boolean roundOver,
-      boolean dealing,
-      boolean turnDisabled,
-      boolean newRoundDisabled,
-      boolean resultVisible) {
-    Blackjack blackjack = mock(Blackjack.class);
-    when(blackjack.getPlayerHand()).thenReturn(java.util.List.of());
-    when(blackjack.getDealerHand()).thenReturn(java.util.List.of());
-    BlackjackDisplay display = new BlackjackDisplay(blackjack, new InventoryComponent(100));
+  @Test
+  void shouldRequestPauseFromPauseButton() {
+    BlackjackDisplay display =
+        new BlackjackDisplay(new Blackjack(100, new Random(1)), new InventoryComponent(100));
+    Entity ui = show(display);
+    int[] requests = {0};
+    ui.getEvents().addListener(BlackjackDisplay.PAUSE_REQUESTED, () -> requests[0]++);
+
+    ((ImageButton) field(display, "table", Table.class).findActor("pauseButton"))
+        .fire(new com.badlogic.gdx.scenes.scene2d.utils.ChangeListener.ChangeEvent());
+
+    assertEquals(1, requests[0]);
+  }
+
+  @Test
+  void shouldKeepNewRoundButtonWhenFirstDealFails() {
+    BlackjackDisplay display =
+        new BlackjackDisplay(new Blackjack(100, new Random(1)), new InventoryComponent(0));
     show(display);
-    when(blackjack.isRoundInProgress()).thenReturn(inProgress);
-    when(blackjack.isRoundOver()).thenReturn(roundOver);
-    when(blackjack.getResultMessage()).thenReturn("Push: same total.");
-    setField(display, "dealInProgress", dealing);
+    ImageButton newRound = field(display, "newRoundButton", ImageButton.class);
 
-    invokeUpdateResultOverlay(display);
+    invoke(display, "tryStartRound");
 
-    assertButtonState(display, "hitButton", turnDisabled);
-    assertButtonState(display, "standButton", turnDisabled);
-    assertButtonState(display, "newRoundButton", newRoundDisabled);
-    assertButtonState(display, "backButton", false);
-    Table overlay = field(display, "resultOverlay", Table.class);
-    assertEquals(resultVisible, overlay.isVisible());
-    assertEquals(resultVisible ? Touchable.enabled : Touchable.disabled, overlay.getTouchable());
-    if (resultVisible) {
-      Label title = overlay.findActor("resultTitle");
-      Label message = overlay.findActor("resultMessage");
-      assertEquals("PUSH!", title.getText().toString());
-      assertEquals("Push: same total.", message.getText().toString());
-      int actionCount = overlay.getActions().size;
-      invokeUpdateResultOverlay(display);
-      assertEquals(actionCount, overlay.getActions().size, "Refresh must not restart the fade");
+    assertTrue(newRound.isVisible());
+  }
+
+  @Test
+  void shouldSettleGoldByRoundOutcome() {
+    for (int seed = 0; seed < 20; seed++) {
+      InventoryComponent inventory = new InventoryComponent(10);
+      Blackjack blackjack = new Blackjack(10, new Random(seed));
+      BlackjackDisplay display = new BlackjackDisplay(blackjack, inventory);
+      show(display);
+
+      invoke(display, "tryStartRound");
+      if (!blackjack.isRoundOver()) {
+        blackjack.stand();
+        invoke(display, "settleGoldIfRoundOver");
+      }
+
+      int expectedGold =
+          switch (blackjack.getLastOutcome()) {
+            case PLAYER_WIN -> 11;
+            case DEALER_WIN -> 9;
+            case PUSH -> 10;
+          };
+      assertEquals(expectedGold, inventory.getGold());
+      assertEquals(inventory.getGold(), blackjack.getBalance());
     }
   }
 
   @Test
-  void resultRefreshToleratesUninitialisedUiAndMissingButtons() {
-    BlackjackDisplay display = new BlackjackDisplay(new Blackjack(100));
-    assertDoesNotThrow(() -> invokeUpdateResultOverlay(display));
+  void shouldNotStartRoundWhenMatchIsOver() {
+    Blackjack blackjack = lostMatch();
+    InventoryComponent inventory = new InventoryComponent(0);
+    BlackjackDisplay display = new BlackjackDisplay(blackjack, inventory);
     show(display);
-    setField(display, "hitButton", null);
-    setField(display, "standButton", null);
-    setField(display, "newRoundButton", null);
-    setField(display, "backButton", null);
 
-    assertDoesNotThrow(() -> invokeUpdateResultOverlay(display));
-    assertFalse(field(display, "resultOverlay", Table.class).isVisible());
+    invoke(display, "tryStartRound");
+
+    assertEquals("The match is over.", label(display, "resultLabel").getText().toString());
+    assertEquals("MATCH OVER", label(display, "statusLabel").getText().toString());
+    assertFalse(blackjack.isRoundInProgress());
   }
 
-  private static void assertButtonState(BlackjackDisplay display, String name, boolean disabled) {
-    ImageButton button = field(display, name, ImageButton.class);
-    assertEquals(disabled, button.isDisabled(), name);
-    assertEquals(disabled ? Touchable.disabled : Touchable.enabled, button.getTouchable(), name);
+  @Test
+  void shouldRefillGoldWhenAcceptingOutOfGoldDialogue() {
+    Blackjack blackjack = lostMatch();
+    InventoryComponent inventory = new InventoryComponent(0);
+    BlackjackDisplay display = new BlackjackDisplay(blackjack, inventory);
+    show(display);
+
+    BlackjackDialogue dialogue = BlackjackDialogue.forMatch(blackjack);
+    assertEquals(BlackjackDialogue.Kind.OUT_OF_GOLD, dialogue.getKind());
+    dialogue.pressButton(blackjack, null);
+    inventory.setGold(blackjack.getBalance());
+
+    assertEquals(Blackjack.REFILL_GOLD, inventory.getGold());
+    assertEquals(Blackjack.REFILL_GOLD, blackjack.getBalance());
+    assertEquals(0, blackjack.getPlayerWins());
+    assertEquals(0, blackjack.getDealerWins());
+    assertEquals(Blackjack.MatchResult.IN_PROGRESS, blackjack.getMatchResult());
   }
 
-  private static TextButton findSoundButton(Group group) {
-    for (Actor actor : group.getChildren()) {
-      if (actor instanceof TextButton button && button.getText().toString().startsWith("SOUND:")) {
-        return button;
-      }
-      if (actor instanceof Group child) {
-        TextButton button = findSoundButton(child);
-        if (button != null) {
-          return button;
+  @Test
+  void shouldKeepRemainingGoldAfterAcceptingDefeatDialogue() {
+    Blackjack blackjack = new Blackjack(7);
+    InventoryComponent inventory = new InventoryComponent(0);
+    BlackjackDialogue dialogue = BlackjackDialogue.of(BlackjackDialogue.Kind.MATCH_LOST);
+
+    dialogue.pressButton(blackjack, null);
+    inventory.setGold(blackjack.getBalance());
+
+    assertEquals(7, inventory.getGold());
+    assertEquals(7, blackjack.getBalance());
+    assertEquals(Blackjack.MatchResult.IN_PROGRESS, blackjack.getMatchResult());
+  }
+
+  @Test
+  void shouldShowNewMatchButtonAfterLosingTheMatch() {
+    // No inventory, so Circe's welcome gift doesn't take over the pop-up.
+    BlackjackDisplay display = new BlackjackDisplay(lostMatch());
+    show(display);
+
+    assertSame(
+        field(display, "newMatchStyle", ImageButton.ImageButtonStyle.class),
+        resultButton(display).getStyle());
+  }
+
+  @Test
+  void shouldShowNewRoundButtonAfterAnOrdinaryRound() {
+    Blackjack blackjack = new Blackjack(10, new Random(1));
+    blackjack.startNewRound();
+    if (!blackjack.isRoundOver()) {
+      blackjack.stand();
+    }
+    assertFalse(blackjack.isMatchOver());
+    BlackjackDisplay display = new BlackjackDisplay(blackjack);
+    show(display);
+
+    assertSame(
+        field(display, "newRoundStyle", ImageButton.ImageButtonStyle.class),
+        resultButton(display).getStyle());
+  }
+
+  @Test
+  void shouldShowNewMatchButtonAfterAStandaloneWin() {
+    BlackjackDisplay display = new BlackjackDisplay(wonMatch());
+    show(display);
+
+    assertSame(
+        field(display, "newMatchStyle", ImageButton.ImageButtonStyle.class),
+        resultButton(display).getStyle());
+  }
+
+  private static ImageButton resultButton(BlackjackDisplay display) {
+    return field(display, "resultOverlay", Table.class).findActor("resultContinue");
+  }
+
+  /** Returns a game the player has won by reaching the required round wins. */
+  private static Blackjack wonMatch() {
+    for (int seed = 0; seed < 500; seed++) {
+      Blackjack blackjack = new Blackjack(100, new Random(seed));
+      while (!blackjack.isMatchOver()) {
+        blackjack.startNewRound();
+        if (!blackjack.isRoundOver()) {
+          blackjack.stand();
         }
       }
+      if (blackjack.getMatchResult() == Blackjack.MatchResult.PLAYER_WON) {
+        return blackjack;
+      }
     }
-    return null;
+    throw new AssertionError("Could not find a won match");
   }
 
-  private static void setField(Object object, String name, Object value) {
-    try {
-      Field field = object.getClass().getDeclaredField(name);
-      field.setAccessible(true);
-      field.set(object, value);
-    } catch (ReflectiveOperationException exception) {
-      throw new AssertionError(exception);
+  /** Returns a game the player has lost by running out of gold after one round. */
+  private static Blackjack lostMatch() {
+    for (int seed = 0; seed < 100; seed++) {
+      Blackjack blackjack = new Blackjack(Blackjack.BET, new Random(seed));
+      blackjack.startNewRound();
+      if (!blackjack.isRoundOver()) {
+        blackjack.stand();
+      }
+      if (blackjack.getMatchResult() == Blackjack.MatchResult.DEALER_WON) {
+        return blackjack;
+      }
     }
+    throw new AssertionError("Could not find a lost match");
   }
 
-  private static void invokeUpdateResultOverlay(BlackjackDisplay display) {
+  private static void invoke(BlackjackDisplay display, String methodName) {
     try {
-      java.lang.reflect.Method method =
-          BlackjackDisplay.class.getDeclaredMethod("updateResultOverlay");
-      method.setAccessible(true);
-      method.invoke(display);
-    } catch (ReflectiveOperationException exception) {
-      throw new AssertionError(exception);
-    }
-  }
-
-  private static void invokeTryStartRound(BlackjackDisplay display) {
-    try {
-      java.lang.reflect.Method method = BlackjackDisplay.class.getDeclaredMethod("tryStartRound");
+      java.lang.reflect.Method method = BlackjackDisplay.class.getDeclaredMethod(methodName);
       method.setAccessible(true);
       method.invoke(display);
     } catch (ReflectiveOperationException exception) {

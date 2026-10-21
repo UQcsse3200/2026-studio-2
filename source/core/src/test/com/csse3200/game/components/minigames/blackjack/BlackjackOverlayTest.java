@@ -2,6 +2,7 @@ package com.csse3200.game.components.minigames.blackjack;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -93,8 +94,7 @@ class BlackjackOverlayTest {
 
   @Test
   void defaultAndPlayerConstructorsDoNotThrow() {
-    org.junit.jupiter.api.function.Executable createOverlay = BlackjackOverlay::new;
-    assertDoesNotThrow(createOverlay);
+    assertNotNull(new BlackjackOverlay());
     assertDoesNotThrow(() -> new BlackjackOverlay(null));
   }
 
