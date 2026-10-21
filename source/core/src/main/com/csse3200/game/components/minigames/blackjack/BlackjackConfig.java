@@ -25,7 +25,7 @@ public final class BlackjackConfig {
   public static final int WIN_REWARD_QUANTITY = 1;
 
   private static String[] createTextures() {
-    String[] textures = new String[71];
+    String[] textures = new String[73];
     int index = 0;
 
     for (Blackjack.Suit suit : Blackjack.Suit.values()) {
@@ -56,6 +56,8 @@ public final class BlackjackConfig {
     textures[index++] = "images/Buttons/sound_on_up_btn.png";
     textures[index++] = "images/Buttons/sound_off_down_btn.png";
     textures[index++] = "images/Buttons/sound_on_down_btn.png";
+    textures[index++] = "images/Buttons/bj_pause_up_btn.png";
+    textures[index++] = "images/Buttons/bj_pause_down_btn.png";
 
     textures[index++] = BlackjackRulesDisplay.INFO_UP_PATH;
     textures[index++] = BlackjackRulesDisplay.INFO_DOWN_PATH;

@@ -186,6 +186,20 @@ class BlackjackDisplayTest {
   }
 
   @Test
+  void shouldRequestPauseFromPauseButton() {
+    BlackjackDisplay display =
+        new BlackjackDisplay(new Blackjack(100, new Random(1)), new InventoryComponent(100));
+    Entity ui = show(display);
+    int[] requests = {0};
+    ui.getEvents().addListener(BlackjackDisplay.PAUSE_REQUESTED, () -> requests[0]++);
+
+    field(display, "pauseButton", ImageButton.class)
+        .fire(new com.badlogic.gdx.scenes.scene2d.utils.ChangeListener.ChangeEvent());
+
+    assertEquals(1, requests[0]);
+  }
+
+  @Test
   void shouldKeepNewRoundButtonWhenFirstDealFails() {
     BlackjackDisplay display =
         new BlackjackDisplay(new Blackjack(100, new Random(1)), new InventoryComponent(0));

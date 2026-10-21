@@ -33,6 +33,9 @@ import com.csse3200.game.ui.UIComponent;
 
 /** Displays the Blackjack game and its cards. */
 public class BlackjackDisplay extends UIComponent {
+  /** Fired on the entity when the pause button is pressed. The screen opens its pause menu. */
+  public static final String PAUSE_REQUESTED = "blackjackPauseRequested";
+
   private static final String EMPTY_BALANCE_MESSAGE = "Your balance is 0!";
   private static final String MATCH_OVER_MESSAGE = "The match is over.";
 
@@ -89,6 +92,7 @@ public class BlackjackDisplay extends UIComponent {
   private ImageButton standButton;
   private ImageButton backButton;
   private ImageButton soundButton;
+  private ImageButton pauseButton;
 
   private Label dealerLabel;
   private Label playerLabel;
@@ -353,6 +357,18 @@ public class BlackjackDisplay extends UIComponent {
           }
         });
 
+    pauseButton =
+        createImageButton(
+            "images/Buttons/bj_pause_up_btn.png", "images/Buttons/bj_pause_down_btn.png");
+    pauseButton.addListener(
+        new ChangeListener() {
+          @Override
+          public void changed(ChangeEvent event, Actor actor) {
+            ButtonSound.playClick();
+            entity.getEvents().trigger(PAUSE_REQUESTED);
+          }
+        });
+
     /* User Interface */
 
     Table dealerRegion = new Table();
@@ -441,6 +457,9 @@ public class BlackjackDisplay extends UIComponent {
 
     rightSide.row();
     rightSide.add(soundButton).width(192f).height(67f).pad(5f);
+    // Pause sits directly below Sound, in the same column and at the same size.
+    rightSide.row();
+    rightSide.add(pauseButton).width(192f).height(67f).pad(5f).padTop(15f);
     rightSide.top().right();
 
     table.add(leftSide).prefHeight(PREF_INFO_BOX_HEIGHT).prefWidth(PREF_OUTER_TABLE_WIDTH).center();
@@ -1128,6 +1147,17 @@ public class BlackjackDisplay extends UIComponent {
     if (winFadeOverlay != null) {
       winFadeOverlay.toFront();
     }
+  }
+
+  /**
+   * Returns whether the game can be paused right now. Deal animations are scene2d actions, so they
+   * keep running while the game is paused, and finishing one raises the result pop-up above
+   * everything, including the pause menu. The win fade also changes screen on its own.
+   *
+   * @return false while cards are being dealt or the win transition is running
+   */
+  public boolean canPause() {
+    return !dealInProgress && !winTransitionScheduled;
   }
 
   @Override

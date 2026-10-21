@@ -2,6 +2,7 @@ package com.csse3200.game.screens.minigames;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -29,6 +30,7 @@ import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -60,11 +62,12 @@ class BlackjackScreenTest {
   }
 
   @Test
-  void requestsTheTexturesListedInTheBlackjackConfig() {
-    String[] textures = screen.getTextures();
+  void requestsTheBlackjackAndPauseMenuTextures() {
+    List<String> textures = List.of(screen.getTextures());
 
-    assertTrue(textures.length > 0);
-    assertArrayEquals(BlackjackConfig.TEXTURES.toArray(String[]::new), textures);
+    assertTrue(textures.containsAll(BlackjackConfig.TEXTURES));
+    assertTrue(textures.containsAll(List.of(BlackjackScreen.PAUSE_TEXTURES)));
+    assertEquals(textures.size(), textures.stream().distinct().count());
   }
 
   @Test
@@ -87,6 +90,76 @@ class BlackjackScreenTest {
     assertNotNull(ui.getComponent(BlackjackDisplay.class));
     assertNotNull(ui.getComponent(BlackjackActions.class));
     assertNotNull(ui.getComponent(InputDecorator.class));
+  }
+
+  @Test
+  void pauseButtonEventPausesTheGame() {
+    Entity ui = createUiFor(mock(GdxGame.class), false);
+    EntityService entities = new EntityService();
+    ServiceLocator.registerEntityService(entities);
+
+    ui.getEvents().trigger(BlackjackDisplay.PAUSE_REQUESTED);
+
+    assertTrue(entities.getPaused());
+  }
+
+  @Test
+  void togglePausePausesTheGame() {
+    createUiFor(mock(GdxGame.class), false);
+    EntityService entities = new EntityService();
+    ServiceLocator.registerEntityService(entities);
+
+    screen.togglePause();
+
+    assertTrue(entities.getPaused());
+  }
+
+  @Test
+  void togglePauseIsIgnoredWhileSettingsAreOpen() {
+    createUiFor(mock(GdxGame.class), false);
+    EntityService entities = new EntityService();
+    entities.setSettingsOpen(true);
+    ServiceLocator.registerEntityService(entities);
+
+    screen.togglePause();
+
+    assertFalse(entities.getPaused());
+  }
+
+  @Test
+  void musicPausesWithTheGameAndResumesAfter() throws Exception {
+    EntityService entities = new EntityService();
+    ServiceLocator.registerEntityService(entities);
+    ServiceLocator.registerResourceService(resources);
+
+    entities.setPaused(true);
+    callSyncMusicWithPause();
+    verify(music).pause();
+
+    entities.setPaused(false);
+    callSyncMusicWithPause();
+    verify(music).play();
+  }
+
+  @Test
+  void mutedMusicStaysMutedAfterUnpausing() throws Exception {
+    EntityService entities = new EntityService();
+    ServiceLocator.registerEntityService(entities);
+    ServiceLocator.registerResourceService(resources);
+    callSetSoundEnabled(false);
+
+    entities.setPaused(true);
+    callSyncMusicWithPause();
+    entities.setPaused(false);
+    callSyncMusicWithPause();
+
+    verify(music, never()).play();
+  }
+
+  private void callSyncMusicWithPause() throws Exception {
+    Method method = BlackjackScreen.class.getDeclaredMethod("syncMusicWithPause");
+    method.setAccessible(true);
+    method.invoke(screen);
   }
 
   @Test
@@ -136,7 +209,7 @@ class BlackjackScreenTest {
 
     screen.dispose();
 
-    verify(resources).unloadAssets(BlackjackConfig.TEXTURES.toArray(String[]::new));
+    verify(resources).unloadAssets(screen.getTextures());
     verify(resources).unloadAssets(BlackjackConfig.SOUNDS.toArray(String[]::new));
   }
 
