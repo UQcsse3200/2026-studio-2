@@ -26,11 +26,10 @@ public class LightingEngine implements Disposable {
   private float ambientLight = 0.9f;
 
   /**
-   * Constructor method for the lighting engine. This is where some of the rayHandler's global
-   * variables are set and can be changed.
+   * Creates the lighting engine for a world and camera.
    *
-   * @param camera The camera associated with the current renderer for the screen.
-   * @param world The same world registered with the physics engine.
+   * @param camera camera used to render the current screen
+   * @param world Box2D world used by the physics engine and light raycasts
    */
   public LightingEngine(CameraComponent camera, World world) {
     this.camera = camera;
@@ -41,6 +40,11 @@ public class LightingEngine implements Disposable {
     rayHandler.setBlurNum(LightingDefaults.BLUR_NUM);
   }
 
+  /**
+   * Registers a point light for overlap-based ray-count and color balancing.
+   *
+   * @param light light to register
+   */
   public static void addPointLight(PointLightComponent light) {
     if (pointLights.contains(light)) {
       return;
@@ -50,16 +54,29 @@ public class LightingEngine implements Disposable {
     updateOverlappingRayCounts();
   }
 
+  /**
+   * Removes a point light from overlap balancing.
+   *
+   * @param light light to unregister
+   */
   public static void removePointLight(PointLightComponent light) {
     pointLights.remove(light);
     smoothedRayCounts.remove(light);
     updateOverlappingRayCounts();
   }
 
+  /**
+   * @return the Box2DLight handler that owns and renders this engine's lights
+   */
   public RayHandler getRayHandler() {
     return rayHandler;
   }
 
+  /**
+   * Sets the ambient light level used to shade the scene.
+   *
+   * @param ambientLight ambient light color intensity
+   */
   public void setAmbientLight(float ambientLight) {
     this.ambientLight = ambientLight;
     rayHandler.setAmbientLight(ambientLight);
@@ -67,7 +84,7 @@ public class LightingEngine implements Disposable {
 
   /**
    * Render all lights registered with the ray handler to the screen. This also renders a "shadow"
-   * over the entire screen which can be adjusted using the setAmbientLight function.
+   * over the entire screen which can be adjusted using {@link #setAmbientLight(float)}.
    */
   public void render() {
     rayHandler.setCombinedMatrix(camera.getProjectionMatrix());
@@ -147,6 +164,7 @@ public class LightingEngine implements Disposable {
         totalBlue / totalColorWeight);
   }
 
+  /** Target ray count and color calculated for one light during overlap balancing. */
   private static class LightTargets {
     private final float rayCount;
     private final float red;
