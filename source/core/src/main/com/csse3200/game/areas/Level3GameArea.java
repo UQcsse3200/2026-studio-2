@@ -109,8 +109,7 @@ public class Level3GameArea extends GameArea {
    */
   private static final GridPoint2 ARENA_2_CHECKPOINT = new GridPoint2(16, 37);
 
-  /** Calypso spawns from the level 3 boss arena's spawner, which is the last spawner config. */
-  private static final int BOSS_SPAWNER_INDEX = 5;
+  /** Calypso spawns from the level 3 boss arena's spawner. */
 
   /** The game screen hears this on the area's event dispatcher once Calypso is on the field. */
   public static final String BOSS_SPAWNED = "bossSpawned";
@@ -170,33 +169,34 @@ public class Level3GameArea extends GameArea {
    * Reports the boss lifecycle on this area's event dispatcher, where the game screen can hear it:
    * {@link #BOSS_SPAWNED} once Calypso's arena spawner produces her, then {@link
    * #BOSS_PHASE_CHANGING} and {@link #BOSS_PHASE_CHANGED} forwarded off her own events.
-   *
-   * <p>The spawner entity is the last spawner the level config declares. Spawners broadcast on
-   * {@code spawnEntity} once per child and {@code activateByKey} when every child is defeated, so
-   * the spawn event can be observed without any extra component hook.
    */
+  private boolean bossDefeatedEmitted = false;
+
   private void listenForBossSpawn() {
     List<Entity> spawners =
         areaEntities.stream()
             .filter(entity -> entity.getComponent(SpawnerComponent.class) != null)
             .toList();
-    if (spawners.size() <= BOSS_SPAWNER_INDEX) {
+    if (spawners.isEmpty()) {
       return;
     }
 
-    Entity bossSpawner = spawners.get(BOSS_SPAWNER_INDEX);
-    bossSpawner.getEvents().addListener("spawnEntity", this::onBossSpawned);
-    // The level config leaves the boss spawner without completion ids; report its completion on
-    // the area's dispatcher anyway, so the end of the fight is observable where the screen hears.
-    bossSpawner
-        .getEvents()
-        .addListener(
-            "activateByKey",
-            (String id) -> {
-              if (BOSS_DEFEATED_TRIGGER_ID.equals(id)) {
-                getEvents().trigger(BOSS_DEFEATED);
-              }
-            });
+    for (Entity spawner : spawners) {
+      spawner.getEvents().addListener("spawnEntity", this::onBossSpawned);
+      spawner
+          .getEvents()
+          .addListener(
+              "activateByKey",
+              (String id) -> {
+                if (BOSS_DEFEATED_TRIGGER_ID.equals(id)) {
+                  if (bossDefeatedEmitted) {
+                    return;
+                  }
+                  bossDefeatedEmitted = true;
+                  getEvents().trigger(BOSS_DEFEATED);
+                }
+              });
+    }
   }
 
   /**

@@ -72,6 +72,7 @@ public class LevelsGameScreen extends BaseGameScreen {
 
   private boolean levelSwapQueued = false;
   private boolean levelCompleteQueued = false;
+  private boolean bossDefeatQueued = false;
   private GameArea currentGameArea;
   private GameArea nextGameArea;
   private String level = LEVEL1;
@@ -187,6 +188,9 @@ public class LevelsGameScreen extends BaseGameScreen {
   }
 
   private void onPlayerDeath() {
+    if (bossDefeatQueued) {
+      return;
+    }
     // Keep the player entity so the restart button can revive at the last checkpoint.
     Gdx.app.postRunnable(
         () -> ServiceLocator.getGameEndEventHandler().trigger("gameEnd", GameEndState.LOSE));
@@ -194,6 +198,12 @@ public class LevelsGameScreen extends BaseGameScreen {
 
   /** Restart handler for the game-over panel: checkpoint respawn with health penalty. */
   private void restartAtCheckpoint() {
+    if (bossDefeatQueued) {
+      if (gameEndDisplay != null) {
+        gameEndDisplay.hide();
+      }
+      return;
+    }
     if (currentGameArea != null) {
       currentGameArea.restart();
       if (currentGameArea.requiresWorldResetOnDeath()) {
@@ -307,6 +317,9 @@ public class LevelsGameScreen extends BaseGameScreen {
     if (wasMapToggled) {
       currentGameArea.toggleLevelMap();
     }
+    levelCompleteQueued = false;
+    bossDefeatQueued = false;
+    bossPhasePromptShown = false;
     // Finish applying a loaded save now that its level's area exists (no-op otherwise).
     game.applyPendingSaveWorld(currentGameArea, level);
   }
@@ -501,6 +514,11 @@ public class LevelsGameScreen extends BaseGameScreen {
         .addListener(Level3GameArea.BOSS_PHASE_CHANGING, (EventListener0) this::onBossPhaseChange);
     area.getEvents()
         .addListener(Level3GameArea.BOSS_DEFEATED, (EventListener0) this::onBossDefeated);
+    // Fallback: if CP5 was skipped and checkpoint tutorial tut14 wasn't shown, show it on boss
+    // spawn
+    if (LEVEL3.equals(level) && shownCheckpointTutorials.add("tut14")) {
+      startNamedTutorial("tut14", null);
+    }
   }
 
   /**
@@ -519,12 +537,11 @@ public class LevelsGameScreen extends BaseGameScreen {
    * When Calypso is defeated, play the closing cutscene, which fades to black and ends the game.
    */
   private void onBossDefeated() {
-    // Avoid queuing again if the game is already in a transition/end state.
-    if (levelCompleteQueued) {
+    if (bossDefeatQueued || levelCompleteQueued) {
       return;
     }
+    bossDefeatQueued = true;
     levelCompleteQueued = true;
-    // Mark the save as completed on ending via the boss defeat path.
     game.markSaveCompleted();
     Gdx.app.postRunnable(() -> game.playCutscene("cutscene6", GdxGame.ScreenType.MAIN_MENU));
   }

@@ -200,7 +200,7 @@ public class Level3Config extends LevelConfig {
           new TriggerablePlatformConfig(
               new PlatformConfig(new GridPoint2(12, 97), 3, 1, 0, triggerablePlatformTFP),
               new String[] {BOSS_ARENA},
-              false,
+              true,
               true), // TP12
         };
 
